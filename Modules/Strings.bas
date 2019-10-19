@@ -67,16 +67,20 @@ End Enum
 #End If
 
 'While not technically Uniscribe-specific, this class wraps some other Unicode bits as a convenience
-Public Enum PD_STRING_REMAP
-    PDSR_NONE = 0
-    PDSR_LOWERCASE = 1
-    PDSR_UPPERCASE = 2
-    PDSR_HIRAGANA = 3
-    PDSR_KATAKANA = 4
-    PDSR_SIMPLE_CHINESE = 5
-    PDSR_TRADITIONAL_CHINESE = 6
-    PDSR_TITLECASE_WIN7 = 7
+Public Enum PD_StringRemap
+    sr_None = 0
+    sr_LowerCase = 1
+    sr_UpperCase = 2
+    sr_Hiragana = 3
+    sr_Katakana = 4
+    sr_ChineseSimple = 5
+    sr_ChineseTraditional = 6
+    sr_Titlecase = 7
 End Enum
+
+#If False Then
+    Private Const sr_None = 0, sr_LowerCase = 1, sr_UpperCase = 2, sr_Hiragana = 3, sr_Katakana = 4, sr_ChineseSimple = 5, sr_ChineseTraditional = 6, sr_Titlecase = 7
+#End If
 
 '(Both LCMapString variants use the same constants)
 Private Enum REMAP_STRING_API
@@ -623,10 +627,10 @@ End Function
 
 'Apply some kind of remap conversion ("change case" in Latin languages) using WAPI.
 ' IMPORTANT: some LCMAP constants *are only available under Windows 7*, so be aware of which requests fail on earlier OSes.
-Public Function StringRemap(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
+Public Function StringRemap(ByRef srcString As String, ByVal remapType As PD_StringRemap) As String
     
     'If the remap type is 0, do nothing
-    If (remapType = PDSR_NONE) Then
+    If (remapType = sr_None) Then
         StringRemap = srcString
     Else
     
@@ -635,25 +639,25 @@ Public Function StringRemap(ByRef srcString As String, ByVal remapType As PD_STR
         
         Select Case remapType
         
-            Case PDSR_LOWERCASE
+            Case sr_LowerCase
                 apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_LOWERCASE
             
-            Case PDSR_UPPERCASE
+            Case sr_UpperCase
                 apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_UPPERCASE
                 
-            Case PDSR_HIRAGANA
+            Case sr_Hiragana
                 apiFlags = LCMAP_HIRAGANA
                 
-            Case PDSR_KATAKANA
+            Case sr_Katakana
                 apiFlags = LCMAP_KATAKANA
                 
-            Case PDSR_SIMPLE_CHINESE
+            Case sr_ChineseSimple
                 apiFlags = LCMAP_SIMPLIFIED_CHINESE
                 
-            Case PDSR_TRADITIONAL_CHINESE
+            Case sr_ChineseTraditional
                 apiFlags = LCMAP_TRADITIONAL_CHINESE
                 
-            Case PDSR_TITLECASE_WIN7
+            Case sr_Titlecase
                 apiFlags = LCMAP_TITLECASE
                 
                 'If the remap type is "titlecase" and we're on Vista or earlier, do nothing

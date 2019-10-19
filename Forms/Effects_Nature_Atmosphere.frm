@@ -114,7 +114,7 @@ Public Sub ApplyAtmosphereEffect(ByVal effectParams As String, Optional ByVal to
     Dim atmIntensity As Double, atmStyle As Long, atmBlend As PD_BlendMode
     
     With cParams
-        atmBlend = .GetLong("blendmode", BL_OVERLAY)
+        atmBlend = .GetLong("blendmode", BM_Overlay)
         atmStyle = .GetLong("style", 0)
         atmIntensity = .GetDouble("intensity", 50#)
     End With
@@ -233,7 +233,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboBlendMode.ListIndex = BL_OVERLAY
+    cboBlendMode.ListIndex = BM_Overlay
 End Sub
 
 Private Sub Form_Load()
@@ -244,7 +244,7 @@ Private Sub Form_Load()
     btsStyle.AddItem "local", 1
     btsStyle.ListIndex = 0
     
-    Interface.PopulateBlendModeDropDown cboBlendMode, BL_OVERLAY
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Overlay
     
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True

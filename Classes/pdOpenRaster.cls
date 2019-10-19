@@ -368,7 +368,7 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                                 'Prep a new layer object and initialize it with the image bits we've retrieved
                                 newLayerID = dstImage.CreateBlankLayer()
                                 Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                                tmpLayer.InitializeNewLayer PDL_IMAGE, layerProps(i).orlName, tmpDIB
+                                tmpLayer.InitializeNewLayer PDL_Image, layerProps(i).orlName, tmpDIB
                                 
                                 'Fill in any remaining layer properties
                                 With layerProps(i)
@@ -622,92 +622,92 @@ Private Function GetBlendModeFromSVGOp(ByRef srcString As String) As PD_BlendMod
         
         'Normal / Source Over
         Case "svg:src-over"
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
             
         'Multiply / Source Over
         Case "svg:multiply"
-            GetBlendModeFromSVGOp = BL_MULTIPLY
+            GetBlendModeFromSVGOp = BM_Multiply
         
         'Screen / Source Over
         Case "svg:screen"
-            GetBlendModeFromSVGOp = BL_SCREEN
+            GetBlendModeFromSVGOp = BM_Screen
         
         'Overlay / Source Over
         Case "svg:overlay"
-            GetBlendModeFromSVGOp = BL_OVERLAY
+            GetBlendModeFromSVGOp = BM_Overlay
         
         'Darken / Source Over
         Case "svg:darken"
-            GetBlendModeFromSVGOp = BL_DARKEN
+            GetBlendModeFromSVGOp = BM_Darken
         
         'Lighten / Source Over
         Case "svg:lighten"
-            GetBlendModeFromSVGOp = BL_LIGHTEN
+            GetBlendModeFromSVGOp = BM_Lighten
             
         'Color Dodge / Source Over
         Case "svg:color-dodge"
-            GetBlendModeFromSVGOp = BL_COLORDODGE
+            GetBlendModeFromSVGOp = BM_ColorDodge
         
         'Color Burn / Source Over
         Case "svg:color-burn"
-            GetBlendModeFromSVGOp = BL_COLORBURN
+            GetBlendModeFromSVGOp = BM_ColorBurn
         
         'Hard Light / Source Over
         Case "svg:hard-light"
-            GetBlendModeFromSVGOp = BL_HARDLIGHT
+            GetBlendModeFromSVGOp = BM_HardLight
         
         'Soft Light / Source Over
         Case "svg:soft-light"
-            GetBlendModeFromSVGOp = BL_SOFTLIGHT
+            GetBlendModeFromSVGOp = BM_SoftLight
         
         'Difference / Source Over
         Case "svg:difference"
-            GetBlendModeFromSVGOp = BL_DIFFERENCE
+            GetBlendModeFromSVGOp = BM_Difference
         
         'Color / Source Over
         Case "svg:color"
-            GetBlendModeFromSVGOp = BL_COLOR
+            GetBlendModeFromSVGOp = BM_Color
         
         'Luminosity / Source Over
         Case "svg:luminosity"
-            GetBlendModeFromSVGOp = BL_LUMINOSITY
+            GetBlendModeFromSVGOp = BM_Luminosity
         
         'Hue / Source Over
         Case "svg:hue"
-            GetBlendModeFromSVGOp = BL_HUE
+            GetBlendModeFromSVGOp = BM_Hue
         
         'Saturation / Source Over
         Case "svg:saturation"
-            GetBlendModeFromSVGOp = BL_SATURATION
+            GetBlendModeFromSVGOp = BM_Saturation
         
         'Normal / Lighter
         Case "svg:plus"
             InternalError "GetBlendModeFromSVGOp", "unsupported blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
         
         'Normal / Destination In
         Case "svg:dst-in"
             InternalError "GetBlendModeFromSVGOp", "unsupported blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
         
         'Normal / Destination Out
         Case "svg:dst-out"
             InternalError "GetBlendModeFromSVGOp", "unsupported blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
         
         'Normal / Source Atop
         Case "svg:src-atop"
             InternalError "GetBlendModeFromSVGOp", "unsupported blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
         
         'Normal / Destination Atop
         Case "svg:dst-atop"
             InternalError "GetBlendModeFromSVGOp", "unsupported blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
         
         Case Else
             InternalError "GetBlendModeFromSVGOp", "unknown blend mode: " & srcString
-            GetBlendModeFromSVGOp = BL_NORMAL
+            GetBlendModeFromSVGOp = BM_Normal
     
     End Select
 
@@ -715,35 +715,35 @@ End Function
 
 Private Function GetSVGOpFromBlendMode(ByVal srcBlendMode As PD_BlendMode) As String
     Select Case srcBlendMode
-        Case BL_NORMAL
+        Case BM_Normal
             GetSVGOpFromBlendMode = "svg:src-over"
-        Case BL_MULTIPLY
+        Case BM_Multiply
             GetSVGOpFromBlendMode = "svg:multiply"
-        Case BL_SCREEN
+        Case BM_Screen
             GetSVGOpFromBlendMode = "svg:screen"
-        Case BL_OVERLAY
+        Case BM_Overlay
             GetSVGOpFromBlendMode = "svg:overlay"
-        Case BL_DARKEN
+        Case BM_Darken
             GetSVGOpFromBlendMode = "svg:darken"
-        Case BL_LIGHTEN
+        Case BM_Lighten
             GetSVGOpFromBlendMode = "svg:lighten"
-        Case BL_COLORDODGE
+        Case BM_ColorDodge
             GetSVGOpFromBlendMode = "svg:color-dodge"
-        Case BL_COLORBURN
+        Case BM_ColorBurn
             GetSVGOpFromBlendMode = "svg:color-burn"
-        Case BL_HARDLIGHT
+        Case BM_HardLight
             GetSVGOpFromBlendMode = "svg:hard-light"
-        Case BL_SOFTLIGHT
+        Case BM_SoftLight
             GetSVGOpFromBlendMode = "svg:soft-light"
-        Case BL_DIFFERENCE
+        Case BM_Difference
             GetSVGOpFromBlendMode = "svg:difference"
-        Case BL_COLOR
+        Case BM_Color
             GetSVGOpFromBlendMode = "svg:color"
-        Case BL_LUMINOSITY
+        Case BM_Luminosity
             GetSVGOpFromBlendMode = "svg:luminosity"
-        Case BL_HUE
+        Case BM_Hue
             GetSVGOpFromBlendMode = "svg:hue"
-        Case BL_SATURATION
+        Case BM_Saturation
             GetSVGOpFromBlendMode = "svg:saturation"
         
         'TODO:

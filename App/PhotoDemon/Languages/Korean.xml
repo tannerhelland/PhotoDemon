@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.109</langversion>
+<langversion>1.0.110</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2731,6 +2731,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -14818,7 +14824,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 
 <!-- END text for Toolpanel_Selections.frm-->
 
-<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_Text) -->
+<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_TextBasic) -->
 
 <phrase>
 <original>font face</original>
@@ -14874,7 +14880,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
-<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
+<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_TextAdvanced) -->
 
 <phrase>
 <original>remap</original>
@@ -16260,12 +16266,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for PDPackaging.bas -->
-
-<!-- PDPackaging.bas contains 0 phrases. -->
-
-<!-- END text for PDPackaging.bas-->
 
 <!-- Automatic text extraction complete. -->
 

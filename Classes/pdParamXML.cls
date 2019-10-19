@@ -95,10 +95,10 @@ Friend Sub SetParamVersion(Optional ByVal newVersion As Double = 1#)
 End Sub
 
 'Simple check to see if a parameter exists
-Friend Function DoesParamExist(ByRef paramName As String) As Boolean
+Friend Function DoesParamExist(ByVal paramName As String, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Boolean
     
     'Make the parameter name XML-safe
-    paramName = GetXMLSafeName(paramName)
+    If (Not nameGuaranteedXMLSafe) Then paramName = GetXMLSafeName(paramName)
     
     Dim paramPos As Long
     paramPos = m_ParamString.StrStr("<" & paramName & ">")
@@ -111,54 +111,54 @@ Friend Function DoesParamExist(ByRef paramName As String) As Boolean
 End Function
 
 'Retrieve various type-specific parameters.  Note that these ultimately wrap getParamValue; they simply cast the result explicitly.
-Friend Function GetBool(ByRef paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
+Friend Function GetBool(ByRef paramName As String, Optional ByVal defaultReturn As Boolean = False, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Boolean
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetBool = CBool(Trim$(paramValue))
     Else
         GetBool = defaultReturn
     End If
 End Function
 
-Friend Function GetByte(ByRef paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
+Friend Function GetByte(ByRef paramName As String, Optional ByVal defaultReturn As Byte = 0, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Byte
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetByte = CByte(Trim$(paramValue))
     Else
         GetByte = defaultReturn
     End If
 End Function
 
-Friend Function GetInteger(ByRef paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
+Friend Function GetInteger(ByRef paramName As String, Optional ByVal defaultReturn As Integer = 0, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Integer
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetInteger = CInt(CDblCustom(Trim$(paramValue)))
     Else
         GetInteger = defaultReturn
     End If
 End Function
 
-Friend Function GetLong(ByRef paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
+Friend Function GetLong(ByRef paramName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Long
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetLong = CLng(CDblCustom(Trim$(paramValue)))
     Else
         GetLong = defaultReturn
     End If
 End Function
 
-Friend Function GetSingle(ByRef paramName As String, Optional ByVal defaultReturn As Single = 0!) As Single
+Friend Function GetSingle(ByRef paramName As String, Optional ByVal defaultReturn As Single = 0!, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Single
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetSingle = CSngCustom(Trim$(paramValue))
     Else
         GetSingle = defaultReturn
     End If
 End Function
 
-Friend Function GetDouble(ByRef paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
+Friend Function GetDouble(ByRef paramName As String, Optional ByVal defaultReturn As Double = 0#, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Double
     Dim paramValue As String
-    If GetParamValue(paramName, paramValue) Then
+    If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
         GetDouble = CDblCustom(Trim$(paramValue))
     Else
         GetDouble = defaultReturn
@@ -258,27 +258,27 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     'Convert the parameter value into a string.  We handle this manually to minimize the chance of locale issues.
     Dim strParamValue As String
     
-    If VarType(paramValue) = vbString Then
+    If (VarType(paramValue) = vbString) Then
         strParamValue = paramValue
-    ElseIf VarType(paramValue) = vbByte Then
+    ElseIf (VarType(paramValue) = vbByte) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbInteger Then
+    ElseIf (VarType(paramValue) = vbInteger) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbLong Then
+    ElseIf (VarType(paramValue) = vbLong) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbSingle Then
+    ElseIf (VarType(paramValue) = vbSingle) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbDouble Then
+    ElseIf (VarType(paramValue) = vbDouble) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbBoolean Then
+    ElseIf (VarType(paramValue) = vbBoolean) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbDecimal Then
+    ElseIf (VarType(paramValue) = vbDecimal) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbCurrency Then
+    ElseIf (VarType(paramValue) = vbCurrency) Then
         strParamValue = Trim$(Str$(paramValue))
-    ElseIf VarType(paramValue) = vbNull Then
+    ElseIf (VarType(paramValue) = vbNull) Then
         strParamValue = Trim$(Str$(0))
-    ElseIf VarType(paramValue) = vbDate Then
+    ElseIf (VarType(paramValue) = vbDate) Then
         strParamValue = Format$(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
     
     'Pray for a correct implicit cast result

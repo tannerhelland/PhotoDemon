@@ -1142,9 +1142,9 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
                         'If the current text box is empty, set some new text to orient the user
                         If (g_CurrentTool = TEXT_BASIC) Then
-                            If (LenB(toolpanel_Text.txtTextTool.Text) = 0) Then toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            If (LenB(toolpanel_TextBasic.txtTextTool.Text) = 0) Then toolpanel_TextBasic.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         Else
-                            If (LenB(toolpanel_FancyText.txtTextTool.Text) = 0) Then toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            If (LenB(toolpanel_TextAdvanced.txtTextTool.Text) = 0) Then toolpanel_TextAdvanced.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         End If
                         
                         'Manually synchronize the new size values against their on-screen UI elements
@@ -1177,7 +1177,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     Interface.SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
-                    If (g_CurrentTool = TEXT_BASIC) Then toolpanel_Text.txtTextTool.SelectAll Else toolpanel_FancyText.txtTextTool.SelectAll
+                    If (g_CurrentTool = TEXT_BASIC) Then toolpanel_TextBasic.txtTextTool.SelectAll Else toolpanel_TextAdvanced.txtTextTool.SelectAll
                     
                 'The user is simply editing an existing layer.
                 Else

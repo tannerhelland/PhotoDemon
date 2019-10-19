@@ -202,7 +202,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
         ' via PD's central compositor.
         Dim cComposite As pdCompositor
         Set cComposite = New pdCompositor
-        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, inkDIB, BL_DIFFERENCE, inkOpacity
+        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, inkDIB, BM_Difference, inkOpacity
         
     End If
     

@@ -154,8 +154,8 @@ End Sub
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
-    Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
-    Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
+    Interface.PopulateBlendModeDropDown cboBrushSetting(0), BM_Normal
+    Interface.PopulateAlphaModeDropDown cboBrushSetting(1), AM_Normal
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings

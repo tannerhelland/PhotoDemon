@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.144</langversion>
+<langversion>1.0.145</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2733,6 +2733,12 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -14821,7 +14827,7 @@ I में लोड करें, इस दुर्भावना के �
 
 <!-- END text for Toolpanel_Selections.frm-->
 
-<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_Text) -->
+<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_TextBasic) -->
 
 <phrase>
 <original>font face</original>
@@ -14877,7 +14883,7 @@ I में लोड करें, इस दुर्भावना के �
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
-<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
+<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_TextAdvanced) -->
 
 <phrase>
 <original>remap</original>
@@ -16263,12 +16269,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for PDPackaging.bas -->
-
-<!-- PDPackaging.bas contains 0 phrases. -->
-
-<!-- END text for PDPackaging.bas-->
 
 <!-- Automatic text extraction complete. -->
 

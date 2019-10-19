@@ -44,92 +44,20 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public Enum PD_LayerType
-    PDL_Image = 0
-    PDL_TextBasic = 1
-    PDL_TextAdvanced = 2
-    PDL_Adjustment = 3
-End Enum
-
-#If False Then
-    Const PDL_Image = 0, PDL_TextBasic = 1, PDL_TextAdvanced = 2, PDL_Adjustment = 3
-#End If
-
 'Layer type is set at creation time.  Once a layer has been created, its type should not be changed.
 ' The one exception to this rule is converting vector layers (text, etc) to image layers.  This can be done, but it is a one-way conversion.
 ' Once a layer is converted to PDL_IMAGE type, it cannot be reverted.
-Private myLayerType As PD_LayerType
+Private m_LayerType As PD_LayerType
 
-Public Enum PD_BlendMode
-    BL_NORMAL = 0
-    BL_DARKEN = 1
-    BL_MULTIPLY = 2
-    BL_COLORBURN = 3
-    BL_LINEARBURN = 4
-    BL_LIGHTEN = 5
-    BL_SCREEN = 6
-    BL_COLORDODGE = 7
-    BL_LINEARDODGE = 8
-    BL_OVERLAY = 9
-    BL_SOFTLIGHT = 10
-    BL_HARDLIGHT = 11
-    BL_VIVIDLIGHT = 12
-    BL_LINEARLIGHT = 13
-    BL_PINLIGHT = 14
-    BL_HARDMIX = 15
-    BL_DIFFERENCE = 16
-    BL_EXCLUSION = 17
-    BL_SUBTRACT = 18
-    BL_DIVIDE = 19
-    BL_HUE = 20
-    BL_SATURATION = 21
-    BL_COLOR = 22
-    BL_LUMINOSITY = 23
-    BL_GRAINEXTRACT = 24
-    BL_GRAINMERGE = 25
-    BL_ERASE = 26
-End Enum
-
-#If False Then
-    Const BL_NORMAL = 0, BL_DARKEN = 1, BL_MULTIPLY = 2, BL_COLORBURN = 3, BL_LINEARBURN = 4, BL_LIGHTEN = 5, BL_SCREEN = 6, BL_COLORDODGE = 7
-    Const BL_LINEARDODGE = 8, BL_OVERLAY = 9, BL_SOFTLIGHT = 10, BL_HARDLIGHT = 11, BL_VIVIDLIGHT = 12, BL_LINEARLIGHT = 13, BL_PINLIGHT = 14
-    Const BL_HARDMIX = 15, BL_DIFFERENCE = 16, BL_EXCLUSION = 17, BL_SUBTRACT = 18, BL_DIVIDE = 19
-    Const BL_HUE = 20, BL_SATURATION = 21, BL_COLOR = 22, BL_LUMINOSITY = 23, BL_GRAINEXTRACT = 24, BL_GRAINMERGE = 25
-    Const BL_ERASE = 26
-#End If
-
-'Layer resize quality is defined different from other resample places in the project.  (Only a subset of options are exposed, for performance reasons.)
-Public Enum PD_LayerResizeQuality
-    LRQ_NEAREST_NEIGHBOR = 0
-    LRQ_BILINEAR_NORMAL = 1
-    LRQ_BICUBIC_NORMAL = 2
-End Enum
-
-#If False Then
-    Const LRQ_NEAREST_NEIGHBOR = 0, LRQ_BILINEAR_NORMAL = 1, LRQ_BICUBIC_NORMAL = 2
-#End If
-
-'PD supports the notion "alpha modes", including "inheritance," where a layer "inherits" the alpha of a layer beneath it,
-' (https://userbase.kde.org/Krita/Tutorial_2#Inherit_Alpha_.28alpha_.3D_transparency.29).  I may or may not choose to
-' address masking via this property as well... I'm still deciding the best way to do it.
+'Canonical ID value for this layer.  This value is set once, at layer creation time,
+' and can never be changed again.  It is persistent for the life of the layer,
+' the life of the parent pdImage object (meaning no other layer in that image will
+' ever be assigned this ID value), and the life of any copies of the parent pdImage
+' saved to file.
 '
-'Also, alpha locking is handled via mode.
-Public Enum PD_AlphaMode
-    LA_NORMAL = 0
-    LA_INHERIT = 1
-    LA_LOCKED = 2
-End Enum
-
-#If False Then
-    Private Const LA_NORMAL = 0, LA_INHERIT = 1, LA_LOCKED = 2
-#End If
-
-'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
-' persistent for the life of the layer, the life of the parent pdImage object (meaning no other layer in that image will
-' ever be assigned this ID value), and the life of any copies of the parent pdImage saved to file.
-'
-'Because this value cannot be changed once created, I keep it separate from the LayerData struct (whose data can be changed).
-Private layerID As Long
+'Because this value cannot be changed once created, I keep it separate from the
+' LayerData struct (whose data *can* be modified).
+Private m_layerID As Long
 
 'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
 ' Default values will be set at creation time, but never assume that these values are constant, and never attempt to reference
@@ -137,9 +65,9 @@ Private layerID As Long
 Private Type LayerData
     l_Name As String                    'Layer name, as entered by the user
     l_GroupID As Long                   'Layer group (0 if not assigned to a group)
-    l_Opacity As Long                   'Layer opacity (defaults to 100)
-    l_BlendMode As PD_BlendMode         'Layer blend mode; defaults to BL_NORMAL
-    l_AlphaMode As PD_AlphaMode         'Layer alpha mode; defaults to LA_NORMAL
+    l_Opacity As Single                 'Layer opacity ([0, 100] - defaults to 100)
+    l_BlendMode As PD_BlendMode         'Layer blend mode; defaults to BM_Normal
+    l_AlphaMode As PD_AlphaMode         'Layer alpha mode; defaults to AM_Normal
     l_OffsetX As Double                 'X/Y offset of the layer's top-left corner
     l_OffsetY As Double
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
@@ -185,12 +113,12 @@ End Enum
 
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
 ' stored in this struct.
-Private Type genericVectorData
+Private Type GenericVectorData
     vd_Width As Single          'Unlike raster layers, vector layers must explicitly store their width and height
     vd_Height As Single
 End Type
 
-Private myVectorData As genericVectorData
+Private myVectorData As GenericVectorData
 
 'Vector layers must be converted into raster format for rendering on the screen.  If the DIB is synched against the
 ' the current vector contents, this will be set to TRUE.  If it is FALSE, the DIB must be generated prior to display.
@@ -285,29 +213,30 @@ End Sub
 'Note that the set function is preferenced by "assign" - I do this on purpose, to help me remember that the function should only
 ' ever be called once, right after the layer is first created.  After that, it should never, ever be changed!
 Friend Function GetLayerID() As Long
-    GetLayerID = layerID
+    GetLayerID = m_layerID
 End Function
 
 Friend Sub AssignLayerID(ByVal thisLayerID As Long)
     
-    'As a failsafe, warn me if this layer has already been assigned an ID.  (This should *never* happen, but I like to verify.)
+    'As a failsafe, warn me if this layer has already been assigned an ID.
+    ' (This should *never* happen, but I like to verify.)
     If (Not OS.IsProgramCompiled) Then
-        If (layerID <> -1) Then Debug.Print "WARNING! This layer already has an ID!"
+        If (m_layerID <> -1) Then InternalError "AssignLayerID", "this layer already has an ID"
     End If
     
-    layerID = thisLayerID
+    m_layerID = thisLayerID
     
 End Sub
 
 'Get layer type.
 Friend Function GetLayerType() As PD_LayerType
-    GetLayerType = myLayerType
+    GetLayerType = m_LayerType
 End Function
 
 'Set layer type.  Note that this only sets the layer type flag; changing the actual layer contents to match (e.g. rasterization)
 ' must be handled separately.
 Friend Sub SetLayerType(ByVal newLayerType As PD_LayerType)
-    myLayerType = newLayerType
+    m_LayerType = newLayerType
     m_VectorDIBSynched = False
 End Sub
 
@@ -315,7 +244,7 @@ End Sub
 ' considered vector layers, because all changes are non-destructive.
 Friend Function IsLayerVector() As Boolean
 
-    Select Case myLayerType
+    Select Case m_LayerType
     
         Case PDL_Image
             IsLayerVector = False
@@ -324,7 +253,7 @@ Friend Function IsLayerVector() As Boolean
             IsLayerVector = True
         
         Case Else
-            Debug.Print "Layer type unknown!  Returning VECTOR = FALSE by default."
+            InternalError "IsLayerVector", "Layer type unknown!  Returning VECTOR = FALSE by default."
     
     End Select
 
@@ -340,7 +269,7 @@ End Function
 ' (e.g. "WordArt") in the future.
 Friend Function IsLayerText() As Boolean
 
-    Select Case myLayerType
+    Select Case m_LayerType
     
         Case PDL_TextBasic, PDL_TextAdvanced
             IsLayerText = True
@@ -358,12 +287,12 @@ Friend Sub RasterizeVectorData()
 
     'If the layer is already rasterized, ignore this request
     If Me.IsLayerRaster Then
-        Debug.Print "WARNING!  You just requested rasterization of a raster layer (" & Me.GetLayerName() & "). Fix this! "
+        InternalError "RasterizeVectorData", "can't rasterize a raster layer: " & Me.GetLayerName()
         Exit Sub
     End If
     
     'Rasterizing is a lot simpler than it looks.  Basically, we just change the layer type to PDL_IMAGE and discard any superfluous vector data.
-    myLayerType = PDL_Image
+    m_LayerType = PDL_Image
         
     'While possibly unnecessary for some vector layer types, rasterization is a serious enough change that it's wise to regenerate
     ' any/all internal caches.
@@ -452,7 +381,7 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
         .l_OffsetY = topLeftY
         
         'Image layers have their own base size, and a modifier is used to "stretch" that size accordingly
-        If (myLayerType = PDL_Image) Then
+        If (m_LayerType = PDL_Image) Then
             
             If (Me.GetLayerWidth(False) <> 0#) Then
                 Me.SetLayerCanvasXModifier (bottomRightX - topLeftX) / Me.GetLayerWidth(False)
@@ -467,7 +396,7 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
             End If
         
         'Text layers are simply resized, while their modifier is kept at 1.0
-        ElseIf (myLayerType = PDL_TextBasic) Or (myLayerType = PDL_TextAdvanced) Then
+        ElseIf (m_LayerType = PDL_TextBasic) Or (m_LayerType = PDL_TextAdvanced) Then
             Me.SetLayerWidth bottomRightX - topLeftX
             Me.SetLayerHeight bottomRightY - topLeftY
         End If
@@ -485,7 +414,7 @@ End Sub
 Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
     'The returned width varies by layer type
-    Select Case myLayerType
+    Select Case m_LayerType
     
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_Image
@@ -516,7 +445,7 @@ End Function
 Friend Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
     'The returned height varies by layer type
-    Select Case myLayerType
+    Select Case m_LayerType
     
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_Image
@@ -550,14 +479,14 @@ Friend Sub SetLayerWidth(ByVal newSize As Single)
     If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
-    If (myLayerType <> PDL_Image) And (newSize <> myVectorData.vd_Width) Then
+    If (m_LayerType <> PDL_Image) And (newSize <> myVectorData.vd_Width) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Width = newSize
         m_VectorDIBSynched = False
         
     Else
-        If (myLayerType = PDL_Image) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (m_LayerType = PDL_Image) Then InternalError "SetLayerWidth", "setLayerWidth and setLayerHeight functions are only valid for vector layers"
     End If
     
 End Sub
@@ -568,14 +497,14 @@ Friend Sub SetLayerHeight(ByVal newSize As Single)
     If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
-    If (myLayerType <> PDL_Image) And (newSize <> myVectorData.vd_Height) Then
+    If (m_LayerType <> PDL_Image) And (newSize <> myVectorData.vd_Height) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Height = newSize
         m_VectorDIBSynched = False
         
     Else
-        If (myLayerType = PDL_Image) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (m_LayerType = PDL_Image) Then InternalError "SetLayerHeight", "setLayerWidth and setLayerHeight functions are only valid for vector layers"
     End If
     
 End Sub
@@ -596,7 +525,7 @@ Friend Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
     If (newXModifier <= 0#) Then newXModifier = 0.00000001
     
     'Separate handling by layer type
-    Select Case myLayerType
+    Select Case m_LayerType
     
         Case PDL_Image
             myLayerData.l_CanvasXModifier = newXModifier
@@ -615,7 +544,7 @@ Friend Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     If (newYModifier <= 0#) Then newYModifier = 0.00000001
     
     'Separate handling by layer type
-    Select Case myLayerType
+    Select Case m_LayerType
     
         Case PDL_Image
             myLayerData.l_CanvasYModifier = newYModifier
@@ -639,13 +568,13 @@ Friend Function GetLayerResizeQuality_GDIPlus() As GP_InterpolationMode
     
     Select Case myLayerData.l_ResizeQuality
         
-        Case LRQ_NEAREST_NEIGHBOR
+        Case LRQ_NearestNeighbor
             GetLayerResizeQuality_GDIPlus = GP_IM_NearestNeighbor
         
-        Case LRQ_BILINEAR_NORMAL
+        Case LRQ_Bilinear
             GetLayerResizeQuality_GDIPlus = GP_IM_Bilinear
         
-        Case LRQ_BICUBIC_NORMAL
+        Case LRQ_Bicubic
             GetLayerResizeQuality_GDIPlus = GP_IM_HighQualityBicubic
         
     End Select
@@ -730,7 +659,7 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
             If (myLayerData.l_GroupID <> CLng(newValue)) Then myLayerData.l_GroupID = CLng(newValue)
             
         Case pgp_Opacity
-            If (myLayerData.l_Opacity <> CLng(newValue)) Then Me.SetLayerOpacity CLng(newValue)
+            If (myLayerData.l_Opacity <> CSng(newValue)) Then Me.SetLayerOpacity CSng(newValue)
             
         Case pgp_BlendMode
             If (myLayerData.l_BlendMode <> CLng(newValue)) Then myLayerData.l_BlendMode = CLng(newValue)
@@ -1236,8 +1165,8 @@ Private Sub Class_Initialize()
     With myLayerData
         .l_Name = g_Language.TranslateMessage("New Layer")
         .l_GroupID = 0
-        .l_Opacity = 100
-        .l_BlendMode = BL_NORMAL
+        .l_Opacity = 100!
+        .l_BlendMode = BM_Normal
         .l_OffsetX = 0
         .l_OffsetY = 0
         .l_CanvasXModifier = 1
@@ -1246,10 +1175,10 @@ Private Sub Class_Initialize()
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_Visibility = True
-        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_ResizeQuality = LRQ_Bilinear
         .l_ShearX = 0
         .l_ShearY = 0
-        .l_AlphaMode = LA_NORMAL
+        .l_AlphaMode = AM_Normal
     End With
     
     With myVectorData
@@ -1278,7 +1207,7 @@ Private Sub Class_Initialize()
     m_IsThumbClean = False
     
     'Set the canonical ID to -1.  This can be used to determine if the layer has been activated.
-    layerID = -1
+    m_layerID = -1
     
     'By default, vector layers do not have a backer DIB generated
     m_VectorDIBSynched = False
@@ -1289,6 +1218,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
+    
     Set layerDIB = Nothing
     Set m_LayerThumbnail = Nothing
     Set myTextRenderer = Nothing
@@ -1297,7 +1227,198 @@ Private Sub Class_Terminate()
     For i = 0 To NUM_OF_LOD_CACHES - 1
         Set lodDIB(i) = Nothing
     Next i
+    
 End Sub
+
+'This function initializes a layer header from an XML-format string created by GetLayerHeaderAsXML_New().
+'
+'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function
+' will create a blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.
+' However, it will obviously NOT apply any stored image data.  That must be handled separately, as the
+' format of the underlying layer's data varies by layer type.  (Raster layers store their data as a raw
+' byte stream, for example, while vector and text layers store XML data and we simply recreate the raster
+' copy at run-time.)
+'
+'Note also that this function will try to match color-managed layers against matching ICC profiles in the
+' master ColorManagement cache.  Make *sure* you have added all embedded color profiles to the master cache
+' before invoking this function.
+Friend Function CreateNewLayerFromXML_New(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
+
+    'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
+    xmlEngine.SetParamString xmlString
+    
+    'Validate the XML header...
+    If (xmlEngine.DoesParamExist("photodemon-layer") And (xmlEngine.GetLong("layer-version", 0) >= 1)) Then
+        
+        'If the caller has not specified their own layer ID, use the one from file.
+        If (useCustomLayerID = -1) Then m_layerID = xmlEngine.GetLong("id") Else m_layerID = useCustomLayerID
+        
+        'Read in the layer type.  Remember that this value is immutable, and cannot be changed
+        ' for the life of the layer.
+        m_LayerType = Layers.GetLayerTypeIDFromString(xmlEngine.GetString("type", Layers.GetLayerTypeStringFromID(PDL_Image), True))
+        
+        'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
+        ' added to the LayerData type.
+        With myLayerData
+            .l_Name = xmlEngine.GetString("name", vbNullString, True)
+            .l_GroupID = xmlEngine.GetLong("group-id", 0, True)
+            .l_Visibility = xmlEngine.GetBool("visible", True, True)
+            .l_Opacity = xmlEngine.GetSingle("opacity", 100!, True)
+            .l_BlendMode = Colors.GetBlendModeIDFromString(xmlEngine.GetString("blend-mode", Colors.GetBlendModeStringFromID(BM_Normal), True))
+            .l_AlphaMode = Colors.GetAlphaModeIDFromString(xmlEngine.GetString("alpha-mode", Colors.GetAlphaModeStringFromID(AM_Normal), True))
+            .l_OffsetX = xmlEngine.GetDouble("offset-x", 0#, True)
+            .l_OffsetY = xmlEngine.GetDouble("offset-y", 0#, True)
+            .l_CanvasXModifier = xmlEngine.GetDouble("stretch-x", 1#, True)
+            .l_CanvasYModifier = xmlEngine.GetDouble("stretch-y", 1#, True)
+            .l_ShearX = xmlEngine.GetDouble("shear-x", 0#, True)
+            .l_ShearY = xmlEngine.GetDouble("shear-y", 0#, True)
+            .l_Angle = xmlEngine.GetDouble("angle", 0#, True)
+            .l_RotateCenterX = xmlEngine.GetDouble("rotation-center-x", 0.5, True)
+            .l_RotateCenterY = xmlEngine.GetDouble("rotation-center-y", 0.5, True)
+            .l_ResizeQuality = Layers.GetLayerResizeIDFromString(xmlEngine.GetString("sample-quality", Layers.GetLayerResizeStringFromID(LRQ_Bilinear), True))
+        End With
+        
+        'Next, we're going to do something kinda weird.  We're going to create a blank surface
+        ' for the layer contents using data supplied by this XML packet, but we're *not* going to
+        ' fill the surface yet!  An external function handles that step, because the actual surface
+        ' pixel data is (likely) stored in a heavily compressed binary format.
+        '
+        'Note that this behavior can be overridden by setting the optional createNonDestructively
+        ' parameter to TRUE.  This special case is used by the Undo/Redo engine to re-load an
+        ' image's header data, without actually overwriting the current layer's backing surface.
+        ' (This produces very small undo/redo files when e.g. layer visibility is toggled.)
+        If (Not createNonDestructively) Then
+        
+            Set layerDIB = New pdDIB
+            With xmlEngine
+                
+                'Validate width/height and other layer parameters
+                Dim srfColorDepth As Long, srfColorDetails As String, srfWidth As Long, srfHeight As Long, srfStride As Long
+                srfColorDepth = .GetLong("px-color-depth", 0, True)
+                srfColorDetails = .GetString("px-color-details", vbNullString, True)
+                
+                'While we allow 24-bpp surfaces here, PD has only ever used 32-bpp surfaces, and it will only
+                ' ever write 32-bpp surfaces.  I'm not even sure that 24-bpp surfaces would work once loaded
+                ' (as a lot of internal functions assume the presence of an alpha channel), so this check
+                ' probably needs to be updated after actual testing.  TODO!
+                If ((srfColorDepth = 32) Or (srfColorDepth = 24)) And (LCase$(Left$(srfColorDetails, 6)) = "b8g8r8") Then
+                
+                    'Retrieve dimensions (including stride) and validate accordingly
+                    srfWidth = .GetLong("px-width", 0, True)
+                    srfHeight = .GetLong("px-height", 0, True)
+                    srfStride = .GetLong("px-stride", 0, True)
+                    
+                    If (srfWidth > 0) And (srfHeight > 0) And (srfStride > 0) Then
+                    
+                        'Also grab alpha premultiplication; at present, PD *always* writes premultiplied alpha,
+                        ' but we cover the case of un-premultiplied alpha in case we decide to revert this
+                        ' decision in the future.
+                        Dim srfAlphaPremult As Boolean
+                        srfAlphaPremult = .GetBool("px-alpha-premultiplied", True, True)
+                        
+                        'Create the surface!
+                        layerDIB.CreateBlank srfWidth, srfHeight, srfColorDepth, 0, 0
+                        
+                        'Mark alpha premultiplication in advance
+                        layerDIB.SetInitialAlphaPremultiplicationState srfAlphaPremult
+                        
+                        'Return success; note that we create a backing surface even for vector layers,
+                        ' as it's required for features like adjustment layers that sit above this one.
+                        CreateNewLayerFromXML_New = True
+                        
+                    Else
+                        InternalError "CreateNewLayerFromXML_New", "bad dimensions: " & srfWidth & "x" & srfHeight & ", " & srfStride
+                    End If
+                    
+                Else
+                    InternalError "CreateNewLayerFromXML_New", "bad color-depth or details: " & srfColorDepth & ", " & srfColorDetails
+                End If
+                
+            End With
+            
+            'Note that all internal layer caches are no longer valid
+            Me.NotifyOfDestructiveChanges
+            
+        Else
+            CreateNewLayerFromXML_New = True
+        End If
+        
+    'If the layer XML data can't be validated, try the legacy serialization engine
+    Else
+        Set xmlEngine = Nothing
+        PDDebug.LogAction "pdLayer.CreateNewLayerFromXML is trying again using the legacy serialization engine..."
+        CreateNewLayerFromXML_New = CreateNewLayerFromXML(xmlString, useCustomLayerID, createNonDestructively)
+    End If
+    
+End Function
+
+'Create a copy of all critical layer header data in an XML-format string.  All data necessary to
+' recreate this layer from scratch must be included in this string, EXCEPT FOR PIXEL DATA.
+' (For obvious performance reasons, the pixel contents of this layer must be handled separately,
+' in a dedicated binary format.)
+Friend Function GetLayerHeaderAsXML_New() As String
+    
+    'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
+    
+    'Add a basic header and version info
+    xmlEngine.AddXMLString "<photodemon-layer>"
+    xmlEngine.AddParam "layer-version", 1&, True, True
+    
+    'Start by writing out the hard-coded layer ID.
+    xmlEngine.AddParam "id", m_layerID, True, True
+    
+    'Next, write out the layer type (raster, vector, etc).  Remember that this value is immutable,
+    ' and cannot be changed for the life of the layer.  (If you want to change it, you must perform
+    ' a (usually) one-way conversion to a new format.)
+    xmlEngine.AddParam "type", Layers.GetLayerTypeStringFromID(m_LayerType), True, True
+    
+    'Next, write out all entries in this layer's LayerData header.  (NOTE: new layer properties must
+    ' ALWAYS be manually added to this segment.)
+    With myLayerData
+        xmlEngine.AddParam "name", .l_Name, True, True
+        xmlEngine.AddParam "group-id", .l_GroupID, True, True
+        xmlEngine.AddParam "visible", .l_Visibility, True, True
+        xmlEngine.AddParam "opacity", .l_Opacity, True, True
+        xmlEngine.AddParam "blend-mode", Colors.GetBlendModeStringFromID(.l_BlendMode), True, True
+        xmlEngine.AddParam "alpha-mode", Colors.GetAlphaModeStringFromID(.l_AlphaMode), True, True
+        xmlEngine.AddParam "offset-x", .l_OffsetX, True, True
+        xmlEngine.AddParam "offset-y", .l_OffsetY, True, True
+        xmlEngine.AddParam "stretch-x", .l_CanvasXModifier, True, True
+        xmlEngine.AddParam "stretch-y", .l_CanvasYModifier, True, True
+        xmlEngine.AddParam "shear-x", .l_ShearX, True, True
+        xmlEngine.AddParam "shear-y", .l_ShearY, True, True
+        xmlEngine.AddParam "angle", .l_Angle, True, True
+        xmlEngine.AddParam "rotation-center-x", .l_RotateCenterX, True, True
+        xmlEngine.AddParam "rotation-center-y", .l_RotateCenterY, True, True
+        xmlEngine.AddParam "sample-quality", Layers.GetLayerResizeStringFromID(.l_ResizeQuality), True, True
+    End With
+    
+    'Next, write out enough information for us to reconstruct the underlying pixel data for this layer
+    ' (if any).  Note that we always write these values, even for a vector layer,
+    With xmlEngine
+        .AddParam "px-color-depth", layerDIB.GetDIBColorDepth, True, True
+        If (layerDIB.GetDIBColorDepth = 32) Then
+            .AddParam "px-color-details", "b8g8r8a8", True, True
+        Else
+            .AddParam "px-color-details", "b8g8r8", True, True
+        End If
+        .AddParam "px-width", layerDIB.GetDIBWidth, True, True
+        .AddParam "px-height", layerDIB.GetDIBHeight, True, True
+        .AddParam "px-stride", layerDIB.GetDIBStride, True, True
+        .AddParam "px-alpha-premultiplied", layerDIB.GetAlphaPremultiplication, True, True
+    End With
+    
+    'Close the initial pdLayer tag
+    xmlEngine.AddXMLString "</photodemon-layer>"
+    
+    'The layer XML string is now complete.  Return it.
+    GetLayerHeaderAsXML_New = xmlEngine.GetParamString()
+    
+End Function
 
 'Write a copy of the layer header to an XML-format string.  All data necessary to recreate a layer from scratch will be
 ' included in this string, EXCEPT FOR DIB DATA.  For obvious performance reasons, the DIB contents of this layer must be
@@ -1322,12 +1443,12 @@ Friend Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.WriteBlankLine
     End If
     
-    'Start by writing out the layerID.  Note that functions making use of this XML data must be very careful about how they
+    'Start by writing out the m_layerID.  Note that functions making use of this XML data must be very careful about how they
     ' handle this value.  Depending on the context, it may not be advisable to re-use this data at load-time.
-    xmlEngine.WriteTag "ID", layerID
+    xmlEngine.WriteTag "ID", m_layerID
     
     'Next, write out the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-    xmlEngine.WriteTag "Type", myLayerType
+    xmlEngine.WriteTag "Type", m_LayerType
     
     'Write out the contents of our current LayerData header.  (NOTE: this must be manually modified if new entries are
     ' added to the LayerData type.
@@ -1388,15 +1509,15 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
     'Validate the XML header...
     If (xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdLayer")) Then
         
-        'If the caller has not specified their own layerID, use the one from file.
+        'If the caller has not specified their own layer ID, use the one from file.
         If (useCustomLayerID = -1) Then
-            layerID = xmlEngine.GetUniqueTag_Long("ID")
+            m_layerID = xmlEngine.GetUniqueTag_Long("ID")
         Else
-            layerID = useCustomLayerID
+            m_layerID = useCustomLayerID
         End If
     
         'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-        myLayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_Image)
+        m_LayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_Image)
         
         'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
         ' added to the LayerData type.
@@ -1404,7 +1525,7 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_Name = xmlEngine.GetUniqueTag_String("Name")
             .l_GroupID = xmlEngine.GetUniqueTag_Long("GroupID")
             .l_Opacity = xmlEngine.GetUniqueTag_Long("Opacity")
-            .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BL_NORMAL)
+            .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BM_Normal)
             .l_OffsetX = xmlEngine.GetUniqueTag_Double("OffsetX")
             .l_OffsetY = xmlEngine.GetUniqueTag_Double("OffsetY")
             .l_CanvasXModifier = xmlEngine.GetUniqueTag_Double("CanvasXModifier", 1)
@@ -1413,10 +1534,10 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_RotateCenterX = xmlEngine.GetUniqueTag_Double("RotateCenterX", 0.5)
             .l_RotateCenterY = xmlEngine.GetUniqueTag_Double("RotateCenterY", 0.5)
             .l_Visibility = xmlEngine.GetUniqueTag_Boolean("Visibility")
-            .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
+            .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_Bilinear)
             .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
             .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
-            .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", LA_NORMAL)
+            .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", AM_Normal)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -1447,8 +1568,88 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
     
     'If the layer XML data can't be validated, there's nothing we can do but exit.
     Else
-        Debug.Print "Layer could not be created: are you sure the supplied data was valid?"
+        InternalError "CreateNewLayerFromXML", "layer could not be created: are you sure the supplied data was valid?"
         CreateNewLayerFromXML = False
+    End If
+    
+End Function
+
+'Write a copy of a vector layer's contents to an XML-format string.  All data necessary to recreate
+' a vector layer from scratch must be included in this string.  For obvious performance reasons,
+' the pixel contents of this layer are not part of this function.  PD regenerates the actual backing
+' surface of vector layers from scratch, at load-time.
+Friend Function GetVectorDataAsXML_New() As String
+    
+    'First, make sure this is not an image layer
+    If Not Me.IsLayerVector() Then
+        InternalError "GetVectorDataAsXML_New", "can't get vector data for raster layers"
+        Exit Function
+    End If
+    
+    'Prepare an XML engine, which greatly simplifies the process of assembling XML data
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
+    xmlEngine.AddXMLString "<photodemon-vector-object>"
+    xmlEngine.AddParam "vector-version", 1&, True, True
+    
+    'All vector layers store certain data attributes
+    xmlEngine.AddParam "bounding-width", myVectorData.vd_Width, True, True
+    xmlEngine.AddParam "bounding-height", myVectorData.vd_Height, True, True
+    
+    'Additional vector data varies by layer type
+    Select Case m_LayerType
+        
+        'pdTextRenderer (used for both basic and advanced text layers) handles XML serialization on its own
+        Case PDL_TextBasic, PDL_TextAdvanced
+            xmlEngine.AddParam "vector-text-data", myTextRenderer.GetAllFontSettingsAsXML_New(), True
+        
+    End Select
+    
+    xmlEngine.AddXMLString "</photodemon-vector-object>"
+        
+    'The layer XML string is now complete.  Return it.
+    GetVectorDataAsXML_New = xmlEngine.GetParamString()
+
+End Function
+
+'As the sister function to GetVectorDataAsXML_New(), this function initializes a
+' vector layer's contents from an XML-format string.
+Friend Function SetVectorDataFromXML_New(ByRef xmlString As String) As Boolean
+
+    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
+    xmlEngine.SetParamString xmlString
+    
+    'If basic validation fails, revert to the legacy font serialization engine
+    Dim useLegacyLoader As Boolean
+    useLegacyLoader = (Not xmlEngine.DoesParamExist("photodemon-vector-object", True))
+    If (Not useLegacyLoader) Then useLegacyLoader = (xmlEngine.GetLong("vector-version", 0, True) < 1)
+    
+    If useLegacyLoader Then
+        Set xmlEngine = Nothing
+        SetVectorDataFromXML_New = SetVectorDataFromXML(xmlString)
+    Else
+        
+        'All vector layers store some similar data
+        With myVectorData
+            .vd_Width = xmlEngine.GetLong("bounding-width", 1, True)
+            .vd_Height = xmlEngine.GetLong("bounding-height", 1, True)
+        End With
+        
+        'Next, the vector tags we look for vary by layer type
+        Select Case m_LayerType
+            
+            'pdTextRenderer handles its own XML serialization, thankfully
+            Case PDL_TextBasic, PDL_TextAdvanced
+                myTextRenderer.SetAllFontSettingsFromXML_New xmlEngine.GetString("vector-text-data", vbNullString, True)
+                
+        End Select
+        
+        'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
+        Me.NotifyOfDestructiveChanges
+        SetVectorDataFromXML_New = True
+    
     End If
     
 End Function
@@ -1489,7 +1690,7 @@ Friend Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     End With
     
     'Additional vector data varies by layer type
-    Select Case myLayerType
+    Select Case m_LayerType
         
         Case PDL_TextBasic, PDL_TextAdvanced
             
@@ -1506,7 +1707,7 @@ Friend Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
 End Function
 
 'The sister function to "getVectorDataAsXML" above, this function will initialize a vector layer's contents from an XML-format string.
-Friend Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
+Friend Function SetVectorDataFromXML(ByRef xmlString As String) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
     Dim xmlEngine As pdXML
@@ -1522,7 +1723,7 @@ Friend Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
         End With
         
         'Next, the vector tags we look for vary by layer type
-        Select Case myLayerType
+        Select Case m_LayerType
             
             Case PDL_TextBasic, PDL_TextAdvanced
                 
@@ -1534,12 +1735,12 @@ Friend Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
         'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
         Me.NotifyOfDestructiveChanges
         
-        CreateVectorDataFromXML = True
+        SetVectorDataFromXML = True
     
     'If the layer XML data can't be validated, there's nothing we can do but exit.
     Else
         Debug.Print "Vector layer could not be initialized: are you sure the supplied data is valid?"
-        CreateVectorDataFromXML = False
+        SetVectorDataFromXML = False
     End If
     
 End Function
@@ -1552,7 +1753,7 @@ End Function
 Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal newLayerName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal cloneSourceLayerLocally As Boolean = False)
 
     'Mark the layer type.
-    myLayerType = newLayerType
+    m_LayerType = newLayerType
     
     'Copy the name locally, and set other values to their natural defaults
     With myLayerData
@@ -1562,16 +1763,16 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
             .l_Name = g_Language.TranslateMessage("New layer")
         End If
         .l_GroupID = 0
-        .l_Opacity = 100
-        .l_BlendMode = BL_NORMAL
+        .l_Opacity = 100!
+        .l_BlendMode = BM_Normal
         .l_Visibility = True
-        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_ResizeQuality = LRQ_Bilinear
         .l_Angle = 0#
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_ShearX = 0#
         .l_ShearY = 0#
-        .l_AlphaMode = LA_NORMAL
+        .l_AlphaMode = AM_Normal
     End With
     
     'Reset any vector-specific data
@@ -1611,25 +1812,25 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
 
     'Copy all generic layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
     ' be unique for every created layer!)
-    myLayerType = srcLayer.GetLayerType
+    m_LayerType = srcLayer.GetLayerType
     
     With myLayerData
         .l_Name = srcLayer.GetLayerName()
-        .l_GroupID = srcLayer.GetLayerGroup
-        .l_Opacity = srcLayer.GetLayerOpacity
-        .l_BlendMode = srcLayer.GetLayerBlendMode
-        .l_OffsetX = srcLayer.GetLayerOffsetX
-        .l_OffsetY = srcLayer.GetLayerOffsetY
-        .l_CanvasXModifier = srcLayer.GetLayerCanvasXModifier
-        .l_CanvasYModifier = srcLayer.GetLayerCanvasYModifier
-        .l_Angle = srcLayer.GetLayerAngle
-        .l_RotateCenterX = srcLayer.GetLayerRotateCenterX
-        .l_RotateCenterY = srcLayer.GetLayerRotateCenterY
-        .l_Visibility = srcLayer.GetLayerVisibility
-        .l_ResizeQuality = srcLayer.GetLayerResizeQuality
-        .l_ShearX = srcLayer.GetLayerShearX
-        .l_ShearY = srcLayer.GetLayerShearY
-        .l_AlphaMode = srcLayer.GetLayerAlphaMode
+        .l_GroupID = srcLayer.GetLayerGroup()
+        .l_Opacity = srcLayer.GetLayerOpacity()
+        .l_BlendMode = srcLayer.GetLayerBlendMode()
+        .l_OffsetX = srcLayer.GetLayerOffsetX()
+        .l_OffsetY = srcLayer.GetLayerOffsetY()
+        .l_CanvasXModifier = srcLayer.GetLayerCanvasXModifier()
+        .l_CanvasYModifier = srcLayer.GetLayerCanvasYModifier()
+        .l_Angle = srcLayer.GetLayerAngle()
+        .l_RotateCenterX = srcLayer.GetLayerRotateCenterX()
+        .l_RotateCenterY = srcLayer.GetLayerRotateCenterY()
+        .l_Visibility = srcLayer.GetLayerVisibility()
+        .l_ResizeQuality = srcLayer.GetLayerResizeQuality()
+        .l_ShearX = srcLayer.GetLayerShearX()
+        .l_ShearY = srcLayer.GetLayerShearY()
+        .l_AlphaMode = srcLayer.GetLayerAlphaMode()
     End With
     
     'Copy the source layer's DIB, if one exists.
@@ -1647,7 +1848,7 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
             myVectorData.vd_Height = srcLayer.GetLayerHeight
             
             'Other vector-specific data can be transferred via XML, saving us the hassle of explicitly copying it here
-            Me.CreateVectorDataFromXML srcLayer.GetVectorDataAsXML(True)
+            Me.SetVectorDataFromXML srcLayer.GetVectorDataAsXML(True)
         
         Case PDL_Adjustment
     
@@ -2184,7 +2385,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     
     'Points of interest are sorted by layer type.  In most cases, only the corners of a layer are interesting (as they control
     ' the layer's bounding box), but in the future, things like a Pen tool could have tons of points of interest.
-    Select Case myLayerType
+    Select Case m_LayerType
     
         'Image and text layers consider their corners to be points of interest
         Case PDL_Image, PDL_TextBasic, PDL_TextAdvanced
@@ -2271,8 +2472,8 @@ Friend Sub ResetLayerParameters()
     'Assign default values to this instance's header
     With myLayerData
         .l_GroupID = 0
-        .l_Opacity = 100
-        .l_BlendMode = BL_NORMAL
+        .l_Opacity = 100!
+        .l_BlendMode = BM_Normal
         .l_OffsetX = 0#
         .l_OffsetY = 0#
         .l_CanvasXModifier = 1#
@@ -2281,10 +2482,10 @@ Friend Sub ResetLayerParameters()
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_Visibility = True
-        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_ResizeQuality = LRQ_Bilinear
         .l_ShearX = 0#
         .l_ShearY = 0#
-        .l_AlphaMode = LA_NORMAL
+        .l_AlphaMode = AM_Normal
     End With
     
     'Assign default vector layer values
@@ -2306,7 +2507,7 @@ End Sub
 Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
-    If (myLayerType = PDL_Image) Then
+    If (m_LayerType = PDL_Image) Then
         SyncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
         Exit Function
     End If
@@ -2318,30 +2519,33 @@ Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD
     End If
     
     'From here, the specific vector syncing process varies by vector layer type
-    Select Case myLayerType
+    Select Case m_LayerType
     
         Case PDL_TextBasic, PDL_TextAdvanced
             
             'Set the text rendering engine according to the layer type (basic vs advanced)
-            If (myLayerType = PDL_TextBasic) Then
-                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_WAPI
+            If (m_LayerType = PDL_TextBasic) Then
+                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, te_WAPI
             Else
-                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON
+                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, te_PhotoDemon
             End If
             
             'Initialize the backer DIB as necessary
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
-            
             If (layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
                 layerDIB.CreateBlank Int(myVectorData.vd_Width + 0.9999), Int(myVectorData.vd_Height + 0.9999), 32, 0, 0
             Else
-                layerDIB.ResetDIB
+                layerDIB.ResetDIB 0
             End If
             
             layerDIB.SetInitialAlphaPremultiplicationState True
             
             'Use pdTextRenderer to paint the string onto the backer DIB
+            Const REPORT_TEXT_RENDER_TIME As Boolean = True
+            Dim startTime As Currency
+            If REPORT_TEXT_RENDER_TIME Then VBHacks.GetHighResTime startTime
             myTextRenderer.RenderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            If REPORT_TEXT_RENDER_TIME Then PDDebug.LogAction "Text rendering took: " & VBHacks.GetTimeDiffNowAsString(startTime)
             
     End Select
     
@@ -2397,7 +2601,7 @@ Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = (.l_Angle * 359013) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
         tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
-        tmpHash = tmpHash Xor (.l_Opacity * 65535)
+        tmpHash = tmpHash Xor Int(.l_Opacity * 65535)
         tmpHash = tmpHash Xor (.l_ShearX * 524287#) Xor (.l_ShearY * 1048575#)
         tmpHash = tmpHash Xor ((.l_BlendMode + 1) * 63) Xor ((.l_AlphaMode + 1) * 511)
         tmpHash = tmpHash Xor ((.l_RotateCenterX + 1#) * 3730#) Xor ((.l_RotateCenterY + 1# * 5850#))
@@ -2421,3 +2625,12 @@ End Function
 Friend Function TmpLODDIB(Optional ByVal cacheID As PD_CompositorLOD = CLC_Generic) As pdDIB
     Set TmpLODDIB = lodDIB(cacheID)
 End Function
+
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
+    If UserPrefs.GenerateDebugLogs Then
+        PDDebug.LogAction "pdLayer." & funcName & "() reported an error: " & errDescription
+    Else
+        Debug.Print "pdLayer." & funcName & "() reported an error: " & errDescription
+    End If
+End Sub
+

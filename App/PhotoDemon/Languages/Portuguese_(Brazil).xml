@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3424</langversion>
+<langversion>6.8.3425</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2732,6 +2732,12 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -14822,7 +14828,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <!-- END text for Toolpanel_Selections.frm-->
 
-<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_Text) -->
+<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_TextBasic) -->
 
 <phrase>
 <original>font face</original>
@@ -14878,7 +14884,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
-<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
+<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_TextAdvanced) -->
 
 <phrase>
 <original>remap</original>
@@ -16265,12 +16271,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for PDPackaging.bas -->
-
-<!-- PDPackaging.bas contains 0 phrases. -->
-
-<!-- END text for PDPackaging.bas-->
 
 <!-- Automatic text extraction complete. -->
 

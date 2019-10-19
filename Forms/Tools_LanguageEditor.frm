@@ -1421,7 +1421,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                 Next i
                 
                 'See if the first word used titlecase
-                origStringTitlecase = Strings.StringsEqual(firstWord, Strings.StringRemap(firstWord, PDSR_TITLECASE_WIN7), False)
+                origStringTitlecase = Strings.StringsEqual(firstWord, Strings.StringRemap(firstWord, sr_Titlecase), False)
                 
                 'If it did, apply titlecase to the first word of the translated string as well
                 If origStringTitlecase Then
@@ -1436,7 +1436,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                     Next i
                     
                     Dim tmpString As String
-                    tmpString = Strings.StringRemap(firstWord, PDSR_TITLECASE_WIN7)
+                    tmpString = Strings.StringRemap(firstWord, sr_Titlecase)
                     
                     If (LenB(tmpString) <> 0) Then
                     
@@ -1462,11 +1462,11 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
             Else
             
                 'See if the original string used titlecase
-                origStringTitlecase = Strings.StringsEqual(origString, Strings.StringRemap(origString, PDSR_TITLECASE_WIN7), False)
+                origStringTitlecase = Strings.StringsEqual(origString, Strings.StringRemap(origString, sr_Titlecase), False)
                 
                 'If it did, apply titlecase to the translated string as well
                 If origStringTitlecase Then
-                    GetFixedTitlecase = Strings.StringRemap(translatedString, PDSR_TITLECASE_WIN7)
+                    GetFixedTitlecase = Strings.StringRemap(translatedString, sr_Titlecase)
                 Else
                     GetFixedTitlecase = translatedString
                 End If

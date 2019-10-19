@@ -290,7 +290,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
-                cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
+                cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BM_LinearDodge, 100
                 
                 If (Not toPreview) Then
                     If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
@@ -326,7 +326,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
-                cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
+                cComposite.QuickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BM_LinearDodge, 100
                 
                 If (Not toPreview) Then
                     If Interface.UserPressedESC() Then GoTo PrematureCrossScreenExit
@@ -384,7 +384,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
         m_thresholdDIB.SetAlphaPremultiplication True
         m_mbDIB.SetAlphaPremultiplication True
     End If
-    cComposite.QuickMergeTwoDibsOfEqualSize m_thresholdDIB, m_mbDIB, BL_HARDLIGHT, 100
+    cComposite.QuickMergeTwoDibsOfEqualSize m_thresholdDIB, m_mbDIB, BM_HardLight, 100
     
     'm_thresholdDIB now contains the final, fully processed light effect.
     If (Not toPreview) Then
@@ -395,7 +395,7 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
     If alphaIsRelevant Then workingDIB.SetAlphaPremultiplication True
-    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_thresholdDIB, BL_LINEARDODGE, 100
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_thresholdDIB, BM_LinearDodge, 100
     
     If alphaIsRelevant Then
         workingDIB.SetAlphaPremultiplication False

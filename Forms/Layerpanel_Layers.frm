@@ -349,8 +349,8 @@ Private Sub Form_Load()
     m_DisableRedraws = True
     
     'Populate the alpha and blend mode boxes
-    Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
-    Interface.PopulateAlphaModeDropDown cboAlphaMode, LA_NORMAL
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
+    Interface.PopulateAlphaModeDropDown cboAlphaMode, AM_Normal
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings

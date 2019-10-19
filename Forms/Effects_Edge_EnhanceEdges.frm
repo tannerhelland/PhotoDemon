@@ -268,7 +268,7 @@ Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toP
         tmpEdgeDIB.SetAlphaPremultiplication True
         
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
-        cComposite.QuickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BL_SCREEN
+        cComposite.QuickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BM_Screen
         
         'Remove premultiplication
         edgeDIB.SetAlphaPremultiplication False
@@ -286,7 +286,7 @@ Public Sub ApplyEdgeEnhancement(ByVal effectParams As String, Optional ByVal toP
     workingDIB.SetAlphaPremultiplication True
     
     'Merge the two DIBs together
-    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BL_SCREEN, enhanceStrength
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BM_Screen, enhanceStrength
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     EffectPrep.FinalizeImageData toPreview, dstPic, True

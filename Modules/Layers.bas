@@ -4,7 +4,7 @@ Attribute VB_Name = "Layers"
 'Copyright 2014-2019 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 04/July/14
-'Last update: added eraseLayerByIndex() function
+'Last update: added EraseLayerByIndex() function
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -15,6 +15,29 @@ Attribute VB_Name = "Layers"
 '***************************************************************************
 
 Option Explicit
+
+Public Enum PD_LayerType
+    PDL_Image = 0
+    PDL_TextBasic = 1
+    PDL_TextAdvanced = 2
+    PDL_Adjustment = 3
+End Enum
+
+#If False Then
+    Const PDL_Image = 0, PDL_TextBasic = 1, PDL_TextAdvanced = 2, PDL_Adjustment = 3
+#End If
+
+'Layer resize quality is defined different from other resampling options in the project.
+' (Only a subset of options are exposed, for performance reasons.)
+Public Enum PD_LayerResizeQuality
+    LRQ_NearestNeighbor = 0
+    LRQ_Bilinear = 1
+    LRQ_Bicubic = 2
+End Enum
+
+#If False Then
+    Const LRQ_NearestNeighbor = 0, LRQ_Bilinear = 1, LRQ_Bicubic = 2
+#End If
 
 'Used when converting layers to standalone images and vice-versa
 Private Type LayerConvertCache
@@ -1489,6 +1512,70 @@ Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RectF, 
     End With
 
 End Sub
+
+'Given a PD layer resize enum, return a corresponding string representation.  PD layer resize mode
+' strings are ALWAYS 4-chars long; append spaces as necessary.
+Public Function GetLayerResizeIDFromString(ByRef srcString As String) As PD_LayerResizeQuality
+    Select Case srcString
+        Case "near"
+            GetLayerResizeIDFromString = LRQ_NearestNeighbor
+        Case "blnr"
+            GetLayerResizeIDFromString = LRQ_Bilinear
+        Case "bcub"
+            GetLayerResizeIDFromString = LRQ_Bicubic
+        Case Else
+            GetLayerResizeIDFromString = LRQ_NearestNeighbor
+            PDDebug.LogAction "WARNING! Layers.GetLayerResizeIDFromString received a bad value: " & srcString
+    End Select
+End Function
+
+Public Function GetLayerResizeStringFromID(ByVal srcID As PD_LayerResizeQuality) As String
+    Select Case srcID
+        Case LRQ_NearestNeighbor
+            GetLayerResizeStringFromID = "near"
+        Case LRQ_Bilinear
+            GetLayerResizeStringFromID = "blnr"
+        Case LRQ_Bicubic
+            GetLayerResizeStringFromID = "bcub"
+        Case Else
+            GetLayerResizeStringFromID = "near"
+            PDDebug.LogAction "WARNING! Colors.GetLayerResizeStringFromID received a bad value: " & srcID
+    End Select
+End Function
+
+'Given a PD layer type enum, return a corresponding string representation.  PD layer type
+' strings are ALWAYS 4-chars long; append spaces as necessary.
+Public Function GetLayerTypeIDFromString(ByRef srcString As String) As PD_LayerType
+    Select Case srcString
+        Case "rast"
+            GetLayerTypeIDFromString = PDL_Image
+        Case "txtb"
+            GetLayerTypeIDFromString = PDL_TextBasic
+        Case "txta"
+            GetLayerTypeIDFromString = PDL_TextAdvanced
+        Case "adjs"
+            GetLayerTypeIDFromString = PDL_Adjustment
+        Case Else
+            GetLayerTypeIDFromString = PDL_Image
+            PDDebug.LogAction "WARNING! Layers.GetLayerTypeIDFromString received a bad value: " & srcString
+    End Select
+End Function
+
+Public Function GetLayerTypeStringFromID(ByVal srcID As PD_LayerType) As String
+    Select Case srcID
+        Case PDL_Image
+            GetLayerTypeStringFromID = "rast"
+        Case PDL_TextBasic
+            GetLayerTypeStringFromID = "txtb"
+        Case PDL_TextAdvanced
+            GetLayerTypeStringFromID = "txta"
+        Case PDL_Adjustment
+            GetLayerTypeStringFromID = "adjs"
+        Case Else
+            GetLayerTypeStringFromID = "rast"
+            PDDebug.LogAction "WARNING! Colors.GetLayerTypeStringFromID received a bad value: " & srcID
+    End Select
+End Function
 
 'Given a layer index and an x/y position (ALREADY CONVERTED TO LAYER COORDINATE SPACE!), return an RGBQUAD for the pixel
 ' at that location.  Note that the returned result is unprocessed; e.g. it will be in premultipled format.

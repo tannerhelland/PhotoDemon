@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form toolpanel_Text 
+Begin VB.Form toolpanel_TextBasic 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
@@ -304,7 +304,7 @@ Begin VB.Form toolpanel_Text
       End
    End
 End
-Attribute VB_Name = "toolpanel_Text"
+Attribute VB_Name = "toolpanel_TextBasic"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -581,7 +581,7 @@ Private Sub Form_Load()
     Tools.SetToolBusyState True
     
     'Forcibly hide the "convert to text layer" panel
-    toolpanel_Text.picConvertLayer.Visible = False
+    toolpanel_TextBasic.picConvertLayer.Visible = False
     
     If PDMain.IsProgramRunning() Then
         

@@ -200,11 +200,11 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
         Dim dstBlendMode As PD_BlendMode
         Select Case glowStyle
             Case 0
-                dstBlendMode = BL_SCREEN
+                dstBlendMode = BM_Screen
             Case 1
-                dstBlendMode = BL_OVERLAY
+                dstBlendMode = BM_Overlay
             Case 2
-                dstBlendMode = BL_SOFTLIGHT
+                dstBlendMode = BM_SoftLight
         End Select
         
         cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, blurDIB, dstBlendMode, glowOpacity

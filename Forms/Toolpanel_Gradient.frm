@@ -171,8 +171,8 @@ End Sub
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
-    Interface.PopulateBlendModeDropDown cboSetting(0), BL_NORMAL
-    Interface.PopulateAlphaModeDropDown cboSetting(1), LA_NORMAL
+    Interface.PopulateBlendModeDropDown cboSetting(0), BM_Normal
+    Interface.PopulateAlphaModeDropDown cboSetting(1), AM_Normal
     
     'Populate any custom dropdowns
     cboSetting(2).SetAutomaticRedraws False

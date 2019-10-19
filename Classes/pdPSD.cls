@@ -907,14 +907,14 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                     
                     Dim newLayerName As String
                     newLayerName = g_Language.TranslateMessage("%1 (Channel %2)", m_Layers(i).GetLayerName(), m_Layers(i).GetMultiChannelLayerID(j))
-                    tmpLayer.InitializeNewLayer PDL_IMAGE, newLayerName, m_Layers(i).GetMultiChannelLayerDIB(j)
+                    tmpLayer.InitializeNewLayer PDL_Image, newLayerName, m_Layers(i).GetMultiChannelLayerDIB(j)
                 
                     'Fill in any remaining layer properties
                     With m_Layers(i)
                         
                         'Hardcode "darken" blend mode so that the resulting layers composite together
                         ' into a rough estimation of the original result
-                        tmpLayer.SetLayerBlendMode BL_DARKEN
+                        tmpLayer.SetLayerBlendMode BM_Darken
                         tmpLayer.SetLayerOpacity .GetLayerOpacity()
                         tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
                         tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
@@ -932,7 +932,7 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                 'Prep a new layer object and initialize it with the image bits we've retrieved
                 newLayerID = dstImage.CreateBlankLayer()
                 Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                tmpLayer.InitializeNewLayer PDL_IMAGE, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+                tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
                 
                 'Fill in any remaining layer properties
                 With m_Layers(i)

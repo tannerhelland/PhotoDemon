@@ -166,7 +166,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstImage.GetLayerByIndex(i).CreateVectorDataFromXML(retString) Then
+                    If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
                         nodeLoadedSuccessfully = True
                     Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
@@ -497,7 +497,7 @@ Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer A
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstLayer.CreateVectorDataFromXML(retString) Then
+                    If dstLayer.SetVectorDataFromXML(retString) Then
                         nodeLoadedSuccessfully = True
                     Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
@@ -563,29 +563,31 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
     
     'Load the file into the pdPackager instance.  The reader uses memory-mapped file I/O, so don't modify
     ' the file until the read process completes.  (Note that this step will also validate the incoming file.)
-    If pdiReader.OpenPackage_File(pdiPath) Then
+    If pdiReader.OpenPackage_File(pdiPath, "UNDO") Then
     
-        Dim chunkName As String, chunkLength As Long, chunkData As pdStream
+        Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
         Dim layerHeaderFound As Boolean
         
         'Iterate chunks, looking for a layer header
         Do While pdiReader.ChunksRemain()
             
+            chunkLoaded = False
             chunkName = pdiReader.GetChunkName()
-            chunkLength = pdiReader.GetChunkSize()
+            chunkLength = pdiReader.GetChunkDataSize()
             
             'Layer header.  Note that we'll pull the chunk data into a dedicated stream before converting
             ' it from UTF-8; this is simply a convenience.
             If (chunkName = "LHDR") Then
                 If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
                     layerHeaderFound = True
-                    dstLayer.CreateNewLayerFromXML chunkData.ReadString_UTF8(chunkLength), , loadHeaderOnly
+                    dstLayer.CreateNewLayerFromXML_New chunkData.ReadString_UTF8(chunkLength), , loadHeaderOnly
+                    chunkLoaded = True
                 End If
             End If
             
             'Layer raster/vector data (only if "loadHeaderOnly" is NOT set).
             If (Not loadHeaderOnly) And layerHeaderFound And (chunkName = "LDAT") Then
-            
+                
                 'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
                 ' already created a DIB with a built-in buffer for the pixel data.
                 '
@@ -608,7 +610,7 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
                 
                 Else
                     nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, chunkData)
-                    nodeLoadedSuccessfully = dstLayer.CreateVectorDataFromXML(chunkData.ReadString_UTF8(chunkLength))
+                    nodeLoadedSuccessfully = dstLayer.SetVectorDataFromXML_New(chunkData.ReadString_UTF8(chunkLength))
                 End If
                 
                 'If the load was successful, notify the target layer that its DIB data has been changed; the layer will use this to
@@ -622,7 +624,12 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
                     PDDebug.LogAction "LoadPhotoDemonLayer: node was not loaded successfully."
                 End If
                 
+                chunkLoaded = True
+                
             End If
+            
+            'Ensure we moved forward at least one chunk
+            If (Not chunkLoaded) Then pdiReader.SkipToNextChunk
             
         Loop
         
@@ -1412,7 +1419,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstImage.GetLayerByIndex(i).CreateVectorDataFromXML(retString) Then
+                    If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
                         nodeLoadedSuccessfully = True
                     Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."

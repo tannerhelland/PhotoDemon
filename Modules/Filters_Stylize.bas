@@ -417,7 +417,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         
         'We now want to merge the resulting, blurred DIB onto our original copy, using the HARD LIGHT blend mode
         ' (which will "blow out" gradiens in the image, giving an overlit appearance)
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BL_SOFTLIGHT, colorSoftnessOpacity
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BM_SoftLight, colorSoftnessOpacity
         
     End If
     
@@ -586,7 +586,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         m_tmpDIB.UnwrapLongArrayFromDIB dstImageDataL
         m_tmpDIB.SetInitialAlphaPremultiplicationState True
         
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BL_NORMAL, vignetteAmt
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BM_Normal, vignetteAmt
         
     End If
     

@@ -318,7 +318,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     ' and adjusting opacity (taken from the Density option provided to the user).
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
-    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpFogDIB, BL_NORMAL, fxDensity
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpFogDIB, BM_Normal, fxDensity
     
     If (Not toPreview) Then Set m_tmpFogDIB = Nothing
     

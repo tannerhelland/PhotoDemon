@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.132</langversion>
+<langversion>1.0.133</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2732,6 +2732,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -14819,7 +14825,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 
 <!-- END text for Toolpanel_Selections.frm-->
 
-<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_Text) -->
+<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_TextBasic) -->
 
 <phrase>
 <original>font face</original>
@@ -14875,7 +14881,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
-<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
+<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_TextAdvanced) -->
 
 <phrase>
 <original>remap</original>
@@ -16261,12 +16267,6 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for PDPackaging.bas -->
-
-<!-- PDPackaging.bas contains 0 phrases. -->
-
-<!-- END text for PDPackaging.bas-->
 
 <!-- Automatic text extraction complete. -->
 

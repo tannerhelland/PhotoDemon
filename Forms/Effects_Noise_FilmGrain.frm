@@ -184,7 +184,7 @@ Public Sub AddFilmGrain(ByVal effectParams As String, Optional ByVal toPreview A
         
         Dim cCompositor As pdCompositor
         Set cCompositor = New pdCompositor
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, noiseImage, BL_SOFTLIGHT, , , LA_INHERIT
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, noiseImage, BM_SoftLight, , , AM_Inherit
         
     End If
     

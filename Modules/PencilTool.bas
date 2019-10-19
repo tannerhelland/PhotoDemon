@@ -99,7 +99,7 @@ End Function
 
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
-Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
+Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
     If (newAlphaMode <> m_BrushAlphamode) Then
         m_BrushAlphamode = newAlphaMode
         m_BrushIsReady = False
@@ -113,7 +113,7 @@ Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialia
     End If
 End Sub
 
-Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BL_NORMAL)
+Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_Normal)
     If (newBlendMode <> m_BrushBlendmode) Then
         m_BrushBlendmode = newBlendMode
         m_BrushIsReady = False

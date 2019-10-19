@@ -2937,13 +2937,13 @@ Private Sub Form_Unload(Cancel As Integer)
         Unload toolpanel_Selections
         Set toolpanel_Selections = Nothing
     ElseIf (g_CurrentTool = TEXT_BASIC) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
-        Unload toolpanel_Text
-        Set toolpanel_Text = Nothing
+        g_WindowManager.DeactivateToolPanel True, toolpanel_TextBasic.hWnd
+        Unload toolpanel_TextBasic
+        Set toolpanel_TextBasic = Nothing
     ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
-        Unload toolpanel_FancyText
-        Set toolpanel_FancyText = Nothing
+        g_WindowManager.DeactivateToolPanel True, toolpanel_TextAdvanced.hWnd
+        Unload toolpanel_TextAdvanced
+        Set toolpanel_TextAdvanced = Nothing
     ElseIf (g_CurrentTool = PAINT_PENCIL) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
         Unload toolpanel_Pencil

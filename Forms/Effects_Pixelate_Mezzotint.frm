@@ -229,9 +229,9 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
     
     'Fine stippling uses a totally different approach, but the results are (IMO) much more interesting than Photoshop's
     If (mStipplingLevel = 2) Then
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_OVERLAY
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BM_Overlay
     Else
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BM_HardMix
     End If
     
     If (Not toPreview) Then ProgressBars.SetProgBarVal 8

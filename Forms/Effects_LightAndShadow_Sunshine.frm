@@ -272,7 +272,7 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
         baseColor = .GetLong("color", clrBase.Color)
         m_Randomize.SetSeed_Float .GetDouble("seed", m_Randomize.GetRandomFloat_VB)
         colorVariance = .GetLong("colorvariance", sldColorVariance.Value)
-        overlayBlend = .GetLong("blendmode", BL_NORMAL)
+        overlayBlend = .GetLong("blendmode", BM_Normal)
         centerX = .GetDouble("centerx", 0.5)
         centerY = .GetDouble("centery", 0.5)
     End With
@@ -547,7 +547,7 @@ Private Sub Form_Load()
     m_Randomize.SetSeed_AutomaticAndRandom
     
     'Populate the blend mode drop-down
-    Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

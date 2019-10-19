@@ -51,7 +51,7 @@ Private Const ONE_DIV_255 As Double = 1# / 255#
 ' - A full blend (including alpha handling) will be applied.
 ' - The bottom DIB must already be large enough to hold the result of the composition.
 ' - The two DIBs should overlap at least partially.  If they don't, correctness of the function is not guaranteed.
-Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
+Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = AM_Normal, Optional ByVal topAlphaMode As PD_AlphaMode = AM_Normal, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffsetBottom As Long, yOffsetBottom As Long
     
@@ -75,7 +75,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         
         'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
         
-        If (topAlphaMode <> LA_NORMAL) Or (bottomAlphaMode <> LA_NORMAL) Or (Not topLayerMask Is Nothing) Then
+        If (topAlphaMode <> AM_Normal) Or (bottomAlphaMode <> AM_Normal) Or (Not topLayerMask Is Nothing) Then
             PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF, topLayerMask
         End If
         
@@ -85,87 +85,87 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         Select Case blendMode
             
             'If this function is only being called for alpha handling reasons, but the blend mode is normal, we don't have to do anything here.
-            Case BL_NORMAL
+            Case BM_Normal
             
             'Blend modes with already-optimized functions are listed here
-            Case BL_COLOR
+            Case BM_Color
                 ApplyBlendMode_Color m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_COLORBURN
+            Case BM_ColorBurn
                 ApplyBlendMode_ColorBurn m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_COLORDODGE
+            Case BM_ColorDodge
                 ApplyBlendMode_ColorDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_DARKEN
+            Case BM_Darken
                 ApplyBlendMode_Darken m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_DIFFERENCE
+            Case BM_Difference
                 ApplyBlendMode_Difference m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_DIVIDE
+            Case BM_Divide
                 ApplyBlendMode_Divide m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_EXCLUSION
+            Case BM_Exclusion
                 ApplyBlendMode_Exclusion m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_GRAINEXTRACT
+            Case BM_GrainExtract
                 ApplyBlendMode_GrainExtract m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_GRAINMERGE
+            Case BM_GrainMerge
                 ApplyBlendMode_GrainMerge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_HUE
+            Case BM_Hue
                 ApplyBlendMode_Hue m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_HARDLIGHT
+            Case BM_HardLight
                 ApplyBlendMode_HardLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_HARDMIX
+            Case BM_HardMix
                 ApplyBlendMode_HardMix m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_LIGHTEN
+            Case BM_Lighten
                 ApplyBlendMode_Lighten m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_LINEARBURN
+            Case BM_LinearBurn
                 ApplyBlendMode_LinearBurn m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_LINEARDODGE
+            Case BM_LinearDodge
                 ApplyBlendMode_LinearDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_LINEARLIGHT
+            Case BM_LinearLight
                 ApplyBlendMode_LinearLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_LUMINOSITY
+            Case BM_Luminosity
                 ApplyBlendMode_Luminosity m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_MULTIPLY
+            Case BM_Multiply
                 ApplyBlendMode_Multiply m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_OVERLAY
+            Case BM_Overlay
                 ApplyBlendMode_Overlay m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_PINLIGHT
+            Case BM_PinLight
                 ApplyBlendMode_PinLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_SATURATION
+            Case BM_Saturation
                 ApplyBlendMode_Saturation m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_SCREEN
+            Case BM_Screen
                 ApplyBlendMode_Screen m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_SOFTLIGHT
+            Case BM_SoftLight
                 ApplyBlendMode_SoftLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
-            Case BL_SUBTRACT
+            Case BM_Subtract
                 ApplyBlendMode_Subtract m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_VIVIDLIGHT
+            Case BM_VividLight
                 ApplyBlendMode_VividLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
-            Case BL_ERASE
+            Case BM_Erase
                 'Erase mode is totally pointless if alpha is locked, so just skip it entirely
-                If (bottomAlphaMode <> LA_LOCKED) Then
+                If (bottomAlphaMode <> AM_Locked) Then
                     ApplyBlendMode_Erase m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, alphaModifier
                 End If
             
@@ -179,11 +179,11 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         If applyFinalBlend Then
             
             'Some blend modes ignore this step (Erase, at present)
-            If (blendMode <> BL_ERASE) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, alphaModifier * 255
+            If (blendMode <> BM_Erase) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, alphaModifier * 255
             'Debug.Print "Blending this many pixels: " & CStr((finalX - initX + 1) * (finalY - initY + 1))
             
             'Also, locked alpha requires us to restore the original bottom layer alpha values now
-            If (bottomAlphaMode = LA_LOCKED) Then PostProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
+            If (bottomAlphaMode = AM_Locked) Then PostProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
             
         End If
         
@@ -380,7 +380,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     'Only some settings require us to use this function.
     Dim needToStay As Boolean
-    needToStay = (bottomAlphaMode <> LA_NORMAL) Or (topAlphaMode <> LA_NORMAL) Or (Not topLayerMask Is Nothing)
+    needToStay = (bottomAlphaMode <> AM_Normal) Or (topAlphaMode <> AM_Normal) Or (Not topLayerMask Is Nothing)
     
     If needToStay Then
         
@@ -476,7 +476,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         
         'Next comes locked alpha.  If alpha is locked for the destination, we don't care about further processing;
         ' instead, we cache alpha values and bail immediately.
-        If (bottomAlphaMode = LA_LOCKED) Then
+        If (bottomAlphaMode = AM_Locked) Then
             
             'Locked alpha is a little weird, because we're copying out the alpha values of the *bottom* layer.  Because the rect
             ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
@@ -497,7 +497,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             
         End If
     
-        If (topAlphaMode = LA_INHERIT) Then
+        If (topAlphaMode = AM_Inherit) Then
         
             'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
             ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -595,7 +595,7 @@ End Sub
 ' not all alpha modes require this, but there is no harm in calling it regardless.
 Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As PD_AlphaMode, ByVal topAlphaMode As PD_AlphaMode, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
     
-    If (bottomAlphaMode = LA_LOCKED) Then
+    If (bottomAlphaMode = AM_Locked) Then
         
         'Locked alpha is a little weird, because we're copying in the alpha values of the *bottom* layer.  Because the rect
         ' we've been passed is relative to the *top* layer, we need to calculate a transform now.

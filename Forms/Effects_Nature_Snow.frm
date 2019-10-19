@@ -327,7 +327,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     'Overlay the snow result onto the image, using the "Screen" blend mode to fade out black shades
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
-    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_snowDIB, BL_SCREEN, finalOpacity, LA_NORMAL, LA_INHERIT
+    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_snowDIB, BM_Screen, finalOpacity, AM_Normal, AM_Inherit
     
     If (Not toPreview) Then ProgressBars.SetProgBarVal 7
     

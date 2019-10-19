@@ -283,9 +283,9 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
             Set cComposite = New pdCompositor
             
             If blackBackground Then
-                cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BL_SCREEN
+                cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BM_Screen
             Else
-                cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BL_MULTIPLY
+                cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BM_Multiply
             End If
             
             'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB

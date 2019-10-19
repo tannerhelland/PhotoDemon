@@ -503,6 +503,24 @@ Friend Function GetInProgressChunk() As pdStream
     End If
 End Function
 
+'Return the size of the next chunk in line.  A couple important notes...
+' 1) This value DOES NOT INCLUDE PADDING.  pdPackages provide flexible support for arbitrary padding,
+'    and if you want the size of the data WITH padding, you need to call GetChunkSize() instead of
+'    this GetChunkDataSize() function.
+' 2) Calling this function does *not* affect the stream pointer (by design)!
+Friend Function GetChunkDataSize() As Long
+    If (m_chunkIndex > 0) Then
+        If (m_Chunks(m_chunkIndex - 1).chnkSize = 0) Then
+            GetChunkDataSize = 0
+        Else
+            GetChunkDataSize = m_Chunks(m_chunkIndex - 1).chnkCompressedSize
+        End If
+    Else
+        InternalError "GetChunkDataSize", "no chunks loaded!"
+        GetChunkDataSize = 0
+    End If
+End Function
+
 'Return the name of the next chunk in line.  Note that this does *not* permanently move the
 ' stream pointer (by design)!
 Friend Function GetChunkName() As String
@@ -514,8 +532,11 @@ Friend Function GetChunkName() As String
     End If
 End Function
 
-'Return the size of the next chunk in line.  Note that this does *not* permanently move the
-' stream pointer (by design)!
+'Return the size of the next chunk in line.  A couple important notes...
+' 1) This value MAY INCLUDE PADDING.  pdPackages provide flexible support for arbitrary padding,
+'    and if you want the size of the data WITHOUT including padding, you need to call
+'    GetChunkDataSize() instead of this GetChunkSize() function.
+' 2) Calling this function does *not* affect the stream pointer (by design)!
 Friend Function GetChunkSize() As Long
     If (m_chunkIndex > 0) Then
         GetChunkSize = m_Chunks(m_chunkIndex - 1).chnkSize

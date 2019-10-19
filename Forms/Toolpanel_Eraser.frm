@@ -233,8 +233,8 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Paint.SetBrushOpacity sltBrushSetting(1).Value
     Tools_Paint.SetBrushHardness sltBrushSetting(2).Value
     Tools_Paint.SetBrushFlow sltBrushSetting(3).Value
-    Tools_Paint.SetBrushBlendMode BL_ERASE
-    Tools_Paint.SetBrushAlphaMode LA_NORMAL
+    Tools_Paint.SetBrushBlendMode BM_Erase
+    Tools_Paint.SetBrushAlphaMode AM_Normal
     If (btsSpacing.ListIndex = 0) Then Tools_Paint.SetBrushSpacing 0# Else Tools_Paint.SetBrushSpacing sldSpacing.Value
 End Sub
 

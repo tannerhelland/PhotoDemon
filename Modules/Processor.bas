@@ -2179,7 +2179,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
             PDImages.GetActiveImage.GetActiveLayer.CreateNewLayerFromXML cParams.GetString("layerheader")
             
             '2) Initialize the text-layer-specific bits
-            PDImages.GetActiveImage.GetActiveLayer.CreateVectorDataFromXML cParams.GetString("layerdata")
+            PDImages.GetActiveImage.GetActiveLayer.SetVectorDataFromXML cParams.GetString("layerdata")
             
         End If
         

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.441</langversion>
+<langversion>6.7.442</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2733,6 +2733,12 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
+
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -14824,7 +14830,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- END text for Toolpanel_Selections.frm-->
 
-<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_Text) -->
+<!-- BEGIN text for Toolpanel_TextBasic.frm (toolpanel_TextBasic) -->
 
 <phrase>
 <original>font face</original>
@@ -14880,7 +14886,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
-<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
+<!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_TextAdvanced) -->
 
 <phrase>
 <original>remap</original>
@@ -16267,12 +16273,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for PDPackaging.bas -->
-
-<!-- PDPackaging.bas contains 0 phrases. -->
-
-<!-- END text for PDPackaging.bas-->
 
 <!-- Automatic text extraction complete. -->
 

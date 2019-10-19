@@ -74,7 +74,7 @@ Private Declare Function ObjSetAddRef Lib "msvbvm60" Alias "__vbaObjSetAddref" (
 ' the finished top DIB over the bottom DIB to achieve full composition.
 '
 'This function is currently unused.  I cannot guarantee that it will exist in future releases.
-'Friend Sub CompositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As PD_AlphaMode = LA_NORMAL)
+'Friend Sub CompositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As PD_AlphaMode = AM_Normal)
 '
 '    'The pixel blender class handles this for us
 '    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, 1, alphaMode, False
@@ -92,7 +92,7 @@ Private Declare Function ObjSetAddRef Lib "msvbvm60" Alias "__vbaObjSetAddref" (
 ' *will crash* if you call it directly without meeting this criteria.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
+Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As PD_BlendMode, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As PD_AlphaMode = AM_Normal, Optional ByVal topAlphaMode As PD_AlphaMode = AM_Normal, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'The blend class handles this for us
     m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, bottomAlphaMode, topAlphaMode, True, ptrToTopLayerAlternateRectF, topLayerMask
@@ -224,7 +224,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     If (Not topLayer.AffineTransformsActive(True)) Then
         
         'We don't even need a temporary DIB - just composite the current layer as-is
-        If ((topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL)) Then
+        If ((topLayer.GetLayerBlendMode = BM_Normal) And (topLayer.GetLayerAlphaMode = AM_Normal)) Then
             topLayer.layerDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
             CompositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
@@ -256,7 +256,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         End If
         
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
-        If (topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL) Then
+        If (topLayer.GetLayerBlendMode = BM_Normal) And (topLayer.GetLayerAlphaMode = AM_Normal) Then
             tmpDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
             CompositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, bottomLayer.GetLayerAlphaMode, topLayer.GetLayerAlphaMode
@@ -430,7 +430,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     'Unlike regular layers, we know that the paintbrush layer will never have any active transforms, so we can simply composite the top
     ' layer as-is (without checking for active transforms, like stretching or rotation).
     Dim quickBlendOkay As Boolean
-    quickBlendOkay = ((paintLayer.GetLayerBlendMode = BL_NORMAL) And (paintLayer.GetLayerAlphaMode = LA_NORMAL) And (Not (bottomLayer.GetLayerAlphaMode = LA_LOCKED)))
+    quickBlendOkay = ((paintLayer.GetLayerBlendMode = BM_Normal) And (paintLayer.GetLayerAlphaMode = AM_Normal) And (Not (bottomLayer.GetLayerAlphaMode = AM_Locked)))
     
     If quickBlendOkay Then
         GDIPlus_StretchBlt bottomLayer.layerDIB, xOffset, yOffset, topRect.Width, topRect.Height, paintLayer.layerDIB, topRect.Left, topRect.Top, topRect.Width, topRect.Height, paintLayer.GetLayerOpacity * 0.01, GP_IM_NearestNeighbor, , True
@@ -438,10 +438,10 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         
         'If *either* the paintbrush or the target layer has requested locked alpha, honor that now
         Dim targetAlphaMode As PD_AlphaMode
-        If ((paintLayer.GetLayerAlphaMode = LA_LOCKED) Or (bottomLayer.GetLayerAlphaMode = LA_LOCKED)) Then
-            targetAlphaMode = LA_LOCKED
+        If ((paintLayer.GetLayerAlphaMode = AM_Locked) Or (bottomLayer.GetLayerAlphaMode = AM_Locked)) Then
+            targetAlphaMode = AM_Locked
         Else
-            targetAlphaMode = LA_NORMAL
+            targetAlphaMode = AM_Normal
         End If
             
         Me.CompositeAndBlendDIBs paintLayer.layerDIB, bottomLayer.layerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity * 0.01, targetAlphaMode, paintLayer.GetLayerAlphaMode, VarPtr(topRect)
@@ -463,7 +463,7 @@ End Sub
 'IMPORTANT NOTE!  Both the top and bottom DIBs will be modified by this function, per standard merge rules.  The top DIB must be modified because it
 '                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
 '                  use temp copies of DIBs you can't afford to lose.
-Friend Sub QuickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As PD_BlendMode = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal bottomAlphaMode As PD_AlphaMode = LA_NORMAL, Optional ByVal topAlphaMode As PD_AlphaMode = LA_NORMAL)
+Friend Sub QuickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As PD_BlendMode = BM_Normal, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal bottomAlphaMode As PD_AlphaMode = AM_Normal, Optional ByVal topAlphaMode As PD_AlphaMode = AM_Normal)
     Me.CompositeAndBlendDIBs topDIB, bottomDIB, blendMode, 0, 0, topLayerOpacity / 100, bottomAlphaMode, topAlphaMode
 End Sub
 
@@ -547,7 +547,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     If (srcLayerIndex = 0) Then
         standardBlendingActive = True
     Else
-        standardBlendingActive = (srcLayer.GetLayerBlendMode = BL_NORMAL) And (srcLayer.GetLayerAlphaMode = LA_NORMAL)
+        standardBlendingActive = (srcLayer.GetLayerBlendMode = BM_Normal) And (srcLayer.GetLayerAlphaMode = AM_Normal)
     End If
         
     'Next, check for custom blend modes.  These require an intermediate DIB copy of the image, because PD must internally render the
@@ -588,7 +588,7 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         
         End If
     
-    'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BL_NORMAL)..."
+    'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BM_Normal)..."
     Else
     
         'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
@@ -873,7 +873,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         If isBaseLayer Then
             nonStandardBlendingActive = False
         Else
-            nonStandardBlendingActive = (srcLayer.GetLayerBlendMode <> BL_NORMAL) Or (srcLayer.GetLayerAlphaMode <> LA_NORMAL)
+            nonStandardBlendingActive = (srcLayer.GetLayerBlendMode <> BM_Normal) Or (srcLayer.GetLayerAlphaMode <> AM_Normal)
         End If
         
         'If a mask was supplied, also treat this as a non-standard blend
@@ -1573,11 +1573,11 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Set lodDIB = srcImage.ScratchLayer.TmpLODDIB(CLC_Viewport)
         
         'Check for non-standard blend or alpha modes for this paint stroke.  As expected, they require a custom processing pipeline.
-        nonStandardBlendingActive = (srcImage.ScratchLayer.GetLayerBlendMode <> BL_NORMAL) Or (srcImage.ScratchLayer.GetLayerAlphaMode <> LA_NORMAL)
+        nonStandardBlendingActive = (srcImage.ScratchLayer.GetLayerBlendMode <> BM_Normal) Or (srcImage.ScratchLayer.GetLayerAlphaMode <> AM_Normal)
         
         'We also need to check if the destination layer (*not* the paint layer) has locked alpha values.  If it does, we will
         ' pre-process the paint stroke alpha to match.
-        If (Not nonStandardBlendingActive) Then nonStandardBlendingActive = (srcLayer.GetLayerAlphaMode = LA_LOCKED)
+        If (Not nonStandardBlendingActive) Then nonStandardBlendingActive = (srcLayer.GetLayerAlphaMode = AM_Locked)
         
         'Finally, if a selection mask is active, we need to pre-process the paint stroke against the selection mask,
         ' and remove any stroke details that fall outside the selection boundary.
@@ -1742,10 +1742,10 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             
             'If *either* the paintbrush or the target layer has requested locked alpha, honor that now
             Dim targetAlphaMode As PD_AlphaMode
-            If (srcImage.ScratchLayer.GetLayerAlphaMode = LA_LOCKED) Or (srcLayer.GetLayerAlphaMode = LA_LOCKED) Then
-                targetAlphaMode = LA_LOCKED
+            If (srcImage.ScratchLayer.GetLayerAlphaMode = AM_Locked) Or (srcLayer.GetLayerAlphaMode = AM_Locked) Then
+                targetAlphaMode = AM_Locked
             Else
-                targetAlphaMode = LA_NORMAL
+                targetAlphaMode = AM_Normal
             End If
             
             'Composite and blend in one fell swoop
@@ -1764,7 +1764,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     Set lodDIB = srcImage.ScratchLayer.TmpLODDIB(CLC_Painting)
     
     'Merge the final, fully blended result onto the rest of the compositor stack
-    nonStandardBlendingActive = (srcLayer.GetLayerBlendMode <> BL_NORMAL) Or (srcLayer.GetLayerAlphaMode <> LA_NORMAL)
+    nonStandardBlendingActive = (srcLayer.GetLayerBlendMode <> BM_Normal) Or (srcLayer.GetLayerAlphaMode <> AM_Normal)
     
     If nonStandardBlendingActive Then
         CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, 0, 0, srcLayer.GetLayerOpacity * 0.01, , srcLayer.GetLayerAlphaMode

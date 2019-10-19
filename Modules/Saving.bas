@@ -585,7 +585,7 @@ SavePDIError:
     
 End Function
 
-Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As String, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
+Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As String, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByRef dstUndoFileSize As Long) As Boolean
 
     On Error GoTo SavePDLayerError
     
@@ -593,6 +593,11 @@ Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As
     If (srcLayer Is Nothing) Then Exit Function
     If (srcLayer.layerDIB Is Nothing) Then Exit Function
     If (LenB(pdiPath) = 0) Then Exit Function
+    
+    'Enable for detailed profiling
+    Const REPORT_LAYER_SAVE_TIMING As Boolean = False
+    Dim startTime As Currency
+    If REPORT_LAYER_SAVE_TIMING Then VBHacks.GetHighResTime startTime
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -602,17 +607,24 @@ Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As
     If (m_PdiWriterNew Is Nothing) Then Set m_PdiWriterNew = New pdPackageChunky
     
     'Unlike an actual PDI file, which stores a whole bunch of data, layer temp files only store
-    ' two pieces of data: the layer header, and the DIB bytestream.  (Note that we supply a
-    ' (very rough) estimate of final package size as a helper to the memory-mapped file class
-    ' underlying pdPackager - you can omit this and everything will work fine; there may just be
-    ' a few extra trips out to the HDD to dynamically resize the file map as needed.
-    m_PdiWriterNew.StartNewPackage_File pdiPath, srcIsUndo, srcLayer.EstimateRAMUsage \ 4
+    ' two pieces of data: the layer header, and the DIB bytestream.
+    m_PdiWriterNew.StartNewPackage_File pdiPath, False, , "UNDO"
+    
+    If REPORT_LAYER_SAVE_TIMING Then
+        PDDebug.LogAction "Time required for allocate: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'Retrieve the layer header (in XML format), then write the XML stream to the package
     Dim dataString As String, dataUTF8() As Byte, utf8Len As Long
-    dataString = srcLayer.GetLayerHeaderAsXML(True)
+    dataString = srcLayer.GetLayerHeaderAsXML_New()
     Strings.UTF8FromStrPtr StrPtr(dataString), Len(dataString), dataUTF8, utf8Len
     m_PdiWriterNew.AddChunk_WholeFromPtr "LHDR", VarPtr(dataUTF8(0)), utf8Len, compressHeaders
+    
+    If REPORT_LAYER_SAVE_TIMING Then
+        PDDebug.LogAction "Time required for layer header: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
@@ -628,7 +640,7 @@ Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As
         'Text (and other vector layers) save their vector contents in XML format
         ElseIf srcLayer.IsLayerVector Then
             
-            dataString = srcLayer.GetVectorDataAsXML(True)
+            dataString = srcLayer.GetVectorDataAsXML_New()
             Strings.UTF8FromStrPtr StrPtr(dataString), Len(dataString), dataUTF8, utf8Len
             m_PdiWriterNew.AddChunk_WholeFromPtr "LDAT", VarPtr(dataUTF8(0)), utf8Len, compressLayers, compressionLevel
             
@@ -638,6 +650,8 @@ Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As
         End If
         
     End If
+    
+    If REPORT_LAYER_SAVE_TIMING Then PDDebug.LogAction "Time required for layer contents: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Report our finished package size to the caller
     dstUndoFileSize = m_PdiWriterNew.GetPackageSize()
@@ -707,11 +721,11 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_Layer, UNDO_Layer_VectorSafe
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", cf_Lz4, undoCmpEngine, False, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", cf_Zstd, undoCmpEngine, False, undoCmpLevel, dstUndoFileSize)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LayerHeader
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", undoCmpEngine, cf_None, True, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", undoCmpEngine, cf_None, True, undoCmpLevel, dstUndoFileSize)
             
         'Selection data only
         Case UNDO_Selection

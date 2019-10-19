@@ -199,7 +199,7 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     'Merge the result back onto the original temporary DIB
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
-    cCompositor.QuickMergeTwoDibsOfEqualSize m_tmpDIB, rotDIB, BL_VIVIDLIGHT
+    cCompositor.QuickMergeTwoDibsOfEqualSize m_tmpDIB, rotDIB, BM_VividLight
     
     'Free our rotated DIB
     Set rotDIB = Nothing
@@ -223,7 +223,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboBlendMode.ListIndex = BL_OVERLAY
+    cboBlendMode.ListIndex = BM_Overlay
     cpShadow.Color = RGB(50, 0, 0)
     cpHighlight.Color = RGB(250, 140, 95)
 End Sub
@@ -242,7 +242,7 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the blend mode drop-down
-    Interface.PopulateBlendModeDropDown cboBlendMode, BL_OVERLAY
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Overlay
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me

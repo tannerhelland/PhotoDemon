@@ -1612,7 +1612,7 @@ Public Sub EnableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As PD_BlendMode = BL_NORMAL)
+Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As PD_BlendMode = BM_Normal)
     
     dstCombo.SetAutomaticRedraws False
     
@@ -1653,7 +1653,7 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
 End Sub
 
 'Given a combo box, populate it with all currently supported alpha modes
-Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As PD_AlphaMode = LA_NORMAL)
+Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As PD_AlphaMode = AM_Normal)
     
     dstCombo.SetAutomaticRedraws False
     

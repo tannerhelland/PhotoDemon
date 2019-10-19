@@ -512,7 +512,7 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
             Set cPen = Nothing
             
             'Merge this temporary image onto the base image
-            cCompositor.QuickMergeTwoDibsOfEqualSize m_HistogramImage, tmpImage, BL_SCREEN
+            cCompositor.QuickMergeTwoDibsOfEqualSize m_HistogramImage, tmpImage, BM_Screen
             
         End If
                 

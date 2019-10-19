@@ -373,11 +373,11 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Really dense blend, similar to Photoshop:
     'DIBs.CreateDIBFromGrayscaleMap_Alpha m_GrayDIB, finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    'cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BL_NORMAL, 100#
+    'cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BM_Normal, 100#
     
     'Lighter, modern blend:
     DIBs.CreateDIBFromGrayscaleMap m_GrayDIB, finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BL_SCREEN, 100#, , LA_INHERIT
+    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BM_Screen, 100#, , AM_Inherit
     
     'If this is *not* a preview, wipe our local caches before exiting
     If (Not toPreview) Then Set m_GrayDIB = Nothing

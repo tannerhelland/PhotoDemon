@@ -299,7 +299,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
-    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_edgeDIB, BL_SCREEN, fxOpacity
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_edgeDIB, BM_Screen, fxOpacity
     
     'If this is *not* a preview, free any intermediary data
     If (Not toPreview) Then Set m_edgeDIB = Nothing

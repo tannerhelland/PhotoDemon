@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form toolpanel_FancyText 
+Begin VB.Form toolpanel_TextAdvanced 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
@@ -780,7 +780,7 @@ Begin VB.Form toolpanel_FancyText
       End
    End
 End
-Attribute VB_Name = "toolpanel_FancyText"
+Attribute VB_Name = "toolpanel_TextAdvanced"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

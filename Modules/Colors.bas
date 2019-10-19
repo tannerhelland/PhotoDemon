@@ -19,7 +19,7 @@ Option Explicit
 
 'PhotoDemon tries to support a variety of textual color representations.  Not all of these are implemented at present.
 ' (TODO: get all formats working)
-Public Enum PD_COLOR_STRING
+Public Enum PD_ColorStringType
     ColorInvalid = -1
     ColorUnknown = 0
     ColorHex = 1
@@ -32,6 +32,60 @@ End Enum
 
 #If False Then
     Private Const ColorInvalid = -1, ColorUnknown = 0, ColorHex = 1, ColorRGB = 2, ColorRGBA = 3, ColorHSL = 4, ColorHSLA = 5, ColorNamed = 6
+#End If
+
+Public Enum PD_BlendMode
+    BM_Normal = 0
+    BM_Darken = 1
+    BM_Multiply = 2
+    BM_ColorBurn = 3
+    BM_LinearBurn = 4
+    BM_Lighten = 5
+    BM_Screen = 6
+    BM_ColorDodge = 7
+    BM_LinearDodge = 8
+    BM_Overlay = 9
+    BM_SoftLight = 10
+    BM_HardLight = 11
+    BM_VividLight = 12
+    BM_LinearLight = 13
+    BM_PinLight = 14
+    BM_HardMix = 15
+    BM_Difference = 16
+    BM_Exclusion = 17
+    BM_Subtract = 18
+    BM_Divide = 19
+    BM_Hue = 20
+    BM_Saturation = 21
+    BM_Color = 22
+    BM_Luminosity = 23
+    BM_GrainExtract = 24
+    BM_GrainMerge = 25
+    BM_Erase = 26
+End Enum
+
+#If False Then
+    Const BM_Normal = 0, BM_Darken = 1, BM_Multiply = 2, BM_ColorBurn = 3, BM_LinearBurn = 4
+    Const BM_Lighten = 5, BM_Screen = 6, BM_ColorDodge = 7, BM_LinearDodge = 8, BM_Overlay = 9
+    Const BM_SoftLight = 10, BM_HardLight = 11, BM_VividLight = 12, BM_LinearLight = 13, BM_PinLight = 14
+    Const BM_HardMix = 15, BM_Difference = 16, BM_Exclusion = 17, BM_Subtract = 18, BM_Divide = 19
+    Const BM_Hue = 20, BM_Saturation = 21, BM_Color = 22, BM_Luminosity = 23, BM_GrainExtract = 24
+    Const BM_GrainMerge = 25, BM_Erase = 26
+#End If
+
+'PD supports the notion "alpha modes", including "inheritance," where a layer "inherits" the alpha of a layer beneath it,
+' (https://userbase.kde.org/Krita/Tutorial_2#Inherit_Alpha_.28alpha_.3D_transparency.29).  I may or may not choose to
+' address masking via this property as well... I'm still deciding the best way to do it.
+'
+'Also, alpha locking is handled via mode.
+Public Enum PD_AlphaMode
+    AM_Normal = 0
+    AM_Inherit = 1
+    AM_Locked = 2
+End Enum
+
+#If False Then
+    Private Const AM_Normal = 0, AM_Inherit = 1, AM_Locked = 2
 #End If
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
@@ -774,7 +828,7 @@ End Function
 
 'Given some string value, attempt to wring color information out of it.  The goal is to eventually support all valid CSS
 ' color descriptors (e.g. http://www.w3schools.com/cssref/css_colors_legal.asp), but for now PD primarily uses hex representations.
-Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColorType As PD_COLOR_STRING = ColorUnknown, Optional ByVal validateActualColorValue As Boolean = True) As Boolean
+Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColorType As PD_ColorStringType = ColorUnknown, Optional ByVal validateActualColorValue As Boolean = True) As Boolean
     
     dstColorType = ColorUnknown
     
@@ -832,7 +886,7 @@ End Function
 ' NOTE: at present, opacity is not actually retrieved; it always returns 100.0.  Also, per comments elsewhere in this module,
 ' not all color representations have been implemented.  Stick to hex for now.
 ' RETURNS: TRUE if successful; FALSE otherwise
-Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong As Long, Optional ByVal srcColorType As PD_COLOR_STRING = ColorUnknown) As Boolean
+Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong As Long, Optional ByVal srcColorType As PD_ColorStringType = ColorUnknown) As Boolean
 
     'If the color type is unknown, attempt to identify it now.
     If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then GetColorFromString = IsStringAColor(srcString, srcColorType)
@@ -908,3 +962,166 @@ Private Sub BuildColorNameList()
     End If
     
 End Sub
+
+'Given a PD alpha mode enum, return a corresponding string representation.  PD alpha mode
+' strings are ALWAYS 4-chars long; append spaces as necessary.
+Public Function GetAlphaModeIDFromString(ByRef srcString As String) As PD_AlphaMode
+    Select Case srcString
+        Case "norm"
+            GetAlphaModeIDFromString = AM_Normal
+        Case "lock"
+            GetAlphaModeIDFromString = AM_Locked
+        Case "inhr"
+            GetAlphaModeIDFromString = AM_Inherit
+        Case Else
+            GetAlphaModeIDFromString = AM_Normal
+            PDDebug.LogAction "WARNING! Colors.GetAlphaModeIDFromString received a bad value: " & srcString
+    End Select
+End Function
+
+Public Function GetAlphaModeStringFromID(ByVal srcID As PD_AlphaMode) As String
+    Select Case srcID
+        Case AM_Normal
+            GetAlphaModeStringFromID = "norm"
+        Case AM_Locked
+            GetAlphaModeStringFromID = "lock"
+        Case AM_Inherit
+            GetAlphaModeStringFromID = "inhr"
+        Case Else
+            GetAlphaModeStringFromID = "norm"
+            PDDebug.LogAction "WARNING! Colors.GetAlphaModeStringFromID received a bad value: " & srcID
+    End Select
+End Function
+
+'Given a PD blend mode enum, return a corresponding string representation.  PD blend mode
+' strings are ALWAYS 4-chars long; append spaces as necessary.
+Public Function GetBlendModeIDFromString(ByRef srcString As String) As PD_BlendMode
+
+    Select Case srcString
+        Case "norm"
+            GetBlendModeIDFromString = BM_Normal
+        Case "dark"
+            GetBlendModeIDFromString = BM_Darken
+        Case "mult"
+            GetBlendModeIDFromString = BM_Multiply
+        Case "cbrn"
+            GetBlendModeIDFromString = BM_ColorBurn
+        Case "lbrn"
+            GetBlendModeIDFromString = BM_LinearBurn
+        Case "lght"
+            GetBlendModeIDFromString = BM_Lighten
+        Case "scrn"
+            GetBlendModeIDFromString = BM_Screen
+        Case "cddg"
+            GetBlendModeIDFromString = BM_ColorDodge
+        Case "lddg"
+            GetBlendModeIDFromString = BM_LinearDodge
+        Case "ovrl"
+            GetBlendModeIDFromString = BM_Overlay
+        Case "sftl"
+            GetBlendModeIDFromString = BM_SoftLight
+        Case "hrdl"
+            GetBlendModeIDFromString = BM_HardLight
+        Case "vvdl"
+            GetBlendModeIDFromString = BM_VividLight
+        Case "lnrl"
+            GetBlendModeIDFromString = BM_LinearLight
+        Case "pinl"
+            GetBlendModeIDFromString = BM_PinLight
+        Case "hrdm"
+            GetBlendModeIDFromString = BM_HardMix
+        Case "diff"
+            GetBlendModeIDFromString = BM_Difference
+        Case "excl"
+            GetBlendModeIDFromString = BM_Exclusion
+        Case "subt"
+            GetBlendModeIDFromString = BM_Subtract
+        Case "divd"
+            GetBlendModeIDFromString = BM_Divide
+        Case "hue "
+            GetBlendModeIDFromString = BM_Hue
+        Case "satr"
+            GetBlendModeIDFromString = BM_Saturation
+        Case "clr "
+            GetBlendModeIDFromString = BM_Color
+        Case "lumn"
+            GetBlendModeIDFromString = BM_Luminosity
+        Case "gext"
+            GetBlendModeIDFromString = BM_GrainExtract
+        Case "gmrg"
+            GetBlendModeIDFromString = BM_GrainMerge
+        Case "eras"
+            GetBlendModeIDFromString = BM_Erase
+        Case Else
+            GetBlendModeIDFromString = BM_Normal
+            PDDebug.LogAction "WARNING! Colors.GetBlendModeStringFromID received a bad value: " & srcString
+    End Select
+    
+End Function
+
+'Given a PD blend mode string representation, return a corresponding enum.  PD blend mode
+' strings are ALWAYS 4-chars long.
+Public Function GetBlendModeStringFromID(ByVal srcMode As PD_BlendMode) As String
+    
+    Select Case srcMode
+        Case BM_Normal
+            GetBlendModeStringFromID = "norm"
+        Case BM_Darken
+            GetBlendModeStringFromID = "dark"
+        Case BM_Multiply
+            GetBlendModeStringFromID = "mult"
+        Case BM_ColorBurn
+            GetBlendModeStringFromID = "cbrn"
+        Case BM_LinearBurn
+            GetBlendModeStringFromID = "lbrn"
+        Case BM_Lighten
+            GetBlendModeStringFromID = "lght"
+        Case BM_Screen
+            GetBlendModeStringFromID = "scrn"
+        Case BM_ColorDodge
+            GetBlendModeStringFromID = "cddg"
+        Case BM_LinearDodge
+            GetBlendModeStringFromID = "lddg"
+        Case BM_Overlay
+            GetBlendModeStringFromID = "ovrl"
+        Case BM_SoftLight
+            GetBlendModeStringFromID = "sftl"
+        Case BM_HardLight
+            GetBlendModeStringFromID = "hrdl"
+        Case BM_VividLight
+            GetBlendModeStringFromID = "vvdl"
+        Case BM_LinearLight
+            GetBlendModeStringFromID = "lnrl"
+        Case BM_PinLight
+            GetBlendModeStringFromID = "pinl"
+        Case BM_HardMix
+            GetBlendModeStringFromID = "hrdm"
+        Case BM_Difference
+            GetBlendModeStringFromID = "diff"
+        Case BM_Exclusion
+            GetBlendModeStringFromID = "excl"
+        Case BM_Subtract
+            GetBlendModeStringFromID = "subt"
+        Case BM_Divide
+            GetBlendModeStringFromID = "divd"
+        Case BM_Hue
+            GetBlendModeStringFromID = "hue "
+        Case BM_Saturation
+            GetBlendModeStringFromID = "satr"
+        Case BM_Color
+            GetBlendModeStringFromID = "clr "
+        Case BM_Luminosity
+            GetBlendModeStringFromID = "lumn"
+        Case BM_GrainExtract
+            GetBlendModeStringFromID = "gext"
+        Case BM_GrainMerge
+            GetBlendModeStringFromID = "gmrg"
+        Case BM_Erase
+            GetBlendModeStringFromID = "eras"
+        Case Else
+            GetBlendModeStringFromID = "    "
+            PDDebug.LogAction "WARNING! Colors.GetBlendModeStringFromID received a bad value: " & srcMode
+    End Select
+    
+End Function
+

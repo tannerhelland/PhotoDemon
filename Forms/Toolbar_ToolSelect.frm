@@ -995,16 +995,16 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             
         'Vector tools
         Case TEXT_BASIC
-            Load toolpanel_Text
-            toolpanel_Text.UpdateAgainstCurrentTheme
+            Load toolpanel_TextBasic
+            toolpanel_TextBasic.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Text
-            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Text.hWnd
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_TextBasic.hWnd
             
         Case TEXT_ADVANCED
-            Load toolpanel_FancyText
-            toolpanel_FancyText.UpdateAgainstCurrentTheme
+            Load toolpanel_TextAdvanced
+            toolpanel_TextAdvanced.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Typography
-            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_FancyText.hWnd
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_TextAdvanced.hWnd
         
         'Paint tools
         Case PAINT_PENCIL
@@ -1155,12 +1155,12 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
                         Set toolpanel_Selections = Nothing
         
                     Case TP_Text
-                        Unload toolpanel_Text
-                        Set toolpanel_Text = Nothing
+                        Unload toolpanel_TextBasic
+                        Set toolpanel_TextBasic = Nothing
         
                     Case TP_Typography
-                        Unload toolpanel_FancyText
-                        Set toolpanel_FancyText = Nothing
+                        Unload toolpanel_TextAdvanced
+                        Set toolpanel_TextAdvanced = Nothing
         
                     Case TP_Pencil
                         Unload toolpanel_Pencil

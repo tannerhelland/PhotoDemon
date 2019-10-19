@@ -610,9 +610,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         'Some panels may still wish to redraw their contents, even if no images are loaded.  (Text panels use this
         ' opportunity to hide the "convert typography to text or vice-versa" panels that are visible by default.)
         If (g_CurrentTool = TEXT_BASIC) Then
-            toolpanel_Text.UpdateAgainstCurrentLayer
+            toolpanel_TextBasic.UpdateAgainstCurrentLayer
         ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-            toolpanel_FancyText.UpdateAgainstCurrentLayer
+            toolpanel_TextAdvanced.UpdateAgainstCurrentLayer
         End If
         
         'Exit now, as subsequent checks in this function require one or more active images
@@ -640,9 +640,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             
                 'Hide the "convert to different type of text" panel prompts
                 If (g_CurrentTool = TEXT_BASIC) Then
-                    toolpanel_Text.UpdateAgainstCurrentLayer
+                    toolpanel_TextBasic.UpdateAgainstCurrentLayer
                 ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-                    toolpanel_FancyText.UpdateAgainstCurrentLayer
+                    toolpanel_TextAdvanced.UpdateAgainstCurrentLayer
                 End If
             
             End If
@@ -676,7 +676,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 
             Case TEXT_BASIC
                 
-                With toolpanel_Text
+                With toolpanel_TextBasic
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
@@ -692,11 +692,11 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 End With
                 
                 'Display the "convert to basic text layer" panel as necessary
-                toolpanel_Text.UpdateAgainstCurrentLayer
+                toolpanel_TextBasic.UpdateAgainstCurrentLayer
                 
             Case TEXT_ADVANCED
                 
-                With toolpanel_FancyText
+                With toolpanel_TextAdvanced
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
@@ -732,7 +732,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 End With
                 
                 'Display the "convert to advanced text layer" panel as necessary
-                toolpanel_FancyText.UpdateAgainstCurrentLayer
+                toolpanel_TextAdvanced.UpdateAgainstCurrentLayer
         
         End Select
         
@@ -799,64 +799,64 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
             Case TEXT_BASIC
                 
                 With PDImages.GetActiveImage.GetActiveLayer
-                    .SetTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
-                    .SetTextLayerProperty ptp_FontFace, toolpanel_Text.cboTextFontFace.List(toolpanel_Text.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_Text.sldTextFontSize.Value
-                    .SetTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
-                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
-                    .SetTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
-                    .SetTextLayerProperty ptp_FontBold, toolpanel_Text.btnFontStyles(0).Value
-                    .SetTextLayerProperty ptp_FontItalic, toolpanel_Text.btnFontStyles(1).Value
-                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_Text.btnFontStyles(2).Value
-                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
-                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
-                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
+                    .SetTextLayerProperty ptp_Text, toolpanel_TextBasic.txtTextTool.Text
+                    .SetTextLayerProperty ptp_FontFace, toolpanel_TextBasic.cboTextFontFace.List(toolpanel_TextBasic.cboTextFontFace.ListIndex)
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextBasic.sldTextFontSize.Value
+                    .SetTextLayerProperty ptp_FontColor, toolpanel_TextBasic.csTextFontColor.Color
+                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextBasic.cboTextRenderingHint.ListIndex
+                    .SetTextLayerProperty ptp_TextContrast, toolpanel_TextBasic.sltTextClarity.Value
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextBasic.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextBasic.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextBasic.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextBasic.btnFontStyles(3).Value
+                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_TextBasic.btsHAlignment.ListIndex
+                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_TextBasic.btsVAlignment.ListIndex
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
                 ' This is because this property changes according to the active text tool.
-                PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, tre_WAPI
+                PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, te_WAPI
             
             Case TEXT_ADVANCED
                 
                 With PDImages.GetActiveImage.GetActiveLayer
-                    .SetTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
-                    .SetTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_FancyText.sldTextFontSize.Value
-                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
-                    .SetTextLayerProperty ptp_TextHinting, toolpanel_FancyText.chkHinting.Value
-                    .SetTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
-                    .SetTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
-                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
-                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_FancyText.btnFontStyles(3).Value
-                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
-                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
-                    .SetTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
-                    .SetTextLayerProperty ptp_FillActive, toolpanel_FancyText.chkFillText.Value
-                    .SetTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
-                    .SetTextLayerProperty ptp_OutlineActive, toolpanel_FancyText.chkOutlineText.Value
-                    .SetTextLayerProperty ptp_OutlinePen, toolpanel_FancyText.psText.Pen
-                    .SetTextLayerProperty ptp_BackgroundActive, toolpanel_FancyText.chkBackground.Value
-                    .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
-                    .SetTextLayerProperty ptp_BackBorderActive, toolpanel_FancyText.chkBackgroundBorder.Value
-                    .SetTextLayerProperty ptp_BackBorderPen, toolpanel_FancyText.psTextBackground.Pen
-                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
-                    .SetTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
-                    .SetTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
-                    .SetTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
-                    .SetTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
-                    .SetTextLayerProperty ptp_CharInflation, toolpanel_FancyText.sltCharInflation.Value
-                    .SetTextLayerProperty ptp_CharJitterX, toolpanel_FancyText.tudJitter(0).Value
-                    .SetTextLayerProperty ptp_CharJitterY, toolpanel_FancyText.tudJitter(1).Value
-                    .SetTextLayerProperty ptp_CharMirror, toolpanel_FancyText.cboCharMirror.ListIndex
-                    .SetTextLayerProperty ptp_CharOrientation, toolpanel_FancyText.sltCharOrientation.Value
-                    .SetTextLayerProperty ptp_CharRemap, toolpanel_FancyText.cboCharCase.ListIndex
-                    .SetTextLayerProperty ptp_CharSpacing, toolpanel_FancyText.sltCharSpacing.Value
+                    .SetTextLayerProperty ptp_Text, toolpanel_TextAdvanced.txtTextTool.Text
+                    .SetTextLayerProperty ptp_FontFace, toolpanel_TextAdvanced.cboTextFontFace.List(toolpanel_TextAdvanced.cboTextFontFace.ListIndex)
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_TextAdvanced.sldTextFontSize.Value
+                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_TextAdvanced.cboTextRenderingHint.ListIndex
+                    .SetTextLayerProperty ptp_TextHinting, toolpanel_TextAdvanced.chkHinting.Value
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_TextAdvanced.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_TextAdvanced.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_TextAdvanced.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_TextAdvanced.btnFontStyles(3).Value
+                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_TextAdvanced.btsHAlignment.ListIndex
+                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_TextAdvanced.btsVAlignment.ListIndex
+                    .SetTextLayerProperty ptp_WordWrap, toolpanel_TextAdvanced.cboWordWrap.ListIndex
+                    .SetTextLayerProperty ptp_FillActive, toolpanel_TextAdvanced.chkFillText.Value
+                    .SetTextLayerProperty ptp_FillBrush, toolpanel_TextAdvanced.bsText.Brush
+                    .SetTextLayerProperty ptp_OutlineActive, toolpanel_TextAdvanced.chkOutlineText.Value
+                    .SetTextLayerProperty ptp_OutlinePen, toolpanel_TextAdvanced.psText.Pen
+                    .SetTextLayerProperty ptp_BackgroundActive, toolpanel_TextAdvanced.chkBackground.Value
+                    .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_TextAdvanced.bsTextBackground.Brush
+                    .SetTextLayerProperty ptp_BackBorderActive, toolpanel_TextAdvanced.chkBackgroundBorder.Value
+                    .SetTextLayerProperty ptp_BackBorderPen, toolpanel_TextAdvanced.psTextBackground.Pen
+                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_TextAdvanced.tudLineSpacing.Value
+                    .SetTextLayerProperty ptp_MarginLeft, toolpanel_TextAdvanced.tudMargin(0).Value
+                    .SetTextLayerProperty ptp_MarginRight, toolpanel_TextAdvanced.tudMargin(1).Value
+                    .SetTextLayerProperty ptp_MarginTop, toolpanel_TextAdvanced.tudMargin(2).Value
+                    .SetTextLayerProperty ptp_MarginBottom, toolpanel_TextAdvanced.tudMargin(3).Value
+                    .SetTextLayerProperty ptp_CharInflation, toolpanel_TextAdvanced.sltCharInflation.Value
+                    .SetTextLayerProperty ptp_CharJitterX, toolpanel_TextAdvanced.tudJitter(0).Value
+                    .SetTextLayerProperty ptp_CharJitterY, toolpanel_TextAdvanced.tudJitter(1).Value
+                    .SetTextLayerProperty ptp_CharMirror, toolpanel_TextAdvanced.cboCharMirror.ListIndex
+                    .SetTextLayerProperty ptp_CharOrientation, toolpanel_TextAdvanced.sltCharOrientation.Value
+                    .SetTextLayerProperty ptp_CharRemap, toolpanel_TextAdvanced.cboCharCase.ListIndex
+                    .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.Value
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
                 ' This is because this property changes according to the active text tool.
-                PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
+                PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, te_PhotoDemon
         
         End Select
         

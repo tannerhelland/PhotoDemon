@@ -420,7 +420,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboBlendMode.ListIndex = BL_NORMAL
+    cboBlendMode.ListIndex = BM_Normal
     cpShadow.Color = RGB(0, 0, 0)
     cpHighlight.Color = RGB(255, 255, 255)
 End Sub
@@ -439,7 +439,7 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the blend mode drop-down
-    Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
     
     'Populate button strips
     btsType.AddItem "simple", 0

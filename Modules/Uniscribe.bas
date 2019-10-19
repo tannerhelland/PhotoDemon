@@ -214,11 +214,11 @@ End Type
 'Glyph data used by PhotoDemon.  An array of this custom struct is filled when the caller requests a copy of pdUniscribe's internal data.
 ' A fair amount of work is required to pull data out of the various incredibly complicated Uniscribe structs, so don't request copies of
 ' this data more than is absolutely necessary.
-Public Type pdGlyphUniscribe
+Public Type PDGlyphUniscribe
     glyphIndex As Long
-    GlyphOffset As GOFFSET
+    glyphOffset As GOFFSET
     
-    AdvanceWidth As Long
+    advanceWidth As Long
     
     glyphPath As pd2DPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline.  Note that this value is not
                                     ' filled by PD's Uniscribe interface; pdGlyphCollection actually handles that step.
@@ -227,11 +227,11 @@ Public Type pdGlyphUniscribe
     isZeroWidth As Boolean
     isHardLineBreak As Boolean
     
-    ABCWidth As ABC
+    abcWidth As ABC
     
     finalX As Single        'Final (x, y) positioning has nothing to do with Uniscribe.  PD calculates this internally, using all the
     finalY As Single        ' metrics supplied by Uniscribe, and all the metrics supplied by the user.
-    LineID As Long          'Which line (0-based) this glyph sits on.  PD marks this during the positioning loop to simplify rendering.
+    lineID As Long          'Which line (0-based) this glyph sits on.  PD marks this during the positioning loop to simplify rendering.
     
     isFirstGlyphOnLine As Boolean   'These two values could be inferred from LineID, but it's faster to simply mark them during
     isLastGlyphOnLine As Boolean    ' processing.  We use these markers to account for ABC overhang on leading or trailing chars.

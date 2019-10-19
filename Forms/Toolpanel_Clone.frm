@@ -231,8 +231,8 @@ End Sub
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
-    Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
-    Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
+    Interface.PopulateBlendModeDropDown cboBrushSetting(0), BM_Normal
+    Interface.PopulateAlphaModeDropDown cboBrushSetting(1), AM_Normal
     
     cboBrushSetting(2).SetAutomaticRedraws False
     cboBrushSetting(2).AddItem "off", 0
@@ -313,7 +313,6 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushSize sltBrushSetting(0).Value
     Tools_Clone.SetBrushOpacity sltBrushSetting(1).Value
     Tools_Clone.SetBrushHardness sltBrushSetting(2).Value
-    Tools_Clone.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Tools_Clone.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Clone.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value

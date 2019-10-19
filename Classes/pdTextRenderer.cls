@@ -128,28 +128,16 @@ Private m_CurrentBackend As fontBackend
 
 'This class provides two basic rendering engines: WAPI and MANUAL.  WAPI limits you to innate features of GDI and GDI+ (BOOOORING).
 ' MANUAL offloads all rendering to PD's manual glyph renderer, and enables... well, pretty much anything I can think to implement.
-Public Enum TEXT_RENDERING_ENGINE
-    tre_WAPI = 0
-    tre_PHOTODEMON = 1
+Public Enum PD_TextEngine
+    te_WAPI = 0
+    te_PhotoDemon = 1
 End Enum
 
 #If False Then
-    Private Const tre_WAPI = 0, tre_PHOTODEMON = 1
+    Private Const te_WAPI = 0, te_PhotoDemon = 1
 #End If
 
-Private m_RenderingEngine As TEXT_RENDERING_ENGINE
-
-'This class's custom glyph renderer supports various wordwrap modes
-Public Enum TEXT_WORDWRAP_MODE
-    tre_None = 0
-    tre_ManualOnly = 1
-    tre_AutoBreakCharacter = 2
-    tre_AutoBreakWords = 3
-End Enum
-
-#If False Then
-    Private Const tre_None = 0, tre_ManualOnly = 1, tre_AutoBreakCharacter = 2, tre_AutoBreakWords = 3
-#End If
+Private m_RenderingEngine As PD_TextEngine
 
 'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown (e.g. GDI+ font handling is
 ' a pile of garbage).  Here are a few common failure states.
@@ -390,7 +378,7 @@ Private m_TextContrast As Long
 
 'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
 Private m_TextHinting As Boolean
-Private m_WordWrap As TEXT_WORDWRAP_MODE
+Private m_WordWrap As PD_TextWordwrap
 Private m_FillActive As Boolean
 Private m_FillBrush As String
 Private m_OutlineActive As Boolean
@@ -408,13 +396,13 @@ Private m_MarginRight As Single
 Private m_MarginBottom As Single
 
 '...and a bunch of character-level modifications
-Private m_CharRemap As Long
+Private m_CharRemap As PD_StringRemap
 Private m_CharSpacing As Double
 Private m_CharOrientation As Double
 Private m_CharJitterX As Double
 Private m_CharJitterY As Double
 Private m_CharInflation As Double
-Private m_CharMirror As Long
+Private m_CharMirror As PD_CharacterMirror
 
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
@@ -541,17 +529,319 @@ Friend Sub SetFontSizeUnit(ByVal newUnit As PD_FontUnit)
     End If
 End Sub
 
+Private Function GetFontAntialiasingStringFromEnum(ByVal srcValue As pdTextAA) As String
+    If (srcValue = pdta_None) Then
+        GetFontAntialiasingStringFromEnum = "none"
+    ElseIf (srcValue = pdta_Standard) Then
+        GetFontAntialiasingStringFromEnum = "standard"
+    ElseIf (srcValue = pdta_Crisp) Then
+        GetFontAntialiasingStringFromEnum = "crisp"
+    Else
+        InternalError "GetFontAntialiasingStringFromEnum", "bad value: " & srcValue
+        GetFontAntialiasingStringFromEnum = "standard"
+    End If
+End Function
+
+Private Function GetFontAntialiasingEnumFromString(ByRef srcValue As String) As pdTextAA
+    If (srcValue = "none") Then
+        GetFontAntialiasingEnumFromString = pdta_None
+    ElseIf (srcValue = "standard") Then
+        GetFontAntialiasingEnumFromString = pdta_Standard
+    ElseIf (srcValue = "crisp") Then
+        GetFontAntialiasingEnumFromString = pdta_Crisp
+    Else
+        InternalError "GetFontAntialiasingEnumFromString", "bad value: " & srcValue
+        GetFontAntialiasingEnumFromString = pdta_Standard
+    End If
+End Function
+
+'When serializing text properties to XML, use string representations instead of hard-coded enums
+Private Function GetFontSizeStringFromUnit(ByVal srcUnit As PD_FontUnit) As String
+    If (srcUnit = fu_Pixel) Then
+        GetFontSizeStringFromUnit = "px"
+    ElseIf (srcUnit = fu_Point) Then
+        GetFontSizeStringFromUnit = "pt"
+    Else
+        InternalError "GetFontSizeStringFromUnit", "bad unit: " & srcUnit
+        GetFontSizeStringFromUnit = "px"
+    End If
+End Function
+
+Private Function GetFontSizeUnitFromString(ByRef srcString As String) As PD_FontUnit
+    If (srcString = "px") Then
+        GetFontSizeUnitFromString = fu_Pixel
+    ElseIf (srcString = "pt") Then
+        GetFontSizeUnitFromString = fu_Point
+    Else
+        InternalError "GetFontSizeUnitFromString", "bad string: " & srcString
+        GetFontSizeUnitFromString = fu_Pixel
+    End If
+End Function
+
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
 ' which uses GDI and Uniscribe to retrieve individual glyphs, but then does all positioning and rendering manually.
 '
 'Note that this setting does not initiate a font refresh, as PD generates a GDI font copy by default, regardless of rendering engine or font backend.
-Friend Function GetRenderingEngine() As TEXT_RENDERING_ENGINE
+Friend Function GetRenderingEngine() As PD_TextEngine
     GetRenderingEngine = m_RenderingEngine
 End Function
 
-Friend Sub SetRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
+Friend Sub SetRenderingEngine(ByVal newEngine As PD_TextEngine)
     m_RenderingEngine = newEngine
 End Sub
+
+Private Function GetRendererStringFromEnum(ByVal srcValue As PD_TextEngine) As String
+    If (srcValue = te_WAPI) Then
+        GetRendererStringFromEnum = "wapi"
+    ElseIf (srcValue = te_PhotoDemon) Then
+        GetRendererStringFromEnum = "pd"
+    Else
+        InternalError "GetRendererStringFromEnum", "bad value: " & srcValue
+        GetRendererStringFromEnum = "wapi"
+    End If
+End Function
+
+Private Function GetRendererEnumFromString(ByRef srcValue As String) As PD_TextEngine
+    If (srcValue = "wapi") Then
+        GetRendererEnumFromString = te_WAPI
+    ElseIf (srcValue = "pd") Then
+        GetRendererEnumFromString = te_PhotoDemon
+    Else
+        InternalError "GetRendererEnumFromString", "bad value: " & srcValue
+        GetRendererEnumFromString = te_WAPI
+    End If
+End Function
+
+Private Function GetTextMirrorStringFromEnum(ByVal srcValue As PD_CharacterMirror) As String
+    If (srcValue = cm_None) Then
+        GetTextMirrorStringFromEnum = "none"
+    ElseIf (srcValue = cm_Horizontal) Then
+        GetTextMirrorStringFromEnum = "horz"
+    ElseIf (srcValue = cm_Vertical) Then
+        GetTextMirrorStringFromEnum = "vert"
+    ElseIf (srcValue = cm_Both) Then
+        GetTextMirrorStringFromEnum = "both"
+    Else
+        InternalError "GetTextMirrorStringFromEnum", "bad value: " & srcValue
+        GetTextMirrorStringFromEnum = "none"
+    End If
+End Function
+
+Private Function GetTextMirrorEnumFromString(ByRef srcValue As String) As PD_CharacterMirror
+    If (srcValue = "none") Then
+        GetTextMirrorEnumFromString = cm_None
+    ElseIf (srcValue = "horz") Then
+        GetTextMirrorEnumFromString = cm_Horizontal
+    ElseIf (srcValue = "vert") Then
+        GetTextMirrorEnumFromString = cm_Vertical
+    ElseIf (srcValue = "both") Then
+        GetTextMirrorEnumFromString = cm_Both
+    Else
+        InternalError "GetTextMirrorEnumFromString", "bad value: " & srcValue
+        GetTextMirrorEnumFromString = cm_None
+    End If
+End Function
+
+Private Function GetTextRemapStringFromEnum(ByVal srcValue As PD_StringRemap) As String
+    If (srcValue = sr_None) Then
+        GetTextRemapStringFromEnum = "none"
+    ElseIf (srcValue = sr_LowerCase) Then
+        GetTextRemapStringFromEnum = "lower"
+    ElseIf (srcValue = sr_UpperCase) Then
+        GetTextRemapStringFromEnum = "upper"
+    ElseIf (srcValue = sr_Titlecase) Then
+        GetTextRemapStringFromEnum = "title"
+    ElseIf (srcValue = sr_Hiragana) Then
+        GetTextRemapStringFromEnum = "hiragana"
+    ElseIf (srcValue = sr_Katakana) Then
+        GetTextRemapStringFromEnum = "katakana"
+    ElseIf (srcValue = sr_ChineseSimple) Then
+        GetTextRemapStringFromEnum = "chinese-simple"
+    ElseIf (srcValue = sr_ChineseTraditional) Then
+        GetTextRemapStringFromEnum = "chinese-traditional"
+    Else
+        InternalError "GetTextRemapStringFromEnum", "bad value: " & srcValue
+        GetTextRemapStringFromEnum = "none"
+    End If
+End Function
+
+Private Function GetTextRemapEnumFromString(ByRef srcValue As String) As PD_StringRemap
+    If (srcValue = "none") Then
+        GetTextRemapEnumFromString = sr_None
+    ElseIf (srcValue = "lower") Then
+        GetTextRemapEnumFromString = sr_LowerCase
+    ElseIf (srcValue = "upper") Then
+        GetTextRemapEnumFromString = sr_UpperCase
+    ElseIf (srcValue = "title") Then
+        GetTextRemapEnumFromString = sr_Titlecase
+    ElseIf (srcValue = "hiragana") Then
+        GetTextRemapEnumFromString = sr_Hiragana
+    ElseIf (srcValue = "katakana") Then
+        GetTextRemapEnumFromString = sr_Katakana
+    ElseIf (srcValue = "chinese-simple") Then
+        GetTextRemapEnumFromString = sr_ChineseSimple
+    ElseIf (srcValue = "chinese-traditional") Then
+        GetTextRemapEnumFromString = sr_ChineseTraditional
+    Else
+        InternalError "GetTextRemapEnumFromString", "bad value: " & srcValue
+        GetTextRemapEnumFromString = sr_None
+    End If
+End Function
+
+Private Function GetWordwrapStringFromEnum(ByVal srcValue As PD_TextWordwrap) As String
+    If (srcValue = tww_None) Then
+        GetWordwrapStringFromEnum = "none"
+    ElseIf (srcValue = tww_Manual) Then
+        GetWordwrapStringFromEnum = "manual"
+    ElseIf (srcValue = tww_AutoCharacter) Then
+        GetWordwrapStringFromEnum = "char"
+    ElseIf (srcValue = tww_AutoWord) Then
+        GetWordwrapStringFromEnum = "word"
+    Else
+        InternalError "GetWordwrapStringFromEnum", "bad value: " & srcValue
+        GetWordwrapStringFromEnum = "none"
+    End If
+End Function
+
+Private Function GetWordwrapEnumFromString(ByRef srcValue As String) As PD_TextWordwrap
+    If (srcValue = "none") Then
+        GetWordwrapEnumFromString = tww_None
+    ElseIf (srcValue = "manual") Then
+        GetWordwrapEnumFromString = tww_Manual
+    ElseIf (srcValue = "char") Then
+        GetWordwrapEnumFromString = tww_AutoCharacter
+    ElseIf (srcValue = "word") Then
+        GetWordwrapEnumFromString = tww_AutoWord
+    Else
+        InternalError "GetWordwrapEnumFromString", "bad value: " & srcValue
+        GetWordwrapEnumFromString = tww_None
+    End If
+End Function
+
+'XML get/set functions for getting/setting all parameters at once.
+Friend Function GetAllFontSettingsAsXML_New() As String
+
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
+    Dim cSerialize As pdParamXML
+    Set cSerialize = New pdParamXML
+    
+    'Add a basic header and version info
+    cSerialize.AddXMLString "<photodemon-text-object>"
+    cSerialize.AddParam "text-version", 1&, True, True
+    
+    'Next comes the huge list of possible text properties
+    With cSerialize
+        .AddParam "obj-text", m_CurrentText, True, False
+        .AddParam "obj-font-color", m_FontColor, True, True
+        .AddParam "obj-font-face", m_FontFace, True, False
+        .AddParam "obj-font-size", m_FontSize, True, True
+        .AddParam "obj-font-size-unit", GetFontSizeStringFromUnit(m_FontSizeUnit), True, True
+        .AddParam "obj-font-bold", m_FontBold, True, True
+        .AddParam "obj-font-italic", m_FontItalic, True, True
+        .AddParam "obj-font-underling", m_FontUnderline, True, True
+        .AddParam "obj-font-strikeout", m_FontStrikeout, True, True
+        .AddParam "obj-align-horizontal", GetAlignmentStringFromUnit(m_HorizontalAlignment), True, True
+        .AddParam "obj-align-vertical", GetAlignmentStringFromUnit(m_VerticalAlignment), True, True
+        .AddParam "obj-antialiasing-type", GetFontAntialiasingStringFromEnum(m_TextAntialiasing), True, True
+        .AddParam "obj-antialiasing-contrast", m_TextContrast, True, True
+        .AddParam "obj-text-renderer", GetRendererStringFromEnum(m_RenderingEngine), True, True
+        .AddParam "obj-hinting", m_TextHinting, True, True
+        .AddParam "obj-wordwrap-mode", GetWordwrapStringFromEnum(m_WordWrap), True, True
+        .AddParam "obj-fill-active", m_FillActive, True, True
+        .AddParam "obj-fill-brush", m_FillBrush, True, False
+        .AddParam "obj-stroke-active", m_OutlineActive, True, True
+        .AddParam "obj-stroke-pen", m_OutlinePen, True, False
+        .AddParam "obj-background-fill-active", m_BackgroundActive, True, True
+        .AddParam "obj-background-fill-brush", m_BackgroundBrush, True, False
+        .AddParam "obj-background-stroke-active", m_BackBorderActive, True, True
+        .AddParam "obj-background-stroke-pen", m_BackBorderPen, True, False
+        .AddParam "obj-line-spacing", m_LineSpacing, True, True
+        .AddParam "obj-margin-left", m_MarginLeft, True, True
+        .AddParam "obj-margin-top", m_MarginTop, True, True
+        .AddParam "obj-margin-right", m_MarginRight, True, True
+        .AddParam "obj-margin-bottom", m_MarginBottom, True, True
+        .AddParam "obj-character-remap", GetTextRemapStringFromEnum(m_CharRemap), True, True
+        .AddParam "obj-character-spacing", m_CharSpacing, True, True
+        .AddParam "obj-character-rotation", m_CharOrientation, True, True
+        .AddParam "obj-character-jitter-x", m_CharJitterX, True, True
+        .AddParam "obj-character-jitter-y", m_CharJitterY, True, True
+        .AddParam "obj-character-inflation", m_CharInflation, True, True
+        .AddParam "obj-character-mirror", GetTextMirrorStringFromEnum(m_CharMirror), True, True
+    End With
+    
+    'Close out the text object
+    cSerialize.AddXMLString "</photodemon-text-object>"
+    
+    'Return the completed XML string
+    GetAllFontSettingsAsXML_New = cSerialize.GetParamString()
+
+End Function
+
+'Set all text and font parameters at once, using an XML string created by a previous call
+' to GetAllFontSettingsAsXML_New(). (Note that this function manually marks the font cache
+' as dirty, so you should only use it when loading a serialized object for the first time.)
+Friend Function SetAllFontSettingsFromXML_New(ByRef srcXMLString As String) As Boolean
+    
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
+    Dim cSerialize As pdParamXML
+    Set cSerialize = New pdParamXML
+    cSerialize.SetParamString srcXMLString
+    
+    'If basic validation fails, revert to the legacy font serialization engine
+    Dim useLegacyLoader As Boolean
+    useLegacyLoader = (Not cSerialize.DoesParamExist("photodemon-text-object"))
+    If (Not useLegacyLoader) Then useLegacyLoader = (cSerialize.GetLong("text-version", 0, True) < 1)
+    
+    If useLegacyLoader Then
+        Set cSerialize = Nothing
+        SetAllFontSettingsFromXML_New = SetAllFontSettingsFromXML(srcXMLString)
+    Else
+        
+        With cSerialize
+            SetGenericTextProperty ptp_Text, .GetString("obj-text", vbNullString)
+            SetGenericTextProperty ptp_FontColor, .GetLong("obj-font-color", vbBlack)
+            SetGenericTextProperty ptp_FontFace, .GetString("obj-font-face", Fonts.GetUIFontName())
+            SetGenericTextProperty ptp_FontSize, .GetDouble("obj-font-size", 16#)
+            SetGenericTextProperty ptp_FontSizeUnit, GetFontSizeUnitFromString(.GetString("obj-font-size-unit", GetFontSizeStringFromUnit(fu_Pixel), True))
+            SetGenericTextProperty ptp_FontBold, .GetBool("obj-font-bold", False)
+            SetGenericTextProperty ptp_FontItalic, .GetBool("obj-font-italic", False)
+            SetGenericTextProperty ptp_FontUnderline, .GetBool("obj-font-underline", False)
+            SetGenericTextProperty ptp_FontStrikeout, .GetBool("obj-font-strikeout", False)
+            SetGenericTextProperty ptp_HorizontalAlignment, GetAlignmentUnitFromString(.GetString("obj-align-horizontal", GetAlignmentStringFromUnit(StringAlignmentNear), True))
+            SetGenericTextProperty ptp_VerticalAlignment, GetAlignmentUnitFromString(.GetString("obj-align-vertical", GetAlignmentStringFromUnit(StringAlignmentNear), True))
+            SetGenericTextProperty ptp_TextAntialiasing, GetFontAntialiasingEnumFromString(.GetString("obj-antialiasing-type", GetFontAntialiasingStringFromEnum(pdta_Standard), True))
+            SetGenericTextProperty ptp_TextContrast, .GetLong("obj-antialiasing-contrast", 5)
+            SetGenericTextProperty ptp_RenderingEngine, GetRendererEnumFromString(.GetString("obj-text-renderer", GetRendererStringFromEnum(te_WAPI), True))
+            SetGenericTextProperty ptp_TextHinting, .GetBool("obj-hinting", False)
+            SetGenericTextProperty ptp_WordWrap, GetWordwrapEnumFromString(.GetString("obj-wordwrap-mode", GetWordwrapStringFromEnum(tww_AutoWord), True))
+            SetGenericTextProperty ptp_FillActive, .GetBool("obj-fill-active", True)
+            SetGenericTextProperty ptp_FillBrush, .GetString("obj-fill-brush", vbNullString)
+            SetGenericTextProperty ptp_OutlineActive, .GetBool("obj-stroke-active", False)
+            SetGenericTextProperty ptp_OutlinePen, .GetString("obj-stroke-pen", vbNullString)
+            SetGenericTextProperty ptp_BackgroundActive, .GetBool("obj-background-fill-active", False)
+            SetGenericTextProperty ptp_BackgroundBrush, .GetString("obj-background-fill-brush", vbNullString)
+            SetGenericTextProperty ptp_BackBorderActive, .GetBool("obj-background-stroke-active", False)
+            SetGenericTextProperty ptp_BackBorderPen, .GetString("obj-background-stroke-pen", vbNullString)
+            SetGenericTextProperty ptp_LineSpacing, .GetDouble("obj-line-spacing", 0#)
+            SetGenericTextProperty ptp_MarginLeft, .GetDouble("obj-margin-left", 0#)
+            SetGenericTextProperty ptp_MarginTop, .GetDouble("obj-margin-top", 0#)
+            SetGenericTextProperty ptp_MarginRight, .GetDouble("obj-margin-right", 0#)
+            SetGenericTextProperty ptp_MarginBottom, .GetDouble("obj-margin-bottom", 0#)
+            SetGenericTextProperty ptp_CharRemap, GetTextRemapEnumFromString(.GetString("obj-character-remap", GetTextRemapStringFromEnum(sr_None), True))
+            SetGenericTextProperty ptp_CharSpacing, .GetDouble("obj-character-spacing", 0#)
+            SetGenericTextProperty ptp_CharOrientation, .GetDouble("obj-character-rotation", 0#)
+            SetGenericTextProperty ptp_CharJitterX, .GetDouble("obj-character-jitter-x", 0#)
+            SetGenericTextProperty ptp_CharJitterY, .GetDouble("obj-character-jitter-y", 0#)
+            SetGenericTextProperty ptp_CharInflation, .GetDouble("obj-character-inflation", 0#)
+            SetGenericTextProperty ptp_CharMirror, GetTextMirrorEnumFromString(.GetString("obj-character-mirror", GetTextMirrorStringFromEnum(cm_None), True))
+        End With
+        
+        'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
+        SetAllFontSettingsFromXML_New = True
+        
+    End If
+        
+End Function
 
 'XML get/set functions for getting/setting all parameters at once
 Friend Function GetAllFontSettingsAsXML() As String
@@ -629,9 +919,9 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
         SetGenericTextProperty ptp_VerticalAlignment, .GetLong("TextLayerVerticalAlignment", StringAlignmentNear)
         SetGenericTextProperty ptp_TextAntialiasing, .GetLong("TextLayerAntialiasing", pdta_Standard)
         SetGenericTextProperty ptp_TextContrast, .GetLong("TextLayerContrast", 5)
-        SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", tre_WAPI)
+        SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", te_WAPI)
         SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
-        SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tre_AutoBreakWords)
+        SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tww_AutoWord)
         SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
         SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
         SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)
@@ -657,6 +947,32 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
     'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
     SetAllFontSettingsFromXML = True
     
+End Function
+
+Private Function GetAlignmentStringFromUnit(ByVal srcValue As GdiPlusStringAlignment) As String
+    If (srcValue = StringAlignmentNear) Then
+        GetAlignmentStringFromUnit = "near"
+    ElseIf (srcValue = StringAlignmentCenter) Then
+        GetAlignmentStringFromUnit = "center"
+    ElseIf (srcValue = StringAlignmentFar) Then
+        GetAlignmentStringFromUnit = "far"
+    Else
+        InternalError "GetAlignmentStringFromUnit", "bad value: " & srcValue
+        GetAlignmentStringFromUnit = "near"
+    End If
+End Function
+
+Private Function GetAlignmentUnitFromString(ByRef srcValue As String) As GdiPlusStringAlignment
+    If (srcValue = "near") Then
+        GetAlignmentUnitFromString = StringAlignmentNear
+    ElseIf (srcValue = "center") Then
+        GetAlignmentUnitFromString = StringAlignmentCenter
+    ElseIf (srcValue = "far") Then
+        GetAlignmentUnitFromString = StringAlignmentFar
+    Else
+        InternalError "GetAlignmentUnitFromString", "bad value: " & srcValue
+        GetAlignmentUnitFromString = StringAlignmentNear
+    End If
 End Function
 
 'Rather than using dedicated get functions or properties, you can retrieve font and text values via this universal function.
@@ -776,7 +1092,6 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
 
 End Function
 
-
 'Rather than using dedicated set functions or properties, you can modify values via this universal function.
 ' Returns: TRUE if a value was successfully changed; FALSE if the requested value change was meaningless.  The caller can use this return
 '           to know whether the associated text needs to be redrawn.
@@ -791,7 +1106,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             End If
         
         Case ptp_FontColor
-            If m_FontColor <> CLng(newValue) Then
+            If (m_FontColor <> CLng(newValue)) Then
                 m_FontColor = CLng(newValue)
                 SetGenericTextProperty = True
             End If
@@ -807,42 +1122,42 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             End If
         
         Case ptp_FontSize
-            If m_FontSize <> CSng(newValue) Then
+            If (m_FontSize <> CSng(newValue)) Then
                 m_FontSize = CSng(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FontSizeUnit
-            If m_FontSizeUnit <> CLng(newValue) Then
+            If (m_FontSizeUnit <> CLng(newValue)) Then
                 m_FontSizeUnit = CLng(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FontBold
-            If m_FontBold <> CBool(newValue) Then
+            If (m_FontBold <> CBool(newValue)) Then
                 m_FontBold = CBool(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FontItalic
-            If m_FontItalic <> CBool(newValue) Then
+            If (m_FontItalic <> CBool(newValue)) Then
                 m_FontItalic = CBool(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FontUnderline
-            If m_FontUnderline <> CBool(newValue) Then
+            If (m_FontUnderline <> CBool(newValue)) Then
                 m_FontUnderline = CBool(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FontStrikeout
-            If m_FontStrikeout <> CBool(newValue) Then
+            If (m_FontStrikeout <> CBool(newValue)) Then
                 m_FontStrikeout = CBool(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
@@ -850,21 +1165,21 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
         
         'When using GDI+ as our text layout engine, we set alignment changes immediately, as it's inexpensive to do so
         Case ptp_HorizontalAlignment
-            If m_HorizontalAlignment <> CLng(newValue) Then
+            If (m_HorizontalAlignment <> CLng(newValue)) Then
                 m_HorizontalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
                 If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
             End If
         
         Case ptp_VerticalAlignment
-            If m_VerticalAlignment <> CLng(newValue) Then
+            If (m_VerticalAlignment <> CLng(newValue)) Then
                 m_VerticalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
                 If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, m_VerticalAlignment
             End If
         
         Case ptp_TextAntialiasing
-            If m_TextAntialiasing <> CLng(newValue) Then
+            If (m_TextAntialiasing <> CLng(newValue)) Then
                 m_TextAntialiasing = CLng(newValue)
                 SetGenericTextProperty = True
                 
@@ -878,7 +1193,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
         ' BASIC RENDERING MODE.  GDI doesn't support this measurement natively, so we have to rig it using a manual system.  PD's manual glyph
         ' rendering methods ignore this setting entirely.
         Case ptp_TextContrast
-            If m_TextContrast <> CLng(newValue) Then
+            If (m_TextContrast <> CLng(newValue)) Then
                 m_TextContrast = CLng(newValue)
                 
                 If (m_TextContrast < 0) Then
@@ -891,140 +1206,140 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             End If
             
         Case ptp_RenderingEngine
-            If m_RenderingEngine <> CLng(newValue) Then
+            If (m_RenderingEngine <> CLng(newValue)) Then
                 m_RenderingEngine = CLng(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_TextHinting
-            If m_TextHinting <> CBool(newValue) Then
+            If (m_TextHinting <> CBool(newValue)) Then
                 m_TextHinting = CBool(newValue)
                 m_FontCacheClean = False
                 SetGenericTextProperty = True
             End If
             
         Case ptp_WordWrap
-            If m_WordWrap <> CLng(newValue) Then
+            If (m_WordWrap <> CLng(newValue)) Then
                 m_WordWrap = CLng(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_FillActive
-            If m_FillActive <> CBool(newValue) Then
+            If (m_FillActive <> CBool(newValue)) Then
                 m_FillActive = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_FillBrush
-            If m_FillBrush <> newValue Then
+            If (m_FillBrush <> newValue) Then
                 m_FillBrush = newValue
                 SetGenericTextProperty = True
             End If
         
         Case ptp_OutlineActive
-            If m_OutlineActive <> CBool(newValue) Then
+            If (m_OutlineActive <> CBool(newValue)) Then
                 m_OutlineActive = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_OutlinePen
-            If m_OutlinePen <> newValue Then
+            If (m_OutlinePen <> newValue) Then
                 m_OutlinePen = newValue
                 SetGenericTextProperty = True
             End If
         
         Case ptp_BackgroundActive
-            If m_BackgroundActive <> CBool(newValue) Then
+            If (m_BackgroundActive <> CBool(newValue)) Then
                 m_BackgroundActive = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_BackgroundBrush
-            If m_BackgroundBrush <> newValue Then
+            If (m_BackgroundBrush <> newValue) Then
                 m_BackgroundBrush = newValue
                 SetGenericTextProperty = True
             End If
         
         Case ptp_BackBorderActive
-            If m_BackBorderActive <> CBool(newValue) Then
+            If (m_BackBorderActive <> CBool(newValue)) Then
                 m_BackBorderActive = CBool(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_BackBorderPen
-            If m_BackBorderPen <> newValue Then
+            If (m_BackBorderPen <> newValue) Then
                 m_BackBorderPen = newValue
                 SetGenericTextProperty = True
             End If
         
         Case ptp_LineSpacing
-            If m_LineSpacing <> CSng(newValue) Then
+            If (m_LineSpacing <> CSng(newValue)) Then
                 m_LineSpacing = CSng(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_MarginLeft
-            If m_MarginLeft <> CSng(newValue) Then
+            If (m_MarginLeft <> CSng(newValue)) Then
                 m_MarginLeft = CSng(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_MarginTop
-            If m_MarginTop <> CSng(newValue) Then
+            If (m_MarginTop <> CSng(newValue)) Then
                 m_MarginTop = CSng(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_MarginRight
-            If m_MarginRight <> CSng(newValue) Then
+            If (m_MarginRight <> CSng(newValue)) Then
                 m_MarginRight = CSng(newValue)
                 SetGenericTextProperty = True
             End If
         
         Case ptp_MarginBottom
-            If m_MarginBottom <> CSng(newValue) Then
+            If (m_MarginBottom <> CSng(newValue)) Then
                 m_MarginBottom = CSng(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharRemap
-            If m_CharRemap <> CLng(newValue) Then
+            If (m_CharRemap <> CLng(newValue)) Then
                 m_CharRemap = CLng(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharSpacing
-            If m_CharSpacing <> CDbl(newValue) Then
+            If (m_CharSpacing <> CDbl(newValue)) Then
                 m_CharSpacing = CDbl(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharOrientation
-            If m_CharOrientation <> CDbl(newValue) Then
+            If (m_CharOrientation <> CDbl(newValue)) Then
                 m_CharOrientation = CDbl(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharJitterX
-            If m_CharJitterX <> CDbl(newValue) Then
+            If (m_CharJitterX <> CDbl(newValue)) Then
                 m_CharJitterX = CDbl(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharJitterY
-            If m_CharJitterY <> CDbl(newValue) Then
+            If (m_CharJitterY <> CDbl(newValue)) Then
                 m_CharJitterY = CDbl(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharInflation
-            If m_CharInflation <> CDbl(newValue) Then
+            If (m_CharInflation <> CDbl(newValue)) Then
                 m_CharInflation = CDbl(newValue)
                 SetGenericTextProperty = True
             End If
             
         Case ptp_CharMirror
-            If m_CharMirror <> CLng(newValue) Then
+            If (m_CharMirror <> CLng(newValue)) Then
                 m_CharMirror = CLng(newValue)
                 SetGenericTextProperty = True
             End If
@@ -1101,7 +1416,7 @@ Friend Function CreateFontObject() As Boolean
     Dim fontCreationSuccess As Boolean
     fontCreationSuccess = False
     
-    If m_RenderingEngine = tre_WAPI Then fontCreationSuccess = CreateGDIPlusFont()
+    If m_RenderingEngine = te_WAPI Then fontCreationSuccess = CreateGDIPlusFont()
     
     'GDI+ reported success, and we obtained a valid GDI+ font handle.
     If fontCreationSuccess And (m_GDIPlusFont <> 0) Then
@@ -1298,7 +1613,7 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
     
     'PD currently supports two rendering modes: WAPI (which uses GDI or GDI+ to render the text, and is thus limited by the settings
     ' those two engines provide), or an internal PHOTODEMON engine, which manually extracts font glyphs and renders them ourselves.
-    If (m_RenderingEngine = tre_WAPI) Then
+    If (m_RenderingEngine = te_WAPI) Then
         
         'We should now know whether GDI or GDI+ is required for this combination of settings.
         Select Case m_CurrentBackend
@@ -1326,7 +1641,11 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
             
         'Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
         
-    ElseIf (m_RenderingEngine = tre_PHOTODEMON) Then
+    ElseIf (m_RenderingEngine = te_PhotoDemon) Then
+        
+        Const REPORT_RENDER_TIME As Boolean = True
+        Dim startTime As Currency
+        If REPORT_RENDER_TIME Then VBHacks.GetHighResTime startTime
         
         'PD's internal font engine works by manually translating GDI glyphs into GDI+ paths, then rendering the paths manually.
         ' Because glyph geometry is very energy intensive, we use a separate class that caches glyphs as they are created.
@@ -1339,6 +1658,11 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
         m_GlyphCollection.NotifyOfGDIFontChoice m_GDIFont, m_FontUnderline, m_FontStrikeout
         
+        If REPORT_RENDER_TIME Then
+            PDDebug.LogAction "pdTextRenderer - init glyph collection: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
         'Next, pass the glyph collection our target string.  The glyph collection will generate a list of required glyphs and
         ' automatically retrieve any glyph geometry it hasn't already calculated.  (For example, if the last request it received
         ' was "cat", but this request is "cats", only the 's' needs to be newly retrieved.)
@@ -1348,12 +1672,22 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         tmpString = m_CurrentText
         m_GlyphCollection.BuildGlyphCollection tmpString, m_TextHinting, m_CharRemap
         
+        If REPORT_RENDER_TIME Then
+            PDDebug.LogAction "pdTextRenderer - build glyphs: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
         'After all glyphs have been created, it's *very important* that we regain control over our GDI font, as we need it for
         ' the actual rendering step!
         m_GlyphCollection.RequestGDIFontRelease
         
         'With the glyph collection successfully assembled, proceed with rendering
         RenderTextToDIB = RenderTextToDIB_Glyphs(dstDIB, tmpString, x1, y1, textWidth, textHeight)
+        
+        If REPORT_RENDER_TIME Then
+            PDDebug.LogAction "pdTextRenderer - render glyphs: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
         
     'Failsafe
     Else
@@ -1444,6 +1778,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
 
     'TESTING ONLY!  Fill with white prior to rendering
     'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
+    
+    Const REPORT_RENDER_TIMING As Boolean = False
+    Dim startTime As Currency
+    If REPORT_RENDER_TIMING Then VBHacks.GetHighResTime startTime
     
     'Start by acquiring a GDI+ handle to the destination DIB
     Dim dstGraphics As Long
@@ -1591,8 +1929,18 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim finalTextPath As pd2DPath
     m_GlyphCollection.NotifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
     
+    If REPORT_RENDER_TIMING Then
+        PDDebug.LogAction "RenderTextToDIB_Glyphs - init: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
     If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
+        If REPORT_RENDER_TIMING Then
+            PDDebug.LogAction "RenderTextToDIB_Glyphs - assembly: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    
         Dim exactTextBounds As RectF
         exactTextBounds = finalTextPath.GetPathBoundariesF
         
@@ -1626,6 +1974,11 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawRectangle failed; return code was " & gdipReturn
         End If
         
+        If REPORT_RENDER_TIMING Then
+            PDDebug.LogAction "RenderTextToDIB_Glyphs - bkgd: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    
         'Before attempting to render the text itself, make sure a boundary rect exists.
         ' (Bad/corrupted font files may not produce usable glyph data.)
         If (boundingRect.Width > 0!) And (boundingRect.Height > 0!) Then
@@ -1644,12 +1997,22 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 
             End If
             
+            If REPORT_RENDER_TIMING Then
+                PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
+                VBHacks.GetHighResTime startTime
+            End If
+    
             'If outline mode is active, stroke the text now
             If (gdipOutlinePen <> 0) Then
                 gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
             End If
             
+        If REPORT_RENDER_TIMING Then
+            PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    
         End If
         
     Else
@@ -2025,10 +2388,18 @@ Friend Sub ReleaseAsManyResourcesAsPossible()
     
 End Sub
 
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
+    If UserPrefs.GenerateDebugLogs Then
+        PDDebug.LogAction "pdTextRenderer." & funcName & "() reported an error: " & errDescription
+    Else
+        Debug.Print "pdTextRenderer." & funcName & "() reported an error: " & errDescription
+    End If
+End Sub
+
 Private Sub Class_Initialize()
     
     'TEMPORARY!  Force the default, basic rendering engine while we get the basic text tool sorted out.
-    m_RenderingEngine = tre_WAPI
+    m_RenderingEngine = te_WAPI
         
     'Because GDI+ StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
     ' This saves us having to recreate the object later.
@@ -2073,7 +2444,7 @@ Private Sub Class_Initialize()
     m_HorizontalAlignment = StringAlignmentNear
     m_VerticalAlignment = StringAlignmentNear
     
-    m_WordWrap = tre_AutoBreakWords
+    m_WordWrap = tww_AutoWord
     m_FillActive = True
     
     'Set default graphics container text settings

@@ -109,7 +109,7 @@ End Type
 Private m_GlyphOutlines() As pdGlyphOutline
 
 'New glyph collection format, using Uniscribe for generation
-Private m_Glyphs() As pdGlyphUniscribe
+Private m_Glyphs() As PDGlyphUniscribe
 
 'Current number of generated glyphs.  This does not correspond to the UBound() of the glyph collection.
 Private m_NumOfGlyphs As Long
@@ -156,7 +156,7 @@ Private m_CharOrientation As Single
 Private m_CharJitterX As Single
 Private m_CharJitterY As Single
 Private m_CharInflation As Single
-Private m_CharMirror As Long
+Private m_CharMirror As PD_CharacterMirror
 
 'If no custom character modifications are active, we can skip ceratin steps during path assembly.
 Private m_CharEffectsEnabled As Boolean
@@ -208,15 +208,15 @@ Friend Sub RequestGDIFontRelease()
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal remapType As PD_STRING_REMAP = PDSR_NONE) As Boolean
-        
+Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal remapType As PD_StringRemap = sr_None) As Boolean
+    
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
     Dim rawGlyphBytes() As Long
     Dim glyphAdded As Boolean
     
     'If an optional string remap is specified, apply it now.
-    If (remapType <> PDSR_NONE) Then srcString = Strings.StringRemap(srcString, remapType)
+    If (remapType <> sr_None) Then srcString = Strings.StringRemap(srcString, remapType)
     
     Dim stringChanged As Boolean, fontOrDCChanged As Boolean
     
@@ -606,7 +606,7 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
+Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None)
     
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing
@@ -618,13 +618,13 @@ Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single
     
     'If one or more custom character attributes are non-zero, mark a class-level flag.  This allows us to skip some processor-intensive
     ' steps if the text is generic.
-    m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> 0)
+    m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> cm_None)
     
 End Sub
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As PD_TextWordwrap = tww_AutoWord) As Boolean
     
     'Initialize the destination path as necessary
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
@@ -711,13 +711,13 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                         
                         Select Case m_CharMirror
                         
-                            Case 1
+                            Case cm_Horizontal
                                 tmpGlyphOutlineCopy.MirrorPathAroundItsCenter True, False
                             
-                            Case 2
+                            Case cm_Vertical
                                 tmpGlyphOutlineCopy.MirrorPathAroundItsCenter False, True
                             
-                            Case 3
+                            Case cm_Both
                                 tmpGlyphOutlineCopy.MirrorPathAroundItsCenter True, True
                         
                         End Select
@@ -731,9 +731,9 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                     With m_Glyphs(curGlyph)
                                             
                         If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
-                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.GetRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.GetRandomFloat_VB * maxJitterY) - halfJitterY)
+                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .glyphOffset.du + ((cRandom.GetRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .glyphOffset.dv + ((cRandom.GetRandomFloat_VB * maxJitterY) - halfJitterY)
                         Else
-                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .glyphOffset.du, .finalY - .glyphOffset.dv
                         End If
                         
                     End With
@@ -742,7 +742,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                 Else
                 
                     With m_Glyphs(curGlyph)
-                        dstPath.AddPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                        dstPath.AddPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .glyphOffset.du, .finalY - .glyphOffset.dv
                     End With
                     
                 End If
@@ -798,7 +798,7 @@ End Function
 
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes from Uniscribe;
 ' this function is primarily responsible for line breaks, and any PD-specific positioning changes (e.g. modified character spacing).
-Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pd2DPath) As Boolean
+Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As PD_TextWordwrap = tww_AutoWord, Optional ByRef dstStylePath As pd2DPath) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, glyphCheck As Long
@@ -840,7 +840,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
         With m_Glyphs(i)
             .isFirstGlyphOnLine = False
             .isLastGlyphOnLine = False
-            .LineID = 0
+            .lineID = 0
         End With
     Next i
     
@@ -870,7 +870,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
     Do
         
         'How we determine line breaks depends on the current wordwrap modes.
-        If (lineWrapMode = tre_None) Then
+        If (lineWrapMode = tww_None) Then
 
             'In non-break mode, all line breaks (even manual ones) are forcibly ignored
             timeToBreakLine = False
@@ -890,19 +890,19 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                 
                 'Regardless of break mode, start by seeing if this character extends past the end of the line.  Note that this character's
                 ' C-overhang is included, to avoid clipping on italicized characters.
-                If (xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= boundingRectRight) Then
+                If (xOffset + m_Glyphs(curGlyph).advanceWidth + (-1 * m_Glyphs(curGlyph).abcWidth.abcC) >= boundingRectRight) Then
                 
                     'This character doesn't fit.  Further handling is determined by wrap mode.
                     
                     'In character mode, lines are broken as soon as a character extends past a line, so simply mark the
                     ' break and move on.
-                    If (lineWrapMode = tre_AutoBreakCharacter) Then
+                    If (lineWrapMode = tww_AutoCharacter) Then
                         timeToBreakLine = True
                     
                     'In word mode, language-specific word-wrap rules are used.  This is complicated, because we have to forcibly retract
                     ' the character pointer to the last viable breaking position.  If that happens to be the first character on
                     ' this line, it means this word doesn't physically fit, so we have no choice but to break in the middle of the word.
-                    ElseIf (lineWrapMode = tre_AutoBreakWords) Then
+                    ElseIf (lineWrapMode = tww_AutoWord) Then
                         
                         'One way or another, we're going to apply a linebreak
                         timeToBreakLine = True
@@ -958,10 +958,10 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                                     'If we're still here, it means this character is a viable candidate for a valid break.
                                     
                                     'Remove its width from the running line width counter
-                                    If ((m_Glyphs(j).AdvanceWidth + customCharOffset) > 0) Then
-                                        m_LineWidths(currentLine) = m_LineWidths(currentLine) - (m_Glyphs(j).AdvanceWidth + customCharOffset)
+                                    If ((m_Glyphs(j).advanceWidth + customCharOffset) > 0) Then
+                                        m_LineWidths(currentLine) = m_LineWidths(currentLine) - (m_Glyphs(j).advanceWidth + customCharOffset)
                                     Else
-                                        m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).AdvanceWidth
+                                        m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).advanceWidth
                                     End If
                                     
                                     'Because this glyph has been removed from the running line width, note that it has been "checked".
@@ -999,10 +999,10 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                                             
                                                 'This glyph is stuck on the current line.  Return its width to the
                                                 ' running line width counter.
-                                                If ((m_Glyphs(j).AdvanceWidth + customCharOffset) > 0) Then
-                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + (m_Glyphs(j).AdvanceWidth + customCharOffset)
+                                                If ((m_Glyphs(j).advanceWidth + customCharOffset) > 0) Then
+                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + (m_Glyphs(j).advanceWidth + customCharOffset)
                                                 Else
-                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + m_Glyphs(j).AdvanceWidth
+                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + m_Glyphs(j).advanceWidth
                                                 End If
                                             
                                             Next j
@@ -1074,10 +1074,10 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                         
                             'Remove this character's width from our running line width.  We *do not* want to factor end-of-line
                             ' whitespace into our positioning calculations.
-                            If ((m_Glyphs(glyphCheck).AdvanceWidth + customCharOffset) > 0) Then
-                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - (m_Glyphs(glyphCheck).AdvanceWidth + customCharOffset)
+                            If ((m_Glyphs(glyphCheck).advanceWidth + customCharOffset) > 0) Then
+                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - (m_Glyphs(glyphCheck).advanceWidth + customCharOffset)
                             Else
-                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).AdvanceWidth
+                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).advanceWidth
                             End If
                         
                         End If
@@ -1094,7 +1094,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                     
                         'Add the "C" overhang from this character to the line width.  This is important for getting right-
                         ' and center-aligned text *perfect*.
-                        m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).ABCWidth.abcC
+                        m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).abcWidth.abcC
                     
                     End If
                 
@@ -1170,7 +1170,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
                 
                 'For initial glyphs on a line, we increment the x-offset artificially, using their A overhang.  This is important for
                 ' avoiding clipping on synthesized italic fonts (e.g. Times New Roman at large sizes)
-                xOffset = boundingRect.Left + 1 + (-1 * m_Glyphs(curGlyph).ABCWidth.abcA)
+                xOffset = boundingRect.Left + 1 + (-1 * m_Glyphs(curGlyph).abcWidth.abcA)
                 
             End If
             
@@ -1178,11 +1178,11 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             With m_Glyphs(curGlyph)
                 .finalX = xOffset
                 .finalY = yOffset
-                .LineID = currentLine
+                .lineID = currentLine
             End With
             
             'Increment the running x-offset with this character's width
-            curGlyphWidth = m_Glyphs(curGlyph).AdvanceWidth
+            curGlyphWidth = m_Glyphs(curGlyph).advanceWidth
             
             'We also apply the user's custom character spacing parameter, if applicable.  (If applying it would result in a negative
             ' offset relative to the previous character, we ignore it.)
@@ -1211,7 +1211,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
         
         'We also want to add the C measurement of this glyph to the running line width of the final line, since that's normally
         ' handled by the "move to next line" code, above.
-        m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(m_NumOfGlyphs - 1).ABCWidth.abcC
+        m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(m_NumOfGlyphs - 1).abcWidth.abcC
         
     Else
         m_Glyphs(0).isLastGlyphOnLine = True
@@ -1236,7 +1236,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
         For i = lastGlyphChecked To m_NumOfGlyphs - 1
         
             'If a non-whitespace char is found on this line, note it and exit immediately
-            If ((m_Glyphs(i).LineID = curLine) And (Not m_Glyphs(i).isWhiteSpace)) Then
+            If ((m_Glyphs(i).lineID = curLine) And (Not m_Glyphs(i).isWhiteSpace)) Then
                 lineHasNonWhitespace = True
                 lastGlyphChecked = i
                 Exit For
@@ -1276,7 +1276,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
         For curGlyph = 0 To m_NumOfGlyphs - 1
             
             With m_Glyphs(curGlyph)
-                .finalX = .finalX + hLineOffsets(.LineID)
+                .finalX = .finalX + hLineOffsets(.lineID)
             End With
             
         Next curGlyph
@@ -1332,13 +1332,13 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             
             'We only want to deal with the first character on each line, as it contains sufficient positioning data for us to infer
             ' the rest of the line's contents.
-            If (m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).LineID) > 0)) Then
+            If (m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).lineID) > 0)) Then
                 
                 'Use this glyph's position as the starting point for this underline
                 underlineRect.Left = m_Glyphs(curGlyph).finalX
                 
                 'Width of the underline is the *full line width* (not counting trailing whitespace chars)
-                underlineRect.Width = m_LineWidths(m_Glyphs(curGlyph).LineID)
+                underlineRect.Width = m_LineWidths(m_Glyphs(curGlyph).lineID)
         
                 'Top position and height are easy, as they're primarily based on font-level metrics, not glyph-level metrics
                 underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsUnderscorePosition
@@ -1366,13 +1366,13 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             
             'We only want to deal with the first character on each line, as it contains sufficient positioning data for us to infer
             ' the rest of the line's contents.
-            If (m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).LineID) > 0)) Then
+            If (m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).lineID) > 0)) Then
                 
                 'Use this glyph's position as the starting point for this strikeout
                 strikeoutRect.Left = m_Glyphs(curGlyph).finalX
                 
                 'Width of the strikeout is the *full line width* (not counting trailing whitespace chars)
-                strikeoutRect.Width = m_LineWidths(m_Glyphs(curGlyph).LineID)
+                strikeoutRect.Width = m_LineWidths(m_Glyphs(curGlyph).lineID)
         
                 'Top position and height are easy, as they're primarily based on font-level metrics, not glyph-level metrics
                 strikeoutRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsStrikeoutPosition
@@ -1445,7 +1445,7 @@ Friend Sub ResetGlyphCollection()
     m_NumOfGlyphs = 0
     m_NumOfGlyphOutlines = 0
     ReDim m_GlyphOutlines(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As pdGlyphOutline
-    ReDim m_Glyphs(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As pdGlyphUniscribe
+    ReDim m_Glyphs(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As PDGlyphUniscribe
     
 End Sub
 
