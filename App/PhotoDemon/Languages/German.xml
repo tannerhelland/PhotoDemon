@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1457</langversion>
+<langversion>7.2.1510</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1061,7 +1061,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Basic text layer</original>
-<translation>Grundtext-Layer</translation>
+<translation>Grundlegender Text-Layer</translation>
 </phrase>
 
 <phrase>
@@ -3621,7 +3621,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>Klon-Stempel</translation>
+<translation>Klonstempel</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3638,7 +3638,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Fill tool</original>
-<translation>Füll-Tool</translation>
+<translation>Fülltool</translation>
 </phrase>
 
 <!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3649,7 +3649,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Gradient tool</original>
-<translation>Gradienten-Tool</translation>
+<translation>Gradiententool</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3802,7 +3802,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Software-Updater wird initialisiert (dieses Feature kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
+<translation>Software-Updater wird initialisiert (dieses Feature kann über das Menü "Tools > Optionen" deaktiviert werden)</translation>
 </phrase>
 
 <phrase>
@@ -7615,7 +7615,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharfe Maskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
+<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können das Menü "Effekte > Schärfen > Unscharfe Maskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -14041,7 +14041,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Datei-Tools: Erstellen, laden und speichern Sie Bilddateien.</translation>
+<translation>Dateitools: Erstellen, laden und speichern Sie Bilddateien.</translation>
 </phrase>
 
 <phrase>
@@ -14056,12 +14056,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation>Auswahl-Tools: Isolieren Sie Teile eines Bildes oder Layers zur weiteren Bearbeitung.</translation>
+<translation>Auswahltools: Isolieren Sie Teile eines Bildes oder Layers zur weiteren Bearbeitung.</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation>Text-Tools: Erstellen und bearbeiten Sie Text-Layer.</translation>
+<translation>Texttools: Erstellen und bearbeiten Sie Text-Layer.</translation>
 </phrase>
 
 <phrase>
@@ -14196,7 +14196,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Basic Text</original>
-<translation>Grundtext</translation>
+<translation>Grundlegender Text</translation>
 </phrase>
 
 <phrase>
@@ -14231,7 +14231,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Hand tool</original>
-<translation>Hand-Tool</translation>
+<translation>Handtool</translation>
 </phrase>
 
 <phrase>
@@ -14281,12 +14281,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Basic text tool</original>
-<translation>Grundtext-Tool</translation>
+<translation>Grundlegendes Texttool</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation>Erweitertes Text-Tool</translation>
+<translation>Erweitertes Texttool</translation>
 </phrase>
 
 <phrase>
@@ -14306,7 +14306,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation>Klon-Stempel-Tool</translation>
+<translation>Klonstempel-Tool</translation>
 </phrase>
 
 <phrase>
@@ -14383,7 +14383,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>sample radius</original>
-<translation>Sample-Radius</translation>
+<translation>Radius samplen</translation>
 </phrase>
 
 <phrase>
@@ -14872,7 +14872,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Dies ist ein erweiterter Text-Layer. Um ihn mit dem Grundtext-Tool zu bearbeiten, müssen Sie diesen zuerst in einen Grundtext-Layer konvertieren.</translation>
+<translation>Dies ist ein erweiterter Text-Layer. Um ihn mit dem grundlegenden Texttool zu bearbeiten, müssen Sie diesen zuerst in einen grundlegenden Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -14882,7 +14882,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click here to convert this layer to basic text.</original>
-<translation>Klicken Sie hier, um diesen Layer in Grundtext zu konvertieren.</translation>
+<translation>Klicken Sie hier, um diesen Layer in grundlegenden Text zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15023,7 +15023,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation>Dies ist ein Grundtext-Layer. Um ihn mit dem erweiterten Text-Tool zu bearbeiten, müssen Sie diesen zuerst in einen erweiterten Text-Layer konvertieren.</translation>
+<translation>Dies ist ein grundlegender Text-Layer. Um ihn mit dem erweiterten Texttool zu bearbeiten, müssen Sie diesen zuerst in einen erweiterten Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>

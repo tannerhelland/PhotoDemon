@@ -1033,6 +1033,8 @@ Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
     'Erase everything
     If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then
         If (fillValue = 0) Then ZeroMemory tmpDIBPointer, tmpDIBSize Else FillMemory tmpDIBPointer, tmpDIBSize, fillValue
+    Else
+        Debug.Print "ResetDIB was called on an empty DIB!", tmpDIBPointer, tmpDIBSize
     End If
     
 End Sub

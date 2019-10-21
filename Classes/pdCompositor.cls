@@ -1671,7 +1671,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             
         Else
             'If this is *not* the first paint event, we don't need to reset anything, as we'll only modify the changed region
-            If isFirstPaintEvent Then lodDIB.ResetDIB
+            If isFirstPaintEvent Then lodDIB.ResetDIB 0
         End If
         
         'Some paint tools are capable of doing their own "generate preview in viewport coordinate space" work.

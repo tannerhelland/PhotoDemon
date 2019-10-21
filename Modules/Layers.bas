@@ -1826,7 +1826,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         
         'Reset the scratch layer
         PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
-    
+        
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
     Else
         
@@ -1867,6 +1867,12 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         'Create a new scratch layer
         Tools.InitializeToolsDependentOnImage
         
+    End If
+    
+    'Before exiting, forcibly clear the temporary viewport DIB for the scratch layer
+    ' (as its contents are no longer needed).
+    If (Not PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport) Is Nothing) Then
+        PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport).ResetDIB 0
     End If
     
 End Sub

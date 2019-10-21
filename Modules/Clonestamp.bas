@@ -577,7 +577,13 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             'Retrieve the relevant portion of the source image, then make an *untouched* copy of it
             m_Sample.SetInitialAlphaPremultiplicationState True
             If (m_WrapMode = P2_WM_Clamp) Then
+                
                 GDI.BitBltWrapper m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcDIB.GetDIBDC, srcRectL.Left, srcRectL.Top
+                
+                'The same thing can be accomplished with GDI+, but raw GDI calls tend to be faster,
+                ' especially on old hardware:
+                'GDI_Plus.GDIPlus_StretchBlt m_Sample, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcDIB, srcRectL.Left, srcRectL.Top, dstRectL.Width, dstRectL.Height, 1!, GP_IM_Bilinear, , , , True
+                
             Else
             
                 'Create a matching texture brush, using the source image as our texture
