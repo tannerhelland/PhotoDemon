@@ -40,11 +40,10 @@ Private Const PROFILE_GRADIENT_PERF As Boolean = False
 Private Enum PD_GradientRenderer
     gr_Internal = 0
     gr_GDIPlus = 1
-    gr_Cairo = 2
 End Enum
 
 #If False Then
-    Private Const gr_Internal = 0, gr_GDIPlus = 1, gr_Cairo = 2
+    Private Const gr_Internal = 0, gr_GDIPlus = 1
 #End If
 
 Public Enum PD_GradientAttributes
@@ -109,7 +108,7 @@ Private m_PointsInitialized As Boolean
 Private m_Points() As PointFloat
 
 'A persistent gradient object is used to perform the actual gradient rendering
-Private m_GradientGdip As pd2DGradient, m_GradientCairo As pd2DGradientCairo
+Private m_GradientGdip As pd2DGradient
 
 'Other gradient parameters, as relevant
 Private m_Angle As Single
@@ -261,24 +260,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
         PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_GradientBlendmode
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_GradientAlphamode
         
-        If (curBackend = gr_Cairo) Then
-        
-            Set m_GradientCairo = New pd2DGradientCairo
-            m_GradientCairo.CreateGradientFromGdipGradientString toolpanel_Gradient.grdPrimary.Gradient()
-            m_GradientCairo.SetGradientShape P2_GS_Linear
-            
-            'Note: Cairo does not support "none" vs "clamp" wrap modes the same way that our internal
-            ' renderers do
-            Select Case m_GradientRepeat
-                Case gr_None
-                    m_GradientCairo.SetGradientExtend ce_ExtendPad
-                Case gr_Wrap
-                    m_GradientCairo.SetGradientExtend ce_ExtendRepeat
-                Case gr_Reflect
-                    m_GradientCairo.SetGradientExtend ce_ExtendReflect
-            End Select
-            
-        ElseIf (curBackend = gr_GDIPlus) Then
+        If (curBackend = gr_GDIPlus) Then
         
             Set m_GradientGdip = New pd2DGradient
             m_GradientGdip.CreateGradientFromString toolpanel_Gradient.grdPrimary.Gradient()
@@ -370,10 +352,8 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
                 Dim gradStartTime As Currency
                 VBHacks.GetHighResTime gradStartTime
             End If
-        
-            If (curBackend = gr_Cairo) Then
-                CairoRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
-            ElseIf (curBackend = gr_GDIPlus) Then
+            
+            If (curBackend = gr_GDIPlus) Then
                 GdipRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
             ElseIf (curBackend = gr_Internal) Then
                 InternalRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
@@ -416,16 +396,6 @@ Private Function GetBestRenderer() As PD_GradientRenderer
         GetBestRenderer = gr_GDIPlus
     ElseIf (m_GradientShape = gs_Reflection) Then
         GetBestRenderer = gr_GDIPlus
-    ElseIf (m_GradientShape = gs_Radial) Then
-        
-        'While Cairo works just fine on Win 7+, our internal renderer is significantly faster.
-        ' (More than 2x faster, by my testing.)  As such, we always use it preferentially.
-        ' This means that Cairo is not currently used by any gradient patterns.
-        'If OS.IsWin7OrLater Then
-        '    GetBestRenderer = gr_Cairo
-        'Else
-            GetBestRenderer = gr_Internal
-        'End If
     
     'All other shapes are only supported by our internal gradient renderer
     Else
@@ -437,8 +407,6 @@ End Function
 Private Function GetNameOfRenderer(ByVal rID As PD_GradientRenderer) As String
     If (rID = gr_Internal) Then
         GetNameOfRenderer = "PhotoDemon"
-    ElseIf (rID = gr_Cairo) Then
-        GetNameOfRenderer = "Cairo"
     ElseIf (rID = gr_GDIPlus) Then
         GetNameOfRenderer = "GDI+"
     End If
@@ -481,48 +449,11 @@ Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas, ByRef firstPoint As Poi
     cTransform.ApplyTransformToPointFs VarPtr(newPoints(0)), 2
     
     'Call the relevant renderer, which will proceed to draw a miniature version of the current gradient
-    If (curBackend = gr_Cairo) Then
-        CairoRenderer newPoints(0), newPoints(1), m_PreviewDIB
-    ElseIf (curBackend = gr_GDIPlus) Then
+    If (curBackend = gr_GDIPlus) Then
         GdipRenderer newPoints(0), newPoints(1), m_PreviewDIB
     ElseIf (curBackend = gr_Internal) Then
         InternalRenderer newPoints(0), newPoints(1), m_PreviewDIB, False
     End If
-    
-End Sub
-
-Private Sub CairoRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
-
-    'Rendering methods are still being debated; cairo and GDI+ both have trade-offs depending
-    ' on gradient parameters.
-    Dim cSurface As pd2DSurfaceCairo
-    Set cSurface = New pd2DSurfaceCairo
-    cSurface.SetAntialias ca_NONE
-    cSurface.SetOperator co_Source
-    cSurface.WrapAroundPDDIB dstDIB
-    
-    'Populate any remaining gradient properties
-    m_GradientCairo.SetGradientPoint1 firstPoint
-    m_GradientCairo.SetGradientPoint2 secondPoint
-    If (m_GradientShape = gs_Linear) Then
-        m_GradientCairo.SetGradientShape P2_GS_Linear
-    ElseIf (m_GradientShape = gs_Radial) Then
-        m_GradientCairo.SetGradientShape P2_GS_Radial
-        m_GradientCairo.SetGradientRadii 0!, PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
-    End If
-    
-    'Select the pattern into the destination source
-    Dim hPattern As Long
-    hPattern = m_GradientCairo.GetPatternHandle()
-    Plugin_Cairo.Context_SetSourcePattern cSurface.GetContextHandle, hPattern
-    
-    'Fill the entire source
-    Plugin_Cairo.Context_Rectangle cSurface.GetContextHandle, 0#, 0#, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
-    Plugin_Cairo.Context_Fill cSurface.GetContextHandle
-    
-    'Free all handles and notify the scratch layer of our changes
-    Plugin_Cairo.FreeCairoPattern hPattern
-    Set cSurface = Nothing
     
 End Sub
 

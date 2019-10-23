@@ -110,7 +110,7 @@ End Enum
     Const ptp_CharMirror = 35
 #End If
 
-'At present, only WAPI font backends are available.  This may change in the future (Cairo+Pango would be particularly nice to implement).
+'At present, only WAPI font backends are available.
 Private Enum fontBackend
     fb_UNKNOWN = 0
     fb_GDIPLUS = 1

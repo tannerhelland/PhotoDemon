@@ -674,7 +674,6 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
         
         .WriteTag "Plugins", vbNullString, True
-            .WriteTag "ForceCairoDisable", "False"
             .WriteTag "ForceExifToolDisable", "False"
             .WriteTag "ForceEZTwainDisable", "False"
             .WriteTag "ForceFreeImageDisable", "False"

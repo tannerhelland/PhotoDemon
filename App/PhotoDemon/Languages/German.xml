@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1513</langversion>
+<langversion>7.2.1514</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2742,17 +2742,6 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <!-- END text for PDPackaging.bas-->
 
-<!-- BEGIN text for Plugin_Cairo.bas -->
-
-<phrase>
-<original>this plugin is not compatible with your version of Windows</original>
-<translation>Dieses Plug-in ist nicht mit Ihrer Version von Windows kompatibel</translation>
-</phrase>
-
-<!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for Plugin_Cairo.bas-->
-
 <!-- BEGIN text for Plugin_EZTwain.bas -->
 
 <phrase>
@@ -2926,11 +2915,6 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
-<original>GNU LGPLv2.1</original>
-<translation>GNU LGPLv2.1</translation>
-</phrase>
-
-<phrase>
 <original>artistic license</original>
 <translation>Artistic-License</translation>
 </phrase>
@@ -2965,7 +2949,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -3954,12 +3938,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- END text for pd2DGradient.cls-->
 
-<!-- BEGIN text for pd2DGradientCairo.cls -->
-
-<!-- pd2DGradientCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DGradientCairo.cls-->
-
 <!-- BEGIN text for pd2DPath.cls -->
 
 <!-- pd2DPath.cls contains 0 phrases. -->
@@ -3983,12 +3961,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pd2DSurface.cls contains 0 phrases. -->
 
 <!-- END text for pd2DSurface.cls-->
-
-<!-- BEGIN text for pd2DSurfaceCairo.cls -->
-
-<!-- pd2DSurfaceCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DSurfaceCairo.cls-->
 
 <!-- BEGIN text for pd2DTransform.cls -->
 
@@ -16279,10 +16251,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2710</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4999 phrases. -->
-<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12725 total words. -->
+<!-- As of this build, PhotoDemon contains 4995 phrases. -->
+<!-- 2287 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12714 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.238</langversion>
+<langversion>1.0.239</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2739,17 +2739,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 
 <!-- END text for PDPackaging.bas-->
 
-<!-- BEGIN text for Plugin_Cairo.bas -->
-
-<phrase>
-<original>this plugin is not compatible with your version of Windows</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for Plugin_Cairo.bas-->
-
 <!-- BEGIN text for Plugin_EZTwain.bas -->
 
 <phrase>
@@ -2923,11 +2912,6 @@ To овозможи поддршка скенер, молам копирајте
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
-<original>GNU LGPLv2.1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>artistic license</original>
 <translation>уметнички лиценца</translation>
 </phrase>
@@ -2962,7 +2946,7 @@ To овозможи поддршка скенер, молам копирајте
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -3949,12 +3933,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pd2DGradient.cls-->
 
-<!-- BEGIN text for pd2DGradientCairo.cls -->
-
-<!-- pd2DGradientCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DGradientCairo.cls-->
-
 <!-- BEGIN text for pd2DPath.cls -->
 
 <!-- pd2DPath.cls contains 0 phrases. -->
@@ -3978,12 +3956,6 @@ Please enter a numeric value.</original>
 <!-- pd2DSurface.cls contains 0 phrases. -->
 
 <!-- END text for pd2DSurface.cls-->
-
-<!-- BEGIN text for pd2DSurfaceCairo.cls -->
-
-<!-- pd2DSurfaceCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DSurfaceCairo.cls-->
 
 <!-- BEGIN text for pd2DTransform.cls -->
 
@@ -16275,10 +16247,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2710</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4999 phrases. -->
-<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12725 total words. -->
+<!-- As of this build, PhotoDemon contains 4995 phrases. -->
+<!-- 2287 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12714 total words. -->
 
 </pdData>
