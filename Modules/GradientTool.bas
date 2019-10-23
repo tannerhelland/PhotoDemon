@@ -222,25 +222,6 @@ Public Function GetGradientProperty(ByVal bProperty As PD_GradientAttributes) As
     
 End Function
 
-Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newPropValue As Variant)
-    
-    Select Case bProperty
-        Case GA_AlphaMode
-            SetGradientAlphaMode newPropValue
-        Case GA_Antialiasing
-            SetGradientAntialiasing newPropValue
-        Case GA_BlendMode
-            SetGradientBlendMode newPropValue
-        Case GA_Opacity
-            SetGradientOpacity newPropValue
-        Case GA_Repeat
-            SetGradientRepeat newPropValue
-        Case GA_Shape
-            SetGradientShape newPropValue
-    End Select
-    
-End Sub
-
 'Notify the gradient engine of the current mouse position.  Coordinates should always be in *image* coordinate space,
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)

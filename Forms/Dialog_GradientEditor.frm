@@ -1545,18 +1545,18 @@ Private Sub Form_Load()
         Set inactiveOutlinePen = New pd2DPen
         Set activeOutlinePen = New pd2DPen
         
-        inactiveOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
-        inactiveOutlinePen.SetPenProperty P2_PenOpacity, 100
-        inactiveOutlinePen.SetPenProperty P2_PenWidth, 1#
-        inactiveOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Miter
-        inactiveOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetGenericUIColor(UI_GrayDark)
+        inactiveOutlinePen.SetPenStyle GP_DS_Solid
+        inactiveOutlinePen.SetPenOpacity 100
+        inactiveOutlinePen.SetPenWidth 1#
+        inactiveOutlinePen.SetPenLineJoin GP_LJ_Miter
+        inactiveOutlinePen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDark)
         inactiveOutlinePen.CreatePen
         
-        activeOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
-        activeOutlinePen.SetPenProperty P2_PenOpacity, 100
-        activeOutlinePen.SetPenProperty P2_PenWidth, 1#
-        activeOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Miter
-        activeOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetGenericUIColor(UI_Accent)
+        activeOutlinePen.SetPenStyle GP_DS_Solid
+        activeOutlinePen.SetPenOpacity 100
+        activeOutlinePen.SetPenWidth 1#
+        activeOutlinePen.SetPenLineJoin GP_LJ_Miter
+        activeOutlinePen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
         activeOutlinePen.CreatePen
         
         'Draw the initial set of interactive gradient nodes

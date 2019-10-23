@@ -1101,6 +1101,7 @@ Friend Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
     End If
     
     'As a failsafe, make sure the back buffer size is up-to-date
+    
     SyncBackBufferSize
     
     'Make sure the program is running, as we need to pull data from PD's central themer

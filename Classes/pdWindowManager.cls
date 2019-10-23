@@ -56,6 +56,12 @@ Private Const WM_SETTEXT = &HC
 Private Const WS_EX_APPWINDOW As Long = &H40000
 Private Const WS_EX_LAYERED As Long = &H80000
 Private Const WS_EX_COMPOSITED As Long = &H2000000
+Private Const WS_EX_TOOLWINDOW As Long = &H80&
+Private Const WS_EX_WINDOWEDGE As Long = &H100&
+Private Const WS_EX_TOPMOST As Long = &H8&
+Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
+Private Const WS_CHILD As Long = &H40000000
+Private Const WS_POPUP As Long = &H80000000
 Private Const GWL_EXSTYLE As Long = (-20)
 Private Const GWL_STYLE As Long = (-16)
 Private Const SWP_NOACTIVATE As Long = &H10
@@ -364,8 +370,8 @@ Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
             '                  child-ified toolpanel.  However, this causes VB to intercept some messages (like focus events)
             '                  which we definitely don't want.  For the time being, I have disabled the manual setting of
             '                  window styles, to forcibly prevent VB message queues from eating our notifications.
-            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) Or CLng(WS_CHILD)
-            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) And CLng(Not WS_POPUP)
+            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) Or WS_CHILD
+            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) And (Not WS_POPUP)
             SetParent m_CurrentToolPanelHwnd, optionWindowHwnd
             
         End If

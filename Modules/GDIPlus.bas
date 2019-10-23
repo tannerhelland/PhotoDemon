@@ -2738,7 +2738,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 Dim newLayerID As Long, newLayerName As String
                 newLayerID = targetImage.CreateBlankLayer
                 newLayerName = Layers.GenerateInitialLayerName(vbNullString, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
-                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, True
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, dstDIB, True
                 
             Else
                 PDDebug.LogAction "WARNING!  Failed to set active page #" & pageToLoad
@@ -4040,8 +4040,8 @@ End Function
 Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_None) As Long
     Dim hGraphics As Long
     If (GdipCreateFromHDC(srcDC, hGraphics) = GP_OK) Then
-        SetGDIPlusGraphicsProperty hGraphics, P2_SurfaceAntialiasing, graphicsAntialiasing
-        SetGDIPlusGraphicsProperty hGraphics, P2_SurfacePixelOffset, graphicsPixelOffsetMode
+        GDI_Plus.SetGDIPlusGraphicsAntialiasing hGraphics, graphicsAntialiasing
+        GDI_Plus.SetGDIPlusGraphicsPixelOffset hGraphics, graphicsPixelOffsetMode
         GetGDIPlusGraphicsFromDC = hGraphics
     Else
         GetGDIPlusGraphicsFromDC = 0
@@ -4314,44 +4314,6 @@ Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         If (gResult <> GP_OK) Then
             InternalGDIPlusError "GetGDIPlusGraphicsProperty Error", "Bad GP_RESULT value", gResult
         End If
-    
-    Else
-        InternalGDIPlusError "GetGDIPlusGraphicsProperty Error", "Null graphics handle"
-    End If
-    
-End Function
-
-Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant) As Boolean
-    
-    If (hGraphics <> 0) Then
-        
-        Select Case propID
-            
-            Case P2_SurfaceAntialiasing
-                SetGDIPlusGraphicsProperty = (GdipSetSmoothingMode(hGraphics, CLng(newSetting)) = GP_OK)
-                
-            Case P2_SurfacePixelOffset
-                SetGDIPlusGraphicsProperty = (GdipSetPixelOffsetMode(hGraphics, CLng(newSetting)) = GP_OK)
-            
-            Case P2_SurfaceRenderingOriginX
-                SetGDIPlusGraphicsProperty = (GdipSetRenderingOrigin(hGraphics, CLng(newSetting), GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginY)) = GP_OK)
-            
-            Case P2_SurfaceRenderingOriginY
-                SetGDIPlusGraphicsProperty = (GdipSetRenderingOrigin(hGraphics, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginX), CLng(newSetting)) = GP_OK)
-                
-            Case P2_SurfaceBlendUsingSRGBGamma
-                SetGDIPlusGraphicsProperty = (GdipSetCompositingQuality(hGraphics, CLng(newSetting)) = GP_OK)
-                
-            Case P2_SurfaceResizeQuality
-                SetGDIPlusGraphicsProperty = (GdipSetInterpolationMode(hGraphics, CLng(newSetting)) = GP_OK)
-                
-            Case P2_SurfaceCompositeMode
-                SetGDIPlusGraphicsProperty = (GdipSetCompositingMode(hGraphics, CLng(newSetting)) = GP_OK)
-                
-            Case P2_SurfaceWorldTransform
-                SetGDIPlusGraphicsProperty = (GdipSetWorldTransform(hGraphics, CLng(newSetting)) = GP_OK)
-            
-        End Select
     
     Else
         InternalGDIPlusError "GetGDIPlusGraphicsProperty Error", "Null graphics handle"

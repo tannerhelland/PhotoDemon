@@ -148,48 +148,6 @@ Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
     End If
 End Sub
 
-Public Function GetBrushProperty(ByVal bProperty As PD_BrushAttributes) As Variant
-    
-    Select Case bProperty
-        Case BA_AlphaMode
-            GetBrushProperty = GetBrushAlphaMode()
-        Case BA_Antialiasing
-            GetBrushProperty = GetBrushAntialiasing()
-        Case BA_BlendMode
-            GetBrushProperty = GetBrushBlendMode()
-        Case BA_Opacity
-            GetBrushProperty = GetBrushOpacity()
-        Case BA_Size
-            GetBrushProperty = GetBrushSize()
-        Case BA_Source
-            GetBrushProperty = GetBrushSource()
-        Case BA_SourceColor
-            GetBrushProperty = GetBrushSourceColor()
-    End Select
-    
-End Function
-
-Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newPropValue As Variant)
-    
-    Select Case bProperty
-        Case BA_AlphaMode
-            SetBrushAlphaMode newPropValue
-        Case BA_Antialiasing
-            SetBrushAntialiasing newPropValue
-        Case BA_BlendMode
-            SetBrushBlendMode newPropValue
-        Case BA_Opacity
-            SetBrushOpacity newPropValue
-        Case BA_Size
-            SetBrushSize newPropValue
-        Case BA_Source
-            SetBrushSource newPropValue
-        Case BA_SourceColor
-            SetBrushSourceColor newPropValue
-    End Select
-    
-End Sub
-
 Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean = True, Optional ByVal forceCreation As Boolean = False)
         
     If ((Not m_BrushIsReady) Or forceCreation) Then

@@ -24,28 +24,6 @@ End Enum
     Private Const BS_Color = 0
 #End If
 
-Public Enum PD_BrushAttributes
-    BA_Source = 0
-    BA_Style = 1
-    BA_Size = 2
-    BA_Opacity = 3
-    BA_BlendMode = 4
-    BA_AlphaMode = 5
-    BA_Antialiasing = 6
-    BA_Hardness = 7
-    BA_Spacing = 8
-    BA_Flow = 9
-    
-    'Source-specific values can be stored here, as relevant
-    BA_SourceColor = 1000
-End Enum
-
-#If False Then
-    Private Const BA_Source = 0, BA_Style = 1, BA_Size = 2, BA_Opacity = 3, BA_BlendMode = 4, BA_AlphaMode = 5, BA_Antialiasing = 6
-    Private Const BA_Hardness = 7, BA_Spacing = 8, BA_Flow = 9
-    Private Const BA_SourceColor = 1000
-#End If
-
 'The current brush engine is stored here.  Note that this value is not correct until a call has been made to
 ' the CreateCurrentBrush() function; this function searches brush attributes and determines which brush engine
 ' to use.
@@ -232,60 +210,6 @@ Public Sub SetBrushSpacing(ByVal newSpacing As Single)
         m_BrushSpacing = newSpacing
         m_BrushIsReady = False
     End If
-End Sub
-
-Public Function GetBrushProperty(ByVal bProperty As PD_BrushAttributes) As Variant
-    
-    Select Case bProperty
-        Case BA_AlphaMode
-            GetBrushProperty = GetBrushAlphaMode()
-        Case BA_Antialiasing
-            GetBrushProperty = GetBrushAntialiasing()
-        Case BA_BlendMode
-            GetBrushProperty = GetBrushBlendMode()
-        Case BA_Flow
-            GetBrushProperty = GetBrushFlow()
-        Case BA_Hardness
-            GetBrushProperty = GetBrushHardness()
-        Case BA_Opacity
-            GetBrushProperty = GetBrushOpacity()
-        Case BA_Size
-            GetBrushProperty = GetBrushSize()
-        Case BA_Source
-            GetBrushProperty = GetBrushSource()
-        Case BA_SourceColor
-            GetBrushProperty = GetBrushSourceColor()
-        Case BA_Spacing
-            GetBrushProperty = GetBrushSpacing()
-    End Select
-    
-End Function
-
-Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newPropValue As Variant)
-    
-    Select Case bProperty
-        Case BA_AlphaMode
-            SetBrushAlphaMode newPropValue
-        Case BA_Antialiasing
-            SetBrushAntialiasing newPropValue
-        Case BA_BlendMode
-            SetBrushBlendMode newPropValue
-        Case BA_Flow
-            SetBrushFlow newPropValue
-        Case BA_Hardness
-            SetBrushHardness newPropValue
-        Case BA_Opacity
-            SetBrushOpacity newPropValue
-        Case BA_Size
-            SetBrushSize newPropValue
-        Case BA_Source
-            SetBrushSource newPropValue
-        Case BA_SourceColor
-            SetBrushSourceColor newPropValue
-        Case BA_Spacing
-            SetBrushSpacing newPropValue
-    End Select
-    
 End Sub
 
 Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean = True, Optional ByVal forceCreation As Boolean = False)

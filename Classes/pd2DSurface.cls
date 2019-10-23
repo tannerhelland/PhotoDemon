@@ -97,7 +97,7 @@ Private m_SurfaceResizeQuality As PD_2D_ResizeQuality
 Private m_SurfaceCompositeMode As PD_2D_CompositeMode
 Private m_SurfaceWorldTransform As Long
 
-'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
+'Get/set individual settings.
 Friend Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
     GetSurfaceAntialiasing = m_SurfaceAntialiasing
 End Function
@@ -128,54 +128,64 @@ End Function
 
 Friend Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     m_SurfaceAntialiasing = newSetting
-    If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_Antialias Else GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_None
+    If (m_SurfaceHandle <> 0) Then
+        If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_Antialias Else GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_None
+    End If
 End Sub
 
 Friend Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
     m_SurfaceBlendUsingSRGBGamma = newSetting
-    If m_SurfaceBlendUsingSRGBGamma Then GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_GammaCorrected Else GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_AssumeLinear
+    If (m_SurfaceHandle <> 0) Then
+        If m_SurfaceBlendUsingSRGBGamma Then GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_GammaCorrected Else GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_AssumeLinear
+    End If
 End Sub
 
 Friend Sub SetSurfaceCompositing(ByVal newSetting As PD_2D_CompositeMode)
     m_SurfaceCompositeMode = newSetting
-    If (m_SurfaceCompositeMode = P2_CM_Blend) Then GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceOver Else GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceCopy
+    If (m_SurfaceHandle <> 0) Then
+        If (m_SurfaceCompositeMode = P2_CM_Blend) Then GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceOver Else GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceCopy
+    End If
 End Sub
 
 Friend Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
     m_SurfacePixelOffset = newSetting
-    If (m_SurfacePixelOffset >= P2_PO_Half) Then GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_Half Else GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_None
+    If (m_SurfaceHandle <> 0) Then
+        If (m_SurfacePixelOffset >= P2_PO_Half) Then GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_Half Else GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_None
+    End If
 End Sub
 
 Friend Sub SetSurfaceRenderingOriginX(ByVal newSetting As Long)
     m_SurfaceRenderingOriginX = newSetting
-    GDI_Plus.SetGDIPlusGraphicsRenderingOriginX m_SurfaceHandle, m_SurfaceRenderingOriginX
+    If (m_SurfaceHandle <> 0) Then GDI_Plus.SetGDIPlusGraphicsRenderingOriginX m_SurfaceHandle, m_SurfaceRenderingOriginX
 End Sub
 
 Friend Sub SetSurfaceRenderingOriginY(ByVal newSetting As Long)
     m_SurfaceRenderingOriginY = newSetting
-    GDI_Plus.SetGDIPlusGraphicsRenderingOriginY m_SurfaceHandle, m_SurfaceRenderingOriginY
+    If (m_SurfaceHandle <> 0) Then GDI_Plus.SetGDIPlusGraphicsRenderingOriginY m_SurfaceHandle, m_SurfaceRenderingOriginY
 End Sub
 
 Friend Sub SetSurfaceResizeQuality(ByVal newSetting As PD_2D_ResizeQuality)
     m_SurfaceResizeQuality = newSetting
-    Select Case m_SurfaceResizeQuality
-        Case P2_RQ_Fast
-            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_NearestNeighbor
-        Case P2_RQ_Bilinear
-            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_Bilinear
-        Case P2_RQ_Bicubic
-            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_HighQualityBicubic
-    End Select
+    If (m_SurfaceHandle <> 0) Then
+        Select Case m_SurfaceResizeQuality
+            Case P2_RQ_Fast
+                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_NearestNeighbor
+            Case P2_RQ_Bilinear
+                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_Bilinear
+            Case P2_RQ_Bicubic
+                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_HighQualityBicubic
+        End Select
+    End If
 End Sub
 
 Friend Sub SetSurfaceWorldTransform(ByRef srcTransform As pd2DTransform)
     m_SurfaceWorldTransform = srcTransform.GetHandle
-    GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
+    If (m_SurfaceHandle <> 0) Then GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
 End Sub
 
 Friend Sub SetSurfaceWorldTransform_ByHandle(ByVal srcTransform As Long)
     m_SurfaceWorldTransform = srcTransform
-    GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
+    If (m_SurfaceHandle <> 0) Then GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
 End Sub
 
 'Some property changes exist only at run-time.  Because these properties are not well-defined, they do not support
@@ -253,12 +263,16 @@ Friend Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal clo
         
         If CloneSurface Then
         
-            'Clone all surface properties
+            'Clone all surface properties.  Note that IMPORTANT caveat below this segment,
+            ' involving clipping regions.
             If clonePropertiesToo Then
-                Dim i As PD_2D_SURFACE_SETTINGS
-                For i = 0 To [_P2_NumOfSurfaceSettings] - 1
-                    Me.SetSurfaceProperty i, srcSurface.GetSurfaceProperty(i)
-                Next i
+                Me.SetSurfaceAntialiasing srcSurface.GetSurfaceAntialiasing()
+                Me.SetSurfacePixelOffset srcSurface.GetSurfacePixelOffset()
+                Me.SetSurfaceRenderingOriginX srcSurface.GetSurfaceRenderingOriginX()
+                Me.SetSurfaceRenderingOriginY srcSurface.GetSurfaceRenderingOriginY()
+                Me.SetSurfaceBlendUsingSRGBGamma srcSurface.GetSurfaceBlendUsingSRGBGamma()
+                Me.SetSurfaceResizeQuality srcSurface.GetSurfaceResizeQuality()
+                Me.SetSurfaceCompositing srcSurface.GetSurfaceCompositing()
             End If
             
             'Clipping regions are somewhat messy, as their shape can be horrifically complex
@@ -948,71 +962,6 @@ Friend Sub ResetAllProperties()
     Me.SetSurfaceBlendUsingSRGBGamma False
     Me.SetSurfaceResizeQuality P2_RQ_Fast
     Me.SetSurfaceCompositing P2_CM_Blend
-End Sub
-
-'For bulk getting/setting properties, you can use these wrappers (which take a property ID).  Obviously these
-' are slower than accessing individual properties, as we have to move data around inside variants.
-Friend Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
-
-    Select Case propID
-    
-        Case P2_SurfaceAntialiasing
-            GetSurfaceProperty = m_SurfaceAntialiasing
-        
-        Case P2_SurfacePixelOffset
-            GetSurfaceProperty = m_SurfacePixelOffset
-            
-        Case P2_SurfaceRenderingOriginX
-            GetSurfaceProperty = m_SurfaceRenderingOriginX
-        
-        Case P2_SurfaceRenderingOriginY
-            GetSurfaceProperty = m_SurfaceRenderingOriginY
-        
-        Case P2_SurfaceBlendUsingSRGBGamma
-            GetSurfaceProperty = m_SurfaceBlendUsingSRGBGamma
-            
-        Case P2_SurfaceResizeQuality
-            GetSurfaceProperty = m_SurfaceResizeQuality
-            
-        Case P2_SurfaceCompositeMode
-            GetSurfaceProperty = m_SurfaceCompositeMode
-            
-    End Select
-
-End Function
-
-Friend Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant)
-    
-    Select Case propID
-    
-        Case P2_SurfaceAntialiasing
-            Me.SetSurfaceAntialiasing CLng(newSetting)
-        
-        Case P2_SurfacePixelOffset
-            Me.SetSurfacePixelOffset CLng(newSetting)
-            
-        Case P2_SurfaceRenderingOriginX
-            Me.SetSurfaceRenderingOriginX CLng(newSetting)
-            
-        Case P2_SurfaceRenderingOriginY
-            Me.SetSurfaceRenderingOriginY CLng(newSetting)
-            
-        Case P2_SurfaceBlendUsingSRGBGamma
-            Me.SetSurfaceBlendUsingSRGBGamma CBool(newSetting)
-            
-        Case P2_SurfaceResizeQuality
-            Me.SetSurfaceResizeQuality CLng(newSetting)
-            
-        Case P2_SurfaceCompositeMode
-            Me.SetSurfaceCompositing CLng(newSetting)
-        
-        'World transforms are not currently cached locally; instead, they are blindly forwarded to the
-        ' relevant backend.
-        Case P2_SurfaceWorldTransform
-            Me.SetSurfaceWorldTransform_ByHandle CLng(newSetting)
-            
-    End Select
-    
 End Sub
 
 'After creating a new object, you may want to synchronize all settings to the underlying backend

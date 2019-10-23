@@ -81,7 +81,7 @@ Private m_BrushHandle As Long
 
 'NOTE: texture brush settings are still TBD
 
-'Get/set individual settings.  Note that these just wrap the generic Get/SetBrushProperty functions, below.
+'Get/set individual settings.
 Friend Function GetBrushMode() As PD_2D_BrushMode
     GetBrushMode = m_BrushMode
 End Function
@@ -282,114 +282,6 @@ Friend Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
     If (m_BrushHandle <> 0) Then
         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
     End If
-    
-End Sub
-
-'Get/set individual settings by enum type
-Friend Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Variant
-    
-    Select Case propID
-        
-        Case P2_BrushMode
-            GetBrushProperty = m_BrushMode
-        
-        Case P2_BrushColor
-            GetBrushProperty = m_PrimaryColor
-            
-        Case P2_BrushOpacity
-            GetBrushProperty = m_PrimaryOpacity
-            
-        Case P2_BrushPatternStyle
-            GetBrushProperty = m_PatternStyle
-            
-        Case P2_BrushPattern1Color
-            GetBrushProperty = m_Pattern1Color
-            
-        Case P2_BrushPattern1Opacity
-            GetBrushProperty = m_Pattern1Opacity
-            
-        Case P2_BrushPattern2Color
-            GetBrushProperty = m_Pattern2Color
-            
-        Case P2_BrushPattern2Opacity
-            GetBrushProperty = m_Pattern2Opacity
-            
-        Case P2_BrushGradientAllSettings
-            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientAsString()
-            
-        Case P2_BrushGradientShape
-            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientShape()
-            
-        Case P2_BrushGradientAngle
-            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientAngle()
-            
-        Case P2_BrushGradientWrapMode
-            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientWrapMode()
-            
-        Case P2_BrushGradientNodes
-            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientNodes()
-            
-        Case P2_BrushTextureWrapMode
-            GetBrushProperty = m_TextureWrapMode
-            
-    End Select
-    
-End Function
-
-Friend Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetting As Variant)
-    
-    Select Case propID
-        
-        Case P2_BrushMode
-            m_BrushMode = CLng(newSetting)
-        
-        Case P2_BrushColor
-            m_PrimaryColor = CLng(newSetting)
-            
-        Case P2_BrushOpacity
-            m_PrimaryOpacity = CDbl(newSetting)
-            
-        Case P2_BrushPatternStyle
-            m_PatternStyle = CLng(newSetting)
-            
-        Case P2_BrushPattern1Color
-            m_Pattern1Color = CLng(newSetting)
-            
-        Case P2_BrushPattern1Opacity
-            m_Pattern1Opacity = CDbl(newSetting)
-            
-        Case P2_BrushPattern2Color
-            m_Pattern2Color = CLng(newSetting)
-            
-        Case P2_BrushPattern2Opacity
-            m_Pattern2Opacity = CDbl(newSetting)
-            
-        Case P2_BrushGradientAllSettings
-            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.CreateGradientFromString CStr(newSetting)
-        
-        Case P2_BrushGradientShape
-            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.SetGradientShape CLng(newSetting)
-            
-        Case P2_BrushGradientAngle
-            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.SetGradientAngle CSng(newSetting)
-            
-        Case P2_BrushGradientWrapMode
-            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.SetGradientWrapMode CLng(newSetting)
-            
-        Case P2_BrushGradientNodes
-            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_Gradient.SetGradientNodes CStr(newSetting)
-            
-        Case P2_BrushTextureWrapMode
-            m_TextureWrapMode = CLng(newSetting)
-            
-    End Select
-    
-    RelayPropertyChangeToBackend propID
     
 End Sub
 

@@ -695,7 +695,7 @@ Private Sub CreateSVSquare()
     m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI * 0.25): m_SVRectF.Height = m_SVRectF.Width
     
     If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
-    If (m_SquareBuffer.GetDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.GetDIBHeight <> CLng(m_SVRectF.Height)) Then
+    If (m_SquareBuffer.GetDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.GetDIBHeight <> CLng(m_SVRectF.Height)) Or (m_SVRectF.Width = 0) Or (m_SVRectF.Height = 0) Then
         m_SquareBuffer.CreateBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 32, , 255
     Else
         m_SquareBuffer.ResetDIB 255

@@ -1713,8 +1713,8 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     If (GdipSetTextContrast(dstGraphics, CLng(CDbl(m_TextContrast) * 1.2)) <> GP_OK) Then PDDebug.LogAction "Failed to set text contrast " & m_TextContrast
     
     'New GDI+ definitions should look like this:
-    If Not GDI_Plus.SetGDIPlusGraphicsProperty(dstGraphics, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear) Then PDDebug.LogAction "Failed to set compositing quality."
-    If Not GDI_Plus.SetGDIPlusGraphicsProperty(dstGraphics, P2_SurfacePixelOffset, GP_POM_Half) Then PDDebug.LogAction "Failed to set pixel offset mode."
+    If Not GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma(dstGraphics, GP_CQ_AssumeLinear) Then PDDebug.LogAction "Failed to set compositing quality."
+    If Not GDI_Plus.SetGDIPlusGraphicsPixelOffset(dstGraphics, GP_POM_Half) Then PDDebug.LogAction "Failed to set pixel offset mode."
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
@@ -1799,9 +1799,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Next, set up all container-specific path settings
     Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GP_PixelOffsetMode
     
-    'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality (which assumes gamma correction),
-    ' and it can cause premultiplied alpha to be calculated incorrectly, leading to random hot pixels.
-    GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear
+    'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality
+    ' (which assumes gamma correction), and it can cause premultiplied alpha to be calculated
+    ' incorrectly, leading to random hot pixels.
+    GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma dstGraphics, GP_CQ_AssumeLinear
     
     'Antialiasing settings currently affect both smoothing mode and offset mode.  Offset mode is particularly relevant when working with
     ' tiny text, as it greatly improves clarity to use half mode.  (Also, note that antialiasing affects *all drawing operations on the target*,
@@ -1876,10 +1877,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     If m_OutlineActive Then
         
         With boundingRect
-            .Left = .Left + penTextOutline.GetPenProperty(P2_PenWidth)
-            .Top = .Top + penTextOutline.GetPenProperty(P2_PenWidth)
-            .Width = .Width - penTextOutline.GetPenProperty(P2_PenWidth) * 2
-            .Height = .Height - penTextOutline.GetPenProperty(P2_PenWidth) * 2
+            .Left = .Left + penTextOutline.GetPenWidth()
+            .Top = .Top + penTextOutline.GetPenWidth()
+            .Width = .Width - penTextOutline.GetPenWidth() * 2
+            .Height = .Height - penTextOutline.GetPenWidth() * 2
         End With
     
     End If
@@ -1897,7 +1898,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_BackBorderActive Then
         
-        borderWidth = penBackgroundOutline.GetPenProperty(P2_PenWidth)
+        borderWidth = penBackgroundOutline.GetPenWidth()
         halfBorderWidth = borderWidth / 2
         
         With boundingRect
@@ -1950,7 +1951,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         If (gdipBackgroundBrush <> 0) Then
             
             'Prior to filling, set high-speed offset mode.
-            GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfacePixelOffset, GP_POM_None
+            GDI_Plus.SetGDIPlusGraphicsPixelOffset dstGraphics, GP_POM_None
             
             'If an outline is being drawn, we don't need antialiasing, which also improves performance
             If (gdipBackBorderPen <> 0) Then
@@ -1966,7 +1967,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
         'Now we can set our desired smoothing and offset modes, which are constant for all remaining draw operations
         GdipSetSmoothingMode dstGraphics, targetSmoothingMode
-        GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfacePixelOffset, targetOffsetMode
+        GDI_Plus.SetGDIPlusGraphicsPixelOffset dstGraphics, targetOffsetMode
                 
         'If background border is active, stroke it now
         If (gdipBackBorderPen <> 0) Then

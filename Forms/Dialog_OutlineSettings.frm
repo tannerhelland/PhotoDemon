@@ -380,14 +380,14 @@ End Sub
 Private Sub UpdateOutlineObject()
 
     With m_PenPreview
-        .SetPenProperty P2_PenStyle, btsStyle.ListIndex
-        .SetPenProperty P2_PenColor, csOutline.Color
-        .SetPenProperty P2_PenOpacity, sltOutlineOpacity.Value
-        .SetPenProperty P2_PenWidth, sltOutlineWidth.Value
-        .SetPenProperty P2_PenLineCap, cboLineCap.ListIndex
-        .SetPenProperty P2_PenDashCap, cboLineCap.ListIndex       'For now, dash cap mirrors line cap
-        .SetPenProperty P2_PenLineJoin, cboCorner.ListIndex
-        .SetPenProperty P2_PenMiterLimit, sltMiterLimit.Value
+        .SetPenStyle btsStyle.ListIndex
+        .SetPenColor csOutline.Color
+        .SetPenOpacity sltOutlineOpacity.Value
+        .SetPenWidth sltOutlineWidth.Value
+        .SetPenLineCap cboLineCap.ListIndex
+        .SetPenDashCap cboLineCap.ListIndex       'For now, dash cap mirrors line cap
+        .SetPenLineJoin cboCorner.ListIndex
+        .SetPenMiterLimit sltMiterLimit.Value
         .CreatePen
     End With
     
@@ -412,8 +412,8 @@ Private Sub UpdatePreview()
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
         Dim tmpRect As RectF, hPadding As Single, vPadding As Single
         
-        hPadding = m_PenPreview.GetPenProperty(P2_PenWidth) * 2
-        If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
+        hPadding = m_PenPreview.GetPenWidth() * 2
+        If (hPadding > Interface.FixDPIFloat(12)) Then hPadding = Interface.FixDPIFloat(12)
         vPadding = hPadding
         
         With tmpRect
@@ -451,15 +451,15 @@ Private Sub SyncControlsToOutlineObject()
         
     With m_PenPreview
         
-        btsStyle.ListIndex = .GetPenProperty(P2_PenStyle)
+        btsStyle.ListIndex = .GetPenStyle()
         
-        csOutline.Color = .GetPenProperty(P2_PenColor)
-        sltOutlineOpacity.Value = .GetPenProperty(P2_PenOpacity)
-        sltOutlineWidth.Value = .GetPenProperty(P2_PenWidth)
+        csOutline.Color = .GetPenColor()
+        sltOutlineOpacity.Value = .GetPenOpacity()
+        sltOutlineWidth.Value = .GetPenWidth()
         
-        cboLineCap.ListIndex = .GetPenProperty(P2_PenLineCap)
-        cboCorner.ListIndex = .GetPenProperty(P2_PenLineJoin)
-        sltMiterLimit.Value = .GetPenProperty(P2_PenMiterLimit)
+        cboLineCap.ListIndex = .GetPenLineCap()
+        cboCorner.ListIndex = .GetPenLineJoin()
+        sltMiterLimit.Value = .GetPenMiterLimit()
     
     End With
         

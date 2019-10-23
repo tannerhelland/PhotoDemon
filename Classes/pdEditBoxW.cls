@@ -66,7 +66,7 @@ Private WithEvents m_MouseEvents As pdInputMouse
 Attribute m_MouseEvents.VB_VarHelpID = -1
 
 'Window styles
-Private Enum enWindowStyles
+Private Enum Win32_WindowStyles
     WS_BORDER = &H800000
     WS_CAPTION = &HC00000
     WS_CHILD = &H40000000
@@ -94,16 +94,16 @@ Private Enum enWindowStyles
     WS_EX_TOPMOST = &H8&
     WS_EX_TRANSPARENT = &H20&
     WS_EX_TOOLWINDOW = &H80&
-    WS_EX_MDICHILD = &H40
-    WS_EX_WINDOWEDGE = &H100
-    WS_EX_CLIENTEDGE = &H200
-    WS_EX_CONTEXTHELP = &H400
-    WS_EX_RIGHT = &H1000
-    WS_EX_LEFT = &H0
-    WS_EX_RTLREADING = &H2000
-    WS_EX_LTRREADING = &H0
-    WS_EX_LEFTSCROLLBAR = &H4000
-    WS_EX_RIGHTSCROLLBAR = &H0
+    WS_EX_MDICHILD = &H40&
+    WS_EX_WINDOWEDGE = &H100&
+    WS_EX_CLIENTEDGE = &H200&
+    WS_EX_CONTEXTHELP = &H400&
+    WS_EX_RIGHT = &H1000&
+    WS_EX_LEFT = &H0&
+    WS_EX_RTLREADING = &H2000&
+    WS_EX_LTRREADING = &H0&
+    WS_EX_LEFTSCROLLBAR = &H4000&
+    WS_EX_RIGHTSCROLLBAR = &H0&
     WS_EX_CONTROLPARENT = &H10000
     WS_EX_STATICEDGE = &H20000
     WS_EX_APPWINDOW = &H40000

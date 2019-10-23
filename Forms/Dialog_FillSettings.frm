@@ -657,18 +657,18 @@ Private Sub SyncControlsToFillObject()
         
     With m_Filler
         
-        btsStyle.ListIndex = .GetBrushProperty(P2_BrushMode)
+        btsStyle.ListIndex = .GetBrushMode()
         
-        csFillColor.Color = .GetBrushProperty(P2_BrushColor)
-        sltFillOpacity.Value = .GetBrushProperty(P2_BrushOpacity)
+        csFillColor.Color = .GetBrushColor()
+        sltFillOpacity.Value = .GetBrushOpacity()
         
-        lstFillPattern.ListIndex = .GetBrushProperty(P2_BrushPatternStyle)
-        csPattern(0).Color = .GetBrushProperty(P2_BrushPattern1Color)
-        csPattern(1).Color = .GetBrushProperty(P2_BrushPattern2Color)
-        sltPatternOpacity(0).Value = .GetBrushProperty(P2_BrushPattern1Opacity)
-        sltPatternOpacity(1).Value = .GetBrushProperty(P2_BrushPattern2Opacity)
+        lstFillPattern.ListIndex = .GetBrushPatternStyle()
+        csPattern(0).Color = .GetBrushPattern1Color()
+        csPattern(1).Color = .GetBrushPattern2Color()
+        sltPatternOpacity(0).Value = .GetBrushPattern1Opacity()
+        sltPatternOpacity(1).Value = .GetBrushPattern2Opacity()
         
-        m_Gradient.CreateGradientFromString .GetBrushProperty(P2_BrushGradientAllSettings)
+        m_Gradient.CreateGradientFromString .GetBrushGradientAllSettings()
         gsPrimary.Gradient = m_Gradient.GetGradientAsString
         btsGradientShape.ListIndex = m_Gradient.GetGradientShape
         sldGradientAngle.Value = m_Gradient.GetGradientAngle

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1510</langversion>
+<langversion>7.2.1513</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6118,7 +6118,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation>Grund-Layer</translation>
+<translation>Grundlegender Layer</translation>
 </phrase>
 
 <phrase>
@@ -8710,7 +8710,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
-<translation>Ich verstehe die Risiken beim Ausführen von PhotoDemon in der IDE</translation>
+<translation>Ich verstehe die Risiken der Ausführung von PhotoDemon in der IDE</translation>
 </phrase>
 
 <phrase>
@@ -8725,7 +8725,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Bitte kompilieren Sie PhotoDemon vor seiner Verwendung. Viele Features, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, insbesondere wenn Sie das Programm mit dem Button "IDE-Stopp" schließen.</translation>
+<translation>Bitte kompilieren Sie PhotoDemon vor seiner Verwendung. Viele Features, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Von daher kann es zu Instabilitäten und Abstürzen der IDE kommen, insbesondere wenn Sie das Programm über den Stopp-Button der IDE schließen.</translation>
 </phrase>
 
 <phrase>
@@ -8735,7 +8735,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Bugs hinsichtlich IDE-Abstürzen oder Freezes ein. Die Developer von PhotoDemon können sich nur Probleme und Bugs adressieren, welche die kompilierte .exe (ausführbare Datei) betreffen.</translation>
+<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Bugs hinsichtlich Abstürzen oder Freezes der IDE ein. Die Developer von PhotoDemon können sich nur Probleme und Bugs adressieren, welche die kompilierte .exe (ausführbare Datei) betreffen.</translation>
 </phrase>
 
 <!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12917,7 +12917,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>basic settings</original>
-<translation>Grundeinstellungen</translation>
+<translation>Grundlegende Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -16104,7 +16104,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>reading not accurate inside IDE</original>
-<translation>Lesen in IDE nicht genau</translation>
+<translation>Lesen in der IDE nicht genau</translation>
 </phrase>
 
 <phrase>
