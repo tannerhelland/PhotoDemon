@@ -314,8 +314,17 @@ Public Sub AlignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
                 If Strings.StringsEqual(srcPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk"), m_XmlEntries(i).xmlPath, True) Then
-                    srcPDImage.ReadExternalData m_XmlEntries(i).xmlPath
+                    
+                    'Load the XML data, then attempt to initialize a pdImage object from it
+                    Dim srcString As String
+                    If Files.FileLoadAsString(m_XmlEntries(i).xmlPath, srcString) Then
+                        If (Not srcPDImage.SetHeaderFromXML(srcString)) Then PDDebug.LogAction "WARNING!  Autosaves.AlignLoadedImageWithAutoSave failed to created a valid pdImage header."
+                    Else
+                        PDDebug.LogAction "WARNING!  Couldn't load autosave data: " & m_XmlEntries(i).xmlPath
+                    End If
+                    
                     Exit For
+                    
                 End If
             
             Next i

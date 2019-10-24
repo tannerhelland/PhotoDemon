@@ -791,16 +791,8 @@ Friend Sub SetSelectionActive(ByVal newState As Boolean)
     m_SelectionIsActive = newState
 End Sub
 
-'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the
-' current image's state, because some pdImage data is only relevant at run-time.  Also, some data structures (like metadata) are
-' very difficult to handle properly; I am working on a solution to this, but have not finished it yet.
-'
-'In the event that you want to do something else with the XML data, I have now added an optional parameter.
-' Mark "filePathIsActuallyString" as TRUE to treat the filename string as a destination buffer, and this function will
-' write the XML data there (instead of treating it as a filename).
-Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
-
-    On Error GoTo failedDataWrite
+'Serialize all relevant image header data to an XML string.
+Friend Function GetHeaderAsXML() As String
 
     'Prepare an XML engine, which will handle the actual writing of the file
     Dim xmlEngine As pdXML
@@ -838,57 +830,30 @@ Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     
     xmlEngine.WriteBlankLine
     
-    'That should be enough information to reconstruct the original image state.  We now have two options, depending on the value
-    ' of the "filePathIsActuallyString" parameter.
-    
-    'The string we were supplied is a blank buffer, not a filename.  Write the XML data to it.  Note that by default, XML indentation
-    ' is suppressed; this is for performance reasons.
-    If filePathIsActuallyString Then
-        dstFilename = xmlEngine.ReturnCurrentXMLString(True)
-    
-    'The string we were supplied is a filename.  Write the XML data to it.
-    Else
-        xmlEngine.WriteXMLToFile dstFilename
-    End If
-    
-    WriteExternalData = True
-    Exit Function
-    
-failedDataWrite:
-
-    Debug.Print "WARNING: could not write XML data to file.  Are you sure this drive has enough free space?"
-    WriteExternalData = False
+    'That should be enough information to reconstruct the original image state.
+    GetHeaderAsXML = xmlEngine.ReturnCurrentXMLString(True)
     
 End Function
 
-'Sister function to WriteExternalDataToFile, above.  If you add a variable to one function, make sure to include it in the other.
-' If the function fails, it will return FALSE.
+'Sister function to GetHeaderAsXML(), above.  If you report a value in that function, make sure to
+' include it here!
 '
-'In the event that you have already loaded the XML data yourself (or have compiled it manually), I have added an optional parameter.
-' Mark "filePathIsActuallyString" as TRUE to treat the filename string as actual XML data instead.
-'
-'Finally, if this function is being called as part of an Undo/Redo action, we can safely ignore certain entries in the file, in favor
-' of the values we already have stored for this image.  The Undo/Redo engine may also specify non-destructive loading, in which case
-' we assume that our existing layer stack is valid, but in the wrong order - so simply reorder the stack according to the data in the
-' XML, instead of full-on recreating it from scratch.
-Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
-
-    On Error GoTo failedDataRead
+'If this function is being called as part of an Undo/Redo action, we can safely ignore certain entries
+' in the file (in favor of the values already have stored for this image).  The Undo/Redo engine may
+' also specify non-destructive loading, in which case we assume that our existing layer stack is valid,
+' but in the wrong order - so we'll simply reorder the stack according to the data in the XML,
+' instead of full-on recreating it from scratch.  (This is a high-performance way to handle Undo/Redo
+' data for operations like reordering the layer stack.)
+Friend Function SetHeaderFromXML(ByRef srcText As String, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
     
-    Dim xmlLoadSuccessful As Boolean
-    xmlLoadSuccessful = False
-
     'Prepare an XML engine, which will handle the actual reading and parsing of the file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
     'We now have two choices, depending on the value of filePathIsActuallyString.  Load the supposed XML contents
     ' (either from file or directly) into the XML engine; note that both steps validate the incoming data automatically.
-    If filePathIsActuallyString Then
-        xmlLoadSuccessful = xmlEngine.LoadXMLFromString(srcFilename)
-    Else
-        xmlLoadSuccessful = xmlEngine.LoadXMLFile(srcFilename)
-    End If
+    Dim xmlLoadSuccessful As Boolean
+    xmlLoadSuccessful = xmlEngine.LoadXMLFromString(srcText)
     
     'Make sure the supplied XML actually contains pdImage data.
     If xmlLoadSuccessful And xmlEngine.IsPDDataType("pdImage") Then
@@ -934,20 +899,12 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             Next i
             
         End If
+        
+        SetHeaderFromXML = True
     
     Else
-        GoTo failedDataRead
+        PDDebug.LogAction "WARNING!  pdImage.SetHeaderFromXML() couldn't validate XML header."
     End If
-    
-    'The pdImage struct has been created successfully!
-    ReadExternalData = True
-    
-    Exit Function
-    
-failedDataRead:
-    
-    Debug.Print "WARNING: could not validate XML data.  pdImage internals were not updated."
-    ReadExternalData = False
     
 End Function
 
@@ -1140,7 +1097,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         
         'Prep the destination thumbnail
         If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
-        If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
+        If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Or (dstThumbnailDIB.GetDIBWidth = 0) Then
             dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
         Else
             dstThumbnailDIB.ResetDIB 0
@@ -1158,14 +1115,22 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         If (ptrToRectF <> 0) Then
             CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
         Else
+            
             With tmpRectF
                 .Left = 0!
                 .Top = 0!
                 .Width = thumbWidth
                 .Height = thumbHeight
             End With
-            If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB Else dstThumbnailDIB.ResetDIB 0
+            
+            If (dstThumbnailDIB Is Nothing) Then
+                Set dstThumbnailDIB = New pdDIB
+            Else
+                If (dstThumbnailDIB.GetDIBWidth > 0) Then dstThumbnailDIB.ResetDIB 0
+            End If
+            
             dstThumbnailDIB.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
+            
         End If
         
         GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_ImageThumbnail, 0!, 0!, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True

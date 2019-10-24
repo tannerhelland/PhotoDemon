@@ -95,7 +95,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.ReadExternalData retString, True, sourceIsUndoFile
+            dstImage.SetHeaderFromXML retString, sourceIsUndoFile
         
         'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else
@@ -309,7 +309,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
             CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.ReadExternalData retString, True, True, True
+            dstImage.SetHeaderFromXML retString, True, True
         
         'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else
@@ -1344,7 +1344,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             End If
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.ReadExternalData retString, True, sourceIsUndoFile
+            dstImage.SetHeaderFromXML retString, sourceIsUndoFile
         
         'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else
@@ -1571,7 +1571,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
             End If
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.ReadExternalData retString, True, True, True
+            dstImage.SetHeaderFromXML retString, True, True
         
         'Bytes could not be read, or alternately, checksums didn't match for the first node.
         Else

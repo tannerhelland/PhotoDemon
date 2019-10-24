@@ -477,8 +477,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     nodeIndex = pdiWriter.AddNode("pdImage Header", -1, 0)
     
     Dim dataString As String
-    srcPDImage.WriteExternalData dataString, True
-    
+    dataString = srcPDImage.GetHeaderAsXML()
     pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
     
     'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
