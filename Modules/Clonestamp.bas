@@ -387,8 +387,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         'Calculate an offset from the current point to the source point; this is maintained
         ' for the duration of this stroke.
         If m_FirstStroke Or (Not m_Aligned) Then
-            m_SourceOffsetX = (m_SourcePoint.x - m_MouseX)
-            m_SourceOffsetY = (m_SourcePoint.y - m_MouseY)
+            m_SourceOffsetX = (m_SourcePoint.x - m_MouseX) - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
+            m_SourceOffsetY = (m_SourcePoint.y - m_MouseY) - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
             m_OrigSourceOffsetX = m_SourceOffsetX
             m_OrigSourceOffsetY = m_SourceOffsetY
         Else
@@ -1057,12 +1057,12 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                 srcY = m_MouseY
             Else
                 If m_Paintbrush.IsMouseDown() Then
-                    srcX = m_MouseX + m_SourceOffsetX
-                    srcY = m_MouseY + m_SourceOffsetY
+                    srcX = m_MouseX + m_SourceOffsetX + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
+                    srcY = m_MouseY + m_SourceOffsetY + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
                 Else
                     If m_Aligned And (Not m_SourceSetThisClick) Then
-                        srcX = m_MouseX + m_SourceOffsetX
-                        srcY = m_MouseY + m_SourceOffsetY
+                        srcX = m_MouseX + m_SourceOffsetX + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
+                        srcY = m_MouseY + m_SourceOffsetY + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
                     Else
                         srcX = m_SourcePoint.x
                         srcY = m_SourcePoint.y

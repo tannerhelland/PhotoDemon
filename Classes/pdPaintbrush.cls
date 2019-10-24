@@ -209,6 +209,11 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     'Track mouse state
     m_MouseDown = mouseButtonDown
     
+    'If too many mouse movements occur close together (important when the viewport is heavily zoomed-in),
+    ' we'll skip paint events until a "significant" number of events have occurred.
+    Dim storeAsLastPoint As Boolean
+    storeAsLastPoint = True
+    
     'If this is the first dab of this stroke, reset some internal parameters
     If m_IsFirstDab Then
     
@@ -252,8 +257,20 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         If m_MouseDown Then
             
             'If ((srcX <> m_LastPoint.x) Or (srcY <> m_LastPoint.y)) And ((m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)) Then
+            
             If ((m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)) Then
-                AddPoints_VoxelStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
+                
+                'Before adding this point, enforce a "minimum distance" (currently 1/4 of a pixel)
+                ' that the mouse must move before applying this stroke.  If we don't do this,
+                ' small mouse movements on a zoomed-in canvas will generate an explosion of dabs,
+                ' which greatly interferes with soft edge brush behavior (because the dabs will all
+                ' overlap each other, effectively "erasing" the soft edges).
+                If (Abs(m_LastPoint.x - srcX) > 0.25) Or (Abs(m_LastPoint.y - srcY) > 0.25) Then
+                    AddPoints_VoxelStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
+                Else
+                    storeAsLastPoint = False
+                End If
+                
             Else
                 AddSinglePoint srcX, srcY
             End If
@@ -263,7 +280,7 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     End If
     
     'If the mouse is down (or this is the "last dab"), update our running last-passed-point tracker
-    If m_MouseDown Or m_IsLastDab Then
+    If ((m_MouseDown Or m_IsLastDab) And storeAsLastPoint) Then
         m_LastPoint.x = srcX
         m_LastPoint.y = srcY
     End If
