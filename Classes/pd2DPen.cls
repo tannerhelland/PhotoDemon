@@ -135,7 +135,13 @@ End Sub
 
 Friend Sub SetPenLineCap(ByVal newSetting As PD_2D_LineCap)
     m_PenLineCap = newSetting
-    If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenLineCap, m_PenLineCap
+    m_PenStartCap = m_PenLineCap
+    m_PenEndCap = m_PenLineCap
+    If (m_PenHandle <> 0) Then
+        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenLineCap, m_PenLineCap
+        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
+    End If
 End Sub
 
 Friend Sub SetPenLineJoin(ByVal newSetting As PD_2D_LineJoin)
