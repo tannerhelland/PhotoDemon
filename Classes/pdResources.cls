@@ -51,7 +51,7 @@ Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMono
 
 'Individual resources are always stored as two chunks: a raw data chunk, and an XML chunk that describes resource attributes.
 ' To improve performance, a dedicated XML parser is always created alongside this class.
-Private m_XML As pdXML
+Private m_XML As pdParamXML
 
 'When loading image resources during startup, 99% of resources will be an identical size.  To cut down on the amount
 ' of memory we need to allocate, we try to reuse the same image buffer over and over again.
@@ -327,162 +327,158 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
         'See if this resource exists in the collection.
         If m_ResImageHeaders.FindChunk_NameValuePair("NAME", imgResName, "DATA", m_tmpStream) Then
             
-            If m_XML.LoadXMLFromString(Strings.StringFromUTF8Ptr(m_tmpStream.Peek_PointerOnly(0, m_tmpStream.GetStreamSize()), m_tmpStream.GetStreamSize())) Then
+            m_XML.SetParamString Strings.StringFromUTF8Ptr(m_tmpStream.Peek_PointerOnly(0, m_tmpStream.GetStreamSize()), m_tmpStream.GetStreamSize())
             
-                'Retrieve the image's dimensions
-                Dim imgWidth As Long, imgHeight As Long, imgBPP As Long
-                imgWidth = m_XML.GetUniqueTag_Long("w")
-                imgHeight = m_XML.GetUniqueTag_Long("h")
-                imgBPP = m_XML.GetUniqueTag_Long("bpp")
-                
-                'Prep a temporary DIB (as we may need to resize the DIB to meet the user's request)
-                If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-                
-                Dim needToCreateDIB As Boolean: needToCreateDIB = False
-                If (m_tmpDIB.GetDIBWidth <> imgWidth) Then
-                    needToCreateDIB = True
-                ElseIf (m_tmpDIB.GetDIBHeight <> imgHeight) Then
-                    needToCreateDIB = True
-                ElseIf (m_tmpDIB.GetDIBColorDepth <> imgBPP) Then
-                    needToCreateDIB = True
-                End If
-                
-                If needToCreateDIB Then
-                    m_tmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
-                    m_tmpDIB.SetInitialAlphaPremultiplicationState True
-                End If
-                
-                'We now have to use one of two strategies to retrieve the DIB
-                ' 1) Pull the actual DIB bits out of the file.  This is only an option if the image
-                '    does *not* support run-time coloration.
-                ' 2) Pull the DIB's alpha channel only out of the file.  If this image *does* support
-                '    run-time coloration, there will not be any color data inside the file.
-                If m_XML.GetUniqueTag_Boolean("rt-clr") Then
-                    
-                    'Reuse the same module-level pixel array, to try and reduce unnecessary allocations
-                    If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
-                        m_ResWidth = imgWidth
-                        m_ResHeight = imgHeight
-                        ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
-                    End If
-                    
-                    LoadImageResource = m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", Nothing, VarPtr(m_Pixels(0, 0)))
-                    If LoadImageResource Then LoadImageResource = DIBs.ApplyTransparencyTable(m_tmpDIB, m_Pixels)
-                    
-                Else
-                    
-                    'See if the DIB was stored using a palette system
-                    If m_XML.GetUniqueTag_Boolean("uses-palette", False) Then
-                    
-                        'Retrieve the palette count, and prep a palette and 8-bpp array
-                        Dim numColors As Long
-                        numColors = m_XML.GetUniqueTag_Long("palette-size")
-                        
-                        'Failsafe check only
-                        If (numColors > 0) Then
-                        
-                            'Reuse the same module-level arrays, to try and reduce unnecessary allocations
-                            If (m_numOfPaletteEntries < numColors) Then
-                                m_numOfPaletteEntries = numColors
-                                ReDim m_Palette(0 To numColors - 1) As RGBQuad
-                            End If
-                            
-                            If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
-                                m_ResWidth = imgWidth
-                                m_ResHeight = imgHeight
-                                ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
-                            End If
-                            
-                            If m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", m_tmpStream) Then
-                                
-                                'Copy the palette and pixel data into place
-                                m_tmpStream.SetPosition 0, FILE_BEGIN
-                                m_tmpStream.ReadBytesToBarePointer VarPtr(m_Palette(0)), numColors * 4
-                                m_tmpStream.ReadBytesToBarePointer VarPtr(m_Pixels(0, 0)), imgWidth * imgHeight
-                                   
-                                'Build a matching 32-bpp DIB from the palette and pixel data
-                                LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, m_Palette, m_Pixels)
-                                
-                            End If
-                        
-                        End If
-                    
-                    Else
-                        Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                        m_tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                        LoadImageResource = m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", Nothing, tmpDIBPointer)
-                    End If
-                    
-                End If
+            'Retrieve the image's dimensions
+            Dim imgWidth As Long, imgHeight As Long, imgBPP As Long
+            imgWidth = m_XML.GetLong("w", 0, True)
+            imgHeight = m_XML.GetLong("h", 0, True)
+            imgBPP = m_XML.GetLong("bpp", 0, True)
             
-                'At present, all resources contain premultiplied alpha, so force the corresponding state now
+            'Prep a temporary DIB (as we may need to resize the DIB to meet the user's request)
+            If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+            
+            Dim needToCreateDIB As Boolean: needToCreateDIB = False
+            If (m_tmpDIB.GetDIBWidth <> imgWidth) Then
+                needToCreateDIB = True
+            ElseIf (m_tmpDIB.GetDIBHeight <> imgHeight) Then
+                needToCreateDIB = True
+            ElseIf (m_tmpDIB.GetDIBColorDepth <> imgBPP) Then
+                needToCreateDIB = True
+            End If
+            
+            If needToCreateDIB Then
+                m_tmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
                 m_tmpDIB.SetInitialAlphaPremultiplicationState True
+            End If
+            
+            'We now have to use one of two strategies to retrieve the DIB
+            ' 1) Pull the actual DIB bits out of the file.  This is only an option if the image
+            '    does *not* support run-time coloration.
+            ' 2) Pull the DIB's alpha channel only out of the file.  If this image *does* support
+            '    run-time coloration, there will not be any color data inside the file.
+            If m_XML.GetBool("rt-clr", False, True) Then
                 
-                'Resize the DIB into the destination
-                If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-                If (desiredWidth = 0) Then desiredWidth = 16
-                If (desiredHeight = 0) Then desiredHeight = 16
-                
-                If (dstDIB.GetDIBWidth <> desiredWidth) Or (dstDIB.GetDIBHeight <> desiredHeight) Then
-                    dstDIB.CreateBlank desiredWidth, desiredHeight, 32, 0, 0
-                Else
-                    dstDIB.ResetDIB 0
+                'Reuse the same module-level pixel array, to try and reduce unnecessary allocations
+                If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
+                    m_ResWidth = imgWidth
+                    m_ResHeight = imgHeight
+                    ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
                 End If
                 
-                dstDIB.SetInitialAlphaPremultiplicationState True
-                GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , resampleAlgorithm, , True, , True
-            
-                'Now, we use a hierarchy of settings to determine how to color this particular icon.
-                
-                'First: if the user wants monochrome icons, this overrides all other color settings.
-                Dim targetColor As Long
-                
-                If m_ThemeIconsMonochrome And (Not suspendMonochrome) Then
-                    If dstIsMenu Then targetColor = m_ThemeIconColorMenu Else targetColor = m_ThemeIconColor
-                    DIBs.ColorizeDIB dstDIB, targetColor
-                
-                'If the user does *not* want monochrome icons, we have more flexibility in how we deal with coloration.
-                Else
-                
-                    'If a custom color was specified, apply it now.
-                    If (customColor <> -1) Then
-                        DIBs.ColorizeDIB dstDIB, customColor
-                    Else
-                    
-                        'If the image supports real-time coloration, apply it now (based on the currently selected theme).
-                        If m_XML.GetUniqueTag_Boolean("rt-clr") Then
-                        
-                            'Retrieve the image's color.  (NOTE: the specified color will be overridden with
-                            ' monochrome if the monochrome icon preference is active; see the branch above.)
-                            If dstIsMenu Then
-                                If m_XML.GetUniqueTag_Boolean("rt-clrmenu", False) Then
-                                    targetColor = m_XML.GetUniqueTag_Long("clr-m")
-                                Else
-                                    targetColor = m_XML.GetUniqueTag_Long("clr-l")
-                                End If
-                            Else
-                                If ((g_Themer.GetCurrentThemeClass = PDTC_Light) Or dstIsMenu) Then
-                                    targetColor = m_XML.GetUniqueTag_Long("clr-l")
-                                ElseIf (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then
-                                    targetColor = m_XML.GetUniqueTag_Long("clr-d")
-                                End If
-                            End If
-                        
-                            DIBs.ColorizeDIB dstDIB, targetColor
-                        
-                        End If
-                        
-                    End If
-                    
-                End If
-            
-                'Before returning, free the target DIB from its DC.  (There's a chance our caller won't
-                ' use the DIB right away, and this keeps an unnecessary GDI object from being created.)
-                dstDIB.FreeFromDC
+                LoadImageResource = m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", Nothing, VarPtr(m_Pixels(0, 0)))
+                If LoadImageResource Then LoadImageResource = DIBs.ApplyTransparencyTable(m_tmpDIB, m_Pixels)
                 
             Else
-                RaiseResourceError "Resource XML bad: " & imgResName
+                
+                'See if the DIB was stored using a palette system
+                If m_XML.GetBool("uses-palette", False, True) Then
+                
+                    'Retrieve the palette count, and prep a palette and 8-bpp array
+                    Dim numColors As Long
+                    numColors = m_XML.GetLong("palette-size", 0, True)
+                    
+                    'Failsafe check only
+                    If (numColors > 0) Then
+                    
+                        'Reuse the same module-level arrays, to try and reduce unnecessary allocations
+                        If (m_numOfPaletteEntries < numColors) Then
+                            m_numOfPaletteEntries = numColors
+                            ReDim m_Palette(0 To numColors - 1) As RGBQuad
+                        End If
+                        
+                        If (m_ResWidth <> imgWidth) Or (m_ResHeight <> imgHeight) Then
+                            m_ResWidth = imgWidth
+                            m_ResHeight = imgHeight
+                            ReDim m_Pixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
+                        End If
+                        
+                        If m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", m_tmpStream) Then
+                            
+                            'Copy the palette and pixel data into place
+                            m_tmpStream.SetPosition 0, FILE_BEGIN
+                            m_tmpStream.ReadBytesToBarePointer VarPtr(m_Palette(0)), numColors * 4
+                            m_tmpStream.ReadBytesToBarePointer VarPtr(m_Pixels(0, 0)), imgWidth * imgHeight
+                               
+                            'Build a matching 32-bpp DIB from the palette and pixel data
+                            LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, m_Palette, m_Pixels)
+                            
+                        End If
+                    
+                    End If
+                
+                Else
+                    Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                    m_tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                    LoadImageResource = m_ResImagePixels.FindChunk_NameValuePair("NAME", imgResName, "DATA", Nothing, tmpDIBPointer)
+                End If
+                
             End If
+        
+            'At present, all resources contain premultiplied alpha, so force the corresponding state now
+            m_tmpDIB.SetInitialAlphaPremultiplicationState True
+            
+            'Resize the DIB into the destination
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            If (desiredWidth = 0) Then desiredWidth = 16
+            If (desiredHeight = 0) Then desiredHeight = 16
+            
+            If (dstDIB.GetDIBWidth <> desiredWidth) Or (dstDIB.GetDIBHeight <> desiredHeight) Then
+                dstDIB.CreateBlank desiredWidth, desiredHeight, 32, 0, 0
+            Else
+                dstDIB.ResetDIB 0
+            End If
+            
+            dstDIB.SetInitialAlphaPremultiplicationState True
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , resampleAlgorithm, , True, , True
+        
+            'Now, we use a hierarchy of settings to determine how to color this particular icon.
+            
+            'First: if the user wants monochrome icons, this overrides all other color settings.
+            Dim targetColor As Long
+            
+            If m_ThemeIconsMonochrome And (Not suspendMonochrome) Then
+                If dstIsMenu Then targetColor = m_ThemeIconColorMenu Else targetColor = m_ThemeIconColor
+                DIBs.ColorizeDIB dstDIB, targetColor
+            
+            'If the user does *not* want monochrome icons, we have more flexibility in how we deal with coloration.
+            Else
+            
+                'If a custom color was specified, apply it now.
+                If (customColor <> -1) Then
+                    DIBs.ColorizeDIB dstDIB, customColor
+                Else
+                
+                    'If the image supports real-time coloration, apply it now (based on the currently selected theme).
+                    If m_XML.GetBool("rt-clr", False, True) Then
+                    
+                        'Retrieve the image's color.  (NOTE: the specified color will be overridden with
+                        ' monochrome if the monochrome icon preference is active; see the branch above.)
+                        If dstIsMenu Then
+                            If m_XML.GetBool("rt-clrmenu", False, True) Then
+                                targetColor = m_XML.GetLong("clr-m", 0, True)
+                            Else
+                                targetColor = m_XML.GetLong("clr-l", 0, True)
+                            End If
+                        Else
+                            If ((g_Themer.GetCurrentThemeClass = PDTC_Light) Or dstIsMenu) Then
+                                targetColor = m_XML.GetLong("clr-l", 0, True)
+                            ElseIf (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then
+                                targetColor = m_XML.GetLong("clr-d", 0, True)
+                            End If
+                        End If
+                    
+                        DIBs.ColorizeDIB dstDIB, targetColor
+                    
+                    End If
+                    
+                End If
+                
+            End If
+        
+            'Before returning, free the target DIB from its DC.  (There's a chance our caller won't
+            ' use the DIB right away, and this keeps an unnecessary GDI object from being created.)
+            dstDIB.FreeFromDC
             
         'resource doesn't exist
         Else
@@ -525,8 +521,6 @@ Private Sub Class_Initialize()
     m_ResourcesAvailable = False
     m_ThemeIconsMonochrome = False
     
-    Set m_XML = New pdXML
-    m_XML.SetTextCompareMode vbBinaryCompare
+    Set m_XML = New pdParamXML
     
 End Sub
-

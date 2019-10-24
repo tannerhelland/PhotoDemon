@@ -466,7 +466,7 @@ Private Sub cmdExport_Click()
         ' current theme and/or request information from the caller.)  Some icons come pre-colored, and as such,
         ' they obey different rules.  This must all be stored in the resource file.
         Dim i As Long, nodeIndex As Long
-        Dim cXML As pdXML: Set cXML = New pdXML
+        Dim cXML As pdParamXML: Set cXML = New pdParamXML
         Dim tmpDIB As pdDIB, tmpDIBSize As Long, tmpDIBPointer As Long
         Const PD_RES_NODE_ID_IMG As String = "PDRSI"
         
@@ -479,9 +479,8 @@ Private Sub cmdExport_Click()
             ' resource image size (w/h), coloration behavior, and any other special instructions.
             If (m_Resources(i).ResType = PDRT_Image) Then
                 
-                cXML.PrepareNewXML PD_RES_NODE_ID_IMG
-                
                 Dim cCount As Long, testPalette() As RGBQuad, testPixels() As Byte
+                cXML.Reset
                 
                 'Load the source image to a temporary DIB (so we can query various image attributes)
                 If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False, True) Then
@@ -489,23 +488,23 @@ Private Sub cmdExport_Click()
                     Dim useImagePalette As Boolean: useImagePalette = False
                     
                     'Write the bare amount of information required to reconstruct the image at run-time
-                    cXML.WriteTag "w", tmpDIB.GetDIBWidth
-                    cXML.WriteTag "h", tmpDIB.GetDIBHeight
-                    cXML.WriteTag "bpp", tmpDIB.GetDIBColorDepth
+                    cXML.AddParam "w", tmpDIB.GetDIBWidth, True, True
+                    cXML.AddParam "h", tmpDIB.GetDIBHeight, True, True
+                    cXML.AddParam "bpp", tmpDIB.GetDIBColorDepth, True, True
                     
                     If m_Resources(i).ResSupportsColoration Then
                         
-                        cXML.WriteTag "rt-clr", "True"
-                        cXML.WriteTag "clr-l", m_Resources(i).ResColorLight
-                        cXML.WriteTag "clr-d", m_Resources(i).ResColorDark
+                        cXML.AddParam "rt-clr", "True", True, True
+                        cXML.AddParam "clr-l", m_Resources(i).ResColorLight, True, True
+                        cXML.AddParam "clr-d", m_Resources(i).ResColorDark, True, True
                         If m_Resources(i).ResCustomMenuColor Then
-                            cXML.WriteTag "rt-clrmenu", "True"
-                            cXML.WriteTag "clr-m", m_Resources(i).ResColorMenu
+                            cXML.AddParam "rt-clrmenu", "True", True, True
+                            cXML.AddParam "clr-m", m_Resources(i).ResColorMenu, True, True
                         End If
                         
                     Else
                     
-                        cXML.WriteTag "rt-clr", "False"
+                        cXML.AddParam "rt-clr", "False", True, True
                         
                         'See how many colors this DIB has.  If it's 256 or less, we can write it to file
                         ' using a palette.
@@ -515,8 +514,8 @@ Private Sub cmdExport_Click()
                         ' and conserve a bunch of file space!
                         If (cCount <= 256) Then
                             useImagePalette = True
-                            cXML.WriteTag "uses-palette", "True"
-                            cXML.WriteTag "palette-size", Trim$(Str$(cCount))
+                            cXML.AddParam "uses-palette", "True", True, True
+                            cXML.AddParam "palette-size", cCount, True, True
                             Debug.Print "Palette candidate found: " & cCount & " - " & m_Resources(i).ResFileLocation
                         End If
                         
@@ -525,7 +524,7 @@ Private Sub cmdExport_Click()
                     'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
                     'cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
                     Dim tmpXmlCopy As String, tmpXmlBytes() As Byte, lenXmlBytes As Long
-                    Strings.UTF8FromString cXML.ReturnCurrentXMLString(True), tmpXmlBytes, lenXmlBytes, , True
+                    Strings.UTF8FromString cXML.GetParamString(), tmpXmlBytes, lenXmlBytes, , True
                     cImageHeaders.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(tmpXmlBytes(0)), lenXmlBytes, cf_None
                     
                     'Write the actual bitmap data to the second half of the node.  Note that we use two
