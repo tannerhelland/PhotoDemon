@@ -259,9 +259,13 @@ Friend Sub SetBrushTextureFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal 
     m_TextureSrc.CreateFromDC srcDC, srcX, srcY, srcWidth, srcHeight, srcColorDepth
 End Sub
 
-Friend Sub SetBrushTextureFromDIB(ByRef srcDIB As pdDIB)
-    If (m_TextureSrc Is Nothing) Then Set m_TextureSrc = New pdDIB
-    m_TextureSrc.CreateFromExistingDIB srcDIB
+Friend Sub SetBrushTextureFromDIB(ByRef srcDIB As pdDIB, Optional ByVal useSoftReference As Boolean = True)
+    If useSoftReference Then
+        Set m_TextureSrc = srcDIB
+    Else
+        If (m_TextureSrc Is Nothing) Then Set m_TextureSrc = New pdDIB
+        m_TextureSrc.CreateFromExistingDIB srcDIB
+    End If
 End Sub
 
 'Unlike other brush functions, this one requires that the brush has already been created.
