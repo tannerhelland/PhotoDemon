@@ -31,11 +31,6 @@ xcopy /q /y /s "%src_dir%\Interfaces" "%temp_dir%\Interfaces\" 2>&1 > nul
 xcopy /q /y /s "%src_dir%\Modules" "%temp_dir%\Modules\" 2>&1 > nul
 xcopy /q /y /s "%src_dir%\Resources" "%temp_dir%\Resources\" 2>&1 > nul
 
-echo Put lines to sources in %temp_dir%...
-for %%i in ("%temp_dir%\*.vbp") do (
-    start "" /w "%VbCodeLines%" %%i
-)
-
 echo Compiling to %out_dir%...
 for %%i in ("%temp_dir%\*.vbp") do (
     del "%log_file%" > nul 2>&1

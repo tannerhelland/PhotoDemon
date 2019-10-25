@@ -1,8 +1,5 @@
 trigger:
   - master
-
-pr:
-  - master
   
 pool: Default
 
@@ -50,7 +47,7 @@ steps:
     continueOnError: true
     inputs:
       githubConnection: github
-      repositoryName: wqweto/PhotoDemon
+      repositoryName: tannerhelland/PhotoDemon
       action: delete
       tag: PhotoDemon-latest
   
@@ -59,7 +56,7 @@ steps:
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
     inputs:
       githubConnection: github
-      repositoryName: wqweto/PhotoDemon
+      repositoryName: tannerhelland/PhotoDemon
       action: create
       tagSource: manual
       tag: PhotoDemon-latest
