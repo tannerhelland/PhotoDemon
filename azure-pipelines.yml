@@ -1,6 +1,6 @@
 trigger:
   - master
-
+ 
 pool: Default
 
 steps:
@@ -65,3 +65,4 @@ steps:
       addChangeLog: true
       compareWith: lastRelease
       isPreRelease: true
+
