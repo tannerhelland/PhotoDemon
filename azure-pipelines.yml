@@ -46,7 +46,7 @@ steps:
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
     continueOnError: true
     inputs:
-      githubConnection: github
+      githubConnection: 'GitHub'
       repositoryName: tannerhelland/PhotoDemon
       action: delete
       tag: PhotoDemon-latest
@@ -55,7 +55,7 @@ steps:
     displayName: 'Create release `PhotoDemon-latest` on github.com'
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
     inputs:
-      githubConnection: github
+      githubConnection: 'GitHub'
       repositoryName: tannerhelland/PhotoDemon
       action: create
       tagSource: manual
@@ -65,4 +65,3 @@ steps:
       addChangeLog: true
       compareWith: lastRelease
       isPreRelease: true
-
