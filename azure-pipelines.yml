@@ -1,0 +1,70 @@
+trigger:
+  - master
+
+pr:
+  - master
+  
+pool: Default
+
+steps:
+  - script: 'call "$(Build.SourcesDirectory)\Support\CI\build.bat" "$(Build.BinariesDirectory)"'
+    displayName: 'Build PhotoDemon.vbp'
+    workingDirectory:  '$(Build.SourcesDirectory)\Support\CI'
+    failOnStderr: true
+  
+  - task: CopyFiles@2
+    displayName: 'Copy PhotoDemon.exe to $(Build.ArtifactStagingDirectory)'
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: |
+        Donate to PhotoDemon.url
+        AUTHORS.md
+        LICENSE.md
+        README.md
+        Support\CI\PhotoDemon.exe
+      targetFolder: '$(Build.BinariesDirectory)'
+      
+  - task: CopyFiles@2
+    displayName: 'Copy App folder to $(Build.ArtifactStagingDirectory)\App'
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)\App'
+      contents: '**'
+      targetFolder: '$(Build.BinariesDirectory)\App'
+  
+  - task: ArchiveFiles@2
+    displayName: 'Archive $(Build.BinariesDirectory)'
+    inputs:
+      rootFolderOrFile: '$(Build.BinariesDirectory)'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/PhotoDemon-latest.zip' 
+      includeRootFolder: false
+  
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact PhotoDemon'
+    inputs:
+      pathToPublish: '$(Build.BinariesDirectory)'
+      artifactName: PhotoDemon
+
+  - task: GithubRelease@0
+    displayName: 'Remove release `PhotoDemon-latest` on github.com'
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
+    continueOnError: true
+    inputs:
+      githubConnection: github
+      repositoryName: wqweto/PhotoDemon
+      action: delete
+      tag: PhotoDemon-latest
+  
+  - task: GithubRelease@0
+    displayName: 'Create release `PhotoDemon-latest` on github.com'
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
+    inputs:
+      githubConnection: github
+      repositoryName: wqweto/PhotoDemon
+      action: create
+      tagSource: manual
+      tag: PhotoDemon-latest
+      title: 'PhotoDemon latest build'
+      assets: $(Build.ArtifactStagingDirectory)/*
+      addChangeLog: true
+      compareWith: lastRelease
+      isPreRelease: true
