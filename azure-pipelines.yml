@@ -32,7 +32,7 @@ steps:
     displayName: 'Archive $(Build.BinariesDirectory)'
     inputs:
       rootFolderOrFile: '$(Build.BinariesDirectory)'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/PhotoDemon-latest.zip' 
+      archiveFile: '$(Build.ArtifactStagingDirectory)/PhotoDemon-nightly.zip' 
       includeRootFolder: false
   
   - task: PublishBuildArtifacts@1
