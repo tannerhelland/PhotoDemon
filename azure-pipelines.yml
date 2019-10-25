@@ -1,6 +1,6 @@
 trigger:
   - master
-  
+
 pool: Default
 
 steps:
