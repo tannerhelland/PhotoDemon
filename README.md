@@ -1,6 +1,10 @@
-# PhotoDemon 7.2 alpha
+[![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--7.2a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?label=build-nightly&style=flat-square) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square)
 
-### PhotoDemon is a portable photo editor focused on performance and usability. 
+[![Download source](https://img.shields.io/badge/download--source-PhotoDemon--7.2a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/tannerhelland/PhotoDemon?style=flat-square)
+
+[![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) 
+
+**PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
 1. [Overview](#overview)
 2. [What makes PhotoDemon unique?](#what-makes-photodemon-unique)
@@ -12,7 +16,7 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than twenty languages.
 
@@ -33,10 +37,10 @@ No installer is provided or required.  Aside from a temporary folder – which y
 Complex editing actions can be recorded as macros (similar to Office software).  A built-in batch processor lets you apply macros to entire folders of images.
 
 ### Usability is paramount
-Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, effect previews, mouse wheel and X-button support, and descriptive menu icons make it fast and easy to use.
+Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop files (PSD) and all major camera RAW formats
+* Extensive file format support, including Adobe Photoshop images (PSD) and all major camera RAW formats
 * Color-managed workflow, including full support for embedded ICC profiles
 * Non-destructive editing for select features, including resizing, rotation, and common adjustments
 * 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, straighten, shear, zoom
@@ -46,7 +50,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ### Limitations
 
-* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
+* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
 
 ## What's new in nightly builds
 
