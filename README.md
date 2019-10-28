@@ -4,6 +4,8 @@
 
 [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) 
 
+## PhotoDemon 7.2-alpha
+
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
 1. [Overview](#overview)
