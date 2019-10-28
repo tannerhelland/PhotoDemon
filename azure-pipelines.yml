@@ -20,6 +20,7 @@ steps:
         README.md
         Support\CI\PhotoDemon.exe
       targetFolder: '$(Build.BinariesDirectory)'
+      cleanTargetFolder: true
       
   - task: CopyFiles@2
     displayName: 'Copy App folder to $(Build.ArtifactStagingDirectory)\App'
