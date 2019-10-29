@@ -7,13 +7,13 @@ pr: none
 pool: Default
 
 steps:
-  - script: 'call "$(Build.SourcesDirectory)\Support\CI\build.bat" "$(Build.BinariesDirectory)"'
+  - script: 'call "$(Build.SourcesDirectory)\Support\CI\build.bat" "$(Build.SourcesDirectory)"'
     displayName: 'Build PhotoDemon.vbp'
     workingDirectory:  '$(Build.SourcesDirectory)\Support\CI'
     failOnStderr: true
   
   - task: CopyFiles@2
-    displayName: 'Copy PhotoDemon.exe to $(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy PhotoDemon.exe to $(Build.BinariesDirectory)'
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       contents: |
@@ -21,12 +21,12 @@ steps:
         AUTHORS.md
         LICENSE.md
         README.md
-        Support\CI\PhotoDemon.exe
+        PhotoDemon.exe
       targetFolder: '$(Build.BinariesDirectory)'
       cleanTargetFolder: true
       
   - task: CopyFiles@2
-    displayName: 'Copy App folder to $(Build.ArtifactStagingDirectory)\App'
+    displayName: 'Copy App folder to $(Build.BinariesDirectory)\App'
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)\App'
       contents: '**'
