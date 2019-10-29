@@ -503,6 +503,10 @@ Private Sub ucSupport_LostFocusAPI()
     RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport_MouseDownCustom Button, Shift, x, y, 0
+End Sub
+
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Determine mouse button state for the up and down button areas
