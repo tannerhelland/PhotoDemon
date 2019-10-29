@@ -67,5 +67,5 @@ steps:
       title: 'PhotoDemon nightly build'
       assets: $(Build.ArtifactStagingDirectory)/*
       addChangeLog: true
-      compareWith: lastRelease
+      compareWith: lastFullRelease
       isPreRelease: true
