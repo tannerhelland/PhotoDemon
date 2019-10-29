@@ -504,48 +504,11 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    ucSupport_MouseDownCustom Button, Shift, x, y, 0
+    InternalMouseDownHandler Button, Shift, x, y
 End Sub
 
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    'Determine mouse button state for the up and down button areas
-    If ((Button = pdLeftButton) And Me.Enabled) Then
-    
-        If PDMath.IsPointInRectF(x, y, m_UpRect) Then
-            m_MouseDownUpButton = True
-            m_MouseDownDownButton = False
-            m_MouseDownResetButton = False
-            
-            'Adjust the value immediately
-            MoveValueDown
-            
-            'Start the repeat timer as well
-            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
-            m_UpButtonTimer.StartTimer
-            
-        Else
-        
-            m_MouseDownUpButton = False
-        
-            If PDMath.IsPointInRectF(x, y, m_DownRect) Then
-                m_MouseDownDownButton = True
-                m_MouseDownResetButton = False
-                MoveValueUp
-                m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
-                m_DownButtonTimer.StartTimer
-            Else
-                m_MouseDownDownButton = False
-                m_MouseDownResetButton = PDMath.IsPointInRectF(x, y, m_ResetRect)
-            End If
-            
-        End If
-        
-        'Request a button redraw
-        RedrawBackBuffer
-        
-    End If
-    
+    InternalMouseDownHandler Button, Shift, x, y, timeStamp
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -628,7 +591,7 @@ Private Sub m_DownButtonTimer_Timer()
     
     'If the resulting value change causes a long-running event to trigger, we need to manually
     ' yield for input events like WM_MOUSEUP.
-    vbhacks.DoEvents_SingleHwnd Me.hWnd
+    VBHacks.DoEvents_SingleHwnd Me.hWnd
     
 End Sub
 
@@ -645,7 +608,7 @@ Private Sub m_UpButtonTimer_Timer()
     
     'If the resulting value change causes a long-running event to trigger, we need to manually
     ' yield for input events like WM_MOUSEUP.
-    vbhacks.DoEvents_SingleHwnd Me.hWnd
+    VBHacks.DoEvents_SingleHwnd Me.hWnd
     
 End Sub
 
@@ -884,6 +847,47 @@ Private Sub CreateEditBox()
         ' Resize() event manually
         RaiseEvent Resize
     
+    End If
+    
+End Sub
+
+Private Sub InternalMouseDownHandler(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, Optional ByVal timeStamp As Long = 0)
+
+    'Determine mouse button state for the up and down button areas
+    If ((Button = pdLeftButton) And Me.Enabled) Then
+    
+        If PDMath.IsPointInRectF(x, y, m_UpRect) Then
+            m_MouseDownUpButton = True
+            m_MouseDownDownButton = False
+            m_MouseDownResetButton = False
+            
+            'Adjust the value immediately
+            MoveValueDown
+            
+            'Start the repeat timer as well
+            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+            m_UpButtonTimer.StartTimer
+            
+        Else
+        
+            m_MouseDownUpButton = False
+        
+            If PDMath.IsPointInRectF(x, y, m_DownRect) Then
+                m_MouseDownDownButton = True
+                m_MouseDownResetButton = False
+                MoveValueUp
+                m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                m_DownButtonTimer.StartTimer
+            Else
+                m_MouseDownDownButton = False
+                m_MouseDownResetButton = PDMath.IsPointInRectF(x, y, m_ResetRect)
+            End If
+            
+        End If
+        
+        'Request a button redraw
+        RedrawBackBuffer
+        
     End If
     
 End Sub
