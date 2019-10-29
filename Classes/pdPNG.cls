@@ -1757,7 +1757,7 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
             Dim newLayerID As Long, newLayerName As String
             newLayerID = dstImage.CreateBlankLayer
             newLayerName = Layers.GenerateInitialLayerName(vbNullString, vbNullString, True, dstImage, renderBuffer, curFrame)
-            dstImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, renderBuffer, True
+            dstImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, renderBuffer, True
             
         End If
         
@@ -4931,6 +4931,11 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef tmpChunk 
     Dim cmpSize As Long
     If (cmpLevel < 0) Then
         cmpLevel = Compression.GetDefaultCompressionLevel(cf_Zlib)
+    
+    'libdeflate does not support "none" compression; you must specify at least a value of 1.
+    ' (I have updated the wrapper to note this, but we also perform a failsafe check here.)
+    ElseIf (cmpLevel = 0) Then
+        cmpLevel = 1
     ElseIf (cmpLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then
         cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     End If

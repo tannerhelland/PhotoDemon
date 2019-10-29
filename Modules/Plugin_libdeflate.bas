@@ -333,7 +333,7 @@ End Function
 ' (as gzip headers/trailers are larger than zlib ones).
 Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib) As Long
     
-    If (compressionLevel = -1) Then compressionLevel = Plugin_libdeflate.GetDefaultCompressionLevel()
+    ValidateCompressionLevel compressionLevel
     
     'libdeflate requires a compressor object in order to calculate a "worst-case" size
     Dim hCompress As Long
@@ -390,13 +390,9 @@ End Function
 
 'Clamp requested compression levels to valid inputs, and resolve negative numbers to the engine's default value.
 Private Sub ValidateCompressionLevel(ByRef inputLevel As Long)
-    If (inputLevel = -1) Then
-        inputLevel = LIBDEFLATE_DEFAULT_CLEVEL
-    ElseIf (inputLevel < LIBDEFLATE_MIN_CLEVEL) Then
-        inputLevel = LIBDEFLATE_MIN_CLEVEL
-    ElseIf (inputLevel > LIBDEFLATE_MAX_CLEVEL) Then
-        inputLevel = LIBDEFLATE_MAX_CLEVEL
-    End If
+    If (inputLevel = -1) Then inputLevel = LIBDEFLATE_DEFAULT_CLEVEL
+    If (inputLevel < LIBDEFLATE_MIN_CLEVEL) Then inputLevel = LIBDEFLATE_MIN_CLEVEL
+    If (inputLevel > LIBDEFLATE_MAX_CLEVEL) Then inputLevel = LIBDEFLATE_MAX_CLEVEL
 End Sub
 
 'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
