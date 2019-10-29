@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
 'Copyright 2014-2019 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 07/Feburary/17
-'Last update: large overhaul as part of moving to comctl32 subclassing
+'Last updated: 29/October/19
+'Last update: manually raise corresponding _MouseDown() event in _DoubleClick() handler
 '
 'As part of implementing paint tools in PhotoDemon, a comprehensive input solution was required.  (Prior to that point,
 ' a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel) covered PD pretty well,
@@ -1008,6 +1008,14 @@ Private Function HandleDblClick(ByVal uiMsg As Long, ByVal wParam As Long, ByVal
         
     End If
     
+    'When handled by Windows, double-click messages do not also raise a corresponding WM_*BUTTONDOWN msg.
+    ' (See https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondblclk)
+    
+    'To ensure that fast repeat clicks are handled correctly, we manually raise a corresponding
+    ' _MouseDown event.  (Note that Windows *will* raise a corresponding WM_*BUTTONUP msg, however.)
+    
+    'Thank you to wqweto and https://github.com/tannerhelland/PhotoDemon/pull/283 for first catching this.
+    RaiseEvent MouseDownCustom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_msgTimestamp)
     RaiseEvent DoubleClickCustom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
     
 End Function

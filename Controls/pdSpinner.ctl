@@ -503,10 +503,6 @@ Private Sub ucSupport_LostFocusAPI()
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    InternalMouseDownHandler Button, Shift, x, y
-End Sub
-
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     InternalMouseDownHandler Button, Shift, x, y, timeStamp
 End Sub

@@ -334,7 +334,10 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
     If m_InOLEDragDropMode Then Exit Sub
     
     If (PDMath.IsPointInRect(x, y, m_NameRect) And (Button = pdLeftButton)) Then
-    
+        
+        'Just in case, forcibly deactivate "layer rearrange" mode
+        m_LayerRearrangingMode = False
+        
         'Move the text layer box into position
         txtLayerName.SetPositionAndSize m_NameEditRect.Left, m_NameEditRect.Top, m_NameEditRect.Right - m_NameEditRect.Left, m_NameEditRect.Bottom - m_NameEditRect.Top
         txtLayerName.ZOrder 0
@@ -350,6 +353,7 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
         Processor.FlagInitialNDFXState_Generic pgp_Name, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
         
         txtLayerName.SetFocus
+        txtLayerName.SelectAll
     
     'Hide the text box if it isn't already
     Else
