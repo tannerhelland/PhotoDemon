@@ -1081,6 +1081,7 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     
         'Next, prepare the destination DIB.  If at all possible, we try to optimize this by reusing DIBs that are already
         ' an acceptable size.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         If (dstDIB.GetDIBWidth <> intLayerWidth) Or (dstDIB.GetDIBHeight <> intLayerHeight) Then
             dstDIB.CreateBlank intLayerWidth, intLayerHeight, 32, 0, 0
             dstDIB.SetInitialAlphaPremultiplicationState True

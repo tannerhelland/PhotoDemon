@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Clone"
 'Clone stamp tool interface
 'Copyright 2019-2019 by Tanner Helland
 'Created: 16/September/19
-'Last updated: 20/September/19
-'Last update: add "sample merged" option
+'Last updated: 29/October/19
+'Last update: add support for cloning from layers with active non-destructive transforms
 '
 'The clone tool is nearly identical to the standard soft brush tool.  The only difference is in how the
 ' source overlay is calculated (e.g. instead of a solid fill, it samples from a source image/layer).
@@ -82,6 +82,10 @@ Private m_SampleMerged As Boolean, m_SampleMergedCopy As pdDIB
 Private m_Sample As pdDIB, m_SampleUntouched As pdDIB
 Private m_Aligned As Boolean, m_WrapMode As PD_2D_WrapMode
 Private m_CtrlKeyDown As Boolean
+
+'If the source layer is using one or more non-destructive transforms, we need to make a local copy
+' of the layer with *all* transforms applied.  (This is much faster to clone.)
+Private m_SourceLayerIsTransformed As Boolean, m_SourceLayerTransformed As pdDIB
 
 'Universal brush settings, applicable for most sources.  (I say "most" because some settings can contradict each other;
 ' for example, a "locked" alpha mode + "erase" blend mode makes little sense, but it is technically possible to set
@@ -387,8 +391,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         'Calculate an offset from the current point to the source point; this is maintained
         ' for the duration of this stroke.
         If m_FirstStroke Or (Not m_Aligned) Then
-            m_SourceOffsetX = (m_SourcePoint.x - m_MouseX) - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
-            m_SourceOffsetY = (m_SourcePoint.y - m_MouseY) - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
+            m_SourceOffsetX = (m_SourcePoint.x - m_MouseX)
+            m_SourceOffsetY = (m_SourcePoint.y - m_MouseY)
             m_OrigSourceOffsetX = m_SourceOffsetX
             m_OrigSourceOffsetY = m_SourceOffsetY
         Else
@@ -415,6 +419,24 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             Else
                 If (m_SampleMergedCopy Is Nothing) Then Set m_SampleMergedCopy = New pdDIB
                 PDImages.GetImageByID(m_SourceImageID).GetCompositedImage m_SampleMergedCopy, True
+            End If
+        
+        'Similarly, if the source layer has one or more active non-destructive transforms, we want to
+        ' cache a transformed copy now.
+        Else
+            
+            m_SourceLayerIsTransformed = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).AffineTransformsActive(True)
+            If m_SourceLayerIsTransformed Then
+                
+                Dim tmpTransformDIB As pdDIB, tmpX As Long, tmpY As Long
+                PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetAffineTransformedDIB tmpTransformDIB, tmpX, tmpY
+                
+                If (m_SourceLayerTransformed Is Nothing) Then Set m_SourceLayerTransformed = New pdDIB
+                m_SourceLayerTransformed.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0, 0
+                
+                GDI.BitBltWrapper m_SourceLayerTransformed.GetDIBDC, tmpX, tmpY, tmpTransformDIB.GetDIBWidth, tmpTransformDIB.GetDIBHeight, tmpTransformDIB.GetDIBDC, 0, 0, vbSrcCopy
+                Set tmpTransformDIB = Nothing
+                
             End If
             
         End If
@@ -554,7 +576,11 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         If m_SampleMerged Then
             Set srcDIB = m_SampleMergedCopy
         Else
-            Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+            If m_SourceLayerIsTransformed Then
+                Set srcDIB = m_SourceLayerTransformed
+            Else
+                Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+            End If
         End If
         
         'Prep the sampling DIB.  Note that it is *always* full size, regardless of the actual brush size we're gonna use
@@ -746,6 +772,15 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         .Width = m_BrushSizeInt
         .Height = m_BrushSizeInt
     End With
+    
+    'If sampling directly from a source layer (e.g. sampling merged is NOT set), we need to adjust
+    ' our source rectangle to account for the source layer's potential x/y offsets in the image.
+    If (Not m_SampleMerged) And (Not m_SourceLayerIsTransformed) Then
+        With srcRectL
+            .Left = .Left - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
+            .Top = .Top - PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
+        End With
+    End If
     
     With dstRectL
         .Left = 0
@@ -1057,12 +1092,12 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                 srcY = m_MouseY
             Else
                 If m_Paintbrush.IsMouseDown() Then
-                    srcX = m_MouseX + m_SourceOffsetX + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
-                    srcY = m_MouseY + m_SourceOffsetY + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
+                    srcX = m_MouseX + m_SourceOffsetX
+                    srcY = m_MouseY + m_SourceOffsetY
                 Else
                     If m_Aligned And (Not m_SourceSetThisClick) Then
-                        srcX = m_MouseX + m_SourceOffsetX + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetX
-                        srcY = m_MouseY + m_SourceOffsetY + PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).GetLayerOffsetY
+                        srcX = m_MouseX + m_SourceOffsetX
+                        srcY = m_MouseY + m_SourceOffsetY
                     Else
                         srcX = m_SourcePoint.x
                         srcY = m_SourcePoint.y
