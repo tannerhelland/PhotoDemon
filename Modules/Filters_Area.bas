@@ -509,7 +509,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'Calculate sigma from the radius, using a similar formula to ImageJ (per this link - http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
     Dim sigma As Double
     Const LOG_255_BASE_10 As Double = 2.40654018043395
-    sigma = (radius + 1) / Sqr(2 * LOG_255_BASE_10)
+    sigma = (radius + 1) / Sqr(2# * LOG_255_BASE_10)
     
     'Make sure sigma and steps are not so small as to produce errors or invisible results
     If (sigma <= 0#) Then sigma = 0.001

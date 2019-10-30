@@ -1369,13 +1369,14 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
 End Function
 
 'Given two DIBs, fill one with an approximated gaussian-blur version of the other.
-' Per the Central Limit Theorem, a Gaussian function can be approximated within 3% by three iterations of a matching box function.
-' Gaussian blur and a 3x box blur are thus "roughly" identical, but there are some trade-offs - PD's Gaussian Blur uses a modified
-' standard deviation function, which results in a higher-quality blur.  It also supports floating-point radii.  Both these options
-' are lost if this approximate function is used.  That said, the performance trade-off (20x faster in most cases) is well worth it
-' for all but the most stringent blur needs.
 '
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+'Per the Central Limit Theorem, a Gaussian function can be approximated within 3% by three iterations of a
+' matching box function.  Gaussian blur and a 3x box blur are thus "roughly" identical, but there are some
+' trade-offs - most significantly, floating-point radii accuracy is lost if this approximate function is used
+' (because box blurs only operate on integer radii).  That said, the performance trade-offs are worth it for
+' all but the most stringent blur needs.
+'
+'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1386,61 +1387,41 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    'Modify the Gaussian radius, and convert it to an integer.  (Box blurs don't work on floating-point radii.)
-    Dim comparableRadius As Long
+    'Gaussian convolution can be (swiftly!) approximated using a piece-wise quadratic convolution kernel.
+    ' Said another way, repeating a box blur 3x can produce an end result that's ~97% identical to a
+    ' true Gaussian kernel (per the central-limit theorem).
     
-    'If the number of iterations = 3, we can approximate a correct radius using a piece-wise quadratic convolution kernel.
-    ' This should result in a kernel that's ~97% identical to a Gaussian kernel.  For a more in-depth explanation of
-    ' converting between standard deviation and a box blur estimation, please see this W3 spec:
-    ' http://www.w3.org/TR/SVG11/filters.html#feGaussianBlurElement
-    If (numIterations = 3) Then
-        Dim stdDev As Double
-        stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2# * Log(1# / 255#)))
-        comparableRadius = Int(stdDev * 2.37997232 * 0.5 + 0.5)
-    Else
+    'Unfortunately, there is always a gap between the theoretical application of a rule and its practical
+    ' application.  In this case, it's addressing the question: how do you calculate appropriate radii for
+    ' your individual box blur iterations?  The answer is not straightforward.
     
-        'For larger iterations, it's not worth the trouble to perform a fine estimation, as repeat iterations
-        ' eliminate small discrepancies.  Use a quick-and-dirty computation to calculate radius:
-        comparableRadius = Int(equivalentGaussianRadius / numIterations + 0.5)
+    'I've tried many different gaussian > box radius conversion algorithms over the years.  All have trade-offs.
+    ' At present, I'm using a conversion algorithm c/o Ivan Kutskir at this page: http://blog.ivank.net/fastest-gaussian-blur.html
+    ' Ivan credits a second link for the theory behind the algorithm: http://www.csse.uwa.edu.au/~pk/research/matlabfns/#integral
+    ' Thank you to all of the above authors for their work.
+    Dim wIdeal As Double
+    equivalentGaussianRadius = equivalentGaussianRadius * 0.5
+    wIdeal = Sqr((12# * equivalentGaussianRadius * equivalentGaussianRadius) / CDbl(numIterations) + 1#)
     
-    End If
+    Dim wL As Long, wU As Long
+    wL = Int(wIdeal)
+    If (wL Mod 2 = 0) Then wL = wL - 1
+    wU = wL + 2
+                
+    Dim mIdeal As Double
+    mIdeal = (12 * equivalentGaussianRadius * equivalentGaussianRadius - numIterations * wL * wL - 4 * numIterations * wL - 3 * numIterations) / (-4 * wL - 4)
     
-    'Box blurs require a radius of at least 1, so force it to that
-    If (comparableRadius < 1) Then comparableRadius = 1
+    Dim m As Long
+    m = Int(mIdeal + 0.5)
     
-    'We now want to populate an array of radii, each of which will be used at one of the iterations.  We do this
-    ' so that we can more accurately imitate the original gaussian blur with a series of box blurs.
+    'Populate the radius table with our results
     Dim radiiTable() As Long
     ReDim radiiTable(0 To numIterations - 1) As Long
     
-    Dim netRadii As Long, thisRadii As Long
-    
     Dim i As Long
     For i = 0 To numIterations - 1
-        
-        'For all (n-1) iterations, use the comparable radius calculated above
-        If (i < numIterations - 1) Then
-            thisRadii = comparableRadius
-        
-        'For the final iteration, use the remainder (e.g. the difference between how many radii we've calculated,
-        ' and how many radii remain to be calculated)
-        Else
-            
-            thisRadii = (equivalentGaussianRadius - netRadii)
-            
-            'If the remainder is <= 0, simply remove the final iteration of the blur to compensate
-            If (thisRadii < 1) Then
-                thisRadii = 1
-                numIterations = numIterations - 1
-                If (numIterations < 1) Then numIterations = 1
-            End If
-            
-        End If
-        
-        radiiTable(i) = thisRadii
-        
-        netRadii = netRadii + thisRadii
-        
+        If (i < m) Then radiiTable(i) = wL Else radiiTable(i) = wU
+        radiiTable(i) = (radiiTable(i) - 1) \ 2
     Next i
     
     'Create an extra intermediate DIB.  This is needed to cache the results of the horizontal blur, before we apply the vertical pass to it.
