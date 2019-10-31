@@ -399,9 +399,9 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     'Maximum and minimum values, which will be detected by our initial histogram run
     Dim rMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
-    Dim RMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
     rMax = 0: gMax = 0: bMax = 0: lMax = 0
-    RMin = 255: gMin = 255: bMin = 255: lMin = 255
+    rMin = 255: gMin = 255: bMin = 255: lMin = 255
     
     'Calculate a percentage to ignore at either end.  Photoshop defaults to 0.5%, but the actual value might need to vary on
     ' a per-image basis... hard to know what the best approach is.
@@ -465,7 +465,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            RMin = r
+            rMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -570,7 +570,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     ' between per-channel corrections and net luminance corrections.  This roughly maintains the existing color spread of the image,
     ' while removing any obviously bad results, and producing a consistently well-exposed final image.  It also serves to balance out
     ' color temperature in an elegant way, without subjecting photos to the standard over-cooled look of other auto-level tools.
-    RMin = RMin \ 2
+    rMin = rMin \ 2
     gMin = gMin \ 2
     bMin = bMin \ 2
     lMin = lMin \ 2
@@ -588,7 +588,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "redinputmin", RMin
+        .AddParam "redinputmin", rMin
         .AddParam "redinputmid", 0.5
         .AddParam "redinputmax", rMax
         .AddParam "redoutputmin", 0

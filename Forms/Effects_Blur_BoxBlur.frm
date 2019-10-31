@@ -146,8 +146,8 @@ Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview 
     End If
     
     'Apply the box blur in two steps: a fast horizontal blur, then a fast vertical blur
-    CreateHorizontalBlurDIB hRadius, hRadius, workingDIB, srcDIB, toPreview, workingDIB.GetDIBWidth + workingDIB.GetDIBHeight
-    CreateVerticalBlurDIB vRadius, vRadius, srcDIB, workingDIB, toPreview, workingDIB.GetDIBWidth + workingDIB.GetDIBHeight, workingDIB.GetDIBWidth
+    CreateHorizontalBlurDIB hRadius, hRadius, workingDIB, srcDIB, toPreview, workingDIB.GetDIBHeight * 2
+    CreateVerticalBlurDIB vRadius, vRadius, srcDIB, workingDIB, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
     
     srcDIB.EraseDIB
     Set srcDIB = Nothing

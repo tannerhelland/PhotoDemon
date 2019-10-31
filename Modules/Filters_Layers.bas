@@ -1382,7 +1382,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBWidth * numIterations + srcDIB.GetDIBHeight * numIterations
+    If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBHeight * (numIterations * 2)
     If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = ProgressBars.FindBestProgBarValue()
@@ -1432,15 +1432,11 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     
     'Iterate a box blur, switching between the gauss and destination DIBs as we go
     For i = 0 To numIterations - 1
-        
-        If (radiiTable(i) > 0) Then
-            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * i)) > 0) Then
-                If (CreateVerticalBlurDIB(radiiTable(i), radiiTable(i), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i + 1)) + (gaussDIB.GetDIBHeight * i)) = 0) Then Exit For
-            Else
-                Exit For
-            End If
+        If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBHeight * i) + (gaussDIB.GetDIBHeight * i)) > 0) Then
+            If (CreateVerticalBlurDIB(radiiTable(i), radiiTable(i), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBHeight * (i + 1)) + (gaussDIB.GetDIBHeight * i)) = 0) Then Exit For
+        Else
+            Exit For
         End If
-    
     Next i
     
     'Erase the temporary DIB and exit
@@ -1931,17 +1927,11 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     End If
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray1D
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray1D
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -1957,7 +1947,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
         If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
+            SetProgBarMax finalY
         Else
             SetProgBarMax modifyProgBarMax
         End If
@@ -1970,7 +1960,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     'Limit the left and right offsets to the width of the image
     If (lRadius > xRadius) Then lRadius = xRadius
     If (rRadius > xRadius) Then rRadius = xRadius
-        
+    
     'The number of pixels in the current horizontal line are tracked dynamically.  (This lets us weight edges differently,
     ' yielding a much nicer blur along boundary pixels.)
     Dim numOfPixels As Long
@@ -1981,88 +1971,115 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     
     'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
     ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
-    Dim rTotals() As Long, gTotals() As Long, bTotals() As Long, aTotals() As Long
-    ReDim rTotals(initY To finalY) As Long
-    ReDim gTotals(initY To finalY) As Long
-    ReDim bTotals(initY To finalY) As Long
-    ReDim aTotals(initY To finalY) As Long
+    Dim rTotal As Long, gTotal As Long, bTotal As Long, aTotal As Long
     
-    Dim avgSample As Double
+    'We'll also pre-cache the first and last values in each line; this allows us to skip subsequent accesses
+    Dim rInit As Byte, gInit As Byte, bInit As Byte, aInit As Byte
+    Dim rFinal As Byte, gFinal As Byte, bFinal As Byte, aFinal As Byte
+    
+    numOfPixels = lRadius + rRadius + 1
     
     'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
     ' pixels left of that!)
-    For x = initX To initX + rRadius - 1
-        xStride = x * 4
     For y = initY To finalY
-        bTotals(y) = bTotals(y) + srcImageData(xStride, y)
-        gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
-        rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
-        aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
-    Next y
-        numOfPixels = numOfPixels + 1
-    Next x
+        
+        'Reset all line trackers
+        bTotal = 0
+        gTotal = 0
+        rTotal = 0
+        aTotal = 0
+        
+        'Point the source and destination arrays at the proper locations.
+        dstDIB.WrapArrayAroundScanline dstImageData, dstSA, y
+        srcDIB.WrapArrayAroundScanline srcImageData, srcSA, y
+        
+        'Populate the initial accumulators
+        
+        'Make a note of the first r/g/b/a values in the line; this allows us to skip
+        ' (relatively expensive) array accesses for these values.
+        bInit = srcImageData(0)
+        gInit = srcImageData(1)
+        rInit = srcImageData(2)
+        aInit = srcImageData(3)
+        
+        xStride = finalX * 4
+        bFinal = srcImageData(xStride)
+        gFinal = srcImageData(xStride + 1)
+        rFinal = srcImageData(xStride + 2)
+        aFinal = srcImageData(xStride + 3)
+        
+        'First, add copies of the left-most pixel (effectively clamping the edges of the blur).
+        ' Note that we also add an *extra* copy of the left-most pixel; this allows us to skip a
+        ' boundary check on the inner loop.
+        bTotal = bTotal + bInit * (lRadius + 1)
+        gTotal = gTotal + gInit * (lRadius + 1)
+        rTotal = rTotal + rInit * (lRadius + 1)
+        aTotal = aTotal + aInit * (lRadius + 1)
+        
+        'Next, add all pixels in the initial radius
+        For x = initX To initX + rRadius - 1
+            xStride = x * 4
+            bTotal = bTotal + srcImageData(xStride)
+            gTotal = gTotal + srcImageData(xStride + 1)
+            rTotal = rTotal + srcImageData(xStride + 2)
+            aTotal = aTotal + srcImageData(xStride + 3)
+        Next x
+        
+        'Loop through each column in this row, updating the accumulator as we go
+        For x = initX To finalX
+            
+            'Remove trailing values from the blur collection if they lie outside the processing radius
+            lbX = x - lRadius
+            If (lbX > 0) Then
+                xStride = (lbX - 1) * 4
+                bTotal = bTotal - srcImageData(xStride)
+                gTotal = gTotal - srcImageData(xStride + 1)
+                rTotal = rTotal - srcImageData(xStride + 2)
+                aTotal = aTotal - srcImageData(xStride + 3)
+            Else
+                bTotal = bTotal - bInit
+                gTotal = gTotal - gInit
+                rTotal = rTotal - rInit
+                aTotal = aTotal - aInit
+            End If
+            
+            'Add leading values to the blur box if they lie inside the processing radius
+            ubX = x + rRadius
+            If (ubX <= finalX) Then
+                xStride = ubX * 4
+                bTotal = bTotal + srcImageData(xStride)
+                gTotal = gTotal + srcImageData(xStride + 1)
+                rTotal = rTotal + srcImageData(xStride + 2)
+                aTotal = aTotal + srcImageData(xStride + 3)
+            Else
+                bTotal = bTotal + bFinal
+                gTotal = gTotal + gFinal
+                rTotal = rTotal + rFinal
+                aTotal = aTotal + aFinal
+            End If
                 
-    'Loop through each column in the image, tallying blur values as we go
-    For x = initX To finalX
-        
-        'Remove trailing values from the blur collection if they lie outside the processing radius
-        lbX = x - lRadius
-        If (lbX > 0) Then
-        
-            xStride = (lbX - 1) * 4
-        
-            For y = initY To finalY
-                bTotals(y) = bTotals(y) - srcImageData(xStride, y)
-                gTotals(y) = gTotals(y) - srcImageData(xStride + 1, y)
-                rTotals(y) = rTotals(y) - srcImageData(xStride + 2, y)
-                aTotals(y) = aTotals(y) - srcImageData(xStride + 3, y)
-            Next y
+            'Apply the blurred value to the destination image.
+            xStride = x * 4
+            dstImageData(xStride) = bTotal \ numOfPixels
+            dstImageData(xStride + 1) = gTotal \ numOfPixels
+            dstImageData(xStride + 2) = rTotal \ numOfPixels
+            dstImageData(xStride + 3) = aTotal \ numOfPixels
             
-            numOfPixels = numOfPixels - 1
-        
-        End If
-        
-        'Add leading values to the blur box if they lie inside the processing radius
-        ubX = x + rRadius
-        If (ubX <= finalX) Then
-        
-            xStride = ubX * 4
-            
-            For y = initY To finalY
-                bTotals(y) = bTotals(y) + srcImageData(xStride, y)
-                gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
-                rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
-                aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
-            Next y
-            
-            numOfPixels = numOfPixels + 1
-            
-        End If
-            
-        'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
-        xStride = x * 4
-        avgSample = 1# / numOfPixels
-        
-        For y = initY To finalY
-            dstImageData(xStride, y) = Int(bTotals(y) * avgSample + 0.5)
-            dstImageData(xStride + 1, y) = Int(gTotals(y) * avgSample + 0.5)
-            dstImageData(xStride + 2, y) = Int(rTotals(y) * avgSample + 0.5)
-            dstImageData(xStride + 3, y) = Int(aTotals(y) * avgSample + 0.5)
-        Next y
+        Next x
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
         If (Not suppressMessages) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-        
-    Next x
+            
+    Next y
         
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    dstDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
     
     If g_cancelCurrentAction Then CreateHorizontalBlurDIB = 0 Else CreateHorizontalBlurDIB = 1
     
