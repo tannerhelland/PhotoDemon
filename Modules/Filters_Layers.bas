@@ -1382,10 +1382,14 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBHeight * (numIterations * 2)
+    If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBHeight * numIterations + srcDIB.GetDIBWidth * numIterations
     If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
-    
     progBarCheck = ProgressBars.FindBestProgBarValue()
+    
+    'Cache image dimensions as well
+    Dim origSrcWidth As Long, origSrcHeight As Long
+    origSrcWidth = srcDIB.GetDIBWidth
+    origSrcHeight = srcDIB.GetDIBHeight
     
     'Gaussian convolution can be (swiftly!) approximated using a piece-wise quadratic convolution kernel.
     ' Said another way, repeating a box blur 3x can produce an end result that's ~97% identical to a
@@ -1428,21 +1432,68 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
     gaussDIB.CreateFromExistingDIB srcDIB
-    dstDIB.CreateFromExistingDIB gaussDIB
     
-    'Iterate a box blur, switching between the gauss and destination DIBs as we go
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateFromExistingDIB srcDIB
+    
+    'First we're going to apply *all* horizontal blurs to the image.
     For i = 0 To numIterations - 1
-        If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBHeight * i) + (gaussDIB.GetDIBHeight * i)) > 0) Then
-            If (CreateVerticalBlurDIB(radiiTable(i), radiiTable(i), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBHeight * (i + 1)) + (gaussDIB.GetDIBHeight * i)) = 0) Then Exit For
+        
+        'On even-numbered passes, draw from source to destination; on odd-numbered passes, draw from destination to source.
+        If ((i And 1) = 0) Then
+            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (origSrcHeight * i)) = 0) Then Exit For
         Else
-            Exit For
+            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (origSrcHeight * i)) = 0) Then Exit For
         End If
+        
     Next i
     
-    'Erase the temporary DIB and exit
-    gaussDIB.EraseDIB
-    Set gaussDIB = Nothing
+    'We're now going to do something weird; we're going to rotate the source image 90 degrees, then blur *that*.
+    ' This seems crazy, but it's actually faster as it greatly improves CPU caching by placing blurred pixels
+    ' contiguously in-memory.
     
+    'Also, forgive the ugly aliasing nonsense - this is basically a cheap way to ensure that both even and odd
+    ' iteration counts are handled with a single copy operation.
+    Dim tmpSrc As pdDIB, tmpDst As pdDIB
+    If ((numIterations And 1) = 0) Then
+        Set tmpSrc = gaussDIB
+        Set tmpDst = dstDIB
+    Else
+        Set tmpSrc = dstDIB
+        Set tmpDst = gaussDIB
+    End If
+    
+    tmpDst.CreateBlank origSrcHeight, origSrcWidth, 32, 0, 0
+    GDI_Plus.GDIPlusRotateFlipDIB tmpSrc, tmpDst, GP_RF_90FlipNone
+    tmpSrc.CreateFromExistingDIB tmpDst
+    
+    'We're now going to apply *all* vertical blurs to the image
+    For i = 0 To numIterations - 1
+        
+        'On even-numbered passes, draw from source to destination; on odd-numbered passes, draw from destination to source.
+        If ((i And 1) = 0) Then
+            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), tmpSrc, tmpDst, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (origSrcHeight * numIterations) + (origSrcWidth * i)) = 0) Then Exit For
+        Else
+            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), tmpDst, tmpSrc, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (origSrcHeight * numIterations) + (origSrcWidth * i)) = 0) Then Exit For
+        End If
+        
+    Next i
+    
+    'Copy the source into the destination, using a similarly ridiculous aliasing approach
+    Dim finalSrc As pdDIB, finalDst As pdDIB
+    If ((numIterations And 1) = 0) Then
+        Set finalSrc = tmpSrc
+        Set finalDst = tmpDst
+    Else
+        Set finalSrc = tmpDst
+        Set finalDst = tmpSrc
+    End If
+    
+    finalDst.CreateBlank origSrcWidth, origSrcHeight, 32, 0, 0
+    GDI_Plus.GDIPlusRotateFlipDIB finalSrc, finalDst, GP_RF_270FlipNone
+    If (finalDst.GetDIBDC <> dstDIB.GetDIBDC) Then dstDIB.CreateFromExistingDIB finalDst
+    
+    'Based on global cancellation state, return success/failure
     If g_cancelCurrentAction Then CreateApproximateGaussianBlurDIB = 0 Else CreateApproximateGaussianBlurDIB = 1
 
 End Function
@@ -1946,11 +1997,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalY
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     

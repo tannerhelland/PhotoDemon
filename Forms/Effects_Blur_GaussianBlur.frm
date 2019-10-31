@@ -145,12 +145,8 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
     
         '3 iteration box blur
         Case 0
-            Dim srcDIB As pdDIB
-            Set srcDIB = New pdDIB
-            srcDIB.CreateFromExistingDIB workingDIB
-            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
-            Set srcDIB = Nothing
-        
+            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, workingDIB, workingDIB, 3, toPreview
+            
         'IIR Gaussian estimation
         Case Else
             Filters_Area.GaussianBlur_IIRImplementation workingDIB, gRadius, 3, toPreview

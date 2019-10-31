@@ -624,6 +624,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
     Next y
     
+    'TODO: profile a potentially faster approach: rotate all arrays 90 degrees, horizontally blur *those*,
+    ' then rotate back.  On an integer-based box blur, this is much faster thanks to greatly improved
+    ' cache behavior.
+    
     'Now repeat all the above steps, but filtering vertically along each column, instead
     If (Not g_cancelCurrentAction) Then
     
