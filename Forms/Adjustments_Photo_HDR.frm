@@ -162,8 +162,7 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
     blendStrength = (blendStrength * 2#) / 100#
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    'If toPreview Then hdrRadius = hdrRadius * curDIBValues.previewModifier
-    If hdrRadius = 0 Then hdrRadius = 1
+    If (hdrRadius = 0) Then hdrRadius = 1
     
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
     ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
@@ -174,30 +173,26 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
     
     Dim progBarCalculation As Long
     progBarCalculation = finalY * 3 + finalX * 3
-    gaussBlurSuccess = CreateApproximateGaussianBlurDIB(hdrRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalX)
+    If (Not toPreview) Then ProgressBars.SetProgBarMax progBarCalculation + finalY
+    gaussBlurSuccess = CreateApproximateGaussianBlurDIB(hdrRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalY)
     
     'Assuming the blur was created successfully, proceed with the masking portion of the filter.
     If (gaussBlurSuccess <> 0) Then
     
         'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
-        Dim dstImageData() As Byte
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-        Dim srcImageData() As Byte
-        Dim srcSA As SafeArray2D
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        Dim dstImageData() As Byte, dstSA1D As SafeArray1D
+        Dim srcImageData() As Byte, srcSA1D As SafeArray1D
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
+        Dim xStride As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
         progBarCheck = ProgressBars.FindBestProgBarValue()
-            
+        
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
         scaleFactor = blendStrength + 1#
@@ -215,19 +210,22 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         Const ONE_DIV_255 As Double = 1# / 255#
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            quickVal = x * qvDepth
         For y = initY To finalY
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, y
+            workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+        For x = initX To finalX
+        
+            xStride = x * qvDepth
             
             'Retrieve the original image's pixels
-            b = dstImageData(quickVal, y)
-            g = dstImageData(quickVal + 1, y)
-            r = dstImageData(quickVal + 2, y)
+            b = dstImageData(xStride)
+            g = dstImageData(xStride + 1)
+            r = dstImageData(xStride + 2)
             
             'Now, retrieve the gaussian pixels
-            b2 = srcImageData(quickVal, y)
-            g2 = srcImageData(quickVal + 1, y)
-            r2 = srcImageData(quickVal + 2, y)
+            b2 = srcImageData(xStride)
+            g2 = srcImageData(xStride + 1)
+            r2 = srcImageData(xStride + 2)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
             
@@ -255,22 +253,21 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
             If (s > 1#) Then s = 1#
             Colors.ImpreciseHSLtoRGB h, s, l, newR, newG, newB
             
-            dstImageData(quickVal, y) = newB
-            dstImageData(quickVal + 1, y) = newG
-            dstImageData(quickVal + 2, y) = newR
+            dstImageData(xStride) = newB
+            dstImageData(xStride + 1) = newG
+            dstImageData(xStride + 2) = newR
                                     
-        Next y
+        Next x
             If (Not toPreview) Then
-                If (x And progBarCheck) = 0 Then
+                If (y And progBarCheck) = 0 Then
                     If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal progBarCalculation + x
+                    SetProgBarVal progBarCalculation + y
                 End If
             End If
-        Next x
+        Next y
         
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        
+        workingDIB.UnwrapArrayFromDIB dstImageData
+        srcDIB.UnwrapArrayFromDIB srcImageData
         Set srcDIB = Nothing
         
     End If
