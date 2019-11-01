@@ -1051,7 +1051,6 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     'First, if the shadow and highlight regions have different radius values, we need to make a backup copy
     ' of the current DIB.
     Dim backupDIB As pdDIB
-    
     If (shadowRadius <> highlightRadius) Or (shadowAmount = 0#) Then
         Set backupDIB = New pdDIB
         backupDIB.CreateFromExistingDIB srcDIB
@@ -1065,7 +1064,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     blurDIB.CreateFromExistingDIB srcDIB
     
     'Shadows are handled first.  If the user requested a radius > 0, blur the reference image now.
-    If (shadowAmount <> 0#) And (shadowRadius > 0) Then QuickBlurDIB blurDIB, shadowRadius, False
+    If (shadowAmount <> 0#) And (shadowRadius > 0) Then Filters_Layers.CreateApproximateGaussianBlurDIB shadowRadius, blurDIB, blurDIB, 2, True
         
     'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required
     ' loop objects now.
@@ -1073,14 +1072,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     'Create local arrays and point them at the source DIB and blurred DIB
     Dim srcImageData() As Byte, blurImageData() As Byte
-    Dim srcSA As SafeArray2D, blurSA As SafeArray2D
+    Dim srcSA As SafeArray1D, blurSA As SafeArray1D
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    PrepSafeArray blurSA, blurDIB
-    CopyMemory ByVal VarPtrArray(blurImageData()), VarPtr(blurSA), 4
-        
     'Prep local loop variables
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -1090,7 +1083,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             
     'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want
     ' to handle both cases.)
-    Dim quickX As Long, qvDepth As Long
+    Dim xStride As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Prep color retrieval variables (Long-type, because intermediate calculates may exceed byte range)
@@ -1104,15 +1097,18 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     'Start processing shadow pixels
     If (shadowAmount <> 0) Then
     
-        For x = initX To finalX
-            quickX = x * qvDepth
         For y = initY To finalY
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, y
+            blurDIB.WrapArrayAroundScanline blurImageData, blurSA, y
+        For x = initX To finalX
+            
+            xStride = x * qvDepth
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance
             ' detection, to improve transitions between light and dark regions in the image.)
-            bBlur = blurImageData(quickX, y)
-            gBlur = blurImageData(quickX + 1, y)
-            rBlur = blurImageData(quickX + 2, y)
+            bBlur = blurImageData(xStride)
+            gBlur = blurImageData(xStride + 1)
+            rBlur = blurImageData(xStride + 2)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
             If (grayBlur > 255) Then grayBlur = 255
@@ -1133,9 +1129,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
-                bSrc = srcImageData(quickX, y)
-                gSrc = srcImageData(quickX + 1, y)
-                rSrc = srcImageData(quickX + 2, y)
+                bSrc = srcImageData(xStride)
+                gSrc = srcImageData(xStride + 1)
+                rSrc = srcImageData(xStride + 2)
                 
                 rSrc = rSrc * ONE_DIV_255
                 gSrc = gSrc * ONE_DIV_255
@@ -1158,25 +1154,25 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxShadowCorrection * rBlur) + ((1# - pxShadowCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(quickX, y) = bDst
-                srcImageData(quickX + 1, y) = gDst
-                srcImageData(quickX + 2, y) = rDst
+                srcImageData(xStride) = bDst
+                srcImageData(xStride + 1) = gDst
+                srcImageData(xStride + 2) = rDst
                 
             End If
             
-        Next y
+        Next x
             If Not suppressMessages Then
-                If (x And 63) = 0 Then
+                If ((y And 63) = 0) Then
                     If Interface.UserPressedESC() Then Exit For
                 End If
             End If
-        Next x
+        Next y
         
     End If
     
     'With our shadow work complete, point all local arrays away from their respective DIBs
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(blurImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    blurDIB.UnwrapArrayFromDIB blurImageData
     
     If (Not suppressMessages) Then SetProgBarVal modifyProgBarOffset + 3
     
@@ -1189,7 +1185,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         If (highlightRadius <> shadowRadius) Or (shadowAmount = 0#) Then
             
             blurDIB.CreateFromExistingDIB backupDIB
-            If (highlightRadius <> 0) Then QuickBlurDIB blurDIB, highlightRadius, False
+            If (highlightRadius <> 0) Then Filters_Layers.CreateApproximateGaussianBlurDIB highlightRadius, blurDIB, blurDIB, 2, True
             
             'Note that we can now free our backup DIB, as it's no longer needed
             Set backupDIB = Nothing
@@ -1198,23 +1194,19 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
         If (Not suppressMessages) Then SetProgBarVal modifyProgBarOffset + 4
         
-        'Once again, point arrays at both the source and blur DIBs
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-            
-        PrepSafeArray blurSA, blurDIB
-        CopyMemory ByVal VarPtrArray(blurImageData()), VarPtr(blurSA), 4
-        
         'Start per-pixel highlight processing!
-        For x = initX To finalX
-            quickX = x * qvDepth
         For y = initY To finalY
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, y
+            blurDIB.WrapArrayAroundScanline blurImageData, blurSA, y
+        For x = initX To finalX
+            
+            xStride = x * qvDepth
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
             ' transitions between light and dark regions in the image.)
-            bBlur = blurImageData(quickX, y)
-            gBlur = blurImageData(quickX + 1, y)
-            rBlur = blurImageData(quickX + 2, y)
+            bBlur = blurImageData(xStride)
+            gBlur = blurImageData(xStride + 1)
+            rBlur = blurImageData(xStride + 2)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
             If (grayBlur > 255) Then grayBlur = 255
@@ -1235,9 +1227,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
-                bSrc = srcImageData(quickX, y)
-                gSrc = srcImageData(quickX + 1, y)
-                rSrc = srcImageData(quickX + 2, y)
+                bSrc = srcImageData(xStride)
+                gSrc = srcImageData(xStride + 1)
+                rSrc = srcImageData(xStride + 2)
                 
                 rSrc = rSrc * ONE_DIV_255
                 gSrc = gSrc * ONE_DIV_255
@@ -1260,23 +1252,23 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxHighlightCorrection * rBlur) + ((1# - pxHighlightCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(quickX, y) = bDst
-                srcImageData(quickX + 1, y) = gDst
-                srcImageData(quickX + 2, y) = rDst
+                srcImageData(xStride) = bDst
+                srcImageData(xStride + 1) = gDst
+                srcImageData(xStride + 2) = rDst
                 
             End If
             
-        Next y
+        Next x
             If Not suppressMessages Then
-                If (x And 63) = 0 Then
+                If ((y And 63) = 0) Then
                     If Interface.UserPressedESC() Then Exit For
                 End If
             End If
-        Next x
+        Next y
         
         'With our highlight work complete, point all local arrays away from their respective DIBs
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(blurImageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB srcImageData
+        blurDIB.UnwrapArrayFromDIB blurImageData
     
     End If
     
@@ -1289,19 +1281,17 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     ' use the midtone lookup table to determine valid correction candidates.  (Also, we do not use a blurred copy of the DIB.)
     If (midtoneAmount <> 0) And (Not g_cancelCurrentAction) Then
         
-        'Once again, point an array at the source DIB
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
         'Start per-pixel midtone processing!
-        For x = initX To finalX
-            quickX = x * qvDepth
         For y = initY To finalY
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, y
+        For x = initX To finalX
+        
+            xStride = x * qvDepth
             
             'Calculate luminance for this pixel in the *source* image.
-            bSrc = srcImageData(quickX, y)
-            gSrc = srcImageData(quickX + 1, y)
-            rSrc = srcImageData(quickX + 2, y)
+            bSrc = srcImageData(xStride)
+            gSrc = srcImageData(xStride + 1)
+            rSrc = srcImageData(xStride + 2)
             
             srcBlur = (213 * rSrc + 715 * gSrc + 72 * bSrc) \ 1000
             If (srcBlur > 255) Then srcBlur = 255
@@ -1343,22 +1333,22 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxMidtoneCorrection * rBlur) + ((1# - pxMidtoneCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(quickX, y) = bDst
-                srcImageData(quickX + 1, y) = gDst
-                srcImageData(quickX + 2, y) = rDst
+                srcImageData(xStride) = bDst
+                srcImageData(xStride + 1) = gDst
+                srcImageData(xStride + 2) = rDst
                 
             End If
             
-        Next y
+        Next x
             If Not suppressMessages Then
-                If (x And 63) = 0 Then
+                If ((y And 63) = 0) Then
                     If Interface.UserPressedESC() Then Exit For
                 End If
             End If
-        Next x
+        Next y
         
         'With our highlight work complete, point all local arrays away from their respective DIBs
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB srcImageData
         
     End If
     
@@ -3384,3 +3374,4 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     If g_cancelCurrentAction Then CreateBilateralDIB = 0 Else CreateBilateralDIB = 1
 
 End Function
+
