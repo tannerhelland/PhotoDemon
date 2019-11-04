@@ -119,15 +119,7 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         
         'If GDI+ is unacceptable (or if it failed), use our internal quick blur functionality.
         If (Not gdiPlusIsAcceptable) Then
-        
-            'Create a copy of the current DIB; we need this to hold an intermediate blur copy
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateFromExistingDIB srcDIB
-            If (CreateHorizontalBlurDIB(blurRadius, blurRadius, srcDIB, tmpDIB, True) <> 0) Then
-                QuickBlurDIB = (CreateVerticalBlurDIB(blurRadius, blurRadius, tmpDIB, srcDIB, True) <> 0)
-            End If
-        
+            QuickBlurDIB = Filters_Layers.CreateApproximateGaussianBlurDIB(blurRadius, srcDIB, srcDIB, 1, True)
         End If
         
     End If
@@ -2016,6 +2008,11 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     
     numOfPixels = lRadius + rRadius + 1
     
+    'To achieve better results, we want to round final blur totals.  Cache the equivalent of
+    ' 0.5 for the current pixel count.
+    Dim halfNumPixels As Long
+    halfNumPixels = Int(numOfPixels \ 2)
+    
     'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
     ' pixels left of that!)
     For y = initY To finalY
@@ -2094,13 +2091,13 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 rTotal = rTotal + rFinal
                 aTotal = aTotal + aFinal
             End If
-                
+            
             'Apply the blurred value to the destination image.
             xStride = x * 4
-            dstImageData(xStride) = bTotal \ numOfPixels
-            dstImageData(xStride + 1) = gTotal \ numOfPixels
-            dstImageData(xStride + 2) = rTotal \ numOfPixels
-            dstImageData(xStride + 3) = aTotal \ numOfPixels
+            dstImageData(xStride) = (bTotal + halfNumPixels) \ numOfPixels
+            dstImageData(xStride + 1) = (gTotal + halfNumPixels) \ numOfPixels
+            dstImageData(xStride + 2) = (rTotal + halfNumPixels) \ numOfPixels
+            dstImageData(xStride + 3) = (aTotal + halfNumPixels) \ numOfPixels
             
         Next x
         

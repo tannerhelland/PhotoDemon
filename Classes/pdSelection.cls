@@ -2441,7 +2441,6 @@ End Sub
 
 'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we may choose to do this via GDI+.
 Private Sub ApplyFeatheringToMask()
-    'Filters_Layers.QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
     Filters_Layers.QuickBlurDIBRegion m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), m_Bounds
 End Sub
 
