@@ -501,25 +501,33 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
     
-    'Prep some IIR-specific values next
-    Dim lambda As Double, dnu As Double
-    Dim nu As Double, boundaryScale As Double, postScale As Double
-    Dim step As Long
+    'Next comes a mathematical fudge.  This particular IIR technique tends to produce a slightly
+    ' "genter" blur than an identical radius in Photoshop.  To try and bring the two methods into
+    ' (rough) alignment, I slightly increase the radius used by the IIR method.  There's no (known)
+    ' mathematical explanation for this, alas - I just determined this value experimentally and
+    ' plug it in try and better unify the results.  (Note that PD's 3x iterative box blur produces
+    ' nearly identical results to Photoshop, so it's likely that Adobe uses some variation on that
+    ' technique as well.)
+    radius = radius * 1.075
     
-    'Calculate sigma from the radius, using a similar formula to ImageJ (per this link - http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
+    'Calculate sigma from the radius, using a similar formula to ImageJ (per this link:
+    ' http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
     Dim sigma As Double
     Const LOG_255_BASE_10 As Double = 2.40654018043395
-    sigma = (radius + 1) / Sqr(2# * LOG_255_BASE_10)
+    sigma = (radius + 1#) / Sqr(2# * LOG_255_BASE_10)
     
     'Make sure sigma and steps are not so small as to produce errors or invisible results
     If (sigma <= 0#) Then sigma = 0.001
     If (numSteps <= 0) Then numSteps = 1
     
-    'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
-    ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian.
-    ' The behavior could be toggled by the caller, but for now, I've hard-coded use of the modified formula.
+    'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate
+    ' lambda calculation is proposed.  This adjustment doesn't affect running time at all, and it could
+    ' potentially reduce errors relative to a pure Gaussian... but I've currently disabled it as the
+    ' resulting blur looks a bit "blurrier" than a comparable blur from other photo editors.  This is a
+    ' classic case of "mathematically correct" not necessarily being better than "perceptually correct",
+    ' so for now, I've deactivated the more complex calculation in favor of the traditional one.
     Dim useModifiedQ As Boolean, q As Single
-    useModifiedQ = True
+    useModifiedQ = False
     
     If useModifiedQ Then
         q = sigma * (1# + (0.3165 * numSteps + 0.5695) / ((numSteps + 0.7818) * (numSteps + 0.7818)))
@@ -527,9 +535,12 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         q = sigma
     End If
     
-    'Calculate IIR values
+    'Prep some IIR-specific values next
+    Dim lambda As Double, dnu As Double
     lambda = (q * q) / (2# * numSteps)
     dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
+    
+    Dim nu As Double, boundaryScale As Double, postScale As Double
     nu = dnu
     boundaryScale = (1# / (1# - dnu))
     postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
@@ -554,15 +565,15 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     For y = initY To finalY
         srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
     For x = initX To finalX
-        
         quickX = x * qvDepth
         bFloat(x, y) = floatLUT(imageData(quickX))
         gFloat(x, y) = floatLUT(imageData(quickX + 1))
         rFloat(x, y) = floatLUT(imageData(quickX + 2))
         If imgHasAlpha Then aFloat(x, y) = floatLUT(imageData(quickX + 3))
-        
     Next x
     Next y
+    
+    Dim step As Long
     
     '/* Filter horizontally along each row */
     For y = initY To finalY
@@ -701,9 +712,9 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             quickX = x * qvDepth
         
-            r = rFloat(x, y) * postScale
-            g = gFloat(x, y) * postScale
-            b = bFloat(x, y) * postScale
+            r = Int(rFloat(x, y) * postScale + 0.5)
+            g = Int(gFloat(x, y) * postScale + 0.5)
+            b = Int(bFloat(x, y) * postScale + 0.5)
             
             'Perform failsafe clipping
             If (r > 255) Then r = 255
@@ -716,7 +727,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             'Handle alpha separately
             If imgHasAlpha Then
-                a = aFloat(x, y) * postScale
+                a = Int(aFloat(x, y) * postScale + 0.5)
                 If (a > 255) Then a = 255
                 imageData(quickX + 3) = a
             End If
