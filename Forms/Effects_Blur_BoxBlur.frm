@@ -34,6 +34,7 @@ Begin VB.Form FormBoxBlur
       Caption         =   "box width"
       Min             =   1
       Max             =   500
+      ScaleStyle      =   1
       Value           =   2
       DefaultValue    =   2
    End
@@ -67,6 +68,7 @@ Begin VB.Form FormBoxBlur
       Caption         =   "box height"
       Min             =   1
       Max             =   500
+      ScaleStyle      =   1
       Value           =   2
       DefaultValue    =   2
    End

@@ -45,6 +45,7 @@ Begin VB.Form FormGaussianBlur
       Min             =   0.1
       Max             =   500
       SigDigits       =   1
+      ScaleStyle      =   1
       Value           =   1
       DefaultValue    =   1
    End
