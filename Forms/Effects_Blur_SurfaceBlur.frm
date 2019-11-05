@@ -54,6 +54,7 @@ Begin VB.Form FormSurfaceBlur
       Min             =   0.1
       Max             =   200
       SigDigits       =   1
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   5
    End

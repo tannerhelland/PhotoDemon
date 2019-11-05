@@ -86,6 +86,7 @@ Begin VB.Form FormMotionBlur
       Caption         =   "distance"
       Min             =   1
       Max             =   500
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   5
    End
