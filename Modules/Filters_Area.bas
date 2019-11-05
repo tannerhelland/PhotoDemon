@@ -19,6 +19,11 @@ Attribute VB_Name = "Filters_Area"
 
 Option Explicit
 
+'Cache for IIR gaussian blur terms; these are only calculated as necessary, to improve performance
+Private m_GaussTerms() As Long, m_GaussTermCount As Long
+Private m_lastSigma As Double, m_lastNumSteps As Long
+Private m_nu As Double, m_invNu As Double, m_numTerms As Long, m_preScale As Double
+
 'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
 ' Note that as of July '17, ApplyConvolutionFilter uses an XML param string for supplying convolution details.
 ' The relevant ParamString entries are as follows:
@@ -461,283 +466,293 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
 
 End Sub
 
-'Gaussian blur filter, using an IIR (Infininte Impulse Response) approach
-'
-'I developed this function with help from http://www.getreuer.info/home/gaussianiir
-' Many thanks to Pascal Getreuer for his valuable reference.
+'Half-sample symmetric boundary extension
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Function inf_extension(ByVal numSteps As Long, ByVal n As Long) As Long
+    
+    Do
+        If (n < 0) Then
+            n = -1 - n  '/* Reflect over n = -1/2.    */
+        ElseIf (n >= numSteps) Then
+            n = 2 * numSteps - 1 - n    '/* Reflect over n = N - 1/2. */
+        Else
+            Exit Do
+        End If
+    Loop While True
+    
+    inf_extension = n
+    
+End Function
+
+'Handling of the left boundary for Alvarez-Mazorra
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Function am_left_boundary(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numSteps As Long, ByVal srcStride As Long, ByVal nu As Double, ByVal numTerms As Long) As Double
+    
+    Dim h As Double, accum As Double
+    h = 1#
+    accum = srcFloat(initOffset)
+    
+    Dim m As Long
+    
+    'Pre-calculate terms table only as necessary
+    If (numTerms <> m_GaussTermCount) Then
+        ReDim m_GaussTerms(0 To numTerms - 1) As Long
+        m_GaussTermCount = numTerms
+        For m = 1 To numTerms - 1
+            m_GaussTerms(m) = inf_extension(numSteps, -m)
+        Next m
+    End If
+    
+    For m = 1 To numTerms - 1
+        h = h * nu
+        accum = accum + (h * srcFloat(initOffset + srcStride * m_GaussTerms(m)))
+    Next m
+    
+    am_left_boundary = accum
+    
+End Function
+
+'Implements the fast approximate Gaussian convolution algorithm of Alvarez and Mazorra,
+' where the Gaussian is approximated by the heat equation and each timestep is performed
+' with an efficient recursive computation.  Using more steps yields a more accurate approximation
+' of the Gaussian. Reasonable values for the parameters are `numSteps` = 4, `tol` = 1e-3.
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub am_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numElements As Long, ByVal srcStride As Long, ByVal sigma As Double, ByVal numSteps As Long, ByVal tol As Double, ByVal useAdjustedQ As Boolean)
+    
+    'To improve performance, we only calculate initial terms when sigma or numSteps changes.
+    ' (Initial terms depend only on these and tolerance, but in PD, we do not vary tolerance
+    ' so we never need to check it for changes.)
+    If (sigma <> m_lastSigma) Or (m_lastNumSteps <> numSteps) Then
+        
+        m_lastSigma = sigma
+        m_lastNumSteps = numSteps
+        
+        '/* Use a regression on q for improved accuracy. */
+        Dim q As Double
+        If useAdjustedQ Then
+            q = sigma * (1# + (0.3165 * numSteps + 0.5695) / ((numSteps + 0.7818) * (numSteps + 0.7818)))
+        
+        '/* Use q = sigma as in the original A-M method. */
+        Else
+            q = sigma
+        End If
+    
+        '/* Precompute the filter coefficient nu. */
+        Dim lambda As Double, dnu As Double
+        lambda = (q * q) / (2# * numSteps)
+        dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
+        m_nu = dnu
+        
+        'Exists only as an optimization, to skip division in the inner loop
+        m_invNu = 1# / (1# - m_nu)
+    
+        '/* For handling the left boundary, determine the number of terms needed to
+        '   approximate the sum with accuracy tol. */
+        m_numTerms = Int(Log((1# - dnu) * tol) / Log(dnu) + 1)
+    
+        '/* Precompute the constant scale factor. */
+        m_preScale = (dnu / lambda) ^ numSteps
+        
+    End If
+        
+    '/* Copy src to dest and multiply by the constant scale factor. */
+    Dim stride_N As Long
+    stride_N = srcStride * numElements
+    
+    Dim i As Long
+    For i = 0 To (stride_N - 1) Step srcStride
+        srcFloat(initOffset + i) = srcFloat(initOffset + i) * m_preScale
+    Next i
+    
+    Dim strideOffset As Long
+    strideOffset = initOffset - srcStride
+    
+    '/* Perform K passes of filtering. */
+    Dim pass As Long
+    For pass = 0 To numSteps - 1
+    
+        '/* Initialize the recursive filter on the left boundary. */
+        srcFloat(initOffset) = am_left_boundary(srcFloat, initOffset, numSteps, srcStride, m_nu, m_numTerms)
+        
+        '/* This loop applies the causal filter, implementing the pseudocode
+        '
+        '   For n = 1, ..., N - 1
+        '       dest(n) = dest(n) + nu dest(n - 1)
+        '
+        '   Variable i = stride * n is the offset to the nth sample.  */
+        For i = srcStride To (stride_N - 1) Step srcStride
+            srcFloat(initOffset + i) = srcFloat(initOffset + i) + m_nu * srcFloat(strideOffset + i)
+        Next i
+        
+        '/* Handle the right boundary. */
+        i = i - srcStride
+        srcFloat(initOffset + i) = srcFloat(initOffset + i) * m_invNu
+        
+        '/* Similarly, this loop applies the anticausal filter as
+        '
+        '   For n = N - 1, ..., 1
+        '       dest(n - 1) = dest(n - 1) + nu dest(n) */
+        Do While (i > 0)
+            srcFloat(strideOffset + i) = srcFloat(strideOffset + i) + m_nu * srcFloat(initOffset + i)
+            i = i - srcStride
+        Loop
+    
+    Next pass
+    
+End Sub
+
+'Gaussian blur filter, using an approximation originally by Alvarez and Mazorra, as implemented by
+' Pascal Getreuer.
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
 Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray1D
+    'First comes a mathematical fudge.  This particular gaussian approximation tends to produce a
+    ' slightly "genter" blur than an identical radius in Photoshop.  To try and bring the two methods
+    ' into (rough) alignment, I slightly increase the radius used by this method.  There's no obvious
+    ' mathematical explanation for this, alas - I just determined this value experimentally and
+    ' plug it in to better unify the results.  (Note that PD's 3x iterative box blur produces nearly
+    ' identical results to Photoshop, so it's likely that Adobe uses some variation on that technique
+    ' as well, at least in older versions of their software.)
+    radius = radius * 1.075
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
     
-    Dim iWidth As Long, iHeight As Long
-    iWidth = srcDIB.GetDIBWidth
-    iHeight = srcDIB.GetDIBHeight
+    Dim pxImgWidth As Long, pxImgHeight As Long
+    pxImgWidth = srcDIB.GetDIBWidth
+    pxImgHeight = srcDIB.GetDIBHeight
     
     'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, quickX2 As Long, quickY As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'Determine if alpha handling is necessary for this image
-    Dim imgHasAlpha As Boolean
-    imgHasAlpha = (qvDepth = 4)
+    ' (pxSizeBytes is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim pxSizeBytes As Long
+    pxSizeBytes = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.GetDIBWidth + srcDIB.GetDIBHeight
-    If Not suppressMessages Then SetProgBarMax modifyProgBarMax
-    
-    progBarCheck = ProgressBars.FindBestProgBarValue()
+    If (modifyProgBarMax = -1) Then modifyProgBarMax = 4 * pxSizeBytes
+    If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     
     'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long, a As Long
-    
-    'Next comes a mathematical fudge.  This particular IIR technique tends to produce a slightly
-    ' "genter" blur than an identical radius in Photoshop.  To try and bring the two methods into
-    ' (rough) alignment, I slightly increase the radius used by the IIR method.  There's no (known)
-    ' mathematical explanation for this, alas - I just determined this value experimentally and
-    ' plug it in try and better unify the results.  (Note that PD's 3x iterative box blur produces
-    ' nearly identical results to Photoshop, so it's likely that Adobe uses some variation on that
-    ' technique as well.)
-    radius = radius * 1.075
+    Dim origValue As Long
+    Dim imageData() As Byte, tmpSA As SafeArray1D
     
     'Calculate sigma from the radius, using a similar formula to ImageJ (per this link:
     ' http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
+    ' The idea here is to convert the radius to a sigma of sufficient magnitude where the outer edges
+    ' of the gaussian no longer represent meaningful values on a [0, 255] scale.
     Dim sigma As Double
     Const LOG_255_BASE_10 As Double = 2.40654018043395
     sigma = (radius + 1#) / Sqr(2# * LOG_255_BASE_10)
     
     'Make sure sigma and steps are not so small as to produce errors or invisible results
     If (sigma <= 0#) Then sigma = 0.001
-    If (numSteps <= 0) Then numSteps = 1
+    If (numSteps < 1) Then
+        numSteps = 1
+    ElseIf (numSteps > 5) Then
+        numSteps = 5
+    End If
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate
     ' lambda calculation is proposed.  This adjustment doesn't affect running time at all, and it could
-    ' potentially reduce errors relative to a pure Gaussian... but I've currently disabled it as the
-    ' resulting blur looks a bit "blurrier" than a comparable blur from other photo editors.  This is a
-    ' classic case of "mathematically correct" not necessarily being better than "perceptually correct",
-    ' so for now, I've deactivated the more complex calculation in favor of the traditional one.
-    Dim useModifiedQ As Boolean, q As Single
-    useModifiedQ = False
+    ' potentially reduce errors relative to a pure Gaussian - but only at small radii.
+    Dim useModifiedQ As Boolean
+    useModifiedQ = True
     
-    If useModifiedQ Then
-        q = sigma * (1# + (0.3165 * numSteps + 0.5695) / ((numSteps + 0.7818) * (numSteps + 0.7818)))
-    Else
-        q = sigma
-    End If
+    'To ensure ideal edge-handling, we also need to calculate how many terms are required to
+    ' approximate to a given tolerance.  (The tolerance value used here, 1e-3, comes from
+    ' this URL: http://www.ipol.im/pub/art/2013/87/?utm_source=doi)
+    Const INF_SUM_TOLERANCE As Double = 0.001
     
-    'Prep some IIR-specific values next
-    Dim lambda As Double, dnu As Double
-    lambda = (q * q) / (2# * numSteps)
-    dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
+    'Because this technique requires conversion to/from [0, 1] floats for *all* source channels,
+    ' it can potentially consume a ton of memory (e.g. 16x an image's original size in bytes -
+    ' 4x channels * 4x bytes per float).  To mitigate this, we process each channel individually,
+    ' sharing a single buffer across channels.  This is slightly slower but much lighter on memory.
+    Dim numPixels As Long
+    numPixels = pxImgWidth * pxImgHeight
     
-    Dim nu As Double, boundaryScale As Double, postScale As Double
-    nu = dnu
-    boundaryScale = (1# / (1# - dnu))
-    postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
+    Dim tmpFloat() As Single
+    ReDim tmpFloat(0 To numPixels - 1) As Single
     
-    'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
-    Dim rFloat() As Single, gFloat() As Single, bFloat() As Single, aFloat() As Single
-    ReDim rFloat(initX To finalX, initY To finalY) As Single
-    ReDim gFloat(initX To finalX, initY To finalY) As Single
-    ReDim bFloat(initX To finalX, initY To finalY) As Single
-    If imgHasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
+    'If requested, progress events are raised as discrete steps
+    Dim progressTracker As Long
+    progressTracker = 0
     
-    Const ONE_DIV_255 As Single = 1! / 255!
-    
-    'Build a fast byte -> float lookup table
-    Dim floatLUT() As Single
-    ReDim floatLUT(0 To 255) As Single
-    For x = 0 To 255
-        floatLUT(x) = CSng(x) * ONE_DIV_255
-    Next x
-    
-    'Copy the contents of the current image into the float arrays
-    For y = initY To finalY
-        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
-    For x = initX To finalX
-        quickX = x * qvDepth
-        bFloat(x, y) = floatLUT(imageData(quickX))
-        gFloat(x, y) = floatLUT(imageData(quickX + 1))
-        rFloat(x, y) = floatLUT(imageData(quickX + 2))
-        If imgHasAlpha Then aFloat(x, y) = floatLUT(imageData(quickX + 3))
-    Next x
-    Next y
-    
-    Dim step As Long
-    
-    '/* Filter horizontally along each row */
-    For y = initY To finalY
-    
-        For step = 0 To numSteps - 1
-            
-            'Set initial values
-            rFloat(initX, y) = rFloat(initX, y) * boundaryScale
-            gFloat(initX, y) = gFloat(initX, y) * boundaryScale
-            bFloat(initX, y) = bFloat(initX, y) * boundaryScale
-            
-            'Filter right
-            For x = initX + 1 To finalX
-                quickX2 = (x - 1)
-                rFloat(x, y) = rFloat(x, y) + nu * rFloat(quickX2, y)
-                gFloat(x, y) = gFloat(x, y) + nu * gFloat(quickX2, y)
-                bFloat(x, y) = bFloat(x, y) + nu * bFloat(quickX2, y)
-            Next x
-            
-            'Fix closing row
-            rFloat(finalX, y) = rFloat(finalX, y) * boundaryScale
-            gFloat(finalX, y) = gFloat(finalX, y) * boundaryScale
-            bFloat(finalX, y) = bFloat(finalX, y) * boundaryScale
-            
-            'Filter left
-            For x = finalX To 1 Step -1
-                quickX = (x - 1)
-                rFloat(quickX, y) = rFloat(quickX, y) + nu * rFloat(x, y)
-                gFloat(quickX, y) = gFloat(quickX, y) + nu * gFloat(x, y)
-                bFloat(quickX, y) = bFloat(quickX, y) + nu * bFloat(x, y)
-            Next x
-            
-            'Apply alpha separately
-            If imgHasAlpha Then
-                
-                aFloat(initX, y) = aFloat(initX, y) * boundaryScale
-                
-                For x = initX + 1 To finalX
-                    aFloat(x, y) = aFloat(x, y) + nu * aFloat(x - 1, y)
-                Next x
-                
-                aFloat(finalX, y) = aFloat(finalX, y) * boundaryScale
-                
-                For x = finalX To 1 Step -1
-                    quickX = (x - 1)
-                    aFloat(quickX, y) = aFloat(quickX, y) + nu * aFloat(x, y)
-                Next x
-            
-            End If
-            
-        Next step
+    Dim curChannel As Long
+    For curChannel = 0 To pxSizeBytes - 1
         
-        If Not suppressMessages Then
-            If (y And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal y + modifyProgBarOffset
-            End If
-        End If
-        
-    Next y
-    
-    'TODO: profile a potentially faster approach: rotate all arrays 90 degrees, horizontally blur *those*,
-    ' then rotate back.  On an integer-based box blur, this is much faster thanks to greatly improved
-    ' cache behavior.
-    
-    'Now repeat all the above steps, but filtering vertically along each column, instead
-    If (Not g_cancelCurrentAction) Then
-    
-        For x = initX To finalX
-            
-            For step = 0 To numSteps - 1
-                
-                'Set initial values
-                rFloat(x, initY) = rFloat(x, initY) * boundaryScale
-                gFloat(x, initY) = gFloat(x, initY) * boundaryScale
-                bFloat(x, initY) = bFloat(x, initY) * boundaryScale
-                
-                'Filter down
-                For y = initY + 1 To finalY
-                    quickY = (y - 1)
-                    rFloat(x, y) = rFloat(x, y) + nu * rFloat(x, quickY)
-                    gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, quickY)
-                    bFloat(x, y) = bFloat(x, y) + nu * bFloat(x, quickY)
-                Next y
-                
-                'Fix closing column values
-                rFloat(x, finalY) = rFloat(x, finalY) * boundaryScale
-                gFloat(x, finalY) = gFloat(x, finalY) * boundaryScale
-                bFloat(x, finalY) = bFloat(x, finalY) * boundaryScale
-                
-                'Filter up
-                For y = finalY To 1 Step -1
-                    quickY = y - 1
-                    rFloat(x, quickY) = rFloat(x, quickY) + nu * rFloat(x, y)
-                    gFloat(x, quickY) = gFloat(x, quickY) + nu * gFloat(x, y)
-                    bFloat(x, quickY) = bFloat(x, quickY) + nu * bFloat(x, y)
-                Next y
-                
-                'Handle alpha separately
-                If imgHasAlpha Then
-                    
-                    aFloat(x, initY) = aFloat(x, initY) * boundaryScale
-                    
-                    For y = initY + 1 To finalY
-                        aFloat(x, y) = aFloat(x, y) + nu * aFloat(x, y - 1)
-                    Next y
-                    
-                    aFloat(x, finalY) = aFloat(x, finalY) * boundaryScale
-                    
-                    For y = finalY To 1 Step -1
-                        quickY = y - 1
-                        aFloat(x, quickY) = aFloat(x, quickY) + nu * aFloat(x, y)
-                    Next y
-                    
-                End If
-                
-            Next step
-            
-            If Not suppressMessages Then
-                If (x And progBarCheck) = 0 Then
-                    If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal x + iHeight + modifyProgBarOffset
-                End If
-            End If
-        
-        Next x
-        
-    End If
-    
-    'Apply final post-scaling
-    If (Not g_cancelCurrentAction) Then
-        
-        For y = initY To finalY
+        'Copy the contents of the current image into the float arrays and apply pre-scaling
+        Dim xOffset As Long
+        For y = 0 To finalY
             srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
-        For x = initX To finalX
-            
-            quickX = x * qvDepth
-        
-            r = Int(rFloat(x, y) * postScale + 0.5)
-            g = Int(gFloat(x, y) * postScale + 0.5)
-            b = Int(bFloat(x, y) * postScale + 0.5)
-            
-            'Perform failsafe clipping
-            If (r > 255) Then r = 255
-            If (g > 255) Then g = 255
-            If (b > 255) Then b = 255
-            
-            imageData(quickX) = b
-            imageData(quickX + 1) = g
-            imageData(quickX + 2) = r
-            
-            'Handle alpha separately
-            If imgHasAlpha Then
-                a = Int(aFloat(x, y) * postScale + 0.5)
-                If (a > 255) Then a = 255
-                imageData(quickX + 3) = a
-            End If
-        
+            xOffset = y * pxImgWidth
+        For x = 0 To finalX
+            tmpFloat(x + xOffset) = imageData(x * pxSizeBytes + curChannel)
         Next x
         Next y
         
-    End If
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'All subsequent handling is provided by a separate, dedicated function
+        For y = 0 To finalY
+            am_gaussian_conv tmpFloat, y * pxImgWidth, pxImgWidth, 1, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
+        Next y
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'Next, filter all columns
+        For x = 0 To finalX
+            am_gaussian_conv tmpFloat, x, pxImgHeight, pxImgWidth, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
+        Next x
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'Apply final post-scaling
+        For y = 0 To finalY
+            srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+            xOffset = y * pxImgWidth
+        For x = 0 To finalX
+            
+            'Round the finished result, perform failsafe clipping, then assign
+            origValue = Int(tmpFloat(xOffset + x) + 0.5)
+            If (origValue > 255) Then origValue = 255
+            imageData(x * pxSizeBytes + curChannel) = origValue
+            
+        Next x
+        Next y
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+    Next curChannel
     
-    'Safely deallocate imageData()
+    If (Not suppressMessages) Then ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
+    
+    'Regardless of success/failure, safely deallocate our fake pixel wrapper
     srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
