@@ -78,8 +78,8 @@ Attribute VB_Exposed = False
 'Gaussian Blur Tool
 'Copyright 2010-2019 by Tanner Helland
 'Created: 01/July/10
-'Last updated: 27/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 07/November/19
+'Last update: switched to an all-new Deriche implementation for "high quality" gaussian
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
 ' that utilizes a separable convolution kernel AND allows for sub-pixel radii (at "best" quality, anyway).
@@ -150,7 +150,20 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
             
         'IIR Gaussian estimation
         Case Else
-            Filters_Area.GaussianBlur_IIRImplementation workingDIB, gRadius, 3, toPreview
+            
+            'In the past, I used an IIR approach based on anisotropic filtering
+            ' (https://www.jstor.org/stable/2158018?seq=1#page_scan_tab_contents)
+            ' Unfortunately, subsequent detective work by a contributor turned up
+            ' accuracy issues with this approach vs a true gaussian
+            ' (https://github.com/tannerhelland/PhotoDemon/issues/279).
+            
+            'Subsequent detective work confirmed that academia agrees with this assessment
+            ' (http://www.ipol.im/pub/art/2013/87/) so I have since switched to a
+            ' near-perfect estimation using a 3rd-order Deriche approximation.  This is
+            ' slightly slower than PD's original heavily optimized Alvarez-Mazorra
+            ' algorithm, but the results are significantly higher quality (with proven
+            ' gaussian deviations less than 1/2 of 1%).
+            Filters_Area.GaussianBlur_Deriche workingDIB, gRadius, 3, toPreview
             
     End Select
     

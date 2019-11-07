@@ -195,7 +195,7 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
         'IIR Gaussian estimation
         Case Else
             progBarCalculation = finalY + finalX
-            gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalY)
+            gaussBlurSuccess = Filters_Area.GaussianBlur_IIR(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalY)
         
     End Select
     

@@ -24,6 +24,33 @@ Private m_GaussTerms() As Long, m_GaussTermCount As Long
 Private m_lastSigma As Double, m_lastNumSteps As Long
 Private m_nu As Double, m_invNu As Double, m_numTerms As Long, m_preScale As Double
 
+'Deriche gaussian blur terms follow
+
+'Min/max Deriche orders are hard-coded; these values CANNOT BE CHANGED as hard-coded initiation
+' tables do not exist for higher orders
+Private Const DERICHE_MIN_K As Long = 2
+Private Const DERICHE_MAX_K As Long = 4
+
+'Coefficients for Deriche Gaussian approximation.
+' This coefficients struct is precomputed by Gaussian_DerichePreComp() and then used
+' by Deriche1D() or Deriche1D_image().
+Private Type DericheCoeffs
+    dc_a(0 To DERICHE_MAX_K) As Double            'Denominator coeffs
+    dc_b_causal(0 To DERICHE_MAX_K - 1) As Double 'Causal numerators
+    dc_b_anticausal(0 To DERICHE_MAX_K) As Double 'Anticausal numerators
+    dc_sum_causal As Double                       'Causal filter sum
+    dc_sum_anticausal As Double                   'Anticausal filter sum
+    dc_sigma As Double                            'Gaussian standard deviation
+    dc_K As Long                                  'Filter order = 2, 3, or 4
+    dc_tol As Double                              'Boundary accuracy
+    dc_max_iter As Long
+End Type
+
+Private Type ComplexNumber
+    dc_real As Double
+    dc_imag As Double
+End Type
+
 'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
 ' Note that as of July '17, ApplyConvolutionFilter uses an XML param string for supplying convolution details.
 ' The relevant ParamString entries are as follows:
@@ -470,7 +497,7 @@ End Sub
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Private Function inf_extension(ByVal numSteps As Long, ByVal n As Long) As Long
+Private Function Inf_extension(ByVal numSteps As Long, ByVal n As Long) As Long
     
     Do
         If (n < 0) Then
@@ -482,7 +509,7 @@ Private Function inf_extension(ByVal numSteps As Long, ByVal n As Long) As Long
         End If
     Loop While True
     
-    inf_extension = n
+    Inf_extension = n
     
 End Function
 
@@ -490,7 +517,7 @@ End Function
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Private Function am_left_boundary(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numSteps As Long, ByVal srcStride As Long, ByVal nu As Double, ByVal numTerms As Long) As Double
+Private Function AM_left_boundary(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numSteps As Long, ByVal srcStride As Long, ByVal nu As Double, ByVal numTerms As Long) As Double
     
     Dim h As Double, accum As Double
     h = 1#
@@ -503,7 +530,7 @@ Private Function am_left_boundary(ByRef srcFloat() As Single, ByVal initOffset A
         ReDim m_GaussTerms(0 To numTerms - 1) As Long
         m_GaussTermCount = numTerms
         For m = 1 To numTerms - 1
-            m_GaussTerms(m) = inf_extension(numSteps, -m)
+            m_GaussTerms(m) = Inf_extension(numSteps, -m)
         Next m
     End If
     
@@ -512,7 +539,7 @@ Private Function am_left_boundary(ByRef srcFloat() As Single, ByVal initOffset A
         accum = accum + (h * srcFloat(initOffset + srcStride * m_GaussTerms(m)))
     Next m
     
-    am_left_boundary = accum
+    AM_left_boundary = accum
     
 End Function
 
@@ -523,7 +550,7 @@ End Function
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Private Sub am_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numElements As Long, ByVal srcStride As Long, ByVal sigma As Double, ByVal numSteps As Long, ByVal tol As Double, ByVal useAdjustedQ As Boolean)
+Private Sub AM_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numElements As Long, ByVal srcStride As Long, ByVal sigma As Double, ByVal numSteps As Long, ByVal tol As Double, ByVal useAdjustedQ As Boolean)
     
     'To improve performance, we only calculate initial terms when sigma or numSteps changes.
     ' (Initial terms depend only on these and tolerance, but in PD, we do not vary tolerance
@@ -562,11 +589,11 @@ Private Sub am_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Lon
     End If
         
     '/* Copy src to dest and multiply by the constant scale factor. */
-    Dim stride_N As Long
-    stride_N = srcStride * numElements
+    Dim stride_n As Long
+    stride_n = srcStride * numElements
     
     Dim i As Long
-    For i = 0 To (stride_N - 1) Step srcStride
+    For i = 0 To (stride_n - 1) Step srcStride
         srcFloat(initOffset + i) = srcFloat(initOffset + i) * m_preScale
     Next i
     
@@ -578,7 +605,7 @@ Private Sub am_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Lon
     For pass = 0 To numSteps - 1
     
         '/* Initialize the recursive filter on the left boundary. */
-        srcFloat(initOffset) = am_left_boundary(srcFloat, initOffset, numSteps, srcStride, m_nu, m_numTerms)
+        srcFloat(initOffset) = AM_left_boundary(srcFloat, initOffset, numSteps, srcStride, m_nu, m_numTerms)
         
         '/* This loop applies the causal filter, implementing the pseudocode
         '
@@ -586,7 +613,7 @@ Private Sub am_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Lon
         '       dest(n) = dest(n) + nu dest(n - 1)
         '
         '   Variable i = stride * n is the offset to the nth sample.  */
-        For i = srcStride To (stride_N - 1) Step srcStride
+        For i = srcStride To (stride_n - 1) Step srcStride
             srcFloat(initOffset + i) = srcFloat(initOffset + i) + m_nu * srcFloat(strideOffset + i)
         Next i
         
@@ -612,7 +639,7 @@ End Sub
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function GaussianBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'First comes a mathematical fudge.  This particular gaussian approximation tends to produce a
     ' slightly "genter" blur than an identical radius in Photoshop.  To try and bring the two methods
@@ -690,7 +717,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     Dim curChannel As Long
     For curChannel = 0 To pxSizeBytes - 1
         
-        'Copy the contents of the current image into the float arrays and apply pre-scaling
+        'Copy the contents of the current channel into a float array
         Dim xOffset As Long
         For y = 0 To finalY
             srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
@@ -708,7 +735,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
         'All subsequent handling is provided by a separate, dedicated function
         For y = 0 To finalY
-            am_gaussian_conv tmpFloat, y * pxImgWidth, pxImgWidth, 1, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
+            AM_gaussian_conv tmpFloat, y * pxImgWidth, pxImgWidth, 1, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
         Next y
         
         If (Not suppressMessages) Then
@@ -719,7 +746,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
         'Next, filter all columns
         For x = 0 To finalX
-            am_gaussian_conv tmpFloat, x, pxImgHeight, pxImgWidth, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
+            AM_gaussian_conv tmpFloat, x, pxImgHeight, pxImgWidth, sigma, numSteps, INF_SUM_TOLERANCE, useModifiedQ
         Next x
         
         If (Not suppressMessages) Then
@@ -755,7 +782,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'Regardless of success/failure, safely deallocate our fake pixel wrapper
     srcDIB.UnwrapArrayFromDIB imageData
     
-    If g_cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
+    If g_cancelCurrentAction Then GaussianBlur_IIR = 0 Else GaussianBlur_IIR = 1
 
 End Function
 
@@ -966,4 +993,740 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     If g_cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
 
+End Function
+
+'Gaussian blur approximation using Deriche's recursive IIR technique as described in the paper
+' "Recursively implementating the Gaussian and its derivatives", https://hal.inria.fr/inria-00074778/en/
+'
+'This version is adapted from an original C implementation of Deriche's technique by Pascal Getreuer in
+' "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    Dim pxImgWidth As Long, pxImgHeight As Long
+    pxImgWidth = srcDIB.GetDIBWidth
+    pxImgHeight = srcDIB.GetDIBHeight
+    
+    'These values will help us access locations in the array more quickly.
+    ' (pxSizeBytes is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim pxSizeBytes As Long
+    pxSizeBytes = srcDIB.GetDIBColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (modifyProgBarMax = -1) Then modifyProgBarMax = 4 * pxSizeBytes
+    If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim origValue As Long
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    'Calculate sigma from the radius, using a similar formula to ImageJ (per this link:
+    ' http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
+    ' The idea here is to convert the radius to a sigma of sufficient magnitude where the outer edges
+    ' of the gaussian no longer represent meaningful values on a [0, 255] scale.
+    Dim sigma As Double
+    Const LOG_255_BASE_10 As Double = 2.40654018043395
+    sigma = (radius + 1#) / Sqr(2# * LOG_255_BASE_10)
+    
+    'Make sure sigma and steps are not so small as to produce errors or invisible results
+    If (sigma <= 0#) Then sigma = 0.001
+    If (numSteps < 2) Then
+        numSteps = 2
+    ElseIf (numSteps > 4) Then
+        numSteps = 4
+    End If
+    
+    'To ensure ideal edge-handling, we also need to calculate how many terms are required to
+    ' approximate to a given tolerance.  (The tolerance value used here, 1e-3, comes from
+    ' Pascal's original paper (link good as of 2019): http://www.ipol.im/pub/art/2013/87/)
+    Const INF_SUM_TOLERANCE As Double = 0.001
+    
+    'Precalculate required Deriche coefficients
+    Dim c As DericheCoeffs
+    Gaussian_DerichePreComp c, sigma, numSteps, INF_SUM_TOLERANCE
+    
+    'A temporary buffer of size (2 * max(width, height)) is required for intermediate calculations
+    Dim tmpBuffer() As Double
+    ReDim tmpBuffer(0 To PDMath.Max2Int(pxImgWidth, pxImgHeight) * 2 - 1) As Double
+    
+    'Because this technique requires conversion to/from [0, 1] floats for *all* source channels,
+    ' it can potentially consume a ton of memory (e.g. 16x an image's original size in bytes -
+    ' 4x channels * 4x bytes per float).  To mitigate this, we process each channel individually,
+    ' sharing a single buffer across channels.  This is slightly slower but much lighter on memory.
+    Dim numPixels As Long
+    numPixels = pxImgWidth * pxImgHeight
+    
+    Dim tmpFloat() As Single
+    ReDim tmpFloat(0 To numPixels - 1) As Single
+    
+    'If requested, progress events are raised as discrete steps
+    Dim progressTracker As Long
+    progressTracker = 0
+    
+    Dim curChannel As Long
+    For curChannel = 0 To pxSizeBytes - 1
+        
+        'Copy the contents of the current channel into a float array
+        Dim xOffset As Long
+        For y = 0 To finalY
+            srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+            xOffset = y * pxImgWidth
+        For x = 0 To finalX
+            tmpFloat(x + xOffset) = imageData(x * pxSizeBytes + curChannel)
+        Next x
+        Next y
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'Filter each row of the channel
+        For y = 0 To finalY
+            Deriche1D c, tmpFloat, y * pxImgWidth, tmpBuffer, pxImgWidth, 1
+        Next y
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'Next, filter each column
+        For x = 0 To finalX
+            Deriche1D c, tmpFloat, x, tmpBuffer, pxImgHeight, pxImgWidth
+        Next x
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+        'Convert the float results back into RGB
+        For y = 0 To finalY
+            srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+            xOffset = y * pxImgWidth
+        For x = 0 To finalX
+            
+            'Round the finished result, perform failsafe clipping, then assign
+            origValue = Int(tmpFloat(xOffset + x) + 0.5)
+            If (origValue > 255) Then origValue = 255
+            imageData(x * pxSizeBytes + curChannel) = origValue
+            
+        Next x
+        Next y
+        
+        If (Not suppressMessages) Then
+            If Interface.UserPressedESC() Then Exit For
+            progressTracker = progressTracker + 1
+            SetProgBarVal progressTracker
+        End If
+        
+    Next curChannel
+    
+    If (Not suppressMessages) Then ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
+    
+    'Regardless of success/failure, safely deallocate our fake pixel wrapper
+    srcDIB.UnwrapArrayFromDIB imageData
+    
+    If g_cancelCurrentAction Then GaussianBlur_Deriche = 0 Else GaussianBlur_Deriche = 1
+
+End Function
+
+'Deriche Gaussian convolution
+' (original description by Pascal Getreuer)
+'
+'This routine performs Deriche's recursive filtering approximation of Gaussian convolution.
+' The Gaussian is approximated by summing the responses of a causal filter and an anticausal
+' filter. The causal filter has the form...
+' f[H^{(K)}(z)] = \frac{\sum_{k=0}^{K-1} b^+_k z^{-k}}
+'                    {1 + \sum_{k=1}^K a_k z^{-k}}
+' ...where K is the filter order (2, 3, or 4). The anticausal form is the spatial reversal
+' of the causal filter minus the sample at n = 0.
+'
+'The filter coefficients a_k, b^+_k, b^-_k correspond to the variables `c.a`, `c.b_causal`,
+' and `c.b_anticausal`, which are precomputed by the routine Gaussian_DerichePreComp().
+'
+'Note: results may be inaccurate for large values of sigma unless double-precision values
+' are used.
+'
+'This VB6 implementation is adapted from an original C implementation of Deriche's technique by
+' Pascal Getreuer in "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub Deriche1D(ByRef c As DericheCoeffs, ByRef dest() As Single, ByVal initOffset As Long, ByRef tmpBuffer() As Double, ByVal n As Long, ByVal srcStride As Long)
+    
+    Dim stride_2 As Long, stride_3 As Long, stride_4 As Long, stride_n As Long
+    stride_2 = srcStride * 2
+    stride_3 = srcStride * 3
+    stride_4 = srcStride * 4
+    stride_n = srcStride * n
+    
+    'In the original, these are pointers; we have to rework them as indices "because VB6".
+    ' (As such, y_causual is unused - it just points to idx 0 of tmpBuffer().
+    'Dim y_causal As Long
+    
+    'The source tmpBuffer() has length 2n; we store anticausal values in the back-half,
+    ' using a fixed offset of n
+    Dim y_anticausal As Long
+    y_anticausal = n
+    
+    'Original provides a special case for short signals; I have not implemented this here
+    'If (n <= 4) Then
+    '    'Special case for very short signals.
+    '    gaussian_short_conv(dest, src, N, stride, c.sigma);
+    'End If
+    
+    Dim i As Long, sn As Long
+    
+    'Initialize the causal filter on the left (or top) boundary.
+    Deriche_InitRecursFilter tmpBuffer, dest, n, srcStride, c.dc_b_causal, c.dc_K - 1, c.dc_a, c.dc_K, c.dc_sum_causal, c.dc_tol, c.dc_max_iter, 0, initOffset
+    
+    'The following filters the interior samples according to the filter order c.K.
+    ' The loops below implement the pseudocode...
+    '
+    '   For n = K, ..., N - 1,
+    '       y^+(n) = \sum_{k=0}^{K-1} b^+_k src(n - k)
+    '                - \sum_{k=1}^K a_k y^+(n - k)
+    '
+    'Variable i tracks the offset to the nth sample of src.  It is updated together with n
+    ' such that i = stride * n.
+    Select Case c.dc_K
+    
+        Case 2
+            i = stride_2
+            For sn = 2 To n - 1
+                tmpBuffer(sn) = c.dc_b_causal(0) * dest(initOffset + i) _
+                + c.dc_b_causal(1) * dest(initOffset + i - srcStride) _
+                - c.dc_a(1) * tmpBuffer(sn - 1) _
+                - c.dc_a(2) * tmpBuffer(sn - 2)
+                i = i + srcStride
+            Next sn
+            
+        Case 3
+            i = stride_3
+            For sn = 3 To n - 1
+                tmpBuffer(sn) = c.dc_b_causal(0) * dest(initOffset + i) _
+                + c.dc_b_causal(1) * dest(initOffset + i - srcStride) _
+                + c.dc_b_causal(2) * dest(initOffset + i - stride_2) _
+                - c.dc_a(1) * tmpBuffer(sn - 1) _
+                - c.dc_a(2) * tmpBuffer(sn - 2) _
+                - c.dc_a(3) * tmpBuffer(sn - 3)
+                i = i + srcStride
+            Next sn
+            
+        Case 4
+            i = stride_4
+            For sn = 4 To n - 1
+                tmpBuffer(sn) = c.dc_b_causal(0) * dest(initOffset + i) _
+                + c.dc_b_causal(1) * dest(initOffset + i - srcStride) _
+                + c.dc_b_causal(2) * dest(initOffset + i - stride_2) _
+                + c.dc_b_causal(3) * dest(initOffset + i - stride_3) _
+                - c.dc_a(1) * tmpBuffer(sn - 1) _
+                - c.dc_a(2) * tmpBuffer(sn - 2) _
+                - c.dc_a(3) * tmpBuffer(sn - 3) _
+                - c.dc_a(4) * tmpBuffer(sn - 4)
+                i = i + srcStride
+            Next sn
+                
+    End Select
+    
+    'Initialize the anticausal filter on the right boundary.
+    Deriche_InitRecursFilter tmpBuffer, dest, n, -srcStride, c.dc_b_anticausal, c.dc_K, c.dc_a, c.dc_K, c.dc_sum_anticausal, c.dc_tol, c.dc_max_iter, y_anticausal, initOffset + stride_n - srcStride
+    
+    'Similar to the causal filter code above, the following implements the pseudocode...
+    '
+    '   For n = K, ..., N - 1,
+    '       y^-(n) = \sum_{k=1}^K b^-_k dest(initoffset+N - n - 1 - k)
+    '                - \sum_{k=1}^K a_k y^-(n - k)
+    '
+    'Variable i is updated such that i = stride * (N - n - 1).
+    Select Case c.dc_K
+        
+        Case 2
+            i = stride_n - stride_3
+            For sn = 2 To n - 1
+                tmpBuffer(y_anticausal + sn) = c.dc_b_anticausal(1) * dest(initOffset + i + srcStride) _
+                + c.dc_b_anticausal(2) * dest(initOffset + i + stride_2) _
+                - c.dc_a(1) * tmpBuffer(y_anticausal + sn - 1) _
+                - c.dc_a(2) * tmpBuffer(y_anticausal + sn - 2)
+                i = i - srcStride
+            Next sn
+            
+        Case 3
+            i = stride_n - stride_4
+            For sn = 3 To n - 1
+                tmpBuffer(y_anticausal + sn) = c.dc_b_anticausal(1) * dest(initOffset + i + srcStride) _
+                + c.dc_b_anticausal(2) * dest(initOffset + i + stride_2) _
+                + c.dc_b_anticausal(3) * dest(initOffset + i + stride_3) _
+                - c.dc_a(1) * tmpBuffer(y_anticausal + sn - 1) _
+                - c.dc_a(2) * tmpBuffer(y_anticausal + sn - 2) _
+                - c.dc_a(3) * tmpBuffer(y_anticausal + sn - 3)
+                i = i - srcStride
+            Next sn
+            
+        Case 4
+            i = stride_n - srcStride * 5
+            For sn = 4 To n - 1
+                tmpBuffer(y_anticausal + sn) = c.dc_b_anticausal(1) * dest(initOffset + i + srcStride) _
+                + c.dc_b_anticausal(2) * dest(initOffset + i + stride_2) _
+                + c.dc_b_anticausal(3) * dest(initOffset + i + stride_3) _
+                + c.dc_b_anticausal(4) * dest(initOffset + i + stride_4) _
+                - c.dc_a(1) * tmpBuffer(y_anticausal + sn - 1) _
+                - c.dc_a(2) * tmpBuffer(y_anticausal + sn - 2) _
+                - c.dc_a(3) * tmpBuffer(y_anticausal + sn - 3) _
+                - c.dc_a(4) * tmpBuffer(y_anticausal + sn - 4)
+                i = i - srcStride
+            Next sn
+            
+    End Select
+    
+    'Sum the causal and anticausal responses to obtain the final result
+    i = 0
+    y_anticausal = y_anticausal + n - 1
+    For sn = 0 To n - 1
+        dest(i + initOffset) = tmpBuffer(sn) + tmpBuffer(y_anticausal - sn)
+        i = i + srcStride
+    Next sn
+    
+End Sub
+
+'Precompute coefficients for Deriche's Gaussian approximation
+'
+'This VB6 implementation is adapted from an original C implementation of Deriche's technique by
+' Pascal Getreuer in "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Double, ByVal k As Long, ByVal tol As Double)
+
+    'Deriche's optimized filter parameters
+    Dim cxAlpha() As ComplexNumber
+    ReDim cxAlpha(0 To DERICHE_MAX_K - DERICHE_MIN_K, 0 To 3) As ComplexNumber
+    cxAlpha(0, 0).dc_real = 0.48145
+    cxAlpha(0, 0).dc_imag = 0.971
+    cxAlpha(0, 1).dc_real = 0.48145
+    cxAlpha(0, 1).dc_imag = -0.971
+    cxAlpha(1, 0).dc_real = -0.44645
+    cxAlpha(1, 0).dc_imag = 0.5105
+    cxAlpha(1, 1).dc_real = -0.44645
+    cxAlpha(1, 1).dc_imag = -0.5105
+    cxAlpha(1, 2).dc_real = 1.898
+    cxAlpha(1, 2).dc_imag = 0#
+    cxAlpha(2, 0).dc_real = 0.84
+    cxAlpha(2, 0).dc_imag = 1.8675
+    cxAlpha(2, 1).dc_real = 0.84
+    cxAlpha(2, 1).dc_imag = -1.8675
+    cxAlpha(2, 2).dc_real = -0.34015
+    cxAlpha(2, 2).dc_imag = -0.1299
+    cxAlpha(2, 3).dc_real = -0.34015
+    cxAlpha(2, 3).dc_imag = 0.1299
+    
+    Dim cxLambda() As ComplexNumber
+    ReDim cxLambda(0 To DERICHE_MAX_K - DERICHE_MIN_K, 0 To 3) As ComplexNumber
+    cxLambda(0, 0).dc_real = 1.26
+    cxLambda(0, 0).dc_imag = 0.8448
+    cxLambda(0, 1).dc_real = 1.26
+    cxLambda(0, 1).dc_imag = -0.8448
+    cxLambda(1, 0).dc_real = 1.512
+    cxLambda(1, 0).dc_imag = 1.475
+    cxLambda(1, 1).dc_real = 1.512
+    cxLambda(1, 1).dc_imag = -1.475
+    cxLambda(1, 2).dc_real = 1.556
+    cxLambda(1, 2).dc_imag = 0#
+    cxLambda(2, 0).dc_real = 1.783
+    cxLambda(2, 0).dc_imag = 0.6318
+    cxLambda(2, 1).dc_real = 1.783
+    cxLambda(2, 1).dc_imag = -0.6318
+    cxLambda(2, 2).dc_real = 1.723
+    cxLambda(2, 2).dc_imag = 1.997
+    cxLambda(2, 3).dc_real = 1.723
+    cxLambda(2, 3).dc_imag = -1.997
+    
+    Dim cxBeta() As ComplexNumber
+    ReDim cxBeta(0 To DERICHE_MAX_K - 1) As ComplexNumber
+    
+    Dim sk As Long, temp As Double
+    For sk = 0 To k - 1
+        temp = Exp(-cxLambda(k - DERICHE_MIN_K, sk).dc_real / sigma)
+        cxBeta(sk) = make_complex(-temp * Cos(cxLambda(k - DERICHE_MIN_K, sk).dc_imag / sigma), _
+                     temp * Sin(cxLambda(k - DERICHE_MIN_K, sk).dc_imag / sigma))
+    Next sk
+    
+    'Compute the causal filter coefficients
+    Gaussian_MakeDericheAB c.dc_b_causal, c.dc_a, cxAlpha, k - DERICHE_MIN_K, cxBeta, k, sigma
+    
+    'Numerator coefficients of the anticausal filter
+    c.dc_b_anticausal(0) = 0!
+    
+    For sk = 1 To k - 1
+        c.dc_b_anticausal(sk) = c.dc_b_causal(sk) - c.dc_a(sk) * c.dc_b_causal(0)
+    Next sk
+    
+    c.dc_b_anticausal(k) = -c.dc_a(k) * c.dc_b_causal(0)
+    
+    'Impulse response sums
+    Dim accum_denom As Double
+    accum_denom = 1#
+    
+    For sk = 1 To k
+        accum_denom = accum_denom + c.dc_a(sk)
+    Next sk
+    
+    If (accum_denom < 1E-16) Then accum_denom = 1E-16
+    
+    Dim accum As Double
+    accum = 0#
+    For sk = 0 To k - 1
+        accum = accum + c.dc_b_causal(sk)
+    Next sk
+    
+    c.dc_sum_causal = accum / accum_denom
+    
+    accum = 0#
+    For sk = 1 To k
+        accum = accum + c.dc_b_anticausal(sk)
+    Next sk
+    
+    c.dc_sum_anticausal = accum / accum_denom
+    
+    c.dc_sigma = sigma
+    c.dc_K = k
+    c.dc_tol = tol
+    c.dc_max_iter = Int(10# * sigma + 0.99999999)
+    
+End Sub
+
+'Make Deriche filter from alpha and beta coefficients
+'
+'This VB6 implementation is adapted from an original C implementation of Deriche's technique by
+' Pascal Getreuer in "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub Gaussian_MakeDericheAB(ByRef result_b() As Double, ByRef result_a() As Double, ByRef cx_alpha() As ComplexNumber, ByVal idx_cx_alpha As Long, ByRef cx_beta() As ComplexNumber, ByVal k As Long, ByVal sigma As Double)
+    
+    Const M_SQRT2PI As Double = 2.506628274631
+    Dim denom As Double
+    denom = sigma * M_SQRT2PI
+    
+    Dim b() As ComplexNumber, a() As ComplexNumber
+    ReDim b(0 To DERICHE_MAX_K - 1) As ComplexNumber
+    ReDim a(0 To DERICHE_MAX_K) As ComplexNumber
+    
+    Dim sk As Long, j As Long
+    
+    'Initialize b/a = alpha[0] / (1 + beta[0] z^-1)
+    b(0) = cx_alpha(idx_cx_alpha, 0)
+    a(0) = make_complex(1#, 0#)
+    a(1) = cx_beta(0)
+    
+    For sk = 1 To k - 1
+        
+        'Add kth term, b/a += alpha[k] / (1 + beta[k] z^-1)
+        b(sk) = c_mul(cx_beta(sk), b(sk - 1))
+        
+        For j = sk - 1 To 1 Step -1
+            b(j) = c_add(b(j), c_mul(cx_beta(sk), b(j - 1)))
+        Next j
+        
+        For j = 0 To sk
+            b(j) = c_add(b(j), c_mul(cx_alpha(idx_cx_alpha, sk), a(j)))
+        Next j
+        
+        a(sk + 1) = c_mul(cx_beta(sk), a(sk))
+        
+        For j = sk To 1 Step -1
+            a(j) = c_add(a(j), c_mul(cx_beta(sk), a(j - 1)))
+        Next j
+        
+    Next sk
+    
+    For sk = 0 To k - 1
+        result_b(sk) = b(sk).dc_real / denom
+        result_a(sk + 1) = a(sk + 1).dc_real
+    Next sk
+    
+End Sub
+
+'Compute taps of the impulse response of a causal recursive filter
+'
+'This VB6 implementation is adapted from an original C implementation of Deriche's technique by
+' Pascal Getreuer in "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub Gaussian_RecursiveImpulse(ByRef h() As Double, ByVal n As Long, ByRef b() As Double, ByVal p As Long, ByRef a() As Double, ByVal q As Long)
+    
+    Dim m As Long, sn As Long
+    
+    For sn = 0 To n - 1
+        
+        If (sn <= p) Then
+            h(sn) = b(sn)
+        Else
+            h(sn) = 0
+        End If
+        
+        m = 1
+        
+        Do While (m <= q) And (m <= sn)
+            h(sn) = h(sn) - a(m) * h(sn - m)
+            m = m + 1
+        Loop
+        
+    Next sn
+    
+End Sub
+
+'Initialize a causal recursive filter with boundary extension
+'
+'This VB6 implementation is adapted from an original C implementation of Deriche's technique by
+' Pascal Getreuer in "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Sub Deriche_InitRecursFilter(ByRef dest() As Double, ByRef src() As Single, ByVal n As Long, ByVal srcStride As Long, _
+    ByRef b() As Double, ByVal p As Long, ByRef a() As Double, ByVal q As Long, _
+    ByVal sum As Double, ByVal tol As Double, ByVal max_iter As Long, Optional ByVal initOffset As Long = 0, Optional ByVal srcOffset As Long = 0)
+    
+    Dim h() As Double
+    Const MAX_Q As Long = 7
+    ReDim h(0 To MAX_Q) As Double
+    
+    Dim sn As Long, m As Long
+    
+    'Compute the first q taps of the impulse response, h_0, ..., h_{q-1}
+    Gaussian_RecursiveImpulse h, q, b, p, a, q
+    
+    'Compute dest_m = sum_{n=1}^m h_{m-n} src_n, m = 0, ..., q-1
+    For m = 0 To q - 1
+        dest(m + initOffset) = 0
+        For sn = 1 To m
+            dest(m + initOffset) = dest(m + initOffset) + h(m - sn) * src(srcOffset + srcStride * Inf_extension(n, sn))
+        Next sn
+    Next m
+    
+    Dim cur As Double
+    For sn = 0 To max_iter - 1
+        
+        cur = src(srcOffset + srcStride * Inf_extension(n, -sn))
+        
+        'dest_m = dest_m + h_{n+m} src_{-n}
+        For m = 0 To q - 1
+            dest(m + initOffset) = dest(m + initOffset) + h(m) * cur
+        Next m
+        
+        sum = sum - Abs(h(0))
+        
+        If (sum <= tol) Then Exit For
+        
+        'Compute the next impulse response tap, h_{n+q}
+        If (sn + q <= p) Then
+            h(q) = b(sn + q)
+        Else
+            h(q) = 0
+        End If
+        
+        For m = 1 To q
+            h(q) = h(q) - a(m) * h(q - m)
+        Next m
+        
+        'Shift the h array for the next iteration
+        For m = 0 To q - 1
+            h(m) = h(m + 1)
+        Next m
+        
+    Next sn
+    
+End Sub
+
+'A bunch of complex number arithmetic functions follow.  These are necessary for implementing
+' Deriche's method; not all methods are currently used, but they may be in the future for other
+' recursive IIR methods.
+'
+'These VB6 implementations are adapted from original C implementations by Pascal Getreuer in
+' "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
+'
+' - Original C versions copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
+' - Used here under their original BSD license <http://www.opensource.org/licenses/bsd-license.html>
+' - Translated into VB6 by Tanner Helland in 2019
+Private Function make_complex(ByVal a As Double, ByVal b As Double) As ComplexNumber
+    make_complex.dc_real = a
+    make_complex.dc_imag = b
+End Function
+
+'Complex conjugate
+Private Function c_conj(ByRef z As ComplexNumber) As ComplexNumber
+    c_conj.dc_real = z.dc_real
+    c_conj.dc_imag = -z.dc_imag
+End Function
+
+'Complex addition
+Private Function c_add(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
+    c_add.dc_real = w.dc_real + z.dc_real
+    c_add.dc_imag = w.dc_imag + z.dc_imag
+End Function
+
+'Complex negation
+Private Function c_neg(ByRef z As ComplexNumber) As ComplexNumber
+    c_neg.dc_real = -z.dc_real
+    c_neg.dc_imag = -z.dc_imag
+End Function
+
+'Complex subtraction
+Private Function c_sub(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
+    c_sub.dc_real = w.dc_real - z.dc_real
+    c_sub.dc_imag = w.dc_imag - z.dc_imag
+End Function
+
+'Complex multiplication
+Private Function c_mul(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
+    c_mul.dc_real = w.dc_real * z.dc_real - w.dc_imag * z.dc_imag
+    c_mul.dc_imag = w.dc_real * z.dc_imag + w.dc_imag * z.dc_real
+End Function
+
+'Complex multiplicative inverse 1/z
+Private Function c_inv(ByRef z As ComplexNumber) As ComplexNumber
+
+    'There are two mathematically-equivalent formulas for the inverse. For accuracy,
+    ' choose the formula with the smaller value of |ratio|.
+    Dim ratio As Double, denom As Double
+    If (Abs(z.dc_real) >= Abs(z.dc_imag)) Then
+        ratio = z.dc_imag / z.dc_real
+        denom = z.dc_real + z.dc_imag * ratio
+        c_inv.dc_real = 1# / denom
+        c_inv.dc_imag = -ratio / denom
+    Else
+        ratio = z.dc_real / z.dc_imag
+        denom = z.dc_real * ratio + z.dc_imag
+        c_inv.dc_real = ratio / denom
+        c_inv.dc_imag = -1# / denom
+    End If
+    
+End Function
+
+'Complex division w/z
+Private Function c_div(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
+
+    'For accuracy, choose the formula with the smaller value of |ratio|.
+    Dim ratio As Double, denom As Double
+    If (Abs(z.dc_real) >= Abs(z.dc_imag)) Then
+        ratio = z.dc_imag / z.dc_real
+        denom = z.dc_real + z.dc_imag * ratio
+        c_div.dc_real = (w.dc_real + w.dc_imag * ratio) / denom
+        c_div.dc_imag = (w.dc_imag - w.dc_real * ratio) / denom
+    Else
+        ratio = z.dc_real / z.dc_imag
+        denom = z.dc_real * ratio + z.dc_imag
+        c_div.dc_real = (w.dc_real * ratio + w.dc_imag) / denom
+        c_div.dc_imag = (w.dc_imag * ratio - w.dc_real) / denom
+    End If
+    
+End Function
+
+'Complex magnitude
+Private Function c_mag(ByRef z As ComplexNumber) As Double
+    
+    Dim tmpz As ComplexNumber
+    tmpz = z
+    tmpz.dc_real = Abs(z.dc_real)
+    tmpz.dc_imag = Abs(z.dc_imag)
+    
+    'For accuracy, choose the formula with the smaller value of |ratio|.
+    Dim ratio As Double
+    If (tmpz.dc_real >= tmpz.dc_imag) Then
+        ratio = tmpz.dc_imag / tmpz.dc_real
+        c_mag = tmpz.dc_real * Sqr(1# + ratio * ratio)
+    Else
+        ratio = tmpz.dc_real / tmpz.dc_imag
+        c_mag = tmpz.dc_imag * Sqr(1# + ratio * ratio)
+    End If
+    
+End Function
+
+'Complex argument (angle) in [-pi,+pi]
+Private Function c_arg(ByRef z As ComplexNumber) As Double
+    c_arg = PDMath.Atan2(z.dc_imag, z.dc_real)
+End Function
+
+'Complex power w^z
+Private Function c_pow(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
+    
+    Dim mag_w As Double
+    mag_w = c_mag(w)
+    
+    Dim arg_w As Double
+    arg_w = c_arg(w)
+    
+    Dim mag As Double
+    mag = (mag_w ^ z.dc_real) * Exp(-z.dc_imag * arg_w)
+    
+    Dim arg As Double
+    arg = z.dc_real * arg_w + z.dc_imag * Log(mag_w)
+    
+    c_pow.dc_real = mag * Cos(arg)
+    c_pow.dc_imag = mag * Sin(arg)
+    
+End Function
+
+'Complex power w^x with real exponent
+Private Function c_real_pow(ByRef w As ComplexNumber, ByVal x As Double) As ComplexNumber
+    
+    Dim mag As Double
+    mag = c_mag(w) ^ x
+    
+    Dim arg As Double
+    arg = c_arg(w) * x
+    
+    c_real_pow.dc_real = mag * Cos(arg)
+    c_real_pow.dc_imag = mag * Sin(arg)
+    
+End Function
+
+'Complex square root (principal branch)
+Private Function c_sqrt(ByRef z As ComplexNumber) As ComplexNumber
+    
+    Dim r As Double
+    r = c_mag(z)
+    
+    c_sqrt.dc_real = Sqr((r + z.dc_real) / 2#)
+    c_sqrt.dc_imag = Sqr((r - z.dc_real) / 2#)
+    
+    If (z.dc_imag < 0#) Then c_sqrt.dc_imag = -c_sqrt.dc_imag
+    
+End Function
+
+'Complex exponential
+Private Function c_exp(ByRef z As ComplexNumber) As ComplexNumber
+    
+    Dim r As Double
+    r = Exp(z.dc_real)
+    
+    c_exp.dc_real = r * Cos(z.dc_imag)
+    c_exp.dc_imag = r * Sin(z.dc_imag)
+    
+End Function
+
+'Complex logarithm (principal branch)
+Private Function c_log(ByRef z As ComplexNumber) As ComplexNumber
+    c_log.dc_real = Log(c_mag(z))
+    c_log.dc_imag = c_arg(z)
 End Function
