@@ -1361,6 +1361,10 @@ End Function
 'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
+    'Validate inputs
+    If (equivalentGaussianRadius < 0.01) Then equivalentGaussianRadius = 0.01
+    If (numIterations < 1) Then numIterations = 1
+    
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long

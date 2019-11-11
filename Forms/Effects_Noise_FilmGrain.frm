@@ -171,7 +171,7 @@ Public Sub AddFilmGrain(ByVal effectParams As String, Optional ByVal toPreview A
             If (gSoftness < 0.1) Then gSoftness = 0.1
         End If
         
-        Filters_ByteArray.GaussianBlur_IIR_ByteArray noiseBytes, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, gSoftness, 3
+        Filters_ByteArray.GaussianBlur_AM_ByteArray noiseBytes, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, gSoftness, 3
         
     End If
     

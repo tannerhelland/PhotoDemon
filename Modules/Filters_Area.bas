@@ -639,7 +639,7 @@ End Sub
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Public Function GaussianBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function GaussianBlur_AM(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'First comes a mathematical fudge.  This particular gaussian approximation tends to produce a
     ' slightly "genter" blur than an identical radius in Photoshop.  To try and bring the two methods
@@ -782,7 +782,7 @@ Public Function GaussianBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double, 
     'Regardless of success/failure, safely deallocate our fake pixel wrapper
     srcDIB.UnwrapArrayFromDIB imageData
     
-    If g_cancelCurrentAction Then GaussianBlur_IIR = 0 Else GaussianBlur_IIR = 1
+    If g_cancelCurrentAction Then GaussianBlur_AM = 0 Else GaussianBlur_AM = 1
 
 End Function
 
@@ -1068,6 +1068,10 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
     Dim tmpFloat() As Single
     ReDim tmpFloat(0 To numPixels - 1) As Single
     
+    'y-buffer
+    Dim tmpYFloat() As Single, iY As Long
+    ReDim tmpYFloat(0 To pxImgHeight - 1) As Single
+    
     'If requested, progress events are raised as discrete steps
     Dim progressTracker As Long
     progressTracker = 0
@@ -1104,7 +1108,24 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
         
         'Next, filter each column
         For x = 0 To finalX
-            Deriche1D c, tmpFloat, x, tmpBuffer, pxImgHeight, pxImgWidth
+            
+            'Because this gaussian technique is recursive over a fixed buffer, we can greatly
+            ' improve CPU cache behavior by transferring this column into a temporary contiguous
+            ' buffer, blurring *that*, then copying the result back out.  (For normal behavior,
+            ' use this line of code:
+            ' Deriche1D c, tmpFloat, x, tmpBuffer, pxImgHeight, pxImgWidth
+            
+            For iY = 0 To finalY
+                tmpYFloat(iY) = tmpFloat(iY * pxImgWidth + x)
+            Next iY
+            
+            Deriche1D c, tmpYFloat, 0, tmpBuffer, pxImgHeight, 1
+            
+            'Transfer finished result back to parent array
+            For iY = 0 To finalY
+                tmpFloat(iY * pxImgWidth + x) = tmpYFloat(iY)
+            Next iY
+            
         Next x
         
         If (Not suppressMessages) Then
@@ -1119,9 +1140,12 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
             xOffset = y * pxImgWidth
         For x = 0 To finalX
             
-            'Round the finished result, perform failsafe clipping, then assign
+            'Round the finished result, perform failsafe clipping (which is important - the shape
+            ' of deriche's impulse errors can dip below 0 for sharp boundaries between black and
+            ' white regions in an image), then assign the final channel value
             origValue = Int(tmpFloat(xOffset + x) + 0.5)
             If (origValue > 255) Then origValue = 255
+            If (origValue < 0) Then origValue = 0
             imageData(x * pxSizeBytes + curChannel) = origValue
             
         Next x
@@ -1407,7 +1431,9 @@ Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Dou
     c.dc_sigma = sigma
     c.dc_K = k
     c.dc_tol = tol
-    c.dc_max_iter = Int(10# * sigma + 0.99999999)
+    
+    'In the original, this is set to 10x sigma... which seems excessive?
+    c.dc_max_iter = Int(4# * sigma + 0.99999999)
     
 End Sub
 

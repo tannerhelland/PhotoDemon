@@ -37,7 +37,7 @@ Option Explicit
 '
 'Note that the incoming arrayWidth and arrayHeight parameters are 1-based, so this function will automatically subtract 1 to arrive
 ' at an actual UBound value.
-Public Function GaussianBlur_IIR_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal radius As Double, ByVal numSteps As Long) As Boolean
+Public Function GaussianBlur_AM_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal radius As Double, ByVal numSteps As Long) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
     ' (In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.)
@@ -167,7 +167,7 @@ Public Function GaussianBlur_IIR_ByteArray(ByRef srcArray() As Byte, ByVal array
     Next y
     Next x
     
-    GaussianBlur_IIR_ByteArray = True
+    GaussianBlur_AM_ByteArray = True
     
 End Function
 

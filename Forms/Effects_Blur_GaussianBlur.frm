@@ -23,6 +23,32 @@ Begin VB.Form FormGaussianBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSlider sldIterations 
+      Height          =   855
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   4560
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1508
+      Caption         =   "iterations"
+      Min             =   2
+      Max             =   4
+      Value           =   3
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   3
+   End
+   Begin PhotoDemon.pdDropDown ddCustom 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "algorithms"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -34,16 +60,15 @@ Begin VB.Form FormGaussianBlur
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltRadius 
-      Height          =   705
+      Height          =   465
       Left            =   6000
       TabIndex        =   2
-      Top             =   1800
+      Top             =   1740
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "radius"
+      _ExtentY        =   820
       Min             =   0.1
-      Max             =   500
+      Max             =   1000
       SigDigits       =   1
       ScaleStyle      =   1
       Value           =   1
@@ -62,11 +87,21 @@ Begin VB.Form FormGaussianBlur
       Height          =   1080
       Left            =   6000
       TabIndex        =   3
-      Top             =   2700
+      Top             =   2280
       Width           =   5835
       _ExtentX        =   10292
       _ExtentY        =   1905
       Caption         =   "mode"
+   End
+   Begin PhotoDemon.pdDropDown ddRadius 
+      Height          =   420
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   1260
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   741
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormGaussianBlur"
@@ -81,24 +116,18 @@ Attribute VB_Exposed = False
 'Last updated: 07/November/19
 'Last update: switched to an all-new Deriche implementation for "high quality" gaussian
 '
-'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
-' that utilizes a separable convolution kernel AND allows for sub-pixel radii (at "best" quality, anyway).
-
-'The use of separable kernels makes this much, much faster than a standard Gaussian blur.  The approximate
-' speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel of 9x9)
-' the processing time is 4.5x faster.  For a radius of 100, my technique is 100x faster than a traditional
-' method.
+'Not much to say here.  Gaussian blur is a standard function in an image editor!
 '
-'For an even faster blur, iterative box blurs can be applied.  The "good" quality uses a 3x box blur estimate, while
-' the "better" quality uses a 5x.  The way the box blur radius is calculated also varies; 3x uses a quadratic
-' estimation to try and improve output, while the 5x uses a quick-and-dirty estimation as the number of iterations
-' makes a more elegant one pointless.
+'Like most programs, PhotoDemon does not attempt to calculate the gaussian precisely.
+' (I previously provided a function for this, but even a separable implementation is
+' incredibly slow on large images.)  Instead, it uses several different approximation
+' methods with varying performance/quality trade-offs.  Currently available methods include...
+' - iterative box blurs (a la Photoshop)
+' - heat equation estimation (Alvarez-Mazorra)
+' - recursive IIR (Deriche)
 '
-'Note that "good quality" is ~20x faster than "best quality", and "best quality" is 100x faster than a naive implementation.
-' Pretty fast stuff!
-'
-'Despite this, it's still quite slow in the IDE due to the number of array accesses required.  I STRONGLY
-' recommend compiling the project before applying any Gaussian blur of a large radius.
+'These functions were written with help from outside researchers; please see the linked
+' gaussian functions for details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -117,16 +146,32 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim gRadius As Double, gaussQuality As Long
+    Dim gRadius As Double, gaussQuality As String, gaussAlgo As String, gaussIterations As Long
     
     With cParams
-        gRadius = .GetDouble("radius", sltRadius.Value)
-        gaussQuality = .GetLong("quality", 1)
+        gRadius = .GetDouble("radius", sltRadius.Value, True)
+        gaussQuality = .GetString("quality", "fast", True)
+        gaussAlgo = .GetString("algorithm", "box", True)
+        gaussIterations = .GetLong("iterations", 3, True)
     End With
     
-    'Previous versions of this filter supported an extremely slow (but exact) gaussian blur routine; we now substitute
-    ' IIR filtering for that approach, as the output is nearly identical but many times faster.
-    If (gaussQuality > 1) Then gaussQuality = 1
+    'Legacy handling of old numeric quality indicators
+    If TextSupport.IsNumberLocaleUnaware(gaussQuality) Then gaussQuality = GetQualityAsString(TextSupport.CDblCustom(gaussQuality))
+    
+    'If "fast" or "precise" mode is used, populate the equivalent alog
+    If (gaussQuality = "fast") Then
+        gaussAlgo = "box"
+        gaussIterations = 3
+    End If
+    
+    If (gaussQuality = "precise") Then
+        gaussAlgo = "deriche"
+        gaussIterations = 3
+    End If
+    
+    'Validate settings
+    If (gaussIterations < 2) Then gaussIterations = 2
+    If (gaussIterations > 4) Then gaussIterations = 4
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SafeArray2D
@@ -137,33 +182,28 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
         gRadius = gRadius * curDIBValues.previewModifier
         If (gRadius <= 0.1) Then gRadius = 0.1
     End If
-        
+    
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
     ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
     ' https://www.khanacademy.org/math/probability/statistics-inferential/sampling_distribution/v/central-limit-theorem?playlist=Statistics
     ' ), that I recommend the faster methods instead.
-    Select Case gaussQuality
+    Select Case gaussAlgo
     
-        '3 iteration box blur
-        Case 0
-            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, workingDIB, workingDIB, 3, toPreview
+        'Iterative box blurs
+        Case "box"
+            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, workingDIB, workingDIB, gaussIterations, toPreview
             
-        'IIR Gaussian estimation
+        'Alvarez-Mazorra anisotropic diffusion
+        Case "am"
+            Filters_Area.GaussianBlur_AM workingDIB, gRadius, gaussIterations, toPreview
+        
+        'Deriche IIR
+        Case "deriche"
+            Filters_Area.GaussianBlur_Deriche workingDIB, gRadius, gaussIterations, toPreview
+        
+        'Failsafe for unsupported quality IDs
         Case Else
-            
-            'In the past, I used an IIR approach based on anisotropic filtering
-            ' (https://www.jstor.org/stable/2158018?seq=1#page_scan_tab_contents)
-            ' Unfortunately, subsequent detective work by a contributor turned up
-            ' accuracy issues with this approach vs a true gaussian
-            ' (https://github.com/tannerhelland/PhotoDemon/issues/279).
-            
-            'Subsequent detective work confirmed that academia agrees with this assessment
-            ' (http://www.ipol.im/pub/art/2013/87/) so I have since switched to a
-            ' near-perfect estimation using a 3rd-order Deriche approximation.  This is
-            ' slightly slower than PD's original heavily optimized Alvarez-Mazorra
-            ' algorithm, but the results are significantly higher quality (with proven
-            ' gaussian deviations less than 1/2 of 1%).
-            Filters_Area.GaussianBlur_Deriche workingDIB, gRadius, 3, toPreview
+            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, workingDIB, workingDIB, gaussIterations, toPreview
             
     End Select
     
@@ -173,6 +213,7 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
 End Sub
 
 Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    updateUI
     UpdatePreview
 End Sub
 
@@ -185,14 +226,43 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
+Private Sub ddCustom_Click()
+    UpdatePreview
+End Sub
+
+Private Sub ddRadius_Click()
+    UpdatePreview
+End Sub
+
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False
     
+    'Populate radius options
+    ddRadius.SetAutomaticRedraws False
+    ddRadius.AddItem "radius", 0
+    ddRadius.AddItem "radius (Photoshop equivalent)", 1
+    
+    Dim stdDevText As String
+    If PDMain.IsProgramRunning() Then stdDevText = g_Language.TranslateMessage("standard deviation (%1)", ChrW$(&H3C3))
+    ddRadius.AddItem stdDevText, 2
+    ddRadius.ListIndex = 0
+    ddRadius.SetAutomaticRedraws True
+    
     'Populate the quality selector
     btsQuality.AddItem "fast", 0
     btsQuality.AddItem "precise", 1
+    btsQuality.AddItem "custom", 2
     btsQuality.ListIndex = 0
+    
+    'Custom algorithms for the "custom" quality setting
+    ddCustom.SetAutomaticRedraws False
+    ddCustom.AddItem "iterative box blur", 0
+    ddCustom.AddItem "anisotropic diffusion (Alvarez-Mazorra)", 1
+    ddCustom.AddItem "IIR (Deriche)", 2
+    ddCustom.ListIndex = 0
+    ddCustom.SetAutomaticRedraws True
+    updateUI
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -205,8 +275,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then GaussianBlurFilter GetLocalParamString(), True, pdFxPreview
+Private Sub sldIterations_Change()
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -218,16 +288,73 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Private Sub UpdatePreview()
+    If cmdBar.PreviewsAllowed Then GaussianBlurFilter GetLocalParamString(), True, pdFxPreview
+End Sub
+
+Private Sub updateUI()
+    ddCustom.Visible = (btsQuality.ListIndex = 2)
+    sldIterations.Visible = (btsQuality.ListIndex = 2)
+End Sub
+
 Private Function GetLocalParamString() As String
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "radius", sltRadius.Value
-        .AddParam "quality", btsQuality.ListIndex
+        
+        If (ddRadius.ListIndex = 0) Then
+            .AddParam "radius", sltRadius.Value
+        
+        'At present, Photoshop radius matching simply doubles the current radius; for some
+        ' reason, PS appears to use "diameter" instead of "radius" even though their UI says
+        ' radius... sigh.  (It's also possible they use sigma instead of radius - or they
+        ' use sigma and radius interchangeably?  Who knows...)
+        ElseIf (ddRadius.ListIndex = 1) Then
+            .AddParam "radius", sltRadius.Value * 2
+        
+        'Some software (GIMP) uses standard deviation as their measurement; we silently
+        ' convert this to an equivalent radius.  (Note, however, that new versions of GIMP
+        ' deliberately blur in a linear RGB space, so their results will *not* match PD's,
+        ' even at an equivalent sigma.)
+        Else
+            Const LOG_255_BASE_10 As Double = 2.40654018043395
+            .AddParam "radius", CDbl((sltRadius.Value * Sqr(2# * LOG_255_BASE_10)) - 1#)
+        End If
+        
+        'Quality is passed as a string to improve forward-compatibility
+        .AddParam "quality", GetQualityAsString(btsQuality.ListIndex)
+        
+        'We always pass custom settings, even if they won't necessarily be used
+        ' with the current "quality" setting
+        .AddParam "algorithm", GetAlgoAsString(ddCustom.ListIndex)
+        .AddParam "iterations", sldIterations.Value
+        
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
+End Function
+
+Private Function GetQualityAsString(ByVal srcIndex As Long) As String
+    Select Case srcIndex
+        Case 0
+            GetQualityAsString = "fast"
+        Case 1
+            GetQualityAsString = "precise"
+        Case 2
+            GetQualityAsString = "custom"
+    End Select
+End Function
+
+Private Function GetAlgoAsString(ByVal srcIndex As Long) As String
+    Select Case srcIndex
+        Case 0
+            GetAlgoAsString = "box"
+        Case 1
+            GetAlgoAsString = "am"
+        Case 2
+            GetAlgoAsString = "deriche"
+    End Select
 End Function

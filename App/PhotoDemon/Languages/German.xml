@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1514</langversion>
+<langversion>7.2.1515</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9638,8 +9638,28 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
+<original>iterations</original>
+<translation>Iterationen</translation>
+</phrase>
+
+<phrase>
+<original>algorithms</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying gaussian blur</original>
 <translation>Gaußscher Weichzeichner wird angewendet</translation>
+</phrase>
+
+<phrase>
+<original>radius (Photoshop equivalent)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>standard deviation (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9647,7 +9667,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Präzise</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>custom</original>
+<translation>Benutzerdefiniert</translation>
+</phrase>
+
+<phrase>
+<original>iterative box blur</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>anisotropic diffusion (Alvarez-Mazorra)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>IIR (Deriche)</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9779,12 +9819,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Faltungsmatrix</translation>
 </phrase>
 
-<phrase>
-<original>custom</original>
-<translation>Benutzerdefiniert</translation>
-</phrase>
-
-<!-- Effects_CustomFilter.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_CustomFilter.frm-->
 
@@ -10478,11 +10513,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>iterations</original>
-<translation>Iterationen</translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation>Energie-Gradienten werden berechnet (Durchlauf %1 von %2)</translation>
 </phrase>
@@ -10512,7 +10542,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Glätten</translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -16251,10 +16281,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2708</phrasecount>
+<phrasecount>2714</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4995 phrases. -->
-<!-- 2287 are duplicates, so only 2708 unique phrases have been written to file. -->
-<!-- These 2708 phrases contain approximately 12714 total words. -->
+<!-- As of this build, PhotoDemon contains 5004 phrases. -->
+<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
+<!-- These 2714 phrases contain approximately 12728 total words. -->
 
 </pdData>

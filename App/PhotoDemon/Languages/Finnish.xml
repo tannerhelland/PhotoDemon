@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3426</langversion>
+<langversion>6.8.3427</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9626,8 +9626,28 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
+<original>iterations</original>
+<translation>toistojen</translation>
+</phrase>
+
+<phrase>
+<original>algorithms</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying gaussian blur</original>
 <translation>Hakeminen Gaussian hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>radius (Photoshop equivalent)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>standard deviation (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9635,7 +9655,27 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>täsmällinen</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>custom</original>
+<translation>asiakassuhde</translation>
+</phrase>
+
+<phrase>
+<original>iterative box blur</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>anisotropic diffusion (Alvarez-Mazorra)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>IIR (Deriche)</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9767,12 +9807,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>konvoluutiomatriisi</translation>
 </phrase>
 
-<phrase>
-<original>custom</original>
-<translation>asiakassuhde</translation>
-</phrase>
-
-<!-- Effects_CustomFilter.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_CustomFilter.frm-->
 
@@ -10466,11 +10501,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>iterations</original>
-<translation>toistojen</translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation>Laskeminen energia kaltevuudet (pass %1 %2)</translation>
 </phrase>
@@ -10500,7 +10530,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>sileä</translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -16241,10 +16271,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2708</phrasecount>
+<phrasecount>2714</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4995 phrases. -->
-<!-- 2287 are duplicates, so only 2708 unique phrases have been written to file. -->
-<!-- These 2708 phrases contain approximately 12714 total words. -->
+<!-- As of this build, PhotoDemon contains 5004 phrases. -->
+<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
+<!-- These 2714 phrases contain approximately 12728 total words. -->
 
 </pdData>

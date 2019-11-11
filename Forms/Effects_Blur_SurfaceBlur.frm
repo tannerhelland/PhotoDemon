@@ -191,7 +191,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         'IIR Gaussian estimation
         Case Else
             progBarCalculation = finalY + finalX
-            gaussBlurSuccess = Filters_Area.GaussianBlur_IIR(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
+            gaussBlurSuccess = Filters_Area.GaussianBlur_AM(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
         
     End Select
     

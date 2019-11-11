@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3426</langversion>
+<langversion>6.8.3427</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9628,8 +9628,28 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Blur_GaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
+<original>iterations</original>
+<translation>Iterace</translation>
+</phrase>
+
+<phrase>
+<original>algorithms</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying gaussian blur</original>
 <translation>Použití gaussian rozostření</translation>
+</phrase>
+
+<phrase>
+<original>radius (Photoshop equivalent)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>standard deviation (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9637,7 +9657,27 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>přesný</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>custom</original>
+<translation>Zvyk</translation>
+</phrase>
+
+<phrase>
+<original>iterative box blur</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>anisotropic diffusion (Alvarez-Mazorra)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>IIR (Deriche)</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -9769,12 +9809,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Konvoluční matice</translation>
 </phrase>
 
-<phrase>
-<original>custom</original>
-<translation>Zvyk</translation>
-</phrase>
-
-<!-- Effects_CustomFilter.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_CustomFilter.frm-->
 
@@ -10468,11 +10503,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 </phrase>
 
 <phrase>
-<original>iterations</original>
-<translation>Iterace</translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation>Výpočet energetických gradientů (průchod %1 z %2)</translation>
 </phrase>
@@ -10502,7 +10532,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>hladký</translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -16241,10 +16271,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2708</phrasecount>
+<phrasecount>2714</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4995 phrases. -->
-<!-- 2287 are duplicates, so only 2708 unique phrases have been written to file. -->
-<!-- These 2708 phrases contain approximately 12714 total words. -->
+<!-- As of this build, PhotoDemon contains 5004 phrases. -->
+<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
+<!-- These 2714 phrases contain approximately 12728 total words. -->
 
 </pdData>

@@ -37,7 +37,7 @@ Public Function GetChromeDIB(ByRef srcDIB As pdDIB, ByVal steelDetail As Long, B
     DIBs.GetDIBGrayscaleMap srcDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
-    If (steelSmoothness > 0) Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, steelSmoothness, 2
+    If (steelSmoothness > 0) Then Filters_ByteArray.GaussianBlur_AM_ByteArray grayMap, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, steelSmoothness, 2
         
     'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight

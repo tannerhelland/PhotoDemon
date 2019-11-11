@@ -190,7 +190,7 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
-    If (wrapSmoothness > 0) Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, wrapSmoothness, 3
+    If (wrapSmoothness > 0) Then Filters_ByteArray.GaussianBlur_AM_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, wrapSmoothness, 3
         
     'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
