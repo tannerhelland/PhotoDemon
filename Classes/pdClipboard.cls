@@ -312,7 +312,7 @@ Friend Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFor
             Case CF_DIF
                 GetFormatNameFromID = "Software Arts' Data Interchange information."
                 
-            Case CF_TIFF = 6
+            Case CF_TIFF
                 GetFormatNameFromID = "Tiff image"
                 
             Case CF_OEMTEXT

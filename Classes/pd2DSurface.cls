@@ -443,7 +443,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         
             'Automatically apply any orientation metadata, if present
             Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
-            If GDI_Plus.GDIPlus_ImageGetProperty(hGdipImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
+            If GDI_Plus.GDIPlus_ImageGetProperty(hGdipImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) And fixJPEGOrientation Then
             
                 'For the orientation property, we need the MSB of the 2-byte array (which is just an integer).
                 Select Case tmpPropBuffer(0)

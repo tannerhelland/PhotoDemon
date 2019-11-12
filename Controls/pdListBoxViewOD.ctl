@@ -230,7 +230,7 @@ End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseClick Button, Shift, x, y
-    UpdateMousePosition x, y
+    UpdateMousePosition
 End Sub
 
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -256,25 +256,25 @@ End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseEnter Button, Shift, x, y
-    UpdateMousePosition x, y
+    UpdateMousePosition
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseLeave Button, Shift, x, y
-    UpdateMousePosition -100, -100
+    UpdateMousePosition
     RaiseEvent MouseLeave
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     listSupport.NotifyMouseMove Button, Shift, x, y
-    UpdateMousePosition x, y
+    UpdateMousePosition
 End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     listSupport.NotifyMouseUp Button, Shift, x, y, clickEventAlsoFiring
 End Sub
 
-Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
+Private Sub UpdateMousePosition()
     If (listSupport.ListIndexHovered >= 0) Then
         ucSupport.RequestCursor m_LastCursor
         RaiseEvent MouseOver(listSupport.ListIndexHovered, listSupport.List(listSupport.ListIndexHovered))

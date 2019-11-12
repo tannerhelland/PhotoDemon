@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1515</langversion>
+<langversion>7.2.1585</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5801,7 +5801,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Change the image size unit displayed to the left of this box</original>
-<translation>Die angezeigte Bildgrößeneinheit links von dieser Box ändern</translation>
+<translation>Die links von diesem Feld angezeigte Bildgrößeneinheit ändern</translation>
 </phrase>
 
 <!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -9613,7 +9613,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>box width</original>
-<translation>Boxbreite</translation>
+<translation>Quaderbreite</translation>
 </phrase>
 
 <phrase>
@@ -9623,7 +9623,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>box height</original>
-<translation>Boxhöhe</translation>
+<translation>Quaderhöhe</translation>
 </phrase>
 
 <phrase>
@@ -9644,7 +9644,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>algorithms</original>
-<translation></translation>
+<translation>Algorithmen</translation>
 </phrase>
 
 <phrase>
@@ -9654,12 +9654,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>radius (Photoshop equivalent)</original>
-<translation></translation>
+<translation>Radius (Photoshop-Äquivalent)</translation>
 </phrase>
 
 <phrase>
 <original>standard deviation (%1)</original>
-<translation></translation>
+<translation>Standardabweichung (%1)</translation>
 </phrase>
 
 <phrase>
@@ -9674,17 +9674,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>iterative box blur</original>
-<translation></translation>
+<translation>Iterative Boxunschärfe</translation>
 </phrase>
 
 <phrase>
 <original>anisotropic diffusion (Alvarez-Mazorra)</original>
-<translation></translation>
+<translation>Anisotrope Diffusion (Alvarez-Mazorra)</translation>
 </phrase>
 
 <phrase>
 <original>IIR (Deriche)</original>
-<translation></translation>
+<translation>IIR (Deriche)</translation>
 </phrase>
 
 <!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -11765,7 +11765,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddateien unter Verwendung des Standarddialogs "Bild öffnen".</translation>
+<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddateien unter Verwendung eines Standarddialogs "Bild öffnen".</translation>
 </phrase>
 
 <phrase>
@@ -15823,12 +15823,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Custom (click boxes to customize)</original>
-<translation>Benutzerdefiniert (zum Anpassen Farbfelder anklicken)</translation>
+<translation>Benutzerdefiniert (zum Anpassen auf Felder klicken)</translation>
 </phrase>
 
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Wenn ein Bild transparente Bereiche aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Farben des Schachbrett ändern.</translation>
+<translation>Wenn ein Bild transparente Bereiche aufweist, wird typischerweise "hinter" dem Bild ein Schachbrett angezeigt. Dieses Feld ermöglicht Ihnen, die Farben des Schachbrett zu ändern.</translation>
 </phrase>
 
 <phrase>
@@ -15858,7 +15858,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Größe des Schachbrett ändern.</translation>
+<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. Dieses Feld ermöglicht Ihnen, die Größe des Schachbrett zu ändern.</translation>
 </phrase>
 
 <phrase>
@@ -15888,7 +15888,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Standardmäßig werden große Binär-Tags (wie Bild-Thumbnails) nicht verarbeitet. Stattdessen gibt PhotoDemon einfach die Größe der eingebetteten Daten an. Wenn Sie diese Daten benötigen, kann PhotoDemon diese zur weiteren Analyse manuell in Base64 konvertieren.</translation>
+<translation>Defaultmäßig werden große Binär-Tags (wie Bild-Thumbnails) nicht verarbeitet. Stattdessen gibt PhotoDemon einfach die Größe der eingebetteten Daten an. Wenn Sie diese Daten benötigen, kann PhotoDemon diese zur weiteren Analyse manuell in Base64 konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -15898,7 +15898,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Standardmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
+<translation>Defaultmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
 </phrase>
 
 <phrase>
@@ -16038,7 +16038,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Standardmäßig wird PhotoDemon bei jedem Programmstart nach Updates suchen, falls gewünscht, können Sie aber diese Frequenz reduzieren.</translation>
+<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon bei jedem Programmstart nach Updates suchen, falls gewünscht, können Sie aber diese Frequenz reduzieren.</translation>
 </phrase>
 
 <phrase>
@@ -16058,7 +16058,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Defaultmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
 </phrase>
 
 <phrase>

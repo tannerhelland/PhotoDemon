@@ -73,13 +73,26 @@ Private Type BITMAPFILEHEADER
     OffBits As Long
 End Type
 
+Private Enum BMP_COMPRESSION
+    BC_RGB = 0
+    BC_RLE8 = 1
+    BC_RLE4 = 2
+    BC_BITFIELDS = 3
+    BC_JPEG = 4
+    BC_PNG = 5
+End Enum
+
+#If False Then
+    Private Const BC_RGB = 0, BC_RLE8 = 1, BC_RLE4 = 2, BC_BITFIELDS = 3, BC_JPEG = 4, BC_PNG = 5
+#End If
+
 Private Type BITMAPINFOHEADER
     biSize As Long
     biWidth As Long
     biHeight As Long
     biPlanes As Integer
     biBitCount As Integer
-    biCompression As Long
+    biCompression As BMP_COMPRESSION    'Note that this enum only works for still frames; video has different values, a la https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
     biSizeImage As Long
     biXPelsPerMeter As Long
     biYPelsPerMeter As Long
@@ -121,19 +134,6 @@ Private Type BITMAPV5HEADER         ' Offset from start of struct
     biProfileSize As Long           ' 116
     biReserved As Long              ' 120 (NOTE: BitmapV5Header struct ends here)
 End Type
-
-Private Enum BMP_COMPRESSION
-    BC_RGB = 0
-    BC_RLE8 = 1
-    BC_RLE4 = 2
-    BC_BITFIELDS = 3
-    BC_JPEG = 4
-    BC_PNG = 5
-End Enum
-
-#If False Then
-    Private Const BC_RGB = 0, BC_RLE8 = 1, BC_RLE4 = 2, BC_BITFIELDS = 3, BC_JPEG = 4, BC_PNG = 5
-#End If
 
 Private Const RGBA_RED_MASK As Long = &HFF0000
 Private Const RGBA_GREEN_MASK As Long = &HFF00&
@@ -1808,15 +1808,17 @@ Private Sub m_Clipboard_ClipboardDestroyStashedData()
     
 End Sub
 
-'When the clipboard object tells us to render all remaining clipboard items, WE MUST OPEN THE CLIPBOARD.  This differs from the behavior
-' of rendering an individual format on-demand.  This is only called when the primary PD window is destroyed, because we must upload all
-' supported clipboard data before PD disappears.
+'When the clipboard object tells us to render all remaining clipboard items, WE MUST OPEN THE CLIPBOARD.
+' This differs from the behavior of rendering an individual format on-demand.  This is only called when
+' the primary PD window is destroyed, because we must upload all supported clipboard data before PD
+' disappears.
 Private Sub m_Clipboard_ClipboardRenderAllFormats()
     'Because PD handles format rendering manually, we can safely ignore this message at present
 End Sub
 
-'When the clipboard object tells us to render a clipboard item on-demand, WE MUST NOT OPEN THE CLIPBOARD.  Another program has already
-' asserted ownership as part of a Paste operation; we simply plug-in the data they need.
+'When the clipboard object tells us to render a clipboard item on-demand, WE MUST NOT OPEN THE CLIPBOARD.
+' Another program has already asserted ownership as part of a Paste operation; we simply plug-in the data
+' they need.
 Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
 
     PDDebug.LogAction "pdClipboardMain received notification to render clipboard format " & m_Clipboard.GetFormatNameFromID(clipFormatID)

@@ -17,6 +17,8 @@ Attribute VB_Name = "Animation"
 '
 '***************************************************************************
 
+Option Explicit
+
 Public Function GetFrameTimeFromLayerName(ByRef srcLayerName As String, Optional ByVal defaultTimeIfMissing As Long = 100) As Long
     
     'Default to 100 ms, per convention

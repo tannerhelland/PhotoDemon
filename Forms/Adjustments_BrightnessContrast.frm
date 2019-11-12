@@ -350,13 +350,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-'RESET button.  All control default values will be reset according to the rules specified in the pdCommandBar user control
-' source.  If we want a different default value applied, we can specify that here.  The important thing to note is
-' that THE VALUES VISIBLE IN THE IDE DESIGNER DO NOT MATTER.
-Private Sub cmdBar_ResetClick()
-    
-End Sub
-
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False

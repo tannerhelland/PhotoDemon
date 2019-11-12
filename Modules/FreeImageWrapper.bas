@@ -1499,12 +1499,6 @@ Public Declare Function FreeImage_GetBits Lib "FreeImage.dll" Alias "_FreeImage_
 Public Declare Function FreeImage_GetScanline Lib "FreeImage.dll" Alias "_FreeImage_GetScanLine@8" ( _
            ByVal Bitmap As Long, _
            ByVal Scanline As Long) As Long
-
-Private Declare Function FreeImage_GetPixelIndexInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelIndex@16" ( _
-           ByVal Bitmap As Long, _
-           ByVal x As Long, _
-           ByVal y As Long, _
-           ByRef Value As Byte) As Long
         
         
 ' Conversion functions
@@ -1761,10 +1755,6 @@ Private Declare Sub FreeImage_UnlockPageInt Lib "FreeImage.dll" Alias "_FreeImag
            ByVal ApplyChanges As Long)
 
 ' Memory I/O streams
-Public Declare Function FreeImage_OpenMemory Lib "FreeImage.dll" Alias "_FreeImage_OpenMemory@8" ( _
-  Optional ByRef Data As Byte, _
-  Optional ByVal sizeInBytes As Long) As Long
-  
 Public Declare Function FreeImage_OpenMemoryByPtr Lib "FreeImage.dll" Alias "_FreeImage_OpenMemory@8" ( _
   Optional ByVal dataPtr As Long, _
   Optional ByVal sizeInBytes As Long) As Long
@@ -1993,11 +1983,6 @@ Private Declare Function FreeImage_MakeThumbnailInt Lib "FreeImage.dll" Alias "_
            ByVal Bitmap As Long, _
            ByVal MaxPixelSize As Long, _
   Optional ByVal Convert As Long) As Long
-
-Public Declare Function FreeImage_SwapPaletteIndices Lib "FreeImage.dll" Alias "_FreeImage_SwapPaletteIndices@12" ( _
-           ByVal Bitmap As Long, _
-           ByRef IndexA As Byte, _
-           ByRef IndexB As Byte) As Long
 
 ' Channel processing
 Public Declare Function FreeImage_GetChannel Lib "FreeImage.dll" Alias "_FreeImage_GetChannel@8" ( _
@@ -2360,17 +2345,6 @@ Public Function FreeImage_GetFIFMimeType(ByVal Format As FREE_IMAGE_FORMAT) As S
    
    FreeImage_GetFIFMimeType = pGetStringFromPointerA(FreeImage_GetFIFMimeTypeInt(Format))
    
-End Function
-
-Public Function FreeImage_GetPixelIndex(ByVal Bitmap As Long, _
-                                        ByVal x As Long, _
-                                        ByVal y As Long, _
-                                        ByRef Value As Byte) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetPixelIndex = (FreeImage_GetPixelIndexInt(Bitmap, x, y, Value) = 1)
-
 End Function
 
 Public Sub FreeImage_GetInfoHeaderEx(ByVal Bitmap As Long, ByVal ptrToBitmapInfoHeader As Long)
@@ -3073,7 +3047,7 @@ Dim lSizeInBytes As Long
                         "Unable to save a 'header-only' bitmap.")
       End If
    
-      hStream = FreeImage_OpenMemory()
+      hStream = FreeImage_OpenMemoryByPtr(0&, 0&)
       If hStream Then
          FreeImage_SaveToMemoryEx = FreeImage_SaveToMemory(Format, Bitmap, hStream, Flags)
          
@@ -3165,7 +3139,7 @@ Public Function FreeImage_SaveToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
       End If
    
       If (Stream = 0) Then
-         Stream = FreeImage_OpenMemory()
+         Stream = FreeImage_OpenMemoryByPtr(0&, 0&)
       End If
       If (Stream) Then
          FreeImage_SaveToMemoryEx2 = FreeImage_SaveToMemory(Format, Bitmap, Stream, Flags)

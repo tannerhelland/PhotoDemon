@@ -108,16 +108,6 @@ End Enum
     Private Const DT_TOP = &H0&, DT_LEFT = &H0&, DT_CENTER = &H1&, DT_RIGHT = &H2&, DT_VCENTER = &H4&, DT_BOTTOM = &H8&, DT_WORDBREAK = &H10&, DT_SINGLELINE = &H20&, DT_EXPANDTABS = &H40&, DT_TABSTOP = &H80&, DT_NOCLIP = &H100&, DT_EXTERNALLEADING = &H200&, DT_CALCRECT = &H400&, DT_NOPREFIX = &H800&, DT_INTERNAL = &H1000&, DT_EDITCONTROL = &H2000&, DT_PATH_ELLIPSIS = &H4000&, DT_END_ELLIPSIS = &H8000&, DT_MODIFYSTRING = &H10000, DT_RTLREADING = &H20000, DT_WORD_ELLIPSIS = &H40000
 #End If
 
-'GDI Graphics mode
-Private Enum GDI_GraphicsMode
-    GM_Compatible = 1
-    GM_Advanced = 2
-End Enum
-
-#If False Then
-    Private Const GM_Compatible = 1, GM_Advanced = 2
-#End If
-
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByVal ptrToLogFont As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As DT_Flags) As Long

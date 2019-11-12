@@ -203,22 +203,6 @@ Private Enum ImageLockMode
     ImageLockModeUserInputBuf = &H4
 End Enum
 
-Private Enum ColorAdjustType
-    ColorAdjustTypeDefault = 0
-    ColorAdjustTypeBitmap = 1
-    ColorAdjustTypeBrush = 2
-    ColorAdjustTypePen = 3
-    ColorAdjustTypeText = 4
-    ColorAdjustTypeCount = 5
-    ColorAdjustTypeAny = 6
-End Enum
-
-Private Enum ColorMatrixFlags
-    ColorMatrixFlagsDefault = 0
-    ColorMatrixFlagsSkipGrays = 1
-    ColorMatrixFlagsAltGray = 2
-End Enum
-
 'Added by Tanner: GDI+ images use premultiplied alpha!
 Private Const PixelFormat32bppPARGB As Long = &HE200B
 Private Const PixelFormat32bppARGB As Long = &H26200A
@@ -553,6 +537,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
                     .m(4, 4) = 1
                 End With
                 
+                Const ColorAdjustTypeDefault As Long = 0, ColorMatrixFlagsDefault As Long = 0
                 GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, 1&, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
     
             End If
@@ -776,7 +761,9 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
 
                 End With
                 
+                Const ColorAdjustTypeDefault As Long = 0, ColorMatrixFlagsDefault As Long = 0
                 GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
+                
             End If
 
             GdipDrawImageRectRectI hGraphics, hImage, 0, 0, m_lWidth, m_lHeight, 0, 0, imgWidth, imgHeight, &H2, hAttributes, 0&, 0&

@@ -30,24 +30,9 @@ Option Explicit
 
 Private Declare Function ShellExecuteW Lib "shell32" (ByVal hWnd As Long, ByVal ptrToOperationString As Long, ByVal ptrToFileString As Long, ByVal ptrToParameters As Long, ByVal ptrToDirectory As Long, ByVal nShowCmd As Long) As Long
 
-Public Enum UpdateCheck
-    UPDATE_ERROR = 0
-    UPDATE_NOT_NEEDED = 1
-    UPDATE_AVAILABLE = 2
-    UPDATE_UNAVAILABLE = 3
-End Enum
-
-#If False Then
-    Private Const UPDATE_ERROR = 0, UPDATE_NOT_NEEDED = 1, UPDATE_AVAILABLE = 2, UPDATE_UNAVAILABLE = 3
-#End If
-
-'When patching PD itself, we make a backup copy of the update XML contents.  This file provides a second failsafe
-' checksum reference, which is important when patching binary EXE and DLL files.
-Private m_PDPatchXML As String
-
 'When initially parsing the update XML file (above), if an update is found, the parse routine will note which
 ' track was used for the update, and where that track's data starts and ends inside the XML file.
-Private m_SelectedTrack As Long, m_TrackStartPosition As Long, m_TrackEndPosition As Long
+Private m_SelectedTrack As Long
 
 'If an update package is downloaded successfully, it will be forwarded to this module.  At program shutdown time,
 ' the package will be applied.
@@ -272,10 +257,6 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 
                 End If
                 
-                'TODO: figure out how we want to handle these guys
-'                    m_TrackStartPosition = tagAreaStart
-'                    m_TrackEndPosition = tagAreaEnd
-                
             End If
         
         Else
@@ -287,10 +268,6 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     'If we found a track with a valid update target, initiate its download
     If (trackWithValidUpdate >= 0) Then
     
-        'Make a backup copy of the update XML string.  We'll need to refer to it later, after the patch files have downloaded,
-        ' as it contains failsafe checksum values.
-        'm_PDPatchXML = xmlEngine.ReturnCurrentXMLString(True)
-        
         'Cache the current update track at module-level, so we can display customized update notifications
         ' to the user.
         m_UpdateTrack = trackWithValidUpdate
@@ -359,12 +336,6 @@ Public Function PatchProgramFiles() As Boolean
         Exit Function
     End If
     
-    'Write the update XML file out to file, so the separate patching app can access it
-    'Dim tmpXML As pdXML
-    'Set tmpXML = New pdXML
-    'tmpXML.LoadXMLFromString m_PDPatchXML
-    'tmpXML.WriteXMLToFile UserPrefs.GetUpdatePath & "patch.xml", True
-    
     'The patching .exe is embedded inside the update package.  Extract it now; it will handle the rest
     ' of the patching process after we exit.
     Dim cPackage As pdPackager
@@ -383,9 +354,6 @@ Public Function PatchProgramFiles() As Boolean
     Dim patchParams As String
     If g_UserWantsRestart Then patchParams = "/restart"
     patchParams = patchParams & " /sourceIsPD"
-    
-    'We must tell the patcher where to find the update information
-    'patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
     Dim targetPath As String
     targetPath = UserPrefs.GetProgramPath & patchFileName
@@ -543,7 +511,7 @@ Public Sub StandardUpdateChecks()
     End If
     
     'With all potentially required downloads added to the queue, we can now begin downloading everything
-    FormMain.asyncDownloader.SetAutoDownloadMode True
+    FormMain.AsyncDownloader.SetAutoDownloadMode True
     
 End Sub
 

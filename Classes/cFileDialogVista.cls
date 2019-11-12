@@ -274,7 +274,9 @@ Private Const CTRLIDOFFSET As Long = 100&
 Private Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal pv As Any)
 Private Declare Function SHCreateItemFromParsingName Lib "shell32.dll" (ByVal pszPath As Long, ByVal pBC As Long, ByVal rIID As Long, pUnk As Long) As Long
 Private Declare Function SHParseDisplayName Lib "shell32.dll" (ByVal pszName As Long, ByVal pBC As Long, ByRef ppidl As Long, ByVal sfgaoIn As Long, ByRef psfgaoOut As Long) As Long
-Private Declare Function SHILCreateFromPath Lib "shell32.dll" (ByVal pszPath As Long, ByRef ppidl As Long, ByRef rgflnOut As Long) As Long
+
+'Edit by Tanner: SHILCreateFromPath is deprecated; see my replacement, below
+'Private Declare Function SHILCreateFromPath Lib "shell32.dll" (ByVal pszPath As Long, ByRef ppidl As Long, ByRef rgflnOut As Long) As Long
 Private Declare Function SHCreateItemFromIDList Lib "shell32.dll" (ByVal pIDL As Long, ByVal rIID As Long, ByRef pUnk As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32.dll" (ByVal lpString As Long) As Long
 

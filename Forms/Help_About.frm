@@ -357,6 +357,7 @@ Private Sub Form_Load()
     GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateContributor "Jian Ma", "https://www.cnblogs.com/stronghorse/"
     GenerateContributor "Johannes Nendel"
+    GenerateContributor "John Desrosiers", "https://johndesrosiers.com"
     GenerateContributor "Joseph Greco"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"

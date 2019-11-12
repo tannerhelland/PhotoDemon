@@ -307,11 +307,6 @@ Private Sub btsDisablePlugin_Click(ByVal buttonIndex As Long)
     UpdatePluginLabels
 End Sub
 
-'Upon cancellation, we don't propagate any local changes back to the plugin manager
-Private Sub cmdBarMini_CancelClick()
-    
-End Sub
-
 Private Sub cmdBarMini_OKClick()
     
     Message "Saving plugin options..."

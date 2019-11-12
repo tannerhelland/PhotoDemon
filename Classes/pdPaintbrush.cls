@@ -36,14 +36,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'As a helper to the caller, this class raises special notifications during strokes.
-' IMPORTANTLY, it does not double-raise events, so you MUST process the first dab and
-' last dab events if your brush requires it (e.g. those dabs will NOT also come via
-' normal dab events).
-'Public Event FirstDab(ByVal xDab As Single, ByVal yDab As Single, ByVal ptrToDynamics As Long)
-Public Event Dab(ByVal xDab As Single, ByVal yDab As Single, ByVal ptrToDynamics As Long)
-'Public Event LastDab(ByVal xDat As Single, ByVal yDab As Single, ByVal ptrToDynamics As Long)
-
 'Current mouse/pen input values.  These are blindly relayed to us by the canvas, and it's up to us
 ' to perform any special tracking calculations.
 Private m_MouseDown As Boolean

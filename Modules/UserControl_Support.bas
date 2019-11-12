@@ -129,9 +129,6 @@ Private m_numOfSharedFonts As Long
 Private m_SharedFonts() As SharedGDIFont
 Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
 
-'Sometimes controls need unique ID values.  This module will provide a non-zero unique ID via the GetUniqueControlID() function.
-Private m_UniqueIDTracker As Long
-
 'As part of broad optimization efforts in the 7.0 release, this module now tracks how many custom PD controls we're managing at
 ' any given time.  Use this for leak-detection and resource counting.  For example: each ucSupport-managed PD control uses two
 ' GDI objects: one DIB and one persistent DC for the control's backbuffer (all controls are double-buffered).  Use this to
@@ -539,41 +536,6 @@ Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
     
 End Function
 
-'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function after
-' an edit box is unloaded, so we can free the shared brush accordingly.  (If it's more convenient, you can also use
-' the ReleaseSharedGDIBrushByHandle version of this function, below.)
-Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
-
-    'If the cache is empty, ignore this request
-    If (m_numOfSharedBrushes = 0) Then
-        Debug.Print "FYI: UserControls.ReleaseSharedGDIBrush() received a release request, but no shared brushes exist."
-        Exit Sub
-    
-    'If the cache is non-empty, find the matching brush and decrement its count.
-    Else
-    
-        Dim i As Long
-        For i = 0 To m_numOfSharedBrushes - 1
-            
-            If (m_SharedBrushes(i).brushColor = requestedColor) Then
-                m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
-                
-                'Brushes with a count of 0 are immediately killed.
-                If (m_SharedBrushes(i).numOfOwners = 0) Then
-                    DeleteObject m_SharedBrushes(i).brushHandle
-                    m_SharedBrushes(i).brushHandle = 0
-                    m_SharedBrushes(i).brushColor = 0
-                End If
-                
-                Exit For
-            End If
-            
-        Next i
-        
-    End If
-
-End Sub
-
 Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
 
     If (m_numOfSharedBrushes = 0) Then
@@ -792,19 +754,6 @@ Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
             GetNameOfControlType = "pdTitle"
         
     End Select
-    
-End Function
-
-'Return a unique, non-zero control ID.  Limited to the size of a VB Long (32-bytes), so don't call more than ~4 billion times.
-Public Function GetUniqueControlID() As Long
-    
-    If (m_UniqueIDTracker = LONG_MAX) Then
-        m_UniqueIDTracker = -1 * LONG_MAX
-    Else
-        m_UniqueIDTracker = m_UniqueIDTracker + 1
-    End If
-    
-    GetUniqueControlID = m_UniqueIDTracker
     
 End Function
 

@@ -204,10 +204,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    'TODO!
-End Sub
-
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False

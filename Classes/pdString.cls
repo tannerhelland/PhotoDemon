@@ -69,7 +69,7 @@ End Sub
 
 Private Sub Class_Terminate()
 
-    'Because we a standard VB string as our buffer, we don't have to mess with special release code.
+    'Because we use a standard VB string as our buffer, no special unload commands are required.
 
 End Sub
 
