@@ -142,7 +142,6 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     Set blurDIB = New pdDIB
     blurDIB.CreateFromExistingDIB workingDIB
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

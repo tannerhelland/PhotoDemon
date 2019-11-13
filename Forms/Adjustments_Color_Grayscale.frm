@@ -283,12 +283,10 @@ End Sub
 Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -608,12 +606,10 @@ End Function
 Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -685,12 +681,10 @@ End Function
 Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -757,12 +751,10 @@ End Function
 Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
         
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -828,12 +820,10 @@ End Function
 Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -899,12 +889,10 @@ End Function
 Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim imageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

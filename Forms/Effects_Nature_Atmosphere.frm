@@ -120,15 +120,13 @@ Public Sub ApplyAtmosphereEffect(ByVal effectParams As String, Optional ByVal to
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     'Create a copy of the working data
     If (m_EffectDIB Is Nothing) Then Set m_EffectDIB = New pdDIB
     m_EffectDIB.CreateFromExistingDIB workingDIB
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

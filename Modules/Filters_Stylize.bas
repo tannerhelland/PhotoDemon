@@ -40,8 +40,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -319,7 +318,6 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
     dibPtr = dstSA.pvData
     dibStride = dstSA.cElements
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

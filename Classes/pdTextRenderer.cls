@@ -2259,7 +2259,6 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     PrepSafeArray srcSA, m_tmpGdiDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim finalX As Long, finalY As Long
     finalX = m_tmpGdiDIB.GetDIBWidth - 1
     finalY = m_tmpGdiDIB.GetDIBHeight - 1

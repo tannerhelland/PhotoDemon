@@ -377,12 +377,10 @@ End Sub
 Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
 
     'Create a local array and point it at the source DIB's pixel data
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1186,13 +1184,10 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     If (Not toPreview) Then Message "Mapping new image levels..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

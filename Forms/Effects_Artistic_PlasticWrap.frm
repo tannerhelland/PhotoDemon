@@ -183,15 +183,21 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     If toPreview Then
         wrapSmoothness = wrapSmoothness * curDIBValues.previewModifier
         lightDistance = lightDistance * curDIBValues.previewModifier
+    Else
+        ProgressBars.SetProgBarMax 8
+        ProgressBars.SetProgBarVal 0
     End If
     
     'Retrieve a normalized luminance map of the current image
     Dim grayMap() As Byte
     DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 1
     
     'If the user specified a non-zero smoothness, apply it now
     If (wrapSmoothness > 0) Then Filters_ByteArray.GaussianBlur_AM_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, wrapSmoothness, 3
-        
+    
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 2
+    
     'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
     
@@ -228,31 +234,23 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     Dim cLut As pdFilterLUT
     Set cLut = New pdFilterLUT
     cLut.FillLUT_Curve gLookup, gCurve
-        
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 3
+    
     'Next, we will apply the curve to the grayscale map.
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY * 2
-    progBarCheck = ProgressBars.FindBestProgBarValue()
-    
     For y = initY To finalY
     For x = initX To finalX
         grayMap(x, y) = gLookup(grayMap(x, y))
     Next x
-        If (y And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal y
-        End If
     Next y
+    
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 4
     
     'Now we have a graymap that represents the (smoothened) gradient of colors in the image.  We now need to calculate
     ' the slope at every pixel, and apply those results to an actual 32-bpp DIB we can use for blending.
@@ -350,13 +348,9 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
         finalGrayMap(x, y) = g
         
     Next x
-        If (Not toPreview) Then
-            If (y And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal finalY + y
-            End If
-        End If
     Next y
+    
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 5
     
     'Because the end result is somewhat pixelated (due to the integer maths involved), it helps to gently blur
     ' the final result.
@@ -364,12 +358,16 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     blurRadius = Int(3# * curDIBValues.previewModifier)
     If (blurRadius < 1) Then blurRadius = 1
     Filters_ByteArray.HorizontalBlur_ByteArray finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, blurRadius, blurRadius
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 6
     Filters_ByteArray.VerticalBlur_ByteArray finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, blurRadius, blurRadius
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 7
     
     'With the graymap successfully converted, we can now apply it to the image.
     workingDIB.SetAlphaPremultiplication True
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
+    
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 8
     
     'Really dense blend, similar to Photoshop:
     'DIBs.CreateDIBFromGrayscaleMap_Alpha m_GrayDIB, finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
@@ -377,7 +375,9 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Lighter, modern blend:
     DIBs.CreateDIBFromGrayscaleMap m_GrayDIB, finalGrayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 9
     cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_GrayDIB, BM_Screen, 100#, , AM_Inherit
+    If (Not toPreview) Then ProgressBars.SetProgBarVal 10
     
     'If this is *not* a preview, wipe our local caches before exiting
     If (Not toPreview) Then Set m_GrayDIB = Nothing

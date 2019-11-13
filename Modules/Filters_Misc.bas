@@ -26,8 +26,7 @@ Public Sub MenuSepia()
     Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
@@ -106,7 +105,6 @@ Public Sub MenuCountColors()
     Dim qvDepth As Long
     qvDepth = tmpImageComposite.GetDIBColorDepth \ 8
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

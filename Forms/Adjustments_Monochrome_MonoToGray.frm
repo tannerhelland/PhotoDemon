@@ -126,15 +126,13 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     mRadius = cParams.GetLong("radius", sltRadius.Value)
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -142,8 +140,7 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
@@ -165,7 +162,7 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValInner As Long, quickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -267,11 +264,11 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         
         Else
         
-            QuickY = finalY - mRadius
+            quickY = finalY - mRadius
         
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
-                If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
+                If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
                 numOfPixels = numOfPixels - 1
             Next i
         
@@ -311,11 +308,11 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
             'Remove trailing values from the box
             If lbY > 0 Then
             
-                QuickY = lbY - 1
+                quickY = lbY - 1
             
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
+                    If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
                     numOfPixels = numOfPixels - 1
                 Next i
                         
@@ -348,11 +345,11 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
                                 
             If ubY < finalY Then
             
-                QuickY = ubY + 1
+                quickY = ubY + 1
             
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
+                    If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
                     numOfPixels = numOfPixels - 1
                 Next i
                         

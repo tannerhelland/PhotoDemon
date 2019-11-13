@@ -204,13 +204,12 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     If (Not toPreview) Then Message "Projecting image through simulated lens..."
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
     Dim srcImageData() As Byte
     Dim srcSA As SafeArray2D
     
@@ -220,8 +219,7 @@ Public Sub ApplyLensDistortion(ByVal effectParams As String, Optional ByVal toPr
     
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

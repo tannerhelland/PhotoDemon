@@ -163,8 +163,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     ' to the flame.
     PrepSafeArray tmpSA, m_edgeDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

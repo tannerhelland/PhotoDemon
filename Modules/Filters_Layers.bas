@@ -159,7 +159,6 @@ Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
     finalX = dstDIB.GetDIBWidth - 1
     finalY = dstDIB.GetDIBHeight - 1
@@ -194,7 +193,6 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -360,8 +358,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -574,8 +571,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -736,8 +732,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Dim srcSA As SafeArray2D, srcSA1D As SafeArray1D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 1
     initY = 1
@@ -1494,14 +1489,13 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
     Dim srcImageData() As Byte
     Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1726,14 +1720,13 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
     Dim srcImageData() As Byte
     Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1969,8 +1962,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte, srcSA As SafeArray1D
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -2017,8 +2009,8 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     Dim halfNumPixels As Long
     halfNumPixels = Int(numOfPixels \ 2)
     
-    'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
-    ' pixels left of that!)
+    'Populate the initial trackers.  We can ignore the left offset at this point, as we are starting at column 0
+    ' (and there are no pixels left of that!)
     For y = initY To finalY
         
         'Reset all line trackers
@@ -2096,7 +2088,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 aTotal = aTotal + aFinal
             End If
             
-            'Apply the blurred value to the destination image.
+            'Apply the blurred value to the destination image (with rounding).
             xStride = x * 4
             dstImageData(xStride) = (bTotal + halfNumPixels) \ numOfPixels
             dstImageData(xStride + 1) = (gTotal + halfNumPixels) \ numOfPixels
@@ -2150,8 +2142,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     Dim srcDibPointer As Long, srcDibStride As Long
     srcDibPointer = srcSA1D.pvData
     srcDibStride = srcSA1D.cElements
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -2314,8 +2305,7 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = PDMath.Max2Int(Int(blurBounds.Left), 0)
     initY = PDMath.Max2Int(Int(blurBounds.Top), 0)
@@ -2450,8 +2440,7 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     Dim srcDibPointer As Long, srcDibStride As Long
     srcDibPointer = srcSA1D.pvData
     srcDibStride = srcSA1D.cElements
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = PDMath.Max2Int(Int(blurBounds.Left), 0)
     initY = PDMath.Max2Int(Int(blurBounds.Top), 0)
@@ -2591,8 +2580,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     Dim srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -2788,8 +2776,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -2863,8 +2850,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -2944,8 +2930,7 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -3089,7 +3074,6 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     PrepSafeArray dstSA, srcDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

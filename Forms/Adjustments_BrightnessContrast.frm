@@ -148,11 +148,9 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     If (Not toPreview) Then Message "Adjusting brightness and contrast..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim srcImageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim srcImageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

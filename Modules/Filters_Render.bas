@@ -30,7 +30,6 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVa
     dibPtr = dstDIB.GetDIBPointer
     dibStride = dstDIB.GetDIBStride
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -157,7 +156,6 @@ Public Function RenderFibers_TwoColor(ByRef dstDIB As pdDIB, ByVal firstColorRGB
     Dim dstImageData() As Long, dstSA As SafeArray2D
     dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, yStep As Long
     initX = 0
     initY = 0
@@ -238,7 +236,6 @@ Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLut() As Long, By
     Dim dstImageData() As Long, dstSA As SafeArray2D
     dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

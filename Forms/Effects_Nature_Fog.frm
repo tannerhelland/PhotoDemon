@@ -175,11 +175,9 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     fxQuality = fxQuality - 1
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

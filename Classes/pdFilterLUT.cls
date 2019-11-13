@@ -511,8 +511,7 @@ Friend Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -591,8 +590,7 @@ Friend Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte)
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -663,8 +661,7 @@ Friend Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     Dim tmpSA As SafeArray2D
     PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0

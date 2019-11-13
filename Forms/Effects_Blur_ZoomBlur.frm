@@ -149,8 +149,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     If (Not toPreview) Then Message "Applying zoom blur..."
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
@@ -162,8 +161,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     
     Dim srcImageData() As Byte, srcSA As SafeArray2D
     srcDIB.WrapArrayAroundDIB srcImageData, srcSA
-       
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top

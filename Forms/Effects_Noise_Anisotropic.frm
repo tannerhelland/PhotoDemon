@@ -216,9 +216,8 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     
     Dim srcImageData() As Byte, srcSA As SafeArray2D
     srcDIB.WrapArrayAroundDIB srcImageData, srcSA
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
-    ' (At present, we ignore edge pixels to simplify the filter's implementation; this will be dealt with momentarily.)
+    
+    'At present, we ignore edge pixels to simplify the filter's implementation; this may be dealt with in the future.
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left + 1
     initY = curDIBValues.Top + 1

@@ -126,20 +126,18 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = mRadius * curDIBValues.previewModifier
-        If mRadius < 1 Then mRadius = 1
+        If (mRadius < 1) Then mRadius = 1
     End If
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
