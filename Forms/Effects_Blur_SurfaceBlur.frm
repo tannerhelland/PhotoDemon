@@ -158,7 +158,6 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
     Set gaussDIB = New pdDIB
     gaussDIB.CreateFromExistingDIB workingDIB
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
@@ -191,7 +190,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         'IIR Gaussian estimation
         Case Else
             progBarCalculation = finalY + finalX
-            gaussBlurSuccess = Filters_Area.GaussianBlur_AM(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
+            gaussBlurSuccess = Filters_Area.GaussianBlur_Deriche(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
         
     End Select
     
@@ -212,10 +211,10 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
-        Dim GaussImageData() As Byte
+        Dim gaussImageData() As Byte
         Dim gaussSA As SafeArray2D
         PrepSafeArray gaussSA, gaussDIB
-        CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
+        CopyMemory ByVal VarPtrArray(gaussImageData()), VarPtr(gaussSA), 4
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -244,9 +243,9 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
             tDelta = (213 * r + 715 * g + 72 * b) \ 1000
             
             'Now, retrieve the gaussian pixels
-            r2 = GaussImageData(quickVal + 2, y)
-            g2 = GaussImageData(quickVal + 1, y)
-            b2 = GaussImageData(quickVal, y)
+            r2 = gaussImageData(quickVal + 2, y)
+            g2 = gaussImageData(quickVal + 1, y)
+            b2 = gaussImageData(quickVal, y)
             
             'Calculate a delta between the two
             tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
@@ -257,20 +256,20 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
             
                 If tDelta > gThreshold Then
                     If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), GaussImageData(quickVal + 2, y), blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), GaussImageData(quickVal + 1, y), blendVal)
-                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), GaussImageData(quickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), GaussImageData(quickVal + 3, y), blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), gaussImageData(quickVal + 2, y), blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), gaussImageData(quickVal + 1, y), blendVal)
+                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), gaussImageData(quickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), gaussImageData(quickVal + 3, y), blendVal)
                 End If
             
             Else
             
                 If tDelta <= gThreshold Then
                     If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), GaussImageData(quickVal + 2, y), blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), GaussImageData(quickVal + 1, y), blendVal)
-                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), GaussImageData(quickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), GaussImageData(quickVal + 3, y), blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), gaussImageData(quickVal + 2, y), blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), gaussImageData(quickVal + 1, y), blendVal)
+                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), gaussImageData(quickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), gaussImageData(quickVal + 3, y), blendVal)
                 End If
         
             End If
@@ -285,7 +284,7 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         Next x
             
         'With our work complete, release all arrays
-        CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(gaussImageData), 0&, 4
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

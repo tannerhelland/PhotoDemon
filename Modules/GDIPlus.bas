@@ -3522,12 +3522,12 @@ End Sub
 'Given a regular ol' DIB and an angle, return a DIB that is rotated by that angle, with its edge values clamped and extended
 ' to fill all empty space around the rotated image.  This very cool operation allows us to support angles for any filter
 ' with a grid implementation (e.g. something that operates on the (x, y) axes of an image, like pixellate or blur).
-Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single)
+Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal padToIntegerCalcs As Boolean = True)
     
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    PDMath.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
+    PDMath.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, padToIntegerCalcs
     
     'Use these dimensions to size the destination image
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -3553,13 +3553,14 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
     Dim hOffset As Double, vOffset As Double
-    hOffset = (nWidth - srcDIB.GetDIBWidth) / 2
-    vOffset = (nHeight - srcDIB.GetDIBHeight) / 2
+    hOffset = (nWidth - srcDIB.GetDIBWidth) / 2#
+    vOffset = (nHeight - srcDIB.GetDIBHeight) / 2#
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
-    Dim useHalfPixels As Boolean
-    useHalfPixels = False
+    Dim useHalfPixels As Boolean, fixEdges As Boolean
+    useHalfPixels = True
+    fixEdges = True
     
     Dim i As Long
     For i = 0 To 3
@@ -3572,7 +3573,12 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     Next i
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels, fixEdges
+    
+    Dim intrplMode As GP_InterpolationMode
+    intrplMode = GP_IM_HighQualityBilinear
+    useHalfPixels = True
+    fixEdges = True
     
     'We're now going to calculate a whole bunch of geometry based around the concept of extending a rectangle from
     ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
@@ -3583,11 +3589,11 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     ReDim padPoints(0 To 2) As PointFloat
     
     'Calculate the distance from the center of the rotated image to the corner of the rotated image
-    diagDistance = Sqr(nWidth * nWidth + nHeight * nHeight) / 2
+    diagDistance = Sqr(nWidth * nWidth + nHeight * nHeight) * 0.5
     
     'Get the difference between the diagonal distance, and the original height of the image.  This is the distance
     ' where we need to provide clamped pixels on this edge.
-    distDiff = diagDistance - (srcDIB.GetDIBHeight / 2)
+    distDiff = diagDistance - (srcDIB.GetDIBHeight / 2#)
     
     'Calculate delta x/y values for the top line, then convert those into unit vectors
     dx = listOfPoints(1).x - listOfPoints(0).x
@@ -3610,7 +3616,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(0).x
     padPoints(2).y = listOfPoints(0).y
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, useHalfPixels
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, intrplMode, useHalfPixels, fixEdges
     
     'Now repeat the above steps for the bottom of the image.  Note that we can reuse almost all of the calculations,
     ' as this line is parallel to the one we just calculated.
@@ -3620,14 +3626,14 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(3).y - (pY / distDiff)
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, useHalfPixels
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, intrplMode, useHalfPixels, fixEdges
     
     'We are now going to repeat the above steps, but for the left and right edges of the image.  The end result of this
     ' will be a rotated destination image, with clamped values extending from all image edges.
     
     'Get the difference between the diagonal distance, and the original width of the image.  This is the distance
     ' where we need to provide clamped pixels on this edge.
-    distDiff = diagDistance - (srcDIB.GetDIBWidth / 2)
+    distDiff = diagDistance - (srcDIB.GetDIBWidth / 2#)
     
     'Calculate delta x/y values for the left line, then convert those into unit vectors
     dx = listOfPoints(2).x - listOfPoints(0).x
@@ -3649,7 +3655,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(0).y
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, intrplMode, useHalfPixels, fixEdges
     
     '...and finally, repeat everything for the right side of the image
     padPoints(0).x = listOfPoints(1).x + (pX / distDiff)
@@ -3658,7 +3664,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(3).x + (pX / distDiff)
     padPoints(2).y = listOfPoints(3).y + (pY / distDiff)
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, intrplMode, useHalfPixels, fixEdges
     
     'Our work here is complete!
 

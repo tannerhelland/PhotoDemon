@@ -27,46 +27,34 @@ Option Explicit
 'I developed this function with help from http://www.getreuer.info/home/gaussianiir
 ' Many thanks to Pascal Getreuer for his valuable reference.
 '
-'IIR provides many benefits over a naive Gaussian Blur implementation:
-' - It's performed in-place, meaning a second array is not required.  (That said, the function requires floating-point data,
-'    so an intermediate float-type array *is* currently needed.)
-' - It approaches a true Gaussian over multiple iterations, but at low iterations, it provides a closer estimate than the
-'    corresponding box blur filter would.
-' - Floating-point radii are supported.
-' - Most importantly, it's much faster to calculate!
-'
-'Note that the incoming arrayWidth and arrayHeight parameters are 1-based, so this function will automatically subtract 1 to arrive
-' at an actual UBound value.
+'This function is a stripped-down version of the full RGBA implementation in the
+' Filters_Area.GaussianBlur_AM() function.  Please look there for full implementation details
+' (and comments).
 Public Function GaussianBlur_AM_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal radius As Double, ByVal numSteps As Long) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
-    ' (In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.)
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    'Fudge to produce results closer to an iterative box blur estimation
+    radius = radius * 1.075
+    
+    'In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = arrayWidth - 1
     finalY = arrayHeight - 1
     
-    Dim iWidth As Long, iHeight As Long
-    iWidth = arrayWidth
-    iHeight = arrayHeight
-    
-    'Prep some IIR-specific values next
-    Dim g As Long
-    Dim lambda As Double, dnu As Double
-    Dim nu As Double, boundaryScale As Double, postScale As Double
-    Dim step As Long
-    
-    'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
+    'Calculate sigma from the radius, using a similar formula to ImageJ (per this link:
+    ' http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
+    ' The idea here is to convert the radius to a sigma of sufficient magnitude where the outer edges
+    ' of the gaussian no longer represent meaningful values on a [0, 255] scale.
     Dim sigma As Double
-    sigma = Sqr(-(radius * radius) / (2 * Log(1# / 255#)))
+    Const LOG_255_BASE_10 As Double = 2.40654018043395
+    sigma = (radius + 1#) / Sqr(2# * LOG_255_BASE_10)
     
-    'Another possible sigma formula, per this link (http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur):
-    'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
-    
-    'Make sure sigma and steps are valid
-    If sigma <= 0 Then sigma = 0.01
-    If numSteps <= 0 Then numSteps = 1
+    'Make sure sigma and steps are not so small as to produce errors or invisible results
+    If (sigma <= 0#) Then sigma = 0.001
+    If (numSteps < 1) Then
+        numSteps = 1
+    ElseIf (numSteps > 5) Then
+        numSteps = 5
+    End If
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
     ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian,
@@ -82,46 +70,54 @@ Public Function GaussianBlur_AM_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
         q = sigma
     End If
     
-    'Calculate IIR values
+    'Prep some IIR-specific values next
+    Dim lambda As Double, dnu As Double
+    Dim nu As Double, boundaryScale As Double, postScale As Double
     lambda = (q * q) / (2# * numSteps)
     dnu = (1# + 2# * lambda - Sqr(1# + 4# * lambda)) / (2# * lambda)
     nu = dnu
     boundaryScale = (1# / (1# - dnu))
-    postScale = ((dnu / lambda) ^ (2# * numSteps)) * 255#
+    postScale = ((dnu / lambda) ^ (2# * numSteps))
     
-    'Intermediate float arrays are required for an IIR transform.
-    Dim gFloat() As Single
-    ReDim gFloat(initX To finalX, initY To finalY) As Single
+    Dim step As Long, g As Long
     
-    Const ONE_DIV_255 As Double = 1# / 255#
+    Dim numPixels As Long
+    numPixels = arrayWidth * arrayHeight
     
-    'Copy the contents of the incoming byte array into the float array
-    For x = initX To finalX
-    For y = initY To finalY
-        g = srcArray(x, y)
-        gFloat(x, y) = g * ONE_DIV_255
+    Dim tmpFloat() As Single
+    ReDim tmpFloat(0 To numPixels - 1) As Single
+    
+    Dim origValue As Long, xOffset As Long
+    
+    'Convert the image to floats
+    For y = 0 To finalY
+        xOffset = y * arrayWidth
+        For x = 0 To finalX
+            tmpFloat(x + xOffset) = srcArray(x, y)
+        Next x
     Next y
-    Next x
     
     'Filter horizontally along each row
-    For y = initY To finalY
+    For y = 0 To finalY
+    
+        xOffset = y * arrayWidth
     
         For step = 0 To numSteps - 1
             
             'Set initial values
-            gFloat(initX, y) = gFloat(initX, y) * boundaryScale
+            tmpFloat(xOffset) = tmpFloat(xOffset) * boundaryScale
             
             'Filter right
-            For x = initX + 1 To finalX
-                gFloat(x, y) = gFloat(x, y) + nu * gFloat(x - 1, y)
+            For x = 1 To finalX
+                tmpFloat(xOffset + x) = tmpFloat(xOffset + x) + nu * tmpFloat(xOffset + x - 1)
             Next x
             
             'Fix closing row
-            gFloat(finalX, y) = gFloat(finalX, y) * boundaryScale
+            tmpFloat(xOffset + finalX) = tmpFloat(xOffset + finalX) * boundaryScale
             
             'Filter left
             For x = finalX To 1 Step -1
-                gFloat(x - 1, y) = gFloat(x - 1, y) + nu * gFloat(x, y)
+                tmpFloat(xOffset + x - 1) = tmpFloat(xOffset + x - 1) + nu * tmpFloat(xOffset + x)
             Next x
             
         Next step
@@ -129,43 +125,49 @@ Public Function GaussianBlur_AM_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     Next y
     
     'Now repeat all the above steps, but filtering vertically along each column, instead
-    For x = initX To finalX
+    For step = 0 To numSteps - 1
         
-        For step = 0 To numSteps - 1
-            
-            'Set initial values
-            gFloat(x, initY) = gFloat(x, initY) * boundaryScale
-            
-            'Filter down
-            For y = initY + 1 To finalY
-                gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, y - 1)
-            Next y
-                
-            'Fix closing column values
-            gFloat(x, finalY) = gFloat(x, finalY) * boundaryScale
-                
-            'Filter up
-            For y = finalY To 1 Step -1
-                gFloat(x, y - 1) = gFloat(x, y - 1) + nu * gFloat(x, y)
-            Next y
-            
-        Next step
+        'Set initial values
+        For x = 0 To finalX
+            tmpFloat(x) = tmpFloat(x) * boundaryScale
+        Next x
         
-    Next x
-    
+        'Filter down
+        For y = 1 To finalY
+            xOffset = y * arrayWidth
+            For x = 0 To finalX
+                tmpFloat(xOffset + x) = tmpFloat(xOffset + x) + nu * tmpFloat(xOffset + x - arrayWidth)
+            Next x
+        Next y
+            
+        'Fix closing column values
+        xOffset = finalY * arrayWidth
+        For x = 0 To finalX
+            tmpFloat(xOffset + x) = tmpFloat(xOffset + x) * boundaryScale
+        Next x
+            
+        'Filter up
+        For y = finalY To 1 Step -1
+            xOffset = (y - 1) * arrayWidth
+            For x = 0 To finalX
+                tmpFloat(xOffset + x) = tmpFloat(xOffset + x) + nu * tmpFloat(xOffset + arrayWidth + x)
+            Next x
+        Next y
+        
+    Next step
+        
     'Apply final post-scaling
-    For x = initX To finalX
-    For y = initY To finalY
-    
-        'Apply post-scaling and perform failsafe clipping.  (Shouldn't technically be necessary, but better safe than sorry.)
-        g = gFloat(x, y) * postScale
-        If (g > 255) Then g = 255
+    For y = 0 To finalY
+        xOffset = y * arrayWidth
+    For x = 0 To finalX
         
-        'Store the final value back into the source array
-        srcArray(x, y) = g
+        'Round the finished result, perform failsafe clipping, then assign
+        origValue = Int(tmpFloat(xOffset + x) * postScale + 0.5)
+        If (origValue > 255) Then origValue = 255
+        srcArray(x, y) = origValue
         
-    Next y
     Next x
+    Next y
     
     GaussianBlur_AM_ByteArray = True
     
@@ -176,96 +178,83 @@ Public Function HorizontalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWi
     
     'A second copy of the array is required, to prevent already blurred values from screwing up future calculations
     Dim srcArrayCopy() As Byte
-    ReDim srcArrayCopy(0 To arrayWidth - 1, 0 To arrayHeight - 1) As Byte
-    CopyMemory ByVal VarPtr(srcArrayCopy(0, 0)), ByVal VarPtr(srcArray(0, 0)), arrayWidth * arrayHeight
+    ReDim srcArrayCopy(0 To arrayWidth * arrayHeight - 1) As Byte
+    CopyMemoryStrict VarPtr(srcArrayCopy(0)), VarPtr(srcArray(0, 0)), arrayWidth * arrayHeight
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
-    ' (In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.)
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    'In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = arrayWidth - 1
     finalY = arrayHeight - 1
     
-    Dim xRadius As Long
-    xRadius = finalX - initX
-    
     'Limit the left and right offsets to the width of the image
-    If lRadius > xRadius Then lRadius = xRadius
-    If rRadius > xRadius Then rRadius = xRadius
+    If (lRadius > finalX) Then lRadius = finalX
+    If (rRadius > finalX) Then rRadius = finalX
         
     'The number of pixels in the current horizontal line are tracked dynamically.
     Dim numOfPixels As Long
-    numOfPixels = 0
+    numOfPixels = lRadius + rRadius + 1
+    
+    'To achieve better results, we want to round final blur totals.  Cache the equivalent of
+    ' 0.5 for the current pixel count.
+    Dim halfNumPixels As Long
+    halfNumPixels = Int(numOfPixels \ 2)
+    
+    'This horizontal blur algorithm is based on the principle of "not redoing work that's
+    ' already been done."  To that end, we store the accumulated blur total for the current line,
+    ' and only update it when we move to the next column.
+    Dim lbX As Long, ubX As Long, lineOffset As Long
+    Dim gTotal As Long, gInit As Byte, gFinal As Byte
+    
+    'Populate the initial trackers.  We can ignore the left offset at this point, as we are starting
+    ' at column 0 (and there are no pixels left of that!)
+    For y = 0 To finalY
+        
+        'Reset all line trackers
+        gTotal = 0
+        
+        'Populate the initial accumulators
+        lineOffset = y * arrayWidth
+        
+        'Make a note of the first r/g/b/a values in the line; this allows us to skip
+        ' (relatively expensive) array accesses for these values.
+        gInit = srcArrayCopy(lineOffset)
+        gFinal = srcArrayCopy(lineOffset + finalX)
+        
+        'First, add copies of the left-most pixel (effectively clamping the edges of the blur).
+        ' Note that we also add an *extra* copy of the left-most pixel; this allows us to skip a
+        ' boundary check on the inner loop.
+        gTotal = gTotal + gInit * (lRadius + 1)
+        
+        'Next, add all pixels in the initial radius
+        For x = 0 To rRadius - 1
+            gTotal = gTotal + srcArrayCopy(lineOffset + x)
+        Next x
+        
+        'Loop through each column in this row, updating the accumulator as we go
+        For x = 0 To finalX
             
-    'Blurring takes a lot of variables
-    Dim lbX As Long, ubX As Long
-    Dim obuX As Boolean
-    
-    'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
-    ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
-    Dim gTotals() As Long
-    ReDim gTotals(initY To finalY) As Long
-    
-    'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
-    ' pixels left of that!)
-    If rRadius > 0 Then
-    
-        For x = initX To initX + rRadius - 1
-        For y = initY To finalY
-            gTotals(y) = gTotals(y) + srcArrayCopy(x, y)
-        Next y
+            'Remove trailing values from the blur collection if they lie outside the processing radius
+            lbX = x - lRadius
+            If (lbX > 0) Then
+                gTotal = gTotal - srcArrayCopy(lineOffset + lbX - 1)
+            Else
+                gTotal = gTotal - gInit
+            End If
             
-            'Increase the pixel tally on a per-column basis
-            numOfPixels = numOfPixels + 1
+            'Add leading values to the blur box if they lie inside the processing radius
+            ubX = x + rRadius
+            If (ubX <= finalX) Then
+                gTotal = gTotal + srcArrayCopy(lineOffset + ubX)
+            Else
+                gTotal = gTotal + gFinal
+            End If
+            
+            'Apply the blurred value to the destination image (with rounding).
+            srcArray(x, y) = (gTotal + halfNumPixels) \ numOfPixels
             
         Next x
         
-    End If
-                
-    'Loop through each column in the image, tallying blur values as we go
-    For x = initX To finalX
-        
-        'Determine the loop bounds of the current blur box in the X direction
-        lbX = x - lRadius
-        If lbX < 0 Then lbX = 0
-        ubX = x + rRadius
-        
-        If ubX > finalX Then
-            obuX = True
-            ubX = finalX
-        Else
-            obuX = False
-        End If
-                
-        'Remove trailing values from the blur collection if they lie outside the processing radius
-        If lbX > 0 Then
-            
-            For y = initY To finalY
-                gTotals(y) = gTotals(y) - srcArrayCopy(lbX - 1, y)
-            Next y
-            
-            numOfPixels = numOfPixels - 1
-        
-        End If
-        
-        'Add leading values to the blur box if they lie inside the processing radius
-        If Not obuX Then
-            
-            For y = initY To finalY
-                gTotals(y) = gTotals(y) + srcArrayCopy(ubX, y)
-            Next y
-            
-            numOfPixels = numOfPixels + 1
-            
-        End If
-            
-        'Process the current column.  This simply involves calculating blur values, and applying them to the destination array
-        For y = initY To finalY
-            srcArray(x, y) = gTotals(y) \ numOfPixels
-        Next y
-        
-    Next x
+    Next y
     
     HorizontalBlur_ByteArray = True
     
@@ -276,93 +265,94 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
     
     'A second copy of the array is required, to prevent already blurred values from screwing up future calculations
     Dim srcArrayCopy() As Byte
-    ReDim srcArrayCopy(0 To arrayWidth - 1, 0 To arrayHeight - 1) As Byte
-    CopyMemory ByVal VarPtr(srcArrayCopy(0, 0)), ByVal VarPtr(srcArray(0, 0)), arrayWidth * arrayHeight
+    ReDim srcArrayCopy(0 To arrayWidth * arrayHeight - 1) As Byte
+    CopyMemoryStrict VarPtr(srcArrayCopy(0)), VarPtr(srcArray(0, 0)), arrayWidth * arrayHeight
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
-    ' (In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.)
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    'In the future, it might be nice to allow the caller to specify blur lBounds, but for now, 0 is assumed.
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = arrayWidth - 1
     finalY = arrayHeight - 1
     
-    Dim yRadius As Long
-    yRadius = finalY - initY
-    
     'Limit the up and down offsets to the height of the image
-    If uRadius > yRadius Then uRadius = yRadius
-    If dRadius > yRadius Then dRadius = yRadius
+    If (uRadius > finalY) Then uRadius = finalY
+    If (dRadius > finalY) Then dRadius = finalY
         
     'The number of pixels in the current vertical line are tracked dynamically.
     Dim numOfPixels As Long
-    numOfPixels = 0
-            
-    'Blurring takes a lot of variables
-    Dim lbY As Long, ubY As Long
-    Dim obuY As Boolean
-        
-    'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
-    ' we will store the accumulated blur total for each vertical line, and only update it when we move one row down.
-    Dim gTotals() As Long
-    ReDim gTotals(initX To finalX) As Long
+    numOfPixels = uRadius + dRadius + 1
     
-    'Populate the initial array.  We can ignore the up offset at this point, as we are starting at row 0 (and there are no
-    ' pixels above that!)
-    If dRadius > 0 Then
+    'To achieve better results, we want to round final blur totals.  Cache the equivalent of
+    ' 0.5 for the current pixel count.
+    Dim halfNumPixels As Long
+    halfNumPixels = Int(numOfPixels \ 2)
         
-        For y = initY To initY + dRadius - 1
-        For x = initX To finalX
-            gTotals(x) = gTotals(x) + srcArrayCopy(x, y)
+    'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."
+    ' To that end, we store the accumulated blur total for each vertical line, and only update it when we
+    ' move one row down.
+    Dim lbY As Long, ubY As Long, xOffset As Long
+    Dim gTotal() As Long, gInit() As Byte, gFinal() As Byte
+    ReDim gTotal(0 To finalX) As Long
+    ReDim gInit(0 To finalX) As Byte
+    ReDim gFinal(0 To finalX) As Byte
+    
+    'Make a note of the first and last r/g/b/a values in each line;
+    ' this allows us to skip (relatively expensive) array accesses for these values.
+    For x = 0 To finalX
+        gInit(x) = srcArrayCopy(x)
+    Next x
+    
+    xOffset = finalY * arrayWidth
+    For x = 0 To finalX
+        gFinal(x) = srcArrayCopy(xOffset + x)
+    Next x
+    
+    'Next, add copies of the top-most pixel (effectively clamping the edges of the blur).
+    ' Note that we also add an *extra* copy of the top-most pixel; this allows us to skip a
+    ' boundary check on the inner loop.
+    For x = 0 To finalX
+        gTotal(x) = gInit(x) * (uRadius + 1)
+    Next x
+    
+    'Next, add all pixels in the initial radius
+    For y = 0 To dRadius - 1
+        xOffset = y * arrayWidth
+        For x = 0 To finalX
+            gTotal(x) = gTotal(x) + srcArrayCopy(xOffset + x)
         Next x
-        
-            'Increase the pixel tally on a per-column basis
-            numOfPixels = numOfPixels + 1
-            
-        Next y
-        
-    End If
-                
+    Next y
+    
     'Loop through each row in the image, tallying blur values as we go
-    For y = initY To finalY
+    For y = 0 To finalY
         
-        'Determine the loop bounds of the current blur box in the Y direction
-        lbY = y - uRadius
-        If lbY < 0 Then lbY = 0
-        ubY = y + dRadius
-        
-        If ubY > finalY Then
-            obuY = True
-            ubY = finalY
-        Else
-            obuY = False
-        End If
-                
         'Remove trailing values from the blur collection if they lie outside the processing radius
-        If lbY > 0 Then
-            
-            For x = initX To finalX
-                gTotals(x) = gTotals(x) - srcArrayCopy(x, lbY - 1)
+        lbY = y - uRadius
+        If (lbY > 0) Then
+            xOffset = (lbY - 1) * arrayWidth
+            For x = 0 To finalX
+                gTotal(x) = gTotal(x) - srcArrayCopy(xOffset + x)
             Next x
-            
-            numOfPixels = numOfPixels - 1
-        
+        Else
+            For x = 0 To finalX
+                gTotal(x) = gTotal(x) - gInit(x)
+            Next x
         End If
         
         'Add leading values to the blur box if they lie inside the processing radius
-        If Not obuY Then
-        
-            For x = initX To finalX
-                gTotals(x) = gTotals(x) + srcArrayCopy(x, ubY)
+        ubY = y + dRadius
+        If (ubY <= finalY) Then
+            xOffset = ubY * arrayWidth
+            For x = 0 To finalX
+                gTotal(x) = gTotal(x) + srcArrayCopy(xOffset + x)
             Next x
-            
-            numOfPixels = numOfPixels + 1
-            
+        Else
+            For x = 0 To finalX
+                gTotal(x) = gTotal(x) + gFinal(x)
+            Next x
         End If
-            
-        'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
-        For x = initX To finalX
-            srcArray(x, y) = gTotals(x) \ numOfPixels
+        
+        'Apply blurred values to the destination image (with rounding).
+        For x = 0 To finalX
+            srcArray(x, y) = (gTotal(x) + halfNumPixels) \ numOfPixels
         Next x
         
     Next y
@@ -374,7 +364,6 @@ End Function
 'Given a 2D byte array, normalize the contents to guarantee a full stretch on the range [0, 255]
 Public Function NormalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -444,7 +433,6 @@ End Function
 ' to the image.
 Public Function AddNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal noiseAmount As Long) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -486,7 +474,6 @@ End Function
 ' relatively even split between white and black pixels.
 Public Function ThresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -554,7 +541,6 @@ End Function
 ' between white and black pixels.)
 Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -686,7 +672,6 @@ End Function
 ' Floyd-Steinberg, but nothing prevents the use of other kernels).
 Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal numOfShades As Long = 4) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -799,11 +784,8 @@ End Function
 
 'Contrast-correct a byte array.  (This function is based off PD's white balance algorithm.)
 Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal percentIgnore As Double) As Boolean
-
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = arrayWidth - 1
     finalY = arrayHeight - 1
     
@@ -823,15 +805,15 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     ReDim lCount(0 To 255) As Long
     
     'Build an initial histogram
-    For x = initX To finalX
-    For y = initY To finalY
+    For y = 0 To finalY
+    For x = 0 To finalX
     
         'Increment the histogram at this position
         g = srcArray(x, y)
         lCount(g) = lCount(g) + 1
         
-    Next y
     Next x
+    Next y
     
      'With the histogram complete, we can now figure out how to stretch the gray map. We do this by calculating a min/max
     ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
@@ -898,11 +880,11 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     Next x
     
     'Now we can loop through each entry in the array, converting values as we go
-    For x = initX To finalX
-    For y = initY To finalY
+    For y = 0 To finalY
+    For x = 0 To finalX
         srcArray(x, y) = lFinal(srcArray(x, y))
-    Next y
     Next x
+    Next y
     
     ContrastCorrect_ByteArray = True
     
@@ -911,7 +893,6 @@ End Function
 'Find the range-based median of each entry in a given byte array.  pdPixelIterator is used.
 Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1037,7 +1018,6 @@ End Function
 'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
 Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1152,7 +1132,6 @@ End Function
 'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
 Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -1266,20 +1245,18 @@ End Function
 'Given a byte array, invert all values (e.g. Value = (255 - Value)).
 Public Function InvertByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = arrayWidth - 1
     finalY = arrayHeight - 1
     
     'Invert the array
-    For x = initX To finalX
-    For y = initY To finalY
+    For y = 0 To finalY
+    For x = 0 To finalX
         srcArray(x, y) = 255 - srcArray(x, y)
-    Next y
     Next x
+    Next y
     
     InvertByteArray = True
     
 End Function
+

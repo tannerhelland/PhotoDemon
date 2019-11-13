@@ -281,7 +281,6 @@ Public Function GetDIBColorCountObject(ByRef srcDIB As pdDIB, ByRef dstColorCoun
     Dim qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -324,12 +323,8 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte
-        Dim tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-            
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim imageData() As Byte, tmpSA As SafeArray1D
+        
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -341,7 +336,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
+        Dim xStride As Long, qvDepth As Long
         qvDepth = srcDIB.GetDIBColorDepth \ 8
         
         Dim r As Long, g As Long, b As Long, grayVal As Long
@@ -350,14 +345,15 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         maxVal = 0
             
         'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            quickVal = x * qvDepth
         For y = initY To finalY
-                
+            srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+        For x = initX To finalX
+            
+            xStride = x * qvDepth
             'Get the source pixel color values
-            b = imageData(quickVal, y)
-            g = imageData(quickVal + 1, y)
-            r = imageData(quickVal + 2, y)
+            b = imageData(xStride)
+            g = imageData(xStride + 1)
+            r = imageData(xStride + 2)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (213 * r + 715 * g + 72 * b) * 0.001
@@ -368,18 +364,15 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             
             'If normalization has been requested, check max/min values now
             If toNormalize Then
-                If (grayVal < minVal) Then
-                    minVal = grayVal
-                ElseIf (grayVal > maxVal) Then
-                    maxVal = grayVal
-                End If
+                If (grayVal < minVal) Then minVal = grayVal
+                If (grayVal > maxVal) Then maxVal = grayVal
             End If
             
-        Next y
         Next x
+        Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB imageData
         
         'If normalization was requested, and the data isn't already normalized, normalize it now
         If toNormalize And ((minVal > 0) Or (maxVal < 255)) Then
@@ -408,11 +401,11 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
                 
             Next x
             
-            For x = initX To finalX
             For y = initY To finalY
+            For x = initX To finalX
                 dstGrayArray(x, y) = normalizedLookup(dstGrayArray(x, y))
-            Next y
             Next x
+            Next y
         
         End If
                 
@@ -437,12 +430,10 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte
-        Dim tmpSA As SafeArray2D
+        Dim imageData() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -518,12 +509,10 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte
-        Dim tmpSA As SafeArray2D
+        Dim imageData() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-            
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -588,12 +577,10 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
     If dstDIB.CreateBlank(arrayWidth, arrayHeight, 32, 0, 255) Then
     
         'Point a local array at the DIB
-        Dim dstImageData() As Byte
-        Dim tmpSA As SafeArray2D
+        Dim dstImageData() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -639,12 +626,10 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
     If dstDIB.CreateBlank(arrayWidth, arrayHeight, 32, 0, 0) Then
         
         'Point a local array at the DIB
-        Dim dstImageData() As Byte
-        Dim tmpSA As SafeArray2D
+        Dim dstImageData() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -698,8 +683,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte
-        Dim tmpSA As SafeArray2D
+        Dim imageData() As Byte, tmpSA As SafeArray2D
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
@@ -708,7 +692,6 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         Dim qvDepth As Long
         qvDepth = srcDIB.GetDIBColorDepth \ 8
         
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0

@@ -156,7 +156,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'As of October 2015, I've finally cracked the math to have GDI+ generate a rotated+padded+clamped DIB for us.
     ' This greatly simplifies this function, while also providing higher-quality results!
-    GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, rotateDIB, bAngle
+    GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, rotateDIB, bAngle, False
     
     'Next, apply a horizontal blur to the rotated image, using the blur radius supplied by the user
     Dim rightRadius As Long

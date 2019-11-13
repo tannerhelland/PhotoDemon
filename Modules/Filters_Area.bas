@@ -108,14 +108,12 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent processed pixel values from corrupting subsequent calculations.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
+    'Create a second local array.  This will contain the a copy of the current image,
+    ' and we will use it as our source reference.
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, x2 As Long, y2 As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -295,12 +293,10 @@ Public Sub FilterGridBlur()
     Message "Generating grids..."
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
@@ -550,7 +546,7 @@ End Function
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original simplified BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Private Sub AM_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numElements As Long, ByVal srcStride As Long, ByVal sigma As Double, ByVal numSteps As Long, ByVal tol As Double, ByVal useAdjustedQ As Boolean)
+Public Sub AM_gaussian_conv(ByRef srcFloat() As Single, ByVal initOffset As Long, ByVal numElements As Long, ByVal srcStride As Long, ByVal sigma As Double, ByVal numSteps As Long, ByVal tol As Double, ByVal useAdjustedQ As Boolean)
     
     'To improve performance, we only calculate initial terms when sigma or numSteps changes.
     ' (Initial terms depend only on these and tolerance, but in PD, we do not vary tolerance
@@ -795,7 +791,6 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray1D
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
@@ -859,9 +854,9 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     nu = dnu
     boundaryScale = (1# / (1# - dnu))
     If blurSymmetric Then
-        postScale = Sqr((dnu / lambda) ^ (2# * numSteps)) * 255#
+        postScale = Sqr((dnu / lambda) ^ (2# * numSteps))
     Else
-        postScale = Sqr((dnu / lambda) ^ numSteps) * 255#
+        postScale = Sqr((dnu / lambda) ^ numSteps)
     End If
     
     'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
@@ -871,8 +866,6 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     ReDim bFloat(0 To finalX) As Single
     If imgHasAlpha Then ReDim aFloat(0 To finalX) As Single
     
-    Const ONE_DIV_255 As Double = 1# / 255#
-    
     '/* Filter horizontally along each row */
     For y = 0 To finalY
         
@@ -881,22 +874,11 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         
         'Populate the float arrays
         For x = 0 To finalX
-        
             quickX = x * qvDepth
-                
-            b = imageData(quickX)
-            g = imageData(quickX + 1)
-            r = imageData(quickX + 2)
-            
-            rFloat(x) = r * ONE_DIV_255
-            gFloat(x) = g * ONE_DIV_255
-            bFloat(x) = b * ONE_DIV_255
-            
-            If imgHasAlpha Then
-                a = imageData(quickX + 3)
-                aFloat(x) = a * ONE_DIV_255
-            End If
-
+            bFloat(x) = imageData(quickX)
+            gFloat(x) = imageData(quickX + 1)
+            rFloat(x) = imageData(quickX + 2)
+            If imgHasAlpha Then aFloat(x) = imageData(quickX + 3)
         Next x
         
         'Apply the blur

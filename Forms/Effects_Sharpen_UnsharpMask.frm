@@ -157,8 +157,7 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
-            
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
@@ -195,7 +194,7 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
         'IIR Gaussian estimation
         Case Else
             progBarCalculation = finalY + finalX
-            gaussBlurSuccess = Filters_Area.GaussianBlur_AM(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalY)
+            gaussBlurSuccess = Filters_Area.GaussianBlur_Deriche(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalY)
         
     End Select
     

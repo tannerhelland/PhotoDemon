@@ -645,14 +645,14 @@ Public Sub FindBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeig
     Dim y11 As Double, y21 As Double, y31 As Double, y41 As Double
     
     'Position the points around (0, 0) to simplify the rotation code
-    x1 = -srcWidth / 2
-    x2 = srcWidth / 2
-    x3 = srcWidth / 2
-    x4 = -srcWidth / 2
-    y1 = srcHeight / 2
-    y2 = srcHeight / 2
-    y3 = -srcHeight / 2
-    y4 = -srcHeight / 2
+    x1 = -srcWidth / 2#
+    x2 = srcWidth / 2#
+    x3 = srcWidth / 2#
+    x4 = -srcWidth / 2#
+    y1 = srcHeight / 2#
+    y2 = srcHeight / 2#
+    y3 = -srcHeight / 2#
+    y4 = -srcHeight / 2#
 
     'Apply the rotation to each point
     x11 = x1 * cosTheta + y1 * sinTheta
@@ -704,8 +704,8 @@ Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As
     
     'Position the points around (0, 0) to simplify the rotation code
     Dim halfWidth As Double, halfHeight As Double
-    halfWidth = srcWidth / 2
-    halfHeight = srcHeight / 2
+    halfWidth = srcWidth / 2#
+    halfHeight = srcHeight / 2#
     
     x1 = -halfWidth
     x2 = halfWidth
