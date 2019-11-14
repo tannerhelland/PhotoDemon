@@ -107,7 +107,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Set cParams = New pdParamXML
     cParams.SetParamString parameterList
     
-    Dim mRadius As Long, mLevels As Double, kernelShape As PD_PIXEL_REGION_SHAPE
+    Dim mRadius As Long, mLevels As Double, kernelShape As PD_PixelRegionShape
     mRadius = cParams.GetLong("radius", 1&)
     mLevels = cParams.GetDouble("levels", 50#)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)

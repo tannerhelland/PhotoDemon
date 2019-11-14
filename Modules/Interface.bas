@@ -1547,9 +1547,10 @@ End Sub
 
 'Populate the passed button strip with options related to convolution kernel shape.  The caller can also specify which method they
 ' want set as the default.
-Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As pdButtonStrip, Optional ByVal defaultShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle)
-    srcBTS.AddItem "Square", 0
-    srcBTS.AddItem "Circle", 1
+Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As pdButtonStrip, Optional ByVal defaultShape As PD_PixelRegionShape = PDPRS_Rectangle)
+    srcBTS.AddItem "square", 0
+    srcBTS.AddItem "circle", 1
+    srcBTS.AddItem "diamond", 2
     srcBTS.ListIndex = defaultShape
 End Sub
 

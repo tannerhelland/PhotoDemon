@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1585</langversion>
+<langversion>7.2.1586</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -829,13 +829,18 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>Square</original>
+<original>square</original>
 <translation>Quadrat</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
+<original>circle</original>
 <translation>Kreis</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>Diamant</translation>
 </phrase>
 
 <phrase>
@@ -1048,7 +1053,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Vorschau nicht verfügbar</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8362,21 +8367,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>Kreis</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>Rechteck</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>Diamant</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8788,11 +8783,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>Quadrat</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>Rund</translation>
 </phrase>
@@ -8812,7 +8802,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Bevel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16281,10 +16271,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

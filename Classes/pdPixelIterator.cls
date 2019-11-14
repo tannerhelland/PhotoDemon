@@ -54,7 +54,7 @@ Private m_InitX As Long, m_InitY As Long
 Private m_FinalX As Long, m_FinalY As Long
 
 'Shape of the current iterator, including boundary distance
-Private m_WindowShape As PD_PIXEL_REGION_SHAPE
+Private m_WindowShape As PD_PixelRegionShape
 Private m_XBLeft As Long, m_XBRight As Long, m_XBSize As Long
 Private m_YBTop As Long, m_YBBottom As Long, m_YBSize As Long
 
@@ -81,8 +81,8 @@ Private m_AlphaSupport As Boolean
 'This class currently supports two modes of operation: RGBA, and Luminance.  While we could track both simultaneously,
 ' there is a performance penalty to this, so it's easier to simply track one or the other.
 ' (NOTE: this value is set by the respective LockTargetHistograms function)
-Private m_HistogramMode As PD_PIXEL_ITERATOR_MODE
-Private m_LuminanceMode As PD_LUMINANCE_MODE
+Private m_HistogramMode As PD_PixelIteratorMode
+Private m_LuminanceMode As PD_LuminanceMode
 
 'Histogram arrays.  Managing these are a bit tricky, because these are simply "trick" wrappers against arrays
 ' provided by the caller.
@@ -108,7 +108,7 @@ Private m_XLeft() As Long, m_XRight() As Long, m_YTop() As Long, m_YBottom() As 
 ' bits that are required prior to actually iterating through individual pixels.
 '
 'Returns: TRUE if successful.  DO NOT PROCEED with pixel iterating if the function returns FALSE.
-Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Long, ByVal yRadius As Long, Optional ByVal windowShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle) As Boolean
+Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Long, ByVal yRadius As Long, Optional ByVal windowShape As PD_PixelRegionShape = PDPRS_Rectangle) As Boolean
 
     'Reset the iterator coordinates and pixel count
     m_X = 0
@@ -168,7 +168,7 @@ End Function
 ' better performance, but obviously it requires you to only need one histogram of data.)
 '
 'Returns: TRUE if successful.  DO NOT PROCEED with pixel iterating if the function returns FALSE.
-Friend Function InitializeIterator_ByteArray(ByRef srcByteArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal xRadius As Long, ByVal yRadius As Long, Optional ByVal windowShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle) As Boolean
+Friend Function InitializeIterator_ByteArray(ByRef srcByteArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal xRadius As Long, ByVal yRadius As Long, Optional ByVal windowShape As PD_PixelRegionShape = PDPRS_Rectangle) As Boolean
 
     'Reset the iterator coordinates and pixel count
     m_X = 0
@@ -279,7 +279,7 @@ End Function
 ' it until you have completed your function and freed the histogram safely (via ReleaseTargetHistograms, below).
 '
 'This function will return the pixel count of the first window in the image.  DO NOT PROCEED if it returns zero.
-Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long, Optional ByVal lumMode As PD_LUMINANCE_MODE = PDLM_VALUE) As Long
+Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long, Optional ByVal lumMode As PD_LuminanceMode = PDLM_Value) As Long
     
     'Put the iterator in Luminance mode
     m_HistogramMode = PDPIM_Luminance
@@ -427,6 +427,11 @@ Private Function GenerateInitialWindow() As Long
             
             'Actually generate the initial histogram window
             GenerateInitialWindow = GenerateInitialWindow_ArbitraryShape()
+            
+        Case PDPRS_Diamond
+            CreateShape PDPRS_Diamond
+            FindBoundaries
+            GenerateInitialWindow = GenerateInitialWindow_ArbitraryShape()
         
     End Select
     
@@ -456,21 +461,52 @@ Private Function GenerateInitialWindow_ByteArray() As Long
 End Function
 
 'Create the reference map for a non-rectangular kernel
-Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
+Private Sub CreateShape(ByVal srcShape As PD_PixelRegionShape)
     
     If (m_ShapeImage Is Nothing) Then Set m_ShapeImage = New pdDIB
-    m_ShapeImage.CreateBlank m_XBSize, m_YBSize, 24, 0&
+    m_ShapeImage.CreateBlank m_XBSize, m_YBSize, 32, 0&, 255
+    
+    Dim cSurface As pd2DSurface
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundPDDIB m_ShapeImage
+    
+    Dim cBrush As pd2DBrush
+    Set cBrush = New pd2DBrush
+    cBrush.SetBrushColor RGB(255, 255, 255)
     
     Select Case srcShape
         
         'At small sizes, the GDI+ circle rendering algorithm doesn't work very well.  To bypass this, we activate
         ' antialiasing when the search radius is only 1 px wide (for a net search diameter of 3).
         Case PDPRS_Circle
+            
             Dim useAA As Boolean
             useAA = (m_XBSize <= 3) Or (m_YBSize <= 3)
-            GDI_Plus.GDIPlusFillEllipseToDC m_ShapeImage.GetDIBDC, 0, 0, m_ShapeImage.GetDIBWidth, m_ShapeImage.GetDIBHeight, RGB(255, 255, 255), useAA, 255, True
+            cSurface.SetSurfaceAntialiasing useAA
+            cSurface.SetSurfacePixelOffset P2_PO_Half
             
+            PD2D.FillEllipseF_AbsoluteCoords cSurface, cBrush, 0, 0, m_XBSize, m_YBSize
+            
+        Case PDPRS_Diamond
+            
+            cSurface.SetSurfaceAntialiasing P2_AA_None
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            
+            Dim dstPoints() As PointFloat
+            ReDim dstPoints(0 To 3) As PointFloat
+            dstPoints(0).x = 0
+            dstPoints(0).y = m_YBSize / 2
+            dstPoints(1).x = m_XBSize / 2
+            dstPoints(1).y = 0
+            dstPoints(2).x = m_XBSize
+            dstPoints(2).y = m_YBSize / 2
+            dstPoints(3).x = m_XBSize / 2
+            dstPoints(3).y = m_YBSize
+            PD2D.FillPolygonF_FromPtF cSurface, cBrush, 4, VarPtr(dstPoints(0)), False
+        
     End Select
+    
+    Set cSurface = Nothing: Set cBrush = Nothing
     
     'TODO: as a failsafe, scan the DIB and trim any empty lines, because they'll grossly mess up our calculations.
     '      (Weird shapes may not extend all the way to the edge of the target DIB, and it's difficult to predict this
@@ -774,7 +810,7 @@ End Function
 
 'Given source RGB values, return a corresponding luminance value (high-quality calculation)
 Private Function GetLuminanceFromRGB(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
-    If (m_LuminanceMode = PDLM_VALUE) Then
+    If (m_LuminanceMode = PDLM_Value) Then
         GetLuminanceFromRGB = Colors.GetLuminance(srcR, srcG, srcB)
     Else
         GetLuminanceFromRGB = Colors.GetHQLuminance(srcR, srcG, srcB)
@@ -1090,8 +1126,8 @@ Friend Function MoveYDown() As Long
                     'If m_AlphaSupport Then
                     '    a = m_PixelLine(x + 3)
                     '    m_Alpha(a) = m_Alpha(a) - 1
-                    
                     'End If
+                    
                 Else
                     a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1

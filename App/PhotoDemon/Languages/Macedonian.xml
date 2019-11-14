@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.240</langversion>
+<langversion>1.0.241</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -826,13 +826,18 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
-<original>Square</original>
+<original>square</original>
 <translation>плоштад</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
+<original>circle</original>
 <translation>круг</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>дијамант</translation>
 </phrase>
 
 <phrase>
@@ -1045,7 +1050,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>преглед не се достапни</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8356,21 +8361,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>круг</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>правоаголник</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>дијамант</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8782,11 +8777,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>плоштад</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>круг</translation>
 </phrase>
@@ -8806,7 +8796,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>откос</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16277,10 +16267,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

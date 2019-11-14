@@ -115,7 +115,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Set cParams = New pdParamXML
     cParams.SetParamString parameterList
     
-    Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PIXEL_REGION_SHAPE
+    Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PixelRegionShape
     mRadius = cParams.GetLong("radius", 1&)
     mThreshold = cParams.GetLong("threshold", 0&)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.386</langversion>
+<langversion>6.6.387</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -827,13 +827,18 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>Square</original>
-<translation>Kotak</translation>
+<original>square</original>
+<translation>kotak</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
-<translation>Lingkaran</translation>
+<original>circle</original>
+<translation>lingkaran</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>berlian</translation>
 </phrase>
 
 <phrase>
@@ -1046,7 +1051,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>pratinjau tidak tersedia</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8362,21 +8367,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>lingkaran</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>empat persegi panjang</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>berlian</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8788,11 +8783,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>kotak</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>bulat</translation>
 </phrase>
@@ -8812,7 +8802,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>memiringkan</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16283,10 +16273,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

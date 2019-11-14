@@ -120,7 +120,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     Set cParams = New pdParamXML
     cParams.SetParamString parameterList
     
-    Dim ehTarget As Long, ehMode As Long, ehRadius As Long, kernelShape As PD_PIXEL_REGION_SHAPE
+    Dim ehTarget As Long, ehMode As Long, ehRadius As Long, kernelShape As PD_PixelRegionShape
     ehTarget = cParams.GetLong("target", 0&)
     ehMode = cParams.GetLong("mode", 0&)
     ehRadius = cParams.GetLong("radius", 1&)

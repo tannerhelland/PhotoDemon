@@ -165,7 +165,7 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
-Public Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
+Public Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_ListSupportMode = PDLM_LB_Inside_CB)
     listSupport.CloneExternalListSupport srcListSupport, desiredListIndexTop, newListSupportMode
 End Sub
 
@@ -398,7 +398,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_LISTBOX
+    listSupport.ListSupportMode = PDLM_ListBox
     
     'Set any other typical defaults
     m_LastCursor = IDC_HAND

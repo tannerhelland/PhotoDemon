@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.122</langversion>
+<langversion>7.0.123</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -821,13 +821,18 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>Square</original>
-<translation>Kwadrat</translation>
+<original>square</original>
+<translation>kwadratowy</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
-<translation>Okrąg</translation>
+<original>circle</original>
+<translation>okrąg</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>romb</translation>
 </phrase>
 
 <phrase>
@@ -1040,7 +1045,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>podgląd niedostępny</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8337,21 +8342,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>okrąg</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>prostokąt</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>romb</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8763,11 +8758,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>kwadratowy</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>okrągły</translation>
 </phrase>
@@ -8787,7 +8777,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>skośny</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16253,10 +16243,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

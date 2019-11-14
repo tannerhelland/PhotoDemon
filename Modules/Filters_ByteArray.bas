@@ -891,7 +891,7 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
 End Function
 
 'Find the range-based median of each entry in a given byte array.  pdPixelIterator is used.
-Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PixelRegionShape, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -1016,7 +1016,7 @@ Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double
 End Function
 
 'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
-Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PixelRegionShape, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -1130,7 +1130,7 @@ End Function
 
 
 'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
-Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PixelRegionShape, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0

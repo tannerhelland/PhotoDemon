@@ -52,10 +52,10 @@ Public Event Click()
 ' - Separators (all list elements are the same height, but some have divider lines after them)
 ' - Custom size (the owner controls each element height independently)
 'By default, fixed size is assumed.
-Private m_SizeMode As PD_LISTBOX_HEIGHT
+Private m_SizeMode As PD_ListboxHeight
 
 'This class can also adjust how it responds to certain input events
-Private m_ListMode As PD_LISTSUPPORT_MODE
+Private m_ListMode As PD_ListSupportMode
 
 'If custom sizes are in use, PD needs to store each listbox item position independently, since we can't infer it.
 ' Note that this struct (and the corresponding position array) may or may not be in use - or certain parts of it
@@ -108,8 +108,8 @@ Private m_LanguageAtLastCheck As String
 
 Private Sub Class_Initialize()
     
-    m_ListMode = PDLM_LISTBOX
-    m_SizeMode = PDLH_FIXED
+    m_ListMode = PDLM_ListBox
+    m_SizeMode = PDLH_Fixed
     
     m_DefaultHeight = 0
     m_RedrawAutomatically = True
@@ -131,10 +131,10 @@ Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
     
     'Change the rendering mode, as necessary
-    If (itemHeight <> -1) And (m_SizeMode <> PDLH_CUSTOM) Then
-        m_SizeMode = PDLH_CUSTOM
-    ElseIf (hasTrailingSeparator And (m_SizeMode <> PDLH_SEPARATORS)) Then
-        m_SizeMode = PDLH_SEPARATORS
+    If (itemHeight <> -1) And (m_SizeMode <> PDLH_Custom) Then
+        m_SizeMode = PDLH_Custom
+    ElseIf (hasTrailingSeparator And (m_SizeMode <> PDLH_Separators)) Then
+        m_SizeMode = PDLH_Separators
     End If
     
     'If this item is being inserted anywhere but the end of the list, move other items around to make room.
@@ -280,7 +280,7 @@ End Sub
 
 'Want to clone some other list instance?  This function handles it in one fell swoop, including initializing our internal
 ' rendering parameters.
-Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
+Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_ListSupportMode = PDLM_LB_Inside_CB)
     
     'The order in which we copy data from the target list support is crucial; copying in the
     ' wrong order will cause crashes, especially because we are copying the data using direct
@@ -343,7 +343,7 @@ Friend Function GetHeightOfAllListItems() As Long
     GetHeightOfAllListItems = m_TotalHeight
 End Function
 
-Friend Function GetInternalSizeMode() As PD_LISTBOX_HEIGHT
+Friend Function GetInternalSizeMode() As PD_ListboxHeight
     GetInternalSizeMode = m_SizeMode
 End Function
 
@@ -479,7 +479,7 @@ Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     srcY = (srcY - m_ListRectF.Top) + m_ScrollValue
     
     'On a fixed-size list, this calculation can be automated.
-    If m_SizeMode = PDLH_FIXED Then
+    If m_SizeMode = PDLH_Fixed Then
         ListIndexByPosition = srcY \ m_DefaultHeight
         If ListIndexByPosition >= m_NumOfItems Then ListIndexByPosition = -1
         
@@ -519,11 +519,11 @@ Friend Property Get ListIndexHovered() As Long
     ListIndexHovered = m_ListIndexHover
 End Property
 
-Friend Property Get ListSupportMode() As PD_LISTSUPPORT_MODE
+Friend Property Get ListSupportMode() As PD_ListSupportMode
     ListSupportMode = m_ListMode
 End Property
 
-Friend Property Let ListSupportMode(ByVal newMode As PD_LISTSUPPORT_MODE)
+Friend Property Let ListSupportMode(ByVal newMode As PD_ListSupportMode)
     m_ListMode = newMode
 End Property
 
@@ -591,7 +591,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             markEventHandled = True
             
         Case VK_PAGEDOWN
-            If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
+            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
                 newListIndex = m_LastRenderIndex + 1
             Else
                 newListIndex = newListIndex + 1
@@ -599,7 +599,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             markEventHandled = True
             
         Case VK_PAGEUP
-            If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
+            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
                 newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
             Else
                 newListIndex = newListIndex - 1
@@ -616,7 +616,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'Return only matters for listboxes embedded inside combo boxes.
         Case VK_RETURN, VK_SPACE
-            If (m_ListMode = PDLM_LB_INSIDE_CB) Then
+            If (m_ListMode = PDLM_LB_Inside_CB) Then
                 markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
@@ -627,7 +627,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'For listboxes embedded inside combo boxes, the escape key can hide the dropdown.  Raise a Click() event to mimic this.
         Case VK_ESCAPE
-            If (m_ListMode = PDLM_LB_INSIDE_CB) Then
+            If (m_ListMode = PDLM_LB_Inside_CB) Then
                 markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
@@ -644,7 +644,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     
     'Listboxes dynamically raised by combo boxes should not raise Click() events on keypresses.  This will erroneously cause
     ' the list box to close.  Instead, they simply reassign their .ListIndex and redraw themselves immediately.
-    If (m_ListMode = PDLM_LB_INSIDE_CB) Then
+    If (m_ListMode = PDLM_LB_Inside_CB) Then
         
         m_ListIndex = newListIndex
         
@@ -709,7 +709,7 @@ Friend Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
     
     'The behavior of the mousewheel varies by the current "listmode", e.g. if our parent is a scrollable listview, we behave
     ' differently than if our parent is a closed dropdown box.
-    If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
+    If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
         
         If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
         
@@ -752,7 +752,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
     MakeSureListIndexFitsOnscreen = False
     
     'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
-    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode <> PDLM_COMBOBOX) Then
+    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode <> PDLM_ComboBox) Then
         
         Dim liTop As Single, liBottom As Single
         liTop = m_Items(m_ListIndex).itemTop
@@ -867,7 +867,7 @@ Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_
     
     dstListItem = m_Items(srcListIndex)
     
-    If (m_SizeMode = PDLH_FIXED) Then
+    If (m_SizeMode = PDLH_Fixed) Then
         dstItemTop = (srcListIndex * m_DefaultHeight) - m_ScrollValue
         dstItemHeight = m_DefaultHeight
         dstItemHeightWithoutSeparator = m_DefaultHeight
@@ -956,7 +956,7 @@ Friend Sub CalculateRenderMetrics()
     If (m_ListRectF.Height <= 0) Or (m_DefaultHeight <= 0) Then Exit Sub
     
     'Lists with uniform item sizes can skip a lot of messy handling.
-    If (m_SizeMode = PDLH_FIXED) Then
+    If (m_SizeMode = PDLH_Fixed) Then
     
         'Calculate the first overlapping item that overlaps the viewable area (and cache it)
         i = m_ScrollValue \ m_DefaultHeight

@@ -420,17 +420,18 @@ Public Type PD_Clipboard_Info
 End Type
 
 'When iterating through pixels via pdPixelIterator, PD now supports a variety of region shapes.
-Public Enum PD_PIXEL_REGION_SHAPE
+Public Enum PD_PixelRegionShape
     PDPRS_Rectangle = 0
     PDPRS_Circle = 1
+    PDPRS_Diamond = 2
 End Enum
 
 #If False Then
-    Private Const PDPRS_Rectangle = 0, PDPRS_Circle = 1
+    Private Const PDPRS_Rectangle = 0, PDPRS_Circle = 1, PDPRS_Diamond = 2
 #End If
 
 'pdPixelIterator also supports multiple modes of operation, which determine what kind of histogram it generates.
-Public Enum PD_PIXEL_ITERATOR_MODE
+Public Enum PD_PixelIteratorMode
     PDPIM_RGBA = 0
     PDPIM_Luminance = 1
     PDPIM_ByteArray = 2
@@ -440,37 +441,37 @@ End Enum
     Private Const PDPIM_RGBA = 0, PDPIM_Luminance = 1, PDPIM_ByteArray = 2
 #End If
 
-Public Enum PD_LUMINANCE_MODE
-    PDLM_VALUE = 0
-    PDLM_LIGHTNESS = 1
+Public Enum PD_LuminanceMode
+    PDLM_Value = 0
+    PDLM_Lightness = 1
 End Enum
 
 #If False Then
-    Private Const PDLM_VALUE = 0, PDLM_LIGHTNESS = 1
+    Private Const PDLM_Value = 0, PDLM_Lightness = 1
 #End If
 
 'List boxes support several different per-item height modes
-Public Enum PD_LISTBOX_HEIGHT
-    PDLH_FIXED = 0
-    PDLH_SEPARATORS = 1
-    PDLH_CUSTOM = 2
+Public Enum PD_ListboxHeight
+    PDLH_Fixed = 0
+    PDLH_Separators = 1
+    PDLH_Custom = 2
 End Enum
 
 #If False Then
-    Private Const PDLH_FIXED = 0, PDLH_SEPARATORS = 1, PDLH_CUSTOM = 2
+    Private Const PDLH_Fixed = 0, PDLH_Separators = 1, PDLH_Custom = 2
 #End If
 
 'PD's central list support class can also adjust its behavior automatically, depending on whether its being used by
 ' an underlying list box or a combo box.  (This primarily affects how the support class interprets things like
 ' mouse and key events; e.g. MouseWheel has a different meaning for a scrollable list vs a closed dropdown.)
-Public Enum PD_LISTSUPPORT_MODE
-    PDLM_LISTBOX = 0
-    PDLM_COMBOBOX = 1
-    PDLM_LB_INSIDE_CB = 2
+Public Enum PD_ListSupportMode
+    PDLM_ListBox = 0
+    PDLM_ComboBox = 1
+    PDLM_LB_Inside_CB = 2
 End Enum
 
 #If False Then
-    Private Const PDLM_LISTBOX = 0, PDLM_COMBOBOX = 1, PDLM_LB_INSIDE_CB = 2
+    Private Const PDLM_ListBox = 0, PDLM_ComboBox = 1, PDLM_LB_Inside_CB = 2
 #End If
 
 Public Type PD_Dynamic_Region

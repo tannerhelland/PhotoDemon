@@ -123,7 +123,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     Set cParams = New pdParamXML
     cParams.SetParamString parameterList
     
-    Dim hRadius As Double, vRadius As Double, kernelShape As PD_PIXEL_REGION_SHAPE
+    Dim hRadius As Double, vRadius As Double, kernelShape As PD_PixelRegionShape
     hRadius = cParams.GetDouble("radius-x", 1#)
     vRadius = cParams.GetDouble("radius-y", hRadius)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)

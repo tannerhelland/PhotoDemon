@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1497</langversion>
+<langversion>7.2.1498</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -827,13 +827,18 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>Square</original>
+<original>square</original>
 <translation>广场</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
-<translation>圆圈</translation>
+<original>circle</original>
+<translation>圈</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>钻石</translation>
 </phrase>
 
 <phrase>
@@ -1046,7 +1051,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>预览不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8350,21 +8355,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>圈</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>矩形</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>钻石</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8776,11 +8771,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>广场</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>圆</translation>
 </phrase>
@@ -8800,7 +8790,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>斜角</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16266,10 +16256,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

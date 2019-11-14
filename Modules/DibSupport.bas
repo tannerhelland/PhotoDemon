@@ -349,8 +349,8 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
         For x = initX To finalX
             
-            xStride = x * qvDepth
             'Get the source pixel color values
+            xStride = x * qvDepth
             b = imageData(xStride)
             g = imageData(xStride + 1)
             r = imageData(xStride + 2)

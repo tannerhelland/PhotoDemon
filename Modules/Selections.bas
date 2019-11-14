@@ -243,7 +243,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.CreateBlankLayer
-    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, , tmpDIB
     tmpImage.UpdateSize
         
     'Give the selection a basic filename
@@ -314,7 +314,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'In a temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.CreateBlankLayer
-    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, , tmpDIB
     tmpImage.UpdateSize
     
     'Give the selection a basic filename
@@ -1057,7 +1057,6 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcBytes
         
         Filters_ByteArray.Erode_ByteArray shrinkSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight
-        
         DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as

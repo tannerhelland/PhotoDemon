@@ -129,7 +129,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     Set cParams = New pdParamXML
     cParams.SetParamString parameterList
     
-    Dim mRadius As Long, mPercent As Double, kernelShape As PD_PIXEL_REGION_SHAPE
+    Dim mRadius As Long, mPercent As Double, kernelShape As PD_PixelRegionShape
     mRadius = cParams.GetLong("radius", 1&)
     mPercent = cParams.GetLong("percent", 50&)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)

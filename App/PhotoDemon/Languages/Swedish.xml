@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3427</langversion>
+<langversion>6.8.3428</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -827,13 +827,18 @@ To aktivera stöd för detta bildformat, vänligen kopiera FreeImage.dll filen (
 </phrase>
 
 <phrase>
-<original>Square</original>
-<translation>Fyrkant</translation>
+<original>square</original>
+<translation>fyrkant</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
-<translation>Cirkel</translation>
+<original>circle</original>
+<translation>cirkel</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>diamant-</translation>
 </phrase>
 
 <phrase>
@@ -1046,7 +1051,7 @@ To aktivera stöd för detta bildformat, vänligen kopiera FreeImage.dll filen (
 <translation>förhandsvisning inte tillgänglig</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8352,21 +8357,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>cirkel</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>rektangel</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>diamant-</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8778,11 +8773,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>fyrkant</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>runda</translation>
 </phrase>
@@ -8802,7 +8792,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>fasa</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16272,10 +16262,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>

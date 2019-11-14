@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.447</langversion>
+<langversion>6.7.448</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -827,13 +827,18 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>Square</original>
-<translation>Cuadrado</translation>
+<original>square</original>
+<translation>cuadrado</translation>
 </phrase>
 
 <phrase>
-<original>Circle</original>
-<translation>Circulo</translation>
+<original>circle</original>
+<translation>circulo</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>diamante</translation>
 </phrase>
 
 <phrase>
@@ -1046,7 +1051,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>vista previa no disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 82 phrases. 23 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for Interface.bas-->
 
@@ -8355,21 +8360,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>circulo</translation>
-</phrase>
-
-<phrase>
 <original>rectangle</original>
 <translation>rectángulo</translation>
 </phrase>
 
-<phrase>
-<original>diamond</original>
-<translation>diamante</translation>
-</phrase>
-
-<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8781,11 +8776,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>square</original>
-<translation>cuadrado</translation>
-</phrase>
-
-<phrase>
 <original>round</original>
 <translation>redondo</translation>
 </phrase>
@@ -8805,7 +8795,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>bisel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -16275,10 +16265,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2714</phrasecount>
+<phrasecount>2712</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5004 phrases. -->
-<!-- 2290 are duplicates, so only 2714 unique phrases have been written to file. -->
-<!-- These 2714 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5005 phrases. -->
+<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
+<!-- These 2712 phrases contain approximately 12726 total words. -->
 
 </pdData>
