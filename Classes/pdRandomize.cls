@@ -154,6 +154,10 @@ Friend Function GetRandomInt_VB() As Long
     GetRandomInt_VB = Int((m_HighBound - m_LowBound + 1) * Rnd + m_LowBound)
 End Function
 
+Friend Function GetRandomIntRange_VB(ByVal lowBound As Long, ByVal highBound As Long) As Long
+    GetRandomIntRange_VB = Int((highBound - lowBound + 1) * Rnd + lowBound)
+End Function
+
 'Return a random float using VB's internal randomize engine.  Bounds are ignored.  This is kind of a stupid function, as it would
 ' be faster to just use Rnd yourself, but it's included here for completeness.
 Friend Function GetRandomFloat_VB() As Double
@@ -162,7 +166,11 @@ End Function
 
 'Return a random integer using the Wichmann-Hill PRNG.  If supplied earlier, bounds are used.
 Friend Function GetRandomInt_WH() As Long
-    GetRandomInt_WH = Int((m_HighBound - m_LowBound + 1) * GetRandomFloat_WH + m_LowBound)
+    GetRandomInt_WH = Int((m_HighBound - m_LowBound + 1) * GetRandomFloat_WH() + m_LowBound)
+End Function
+
+Friend Function GetRandomIntRange_WH(ByVal lowBound As Long, ByVal highBound As Long) As Long
+    GetRandomIntRange_WH = Int((highBound - lowBound + 1) * GetRandomFloat_WH() + lowBound)
 End Function
 
 'Return a random float using the Wichmann-Hill PRNG.  Pretty fast, good distribution too.
