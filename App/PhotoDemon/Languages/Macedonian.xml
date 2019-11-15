@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.241</langversion>
+<langversion>1.0.242</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -10533,13 +10533,8 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
 <phrase>
-<original>edge strength</original>
-<translation>Јачина на работ</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>просторни моќ (во моментов скриени)</translation>
+<original>spatial strength</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10548,26 +10543,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>color preservation</original>
-<translation>зачувување боја</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>користи проценка за да се подобри ефикасноста на</translation>
-</phrase>
-
-<phrase>
 <original>Applying bilateral smoothing</original>
 <translation>Примена на билатералните мазнење</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation>Билатералните филтрирање е комплексна задача, а на големи слики може да потрае многу долго време да се процесира. PhotoDemon може да се процени одредени параметри, обезбедување на голем брзина зголеми и по цена на малку понизок квалитет.</translation>
-</phrase>
-
-<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -16265,12 +16245,18 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2712</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5005 phrases. -->
-<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
-<!-- These 2712 phrases contain approximately 12726 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12678 total words. -->
 
 </pdData>

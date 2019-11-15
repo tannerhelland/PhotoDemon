@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3428</langversion>
+<langversion>6.8.3429</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10527,13 +10527,8 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
 <phrase>
-<original>edge strength</original>
-<translation>särmälujuutta</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>paikkatietojen teho (tällä hetkellä piilotettu)</translation>
+<original>spatial strength</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10542,26 +10537,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>color preservation</original>
-<translation>väri säilyttäminen</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>Käytä arviointi parantaa suorituskykyä</translation>
-</phrase>
-
-<phrase>
 <original>Applying bilateral smoothing</original>
 <translation>Hakeminen kahdenvälistä tasoitus</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation>Kahdenvälinen suodatus on monimutkainen tehtävä, ja suuret kuvat voi kestää hyvin kauan käsitellä. PhotoDemon voi arvioida tiettyjä parametreja, joka tarjoaa laajan nopeuden lisäämiseksi hinnalla hieman huonompilaatuista.</translation>
-</phrase>
-
-<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -16259,12 +16239,18 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2712</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5005 phrases. -->
-<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
-<!-- These 2712 phrases contain approximately 12726 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12678 total words. -->
 
 </pdData>

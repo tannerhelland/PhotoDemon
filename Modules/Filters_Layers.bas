@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Layers"
 'DIB Filters Module
 'Copyright 2013-2019 by Tanner Helland
 'Created: 15/February/13
-'Last updated: 09/August/17
-'Last update: new functions for blurring just a sub-region of an image
+'Last updated: 15/November/19
+'Last update: rewrite separable bilateral filter for large perf improvements
 '
 'Some filters in PhotoDemon are capable of operating "on-demand" on any supplied DIBs.  In a perfect world, *all*
 ' filters would work this way - but alas I did not design the program very well up front.  Going forward I will be
@@ -2697,22 +2697,30 @@ Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     SetStretchBltMode dstDIB.GetDIBDC, sbm_ColorOnColor
     
     'Top, bottom
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, vExtend + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    If (vExtend <> 0) Then
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, vExtend + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    End If
     
     'Left, right
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    If (hExtend <> 0) Then
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    End If
     
     'Next, the four corners
     
     'Top-left, top-right
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, 0, hExtend, vExtend, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
+    If (vExtend <> 0) And (hExtend <> 0) Then
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, 0, hExtend, vExtend, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
+    End If
     
     'Bottom-left, bottom-right
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
-    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    If (vExtend <> 0) And (hExtend <> 0) Then
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+        GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    End If
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
     PadDIBClampedPixels = 1
@@ -3043,320 +3051,260 @@ Public Function FastGammaDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double) As
     
 End Function
 
-'Apply bilateral smoothing (separable implementation, so faster but lower quality) to an arbitrary DIB.
+'Apply bilateral smoothing (separable implementation, so faster but only an approximation) to an arbitrary DIB.
 ' PROGRESS BAR: one call of this function requires (2 * width) progress bar range
 ' INPUT RANGES:
 ' 1) kernelRadius: Any integer 1+
 ' 2) spatialFactor: [0, 100]
-' 3) spatialPower: [0.01, 10] - defaults to 2, generally shouldn't be set to any other value unless you understand the technical implications
 ' 4) colorFactor: [0, 100]
-' 5) colorPower: [0.01, 10]
-Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal colorFactor As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
-    Const colorsCount As Long = 256
-    Dim spatialFunc() As Double, colorFunc() As Double
-
-    'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
-    ' actually be bumped a bit, to [0, 255], so apply that now.
-    colorFactor = colorFactor * 2.55
-    
-    'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
-    ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
-    spatialFactor = spatialFactor / 10
-    If (spatialFactor < 1#) Then spatialFactor = 1#
-    
-    'Spatial power is currently hidden from the user.  As such, default it to value 2.
-    spatialPower = 2#
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, srcDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickValDst As Long, quickValSrc As Long, QuickYSrc As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'If messages are not being suppressed, and the user did not specify a custom progress bar maximum, calculate a
-    ' maximum value relevant to this function.
-    If (Not suppressMessages) Then
-        If (modifyProgBarMax = -1) Then SetProgBarMax finalX * 2
-    End If
+    'For perf reasons, this function is locked to 32-bpp inputs
+    If (srcDIB.GetDIBColorDepth <> 32) Then Exit Function
     
     'The kernel must be at least 1 in either direction; otherwise, we'll get range errors
     If (kernelRadius < 1) Then kernelRadius = 1
     
-    'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
+    'As a convenience to the user, we display spatial and color factors with a [0, 100].
+    ' Normalize this against a usable internal value.
+    colorFactor = (colorFactor * 2.55) / 5#
     
-    'To simplify the edge-handling required by this function, we're actually going to resize the source DIB with
-    ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
-    Dim srcDIBPadded As pdDIB
-    Set srcDIBPadded = New pdDIB
-    PadDIBClampedPixels kernelRadius, kernelRadius, srcDIB, srcDIBPadded
+    'Similarly, spatial factor is displayed on a [0, 100] scale as a convenience to the user;
+    ' normalize it too.
+    spatialFactor = spatialFactor / 10#
+    If (spatialFactor < 1#) Then spatialFactor = 1#
     
-    PrepSafeArray srcSA, srcDIBPadded
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
-    'As part of our separable implementation, we'll also be producing an intermediate copy of the filter in either direction
-    Dim midDIB As pdDIB
-    Set midDIB = New pdDIB
-    midDIB.CreateFromExistingDIB srcDIBPadded
+    'If messages are not being suppressed, and the user did not specify a custom progress bar maximum,
+    ' calculate a maximum value relevant to this function.
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax srcDIB.GetDIBWidth + srcDIB.GetDIBHeight
+    End If
     
-    Dim midImageData() As Byte
-    Dim midSA As SafeArray2D
-    PrepSafeArray midSA, midDIB
-    CopyMemory ByVal VarPtrArray(midImageData()), VarPtr(midSA), 4
-        
-    'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
-    ' based on the size of the area to be processed.
+    'To keep processing quick, only update the progress bar when absolutely necessary.
+    ' This function calculates an update interval based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then progBarCheck = ProgressBars.FindBestProgBarValue()
         
-    'Color variables
+    'Color variables; there are quite a few!
     Dim srcR As Long, srcG As Long, srcB As Long
-    Dim newR As Long, newG As Long, newB As Long
-    Dim srcR0 As Long, srcG0 As Long, srcB0 As Long
+    Dim origR As Long, origG As Long, origB As Long
     
-    Dim sCoefR As Double, sCoefG As Double, sCoefB As Double
-    Dim sMembR As Double, sMembG As Double, sMembB As Double
-    Dim coefR As Double, coefG As Double, coefB As Double
-    Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
+    Dim denomR As Double, denomG As Double, denomB As Double
+    Dim numR As Double, numG As Double, numB As Double
+    Dim rFactor As Double, gFactor As Double, bFactor As Double
+    Dim xOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
     Dim spacialFuncCache As Double
-    Dim srcPixelX As Long
-    Dim i As Long, k As Long
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.
     
-    'Prepare the spatial function
-    ReDim spatialFunc(-kernelRadius To kernelRadius) As Double
+    'Calculate the spatial convolution
+    Dim cnvSpace() As Single
+    ReDim cnvSpace(-kernelRadius To kernelRadius) As Single
+    For x = -kernelRadius To kernelRadius
+        cnvSpace(x) = Exp(-(Abs(x) / spatialFactor))
+    Next x
     
-    For i = -kernelRadius To kernelRadius
-        spatialFunc(i) = Exp(-0.5 * (Abs(i) / spatialFactor) ^ spatialPower)
-    Next i
-    
-    'Prepare the color function
-    ReDim colorFunc(0 To colorsCount - 1, 0 To colorsCount - 1)
-    
-    For i = 0 To colorsCount - 1
-        For k = 0 To colorsCount - 1
-            colorFunc(i, k) = Exp(-0.5 * ((Abs(i - k) / colorFactor) ^ colorPower))
-        Next k
-    Next i
-    
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickValSrc = (x + kernelRadius) * qvDepth
-    For y = initY To finalY
-    
-        sCoefR = 0
-        sCoefG = 0
-        sCoefB = 0
-        sMembR = 0
-        sMembG = 0
-        sMembB = 0
-        
-        QuickYSrc = y + kernelRadius
-        
-        srcB0 = srcImageData(quickValSrc, QuickYSrc)
-        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
-        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
-        
-        'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
-        ' don't matter, but since we're doing it, for y, mirror it to x.)
-        xMax = x + kernelRadius
-        xMin = x - kernelRadius
-        
-        For xOffset = xMin To xMax
-                
-            'Cache the source pixel's x and y locations
-            srcPixelX = (xOffset + kernelRadius) * qvDepth
-            
-            srcB = srcImageData(srcPixelX, QuickYSrc)
-            srcG = srcImageData(srcPixelX + 1, QuickYSrc)
-            srcR = srcImageData(srcPixelX + 2, QuickYSrc)
-            
-            spacialFuncCache = spatialFunc(xOffset - x)
-            
-            'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
-            ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
-            ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
-            ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
-            ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
-            ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
-            ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
-            If (spacialFuncCache > 0.0039) Then
-                
-                coefR = spacialFuncCache * colorFunc(srcR, srcR0)
-                coefG = spacialFuncCache * colorFunc(srcG, srcG0)
-                coefB = spacialFuncCache * colorFunc(srcB, srcB0)
-                
-                'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
-                ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
-                ' processing time when the color modifiers are consistently high.  As such, I think it's best to
-                ' limit our check to just the spatial modifier at present.
-                
-                sCoefR = sCoefR + coefR
-                sCoefG = sCoefG + coefG
-                sCoefB = sCoefB + coefB
-                
-                sMembR = sMembR + coefR * srcR
-                sMembG = sMembG + coefG * srcG
-                sMembB = sMembB + coefB * srcB
-                
-            End If
-            
-        Next xOffset
-        
-        If (sCoefR <> 0) Then newR = sMembR / sCoefR
-        If (sCoefG <> 0) Then newG = sMembG / sCoefG
-        If (sCoefB <> 0) Then newB = sMembB / sCoefB
-                        
-        'Assign the new values to each color channel
-        midImageData(quickValSrc, QuickYSrc) = newB
-        midImageData(quickValSrc + 1, QuickYSrc) = newG
-        midImageData(quickValSrc + 2, QuickYSrc) = newR
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal modifyProgBarOffset + x
-            End If
+    'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
+    ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
+    ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
+    ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
+    ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
+    ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
+    ' processing time when the filter's spatial parameter is low (common for cartoon-like parameters).
+    Dim cnvRadius As Long, cnvOffset As Long
+    Const ONE_DIV_255 As Single = 1! / 255!
+    For x = -kernelRadius To kernelRadius
+        If (cnvSpace(x) > ONE_DIV_255) Then
+            cnvRadius = Abs(x)
+            Exit For
         End If
     Next x
     
-    'Our first pass is now complete, and the results have been cached inside midImageData.  To prevent edge distortion,
-    ' we are now going to trim the mid DIB, then re-pad it with its processed edge values.
-    
-    If (Not g_cancelCurrentAction) Then
-    
-        'Release our array
-        CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
-        Erase midImageData
-        
-        'Copy the contents of midDIB to the working DIB
-        GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, kernelRadius, vbSrcCopy
-        
-        'Re-pad working DIB
-        PadDIBClampedPixels kernelRadius, kernelRadius, srcDIB, midDIB
-        
-        'Reclaim a pointer to the DIB data
-        PrepSafeArray midSA, midDIB
-        CopyMemory ByVal VarPtrArray(midImageData()), VarPtr(midSA), 4
-        
-        'We will now apply a second bilateral pass, in the Y direction, using midImageData as the base.
-        
-        'Loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            quickValDst = x * qvDepth
-            quickValSrc = (x + kernelRadius) * qvDepth
-        For y = initY To finalY
-        
-            sCoefR = 0
-            sCoefG = 0
-            sCoefB = 0
-            sMembR = 0
-            sMembG = 0
-            sMembB = 0
-            
-            QuickYSrc = y + kernelRadius
-            
-            'IMPORTANT!  One of the tricks we use in this function is that on this second pass, we use the unmodified
-            ' (well, null-padded but otherwise unmodified) copy of the image as the base of our kernel.  We then
-            ' convolve those original RGB values against the already-convolved RGB values from the first pass, which
-            ' gives us a better approximation of the naive convolution's "true" result.
-            srcB0 = srcImageData(quickValSrc, QuickYSrc)
-            srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
-            srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
-            
-            'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
-            ' don't matter, but since we're doing it, for y, mirror it to x.)
-            yMin = QuickYSrc - kernelRadius
-            yMax = QuickYSrc + kernelRadius
-            
-                For yOffset = yMin To yMax
-                    
-                    'Cache the kernel pixel's x and y locations
-                    srcB = midImageData(quickValSrc, yOffset)
-                    srcG = midImageData(quickValSrc + 1, yOffset)
-                    srcR = midImageData(quickValSrc + 2, yOffset)
-                    
-                    spacialFuncCache = spatialFunc(yOffset - QuickYSrc)
-                    
-                    'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
-                    ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
-                    ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
-                    ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
-                    ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
-                    ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
-                    ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
-                    If (spacialFuncCache > 0.0039) Then
-                        
-                        coefR = spacialFuncCache * colorFunc(srcR, srcR0)
-                        coefG = spacialFuncCache * colorFunc(srcG, srcG0)
-                        coefB = spacialFuncCache * colorFunc(srcB, srcB0)
-                        
-                        'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
-                        ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
-                        ' processing time when the color modifiers are consistently high.  As such, I think it's best to
-                        ' limit our check to just the spatial modifier at present.
-                        
-                        sCoefR = sCoefR + coefR
-                        sCoefG = sCoefG + coefG
-                        sCoefB = sCoefB + coefB
-                        
-                        sMembR = sMembR + coefR * srcR
-                        sMembG = sMembG + coefG * srcG
-                        sMembB = sMembB + coefB * srcB
-                        
-                    End If
-                            
-                Next yOffset
-            
-            If (sCoefR <> 0) Then newR = sMembR / sCoefR
-            If (sCoefG <> 0) Then newG = sMembG / sCoefG
-            If (sCoefB <> 0) Then newB = sMembB / sCoefB
-            
-            'Assign the new values to each color channel
-            dstImageData(quickValDst, y) = newB
-            dstImageData(quickValDst + 1, y) = newG
-            dstImageData(quickValDst + 2, y) = newR
-            
-        Next y
-            If (Not suppressMessages) Then
-                If (x And progBarCheck) = 0 Then
-                    If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal modifyProgBarOffset + finalX + x
-                End If
-            End If
-        Next x
-        
+    If (cnvRadius <> kernelRadius) Then
+        Dim tmpBuffer() As Single
+        ReDim tmpBuffer(-cnvRadius To cnvRadius) As Single
+        CopyMemoryStrict VarPtr(tmpBuffer(-cnvRadius)), VarPtr(cnvSpace(-cnvRadius)), (cnvRadius * 2 + 1) * 4
+        ReDim cnvSpace(-cnvRadius To cnvRadius) As Single
+        CopyMemoryStrict VarPtr(cnvSpace(-cnvRadius)), VarPtr(tmpBuffer(-cnvRadius)), (cnvRadius * 2 + 1) * 4
     End If
     
-    'With our work complete, point all ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
-    Erase midImageData
-    Set midDIB = Nothing
+    cnvOffset = cnvRadius * 4
     
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    Set srcDIBPadded = Nothing
+    'Calculate the color convolution; note that we square this value to obtain a (somewhat stronger)
+    ' color correction than the default value.
+    Dim cnvIntensity() As Single
+    ReDim cnvIntensity(-255 To 255) As Single
+    For x = -255 To 255
+        cnvIntensity(x) = Exp(-((Abs(x) / colorFactor) ^ 2))
+    Next x
     
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    'To remove the need for specialized edge-handling, we resize the source DIB with clamped horizontal edges.
+    Dim srcImageData() As Byte, srcSA As SafeArray1D
+    Dim srcDIBPadded As pdDIB: Set srcDIBPadded = New pdDIB
+    PadDIBClampedPixels kernelRadius, 0, srcDIB, srcDIBPadded
+    
+    'As part of our separable implementation, we'll also be producing an intermediate copy of the filter
+    ' in either direction
+    Dim midImageData() As Byte, midSA As SafeArray1D
+    Dim midDIB As pdDIB: Set midDIB = New pdDIB
+    midDIB.CreateFromExistingDIB srcDIBPadded
+    
+    'Inner convolution loop
+    Dim xStart As Long, xEnd As Long, xInt As Long
+    xStart = kernelRadius * 4
+    xEnd = (finalX + kernelRadius) * 4
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = 0 To finalY
+        
+        'To improve access perf, wrap a 1D array around the current line
+        srcDIBPadded.WrapArrayAroundScanline srcImageData, srcSA, y
+        midDIB.WrapArrayAroundScanline midImageData, midSA, y
+        
+    For x = xStart To xEnd Step 4
+        
+        origB = srcImageData(x)
+        origG = srcImageData(x + 1)
+        origR = srcImageData(x + 2)
+        
+        'Reset all trackers
+        numR = 0#
+        numG = 0#
+        numB = 0#
+        denomR = 0#
+        denomG = 0#
+        denomB = 0#
+        
+        'Determine convolution size, then execute inner loop
+        xMin = x - cnvOffset
+        xMax = x + cnvOffset
+        
+        For xInt = xMin To xMax Step 4
+            
+            srcB = srcImageData(xInt)
+            srcG = srcImageData(xInt + 1)
+            srcR = srcImageData(xInt + 2)
+            
+            'Calculate spatial and intensity factors using prebuilt lookup tables
+            spacialFuncCache = cnvSpace((xInt - x) \ 4)
+            rFactor = spacialFuncCache * cnvIntensity(srcR - origR)
+            gFactor = spacialFuncCache * cnvIntensity(srcG - origG)
+            bFactor = spacialFuncCache * cnvIntensity(srcB - origB)
+            
+            numR = numR + rFactor * srcR
+            numG = numG + gFactor * srcG
+            numB = numB + bFactor * srcB
+            
+            denomR = denomR + rFactor
+            denomG = denomG + gFactor
+            denomB = denomB + bFactor
+            
+        Next xInt
+        
+        'Assign the new values to each color channel
+        If (denomB > 0#) Then midImageData(x) = Int(numB / denomB + 0.5)
+        If (denomG > 0#) Then midImageData(x + 1) = Int(numG / denomG + 0.5)
+        If (denomR > 0#) Then midImageData(x + 2) = Int(numR / denomR + 0.5)
+        
+    Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal modifyProgBarOffset + y
+            End If
+        End If
+    Next y
+    
+    'Safely release all array wrappers
+    midDIB.UnwrapArrayFromDIB midImageData
+    srcDIBPadded.UnwrapArrayFromDIB srcImageData
+    
+    'Our first pass is now complete, and the results have been cached inside midImageData
+    If (Not g_cancelCurrentAction) Then
+    
+        'Copy the contents of midDIB back into the source DIB
+        GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, 0, vbSrcCopy
+        
+        'We now want to create a rotated version of the working DIB (because it's much faster to process
+        ' large convolutions in the horizontal direction, given VB's row-major array layout).
+        GDI_Plus.GDIPlusRotateFlipDIB srcDIB, midDIB, GP_RF_90FlipNone
+        
+        'Re-pad the rotated DIB (so we can skip boundary checks)
+        PadDIBClampedPixels kernelRadius, 0, midDIB, srcDIBPadded
+        
+        'Calculate new array bounds
+        finalY = srcDIB.GetDIBWidth - 1
+        xStart = kernelRadius * 4
+        xEnd = ((srcDIB.GetDIBHeight - 1) + kernelRadius) * 4
+        
+        'Execute identical steps to the previous loop
+        For y = 0 To finalY
+            srcDIBPadded.WrapArrayAroundScanline srcImageData, srcSA, y
+            midDIB.WrapArrayAroundScanline midImageData, midSA, y
+        For x = xStart To xEnd Step 4
+            
+            origB = srcImageData(x)
+            origG = srcImageData(x + 1)
+            origR = srcImageData(x + 2)
+            
+            numR = 0#
+            numG = 0#
+            numB = 0#
+            denomR = 0#
+            denomG = 0#
+            denomB = 0#
+            
+            xMin = x - cnvOffset
+            xMax = x + cnvOffset
+            
+            For xInt = xMin To xMax Step 4
+                
+                srcB = srcImageData(xInt)
+                srcG = srcImageData(xInt + 1)
+                srcR = srcImageData(xInt + 2)
+                
+                spacialFuncCache = cnvSpace((xInt - x) \ 4)
+                rFactor = spacialFuncCache * cnvIntensity(srcR - origR)
+                gFactor = spacialFuncCache * cnvIntensity(srcG - origG)
+                bFactor = spacialFuncCache * cnvIntensity(srcB - origB)
+                
+                numR = numR + rFactor * srcR
+                numG = numG + gFactor * srcG
+                numB = numB + bFactor * srcB
+                
+                denomR = denomR + rFactor
+                denomG = denomG + gFactor
+                denomB = denomB + bFactor
+                
+            Next xInt
+            
+            xInt = x - (kernelRadius * 4)
+            If (denomB > 0#) Then midImageData(xInt) = Int(numB / denomB + 0.5)
+            If (denomG > 0#) Then midImageData(xInt + 1) = Int(numG / denomG + 0.5)
+            If (denomR > 0#) Then midImageData(xInt + 2) = Int(numR / denomR + 0.5)
+            
+        Next x
+            If Not suppressMessages Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal modifyProgBarOffset + y + srcDIB.GetDIBHeight
+                End If
+            End If
+        Next y
+        
+        'Safely release all array wrappers
+        midDIB.UnwrapArrayFromDIB midImageData
+        srcDIBPadded.UnwrapArrayFromDIB srcImageData
+        
+        'Rotate the finished result back into workingDIB
+        GDI_Plus.GDIPlusRotateFlipDIB midDIB, srcDIB, GP_RF_270FlipNone
+        
+    End If
     
     If g_cancelCurrentAction Then CreateBilateralDIB = 0 Else CreateBilateralDIB = 1
 
 End Function
-

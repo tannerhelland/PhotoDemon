@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.148</langversion>
+<langversion>1.0.149</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10531,13 +10531,8 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
 <phrase>
-<original>edge strength</original>
-<translation>बढ़त ताकत</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>स्थानिक शक्ति (वर्तमान में छिपी हुई)</translation>
+<original>spatial strength</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10546,26 +10541,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 </phrase>
 
 <phrase>
-<original>color preservation</original>
-<translation>रंग संरक्षण</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>प्रदर्शन में सुधार करने के लिए आकलन का उपयोग करें</translation>
-</phrase>
-
-<phrase>
 <original>Applying bilateral smoothing</original>
 <translation>द्विपक्षीय चौरसाई को लागू करना</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation>द्विपक्षीय फ़िल्टरिंग एक जटिल कार्य है, और बड़ी छवियों पर प्रक्रिया में बहुत लंबा समय लग सकता है। PhotoDemon कुछ मापदंडों का अनुमान लगा सकता है, जो थोड़ी कम गुणवत्ता की कीमत पर बड़ी गति को बढ़ावा देता है।</translation>
-</phrase>
-
-<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -16262,12 +16242,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2712</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5005 phrases. -->
-<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
-<!-- These 2712 phrases contain approximately 12726 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12678 total words. -->
 
 </pdData>

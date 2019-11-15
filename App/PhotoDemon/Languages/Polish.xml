@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.123</langversion>
+<langversion>7.0.124</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10514,13 +10514,8 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
 <phrase>
-<original>edge strength</original>
-<translation>siła krawędzi</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>siła przestrzeni (aktualnie ukryte)</translation>
+<original>spatial strength</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10529,26 +10524,11 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 </phrase>
 
 <phrase>
-<original>color preservation</original>
-<translation>ochrona koloru</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>użyj oszacowania w celu zwiększenia wydajności</translation>
-</phrase>
-
-<phrase>
 <original>Applying bilateral smoothing</original>
 <translation>Zastosuj dwustronnego wygładzania</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation>Filtrowanie dwustronne jest złożonym zadaniem, i na dużych obrazach może zająć bardzo dużo czasu na przetworzenie. PhotoDemon może oszacować pewne parametry, zapewniając duży wzrost prędkości kosztem nieco niższej jakości.</translation>
-</phrase>
-
-<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -16241,12 +16221,18 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2712</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5005 phrases. -->
-<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
-<!-- These 2712 phrases contain approximately 12726 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12678 total words. -->
 
 </pdData>

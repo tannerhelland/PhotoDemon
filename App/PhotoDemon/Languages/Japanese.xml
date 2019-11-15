@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.136</langversion>
+<langversion>1.0.137</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10529,13 +10529,8 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
 <phrase>
-<original>edge strength</original>
-<translation>エッジ強度</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>空間パワー（現在隠れている）</translation>
+<original>spatial strength</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10544,26 +10539,11 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 </phrase>
 
 <phrase>
-<original>color preservation</original>
-<translation>色保存</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>パフォーマンスを向上させるために推定を使用する</translation>
-</phrase>
-
-<phrase>
 <original>Applying bilateral smoothing</original>
 <translation>バイラテラルスムージングの適用</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation>バイラテラルフィルタリングは複雑な作業であり、大きな画像では処理に非常に時間がかかることがあります。 PhotoDemonは特定のパラメータを見積もることができ、わずかに低い品質のコストで大きなスピードブーストを提供します。</translation>
-</phrase>
-
-<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -16260,12 +16240,18 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2712</phrasecount>
+<phrasecount>2708</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5005 phrases. -->
-<!-- 2293 are duplicates, so only 2712 unique phrases have been written to file. -->
-<!-- These 2712 phrases contain approximately 12726 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
+<!-- These 2708 phrases contain approximately 12678 total words. -->
 
 </pdData>

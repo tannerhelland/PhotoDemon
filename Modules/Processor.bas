@@ -1742,7 +1742,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Bilateral smoothing", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralWrapper processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralSmoothingSeparable processParameters
         Process_EffectsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Harmonic mean", True) Then

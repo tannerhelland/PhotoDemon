@@ -186,7 +186,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
                 End If
             End If
             
-            CreateBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
+            CreateBilateralDIB workingDIB, colorSmudge, 100, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
             
         Next i
         
