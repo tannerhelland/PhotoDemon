@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1587</langversion>
+<langversion>7.2.1588</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9689,8 +9689,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Kuwahara-Glättung wird angewendet</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

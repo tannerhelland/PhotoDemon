@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.446</langversion>
+<langversion>6.7.447</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -9684,8 +9684,8 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Toepassen van Kuwahara vergladding</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

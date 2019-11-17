@@ -421,9 +421,6 @@ Public Sub InitializeMenus()
         AddMenuItem "Motion blur...", "effects_motionblur", 6, 1, 4
         AddMenuItem "Radial blur...", "effects_radialblur", 6, 1, 5
         AddMenuItem "Zoom blur...", "effects_zoomblur", 6, 1, 6
-        AddMenuItem "-", "-", 6, 1, 7
-        AddMenuItem "Kuwahara filter...", "effects_kuwahara", 6, 1, 8
-        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 1, 9
     AddMenuItem "Distort", "effects_distort", 6, 2
         AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 6, 2, 0
         AddMenuItem "-", "-", 6, 2, 1
@@ -468,6 +465,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 6, 5
         AddMenuItem "Mean shift...", "effects_meanshift", 6, 6, 6
         AddMenuItem "Median...", "effects_median", 6, 6, 7
+        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 6, 8
     AddMenuItem "Pixelate", "effects_pixelate", 6, 7
         AddMenuItem "Color halftone...", "effects_colorhalftone", 6, 7, 0
         AddMenuItem "Crystallize...", "effects_crystallize", 6, 7, 1
@@ -483,12 +481,13 @@ Public Sub InitializeMenus()
     AddMenuItem "Stylize", "effects_stylize", 6, 10
         AddMenuItem "Antique...", "effects_antique", 6, 10, 0
         AddMenuItem "Diffuse...", "effects_diffuse", 6, 10, 1
-        AddMenuItem "Outline...", "effects_outline", 6, 10, 2
-        AddMenuItem "Palettize...", "effects_palettize", 6, 10, 3
-        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 10, 4
-        AddMenuItem "Solarize...", "effects_solarize", 6, 10, 5
-        AddMenuItem "Twins...", "effects_twins", 6, 10, 6
-        AddMenuItem "Vignetting...", "effects_vignetting", 6, 10, 7
+        AddMenuItem "Kuwahara...", "effects_kuwahara", 6, 10, 2
+        AddMenuItem "Outline...", "effects_outline", 6, 10, 3
+        AddMenuItem "Palettize...", "effects_palettize", 6, 10, 4
+        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 10, 5
+        AddMenuItem "Solarize...", "effects_solarize", 6, 10, 6
+        AddMenuItem "Twins...", "effects_twins", 6, 10, 7
+        AddMenuItem "Vignetting...", "effects_vignetting", 6, 10, 8
     AddMenuItem "Transform", "effects_transform", 6, 11
         AddMenuItem "Pan and zoom...", "effects_panandzoom", 6, 11, 0
         AddMenuItem "Perspective...", "effects_perspective", 6, 11, 1

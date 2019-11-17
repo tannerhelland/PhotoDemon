@@ -1073,18 +1073,6 @@ Begin VB.Form FormMain
             Caption         =   "Zoom blur..."
             Index           =   6
          End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "-"
-            Index           =   7
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Kuwahara filter..."
-            Index           =   8
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Symmetric nearest-neighbor..."
-            Index           =   9
-         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
@@ -1261,6 +1249,10 @@ Begin VB.Form FormMain
             Caption         =   "Median..."
             Index           =   7
          End
+         Begin VB.Menu MnuNoise 
+            Caption         =   "Symmetric nearest-neighbor..."
+            Index           =   8
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Pixelate"
@@ -1322,28 +1314,32 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Outline..."
+            Caption         =   "Kuwahara..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Palettize..."
+            Caption         =   "Outline..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Portrait glow..."
+            Caption         =   "Palettize..."
             Index           =   4
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Portrait glow..."
             Index           =   5
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
+            Caption         =   "Solarize..."
             Index           =   6
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Vignetting..."
+            Caption         =   "Twins..."
             Index           =   7
+         End
+         Begin VB.Menu MnuStylize 
+            Caption         =   "Vignetting..."
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3076,7 +3072,22 @@ End Sub
 
 'All blur filters are handled here
 Private Sub MnuBlurFilter_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuBlurFilter(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_boxblur"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_gaussianblur"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_surfaceblur"
+        Case 3
+            'separator
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_motionblur"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_radialblur"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_zoomblur"
+    End Select
 End Sub
 
 Private Sub MnuClearMRU_Click()
@@ -3394,7 +3405,26 @@ End Sub
 
 'All noise filters are handled here
 Private Sub MnuNoise_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuNoise(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_filmgrain"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_rgbnoise"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_anisotropic"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_bilateral"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_harmonicmean"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_meanshift"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "effects_median"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "effects_snn"
+    End Select
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
@@ -3472,7 +3502,26 @@ End Sub
 
 'All stylize filters are handled here
 Private Sub MnuStylize_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuStylize(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_antique"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_diffuse"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_kuwahara"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_outline"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_palettize"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_portraitglow"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_solarize"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "effects_twins"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "effects_vignetting"
+    End Select
 End Sub
 
 'All tool menu items are launched from here

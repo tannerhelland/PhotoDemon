@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.137</langversion>
+<langversion>1.0.138</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9679,8 +9679,8 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>桑原平滑適用</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.149</langversion>
+<langversion>1.0.150</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9681,8 +9681,8 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>कूवारा चौरसाई को लागू करना</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

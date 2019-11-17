@@ -5,7 +5,7 @@ Begin VB.Form FormKuwahara
    Caption         =   " Kuwahara"
    ClientHeight    =   6540
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -43,7 +43,6 @@ Begin VB.Form FormKuwahara
       _ExtentY        =   1270
       Caption         =   "radius"
       Min             =   1
-      Max             =   20
       Value           =   1
       DefaultValue    =   1
    End
@@ -64,23 +63,16 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Kuwahara Blur Dialog
-'Copyright 2014 by Audioglider
-'Created: 22/June/14
-'Last updated: 26/July/17
-'Last update: performance improvements, migrate to XML params
-'TODO: adopt Median filter optimization, where instead of rebuilding each quadrant from scratch for each pixel,
-'       we simply add and remove a single horizontal line to each (or a single vertical line when moving to a new
-'       row).  Similar to the Median filter, I expect this to provide an exponential performance improvement
-'       relative to filter radius.
+'Copyright 2019-2019 by Tanner Helland
+'Created: 15/November/19
+'Last updated: 19/November/19
+'Last update: wrap up initial build
 '
-'Kuwahara is a non-linear smoothing filter that preserves edges.
+'Per Wikipedia (https://en.wikipedia.org/wiki/Kuwahara_filter):
+' "The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction."
 '
-' It works as follows:
-'
-' For each pixel, divide up the region around it into four overlapping
-' blocks where each block has the center pixel as a corner pixel.
-' For each of the blocks calculate the mean and the variance. Set the
-' middle pixel equal to the mean of the block with the smallest variance.
+'For performance and quality reasons, PhotoDemon's implementation calculates variance using luminance; the quadrant
+' with the smallest luminance variance is then used for calculating average color.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -89,208 +81,178 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply the Kuwahara filter to an image.
-Public Sub Kuwahara(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub KuwaharaFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim filterSize As Long
-    filterSize = cParams.GetLong("radius", sltRadius.Value)
+    Dim radius As Long
+    radius = cParams.GetLong("radius", sltRadius.Value)
     
-    If (Not toPreview) Then Message "Applying Kuwahara smoothing..."
-    
-    'Indicies for each of the 4 quadrants
-    Dim meansR(0 To 3) As Double
-    Dim meansG(0 To 3) As Double
-    Dim meansB(0 To 3) As Double
-    Dim stdDevsR(0 To 3) As Double
-    Dim stdDevsG(0 To 3) As Double
-    Dim stdDevsB(0 To 3) As Double
-    Dim pixels(0 To 3) As RGBQuad
-
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
+    
+    'Reduce radius for previews.  (Note that this has to happen *after* the EffectPrep call, above,
+    ' as that calculates the preview ratio for us.)
+    If toPreview Then radius = radius * curDIBValues.previewModifier
+    If (radius < 1) Then radius = 1
+    
+    If (Not toPreview) Then Message "Applying Kuwahara filter..."
+    
+    'Sums (and sums^2) for each of the 4 quadrants
+    Dim sum0 As Long, sum1 As Long, sum2 As Long, sum3 As Long
+    Dim sums0 As Long, sums1 As Long, sums2 As Long, sums3 As Long
+    
+    'Pixel count in each quadrant
+    Dim numPixels As Long
+    numPixels = (radius + 1) * (radius + 1)
+    
+    Dim invNumPixels As Double
+    invNumPixels = 1# / CDbl(numPixels)
+    
+    'Pad the working DIB (so we don't have to deal with boundary checking)
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    Dim tmpDIB As pdDIB
+    Filters_Layers.PadDIBClampedPixels radius, radius, workingDIB, tmpDIB
+    tmpDIB.WrapArrayAroundDIB srcImageData, srcSA
+    
+    'Instead of analyzing RGB data, we want to analyze luminance data alone.  The quadrant with
+    ' the largest *luminance* variance is the one we'll use for RGB data as well.
+    Dim grayData() As Byte
+    DIBs.GetDIBGrayscaleMap tmpDIB, grayData, False
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    initX = radius
+    initY = radius
+    finalX = radius + workingDIB.GetDIBWidth - 1
+    finalY = radius + workingDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
+    If (Not toPreview) Then
+        ProgressBars.SetProgBarMax finalY
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
     
-    'If this is a preview, we need to adjust the kernal
-    If toPreview Then filterSize = filterSize * curDIBValues.previewModifier
-    If filterSize < 1 Then filterSize = 1
+    Dim xOffset As Long, yOffset As Long
+    Dim xMin As Long, xMax As Long, yMin As Long, yMax As Long
+    Dim tstVariance As Double, vMin As Double
     
-    Dim dx As Long, dy As Long
-    Dim xdx(0 To 1) As Long, ydy(0 To 1) As Long
-    Dim i As Long
+    Dim i As Long, j As Long
+    Dim r As Long, g As Long, b As Long
     
-    Dim radius As Long
-    Dim scaler As Double
-    Dim lowest As Double
-    Dim lowestIndex As Long
-    Dim rgbSum As Double
-        
-    radius = filterSize / 2
-    scaler = 1# / ((radius + 1) * (radius + 1))
-
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        
+        'Destination pixels are applied on a clean line-by-line basis, so we can simply point
+        ' at the current scanline.
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y - radius
+        
+    For x = initX To finalX
     
-        'Clear the means and standard deviations
-        For i = 0 To 3
-            meansR(i) = 0
-            meansG(i) = 0
-            meansB(i) = 0
-            stdDevsR(i) = 0
-            stdDevsG(i) = 0
-            stdDevsB(i) = 0
-        Next i
+        'Clear all trackers
+        sum0 = 0
+        sum1 = 0
+        sum2 = 0
+        sum3 = 0
+        sums0 = 0
+        sums1 = 0
+        sums2 = 0
+        sums3 = 0
         
-        'Calculate means
-        For dx = 0 To radius
-            xdx(0) = x - dx
-            If xdx(0) < initX Then
-                xdx(0) = initX + initX - xdx(0)
-            End If
-            xdx(1) = x + dx
-            If xdx(1) >= finalX Then
-                xdx(1) = finalX - 2 - xdx(1) + finalX
-            End If
+        'Calculate variance for each quadrant
+        xMax = x + radius
+        yMax = y + radius
+        
+        For j = y To yMax
+        For i = x To xMax
             
-            For dy = 0 To radius
-                ydy(0) = y - dy
-                If ydy(0) < initY Then
-                    ydy(0) = initY + initY - ydy(0)
-                End If
-                ydy(1) = y + dy
-                If ydy(1) >= finalY Then
-                    ydy(1) = finalY - 2 - ydy(1) + finalY
-                End If
-                
-                'Get the source pixel color values for each direction
-                pixels(0).Red = imageData(xdx(0) * qvDepth + 2, ydy(0))
-                pixels(0).Green = imageData(xdx(0) * qvDepth + 1, ydy(0))
-                pixels(0).Blue = imageData(xdx(0) * qvDepth, ydy(0))
-                
-                pixels(1).Red = imageData(xdx(1) * qvDepth + 2, ydy(0))
-                pixels(1).Green = imageData(xdx(1) * qvDepth + 1, ydy(0))
-                pixels(1).Blue = imageData(xdx(1) * qvDepth, ydy(0))
-                
-                pixels(2).Red = imageData(xdx(0) * qvDepth + 2, ydy(1))
-                pixels(2).Green = imageData(xdx(0) * qvDepth + 1, ydy(1))
-                pixels(2).Blue = imageData(xdx(0) * qvDepth, ydy(1))
-                
-                pixels(3).Red = imageData(xdx(1) * qvDepth + 2, ydy(1))
-                pixels(3).Green = imageData(xdx(1) * qvDepth + 1, ydy(1))
-                pixels(3).Blue = imageData(xdx(1) * qvDepth, ydy(1))
-                
-                For i = 0 To 3
-                    meansR(i) = meansR(i) + CDbl(pixels(i).Red)
-                    meansG(i) = meansG(i) + CDbl(pixels(i).Green)
-                    meansB(i) = meansB(i) + CDbl(pixels(i).Blue)
-                Next i
-                
-            Next dy
-        Next dx
-        
-        For i = 0 To 3
-            meansR(i) = meansR(i) * scaler
-            meansG(i) = meansG(i) * scaler
-            meansB(i) = meansB(i) * scaler
-        Next i
-        
-        'Calculate standard deviations
-        For dx = 0 To radius
-            xdx(0) = x - dx
-            If xdx(0) < initX Then
-                xdx(0) = initX + initX - xdx(0)
-            End If
-            xdx(1) = x + dx
-            If xdx(1) >= finalX Then
-                xdx(1) = finalX - 2 - xdx(1) + finalX
-            End If
+            'These could be calculated in a loop, but I manually unroll them for improved perf
             
-            For dy = 0 To radius
-                ydy(0) = y - dy
-                If ydy(0) < initY Then
-                    ydy(0) = initY + initY - ydy(0)
-                End If
-                ydy(1) = y + dy
-                If ydy(1) >= finalY Then
-                    ydy(1) = finalY - 2 - ydy(1) + finalY
-                End If
-                
-                'Get the source pixel color values for each quadrant
-                pixels(0).Red = imageData(xdx(0) * qvDepth + 2, ydy(0))
-                pixels(0).Green = imageData(xdx(0) * qvDepth + 1, ydy(0))
-                pixels(0).Blue = imageData(xdx(0) * qvDepth, ydy(0))
-                
-                pixels(1).Red = imageData(xdx(1) * qvDepth + 2, ydy(0))
-                pixels(1).Green = imageData(xdx(1) * qvDepth + 1, ydy(0))
-                pixels(1).Blue = imageData(xdx(1) * qvDepth, ydy(0))
-                
-                pixels(2).Red = imageData(xdx(0) * qvDepth + 2, ydy(1))
-                pixels(2).Green = imageData(xdx(0) * qvDepth + 1, ydy(1))
-                pixels(2).Blue = imageData(xdx(0) * qvDepth, ydy(1))
-                
-                pixels(3).Red = imageData(xdx(1) * qvDepth + 2, ydy(1))
-                pixels(3).Green = imageData(xdx(1) * qvDepth + 1, ydy(1))
-                pixels(3).Blue = imageData(xdx(1) * qvDepth, ydy(1))
-                
-                For i = 0 To 3
-                    stdDevsR(i) = stdDevsR(i) + (meansR(i) - CDbl(pixels(i).Red)) * (meansR(i) - CDbl(pixels(i).Red))
-                    stdDevsG(i) = stdDevsR(i) + (meansG(i) - CDbl(pixels(i).Green)) * (meansG(i) - CDbl(pixels(i).Green))
-                    stdDevsB(i) = stdDevsB(i) + (meansB(i) - CDbl(pixels(i).Blue)) * (meansB(i) - CDbl(pixels(i).Blue))
-                Next i
-                
-            Next dy
-        Next dx
-        
-        lowest = DOUBLE_MAX
-        lowestIndex = 0
-        
-        'Work out the lowest standard deviation
-        For i = 0 To 3
-            rgbSum = (stdDevsR(i) + stdDevsG(i) + stdDevsB(i))
-            If rgbSum < lowest Then
-                lowest = rgbSum
-                lowestIndex = i
-            End If
+            'Use non-branching variance calculation
+            g = grayData(i - radius, j - radius)
+            sum0 = sum0 + g
+            sums0 = sums0 + g * g
+            
+            'Repeat for other three quadrants
+            g = grayData(i, j - radius)
+            sum1 = sum1 + g
+            sums1 = sums1 + g * g
+            
+            g = grayData(i - radius, j)
+            sum2 = sum2 + g
+            sums2 = sums2 + g * g
+            
+            g = grayData(i, j)
+            sum3 = sum3 + g
+            sums3 = sums3 + g * g
+            
         Next i
+        Next j
         
-        'Assign the new values to each color channel
-        imageData(quickVal + 2, y) = CLng(meansR(lowestIndex))
-        imageData(quickVal + 1, y) = CLng(meansG(lowestIndex))
-        imageData(quickVal, y) = CLng(meansB(lowestIndex))
+        'Find the quadrant with lowest variance.  (Again, this could be done in a loop; I unroll for perf benefits.)
+        tstVariance = sums0 - sum0 * sum0 * invNumPixels
+        vMin = tstVariance
+        xMin = x - radius
+        yMin = y - radius
         
-    Next y
+        tstVariance = sums1 - sum1 * sum1 * invNumPixels
+        If (tstVariance < vMin) Then
+            vMin = tstVariance
+            xMin = x
+        End If
+        
+        tstVariance = sums2 - sum2 * sum2 * invNumPixels
+        If (tstVariance < vMin) Then
+            vMin = tstVariance
+            xMin = x - radius
+            yMin = y
+        End If
+        
+        tstVariance = sums3 - sum3 * sum3 * invNumPixels
+        If (tstVariance < vMin) Then
+            xMin = x
+            yMin = y
+        End If
+        
+        'Assign average values of the lowest quadrant
+        xMin = xMin * 4
+        xMax = xMin + radius * 4
+        yMax = yMin + radius
+        
+        r = 0
+        g = 0
+        b = 0
+        
+        For j = yMin To yMax
+        For i = xMin To xMax Step 4
+            b = b + srcImageData(i, j)
+            g = g + srcImageData(i + 1, j)
+            r = r + srcImageData(i + 2, j)
+        Next i
+        Next j
+        
+        xOffset = (x - radius) * 4
+        dstImageData(xOffset) = b \ numPixels
+        dstImageData(xOffset + 1) = g \ numPixels
+        dstImageData(xOffset + 2) = r \ numPixels
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    'Safely deallocate arrays
+    tmpDIB.UnwrapArrayFromDIB srcImageData
+    Set tmpDIB = Nothing
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -321,7 +283,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then Kuwahara GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.KuwaharaFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3429</langversion>
+<langversion>6.8.3430</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9676,8 +9676,8 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Uygulanması Kuwahara yumuşatma</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

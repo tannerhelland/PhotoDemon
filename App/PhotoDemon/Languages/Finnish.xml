@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3429</langversion>
+<langversion>6.8.3430</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9677,8 +9677,8 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Hakeminen Kuwahara tasoitus</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

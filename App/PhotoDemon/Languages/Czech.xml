@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3429</langversion>
+<langversion>6.8.3430</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9679,8 +9679,8 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Použití vyhlazení Kuwahara</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

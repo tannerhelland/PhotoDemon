@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.114</langversion>
+<langversion>1.0.115</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9678,8 +9678,8 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>쿠와하라 평활 가공</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

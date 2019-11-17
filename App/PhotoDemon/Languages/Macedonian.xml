@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.242</langversion>
+<langversion>1.0.243</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -9683,8 +9683,8 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>Applying Kuwahara smoothing</original>
-<translation>Примена Kuwahara мазнење</translation>
+<original>Applying Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->

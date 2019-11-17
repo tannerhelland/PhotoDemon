@@ -1594,7 +1594,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         
     'Miscellaneous blurs
     ElseIf Strings.StringsEqual(processID, "Kuwahara filter", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.Kuwahara processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.KuwaharaFilter processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Symmetric nearest-neighbor", True) Then
