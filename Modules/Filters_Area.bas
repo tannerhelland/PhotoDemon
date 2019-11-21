@@ -1034,7 +1034,7 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
     
     'Precalculate required Deriche coefficients
     Dim c As DericheCoeffs
-    Gaussian_DerichePreComp c, sigma, numSteps, INF_SUM_TOLERANCE
+    Gaussian_DerichePreComp c, sigma, numSteps, INF_SUM_TOLERANCE, pxImgWidth, pxImgHeight
     
     'A temporary buffer of size (2 * max(width, height)) is required for intermediate calculations
     Dim tmpBuffer() As Double
@@ -1318,7 +1318,7 @@ End Sub
 ' - Original C version is copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
 ' - Used here under its original BSD license <http://www.opensource.org/licenses/bsd-license.html>
 ' - Translated into VB6 by Tanner Helland in 2019
-Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Double, ByVal k As Long, ByVal tol As Double)
+Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Double, ByVal k As Long, ByVal tol As Double, ByVal pxImgWidth As Long, ByVal pxImgHeight As Long)
 
     'Deriche's optimized filter parameters
     Dim cxAlpha() As ComplexNumber
@@ -1416,6 +1416,14 @@ Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Dou
     
     'In the original, this is set to 10x sigma... which seems excessive?
     c.dc_max_iter = Int(4# * sigma + 0.99999999)
+    
+    'Added by me: similarly, limit iterations to the larger of (width/height);
+    ' without this, there is a disproportionate penalty for large radii on small images
+    If (pxImgWidth > pxImgHeight) Then
+        If (c.dc_max_iter > pxImgWidth) Then c.dc_max_iter = pxImgWidth
+    Else
+        If (c.dc_max_iter > pxImgHeight) Then c.dc_max_iter = pxImgHeight
+    End If
     
 End Sub
 
