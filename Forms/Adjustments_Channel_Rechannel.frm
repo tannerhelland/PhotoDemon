@@ -145,7 +145,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Align all channel button strips
     Dim i As Long
@@ -179,7 +179,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes, and supply an initial effect preview
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

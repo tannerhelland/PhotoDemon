@@ -255,7 +255,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate coloring options
     btsColor.AddItem "color", 0
@@ -268,7 +268,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

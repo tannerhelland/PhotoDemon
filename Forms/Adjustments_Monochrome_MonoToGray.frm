@@ -406,14 +406,14 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Provide a small explanation about how this process works
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

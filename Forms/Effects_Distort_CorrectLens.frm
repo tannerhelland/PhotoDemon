@@ -861,7 +861,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews until all controls have been initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsOptions.AddItem "basic", 0
     btsOptions.AddItem "advanced", 1
@@ -874,7 +874,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges(1), EDGE_CLAMP
     
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 
 End Sub
@@ -884,10 +884,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

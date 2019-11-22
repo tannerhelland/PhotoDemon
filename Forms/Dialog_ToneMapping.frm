@@ -375,7 +375,7 @@ End Property
 Public Sub ShowDialog()
     
     'Prevent preview images from rendering until all initialization has finished
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -397,7 +397,7 @@ Public Sub ShowDialog()
     End If
     
     'Render a preview of the current settings, if any
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
         
     Message "Waiting for tone mapping instructions..."
     
@@ -498,7 +498,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     btsMethod.ListIndex = 0
     sltGamma(0) = 2.2
     sltGamma(1) = 1#        'FreeImage documentation is unclear on the correct behavior for Drago gamma.  2.2 is recommended as
@@ -508,7 +508,7 @@ Private Sub cmdBar_ResetClick()
     sltExposure(1) = 2#
     sltWhitepoint = 11.2
     chkRemember.Value = False
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     
     UpdatePreview
     

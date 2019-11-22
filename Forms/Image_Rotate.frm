@@ -370,7 +370,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsResize.AddItem "keep current", 0
     btsResize.AddItem "enlarge to fit", 1
@@ -470,7 +470,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

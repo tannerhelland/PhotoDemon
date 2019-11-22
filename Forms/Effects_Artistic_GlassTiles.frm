@@ -405,7 +405,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the form has been fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -413,7 +413,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

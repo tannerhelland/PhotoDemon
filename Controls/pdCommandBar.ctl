@@ -321,7 +321,7 @@ Public Function PreviewsAllowed() As Boolean
     PreviewsAllowed = (m_allowPreviews And m_controlFullyLoaded And m_userAllowsPreviews)
 End Function
 
-Public Sub MarkPreviewStatus(ByVal newPreviewSetting As Boolean)
+Public Sub SetPreviewStatus(ByVal newPreviewSetting As Boolean)
     m_userAllowsPreviews = newPreviewSetting
 End Sub
 

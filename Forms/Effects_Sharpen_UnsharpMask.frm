@@ -332,7 +332,7 @@ End Sub
 Private Sub Form_Load()
     
     'Suspend previews until the dialog is fully loaded
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the quality selector
     btsQuality.AddItem "fast", 0
@@ -341,7 +341,7 @@ Private Sub Form_Load()
     
     'Apply visual themes to the form
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

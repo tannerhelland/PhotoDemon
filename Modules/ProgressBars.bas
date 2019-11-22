@@ -90,8 +90,8 @@ Public Sub ReleaseProgressBar()
     
     PDDebug.LogAction "Releasing progress bar..."
     
-    'Briefly display a full progress bar before exiting
-    FormMain.MainCanvas(0).ProgBar_SetValue FormMain.MainCanvas(0).ProgBar_GetMax()
+    'Reset the progress bar before exiting
+    FormMain.MainCanvas(0).ProgBar_SetValue 0
     
     'Release the progress bar and container picture box
     FormMain.MainCanvas(0).ProgBar_SetVisibility False

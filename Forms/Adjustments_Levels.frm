@@ -720,7 +720,7 @@ End Sub
 'Update all text box values to match the stored values of the current channel
 Private Sub UpdateTextBoxes()
 
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     m_DisableMaxMinLimits = True
     
     'Set max/min values of the input shadow/highlight boxes to their max possible values.  This will prevent the current limits
@@ -739,7 +739,7 @@ Private Sub UpdateTextBoxes()
     FixScrollBars
     
     'Reinstate automatic preview updates
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
 
 End Sub
 
@@ -747,7 +747,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
 
     If cmdBar.PreviewsAllowed Then
     
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
         
         'Toggle the other command button (as only one can be active at any time)
         If (Index = 0) Then
@@ -756,7 +756,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
             cmdColorSelect(0).Value = False
         End If
         
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
     
     End If
 
@@ -794,7 +794,7 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     If (((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2)) Then
     
         'Disable automatic preview updates
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
         
         Dim newTUDValue As Double
         
@@ -835,7 +835,7 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
         End Select
         
         'Re-enable preview updates, and refresh the screen now
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         UpdatePreview
         
     'Left mouse button is not down
@@ -889,7 +889,7 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
     
         'Disable automatic preview updates
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
         
         Dim newTUDValue As Double
         
@@ -927,7 +927,7 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
         End Select
         
         'Re-enable preview updates, and refresh the screen now
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         UpdatePreview
         
     'Left mouse button is not down
@@ -995,7 +995,7 @@ Private Sub csHighlight_ColorChanged()
     
         'Disable automatic preview updates until our calculations are done.  (If we don't do this, we get infinite recursion from
         ' the updatePreview function attempting to set our color to match the new RGB values.)
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
         r = Colors.ExtractRed(csHighlight.Color)
@@ -1019,7 +1019,7 @@ Private Sub csHighlight_ColorChanged()
         tudLevels(2) = m_LevelValues(m_curChannel, 2)
         
         'Re-enable automatic preview updates
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         
         'Redraw the preview
         UpdatePreview
@@ -1032,7 +1032,7 @@ Private Sub csShadow_ColorChanged()
 
     If cmdBar.PreviewsAllowed Then
     
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
         r = Colors.ExtractRed(csShadow.Color)
@@ -1055,7 +1055,7 @@ Private Sub csShadow_ColorChanged()
         'Update the active text box to match
         tudLevels(0) = m_LevelValues(m_curChannel, 0)
         
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         
         'Redraw the preview
         UpdatePreview
@@ -1085,7 +1085,7 @@ End Sub
 Private Sub Form_Load()
 
     'Prevent automatic preview refreshes until we have finished initializing the dialog
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -1169,7 +1169,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 
 End Sub
@@ -1361,7 +1361,7 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
     
     If cmdBar.PreviewsAllowed And PDMain.IsProgramRunning() Then
         
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
         
         'Erase the picture boxes
         picInputArrows.Picture = LoadPicture(vbNullString)
@@ -1508,7 +1508,7 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         
         csHighlight.Color = RGB(r, g, b)
         
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         
         'Actually render the levels effect
         If alsoUpdateEffect Then MapImageLevels GetLevelsParamString(), True, pdFxPreview

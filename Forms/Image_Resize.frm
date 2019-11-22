@@ -477,7 +477,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             
             'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
             ' for a fast resize.)
-            tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, False
+            tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
             
         'Bilinear sampling
         ElseIf (resampleMethod = pdrc_BilinearNormal) Then

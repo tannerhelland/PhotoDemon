@@ -549,7 +549,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
     newLayerID = PDImages.GetActiveImage.CreateBlankLayer(dLayerIndex)
-            
+    
     'Ask the new layer to copy the contents of the layer we are duplicating
     PDImages.GetActiveImage.GetLayerByID(newLayerID).CopyExistingLayer PDImages.GetActiveImage.GetLayerByID(dupedLayerID)
     

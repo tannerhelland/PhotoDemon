@@ -964,7 +964,7 @@ End Function
 Private Sub Form_Load()
     
     'Suspend previews while we get the form set up
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Set up the grayscale options combo box
     cboMethod.SetAutomaticRedraws False
@@ -996,7 +996,7 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
     
     'Draw the initial preview
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

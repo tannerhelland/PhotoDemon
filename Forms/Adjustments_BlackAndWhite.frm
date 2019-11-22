@@ -169,10 +169,10 @@ End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
 Private Sub chkAutoThreshold_Click()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     If chkAutoThreshold.Value Then sltThreshold.Value = CalculateOptimalThreshold()
     sltThreshold.Enabled = Not chkAutoThreshold.Value
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -221,7 +221,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the dither combobox
     Palettes.PopulateDitheringDropdown cboDither
@@ -233,7 +233,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

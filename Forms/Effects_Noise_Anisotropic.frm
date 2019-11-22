@@ -501,7 +501,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsDirection.AddItem "4-way cardinal", 0
     btsDirection.AddItem "4-way ordinal", 1
@@ -516,7 +516,7 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

@@ -336,7 +336,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -351,7 +351,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

@@ -382,8 +382,12 @@ Begin VB.Form FormMain
          Index           =   18
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "Compare..."
          Index           =   19
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   20
          Begin VB.Menu MnuMetadata 
             Caption         =   "Edit metadata..."
             Index           =   0
@@ -677,7 +681,7 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuLayerSplit 
-            Caption         =   "Other open images into this image (as layers)"
+            Caption         =   "Other open images into this image (as layers)..."
             Index           =   3
          End
       End
@@ -3333,6 +3337,8 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 18
             'separator
         Case 19
+            Menus.ProcessDefaultAction_ByName "image_compare"
+        Case 20
             'Metadata top-level
     End Select
 

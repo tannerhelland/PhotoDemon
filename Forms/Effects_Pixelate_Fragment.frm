@@ -257,7 +257,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews until the dialog has been fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsOpacity.AddItem "auto", 0
     btsOpacity.AddItem "manual", 1
@@ -266,7 +266,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 
 End Sub

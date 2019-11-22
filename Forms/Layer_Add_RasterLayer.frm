@@ -216,7 +216,7 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     With cParams
         .AddParam "targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex
-        .AddParam "layertype", PDL_IMAGE
+        .AddParam "layertype", PDL_Image
         
         'Retrieve the layer type from the active radio button
         Dim newLayerType As Long, i As Long
@@ -237,4 +237,3 @@ Private Function GetLocalParamString() As String
     GetLocalParamString = cParams.GetParamString()
     
 End Function
-

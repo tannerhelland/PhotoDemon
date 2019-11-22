@@ -497,7 +497,7 @@ Friend Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY
 End Function
 
 'Make a copy of an existing DIB
-Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional ByVal useHQStretching As Boolean = True) As Boolean
+Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional ByVal resizeModeIfNecessary As GP_InterpolationMode = GP_IM_HighQualityBicubic) As Boolean
     
     CreateFromExistingDIB = False
     
@@ -553,9 +553,7 @@ Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 Me.ResetDIB 0
             End If
             
-            Dim resizeMode As GP_InterpolationMode
-            If useHQStretching Then resizeMode = GP_IM_HighQualityBicubic Else resizeMode = GP_IM_NearestNeighbor
-            GDI_Plus.GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeMode
+            GDI_Plus.GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeModeIfNecessary
                 
             'Note that GDI+ *always* paints images with pre-multiplied alpha.  If our source image did *not* have premultiplied alpha,
             ' this will result in a mismatch.  (TODO: make a firm decision on whether we handle that here, or if performance

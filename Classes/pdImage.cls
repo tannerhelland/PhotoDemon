@@ -570,19 +570,19 @@ End Function
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
-Friend Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
+Friend Function GetLayerByIndex(ByVal layerIndex As Long, Optional ByVal forceToValidIndex As Boolean = True) As pdLayer
     
     'As a failsafe, validate the incoming layer index
-    If (layerIndex > UBound(imgLayers)) Then
+    If (layerIndex > UBound(imgLayers)) And forceToValidIndex Then
         layerIndex = UBound(imgLayers)
         Debug.Print "WARNING! Invalid layerIndex requested (" & layerIndex & ":" & UBound(imgLayers) & ")"
     End If
     
-    If (layerIndex < 0) Then layerIndex = 0
+    If (layerIndex < 0) And forceToValidIndex Then layerIndex = 0
     
     'Return the requested layer.  Note that by design, we allow the target layer to be returned even if it
     ' does not exist.
-    Set GetLayerByIndex = imgLayers(layerIndex)
+    If (layerIndex >= 0) And (layerIndex <= UBound(imgLayers)) Then Set GetLayerByIndex = imgLayers(layerIndex)
     
 End Function
 

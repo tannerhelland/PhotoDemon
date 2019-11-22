@@ -343,9 +343,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -372,10 +372,10 @@ Private Function GetFilterParamString() As String
 End Function
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

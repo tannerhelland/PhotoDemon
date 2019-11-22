@@ -368,7 +368,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsMethod.AddItem "basic", 0
     btsMethod.AddItem "advanced", 1
@@ -393,7 +393,7 @@ Private Sub Form_Load()
     sldTempBasic.GradientColorMiddle = RGB(r, g, b)
     
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 
 End Sub

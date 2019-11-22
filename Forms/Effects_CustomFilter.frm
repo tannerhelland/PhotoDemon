@@ -474,9 +474,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -490,7 +490,7 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then
         
         'Disable additional previews (as we will be changing text box values)
-        cmdBar.MarkPreviewStatus False
+        cmdBar.SetPreviewStatus False
 
         'If normalization has been requested, apply it before updating the preview
         tudDivisor.Enabled = Not chkNormalize.Value
@@ -525,7 +525,7 @@ Private Sub UpdatePreview()
         Filters_Area.ApplyConvolutionFilter_XML GetLocalParamString(), True, pdFxPreview
     
         'Reenable previews
-        cmdBar.MarkPreviewStatus True
+        cmdBar.SetPreviewStatus True
         
     End If
     

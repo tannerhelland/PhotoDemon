@@ -375,7 +375,7 @@ End Sub
 Private Sub Form_Load()
 
     'Suspend previews while we initialize all the controls
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
     Dim iWidth As Long, iHeight As Long
@@ -400,7 +400,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

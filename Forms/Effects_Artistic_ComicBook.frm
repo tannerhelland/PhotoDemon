@@ -226,7 +226,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the button strip
     btsStrength.AddItem "low", 0
@@ -236,7 +236,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

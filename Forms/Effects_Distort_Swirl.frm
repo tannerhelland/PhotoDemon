@@ -441,7 +441,7 @@ End Sub
 Private Sub Form_Load()
     
     'Suspend previews until the dialog has fully loaded
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -450,7 +450,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -460,10 +460,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

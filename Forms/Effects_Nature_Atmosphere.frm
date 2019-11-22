@@ -236,7 +236,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsStyle.AddItem "global", 0
     btsStyle.AddItem "local", 1
@@ -245,7 +245,7 @@ Private Sub Form_Load()
     Interface.PopulateBlendModeDropDown cboBlendMode, BM_Overlay
     
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

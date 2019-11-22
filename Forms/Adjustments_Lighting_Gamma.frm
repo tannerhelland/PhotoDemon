@@ -310,9 +310,9 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
 End Sub
 
 Private Sub Form_Load()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     m_UserChange = True
     UpdatePreview
 End Sub

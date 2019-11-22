@@ -43,8 +43,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'tmpDIB.createFromExistingDIB PDImages.GetActiveImage.mainDIB
     
     'Point an array at the DIB data
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
     PrepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     

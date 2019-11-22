@@ -239,12 +239,13 @@ Public Sub InitializeMenus()
     AddMenuItem "Merge visible layers", "image_mergevisible", 2, 16, , "generic_visible"
     AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
     AddMenuItem "-", "0", 2, 18
-    AddMenuItem "Metadata", "image_metadata", 2, 19
-        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 19, 0, "image_metadata"
-        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 19, 1
-        AddMenuItem "-", "-", 2, 19, 2
-        AddMenuItem "Count unique colors", "image_countcolors", 2, 19, 3
-        AddMenuItem "Map photo location...", "image_maplocation", 2, 19, 4, "image_maplocation"
+    AddMenuItem "Compare...", "image_compare", 2, 19
+    AddMenuItem "Metadata", "image_metadata", 2, 20
+        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 20, 0, "image_metadata"
+        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 20, 1
+        AddMenuItem "-", "-", 2, 20, 2
+        AddMenuItem "Count unique colors", "image_countcolors", 2, 20, 3
+        AddMenuItem "Map photo location...", "image_maplocation", 2, 20, 4, "image_maplocation"
     
     'Layer menu
     AddMenuItem "&Layer", "layer_top", 3
@@ -315,7 +316,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Current layer into standalone image", "layer_splitlayertoimage", 3, 15, 0
         AddMenuItem "All layers into standalone images", "layer_splitalllayerstoimages", 3, 15, 1
         AddMenuItem "-", "-", 3, 15, 2
-        AddMenuItem "Other open images into this image (as layers)", "layer_splitimagestolayers", 3, 15, 3
+        AddMenuItem "Other open images into this image (as layers)...", "layer_splitimagestolayers", 3, 15, 3
     
     'Select Menu
     AddMenuItem "&Select", "select_top", 4
@@ -1730,7 +1731,10 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
             
         Case "image_flatten"
             Process "Flatten image", True
-            
+        
+        Case "image_compare"
+            Process "Compare images", True
+        
         Case "image_metadata"
             Case "image_editmetadata"
                 Process "Edit metadata", True
@@ -2175,12 +2179,6 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
             Case "effects_zoomblur"
                 Process "Zoom blur", True
                 
-            Case "effects_kuwahara"
-                Process "Kuwahara filter", True
-                
-            Case "effects_snn"
-                Process "Symmetric nearest-neighbor", True
-                
         Case "effects_distort"
             Case "effects_fixlensdistort"
                 Process "Correct lens distortion", True
@@ -2290,6 +2288,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_median"
                 Process "Median", True
+            
+            Case "effects_snn"
+                Process "Symmetric nearest-neighbor", True
                 
         Case "effects_pixelate"
             Case "effects_colorhalftone"
@@ -2327,6 +2328,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_diffuse"
                 Process "Diffuse", True
+            
+            Case "effects_kuwahara"
+                Process "Kuwahara filter", True
                 
             Case "effects_outline"
                 Process "Outline", True

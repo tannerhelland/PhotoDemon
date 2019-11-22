@@ -201,13 +201,13 @@ End Sub
 Private Sub Form_Load()
 
     'Suspend previews while we initialize controls
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
         
     'Apply translations and themes
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

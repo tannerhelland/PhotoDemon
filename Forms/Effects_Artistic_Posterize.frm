@@ -159,7 +159,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Use the palette module to populate our available dithering options
     Palettes.PopulateDitheringDropdown cboDither
@@ -171,7 +171,7 @@ Private Sub Form_Load()
     btsAdaptiveColoring.ListIndex = 0
     
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

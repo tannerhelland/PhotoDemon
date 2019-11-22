@@ -223,7 +223,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsStyle.AddItem "constant", 0
     btsStyle.AddItem "gaussian", 1
@@ -231,7 +231,7 @@ Private Sub Form_Load()
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

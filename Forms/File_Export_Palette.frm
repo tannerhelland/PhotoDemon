@@ -206,7 +206,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsPalette.AddItem "current palette", 0
     btsPalette.AddItem "original embedded palette", 1
@@ -221,7 +221,7 @@ Private Sub Form_Load()
     btsTargetFile.AssignTooltip "Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the ""append"" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified."
     btsTargetFile.ListIndex = 0
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     
 End Sub
 
@@ -232,7 +232,7 @@ End Sub
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing, Optional ByVal palFormat As PD_PaletteFormat = pdpf_AdobeSwatchExchange, Optional ByRef dstFilename As String = vbNullString)
 
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_UserDialogAnswer = vbCancel
@@ -273,7 +273,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing, Optional ByV
     
     'Reflow the available interface options and update the preview
     ReflowInterface
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview True
     
     'Apply translations and visual themes

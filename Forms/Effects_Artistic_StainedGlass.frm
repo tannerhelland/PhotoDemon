@@ -513,7 +513,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Provide with user with several color sampling options
     cboColorSampling.Clear
@@ -536,7 +536,7 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

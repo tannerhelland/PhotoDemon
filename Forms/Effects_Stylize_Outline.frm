@@ -285,7 +285,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsEdgeType.AddItem "alpha", 0
     btsEdgeType.AddItem "color", 1
@@ -294,7 +294,7 @@ Private Sub Form_Load()
     
     ApplyThemeAndTranslations Me
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

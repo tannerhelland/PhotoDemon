@@ -591,7 +591,7 @@ Private Sub Form_Load()
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'Disable all previews while we initialize the dialog
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -638,7 +638,7 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     RedrawPreviewBox
     UpdatePreview
     

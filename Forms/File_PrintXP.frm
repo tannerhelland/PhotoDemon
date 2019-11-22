@@ -556,7 +556,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional forceWhite
     'Normally this will draw a preview of PDImages.GetActiveImage.containingForm's relevant image.  However, another picture source can be specified.
     If srcDIB.GetDIBColorDepth = 32 Then
         Set tmpDIB = New pdDIB
-        tmpDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight, True
+        tmpDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight
         If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
         tmpDIB.RenderToPictureBox dstPicture
     Else

@@ -577,7 +577,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Per convention, monochrome mode is handled via a separate checkbox.  This is also an easier solution for us, as
     ' it's difficult to apply changes to an imaginary "gray channel" (we'd have to divvy up any "gray channel"
@@ -605,7 +605,7 @@ Private Sub Form_Load()
     chkLuminance.Enabled = Not chkMonochrome.Value
     
     'Display the previewed effect in the neighboring window
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

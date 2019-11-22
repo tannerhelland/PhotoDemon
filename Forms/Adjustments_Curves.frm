@@ -555,7 +555,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the form has finished initializing
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -631,7 +631,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

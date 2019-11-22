@@ -467,6 +467,12 @@ Public Function LoWord(ByRef dw As Long) As Integer
    End If
 End Function
 
+'Log variants
+Public Function Log10(ByVal srcValue As Double) As Double
+    Const INV_LOG_OF_10 As Double = 1# / 2.30258509     'Ln(10) = 2.30258509
+    Log10 = Log(srcValue) * INV_LOG_OF_10
+End Function
+
 'Max/min functions
 Public Function Max2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
     If (l1 > l2) Then Max2Int = l1 Else Max2Int = l2

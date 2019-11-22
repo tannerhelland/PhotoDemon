@@ -301,9 +301,9 @@ Private Sub cpShadow_ColorChanged()
 End Sub
 
 Private Sub Form_Load()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

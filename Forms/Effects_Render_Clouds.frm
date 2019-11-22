@@ -300,7 +300,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate the blend mode drop-down
     Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
@@ -320,7 +320,7 @@ Private Sub Form_Load()
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

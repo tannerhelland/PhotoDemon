@@ -481,7 +481,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsShape.AddItem "fit to image", 0
     btsShape.AddItem "circular", 1
@@ -490,7 +490,7 @@ Private Sub Form_Load()
     UpdateShapeVisibility
     
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -506,10 +506,10 @@ End Sub
 
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

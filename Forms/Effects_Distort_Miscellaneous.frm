@@ -407,7 +407,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we populate various dialog controls
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Populate a list of available distort operations
     lstDistorts.SetAutomaticRedraws False
@@ -429,7 +429,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

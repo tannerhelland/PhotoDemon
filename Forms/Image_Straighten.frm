@@ -331,7 +331,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Set the dialog caption to match the current resize operation (resize image or resize single layer)
     Select Case m_StraightenTarget
@@ -417,7 +417,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

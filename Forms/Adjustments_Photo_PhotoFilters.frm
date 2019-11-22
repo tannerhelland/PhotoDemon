@@ -173,7 +173,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews while we initialize everything
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Initialize a custom font object for names
     Set m_TitleFont = New pdFont
@@ -256,7 +256,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

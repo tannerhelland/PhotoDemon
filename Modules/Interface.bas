@@ -1328,7 +1328,7 @@ Public Sub ReleaseFormTheming(ByRef srcForm As Form)
 End Sub
 
 'Given a pdImage object, generate an appropriate caption for the main PhotoDemon window.
-Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appendPDInfo As Boolean = True) As String
+Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appendPDInfo As Boolean = True, Optional ByVal doNotAppendImageFormat As Boolean = False) As String
 
     Dim captionBase As String
     Dim appendFileFormat As Boolean: appendFileFormat = False
@@ -1339,11 +1339,11 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
         ' but better safe than sorry!
         If (Not srcImage.ImgStorage Is Nothing) Then
             
-            If (Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0) Then
+            If (LenB(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0) Then
             
                 'This image has a filename!  Next, check the user's preference for long or short window captions
                 
-                'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
+                'The user prefers short captions.  Use just the filename and extension (no folders) as the base.
                 If (UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0) = 0) Then
                     captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                     appendFileFormat = True
@@ -1351,7 +1351,7 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
                 
                     'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
                     ' and use just the filename.
-                    If (Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
+                    If (LenB(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
                         captionBase = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
                     Else
                         captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
@@ -1366,7 +1366,7 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
             End If
         
             'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
-            If appendFileFormat And (Len(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
+            If appendFileFormat And (Not doNotAppendImageFormat) And (LenB(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
                 captionBase = captionBase & " [" & UCase$(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
             End If
         
@@ -1428,6 +1428,11 @@ Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
         Next i
     End If
     
+    'Suspend any system-wide cursors, as necessary
+    Dim cursorBackup As MousePointerConstants
+    cursorBackup = Screen.MousePointer
+    Screen.MousePointer = vbDefault
+    
     Load dialog_MsgBox
     If dialog_MsgBox.ShowDialog(newMessage, pButtons, newTitle) Then
         PDMsgBox = dialog_MsgBox.DialogResult
@@ -1436,6 +1441,9 @@ Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
     Else
         PDMsgBox = MsgBox(newMessage, pButtons, newTitle)
     End If
+    
+    'Restore cursor before exiting
+    Screen.MousePointer = cursorBackup
     
     Unload dialog_MsgBox
     Set dialog_MsgBox = Nothing

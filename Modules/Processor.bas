@@ -1592,15 +1592,6 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormZoomBlur Else FormZoomBlur.ApplyZoomBlur processParameters
         Process_EffectsMenu = True
         
-    'Miscellaneous blurs
-    ElseIf Strings.StringsEqual(processID, "Kuwahara filter", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.KuwaharaFilter processParameters
-        Process_EffectsMenu = True
-        
-    ElseIf Strings.StringsEqual(processID, "Symmetric nearest-neighbor", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
-        Process_EffectsMenu = True
-        
     'TODO: Grid blur (and previously, chroma blur) lived here.  Chroma blur has been removed because I'm going to
     ' re-implement it in LAB space.  Grid blur still exists but is not accessible to the user anywhere; it is going
     ' to be moved to an eventual texture menu, and I don't want to forget about it.
@@ -1757,6 +1748,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then FormMedian.ShowMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Symmetric nearest-neighbor", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSNN Else FormSNN.ApplySymmetricNearestNeighbor processParameters
+        Process_EffectsMenu = True
+        
     'Pixelate filters
     ElseIf Strings.StringsEqual(processID, "Color halftone", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormColorHalftone Else FormColorHalftone.ColorHalftoneFilter processParameters
@@ -1803,6 +1798,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
                 
     ElseIf Strings.StringsEqual(processID, "Diffuse", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormDiffuse Else FormDiffuse.DiffuseCustom processParameters
+        Process_EffectsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Kuwahara filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormKuwahara Else FormKuwahara.KuwaharaFilter processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Outline", True) Then
@@ -2102,6 +2101,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'Flatten image
     ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
+        Process_ImageMenu = True
+    
+    'Compare two images/layers
+    ElseIf Strings.StringsEqual(processID, "Compare images", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormImageCompare Else FormImageCompare.CompareImages processParameters
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Edit metadata", True) Then

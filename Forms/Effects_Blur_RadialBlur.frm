@@ -236,7 +236,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     btsRender.AddItem "speed", 0
     btsRender.AddItem "accuracy", 1
@@ -244,7 +244,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

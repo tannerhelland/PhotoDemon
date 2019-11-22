@@ -540,7 +540,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the form has been fully initialized
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     Set m_Randomize = New pdRandomize
     m_Randomize.SetSeed_AutomaticAndRandom
@@ -550,7 +550,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -560,10 +560,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     sldXCenter.Value = xRatio
     sldYCenter.Value = yRatio
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 

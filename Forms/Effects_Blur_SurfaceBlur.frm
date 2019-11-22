@@ -320,7 +320,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Apply button strip captions
     btsArea.AddItem "smooth areas", 0
@@ -334,7 +334,7 @@ Private Sub Form_Load()
     'Apply visual themes
     ApplyThemeAndTranslations Me
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

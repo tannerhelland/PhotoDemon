@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1500</langversion>
+<langversion>7.2.1505</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1671,6 +1671,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Compare images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Edit metadata</original>
 <translation>编辑元数据</translation>
 </phrase>
@@ -2221,16 +2226,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Kuwahara filter</original>
-<translation>桑原过滤器</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>对称近邻</translation>
-</phrase>
-
-<phrase>
 <original>Correct lens distortion</original>
 <translation>矫正畸变</translation>
 </phrase>
@@ -2406,6 +2401,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>对称近邻</translation>
+</phrase>
+
+<phrase>
 <original>Color halftone</original>
 <translation>彩色半色调</translation>
 </phrase>
@@ -2458,6 +2458,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Diffuse</original>
 <translation>弥漫性</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>桑原过滤器</translation>
 </phrase>
 
 <phrase>
@@ -2565,7 +2570,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 255 phrases. 29 were duplicates of existing phrases, so only 226 new phrases were written to file. -->
+<!-- Menus.bas contains 256 phrases. 29 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -4671,6 +4676,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPNGChunk.cls-->
 
+<!-- BEGIN text for pdPoissonDisc.cls -->
+
+<!-- pdPoissonDisc.cls contains 0 phrases. -->
+
+<!-- END text for pdPoissonDisc.cls-->
+
 <!-- BEGIN text for pdPopupMenu.cls -->
 
 <!-- pdPopupMenu.cls contains 0 phrases. -->
@@ -6058,6 +6069,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Compare</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Metadata</original>
 <translation>元数据</translation>
 </phrase>
@@ -6473,6 +6489,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Kuwahara</original>
+<translation>Kuwahara</translation>
+</phrase>
+
+<phrase>
 <original>Transform</original>
 <translation>转换</translation>
 </phrase>
@@ -6799,7 +6820,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 355 phrases. 161 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
+<!-- MainWindow.frm contains 356 phrases. 160 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9673,16 +9694,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Blur_Kuwahara.frm (FormKuwahara) -->
 
 <phrase>
-<original>Kuwahara</original>
-<translation>Kuwahara</translation>
-</phrase>
-
-<phrase>
 <original>Applying Kuwahara filter</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_Kuwahara.frm-->
 
@@ -13210,6 +13226,92 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for Image_CanvasSize.frm-->
 
+<!-- BEGIN text for Image_Compare.frm (FormImageCompare) -->
+
+<phrase>
+<original>resize images as necessary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>base image and layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>comparison image and layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compare using Lab color space</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate difference map as a new layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Analyzing images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>difference between %1 and %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>infinite</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lab</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Peak signal-to-noise ratio (PSNR) between these images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>L*</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>a*</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>b*</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These images are identical.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>As a rough estimate, these images are %1% similar.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image comparison</original>
+<translation></translation>
+</phrase>
+
+<!-- Image_Compare.frm contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
+<!-- END text for Image_Compare.frm-->
+
 <!-- BEGIN text for Image_ContentAwareResize.frm (FormResizeContentAware) -->
 
 <phrase>
@@ -16234,18 +16336,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPoissonDisc.cls -->
-
-<!-- pdPoissonDisc.cls contains 0 phrases. -->
-
-<!-- END text for pdPoissonDisc.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2708</phrasecount>
+<phrasecount>2726</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2292 are duplicates, so only 2708 unique phrases have been written to file. -->
-<!-- These 2708 phrases contain approximately 12678 total words. -->
+<!-- As of this build, PhotoDemon contains 5032 phrases. -->
+<!-- 2306 are duplicates, so only 2726 unique phrases have been written to file. -->
+<!-- These 2726 phrases contain approximately 12733 total words. -->
 
 </pdData>

@@ -343,14 +343,14 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'pdRandomize is used for all random number generation in PD
     Set m_Random = New pdRandomize
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

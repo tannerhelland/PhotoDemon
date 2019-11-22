@@ -565,7 +565,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'General panel settings
     sldCompression.Value = sldCompression.NotchValueCustom
@@ -593,7 +593,7 @@ Private Sub cmdBar_ResetClick()
     'Metadata settings
     mtdManager.Reset
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

@@ -190,7 +190,7 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
             
         'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
         If previewTarget.ViewportFitFullImage Then
-            workingDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight, True
+            workingDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight
             
         'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
         Else
@@ -453,7 +453,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
                 If previewTarget.ViewportFitFullImage Then
-                    workingDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB(), newWidth, newHeight, True
+                    workingDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB(), newWidth, newHeight
                     
                 'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
                 Else

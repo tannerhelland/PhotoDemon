@@ -524,7 +524,7 @@ End Sub
 Private Sub Form_Load()
     
     'Suspend previews until the list box has been populated
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Generate a list box with all the currently implemented edge detection algorithms
     lstEdgeOptions.SetAutomaticRedraws False
@@ -540,7 +540,7 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -551,7 +551,7 @@ End Sub
 
 Private Sub LstEdgeOptions_Click()
     
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     
     'Directionality is only supported by some transforms, so de/activate the directionality check boxes to match the
     ' capabilities of the selected transform
@@ -580,7 +580,7 @@ Private Sub LstEdgeOptions_Click()
     
     End Select
     
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
     
 End Sub

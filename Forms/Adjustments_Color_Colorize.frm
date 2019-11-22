@@ -193,9 +193,9 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Load()
-    cmdBar.MarkPreviewStatus False
+    cmdBar.SetPreviewStatus False
     ApplyThemeAndTranslations Me
-    cmdBar.MarkPreviewStatus True
+    cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub
 
