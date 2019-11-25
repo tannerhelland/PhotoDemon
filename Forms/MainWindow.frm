@@ -1891,32 +1891,12 @@ Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately
     
-    Dim cPoisson As pdPoissonDisc
-    Set cPoisson = New pdPoissonDisc
-    
-    Dim listPoints() As PointFloat, numPoints As Long
-    Dim ptGrid() As Long, gridWidth As Long, gridHeight As Long
-    cPoisson.GetDisc listPoints, numPoints, ptGrid, gridWidth, gridHeight, 20#, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
-    
-    'Draw all points?
-    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-    Set cSurface = New pd2DSurface
-    cSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.GetActiveDIB
-    
-    Set cBrush = New pd2DBrush
-    cBrush.SetBrushColor RGB(255, 0, 0)
-    
-    Dim i As Long
-    For i = 0 To numPoints - 1
-        PD2D.FillCircleF cSurface, cBrush, listPoints(i).x, listPoints(i).y, 3!
-    Next i
-    
-    Set cSurface = Nothing
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
-    
     'Filters_Scientific.InternalFFTTest
+    
+    'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
+    ' then uncomment these two lines:
+    'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+    'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest

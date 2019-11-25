@@ -1,6 +1,157 @@
 Attribute VB_Name = "Filters_Scientific"
 Option Explicit
 
+'Given a source image, return a map of image angles and magnitudes.  Magnitudes and angles
+' are both normalized to [0, 255] scales, and are calculated using Scharr's optimization of a
+' Sobel-Feldman operator.
+Public Sub GetImageGradAndMag(ByRef srcDIB As pdDIB, ByRef dstAngles() As Byte, ByRef dstMagnitudes() As Byte)
+    
+    'Gradients are calculated in the luminance domain only
+    Dim tmpGrayMap() As Byte
+    DIBs.GetDIBGrayscaleMap srcDIB, tmpGrayMap, False
+    
+    'To avoid the need for specialized edge-handling, we are now going to pad the byte array's
+    ' edges by 1-px each.
+    Dim padGrayMap() As Byte
+    Filters_ByteArray.PadByteArray tmpGrayMap, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, padGrayMap, 1, 1
+    
+    'We no longer need the original map; free it since we need to declare a few more image-sized arrays
+    Erase tmpGrayMap
+    
+    'Padded width/height dimensions (normally we would subtract one because they're used as loop boundaries,
+    ' but because we're performing edge-detection, we actually want to subtract *2* - which is the exact
+    ' size by which we padded the array, above, so no change is needed!)
+    Dim padWidth As Long, padHeight As Long
+    padWidth = srcDIB.GetDIBWidth
+    padHeight = srcDIB.GetDIBHeight
+    
+    'We are now going to perform a basic sobel convolution.  We need to do a horizontal and vertical pass;
+    ' data from the two passes is then combined to produce usable gradient and magnitude values.
+    
+    'Start by creating the necessary target arrays.  (Shorts are used because we need to store
+    ' positive/negative numbers.)
+    Dim hGrayMap() As Integer, vGrayMap() As Integer
+    ReDim hGrayMap(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Integer
+    
+    'Perform a horizontal Sobel on the the horizontal data
+    
+    'Individual values for the 9 required pixels.  We cache these and reuse them between
+    ' pixels to minimize array accesses (and improve cache behavior)
+    Dim gLU As Long, gU As Long, gRU As Long
+    Dim gL As Long, g As Long, gR As Long
+    Dim gLD As Long, gD As Long, gRD As Long
+    
+    Dim x As Long, y As Long, gSum As Long
+    For y = 1 To padHeight
+        
+        'Precalculate the first set of terms for this line
+        gLU = padGrayMap(0, y - 1)
+        gU = gLU
+        gRU = padGrayMap(1, y - 1)
+        gL = padGrayMap(0, y)
+        g = gL
+        gR = padGrayMap(1, y)
+        gLD = padGrayMap(0, y + 1)
+        gD = gLD
+        gRD = padGrayMap(1, y + 1)
+        
+    For x = 1 To padWidth
+        
+        'Reuse previous operators (faster than array hits)
+        gLU = gU
+        gU = gRU
+        gL = g
+        g = gR
+        gLD = gD
+        gD = gRD
+        
+        'Pull the next three pixel values into the right-side trackers
+        gRU = padGrayMap(x + 1, y - 1)
+        gR = padGrayMap(x + 1, y)
+        gRD = padGrayMap(x + 1, y + 1)
+        
+        'Use Scharr's optimization for better symmetry (https://en.wikipedia.org/wiki/Sobel_operator#Alternative_operators)
+        gSum = 3 * gLU + 10 * gL + 3 * gLD - 3 * gRU - 10 * gR - 3 * gRD
+        hGrayMap(x - 1, y - 1) = gSum
+        
+    Next x
+    Next y
+    
+    'Repeat the above steps on the vertical data
+    ReDim vGrayMap(0 To srcDIB.GetDIBWidth + 1, 0 To srcDIB.GetDIBHeight + 1) As Integer
+    
+    For y = 1 To padHeight
+    
+        gLU = padGrayMap(0, y - 1)
+        gU = gLU
+        gRU = padGrayMap(1, y - 1)
+        gL = padGrayMap(0, y)
+        g = gL
+        gR = padGrayMap(1, y)
+        gLD = padGrayMap(0, y + 1)
+        gD = gLD
+        gRD = padGrayMap(1, y + 1)
+        
+    For x = 1 To padWidth
+        
+        gLU = gU
+        gU = gRU
+        gL = g
+        g = gR
+        gLD = gD
+        gD = gRD
+        
+        gRU = padGrayMap(x + 1, y - 1)
+        gR = padGrayMap(x + 1, y)
+        gRD = padGrayMap(x + 1, y + 1)
+        
+        gSum = 3 * gLU + 10 * gU + 3 * gRU - 3 * gLD - 10 * gD - 3 * gRD
+        vGrayMap(x - 1, y - 1) = gSum
+        
+    Next x
+    Next y
+    
+    'With horizontal and vertical gradients calculated, we no longer need our source padded array;
+    ' release it to free up memory (as we'll be immediately allocating that memory for the destination
+    ' angle and magnitude arrays)
+    Erase padGrayMap
+    
+    'Prep target arrays
+    padWidth = srcDIB.GetDIBWidth - 1
+    padHeight = srcDIB.GetDIBHeight - 1
+    ReDim dstMagnitudes(0 To padWidth, 0 To padHeight) As Byte
+    ReDim dstAngles(0 To padWidth, 0 To padHeight) As Byte
+    
+    'Solve for magnitude and direction
+    Const ANG_NORMALIZE As Double = 255# / 6.28318530717959
+    Dim hTmp As Long, vTmp As Long, magTmp As Long
+    For y = 0 To padHeight
+    For x = 0 To padWidth
+        
+        'Retrieve horizontal and vertical gradients
+        hTmp = hGrayMap(x, y)
+        vTmp = vGrayMap(x, y)
+        
+        'Calculate absolute magnitude
+        magTmp = Sqr(hTmp * hTmp + vTmp * vTmp)
+        
+        'Hypothetically, the largest possible magnitude is sqrt(4080 * 4080 * 2), but this doesn't
+        ' occurs in practice (because it would require an absolute gradient in both the horizontal
+        ' *and* vertical directions simultaneously).  We want to recognize an absolute gradient in
+        ' *either* direction as a "maximum", with a little wiggle room; as such, we normalize
+        ' against the smaller sqrt(4080 * 4080) / 2 instead, with a failsafe check for overflow.
+        magTmp = magTmp \ 8
+        If (magTmp > 255) Then magTmp = 255
+        dstMagnitudes(x, y) = magTmp
+        
+        'Calculate a normalized [0, 255] angle (from the [-pi, pi] atan2 return)
+        dstAngles(x, y) = Int((PDMath.Atan2_Faster(vTmp, hTmp) + PI) * ANG_NORMALIZE + 0.5)
+        
+    Next x
+    Next y
+    
+End Sub
+
 'This sub is for TESTING PURPOSES ONLY!!
 Public Sub InternalFFTTest()
 

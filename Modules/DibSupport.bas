@@ -567,7 +567,8 @@ End Function
 'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.  The final DIB will be
 ' fully opaque, by design.  If you want to treat the grayscale values as alpha values, use the matching
 ' alpha-based function, below.
-' (Note: this function does not support progress bar reports, by design.)
+'
+'(Note: this function does not support progress bar reports, by design.)
 Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
     'Create the DIB
@@ -576,34 +577,26 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
     If dstDIB.CreateBlank(arrayWidth, arrayHeight, 32, 0, 255) Then
     
         'Point a local array at the DIB
-        Dim dstImageData() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, dstDIB
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        Dim dstImageData() As RGBQuad, tmpSA As SafeArray1D
         
-        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-        initX = 0
-        initY = 0
+        Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalX = dstDIB.GetDIBWidth - 1
         finalY = dstDIB.GetDIBHeight - 1
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long, gValue As Byte
-        qvDepth = dstDIB.GetDIBColorDepth \ 8
+        'Prep a LUT
+        Dim grayPal() As RGBQuad
+        Palettes.GetPalette_Grayscale grayPal
         
         'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            quickVal = x * qvDepth
-        For y = initY To finalY
-            gValue = srcGrayArray(x, y)
-            dstImageData(quickVal, y) = gValue
-            dstImageData(quickVal + 1, y) = gValue
-            dstImageData(quickVal + 2, y) = gValue
-        Next y
+        For y = 0 To finalY
+            dstDIB.WrapRGBQuadArrayAroundScanline dstImageData, tmpSA, y
+        For x = 0 To finalX
+            dstImageData(x) = grayPal(srcGrayArray(x, y))
         Next x
+        Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapRGBQuadArrayFromDIB dstImageData
         dstDIB.SetInitialAlphaPremultiplicationState True
         CreateDIBFromGrayscaleMap = True
         
@@ -1933,8 +1926,9 @@ Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdD
 
 End Function
 
-'Given a byte array, construct a 32-bpp DIB where each channel is set to the grayscale equivalent of the input array.  This is used
-' with selection to generate a transparent + grayscale copy of a single byte array.  Note that the DIB *must* already exist as a
+'Given a byte array, construct a 32-bpp DIB where each channel is set to the grayscale
+' equivalent of the input array.  This is used with selections to generate a transparent
+' + grayscale copy of a single byte array.  Note that the DIB *must* already exist as a
 ' 32-bpp DIB matching the size of the input table.
 '
 'Returns TRUE if successful, and srcDIB will be filled with a premultiplied 32-bpp DIB matching the input table

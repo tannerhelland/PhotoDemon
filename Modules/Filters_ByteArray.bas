@@ -429,6 +429,80 @@ Public Function NormalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     
 End Function
 
+'Pad the edges of a byte array by some arbitrary amount.  The padded edges will be filled with
+' clamped copies of boundary values, making this extremely helpful for area operators.
+Public Sub PadByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByRef dstArray() As Byte, Optional ByVal padHorizontal As Long = 0, Optional ByVal padVertical As Long = 0)
+    
+    'Ensure valid inputs
+    If (arrayWidth <= 0) Or (arrayHeight <= 0) Or (padHorizontal < 0) Or (padVertical < 0) Or ((padHorizontal = 0) And (padVertical = 0)) Then Exit Sub
+    
+    'Calculate new dimensions and prep the destination array
+    Dim newWidth As Long, newHeight As Long
+    newWidth = arrayWidth + padHorizontal * 2
+    newHeight = arrayHeight + padVertical * 2
+    
+    ReDim dstArray(0 To newWidth - 1, 0 To newHeight - 1) As Byte
+    
+    'Start with vertical stripes, as we can use CopyMemory to move the existing bytes into place
+    ' (and pad the vertical stripes while we're at it).
+    Dim yBound As Long
+    yBound = arrayHeight - 1
+    
+    Dim x As Long, y As Long
+    For y = 0 To newHeight - 1
+        If (y <= padVertical) Then
+            CopyMemoryStrict VarPtr(dstArray(padHorizontal, y)), VarPtr(srcArray(0, 0)), arrayWidth
+        ElseIf (y < arrayHeight + padVertical) Then
+            CopyMemoryStrict VarPtr(dstArray(padHorizontal, y)), VarPtr(srcArray(0, y - padVertical)), arrayWidth
+        Else
+            CopyMemoryStrict VarPtr(dstArray(padHorizontal, y)), VarPtr(srcArray(0, yBound)), arrayWidth
+        End If
+    Next y
+    
+    'We now need to pad horizontal bytes, if any.  Start with left padding.
+    For y = 0 To newHeight - 1
+        If (y <= padVertical) Then
+            VBHacks.FillMemory VarPtr(dstArray(0, y)), padHorizontal, srcArray(0, 0)
+        ElseIf (y < arrayHeight + padVertical) Then
+            VBHacks.FillMemory VarPtr(dstArray(0, y)), padHorizontal, srcArray(0, y - padVertical)
+        Else
+            VBHacks.FillMemory VarPtr(dstArray(0, y)), padHorizontal, srcArray(0, yBound)
+        End If
+    Next y
+    
+    'Repeat above steps, but for right padding.  (And pre-calculate some offsets for perf reasons.)
+    Dim xBound As Long, xOffset As Long
+    xBound = arrayWidth - 1
+    xOffset = padHorizontal + xBound
+    
+    For y = 0 To newHeight - 1
+        If (y <= padVertical) Then
+            VBHacks.FillMemory VarPtr(dstArray(xOffset, y)), padHorizontal, srcArray(xBound, 0)
+        ElseIf (y < arrayHeight + padVertical) Then
+            VBHacks.FillMemory VarPtr(dstArray(xOffset, y)), padHorizontal, srcArray(xBound, y - padVertical)
+        Else
+            VBHacks.FillMemory VarPtr(dstArray(xOffset, y)), padHorizontal, srcArray(xBound, yBound)
+        End If
+    Next y
+    
+End Sub
+
+'Sister function to PadByteArray(), above.  Make sure you pass identical values to both functions!
+Public Sub UnPadByteArray(ByRef dstArray() As Byte, ByVal dstArrayWidth As Long, ByVal dstArrayHeight As Long, ByRef srcArray() As Byte, Optional ByVal padHorizontal As Long = 0, Optional ByVal padVertical As Long = 0, Optional ByVal dstIsAlreadySized As Boolean = True)
+    
+    'Ensure valid inputs
+    If (dstArrayWidth <= 0) Or (dstArrayHeight <= 0) Or (padHorizontal < 0) Or (padVertical < 0) Or ((padHorizontal = 0) And (padVertical = 0)) Then Exit Sub
+    
+    'Prep the destination array and copy scanlines one-at-a-time
+    If (Not dstIsAlreadySized) Then ReDim dstArray(0 To dstArrayWidth - 1, 0 To dstArrayHeight - 1) As Byte
+    
+    Dim y As Long
+    For y = 0 To dstArrayHeight - 1
+        CopyMemoryStrict VarPtr(dstArray(0, y)), VarPtr(srcArray(padHorizontal, y + padVertical)), dstArrayWidth
+    Next y
+    
+End Sub
+
 'Add noise to a byte array.  noiseAmount is on the range [0, 255]; it will be auto-converted to [-255, 255] when applying changes
 ' to the image.
 Public Function AddNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal noiseAmount As Long) As Boolean
