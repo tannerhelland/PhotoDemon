@@ -101,17 +101,17 @@ Attribute VB_Exposed = False
 'Surface Blur Tool (formerly "Smart Blur")
 'Copyright 2013-2019 by Tanner Helland
 'Created: 17/January/13
-'Last updated: 27/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 25/November/19
+'Last update: performance improvements
 '
-'To my knowledge, this tool is the first of its kind in VB6 - an intelligent blur tool that selectively blurs
-' edges differently from smooth areas of an image.  The user can specify the threshold to use, as well as whether
-' to more strongly blur edges or smooth sections.
+'There are many different ways to implement a surface/selective blur tool.  At present, PD's operates as
+' a selective gaussian, with the underlying gaussian data serving as the guideline for edges vs smooth
+' regions.  (If a pixel from the source matches its blurred value, it's likely a smooth region.)
 '
-'The use of separable kernels helps this function remain swift, despite all the different things it's handling.
+'This is very fast, but not the most accurate way to handle a surface blur.  A better version could
+' use a separate edge detection map - and in fact, this may be a fix that I add in the near-future.
 '
-'Despite this, it's still quite slow in the IDE.  I STRONGLY recommend compiling the project before
-' applying any actions at a large radius.
+'Similarly, for *really* good edge handling, you could use the Noise > Bilateral Filter tool.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -159,9 +159,9 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
     gaussDIB.CreateFromExistingDIB workingDIB
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    initX = 0
+    initY = 0
+    finalX = (curDIBValues.Width - 1) * 4
     finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -202,93 +202,87 @@ Public Sub SurfaceBlurFilter(ByVal effectParams As String, Optional ByVal toPrev
         srcDIB.CreateFromExistingDIB workingDIB
         
         'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
-        Dim dstImageData() As Byte
-        EffectPrep.PrepImageData dstSA, toPreview, dstPic
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        Dim dstImageData() As Byte, dstSA1D As SafeArray1D
+        Dim srcImageData() As Byte, srcSA1D As SafeArray1D
+        Dim gaussImageData() As Byte, gaussSA1D As SafeArray1D
         
-        Dim srcImageData() As Byte
-        Dim srcSA As SafeArray2D
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-            
-        Dim gaussImageData() As Byte
-        Dim gaussSA As SafeArray2D
-        PrepSafeArray gaussSA, gaussDIB
-        CopyMemory ByVal VarPtrArray(gaussImageData()), VarPtr(gaussSA), 4
-                
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
-        qvDepth = curDIBValues.BytesPerPixel
+        If (Not toPreview) Then
+            Message "Applying surface blur..."
+            ProgressBars.SetProgBarMax finalY
+        End If
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
         progBarCheck = ProgressBars.FindBestProgBarValue()
             
-        If (Not toPreview) Then Message "Applying surface blur..."
-            
         Dim blendVal As Double
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = initX To finalX
-            quickVal = x * qvDepth
         For y = initY To finalY
             
-            'Retrieve the original image's pixels
-            r = srcImageData(quickVal + 2, y)
-            g = srcImageData(quickVal + 1, y)
-            b = srcImageData(quickVal, y)
+            'Wrap arrays around the relevant scanline in each image (source, gauss, dest)
+            workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, y
+            gaussDIB.WrapArrayAroundScanline gaussImageData, gaussSA1D, y
             
-            tDelta = (213 * r + 715 * g + 72 * b) \ 1000
+        For x = initX To finalX Step 4
+            
+            'Retrieve the original image's pixels and
+            b = srcImageData(x)
+            g = srcImageData(x + 1)
+            r = srcImageData(x + 2)
+            
+            tDelta = (218 * r + 732 * g + 74 * b) \ 1024
             
             'Now, retrieve the gaussian pixels
-            r2 = gaussImageData(quickVal + 2, y)
-            g2 = gaussImageData(quickVal + 1, y)
-            b2 = gaussImageData(quickVal, y)
+            b2 = gaussImageData(x)
+            g2 = gaussImageData(x + 1)
+            r2 = gaussImageData(x + 2)
             
             'Calculate a delta between the two
-            tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
-            If tDelta < 0 Then tDelta = -tDelta
+            tDelta = tDelta - ((218 * r2 + 732 * g2 + 74 * b2) \ 1024)
+            If (tDelta < 0) Then tDelta = -tDelta
             
             'If the delta is below the specified threshold, replace it with the blurred data.
             If smoothEdges Then
             
-                If tDelta > gThreshold Then
-                    If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), gaussImageData(quickVal + 2, y), blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), gaussImageData(quickVal + 1, y), blendVal)
-                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), gaussImageData(quickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), gaussImageData(quickVal + 3, y), blendVal)
+                If (tDelta > gThreshold) Then
+                    If (tDelta <> 0) Then blendVal = 1# - (gThreshold / tDelta) Else blendVal = 0#
+                    dstImageData(x) = BlendColors(srcImageData(x), gaussImageData(x), blendVal)
+                    dstImageData(x + 1) = BlendColors(srcImageData(x + 1), gaussImageData(x + 1), blendVal)
+                    dstImageData(x + 2) = BlendColors(srcImageData(x + 2), gaussImageData(x + 2), blendVal)
+                    dstImageData(x + 3) = BlendColors(srcImageData(x + 3), gaussImageData(x + 3), blendVal)
                 End If
             
             Else
             
-                If tDelta <= gThreshold Then
-                    If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), gaussImageData(quickVal + 2, y), blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), gaussImageData(quickVal + 1, y), blendVal)
-                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), gaussImageData(quickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), gaussImageData(quickVal + 3, y), blendVal)
+                If (tDelta <= gThreshold) Then
+                    If (gThreshold <> 0) Then blendVal = 1# - (tDelta / gThreshold) Else blendVal = 1#
+                    dstImageData(x) = BlendColors(srcImageData(x), gaussImageData(x), blendVal)
+                    dstImageData(x + 1) = BlendColors(srcImageData(x + 1), gaussImageData(x + 1), blendVal)
+                    dstImageData(x + 2) = BlendColors(srcImageData(x + 2), gaussImageData(x + 2), blendVal)
+                    dstImageData(x + 3) = BlendColors(srcImageData(x + 3), gaussImageData(x + 3), blendVal)
                 End If
         
             End If
             
-        Next y
-            If (Not toPreview) Then
-                If (x And progBarCheck) = 0 Then
-                    If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal x + progBarCalculation
-                End If
-            End If
         Next x
+            If (Not toPreview) Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal y + progBarCalculation
+                End If
+            End If
+        Next y
             
-        'With our work complete, release all arrays
-        CopyMemory ByVal VarPtrArray(gaussImageData), 0&, 4
-        Set gaussDIB = Nothing
+        'With our work complete, release all arrays and temporary image copies
+        gaussDIB.UnwrapArrayFromDIB gaussImageData
+        srcDIB.UnwrapArrayFromDIB srcImageData
+        workingDIB.UnwrapArrayFromDIB dstImageData
         
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Set gaussDIB = Nothing
+        Set srcDIB = Nothing
         
     End If
     
