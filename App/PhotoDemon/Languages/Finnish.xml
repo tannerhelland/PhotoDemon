@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3435</langversion>
+<langversion>6.8.3436</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2433,6 +2433,11 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 </phrase>
 
 <phrase>
+<original>Pointillize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Clouds</original>
 <translation></translation>
 </phrase>
@@ -2572,7 +2577,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <translation>Tyhjennä viimeaikaiset makroluettelossa</translation>
 </phrase>
 
-<!-- Menus.bas contains 256 phrases. 29 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6820,7 +6825,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Kieli vaihdettu.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 356 phrases. 160 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10898,11 +10903,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
-<original>Custom Diffuse</original>
-<translation>Custom Kupu</translation>
-</phrase>
-
-<phrase>
 <original>wrap edge values</original>
 <translation>kääri reuna-arvot</translation>
 </phrase>
@@ -10912,7 +10912,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Simuloidaan suuri kuva räjähdys</translation>
 </phrase>
 
-<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
@@ -16341,12 +16341,33 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2726</phrasecount>
+<phrasecount>2729</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5032 phrases. -->
-<!-- 2306 are duplicates, so only 2726 unique phrases have been written to file. -->
-<!-- These 2726 phrases contain approximately 12733 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12742 total words. -->
 
 </pdData>

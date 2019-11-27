@@ -73,6 +73,10 @@ Friend Function GetDisc(ByRef dstPoints() As PointFloat, ByRef dstNumPoints As L
     ReDim activePoints(0 To dstNumPoints - 1) As PointFloat
     Dim numActivePoints As Long
     
+    Dim maxWidth As Single, maxHeight As Single
+    maxWidth = srcWidth - 1!
+    maxHeight = srcHeight - 1!
+    
     'Next, we need to set up the grid.  Per Bridson's algorithm, the size of each cell should be
     ' r / sqrt(2).
     Dim cellSize As Long
@@ -152,7 +156,7 @@ Friend Function GetDisc(ByRef dstPoints() As PointFloat, ByRef dstNumPoints As L
             
             'First, test it against source image dimensions
             If (tmpPoint.x < 0) Or (tmpPoint.y < 0) Then GoTo TryAnotherPoint
-            If (tmpPoint.x > srcWidth) Or (tmpPoint.y > srcHeight) Then GoTo TryAnotherPoint
+            If (tmpPoint.x > maxWidth) Or (tmpPoint.y > maxHeight) Then GoTo TryAnotherPoint
             
             'Next, figure out where this points (hypothetical) grid index lies
             xGrd = Int(tmpPoint.x / cellSize)

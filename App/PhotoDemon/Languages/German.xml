@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1642</langversion>
+<langversion>7.2.1649</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1681,7 +1681,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Compare images</original>
-<translation></translation>
+<translation>Bilder vergleichen</translation>
 </phrase>
 
 <phrase>
@@ -2440,6 +2440,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Pointillize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Clouds</original>
 <translation>Wolken</translation>
 </phrase>
@@ -2579,7 +2584,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 256 phrases. 29 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6081,7 +6086,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Compare</original>
-<translation></translation>
+<translation>Vergleichen</translation>
 </phrase>
 
 <phrase>
@@ -6832,7 +6837,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 356 phrases. 160 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10910,11 +10915,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
-<original>Custom Diffuse</original>
-<translation>Diffus benutzerdefiniert</translation>
-</phrase>
-
-<phrase>
 <original>wrap edge values</original>
 <translation>Kantenwerte umwickeln</translation>
 </phrase>
@@ -10924,7 +10924,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Große Bildexplosion wird simuliert</translation>
 </phrase>
 
-<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
@@ -13241,82 +13241,82 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>resize images as necessary</original>
-<translation></translation>
+<translation>Bildgrößen ändern wie erforderlich</translation>
 </phrase>
 
 <phrase>
 <original>base image and layer</original>
-<translation></translation>
+<translation>Basisbild und Layer</translation>
 </phrase>
 
 <phrase>
 <original>comparison image and layer</original>
-<translation></translation>
+<translation>Vergleich von Bild und Layer</translation>
 </phrase>
 
 <phrase>
 <original>compare using Lab color space</original>
-<translation></translation>
+<translation>Vergleichen unter Verwendung des Lab-Farbraums</translation>
 </phrase>
 
 <phrase>
 <original>generate difference map as a new layer</original>
-<translation></translation>
+<translation>Differenz-Map als neuen Layer generieren</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing images</original>
-<translation></translation>
+<translation>Bilder werden analysiert</translation>
 </phrase>
 
 <phrase>
 <original>difference between %1 and %2</original>
-<translation></translation>
+<translation>Differenz zwischen %1 und %2</translation>
 </phrase>
 
 <phrase>
 <original>infinite</original>
-<translation></translation>
+<translation>Unendlich</translation>
 </phrase>
 
 <phrase>
 <original>Lab</original>
-<translation></translation>
+<translation>Lab</translation>
 </phrase>
 
 <phrase>
 <original>Peak signal-to-noise ratio (PSNR) between these images</original>
-<translation></translation>
+<translation>Spitzen-Signal-Rausch-Verhältnis (PSNR) zwischen diesen Bildern</translation>
 </phrase>
 
 <phrase>
 <original>L*</original>
-<translation></translation>
+<translation>L*</translation>
 </phrase>
 
 <phrase>
 <original>a*</original>
-<translation></translation>
+<translation>a*</translation>
 </phrase>
 
 <phrase>
 <original>b*</original>
-<translation></translation>
+<translation>b*</translation>
 </phrase>
 
 <phrase>
 <original>These images are identical.</original>
-<translation></translation>
+<translation>Diese Bilder sind identisch.</translation>
 </phrase>
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation></translation>
+<translation>Als grobe Schätzung, diese Bilder sind %1% ähnlich.</translation>
 </phrase>
 
 <phrase>
 <original>Image comparison</original>
-<translation></translation>
+<translation>Bildvergleich</translation>
 </phrase>
 
 <!-- Image_Compare.frm contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13664,12 +13664,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>Anpassung inklusive, falls erforderlich mit transparenten Rahmungen</translation>
+<translation>Anpassung inklusive, mit transparenten Rahmungen wie erforderlich</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>Anpassung exklusiv, falls erforderlich zuschneiden</translation>
+<translation>Anpassung exklusiv, und zuschneiden wie erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -14195,7 +14195,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Versionsnummer, falls erforderlich).</translation>
+<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Versionsnummer, wie erforderlich).</translation>
 </phrase>
 
 <phrase>
@@ -14225,7 +14225,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>Bild-Layer verschieben und in Größe ändern</translation>
+<translation>Bild-Layer verschieben und Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -16351,12 +16351,33 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2726</phrasecount>
+<phrasecount>2729</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5032 phrases. -->
-<!-- 2306 are duplicates, so only 2726 unique phrases have been written to file. -->
-<!-- These 2726 phrases contain approximately 12733 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12742 total words. -->
 
 </pdData>

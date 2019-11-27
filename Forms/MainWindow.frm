@@ -1281,6 +1281,10 @@ Begin VB.Form FormMain
             Caption         =   "Mosaic..."
             Index           =   4
          End
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Pointillize..."
+            Index           =   5
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Render"
@@ -2433,7 +2437,20 @@ Private Sub MnuLightShadow_Click(Index As Integer)
 End Sub
 
 Private Sub MnuPixelate_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuPixelate(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_colorhalftone"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_crystallize"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_fragment"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_mezzotint"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_mosaic"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_pointillize"
+    End Select
 End Sub
 
 Private Sub mnuRecentMacros_Click(Index As Integer)

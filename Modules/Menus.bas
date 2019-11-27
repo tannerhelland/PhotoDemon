@@ -473,6 +473,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Fragment...", "effects_fragment", 6, 7, 2
         AddMenuItem "Mezzotint...", "effects_mezzotint", 6, 7, 3
         AddMenuItem "Mosaic...", "effects_mosaic", 6, 7, 4
+        AddMenuItem "Pointillize...", "effects_pointillize", 6, 7, 5
     AddMenuItem "Render", "effects_render", 6, 8
         AddMenuItem "Clouds...", "effects_clouds", 6, 8, 0
         AddMenuItem "Fibers...", "effects_fibers", 6, 8, 1
@@ -2307,6 +2308,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_mosaic"
                 Process "Mosaic", True
+                
+            Case "effects_pointillize"
+                Process "Pointillize", True
         
         Case "effects_render"
             Case "effects_clouds"

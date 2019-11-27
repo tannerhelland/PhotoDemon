@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.452</langversion>
+<langversion>6.7.453</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -2437,6 +2437,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Pointillize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Clouds</original>
 <translation></translation>
 </phrase>
@@ -2576,7 +2581,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Lista recente macro Cancella</translation>
 </phrase>
 
-<!-- Menus.bas contains 256 phrases. 29 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6825,7 +6830,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 356 phrases. 160 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10903,11 +10908,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- BEGIN text for Effects_Stylize_Diffuse.frm (FormDiffuse) -->
 
 <phrase>
-<original>Custom Diffuse</original>
-<translation>Diffusione personalizzata</translation>
-</phrase>
-
-<phrase>
 <original>wrap edge values</original>
 <translation>avvolgi i valori del bordo</translation>
 </phrase>
@@ -10917,7 +10917,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Simula l'esplosione di una grande immagine</translation>
 </phrase>
 
-<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
@@ -16344,12 +16344,33 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2726</phrasecount>
+<phrasecount>2729</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5032 phrases. -->
-<!-- 2306 are duplicates, so only 2726 unique phrases have been written to file. -->
-<!-- These 2726 phrases contain approximately 12733 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12742 total words. -->
 
 </pdData>

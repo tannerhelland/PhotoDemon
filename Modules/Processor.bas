@@ -1773,6 +1773,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormMosaic Else FormMosaic.MosaicFilter processParameters
         Process_EffectsMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Pointillize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPointillize Else FormPointillize.Pointillize processParameters
+        Process_EffectsMenu = True
+        
     'Render filters
     ElseIf Strings.StringsEqual(processID, "Clouds", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormFxClouds Else FormFxClouds.FxRenderClouds processParameters
