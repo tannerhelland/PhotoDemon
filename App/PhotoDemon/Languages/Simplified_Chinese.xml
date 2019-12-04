@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1506</langversion>
+<langversion>7.2.1508</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2381,11 +2381,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Bilateral smoothing</original>
-<translation>双边滤波算法</translation>
-</phrase>
-
-<phrase>
 <original>Harmonic mean</original>
 <translation>调和平均值</translation>
 </phrase>
@@ -2575,7 +2570,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 30 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -4164,6 +4159,12 @@ Please enter a numeric value.</original>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
+
+<!-- BEGIN text for pdFxBilateral.cls -->
+
+<!-- pdFxBilateral.cls contains 0 phrases. -->
+
+<!-- END text for pdFxBilateral.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -6469,11 +6470,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Bilateral filter</original>
-<translation>双向滤波器</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>像素化</translation>
 </phrase>
@@ -6825,7 +6821,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 356 phrases. 161 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9760,37 +9756,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
-<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
-
-<phrase>
-<original>target</original>
-<translation>目标</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image in preparation for surface blur</original>
-<translation>在准备表面模糊分析图像</translation>
-</phrase>
-
-<phrase>
-<original>Applying surface blur</original>
-<translation>应用表面模糊</translation>
-</phrase>
-
-<phrase>
-<original>smooth areas</original>
-<translation>平滑区域</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>边缘</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_SurfaceBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_ZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
@@ -10546,26 +10511,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
-<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
-<original>spatial strength</original>
-<translation></translation>
+<original>Applying surface blur</original>
+<translation>应用表面模糊</translation>
 </phrase>
 
 <phrase>
-<original>color strength</original>
-<translation>色强度</translation>
+<original>Bilateral smoothing</original>
+<translation>双边滤波算法</translation>
 </phrase>
 
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>运用双边滤波</translation>
-</phrase>
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_BilateralFilter.frm-->
+<!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
@@ -10795,6 +10755,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Mosaic.frm-->
+
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
 
 <!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
 
@@ -16336,33 +16317,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
-
-<phrase>
-<original>background color and opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color variation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Splattering canvas with paint</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Pixelate_Pointillize.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2721</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5042 phrases. -->
-<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12742 total words. -->
+<!-- As of this build, PhotoDemon contains 5028 phrases. -->
+<!-- 2307 are duplicates, so only 2721 unique phrases have been written to file. -->
+<!-- These 2721 phrases contain approximately 12722 total words. -->
 
 </pdData>

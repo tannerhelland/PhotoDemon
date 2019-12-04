@@ -3,14 +3,11 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright 2001-2019 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 31/July/17
-'Last update: migrate the convolution filter functions to XML param strings
+'Last updated: 04/December/19
+'Last update: move recursive bilateral filter into a dedicated class (pdFxBilateral)
 '
-'Holder module for generalized area filters, including most of the project's convolution filters.
-'
-'The most interesting function is ConvolveDIB, which applies any arbitrary 5x5 convolution filter to any arbitrary DIB.  This function
-' is used internally for nearly all edge-detection functions, and other generic convolution effects.  (Note that some convolution
-' filters, like Gaussian Blur, have their own specialized, optimized implementations.)
+'Holder module for generalized area filters, including some experimental implementations
+' (which may not be exposed directly to users; see individual function notes for details).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

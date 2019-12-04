@@ -293,10 +293,16 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
 
 End Function
 
-'Convenience functions for wrapping an array around this DIB's bits.  You *must* call the Unwrap function prior to the array
-' falling out of scope, or VB will crash.
+'Convenience functions for wrapping an array around this DIB's bits.
+' You *must* call the Unwrap function prior to the array falling out of scope, or VB will crash.
 Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray2D)
     PrepInternalSafeArray srcSafeArray
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
+Friend Sub WrapArrayAroundDIB_1D(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray1D)
+    PrepInternalSafeArray_Scanline srcSafeArray, 0
+    srcSafeArray.cElements = m_dibStride * m_dibHeight
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 

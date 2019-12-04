@@ -1238,24 +1238,20 @@ Begin VB.Form FormMain
             Index           =   3
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Bilateral filter..."
+            Caption         =   "Harmonic mean..."
             Index           =   4
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Harmonic mean..."
+            Caption         =   "Mean shift..."
             Index           =   5
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Mean shift..."
+            Caption         =   "Median..."
             Index           =   6
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Median..."
-            Index           =   7
-         End
-         Begin VB.Menu MnuNoise 
             Caption         =   "Symmetric nearest-neighbor..."
-            Index           =   8
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3418,14 +3414,12 @@ Private Sub MnuNoise_Click(Index As Integer)
         Case 3
             Menus.ProcessDefaultAction_ByName "effects_anisotropic"
         Case 4
-            Menus.ProcessDefaultAction_ByName "effects_bilateral"
-        Case 5
             Menus.ProcessDefaultAction_ByName "effects_harmonicmean"
-        Case 6
+        Case 5
             Menus.ProcessDefaultAction_ByName "effects_meanshift"
-        Case 7
+        Case 6
             Menus.ProcessDefaultAction_ByName "effects_median"
-        Case 8
+        Case 7
             Menus.ProcessDefaultAction_ByName "effects_snn"
     End Select
 End Sub

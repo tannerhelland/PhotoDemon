@@ -57,25 +57,31 @@ Public Sub SetProgBarVal(ByVal pbVal As Double)
     
 End Sub
 
-'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to the progress bar
-' maximum divided by 20.  This is a nice compromise between responsive progress bar updates and extremely fast rendering.
-Public Function FindBestProgBarValue() As Long
+'We only want to update the UI's progress bar when necessary, so this function finds a power of two
+' closest to the current progress bar maximum divided by some arbitrary number (~20 works well).
+' This is a nice compromise between responsive progress bar updates and extremely fast UI rendering.
+Public Function FindBestProgBarValue(Optional ByVal customMaxValue As Double = 0#) As Long
 
-    'First, figure out what the range of this operation will be, based on the current progress bar maximum
+    'First, figure out what the range of this operation will be, based on the current progress bar
+    ' maximum or a user-supplied max value
     Dim progBarRange As Double
-    progBarRange = CDbl(ProgressBars.GetProgBarMax())
+    If (customMaxValue > 0#) Then
+        progBarRange = customMaxValue
+    Else
+        progBarRange = CDbl(ProgressBars.GetProgBarMax())
+    End If
     
-    'Divide that value by some arbitrary number; the number is how many times we want the progress bar to update during
-    ' the current process.  (e.g. a value of "10" means "try to update the progress bar ~10 times")  Larger numbers
-    ' mean more visual updates, at some minor cost to performance.
+    'Divide that value by some arbitrary number; the number is how many times we want the progress bar
+    ' to update during the current process.  (e.g. a value of "10" means "try to update the progress bar
+    ' ~10 times")  Larger numbers mean more visual updates, at some cost to performance.
     progBarRange = progBarRange / 18#
     
-    'Find the nearest power of two to that value, rounded down.  (We do this so that we can simply && the result on inner
-    ' pixel processing loops, which is faster than a % operation.)
+    'Find the nearest power of two to that value, rounded down.  (We do this so that we can simply && the
+    ' result on inner pixel processing loops, which is much faster than a % operation.)
     Const LOG_TWO As Double = 0.693147180559945
     
     Dim nearestP2 As Long
-    If (progBarRange > 0#) Then nearestP2 = Log(progBarRange) / LOG_TWO Else nearestP2 = 1
+    If (progBarRange > 0#) Then nearestP2 = Int(Log(progBarRange) / LOG_TWO + 0.5) Else nearestP2 = 1
     FindBestProgBarValue = (2 ^ nearestP2) - 1
     
 End Function

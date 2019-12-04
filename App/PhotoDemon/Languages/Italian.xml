@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.453</langversion>
+<langversion>6.7.455</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -2387,11 +2387,6 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Bilateral smoothing</original>
-<translation>Levigatura bilaterale</translation>
-</phrase>
-
-<phrase>
 <original>Harmonic mean</original>
 <translation>Media armonica</translation>
 </phrase>
@@ -2581,7 +2576,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Lista recente macro Cancella</translation>
 </phrase>
 
-<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 30 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -4168,6 +4163,12 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
+
+<!-- BEGIN text for pdFxBilateral.cls -->
+
+<!-- pdFxBilateral.cls contains 0 phrases. -->
+
+<!-- END text for pdFxBilateral.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -6473,11 +6474,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Bilateral filter</original>
-<translation>Filtro bilaterale</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pixelizzazione</translation>
 </phrase>
@@ -6830,7 +6826,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 356 phrases. 161 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9764,37 +9760,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
-<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
-
-<phrase>
-<original>target</original>
-<translation>bersaglio</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image in preparation for surface blur</original>
-<translation>Analizzando l'immagine in preparazione della sfocatura della superficie</translation>
-</phrase>
-
-<phrase>
-<original>Applying surface blur</original>
-<translation>Applicando sfocatura superficie</translation>
-</phrase>
-
-<phrase>
-<original>smooth areas</original>
-<translation>aree lisce</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>bordi</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_SurfaceBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_ZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
@@ -10550,26 +10515,21 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
-<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
-<original>spatial strength</original>
-<translation></translation>
+<original>Applying surface blur</original>
+<translation>Applicando sfocatura superficie</translation>
 </phrase>
 
 <phrase>
-<original>color strength</original>
-<translation>forza del colore</translation>
+<original>Bilateral smoothing</original>
+<translation>Levigatura bilaterale</translation>
 </phrase>
 
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>Applicazione della levigatura bilaterale</translation>
-</phrase>
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_BilateralFilter.frm-->
+<!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
@@ -10799,6 +10759,27 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Mosaic.frm-->
+
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
 
 <!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
 
@@ -16344,33 +16325,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
-
-<phrase>
-<original>background color and opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color variation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Splattering canvas with paint</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Pixelate_Pointillize.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2721</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5042 phrases. -->
-<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12742 total words. -->
+<!-- As of this build, PhotoDemon contains 5028 phrases. -->
+<!-- 2307 are duplicates, so only 2721 unique phrases have been written to file. -->
+<!-- These 2721 phrases contain approximately 12722 total words. -->
 
 </pdData>

@@ -73,6 +73,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Lemuel Cushing](https://github.com/LemuelCushing)
 * Leonid Blyakher
 * [Manuel Augusto Santos](http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1)
+* [Ming](http://ufoym.com/)
 * Mohammad Reza Karimi
 * [Nguyen Van Hùng](https://github.com/vhreal1302)
 * [Olaf Schmidt](http://www.vbrichclient.com)

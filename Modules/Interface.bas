@@ -1,6 +1,6 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
-'Miscellaneous Functions Related to the User Interface
+'Miscellaneous functions related to UI
 'Copyright 2001-2019 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 17/August/17

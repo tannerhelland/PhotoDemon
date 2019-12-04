@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1649</langversion>
+<langversion>7.2.1663</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2390,11 +2390,6 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
-<original>Bilateral smoothing</original>
-<translation>Bilaterale Glättung</translation>
-</phrase>
-
-<phrase>
 <original>Harmonic mean</original>
 <translation>Harmonischer Mittelwert</translation>
 </phrase>
@@ -2441,7 +2436,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Pointillize</original>
-<translation></translation>
+<translation>Pointillieren</translation>
 </phrase>
 
 <phrase>
@@ -2584,7 +2579,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 257 phrases. 29 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
+<!-- Menus.bas contains 257 phrases. 30 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -4174,6 +4169,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
+
+<!-- BEGIN text for pdFxBilateral.cls -->
+
+<!-- pdFxBilateral.cls contains 0 phrases. -->
+
+<!-- END text for pdFxBilateral.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -6480,11 +6481,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Bilateral filter</original>
-<translation>Bilateraler Filter</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Verpixeln</translation>
 </phrase>
@@ -6837,7 +6833,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 356 phrases. 161 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9771,37 +9767,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
-<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
-
-<phrase>
-<original>target</original>
-<translation>Ziel</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image in preparation for surface blur</original>
-<translation>Bild wird in Vorbereitung für Oberflächenunschärfe analysiert</translation>
-</phrase>
-
-<phrase>
-<original>Applying surface blur</original>
-<translation>Oberflächenunschärfe wird angewendet</translation>
-</phrase>
-
-<phrase>
-<original>smooth areas</original>
-<translation>Bereiche glätten</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>Kanten</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Blur_SurfaceBlur.frm-->
-
 <!-- BEGIN text for Effects_Blur_ZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
@@ -10557,26 +10522,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
-<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+<!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
-<original>spatial strength</original>
-<translation>Räumliche Stärke</translation>
+<original>Applying surface blur</original>
+<translation>Oberflächenunschärfe wird angewendet</translation>
 </phrase>
 
 <phrase>
-<original>color strength</original>
-<translation>Farbstärke</translation>
+<original>Bilateral smoothing</original>
+<translation>Bilaterale Glättung</translation>
 </phrase>
 
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>Bilaterale Glättung wird angewendet</translation>
-</phrase>
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- Effects_Noise_BilateralFilter.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_BilateralFilter.frm-->
+<!-- END text for Effects_Blur_SurfaceBlur.frm-->
 
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
@@ -10806,6 +10766,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Mosaic.frm-->
+
+<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
+
+<phrase>
+<original>background color and opacity</original>
+<translation>Hintergrundfarbe und Opazität</translation>
+</phrase>
+
+<phrase>
+<original>color variation</original>
+<translation>Farbvariation</translation>
+</phrase>
+
+<phrase>
+<original>Splattering canvas with paint</original>
+<translation>Leinwand wird mit Farbe bespritzt</translation>
+</phrase>
+
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Pixelate_Pointillize.frm-->
 
 <!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
 
@@ -16351,33 +16332,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Effects_Pixelate_Pointillize.frm (FormPointillize) -->
-
-<phrase>
-<original>background color and opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color variation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Splattering canvas with paint</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Effects_Pixelate_Pointillize.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2721</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5042 phrases. -->
-<!-- 2313 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12742 total words. -->
+<!-- As of this build, PhotoDemon contains 5028 phrases. -->
+<!-- 2307 are duplicates, so only 2721 unique phrases have been written to file. -->
+<!-- These 2721 phrases contain approximately 12722 total words. -->
 
 </pdData>

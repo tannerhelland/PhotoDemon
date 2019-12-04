@@ -1576,7 +1576,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Surface blur", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.SurfaceBlurFilter processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
         Process_EffectsMenu = True
         
     'Motion (directional) blurs
@@ -1733,7 +1733,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Bilateral smoothing", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormBilateral Else FormBilateral.BilateralSmoothingSeparable processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
         Process_EffectsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Harmonic mean", True) Then

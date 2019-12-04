@@ -511,8 +511,23 @@ Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As 
     UnsignedAdd = ((baseValue Xor SIGN_BIT) + amtToAdd) Xor SIGN_BIT
 End Function
 
-'Wrap an array of [type] around an arbitrary pointer.  This is currently used by the PSD parser to
-' accelerate some otherwise tedious pointer math.
+'Wrap an array of [type] around an arbitrary pointer.
+Public Sub WrapArrayAroundPtr_Float(ByRef dstFloats() As Single, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
+    With dstSA1D
+        .cbElements = 4
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcLenInBytes \ 4
+        .pvData = srcPtr
+    End With
+    CopyMemory ByVal VarPtrArray(dstFloats()), VarPtr(dstSA1D), 4&
+End Sub
+
+Public Sub UnwrapArrayFromPtr_Float(ByRef dstFloats() As Single)
+    PutMem4 VarPtrArray(dstFloats), 0&
+End Sub
+
 Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
     With dstSA1D
         .cbElements = 2

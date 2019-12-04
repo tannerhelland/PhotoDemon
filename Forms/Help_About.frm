@@ -365,6 +365,7 @@ Private Sub Form_Load()
     GenerateContributor "Lemuel Cushing", "https://github.com/LemuelCushing"
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
+    GenerateContributor "Ming", "http://ufoym.com/"
     GenerateContributor "Mohammad Reza Karimi"
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"
     GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
