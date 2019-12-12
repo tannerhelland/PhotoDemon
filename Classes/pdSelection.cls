@@ -234,6 +234,9 @@ Private m_ViewportEdges As pdEdgeDetector
 ' any changes to the actual underlying selection object.
 Private m_LastOverlayCache As String
 
+'Some selection use a timestamp to improve UI behavior
+Private m_LastTime As Currency
+
 'Each different selection shape has a number of properties specific to that shape.  Instead of storing these in open variables,
 ' they are stored in a dictionary, and only created/accessed as necessary.
 Private m_PropertyDict As pdDictionary
@@ -424,8 +427,12 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                             Next i
                         End If
                         
+                        'Create a copy of the current point collection; this will be used for transforms
+                        BackupCurrentSelectionPoints
+                        
                     Else
                         ReDim m_PolygonPoints(0 To 127) As PointFloat
+                        ReDim m_PolygonPointsBackup(0 To 127) As PointFloat
                     End If
                 
                 'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
@@ -528,8 +535,8 @@ Friend Function GetSelectionAsXML() As String
             If (m_NumOfPolygonPoints > 0) Then
                 For i = 0 To m_NumOfPolygonPoints - 1
                     With m_PolygonPoints(i)
-                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True)
-                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False)
+                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True), True
+                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False), True
                     End With
                 Next i
             End If
@@ -543,8 +550,8 @@ Friend Function GetSelectionAsXML() As String
             If (m_NumOfLassoPoints > 0) Then
                 For i = 0 To m_NumOfLassoPoints - 1
                     With m_LassoPoints(i)
-                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True)
-                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False)
+                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True), True
+                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False), True
                     End With
                 Next i
             End If
@@ -778,7 +785,7 @@ Friend Sub GetPolygonPoints(ByRef ptFloatArray() As PointFloat)
     
     If (m_NumOfPolygonPoints > 0) Then
         ReDim ptFloatArray(0 To m_NumOfPolygonPoints - 1) As PointFloat
-        CopyMemory ByVal VarPtr(ptFloatArray(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
+        CopyMemoryStrict VarPtr(ptFloatArray(0)), VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
     Else
         ReDim ptFloatArray(0) As PointFloat
     End If
@@ -1014,10 +1021,8 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 m_MoveXDist = x
                 m_MoveYDist = y
                 
-                'For the transform to work, we need to apply any transformed data to the *original polygon points*.
-                ' Make a backup copy of the original array now.
-                ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As PointFloat
-                CopyMemory ByVal VarPtr(m_PolygonPointsBackup(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
+                'Create a safe copy of the current point collection
+                BackupCurrentSelectionPoints
                 
             'Other transforms don't actually require special handling, as all the work is done in the
             ' SetAdditionalTransformCoordinates function.
@@ -1036,10 +1041,8 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 m_MoveXDist = x
                 m_MoveYDist = y
                 
-                'For the transform to work, we need to apply any transformed data to the *original lasso points*.
-                ' Make a backup copy of the original array now.
-                ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As PointFloat
-                CopyMemory ByVal VarPtr(m_LassoPointsBackup(0)), ByVal VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
+                'Create a safe copy of the current point collection
+                BackupCurrentSelectionPoints
                 
         End Select
             
@@ -1114,6 +1117,9 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
                 .Height = 1
             End With
             
+            'Create a copy of the current point collection; this will be used for transforms
+            BackupCurrentSelectionPoints
+            
         'Lasso selections have limited transform capabilities, and they have a variable number of points
         Case ss_Lasso
             m_IsTransformable = True
@@ -1131,6 +1137,9 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
                 .Width = 1
                 .Height = 1
             End With
+            
+            'Create a safe copy of the current point collection
+            BackupCurrentSelectionPoints
         
         'Wand selections don't support transforms
         Case ss_Wand
@@ -1260,6 +1269,9 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             'Polygon transforms consist of either moving an individual polygon point, or moving the entire polygon array
             Case ss_Polygon
             
+                'Ignore events if they happen too close together.  (This is part of a fix for https://github.com/tannerhelland/PhotoDemon/issues/284)
+                If ((VBHacks.GetHighResTimeInMSEx() - m_LastTime) < 500) Then Exit Sub
+            
                 'Based on the transform mode, set the initial points accordingly
                 Select Case m_CurrentPOI
             
@@ -1269,12 +1281,17 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     'Move transform
                     Case poi_Interior
                         
-                        'Rebuild the main polygon array by copying all points from the backup array, and applying the current
-                        ' x/y transformation distance to them.
-                        For i = 0 To m_NumOfPolygonPoints - 1
-                            m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - m_MoveXDist)
-                            m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - m_MoveYDist)
-                        Next i
+                        'Failsafe check for rapid clicks
+                        If (m_NumOfPolygonPoints - 1 <= UBound(m_PolygonPointsBackup)) Then
+                            
+                            'Rebuild the main polygon array by copying all points from the backup array, and applying the current
+                            ' x/y transformation distance to them.
+                            For i = 0 To m_NumOfPolygonPoints - 1
+                                m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - m_MoveXDist)
+                                m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - m_MoveYDist)
+                            Next i
+                            
+                        End If
                     
                     'Anything else is just moving a polygon point
                     Case Else
@@ -1284,7 +1301,12 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                             .y = y
                         End With
                         
+                        'Create a safe copy of the current point collection
+                        BackupCurrentSelectionPoints
+                        
                 End Select
+                
+                'PDDebug.LogAction "Polygon transform active: " & m_NumOfPolygonPoints
                 
                 'If a transform mode is active, re-mark the selection as being transformable
                 m_IsTransformable = True
@@ -1301,13 +1323,18 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     'Move transform
                     Case poi_Interior
                         
-                        'Rebuild the main lasso array by copying all points from the backup array, and applying the current
-                        ' x/y transformation distance to them.
-                        For i = 0 To m_NumOfLassoPoints - 1
-                            m_LassoPoints(i).x = m_LassoPointsBackup(i).x + (x - m_MoveXDist)
-                            m_LassoPoints(i).y = m_LassoPointsBackup(i).y + (y - m_MoveYDist)
-                        Next i
-                        
+                        'Failsafe check for rapid clicks
+                        If (m_NumOfLassoPoints - 1 <= UBound(m_LassoPointsBackup)) Then
+                                
+                            'Rebuild the main lasso array by copying all points from the backup array, and applying the current
+                            ' x/y transformation distance to them.
+                            For i = 0 To m_NumOfLassoPoints - 1
+                                m_LassoPoints(i).x = m_LassoPointsBackup(i).x + (x - m_MoveXDist)
+                                m_LassoPoints(i).y = m_LassoPointsBackup(i).y + (y - m_MoveYDist)
+                            Next i
+                            
+                        End If
+                            
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
@@ -1322,6 +1349,9 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     'This is not a transform, meaning the selection is being created for the first time.  For standard selection types,
     ' this simply means copying the passed (x, y) values.  Polygon/lasso selections are more complicated.
     Else
+        
+        'Note the current time; only polygon selections use this value (to improve UI behavior)
+        m_LastTime = VBHacks.GetHighResTimeInMSEx()
         
         Select Case m_SelectionShape
         
@@ -1354,6 +1384,11 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 m_PolygonPoints(m_NumOfPolygonPoints - 1).x = x
                 m_PolygonPoints(m_NumOfPolygonPoints - 1).y = y
                 
+                'Create a copy of the current point collection
+                BackupCurrentSelectionPoints
+                
+                'PDDebug.LogAction "Polygon transform NOT active: " & m_NumOfPolygonPoints
+                
             'Lasso selections will increment the current lasso array, and add the new point to its list
             Case ss_Lasso
             
@@ -1368,6 +1403,9 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     'Store the new point
                     m_LassoPoints(m_NumOfLassoPoints - 1).x = x
                     m_LassoPoints(m_NumOfLassoPoints - 1).y = y
+                    
+                    'Create a copy of the current point collection
+                    BackupCurrentSelectionPoints
                     
                 End If
             
@@ -1652,6 +1690,9 @@ Friend Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             
             'We also need to update the selection's bounding rect
             UpdateInternalCoords
+            
+            'Create a safe copy of the current point collection
+            BackupCurrentSelectionPoints
         
         Case ss_Lasso
             
@@ -1665,6 +1706,9 @@ Friend Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             
             'We also need to update the selection's bounding rect
             UpdateInternalCoords
+            
+            'Create a safe copy of the current point collection
+            BackupCurrentSelectionPoints
             
         Case ss_Wand
             m_CornersUnlocked.Left = m_CornersUnlocked.Left + hOffset
@@ -1685,7 +1729,10 @@ End Sub
 'Polygon selections are not as fiddly as lasso selections, but it can still be useful to remove the last-clicked point.
 ' This function (typically triggered via the BACKSPACE key) can be used to remove the last-created polygon point.
 Friend Sub RemoveLastPolygonPoint()
-    If (m_NumOfPolygonPoints > 1) Then m_NumOfPolygonPoints = m_NumOfPolygonPoints - 1
+    If (m_NumOfPolygonPoints > 1) Then
+        m_NumOfPolygonPoints = m_NumOfPolygonPoints - 1
+        BackupCurrentSelectionPoints
+    End If
 End Sub
 
 'Lasso selections have the unique burden of being somewhat unfavorable to user error.  This function (typically triggered via
@@ -1722,6 +1769,9 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     'Return the new cursor coordinates at this position, then exit
     newCursorX_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).x
     newCursorY_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).y
+    
+    'Create a safe copy of the current point collection
+    BackupCurrentSelectionPoints
 
 End Sub
 
@@ -1860,6 +1910,9 @@ Friend Sub LockIn()
         
     'For vector selections, update the internal coordinates one final time
     If (m_SelectionShape <> ss_Raster) Then
+        
+        'Create a safe copy of the current point collection
+        BackupCurrentSelectionPoints
         
         'The final thing we need to check for is the width and height, which may be still be zero at this point.
         ' Due to the way outside filters and effects use selection bounding rects, we can't allow selections of size 0.
@@ -2213,7 +2266,6 @@ Private Sub CreateSelectionMask()
                 
             End If
             
-        
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
         Case ss_Polygon
             
@@ -3887,9 +3939,11 @@ Private Sub Class_Initialize()
     'No lasso or polygon points yet
     m_NumOfLassoPoints = 0
     ReDim m_LassoPoints(0) As PointFloat
+    ReDim m_LassoPointsBackup(0) As PointFloat
     
     m_NumOfPolygonPoints = 0
     ReDim m_PolygonPoints(0) As PointFloat
+    ReDim m_PolygonPointsBackup(0) As PointFloat
     
     'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
@@ -3944,4 +3998,22 @@ Private Sub m_AntTimer_Timer()
         
     End If
     
+End Sub
+'For transforms to work, we need to apply any transformation matrices to *the original* polygon/lasso points.
+' As such, we maintain a persistent second copy of the current point collection, backed up whenever the
+' current point collection changes.
+Private Sub BackupCurrentSelectionPoints()
+
+    Select Case m_SelectionShape
+    
+        Case ss_Polygon
+            If (UBound(m_PolygonPointsBackup) < m_NumOfPolygonPoints - 1) Then ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As PointFloat
+            CopyMemoryStrict VarPtr(m_PolygonPointsBackup(0)), VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
+            
+        Case ss_Lasso
+            If (UBound(m_LassoPointsBackup) < m_NumOfLassoPoints - 1) Then ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As PointFloat
+            CopyMemoryStrict VarPtr(m_LassoPointsBackup(0)), VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
+            
+    End Select
+
 End Sub
