@@ -163,8 +163,10 @@ Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toP
     
     If useRecursiveBF Then
         
-        'Set up the progress bar, as necessary
-        If (Not toPreview) Then ProgressBars.SetProgBarMax 1#
+        'For non-previews, set up the progress bar.  (Note that we have to use an integer value,
+        ' or taskbar progress updates won't work - this is specifically an OS limitation, as PD's
+        ' internal progress bar works just fine with [0, 1] progress values.)
+        If (Not toPreview) Then ProgressBars.SetProgBarMax 100#
         
         If (m_Bilateral Is Nothing) Then Set m_Bilateral = New pdFxBilateral
         m_Bilateral.Bilateral_Recursive workingDIB, kernelRadius, rangeFactor, (Not toPreview)
@@ -203,7 +205,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub m_Bilateral_ProgressUpdate(ByVal progressValue As Single, cancelOperation As Boolean)
-    ProgressBars.SetProgBarVal progressValue
+    ProgressBars.SetProgBarVal progressValue * 100!
 End Sub
 
 Private Sub sldRadius_Change()

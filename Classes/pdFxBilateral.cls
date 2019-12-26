@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Bilateral Filters
 'Copyright 2014-2019 by Tanner Helland
 'Created: 19/June/14
-'Last updated: 04/December/19
-'Last update: add recursive bilateral algorithm
+'Last updated: 13/December/19
+'Last update: final round of minor perf and quality improvements to the recursive BF algorithm
 'Additional dependencies: many; see the VBHacks module in particular, as this class uses it liberally
 'Additional licenses: includes code adapted from an MIT-licensed project by Ming (https://github.com/ufoym/recursive-bf)
 '
@@ -152,9 +152,9 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     imgHeight = srcDIB.GetDIBHeight
     
     'The recursive function also requires a (large) internal floating-point buffer
-    Dim channels As Long, channelMax As Long
+    Dim channels As Long
     channels = srcDIB.GetDIBColorDepth \ 8
-    channelMax = channels - 1
+    
     Dim width_height As Long
     width_height = imgWidth * imgHeight
     Dim width_channel As Long
@@ -265,7 +265,7 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     
     'Originally declared in inner loops
     Dim tcr As Long, tcg As Long, tcb As Long, tca As Long
-    Dim dR As Long, dG As Long, dB As Long, dA As Long
+    Dim dR As Long, dG As Long, dB As Long
     Dim temp_x As Long, in_x As Long, texture_x As Long
     Dim tpr As Long, tpg As Long, tpb As Long, tpa As Long
     Dim temp_factor_x As Long, range_dist As Long
@@ -350,10 +350,9 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
             dR = Abs(tcr - tpr)
             dG = Abs(tcg - tpg)
             dB = Abs(tcb - tpb)
-            dA = Abs(tca - tpa)
             
-            'Reference implementation is modified to include alpha
-            range_dist = (dR + dG + dB + dA) \ 4
+            'Reference implementation is modified to emphasize green over red (per luminance)
+            range_dist = (dR + dG * 2 + dB) \ 4
             'int range_dist = (((dr << 1) + dg + db) >> 2);
             
             weight = range_table(range_dist)
@@ -468,10 +467,9 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
             dR = Abs(tcr - tpr)
             dG = Abs(tcg - tpg)
             dB = Abs(tcb - tpb)
-            dA = Abs(tca - tpa)
             
-            'Reference implementation is modified to include alpha:
-            range_dist = (dR + dG + dB + dA) \ 4
+            'Reference implementation is modified to emphasize green over red (per luminance)
+            range_dist = (dR + dG * 2 + dB) \ 4
             'int range_dist = (((dr << 1) + dg + db) >> 2);
             
             weight = range_table(range_dist)
@@ -613,26 +611,27 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
             tpy = tpy + 1
             'unsigned char db = abs((*tcy++) - (*tpy++));
             
-            dA = Abs(CLng(img(tcy)) - CLng(img(tpy)))
+            'alpha distance isn't required - just advance the pointer
             tcy = tcy + 1
             tpy = tpy + 1
             
-            'Reference implementation is modified to include alpha:
-            range_dist = (dR + dG + dB + dA) \ 4
+            'Reference implementation is modified to emphasize green over red (per luminance)
+            range_dist = (dR + dG * 2 + dB) \ 4
             'int range_dist = (((dr << 1) + dg + db) >> 2);
             
             weight = range_table(range_dist)
             alpha_ = weight * tmpAlpha
             
-            For c = 0 To channelMax
-                
-                img_out_f(ycy) = inv_alpha_ * img_temp(xcy) + alpha_ * img_out_f(ypy)
-                ycy = ycy + 1
-                xcy = xcy + 1
-                ypy = ypy + 1
-                '*ycy++ = inv_alpha_*(*xcy++) + alpha_*(*ypy++);
-            
-            Next c
+            'Original code uses a per-channel loop here; instead, we unroll it manually
+            img_out_f(ycy) = inv_alpha_ * img_temp(xcy) + alpha_ * img_out_f(ypy)
+            ycy = ycy + 1: xcy = xcy + 1: ypy = ypy + 1
+            img_out_f(ycy) = inv_alpha_ * img_temp(xcy) + alpha_ * img_out_f(ypy)
+            ycy = ycy + 1: xcy = xcy + 1: ypy = ypy + 1
+            img_out_f(ycy) = inv_alpha_ * img_temp(xcy) + alpha_ * img_out_f(ypy)
+            ycy = ycy + 1: xcy = xcy + 1: ypy = ypy + 1
+            img_out_f(ycy) = inv_alpha_ * img_temp(xcy) + alpha_ * img_out_f(ypy)
+            ycy = ycy + 1: xcy = xcy + 1: ypy = ypy + 1
+            '*ycy++ = inv_alpha_*(*xcy++) + alpha_*(*ypy++);
             
             map_factor_b(ycf) = inv_alpha_ * map_factor_a(xcf) + alpha_ * map_factor_b(ypf)
             ycf = ycf + 1
@@ -676,20 +675,28 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     'ypy = slice_factor_b;
     'memcpy(ypy, &img_temp[h1 * width_channel], sizeof(float)* width_channel);
     
-    Dim k As Long
+    Dim k As Long, mapFactorBCache As Single
     k = 0
     
     Dim iDx As Long
     For x = 0 To imgWidth - 1
-        For c = 0 To channelMax
-            
-            iDx = (h1 * imgWidth + x) * channels + c
-            
-            img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) / map_factor_b(h1 * imgWidth + x)
-            k = k + 1
-            'img_out_f[idx] = 0.5f*(img_out_f[idx] + ypy[k++]) / map_factor_b[h1 * width + x];
-            
-        Next c
+        
+        'Original code uses a per-channel loop here; we unroll it manually
+        mapFactorBCache = 1! / map_factor_b(h1 * imgWidth + x)
+        iDx = (h1 * imgWidth + x) * channels
+        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        k = k + 1
+        iDx = (h1 * imgWidth + x) * channels + 1
+        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        k = k + 1
+        iDx = (h1 * imgWidth + x) * channels + 2
+        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        k = k + 1
+        iDx = (h1 * imgWidth + x) * channels + 3
+        img_out_f(iDx) = 0.5! * (img_out_f(iDx) + slice_factor_b(k)) * mapFactorBCache
+        k = k + 1
+        'img_out_f[idx] = 0.5f*(img_out_f[idx] + ypy[k++]) / map_factor_b[h1 * width + x];
+        
     Next x
     
     Dim ycy_ As Long, ypy_ As Long, out_ As Long
@@ -739,12 +746,12 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
             tpy = tpy + 1
             'unsigned char db = abs((*tcy++) - (*tpy++));
             
-            dA = Abs(CLng(img(tcy)) - CLng(img(tpy)))
+            'alpha distance isn't required - just advance the pointer
             tcy = tcy + 1
             tpy = tpy + 1
             
-            'Reference implementation is modified to include alpha:
-            range_dist = (dR + dG + dB + dA) \ 4
+            'Reference implementation is modified to emphasize green over red (per luminance)
+            range_dist = (dR + dG * 2 + dB) \ 4
             'int range_dist = (((dr << 1) + dg + db) >> 2);
             
             weight = range_table(range_dist)
@@ -762,23 +769,52 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
             map_factor_b(factor_) = 0.5! * (map_factor_b(factor_) + fcc)
             '*factor_ = 0.5f * (*factor_ + fcc);
             
-            For c = 0 To channelMax
+            'Original code uses a per-channel loop here; we manually unroll it
+            mapFactorBCache = 1! / map_factor_b(factor_)
             
-                ycc = inv_alpha_ * img_temp(xcy) + alpha_ * slice_factor_b(ypy_)
-                xcy = xcy + 1
-                ypy_ = ypy_ + 1
-                'float ycc = inv_alpha_*(*xcy++) + alpha_*(*ypy_++);
-                
-                slice_factor_a(ycy_) = ycc
-                ycy_ = ycy_ + 1
-                '*ycy_++ = ycc;
-                
-                img_out_f(out_) = 0.5! * (img_out_f(out_) + ycc) / map_factor_b(factor_)
-                '*out_ = 0.5f * (*out_ + ycc) / (*factor_);
-                
-                out_ = out_ + 1
-                
-            Next c
+            ycc = inv_alpha_ * img_temp(xcy) + alpha_ * slice_factor_b(ypy_)
+            xcy = xcy + 1
+            ypy_ = ypy_ + 1
+            'float ycc = inv_alpha_*(*xcy++) + alpha_*(*ypy_++);
+            slice_factor_a(ycy_) = ycc
+            ycy_ = ycy_ + 1
+            '*ycy_++ = ycc;
+            img_out_f(out_) = 0.5! * (img_out_f(out_) + ycc) * mapFactorBCache
+            '*out_ = 0.5f * (*out_ + ycc) / (*factor_);
+            out_ = out_ + 1
+            
+            ycc = inv_alpha_ * img_temp(xcy) + alpha_ * slice_factor_b(ypy_)
+            xcy = xcy + 1
+            ypy_ = ypy_ + 1
+            'float ycc = inv_alpha_*(*xcy++) + alpha_*(*ypy_++);
+            slice_factor_a(ycy_) = ycc
+            ycy_ = ycy_ + 1
+            '*ycy_++ = ycc;
+            img_out_f(out_) = 0.5! * (img_out_f(out_) + ycc) * mapFactorBCache
+            '*out_ = 0.5f * (*out_ + ycc) / (*factor_);
+            out_ = out_ + 1
+            
+            ycc = inv_alpha_ * img_temp(xcy) + alpha_ * slice_factor_b(ypy_)
+            xcy = xcy + 1
+            ypy_ = ypy_ + 1
+            'float ycc = inv_alpha_*(*xcy++) + alpha_*(*ypy_++);
+            slice_factor_a(ycy_) = ycc
+            ycy_ = ycy_ + 1
+            '*ycy_++ = ycc;
+            img_out_f(out_) = 0.5! * (img_out_f(out_) + ycc) * mapFactorBCache
+            '*out_ = 0.5f * (*out_ + ycc) / (*factor_);
+            out_ = out_ + 1
+            
+            ycc = inv_alpha_ * img_temp(xcy) + alpha_ * slice_factor_b(ypy_)
+            xcy = xcy + 1
+            ypy_ = ypy_ + 1
+            'float ycc = inv_alpha_*(*xcy++) + alpha_*(*ypy_++);
+            slice_factor_a(ycy_) = ycc
+            ycy_ = ycy_ + 1
+            '*ycy_++ = ycc;
+            img_out_f(out_) = 0.5! * (img_out_f(out_) + ycc) * mapFactorBCache
+            '*out_ = 0.5f * (*out_ + ycc) / (*factor_);
+            out_ = out_ + 1
             
             factor_ = factor_ + 1
             
@@ -799,35 +835,20 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     Next y
     
     'Copy the final result back into the source DIB
-    Const LONG_MAX_FLOAT_SAFE As Single = LONG_MAX - 100!
+    Const FLOAT_TO_LONG_MAX_SAFE As Single = 255!
     
-    Dim tmpFloat As Single, tmpLong As Long, numFailures As Long
+    Dim tmpFloat As Single, tmpLong As Long
     For i = 0 To width_height_channel - 1
         
         'For very small radii, floats may exceed the max value of a long.  (I'm still investigating
         ' what combination of factors can make them this large - probably division of a very small
-        ' number somewhere, argh.)  As a failsafe, check for this and correct it before casting to
-        ' an int.
+        ' number somewhere, argh.)  As a failsafe, check for this and correct it before casting.
         tmpFloat = img_out_f(i)
-        If (tmpFloat > LONG_MAX_FLOAT_SAFE) Then tmpFloat = LONG_MAX_FLOAT_SAFE
-        
+        If (tmpFloat > FLOAT_TO_LONG_MAX_SAFE) Then tmpFloat = FLOAT_TO_LONG_MAX_SAFE
         tmpLong = tmpFloat
-        If (tmpLong < 0) Then
-            tmpLong = 0
-            numFailures = numFailures + 1
-        End If
-        If (tmpLong > 255) Then
-            tmpLong = 255
-            numFailures = numFailures + 1
-        End If
-        
-        img(i) = tmpLong
+        img(i) = tmpLong And &HFF&
         
     Next i
-    
-    'Testing only - I'm curious to see how many times we get OOB errors when translating
-    ' the processed RGB values from float to byte.  (Ideally we can get this to zero!)
-    If (numFailures > 0) Then PDDebug.LogAction "pdFxBilateral.Bilateral_Recursive had out-of-range failures: " & numFailures
     
 FilterCleanup:
     
