@@ -951,6 +951,16 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'HEIF/HEIC loading requires Win 10 and possible extra downloads from the MS Store.
+    ' We attempt to use WIC to load such files.
+    If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
+        CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_WIC
+            dstImage.SetOriginalFileFormat PDIF_HEIF
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v7.2, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to a
     ' lot of bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now more selective about
@@ -1176,7 +1186,7 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         dstImage.SetOriginalFileFormat PDIF_PSD
         dstImage.NotifyImageChanged UNDO_Everything
-        dstImage.SetOriginalColorDepth cPSD.GetBytesPerPixel()
+        dstImage.SetOriginalColorDepth cPSD.GetBytesPerPixel() * 8
         dstImage.SetOriginalGrayscale cPSD.IsGrayscaleColorMode()
         dstImage.SetOriginalAlpha cPSD.HasAlpha()
         
@@ -1203,6 +1213,30 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
     End If
     
+End Function
+
+Public Function LoadHEIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    'At present, file extensions must be validated
+    LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heif", True)
+    If (Not LoadHEIF) Then LoadHEIF = Strings.StringsEqual(Files.FileGetExtension(srcFile), "heic", True)
+    
+    'Extensions match; attempt a load
+    If LoadHEIF Then
+        
+        LoadHEIF = WIC.LoadFileToDIB(dstDIB, srcFile)
+        
+        'If the load was successful, populate some default properties
+        If LoadHEIF And (Not dstImage Is Nothing) Then
+            dstImage.SetOriginalFileFormat PDIF_HEIF
+            dstImage.NotifyImageChanged UNDO_Everything
+            dstImage.SetOriginalColorDepth 32
+            dstImage.SetOriginalGrayscale False
+            dstImage.SetOriginalAlpha True
+        End If
+        
+    End If
+
 End Function
 
 'Most portions of PD operate exclusively in 32-bpp mode.  (This greatly simplifies the compositing pipeline.)

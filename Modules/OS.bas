@@ -749,6 +749,11 @@ Public Function IsWin10OrLater() As Boolean
     IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
 End Function
 
+Public Function GetWin10Build() As Long
+    If (Not m_VersionInfoCached) Then CacheOSVersion
+    GetWin10Build = m_OSVI.dwBuildNumber
+End Function
+
 'Return the number of logical cores on this system
 Public Function LogicalCoreCount() As Long
     Dim tmpSysInfo As OS_SystemInfo

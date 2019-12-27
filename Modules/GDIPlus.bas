@@ -5253,7 +5253,7 @@ Public Sub DEBUG_ListGdipDecoders()
 
     Dim numDecoders As Long, sizeEncodersBytes As Long
     If (GdipGetImageDecodersSize(numDecoders, sizeEncodersBytes) = GP_OK) Then
-    
+        
         'For reasons I don't fully understand, the sizeEncodersBytes value is often significantly larger
         ' than the size you'd expect given the number of codecs.  As such, declare our array safely.
         Dim tmpExampleDec As GP_ImageCodecInfo

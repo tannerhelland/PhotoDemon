@@ -290,10 +290,11 @@ Public Enum PD_ImageDecoder
     id_ORAParser = 4
     id_PSDParser = 5
     id_SVGParser = 6
+    id_WIC = 7
 End Enum
 
 #If False Then
-    Private Const id_Failure = -1, id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_PNGParser = 3, id_ORAParser = 4, id_PSDParser = 5, id_SVGParser = 6
+    Private Const id_Failure = -1, id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_PNGParser = 3, id_ORAParser = 4, id_PSDParser = 5, id_SVGParser = 6, id_WIC = 7
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
@@ -531,7 +532,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_TARGA = 17
     PDIF_TIFF = 18
     PDIF_WBMP = 19
-    PDIF_PSD = 20
+    PDIF_PSD = 20   'Note that FreeImage is not used to load PSDs; we use our own internal parser
     PDIF_CUT = 21
     PDIF_XBM = 22
     PDIF_XPM = 23
@@ -559,7 +560,8 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_EMF = 111
     PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
     PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
-    PDIF_ORA = 114      'OpenRaster support is currently experimental; hope to harden it before 7.2 releases
+    PDIF_ORA = 114      'OpenRaster support is official as of 7.2
+    PDIF_HEIF = 115     'Loaded via WIC; requires Win 8.1 or later and possible downloads from the MS store
     
 End Enum
 
@@ -571,7 +573,7 @@ End Enum
     Const PDIF_HDR = 26, PDIF_FAXG3 = 27, PDIF_SGI = 28, PDIF_EXR = 29, PDIF_J2K = 30, PDIF_JP2 = 31, PDIF_PFM = 32
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
-    Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114
+    Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

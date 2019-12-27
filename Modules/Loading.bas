@@ -249,7 +249,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 'Create the new layer in the target image, and pass our created name to it
                 Dim newLayerID As Long
                 newLayerID = targetImage.CreateBlankLayer
-                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, imageHasMultiplePages
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, targetDIB, imageHasMultiplePages
                 targetImage.UpdateSize
                 
             End If
@@ -281,6 +281,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "GDI+"
             Case id_FreeImage
                 decoderName = "FreeImage plugin"
+            Case id_WIC
+                decoderName = "Windows Imaging Component"
         End Select
         
         PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True
