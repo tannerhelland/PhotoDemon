@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3438</langversion>
+<langversion>6.8.3439</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16321,6 +16321,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- Automatic text extraction complete. -->
 

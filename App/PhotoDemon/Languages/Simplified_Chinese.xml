@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1508</langversion>
+<langversion>7.2.1509</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -16316,6 +16316,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- Automatic text extraction complete. -->
 

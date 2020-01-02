@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.123</langversion>
+<langversion>1.0.124</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16321,6 +16321,12 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- Automatic text extraction complete. -->
 

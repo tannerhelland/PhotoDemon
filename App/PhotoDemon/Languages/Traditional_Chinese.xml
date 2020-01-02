@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.125</langversion>
+<langversion>7.0.126</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -16268,6 +16268,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- Automatic text extraction complete. -->
 

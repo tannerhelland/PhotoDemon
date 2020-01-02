@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.455</langversion>
+<langversion>6.7.456</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -16324,6 +16324,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- Automatic text extraction complete. -->
 
