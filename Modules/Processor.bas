@@ -273,6 +273,17 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             processFound = True
         
         ElseIf Strings.StringsEqual(processID, "Fill tool", True) Then
+            
+            'Per https://github.com/tannerhelland/PhotoDemon/issues/286, I'm attempting to support flood fill
+            ' operations in recorded macros.  (Apparently this can be a huge timesaver in certain workflows!)
+            ' To make this possible, PD needs to know if a macro is currently running; if it is, it will
+            ' attempt to manually apply a flood fill.  We do *NOT* want to do this during normal operations,
+            ' or it will cause the fill to be applied twice!
+            If (Macros.GetMacroStatus = MacroPLAYBACK) And (LenB(processParameters) <> 0) Then
+                PDImages.GetActiveImage.ResetScratchLayer True
+                Tools_Fill.PlayFillFromMacro processParameters
+            End If
+            
             processFound = True
             
         ElseIf Strings.StringsEqual(processID, "Gradient tool", True) Then

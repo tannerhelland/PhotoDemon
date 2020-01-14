@@ -1798,7 +1798,7 @@ End Sub
 ' ID to use, and they are responsible for localizing this string as well (since it won't be auto-detected
 ' by PD's translation file generator).  Also required is the boundary rectangle to commit; for performance
 ' reasons, this should obviously be the smallest size you can get away with.
-Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF As RectF)
+Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF As RectF, Optional ByRef srcParamString As String = vbNullString)
 
     With srcRectF
         If (.Left < 0) Then .Left = 0
@@ -1806,6 +1806,8 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
         If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
     End With
+    
+    Dim undoType As PD_UndoType
     
     'Committing brush results is actually pretty easy!
     
@@ -1821,11 +1823,18 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True, VarPtr(srcRectF)
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process processNameToUse, , , UNDO_Layer, g_CurrentTool
+        'Ask the central processor to create Undo/Redo data for us.
+        ' (IMPORTANT NOTE: when playing back a macro, the macro operation itself will take care of
+        ' Undo/Redo generation - we simply need to flag the processor to update the screen and perform
+        ' any maintenance tasks, but we explicitly request that the processor does *not* generate undo
+        ' data on this internal call!)
+        If (Macros.GetMacroStatus = MacroPLAYBACK) Then undoType = UNDO_Nothing Else undoType = UNDO_Layer
+        Processor.Process processNameToUse, False, srcParamString, undoType, g_CurrentTool
         
-        'Reset the scratch layer
-        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+        'Reset the scratch layer (if it hasn't already been freed)
+        If (Not PDImages.GetActiveImage.ScratchLayer Is Nothing) Then
+            If (Not PDImages.GetActiveImage.ScratchLayer.layerDIB Is Nothing) Then PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+        End If
         
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
     Else
@@ -1861,8 +1870,10 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
         
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process processNameToUse, , , UNDO_Image_VectorSafe, g_CurrentTool
+        'Ask the central processor to create Undo/Redo data for us.  (See IMPORTANT NOTE on the
+        ' previous section for details on why the undo status is set manually.)
+        If (Macros.GetMacroStatus = MacroPLAYBACK) Then undoType = UNDO_Nothing Else undoType = UNDO_Image_VectorSafe
+        Processor.Process processNameToUse, False, srcParamString, undoType, g_CurrentTool
         
         'Create a new scratch layer
         Tools.InitializeToolsDependentOnImage
@@ -1871,8 +1882,10 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
     
     'Before exiting, forcibly clear the temporary viewport DIB for the scratch layer
     ' (as its contents are no longer needed).
-    If (Not PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport) Is Nothing) Then
-        PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport).ResetDIB 0
+    If (Not PDImages.GetActiveImage.ScratchLayer Is Nothing) Then
+        If (Not PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport) Is Nothing) Then
+            PDImages.GetActiveImage.ScratchLayer.TmpLODDIB(CLC_Viewport).ResetDIB 0
+        End If
     End If
     
 End Sub

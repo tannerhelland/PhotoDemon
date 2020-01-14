@@ -73,6 +73,14 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     m_MouseY = imgY
     m_MouseDown = mouseButtonDown
     
+    'Produce a parameter string that stores all data for the current fill (including coordinates!)
+    Dim curFillParams As String
+    If (Macros.GetMacroStatus <> MacroPLAYBACK) Then
+        curFillParams = GetAllFillSettings(imgX, imgY)
+    Else
+        curFillParams = vbNullString
+    End If
+    
     'Different fill modes use different coordinate spaces.  (For example, "sample image" and "sample layer" use different
     ' underlying DIBs to calculate their fill, so we may want to translate the incoming coordinates - which are always in
     ' the *image* coordinate space - to the current layer's coordinate space.)
@@ -81,12 +89,10 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         fillStartX = Int(imgX)
         fillStartY = Int(imgY)
     Else
-        
         Dim newX As Single, newY As Single
         Drawing.ConvertImageCoordsToLayerCoords_Full PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, newX, newY
         fillStartX = Int(newX)
         fillStartY = Int(newY)
-        
     End If
     
     'If the mouse button is down, generate a new fill area
@@ -296,9 +302,9 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     If (Not mouseButtonDown) And oldMouseState Then
         
         If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
-            Tools_Fill.CommitFillResults False
+            Tools_Fill.CommitFillResults False, , curFillParams
         Else
-            Tools_Fill.CommitFillResults True, m_FillImage
+            Tools_Fill.CommitFillResults True, m_FillImage, curFillParams
         End If
         
     End If
@@ -306,7 +312,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
 End Sub
 
 'Want to commit your current fill work?  Call this function to make any pending fill results permanent.
-Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillDIB As pdDIB = Nothing)
+Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillDIB As pdDIB = Nothing, Optional ByRef curFillParams As String = vbNullString)
     
     Dim cBlender As pdPixelBlender
     Set cBlender = New pdPixelBlender
@@ -369,7 +375,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Fill tool", , , UNDO_Layer, g_CurrentTool
+        Processor.Process "Fill tool", , curFillParams, UNDO_Layer, g_CurrentTool
     
     'If useCustomDIB is FALSE, the current scratch layer contains everything we need for the blend.
     Else
@@ -379,10 +385,49 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
         ' the TranslateMessage() call and produce a matching translation entry.
         Dim strDummy As String
         strDummy = g_Language.TranslateMessage("Fill tool")
-        Layers.CommitScratchLayer "Fill tool", m_FillOutline.GetPathBoundariesF
+        Layers.CommitScratchLayer "Fill tool", m_FillOutline.GetPathBoundariesF, curFillParams
     
     End If
     
+End Sub
+
+'To be used *ONLY* during macro playback!
+Public Sub PlayFillFromMacro(ByRef srcParams As String)
+
+    'Failsafe check; the central processor should have verified this
+    If (Macros.GetMacroStatus = MacroPLAYBACK) Then
+    
+        'Parse param string and call the appropriate filler
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString srcParams
+        
+        'Some properties come directly from the fill object
+        If EnsureFillerExists Then
+        
+            With cParams
+                Tools_Fill.SetFillAA .GetBool("antialias")
+                Tools_Fill.SetFillAlphaMode .GetLong("alpha-mode")
+                Tools_Fill.SetFillBlendMode .GetLong("blend-mode")
+                Tools_Fill.SetFillBrush .GetString("brush")
+                Tools_Fill.SetFillBrushColor .GetLong("brush-color")
+                Tools_Fill.SetFillBrushOpacity .GetSingle("brush-opacity")
+                Tools_Fill.SetFillBrushSource .GetLong("fill-source")
+                Tools_Fill.SetFillCompareMode .GetLong("compare-mode")
+                Tools_Fill.SetFillSampleMerged .GetBool("sample-merged")
+                Tools_Fill.SetFillSearchMode .GetLong("search-mode")
+                Tools_Fill.SetFillTolerance .GetSingle("tolerance")
+            End With
+            
+        End If
+        
+        'Simulate a mouse click
+        m_MouseDown = False
+        Tools_Fill.NotifyMouseXY True, cParams.GetSingle("src-x"), cParams.GetSingle("src-y"), FormMain.MainCanvas(0)
+        Tools_Fill.NotifyMouseXY False, cParams.GetSingle("src-x"), cParams.GetSingle("src-y"), FormMain.MainCanvas(0)
+        
+    End If
+
 End Sub
 
 'Render a relevant fill cursor outline to the canvas, using the stored mouse coordinates as the cursor's position
@@ -470,6 +515,37 @@ Public Sub SetFillTolerance(ByVal newTolerance As Single)
     If EnsureFillerExists Then m_FloodFill.SetTolerance newTolerance
 End Sub
 
+'Retrieve all current settings as a param string
+Private Function GetAllFillSettings(ByVal srcX As Single, ByVal srcY As Single) As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    'Some properties come directly from the fill object
+    If EnsureFillerExists Then
+    
+        With cParams
+            .AddParam "src-x", srcX, True
+            .AddParam "src-y", srcY, True
+            .AddParam "antialias", m_FloodFill.GetAntialiasingMode(), True
+            .AddParam "alpha-mode", m_FillAlphaMode, True
+            .AddParam "blend-mode", m_FillBlendMode, True
+            .AddParam "brush", m_FillBrush, True
+            .AddParam "brush-color", m_FillColor, True
+            .AddParam "brush-opacity", m_FillOpacity, True
+            .AddParam "fill-source", m_FillSource, True
+            .AddParam "compare-mode", m_FloodFill.GetCompareMode(), True
+            .AddParam "sample-merged", m_FillSampleMerged, True
+            .AddParam "search-mode", m_FloodFill.GetSearchMode(), True
+            .AddParam "tolerance", m_FloodFill.GetTolerance(), True
+        End With
+        
+    End If
+        
+    GetAllFillSettings = cParams.GetParamString()
+    
+End Function
+
 'Want to free up memory without completely releasing everything tied to this class?  That's what this function
 ' is for.  It should (ideally) be called whenever this tool is deactivated.
 '
@@ -487,4 +563,3 @@ End Sub
 Public Sub FreeFillResources()
     ReduceMemoryIfPossible
 End Sub
-
