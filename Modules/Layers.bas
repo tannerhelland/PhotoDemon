@@ -300,7 +300,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
             'Forcibly convert the new layer to 32bpp
-            If (tmpDIB.GetDIBColorDepth = 24) Then tmpDIB.ConvertTo32bpp
+            If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
             
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
@@ -314,6 +314,13 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             End If
             
             'Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
+            
+            'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
+            ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
+            Dim newX As Double, newY As Double
+            Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
             
             'Notify the parent image that the entire image now needs to be recomposited
             PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
