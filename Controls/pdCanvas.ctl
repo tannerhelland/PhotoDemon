@@ -812,7 +812,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Move stuff around
             Case NAV_MOVE
-                Tools_Move.NotifyMouseDown Me, imgX, imgY
+                Tools_Move.NotifyMouseDown Me, Shift, imgX, imgY
                 
             'Color picker
             Case COLOR_PICKER

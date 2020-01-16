@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3439</langversion>
+<langversion>6.8.3441</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3648,6 +3648,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for MoveTool.bas -->
 
 <phrase>
+<original>Ctrl+click to move the active layer here</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Vaihto-näppäin: säilyttää tasojen kuvasuhde</translation>
 </phrase>
@@ -3662,7 +3667,7 @@ Please enter a numeric value.</original>
 <translation>(ei mitään)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- MoveTool.bas contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -16330,10 +16335,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2721</phrasecount>
+<phrasecount>2722</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5028 phrases. -->
-<!-- 2307 are duplicates, so only 2721 unique phrases have been written to file. -->
-<!-- These 2721 phrases contain approximately 12722 total words. -->
+<!-- As of this build, PhotoDemon contains 5030 phrases. -->
+<!-- 2308 are duplicates, so only 2722 unique phrases have been written to file. -->
+<!-- These 2722 phrases contain approximately 12728 total words. -->
 
 </pdData>

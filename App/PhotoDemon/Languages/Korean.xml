@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.124</langversion>
+<langversion>1.0.126</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3651,6 +3651,11 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- BEGIN text for MoveTool.bas -->
 
 <phrase>
+<original>Ctrl+click to move the active layer here</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift 키: 레이어 종횡비 유지</translation>
 </phrase>
@@ -3665,7 +3670,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>(없음)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- MoveTool.bas contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -16330,10 +16335,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2721</phrasecount>
+<phrasecount>2722</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5028 phrases. -->
-<!-- 2307 are duplicates, so only 2721 unique phrases have been written to file. -->
-<!-- These 2721 phrases contain approximately 12722 total words. -->
+<!-- As of this build, PhotoDemon contains 5030 phrases. -->
+<!-- 2308 are duplicates, so only 2722 unique phrases have been written to file. -->
+<!-- These 2722 phrases contain approximately 12728 total words. -->
 
 </pdData>
