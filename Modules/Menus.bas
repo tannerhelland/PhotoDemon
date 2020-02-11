@@ -1872,7 +1872,8 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Case "layer_flipvertical"
                 Process "Flip layer vertically", , , UNDO_Layer
                 
-        Case "layer_resize"
+        Case "layer_size"
+        
             Case "layer_resetsize"
                 Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
                 
