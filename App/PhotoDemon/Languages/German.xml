@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1666</langversion>
+<langversion>7.2.1705</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3660,7 +3660,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
-<translation></translation>
+<translation>Strg+Mausklick, um den aktiven Layer hierher zu verschieben</translation>
 </phrase>
 
 <phrase>
