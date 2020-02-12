@@ -29,8 +29,8 @@ Begin VB.UserControl pdDropDown
       Top             =   0
       Visible         =   0   'False
       Width           =   4935
-      _extentx        =   2566
-      _extenty        =   661
+      _ExtentX        =   2566
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "pdDropDown"
@@ -460,7 +460,17 @@ End Sub
 'Unlike a regular listview, where the mousewheel results in pixel-level content scrolling, a closed dropdown scrolls actual
 ' list values one-at-a-time on each wheel motion.
 Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    
+    'If the control doesn't current have focus, set it now.
+    ' (This simplifies handling of Windows 7+ behavior where dropdowns can be scrolled
+    ' via mousewheel without actually gaining focus.  PD sometimes relies on focus events
+    ' to flag control state; this is used by the layer toolbar dropdowns for blend mode,
+    ' for example, and how it's how we know to generate Undo/Redo data for non-destructive
+    ' state changes.)
+    If (Not ucSupport.DoIHaveFocus()) And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI Me.hWnd
+    
     listSupport.NotifyMouseWheelVertical Button, Shift, x, y, scrollAmount
+    
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -497,7 +507,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_COMBOBOX
+    listSupport.ListSupportMode = PDLM_ComboBox
     
 End Sub
 
@@ -632,7 +642,7 @@ Private Sub RaiseListBox()
         sizeChange = amtPreceding * listSupport.DefaultItemHeight
         
         'If separators are active, add any separator sizes to our total
-        If listSupport.GetInternalSizeMode = PDLH_SEPARATORS Then
+        If listSupport.GetInternalSizeMode = PDLH_Separators Then
             For i = (Me.ListIndex - amtPreceding) To (Me.ListIndex - 1)
                 If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
             Next i
@@ -645,7 +655,7 @@ Private Sub RaiseListBox()
     If (amtTrailing > 0) Then
         sizeChange = amtTrailing * listSupport.DefaultItemHeight
         
-        If listSupport.GetInternalSizeMode = PDLH_SEPARATORS Then
+        If listSupport.GetInternalSizeMode = PDLH_Separators Then
             For i = Me.ListIndex To (Me.ListIndex + amtTrailing)
                 If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
             Next i
@@ -723,7 +733,7 @@ Private Sub RaiseListBox()
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
     ' scroll bar's maximum value is contingent on the available pixel size of the dropdown.
-    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_INSIDE_CB
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_CB
     
     'Now we can show the window; we also notify the window of its changed window style bits
     With popupRect
