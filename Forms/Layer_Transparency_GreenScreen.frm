@@ -145,7 +145,9 @@ Private Sub pdFxPreview_ColorSelected()
     UpdatePreview
 End Sub
 
-'Convert a DIB from 24bpp to 32bpp, using a high-quality color-matching scheme in the L*a*b* color space.
+'Add transparency to an image by making a specified color transparent (chroma-key or "green screen").
+' This function uses a high-quality color-matching scheme in the L*a*b* color space.
+' LittleCMS is used for transforms, if present.
 Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     Dim cParams As pdParamXML
@@ -164,15 +166,8 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     If (Not toPreview) Then Message "Adding new alpha channel to image..."
     
     'Call prepImageData, which will prepare a temporary copy of the image
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    
-    'Before doing anything else, convert this DIB to 32bpp.
-    If (workingDIB.GetDIBColorDepth <> 32) Then workingDIB.ConvertTo32bpp
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    PrepSafeArray tmpSA, workingDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -243,8 +238,11 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     Dim difThreshold As Double
     blendThreshold = eraseThreshold + blendThreshold
     difThreshold = blendThreshold - eraseThreshold
+    If (difThreshold <> 0#) Then difThreshold = 1# / difThreshold
     
-    Dim cDistance As Double
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    Dim cDistance As Double, cDistanceDenom As Double
     Dim newAlpha As Long
     
     'To improve performance of our horizontal loop, we'll move through bytes an entire pixel at a time
@@ -254,15 +252,18 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
         
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
-    
+        
+        'Wrap an array around the current scanline
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+        
         'Start by pre-calculating all L*a*b* values for this row
         If useLCMS Then
-            labTransform.ApplyTransformToScanline VarPtr(imageData(0, y)), VarPtr(labValues(0)), finalX + 1
+            labTransform.ApplyTransformToScanline VarPtr(imageData(0)), VarPtr(labValues(0)), finalX + 1
         Else
             For x = xStart To xStop Step pxWidth
-                b = imageData(x, y)
-                g = imageData(x + 1, y)
-                r = imageData(x + 2, y)
+                b = imageData(x)
+                g = imageData(x + 1)
+                r = imageData(x + 2)
                 RGBtoLAB r, g, b, labL, labA, labB
                 labValues(x) = labL
                 labValues(x + 1) = labA
@@ -274,10 +275,10 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
         For x = xStart To xStop Step pxWidth
         
             'Get the source pixel color values
-            b = imageData(x, y)
-            g = imageData(x + 1, y)
-            r = imageData(x + 2, y)
-            a = imageData(x + 3, y)
+            b = imageData(x)
+            g = imageData(x + 1)
+            r = imageData(x + 2)
+            a = imageData(x + 3)
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
@@ -289,14 +290,14 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
             
             'If the distance is below the erasure threshold, remove it completely
             If (cDistance < eraseThreshold) Then
-                imageData(x + 3, y) = 0
+                imageData(x + 3) = 0
                 
             'If the color is between the erasure and blend threshold, feather it against a partial alpha and
             ' color-correct it to remove any "color fringing" from the removed color.
             ElseIf (cDistance < blendThreshold) Then
                 
                 'Use a ^2 curve to improve blending response
-                cDistance = ((blendThreshold - cDistance) / difThreshold)
+                cDistance = (blendThreshold - cDistance) * difThreshold
                 cDistance = cDistance * cDistance
                 
                 'Calculate a new alpha value for this pixel, based on its distance from the threshold.  Large
@@ -307,10 +308,11 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
                 ' background color, which will have "infected" the core RGB values.  Attempt to correct this by
                 ' subtracting the target color from the original color, using the calculated threshold value; this
                 ' is the only way I know to approximate the "feathering" caused by light bleeding over object edges.
-                If (cDistance = 1) Then cDistance = 0.999999
-                r = (r - (r2 * cDistance)) / (1# - cDistance)
-                g = (g - (g2 * cDistance)) / (1# - cDistance)
-                b = (b - (b2 * cDistance)) / (1# - cDistance)
+                If (cDistance > 0.999999) Then cDistance = 0.999999
+                cDistanceDenom = 1# / (1# - cDistance)
+                r = (r - (r2 * cDistance)) * cDistanceDenom
+                g = (g - (g2 * cDistance)) * cDistanceDenom
+                b = (b - (b2 * cDistance)) * cDistanceDenom
                 
                 If (r > 255) Then r = 255
                 If (g > 255) Then g = 255
@@ -320,10 +322,10 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
                 If (b < 0) Then b = 0
                 
                 'Assign the new color and alpha values
-                imageData(x, y) = b
-                imageData(x + 1, y) = g
-                imageData(x + 2, y) = r
-                imageData(x + 3, y) = newAlpha * a * (1# / 255#)
+                imageData(x) = b
+                imageData(x + 1) = g
+                imageData(x + 2) = r
+                imageData(x + 3) = newAlpha * a * ONE_DIV_255
                     
             End If
             
@@ -339,7 +341,7 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
