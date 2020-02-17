@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pen Selection Dialog
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 30/June/15
 'Last update: start migrating pen creation bits into this singular dialog

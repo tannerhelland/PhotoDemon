@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Internal Parameter Handler v2
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 25/March/13
 'Last updated: 07/October/17
 'Last update: switch to pdString, which greatly improves parameter assembly performance

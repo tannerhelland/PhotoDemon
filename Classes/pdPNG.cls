@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Container and Parser
-'Copyright 2018-2019 by Tanner Helland
+'Copyright 2018-2020 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 05/September/19
 'Last update: start work on exporting APNGs; 32-bpp animations are already working well!

@@ -173,7 +173,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Pinch and Whirl" Distortion
-'Copyright 2000-2019 by Tanner Helland
+'Copyright 2000-2020 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params

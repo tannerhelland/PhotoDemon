@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
-'Copyright 2018-2019 by Tanner Helland
+'Copyright 2018-2020 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 19/August/19
 'Last update: add full support for importing animated PNGs
@@ -93,8 +93,8 @@ End Enum
 #End If
 
 Private Type APNG_Frame
-    FrameWidth As Long      'Width of the following frame.
-    FrameHeight As Long     'Height of the following frame.
+    frameWidth As Long      'Width of the following frame.
+    frameHeight As Long     'Height of the following frame.
     FrameOffsetX As Long    'X position at which to render the following frame.
     FrameOffsetY As Long    'Y position at which to render the following frame.
     FrameDelayMS As Single  'Frame delay
@@ -162,8 +162,8 @@ Friend Function GetFrameOffsetY() As Long
 End Function
 
 Friend Function GetFrameRect(ByRef dstFrameRect As RectL_WH) As Boolean
-    dstFrameRect.Width = m_FrameData.FrameWidth
-    dstFrameRect.Height = m_FrameData.FrameHeight
+    dstFrameRect.Width = m_FrameData.frameWidth
+    dstFrameRect.Height = m_FrameData.frameHeight
     dstFrameRect.Left = 0
     dstFrameRect.Top = 0
     GetFrameRect = (dstFrameRect.Width <> 0) And (dstFrameRect.Height <> 0)
@@ -301,8 +301,8 @@ Friend Function LoadChunkData(ByRef srcStream As pdStream) As Boolean
                     
                     With m_FrameData
                         .SequenceNumber = m_Data.ReadLong_BE()
-                        .FrameWidth = m_Data.ReadLong_BE()
-                        .FrameHeight = m_Data.ReadLong_BE()
+                        .frameWidth = m_Data.ReadLong_BE()
+                        .frameHeight = m_Data.ReadLong_BE()
                         .FrameOffsetX = m_Data.ReadLong_BE()
                         .FrameOffsetY = m_Data.ReadLong_BE()
                         

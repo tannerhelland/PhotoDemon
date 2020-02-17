@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Rendering Surface class
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 10/May/16
 'Last update: split surface-specific capabilities out from GDI+ and into a safe wrapper

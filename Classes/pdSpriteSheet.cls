@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon spritesheet cache
-'Copyright 2018-2019 by Tanner Helland
+'Copyright 2018-2020 by Tanner Helland
 'Created: 13/July/18
 'Last updated: 30/August/19
 'Last update: allow the user to update images in-place when calling AddImage with an existing ID

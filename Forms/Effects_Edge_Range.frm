@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Range filter edge detection tool
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 23/November/15
 'Last updated: 23/November/15
 'Last update: initial build

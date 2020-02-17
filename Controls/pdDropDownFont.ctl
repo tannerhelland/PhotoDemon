@@ -29,8 +29,8 @@ Begin VB.UserControl pdDropDownFont
       Top             =   0
       Visible         =   0   'False
       Width           =   4935
-      _extentx        =   2566
-      _extenty        =   661
+      _ExtentX        =   2566
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "pdDropDownFont"
@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font-specific Drop Down control 2.0
-'Copyright 2016-2019 by Tanner Helland
+'Copyright 2016-2020 by Tanner Helland
 'Created: 01/June/16
 'Last updated: 09/February/17
 'Last update: migrate to safer comctl32 subclassing technique
@@ -671,7 +671,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_COMBOBOX
+    listSupport.ListSupportMode = PDLM_ComboBox
     
     'Prep font-specific managers and renderers
     Set m_listOfFonts = New pdStringStack
@@ -932,7 +932,7 @@ Private Sub RaiseListBox()
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
     ' scroll bar's maximum value is contingent on the available pixel size of the dropdown.
-    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_INSIDE_CB
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_CB
     
     'Now we can show the window
     With popupRect

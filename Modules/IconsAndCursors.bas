@@ -1,7 +1,7 @@
 Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 30/May/19
 'Last update: render small overlay of PD's icon atop dynamic taskbar icons

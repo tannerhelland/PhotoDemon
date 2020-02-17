@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackageChunky" v2.0 Interface (e.g. chunk-based archive handler)
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 03/June/19
 'Last updated: 03/October/19
 'Last update: allow packages loaded from memory to cache the source data locally; this allows for

@@ -184,7 +184,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'GIF export dialog
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 11/April/16
 'Last update: repurpose old color-depth dialog into a GIF-specific one

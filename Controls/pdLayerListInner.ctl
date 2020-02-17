@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer Listbox (inner portion only)
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 13/February/17
 'Last update: fix layer name edit box's initial size when the layer name is a null string

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon KD-Tree for fast palette matching (child node)
-'Copyright 2018-2019 by Tanner Helland
+'Copyright 2018-2020 by Tanner Helland
 'Created: 28/January/18
 'Last updated: 22/February/18
 'Last update: add support for retrieving colors by their original palette index (instead of bare RGBQuads)

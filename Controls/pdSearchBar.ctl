@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Search Bar control
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 25/April/19
 'Last updated: 16/May/19
 'Last update: continue refining search results list
@@ -939,7 +939,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_COMBOBOX
+    listSupport.ListSupportMode = PDLM_ComboBox
     
 End Sub
 
@@ -1178,7 +1178,7 @@ Private Sub RaiseListBox()
     Dim sizeChange As Single, i As Long
     sizeChange = amtShow * listSupport.DefaultItemHeight
     
-    If (listSupport.GetInternalSizeMode = PDLH_SEPARATORS) Then
+    If (listSupport.GetInternalSizeMode = PDLH_Separators) Then
         For i = 0 To amtShow - 1
             If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
         Next i
@@ -1259,7 +1259,7 @@ Private Sub RaiseListBox()
                             If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
                         End If
                         
-                        lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
+                        lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_CB
                         Exit Sub
                         
                     End If
@@ -1302,7 +1302,7 @@ Private Sub RaiseListBox()
         End If
     End If
     
-    lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
+    lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_CB
     
     'Now we can show the window; we also notify the window of its changed window style bits
     With popupRect

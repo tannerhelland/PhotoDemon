@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Stained Glass Effect Interface
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params

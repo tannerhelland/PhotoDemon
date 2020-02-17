@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
-'Copyright 2002-2019 by Tanner Helland
+'Copyright 2002-2020 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 30/May/19
 'Last update: replace image tabstrip right-click menu with pdPopupMenu; now it's Unicode-aware (finally!)

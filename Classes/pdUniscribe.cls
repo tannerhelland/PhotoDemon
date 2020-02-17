@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Uniscribe API Interface
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 19/May/15
 'Last update: migrate everything from a module to a class; there's enough useful code in here that we may want to
@@ -832,7 +832,7 @@ End Function
 'If a source DC is passed, the function will automatically fill the ABC width of each glyph prior to returning it.
 '
 ' Returns a value >= 0 indicating the number of glyphs in the returned struct.  0 indicates failure or an empty string.
-Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, Optional ByVal srcDC As Long = 0) As Long
+Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As PDGlyphUniscribe, Optional ByVal srcDC As Long = 0) As Long
     
     'Before doing anything else, we need to calculate a total number of glyphs in our current collection.
     Dim totalGlyphCount As Long
@@ -846,7 +846,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     'If the buffer is not large enough to hold our full glyph list, forcibly enlarge it, and leave some dead space for
     ' future entries, to reduce the need for resizes in the future.
     If UBound(dstGlyphArray) < totalGlyphCount - 1 Then
-        ReDim dstGlyphArray(0 To totalGlyphCount * 2 - 1) As pdGlyphUniscribe
+        ReDim dstGlyphArray(0 To totalGlyphCount * 2 - 1) As PDGlyphUniscribe
     End If
     
     'Next, iterate all items and copy the relevant glyph information from each item into the destination array
@@ -886,16 +886,16 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                         'Fill this glyph with dummy information, while taking care to manually mark it as a hard line break
                         With dstGlyphArray(netGlyphOffset)
                             .glyphIndex = 0
-                            .AdvanceWidth = 0
+                            .advanceWidth = 0
                             .isZeroWidth = True
                             .isSoftBreak = True
                             .isWhiteSpace = True
                             .isHardLineBreak = True
-                            .GlyphOffset.du = 0
-                            .GlyphOffset.dv = 0
-                            .ABCWidth.abcA = 0
-                            .ABCWidth.abcB = 0
-                            .ABCWidth.abcC = 0
+                            .glyphOffset.du = 0
+                            .glyphOffset.dv = 0
+                            .abcWidth.abcA = 0
+                            .abcWidth.abcB = 0
+                            .abcWidth.abcC = 0
                             .isFirstGlyphOnLine = False
                             .isLastGlyphOnLine = False
                         End With
@@ -911,14 +911,14 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
             
                 With dstGlyphArray(netGlyphOffset)
                     .glyphIndex = m_Items(i).GetGlyphCacheAtPosition(j)
-                    .AdvanceWidth = m_Items(i).GetAdvanceWidthAtPosition(j)
+                    .advanceWidth = m_Items(i).GetAdvanceWidthAtPosition(j)
                     .isZeroWidth = False
                     .isSoftBreak = m_Items(i).GetSoftBreakAtPosition(j)
                     .isWhiteSpace = m_Items(i).GetWhitespaceAtPosition(j)
                     .isHardLineBreak = False
                     .isFirstGlyphOnLine = False
                     .isLastGlyphOnLine = False
-                    m_Items(i).CopyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
+                    m_Items(i).CopyGlyphOffsetToPointer VarPtr(.glyphOffset), j
                     
                     'While here, we also collect the ABC width of each glyph.  Note that this is a tad cumbersome, because the
                     ' glyph index must be passed as an unsigned integer, and values > 32767 are absolutely possible.  As such,
@@ -929,7 +929,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                         tmpInteger = .glyphIndex
                     End If
                     
-                    If (srcDC <> 0) Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), tmpInteger, VarPtr(.ABCWidth)
+                    If (srcDC <> 0) Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), tmpInteger, VarPtr(.abcWidth)
                     
                 End With
                 
@@ -952,7 +952,7 @@ End Function
 'Sometimes it's helpful to take a close look at the current glyph cache.  This function will provide basic per-glyph info for the base run.
 Friend Sub PrintUniscribeDebugInfo()
     
-    Dim tmpGlyphCache() As pdGlyphUniscribe
+    Dim tmpGlyphCache() As PDGlyphUniscribe
     Dim numOfGlyphs As Long
     numOfGlyphs = GetCopyOfGlyphCache(tmpGlyphCache)
     
@@ -963,7 +963,7 @@ Friend Sub PrintUniscribeDebugInfo()
         Dim i As Long
         For i = 0 To numOfGlyphs - 1
             With tmpGlyphCache(i)
-                Debug.Print i & ": " & .glyphIndex & " (" & .AdvanceWidth & ")  (" & .GlyphOffset.du & ", " & .GlyphOffset.dv & ")"
+                Debug.Print i & ": " & .glyphIndex & " (" & .advanceWidth & ")  (" & .glyphOffset.du & ", " & .glyphOffset.dv & ")"
             End With
         Next i
         

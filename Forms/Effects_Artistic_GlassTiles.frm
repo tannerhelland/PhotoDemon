@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Glass Tiles Filter Dialog
-'Copyright 2014-2019 by dotPDN LLC, Rick Brewster, Tom Jackson, Audioglider, and Tanner Helland (see details below)
+'Copyright 2014-2020 by dotPDN LLC, Rick Brewster, Tom Jackson, Audioglider, and Tanner Helland (see details below)
 'Created: 23/May/14
 'Last updated: 01/August/17
 'Last update: migrate to PD's internal filter support engine, including internal supersampling techniques

@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make color transparent ("green screen") tool dialog
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 10/June/16
 'Last update: add a LittleCMS path for the algorithm; this improves performance by ~30%
@@ -155,12 +155,12 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     cParams.SetParamString processParameters
     
     Dim targetColor As Long
-    Dim eraseThreshold As Double, blendThreshold As Double
+    Dim eraseThreshold As Single, blendThreshold As Single
     
     With cParams
         targetColor = .GetLong("color", vbBlack)
-        eraseThreshold = .GetLong("erase-threshold", 15#)
-        blendThreshold = .GetLong("edge-blending", 30#)
+        eraseThreshold = .GetSingle("erase-threshold", 15!)
+        blendThreshold = .GetSingle("edge-blending", 30!)
     End With
     
     If (Not toPreview) Then Message "Adding new alpha channel to image..."
@@ -176,8 +176,8 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     finalY = curDIBValues.Bottom
     
     'For this function to work, each pixel needs to be RGBA, 32-bpp
-    Dim pxWidth As Long
-    pxWidth = workingDIB.GetDIBColorDepth \ 8
+    Dim pxSize As Long
+    pxSize = workingDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -197,10 +197,13 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     'For maximum quality, we will apply our color comparison in the L*a*b* color space; each scanline will be
     ' transformed to L*a*b* all at once, for performance reasons
     Dim labValues() As Single
-    ReDim labValues(0 To finalX * pxWidth + pxWidth) As Single
+    ReDim labValues(0 To finalX * pxSize + pxSize) As Single
     
+    'Used with internal LAB functions which require double-precision
     Dim labL As Double, labA As Double, labB As Double
     Dim labL2 As Double, labA2 As Double, labB2 As Double
+    
+    'Used with LCMS which supports single-level precision
     Dim labL2f As Single, labA2f As Single, labB2f As Single
     
     Dim labTransform As pdLCMSTransform
@@ -235,20 +238,20 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
     
     'The blend threshold is used to "smooth" the edges of the green screen.  Calculate the difference between
     ' the erase and the blend thresholds in advance.
-    Dim difThreshold As Double
+    Dim difThreshold As Single
     blendThreshold = eraseThreshold + blendThreshold
     difThreshold = blendThreshold - eraseThreshold
-    If (difThreshold <> 0#) Then difThreshold = 1# / difThreshold
+    If (difThreshold <> 0!) Then difThreshold = 1! / difThreshold
     
     Const ONE_DIV_255 As Double = 1# / 255#
     
-    Dim cDistance As Double, cDistanceDenom As Double
+    Dim cDistance As Single, cDistanceDenom As Single
     Dim newAlpha As Long
     
     'To improve performance of our horizontal loop, we'll move through bytes an entire pixel at a time
     Dim xStart As Long, xStop As Long
-    xStart = initX * pxWidth
-    xStop = finalX * pxWidth
+    xStart = initX * pxSize
+    xStop = finalX * pxSize
         
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
@@ -260,7 +263,7 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
         If useLCMS Then
             labTransform.ApplyTransformToScanline VarPtr(imageData(0)), VarPtr(labValues(0)), finalX + 1
         Else
-            For x = xStart To xStop Step pxWidth
+            For x = xStart To xStop Step pxSize
                 b = imageData(x)
                 g = imageData(x + 1)
                 r = imageData(x + 2)
@@ -272,7 +275,7 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
         End If
         
         'With all lab values pre-calculated, we can quickly step through each pixel, calculating distances as we go
-        For x = xStart To xStop Step pxWidth
+        For x = xStart To xStop Step pxSize
         
             'Get the source pixel color values
             b = imageData(x)
@@ -309,7 +312,7 @@ Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPrev
                 ' subtracting the target color from the original color, using the calculated threshold value; this
                 ' is the only way I know to approximate the "feathering" caused by light bleeding over object edges.
                 If (cDistance > 0.999999) Then cDistance = 0.999999
-                cDistanceDenom = 1# / (1# - cDistance)
+                cDistanceDenom = 1! / (1! - cDistance)
                 r = (r - (r2 * cDistance)) * cDistanceDenom
                 g = (g - (g2 * cDistance)) * cDistanceDenom
                 b = (b - (b2 * cDistance)) * cDistanceDenom

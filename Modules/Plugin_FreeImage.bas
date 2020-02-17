@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 08/August/17
 'Last update: migrate all tone-mapping code to XML params; new performance improvements for tone-mapping
@@ -773,7 +773,7 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
                 'Create a blank layer in the receiving image, and retrieve a pointer to it
                 newLayerID = targetImage.CreateBlankLayer
                 newLayerName = Layers.GenerateInitialLayerName(srcFilename, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
-                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, True
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, newLayerName, dstDIB, True
                 
             End If
             

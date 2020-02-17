@@ -423,7 +423,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PNG export dialog
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 24/April/19
 'Last update: remove any remaining dependence on FreeImage; all PNG duties are now handled by our homebrew PNG engine

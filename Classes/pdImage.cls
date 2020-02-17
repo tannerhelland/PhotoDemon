@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright 2006-2019 by Tanner Helland
+'Copyright 2006-2020 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 13/September/15
 'Last update: convert imgStorage to pdDictionary, so we can drop the run-time scrrun.dll requirement

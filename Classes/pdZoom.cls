@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Zoom Handler - calculates and tracks zoom values for a given image
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 28/August/17
 'Last update: code clean-up and minor optimizations

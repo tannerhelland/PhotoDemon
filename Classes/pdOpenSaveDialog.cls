@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PD System Open/Save Dialog Interface
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 05/August/15
 'Last updated: 15/August/15
 'Last update: finish work on GetSaveFileName()

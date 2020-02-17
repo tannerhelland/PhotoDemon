@@ -39,7 +39,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Splash Screen
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 02/September/17
 'Last update: handle paint messages internally, rather than leaning on AutoRedraw

@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserPrefs"
 '***************************************************************************
 'PhotoDemon User Preferences Manager
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 07/March/18
 'Last update: migrate from class to module as part of a broader preferences overhaul

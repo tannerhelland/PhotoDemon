@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Harmonic mean Tool
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 27/July/17
 'Last updated: 27/July/17
 'Last update: initial build

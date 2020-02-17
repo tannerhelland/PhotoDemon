@@ -293,7 +293,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fix Lens Distort Tool
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 22/January/13
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params

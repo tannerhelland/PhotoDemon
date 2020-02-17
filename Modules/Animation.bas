@@ -1,7 +1,7 @@
 Attribute VB_Name = "Animation"
 '***************************************************************************
 'Animation Functions
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 20/August/19
 'Last updated: 20/August/19
 'Last update: migrate animation code from animated GIF engine to here, since we're going to reuse bits of

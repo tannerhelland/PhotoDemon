@@ -161,7 +161,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated PNG export dialog
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 06/September/19
 'Last update: separate from original animated GIF export dialog, as the two exporters have different needs

@@ -295,7 +295,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Move/Size Tool Panel
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 09/April/18
 'Last update: synchronize viewport-specific settings against the new MoveTool module, which manages

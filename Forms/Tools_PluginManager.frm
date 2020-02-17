@@ -253,7 +253,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 20/April/16
 'Last update: overhaul the dialog so that it never needs to be updated against new plugins.  (Instead, all settings

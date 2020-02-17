@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 18/February/19
 'Last update: minor modifications to ensure "optimal" PackBits encoding.  I don't think it's mathematically

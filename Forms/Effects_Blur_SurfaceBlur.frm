@@ -83,7 +83,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Surface Blur (bilateral filter)
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 04/December/19
 'Last update: fully convert to recursive bilateral implementation

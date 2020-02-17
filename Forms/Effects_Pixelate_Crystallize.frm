@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Crystallize Effect Interface
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 08/April/17
 'Last update: convert to XML params, performance improvements

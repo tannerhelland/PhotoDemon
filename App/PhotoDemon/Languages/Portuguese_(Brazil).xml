@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3441</langversion>
+<langversion>6.8.3442</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1872,6 +1872,11 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Luminance to alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Remove alpha channel</original>
 <translation>Remover canal alfa</translation>
 </phrase>
@@ -2576,7 +2581,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation>Lista macro recente Limpar</translation>
 </phrase>
 
-<!-- Menus.bas contains 257 phrases. 30 were duplicates of existing phrases, so only 227 new phrases were written to file. -->
+<!-- Menus.bas contains 258 phrases. 30 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3882,6 +3887,12 @@ Please válidos inserir um valor numérico.</translation>
 <!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
+
+<!-- BEGIN text for WIC.bas -->
+
+<!-- WIC.bas contains 0 phrases. -->
+
+<!-- END text for WIC.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -6245,8 +6256,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Make color transparent</original>
-<translation>Tornar a cor transparente</translation>
+<original>From color (chroma key)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From luminance</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6832,7 +6848,7 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 <translation>Idioma alterado com sucesso.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 356 phrases. 161 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
+<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13895,6 +13911,11 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
+<original>Make color transparent</original>
+<translation>Tornar a cor transparente</translation>
+</phrase>
+
+<phrase>
 <original>erase threshold</original>
 <translation>apagar limiar</translation>
 </phrase>
@@ -13909,9 +13930,35 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>Adicionando novo canal alfa para imagem</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
+
+<!-- BEGIN text for Layer_Transparency_Luma.frm (FormTransparency_FromLuma) -->
+
+<phrase>
+<original>Generate mask from luminance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>black is transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>white is transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gray is transparent</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Layer_Transparency_Luma.frm-->
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
@@ -16332,18 +16379,12 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for WIC.bas -->
-
-<!-- WIC.bas contains 0 phrases. -->
-
-<!-- END text for WIC.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2722</phrasecount>
+<phrasecount>2729</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5030 phrases. -->
-<!-- 2308 are duplicates, so only 2722 unique phrases have been written to file. -->
-<!-- These 2722 phrases contain approximately 12728 total words. -->
+<!-- As of this build, PhotoDemon contains 5038 phrases. -->
+<!-- 2309 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12750 total words. -->
 
 </pdData>

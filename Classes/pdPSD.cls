@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 13/January/19
 'Last updated: 20/June/19
 'Last update: move to a memory-mapped file interface; this improves import and export performance while

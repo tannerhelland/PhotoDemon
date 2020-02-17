@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 15/August/15
 'Last update: convert the old cCommonDialog references to the newer, lighter pdOpenSaveDialog instance
@@ -468,7 +468,7 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String) As B
     
         'Assign the newly created DIB to the layer object
         tmpDIB.SetInitialAlphaPremultiplicationState True
-        newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
+        newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Background"), tmpDIB
         
         'Update the pdImage container to be the same size as its (newly created) base layer
         newImage.UpdateSize

@@ -142,7 +142,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2019 by Tanner Helland
+'Copyright 2002-2020 by Tanner Helland
 'Created: some time 2002
 'Last updated: 02/April/18
 'Last update: add "single neighbor" as a dithering option

@@ -125,7 +125,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Right-side ("Layers") Toolbar
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 25/April/19
 'Last update: add the "search" panel, which is a little tricky because it isn't resizable (unlike other panels)

@@ -63,7 +63,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Kuwahara Blur Dialog
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 15/November/19
 'Last updated: 19/November/19
 'Last update: wrap up initial build
@@ -71,8 +71,8 @@ Attribute VB_Exposed = False
 'Per Wikipedia (https://en.wikipedia.org/wiki/Kuwahara_filter):
 ' "The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction."
 '
-'For performance and quality reasons, PhotoDemon's implementation calculates variance using luminance; the quadrant
-' with the smallest luminance variance is then used for calculating average color.
+'For performance and quality reasons, PhotoDemon's implementation calculates variance using luminance;
+' the quadrant with the smallest luminance variance is then used for calculating average color.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

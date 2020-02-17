@@ -388,7 +388,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Combined Print / Print Preview Interface
-'Copyright 2003-2019 by Tanner Helland
+'Copyright 2003-2020 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 12/November/13
 'Last update: rewritten from scratch.  Literally.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
 'Automatic Software Updater
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 08/June/18
 'Last update: start migrating to a 2.0 update method

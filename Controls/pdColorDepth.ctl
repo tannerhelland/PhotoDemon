@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color/Transparency depth selector User Control
-'Copyright 2016-2019 by Tanner Helland
+'Copyright 2016-2020 by Tanner Helland
 'Created: 22/April/16
 'Last updated: 19/January/17
 'Last update: migrate copy+paste implementation to dedicated UC

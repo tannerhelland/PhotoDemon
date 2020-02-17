@@ -641,12 +641,20 @@ Begin VB.Form FormMain
          Caption         =   "Transparency"
          Index           =   12
          Begin VB.Menu MnuLayerTransparency 
-            Caption         =   "Make color transparent..."
+            Caption         =   "From color (chroma key)..."
             Index           =   0
          End
          Begin VB.Menu MnuLayerTransparency 
-            Caption         =   "Remove transparency..."
+            Caption         =   "From luminance..."
             Index           =   1
+         End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "Remove transparency..."
+            Index           =   3
          End
       End
       Begin VB.Menu MnuLayer 
@@ -1721,13 +1729,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README file for additional information on licensing and redistribution.
 
-'PhotoDemon is Copyright 1999-2019 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2020 by Tanner Helland, tannerhelland.com
 
 'Please visit https://photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Primary PhotoDemon Window
-'Copyright 2002-2019 by Tanner Helland
+'Copyright 2002-2020 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 27/March/18
 'Last update: new export menu items added
@@ -3532,6 +3540,10 @@ Private Sub MnuLayerTransparency_Click(Index As Integer)
         Case 0
             Menus.ProcessDefaultAction_ByName "layer_colortoalpha"
         Case 1
+            Menus.ProcessDefaultAction_ByName "layer_luminancetoalpha"
+        Case 2
+            'separator
+        Case 3
             Menus.ProcessDefaultAction_ByName "layer_removealpha"
     End Select
 End Sub

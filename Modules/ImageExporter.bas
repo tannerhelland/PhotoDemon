@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 10/January/18
 'Last update: add export support for OpenRaster (ORA) files

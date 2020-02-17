@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 10/July/18
 'Last update: expose dedicated options for pre-filtered bilinear and bicubic resampling

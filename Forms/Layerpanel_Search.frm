@@ -41,7 +41,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Search Tool Panel
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 25/April/19
 'Last updated: 25/April/19
 'Last update: initial build

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ColorManagement"
 '***************************************************************************
 'PhotoDemon ICC Profile Support Module
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 24/April/18
 'Last update: new helper function for exporting color profiles to file

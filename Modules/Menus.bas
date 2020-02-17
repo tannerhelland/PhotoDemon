@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2019 by Tanner Helland
+'Copyright 2017-2020 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 08/August/19
 'Last update: provide a WAPI interface for enabling/disabling menu items
@@ -306,8 +306,10 @@ Public Sub InitializeMenus()
         AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 10, 3
     AddMenuItem "-", "-", 3, 11
     AddMenuItem "Transparency", "layer_transparency", 3, 12
-        AddMenuItem "Make color transparent...", "layer_colortoalpha", 3, 12, 0
-        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 12, 1, "generic_trash"
+        AddMenuItem "From color (chroma key)...", "layer_colortoalpha", 3, 12, 0
+        AddMenuItem "From luminance...", "layer_luminancetoalpha", 3, 12, 1
+        AddMenuItem "-", "-", 3, 12, 2
+        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 12, 3, "generic_trash"
     AddMenuItem "-", "-", 3, 13
     AddMenuItem "Rasterize", "layer_rasterize", 3, 14
         AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 14, 0
@@ -1886,6 +1888,9 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
         Case "layer_transparency"
             Case "layer_colortoalpha"
                 Process "Color to alpha", True
+                
+            Case "layer_luminancetoalpha"
+                Process "Luminance to alpha", True
                 
             Case "layer_removealpha"
                 Process "Remove alpha channel", True

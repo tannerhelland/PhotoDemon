@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Button Strip Vertical" control
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 15/March/15
 'Last updated: 09/August/19
 'Last update: improve visual feedback when navigating strip via keyboard

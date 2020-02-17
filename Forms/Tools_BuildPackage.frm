@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Developer package construction dialog
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 04/March/19
 'Last updated: 14/October/19
 'Last update: use the new pdPackageChunky format for resource collections

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'File > Open Recent List Manager
-'Copyright 2005-2019 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2020 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 11/September/17
 'Last update: Rewrote class from scratch as a standalone instance, to enable optimizations that aren't easily

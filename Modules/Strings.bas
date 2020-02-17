@@ -1,7 +1,7 @@
 Attribute VB_Name = "Strings"
 '***************************************************************************
 'Additional string support functions
-'Copyright 2017-2019 by Tanner Helland
+'Copyright 2017-2020 by Tanner Helland
 'Created: 13/June/17
 'Last updated: 29/May/19
 'Last update: add proper support for Unicode normalizing; while this is rarely needed for data coming from Windows

@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Scrollbar control
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 07/October/15
 'Last updated: 29/May/19
 'Last update: switch to pdPopupMenu for right-clicks; this allows for localization (finally)
@@ -166,6 +166,7 @@ Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
 'Popup menu exposed on right-clicks (this is adopted from normal Windows scroll bars)
 Private WithEvents m_PopupMenu As pdPopupMenu
+Attribute m_PopupMenu.VB_VarHelpID = -1
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ScrollBar
@@ -181,9 +182,9 @@ Public Property Get ContainerHwnd() As Long
 End Property
 
 'hWnds aren't exposed by default
-Public Property Get hwnd() As Long
-Attribute hwnd.VB_UserMemId = -515
-    hwnd = UserControl.hwnd
+Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
+    hWnd = UserControl.hWnd
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -613,7 +614,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 m_ContextMenuY = y
                 
                 'Make sure translations have been applied to the popup menu captions
-                If (Not m_PopupMenu Is Nothing) Then m_PopupMenu.ShowMenu Me.hwnd, m_ContextMenuX, m_ContextMenuY
+                If (Not m_PopupMenu Is Nothing) Then m_PopupMenu.ShowMenu Me.hWnd, m_ContextMenuX, m_ContextMenuY
                 
         End Select
         
@@ -776,7 +777,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hwnd, True
+    ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
     

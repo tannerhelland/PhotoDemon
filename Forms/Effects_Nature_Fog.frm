@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fog Effect
-'Copyright 2002-2019 by Tanner Helland
+'Copyright 2002-2020 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 03/August/17
 'Last update: migrate to XML params, minor performance improvements

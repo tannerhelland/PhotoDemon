@@ -1,7 +1,7 @@
 Attribute VB_Name = "Compression"
 '***************************************************************************
 'Unified Compression Interface for PhotoDemon
-'Copyright 2016-2019 by Tanner Helland
+'Copyright 2016-2020 by Tanner Helland
 'Created: 02/December/16
 'Last updated: 13/February/19
 'Last update: overhaul our internal compression API as part of embedding libdeflate for deflate/zlib/gzip tasks

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 25/June/14
 'Last update: add new makeQuickFixesPermanent() function

@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Underwater" Effect
-'Copyright 2013-2019 by Tanner Helland
+'Copyright 2013-2020 by Tanner Helland
 'Created: 01/January/2001?
 'Last updated: 18/October/17
 'Last update: created dedicated UI, expose more options to the user

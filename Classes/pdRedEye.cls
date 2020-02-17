@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Red-eye Detection Engine
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 31/December/16
 'Last updated: 06/January/16
 'Last update: rework flood fill functionality into red-eye region detection

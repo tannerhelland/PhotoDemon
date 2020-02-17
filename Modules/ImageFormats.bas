@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats"
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright 2012-2019 by Tanner Helland
+'Copyright 2012-2020 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 26/December/19
 'Last update: add read support for HEIC/HEIF images (write support is TBD)

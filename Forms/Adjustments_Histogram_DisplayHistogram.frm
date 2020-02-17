@@ -313,7 +313,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 17/May/19
 'Last update: UI overhaul and major code cleanup; pd2D and pdCompositor are now used for rendering

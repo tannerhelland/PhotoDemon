@@ -1,7 +1,7 @@
 Attribute VB_Name = "WIC"
 '***************************************************************************
 'WIC (Windows Imaging Component) Interface
-'Copyright 2019-2019 by Tanner Helland
+'Copyright 2019-2020 by Tanner Helland
 'Created: 26/December/19
 'Last updated: 26/December/19
 'Last update: initial build

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Autosaves"
 '***************************************************************************
 'Image Autosave Handler
-'Copyright 2014-2019 by Tanner Helland
+'Copyright 2014-2020 by Tanner Helland
 'Created: 18/January/14
 'Last updated: 13/August/19
 'Last update: overhaul Undo/Redo file strategy to simplify and accelerate autosave checks

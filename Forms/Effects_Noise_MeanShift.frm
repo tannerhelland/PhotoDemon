@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Mean Shift Effect Tool
-'Copyright 2015-2019 by Tanner Helland
+'Copyright 2015-2020 by Tanner Helland
 'Created: 02/October/15
 'Last updated: 08/December/15
 'Last update: convert to the new pdPixelIterator class

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median-Cut Color Quantization Class
-'Copyright 2017-2019 by Tanner Helland
+'Copyright 2017-2020 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 25/March/19
 'Last update: new support for full RGBA modes, which also attempt to quantize alpha as part of the process
