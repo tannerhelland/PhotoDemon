@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2019 by Tanner Helland
+'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 18/June/18
 'Last update: unify process property handling between this module and the Undo engine; both now operate directly
@@ -2362,6 +2362,10 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     'Change layer alpha
     ElseIf Strings.StringsEqual(processID, "Color to alpha", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormTransparency_FromColor Else FormTransparency_FromColor.ColorToAlpha processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Luminance to alpha", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormTransparency_FromLuma Else FormTransparency_FromLuma.LuminanceToAlpha processParameters
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Remove alpha channel", True) Then
