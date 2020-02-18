@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1709</langversion>
+<langversion>7.2.1710</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1870,6 +1870,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Fit layer to image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color to alpha</original>
 <translation>Farbe zu Alpha</translation>
 </phrase>
@@ -2584,7 +2589,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 258 phrases. 30 were duplicates of existing phrases, so only 228 new phrases were written to file. -->
+<!-- Menus.bas contains 259 phrases. 30 were duplicates of existing phrases, so only 229 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6257,6 +6262,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>Fit to image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Transparency</original>
 <translation>Transparenz</translation>
 </phrase>
@@ -6854,7 +6864,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 357 phrases. 161 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16386,10 +16396,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2731</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5038 phrases. -->
-<!-- 2309 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12750 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2309 are duplicates, so only 2731 unique phrases have been written to file. -->
+<!-- These 2731 phrases contain approximately 12757 total words. -->
 
 </pdData>

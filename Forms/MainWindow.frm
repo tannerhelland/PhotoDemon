@@ -632,6 +632,14 @@ Begin VB.Form FormMain
             Caption         =   "Content-aware resize..."
             Index           =   3
          End
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "-"
+            Index           =   4
+         End
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "Fit to image"
+            Index           =   5
+         End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
@@ -2416,20 +2424,23 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     ' names with the Image > Orientation menu; as such, we must explicitly request actions
     Select Case Index
     
-        'Reset to actual size
         Case 0
             Menus.ProcessDefaultAction_ByName "layer_resetsize"
         
-        '<separator>
         Case 1
+            '<separator>
             
-        'Standard resize
         Case 2
             Menus.ProcessDefaultAction_ByName "layer_resize"
         
-        'Content-aware resize
         Case 3
             Menus.ProcessDefaultAction_ByName "layer_contentawareresize"
+        
+        Case 4
+            '<separator>
+        
+        Case 5
+            Menus.ProcessDefaultAction_ByName "layer_fittoimage"
     
     End Select
     

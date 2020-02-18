@@ -2321,6 +2321,10 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Layers.MakeLayerAffineTransformsPermanent cParams.GetLong("layerindex")
         Process_LayerMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Fit layer to image", True) Then
+        Layers.FitLayerToImageSize cParams.GetLong("layerindex")
+        Process_LayerMenu = True
+        
     'Destructive layer orientation changes
     ElseIf Strings.StringsEqual(processID, "Straighten layer", True) Then
         If raiseDialog Then ShowStraightenDialog PD_AT_SINGLELAYER Else FormStraighten.StraightenImage processParameters

@@ -1358,6 +1358,40 @@ Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
 
 End Sub
 
+'Add the necessary non-destructive transform parameters to force the current layer to its
+' parent image's size.
+Public Sub FitLayerToImageSize(ByVal srcLayerIndex As Long)
+    
+    If (srcLayerIndex < 0) Then srcLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'Reset to position (0, 0)
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerOffsetX 0#
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerOffsetY 0#
+    
+    'Set x/y size modifiers that result in a full-image stretch
+    Dim lyrWidth As Double, lyrHeight As Double, imgWidth As Double, imgHeight As Double
+    imgWidth = PDImages.GetActiveImage.Width
+    imgHeight = PDImages.GetActiveImage.Height
+    lyrWidth = PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).GetLayerWidth(False)
+    lyrHeight = PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).GetLayerHeight(False)
+    
+    'Failsafe check only; PD doesn't allow 0-width/height layers at present
+    If (lyrWidth > 0#) And (lyrHeight > 0#) Then
+        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier imgWidth / lyrWidth
+        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier imgHeight / lyrHeight
+    End If
+    
+    'Notify the parent image of the change
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    
+    'Re-sync the interface
+    Interface.SyncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+
+End Sub
+
 'If a layer has been transformed using the on-canvas tools, this will make those transforms permanent.
 Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     

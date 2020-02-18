@@ -304,6 +304,8 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 3, 10, 1
         AddMenuItem "Resize...", "layer_resize", 3, 10, 2, "image_resize"
         AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 10, 3
+        AddMenuItem "-", "-", 3, 10, 4
+        AddMenuItem "Fit to image", "layer_fittoimage", 3, 10, 5
     AddMenuItem "-", "-", 3, 11
     AddMenuItem "Transparency", "layer_transparency", 3, 12
         AddMenuItem "From color (chroma key)...", "layer_colortoalpha", 3, 12, 0
@@ -1798,7 +1800,6 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
             
         Case "layer_order"
-            
             Case "layer_gotop"
                 Process "Go to top layer", False, vbNullString, UNDO_Nothing
                 
@@ -1875,7 +1876,6 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 Process "Flip layer vertically", , , UNDO_Layer
                 
         Case "layer_size"
-        
             Case "layer_resetsize"
                 Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
                 
@@ -1884,6 +1884,9 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 
             Case "layer_contentawareresize"
                 Process "Content-aware layer resize", True
+                
+            Case "layer_fittoimage"
+                Process "Fit layer to image", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
                 
         Case "layer_transparency"
             Case "layer_colortoalpha"
