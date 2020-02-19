@@ -601,20 +601,20 @@ Public Function MinArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
 End Function
 
 'This is a modified modulo function; it handles negative values specially to ensure they work with certain distort functions
-Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
-    Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
-    If (Modulo < 0#) Then Modulo = Modulo + Divisor
+Public Function Modulo(ByVal quotient As Double, ByVal divisor As Double) As Double
+    Modulo = quotient - Fix(quotient / divisor) * divisor
+    If (Modulo < 0#) Then Modulo = Modulo + divisor
 End Function
 
 Public Function NearestInt(ByVal srcFloat As Single) As Long
-    NearestInt = Int(srcFloat + 0.5)
+    NearestInt = Int(srcFloat + 0.5!)
 End Function
 
 'Given an array of points (in floating-point format), calculate the center point of the bounding rect.
 Public Sub FindCenterOfFloatPoints(ByRef dstPoint As PointFloat, ByRef srcPoints() As PointFloat)
 
     Dim curMinX As Single, curMinY As Single, curMaxX As Single, curMaxY As Single
-    curMinX = 9999999:   curMaxX = -9999999:   curMinY = 9999999:   curMaxY = -9999999
+    curMinX = 9999999!:   curMaxX = -9999999!:   curMinY = 9999999!:   curMaxY = -9999999!
     
     'From the array of supplied points, find minimum and maximum (x, y) values
     Dim i As Long

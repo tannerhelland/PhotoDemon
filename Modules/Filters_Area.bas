@@ -413,8 +413,8 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
             numAASamples = 1
             ReDim ssOffsetsX(0) As Single
             ReDim ssOffsetsY(0) As Single
-            ssOffsetsX(0) = 0
-            ssOffsetsY(0) = 0
+            ssOffsetsX(0) = 0!
+            ssOffsetsY(0) = 0!
         
         'Cases 3, 4, 5: use rotated grid supersampling, at the recommended rotation of arctan(1/2), with 4 additional sample points
         ' per quality level.
@@ -427,56 +427,56 @@ Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
             
             'The first sample point is always the origin pixel.  This is used as the basis of adaptive supersampling,
             ' and should not be changed.
-            ssOffsetsX(0) = 0
-            ssOffsetsY(0) = 0
+            ssOffsetsX(0) = 0!
+            ssOffsetsY(0) = 0!
             
             'The other 4 sample points are calculated as follows:
             ' - Rotate (0, 0.5) around (0, 0) by arctan(1/2) radians
             ' - Repeat the above step, but increasing each rotation by 90.
-            ssOffsetsX(1) = 0.447077
-            ssOffsetsY(1) = 0.22388
+            ssOffsetsX(1) = 0.447077!
+            ssOffsetsY(1) = 0.22388!
             
-            ssOffsetsX(2) = -0.447077
-            ssOffsetsY(2) = -0.22388
+            ssOffsetsX(2) = -0.447077!
+            ssOffsetsY(2) = -0.22388!
             
-            ssOffsetsX(3) = -0.22388
-            ssOffsetsY(3) = 0.447077
+            ssOffsetsX(3) = -0.22388!
+            ssOffsetsY(3) = 0.447077!
             
-            ssOffsetsX(4) = 0.22388
-            ssOffsetsY(4) = -0.447077
+            ssOffsetsX(4) = 0.22388!
+            ssOffsetsY(4) = -0.447077!
             
             'For quality levels 4 and 5, we add a second set of sampling points, closer to the origin, and offset from the originals
             ' by 45 degrees
             If (userQuality > 3) Then
             
-                ssOffsetsX(5) = 0.0789123
-                ssOffsetsY(5) = 0.237219
+                ssOffsetsX(5) = 0.0789123!
+                ssOffsetsY(5) = 0.237219!
                 
-                ssOffsetsX(6) = -0.237219
-                ssOffsetsY(6) = 0.0789123
+                ssOffsetsX(6) = -0.237219!
+                ssOffsetsY(6) = 0.0789123!
                 
-                ssOffsetsX(7) = -0.0789123
-                ssOffsetsY(7) = -0.237219
+                ssOffsetsX(7) = -0.0789123!
+                ssOffsetsY(7) = -0.237219!
                 
-                ssOffsetsX(8) = 0.237219
-                ssOffsetsY(8) = -0.0789123
+                ssOffsetsX(8) = 0.237219!
+                ssOffsetsY(8) = -0.0789123!
             
                 'For the final quality level, add a set of 4 more points, calculated by rotating (0, 0.67) around the
                 ' origin in 45 degree increments.  The benefits of this are minimal for all but the most extreme
                 ' zoom-out situations.
                 If (userQuality > 4) Then
                 
-                    ssOffsetsX(9) = 0.473762
-                    ssOffsetsY(9) = 0.473762
+                    ssOffsetsX(9) = 0.473762!
+                    ssOffsetsY(9) = 0.473762!
                     
-                    ssOffsetsX(10) = -0.473762
-                    ssOffsetsY(10) = 0.473762
+                    ssOffsetsX(10) = -0.473762!
+                    ssOffsetsY(10) = 0.473762!
                     
-                    ssOffsetsX(11) = -0.473762
-                    ssOffsetsY(11) = -0.473762
+                    ssOffsetsX(11) = -0.473762!
+                    ssOffsetsY(11) = -0.473762!
                     
-                    ssOffsetsX(12) = 0.473762
-                    ssOffsetsY(12) = -0.473762
+                    ssOffsetsX(12) = 0.473762!
+                    ssOffsetsY(12) = -0.473762!
                     
                 End If
             
