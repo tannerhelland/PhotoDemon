@@ -279,7 +279,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             ' To make this possible, PD needs to know if a macro is currently running; if it is, it will
             ' attempt to manually apply a flood fill.  We do *NOT* want to do this during normal operations,
             ' or it will cause the fill to be applied twice!
-            If (Macros.GetMacroStatus = MacroPLAYBACK) And (LenB(processParameters) <> 0) Then
+            If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) And (LenB(processParameters) <> 0) Then
                 PDImages.GetActiveImage.ResetScratchLayer True
                 Tools_Fill.PlayFillFromMacro processParameters
             End If
@@ -299,7 +299,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
         ' ID, and the second is a layer setting value.
         ElseIf Strings.StringsEqual(processID, "Modify layer", True) Then
-            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+            If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
                 PDImages.GetActiveImage.GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
             End If
             processFound = True
@@ -308,7 +308,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
         ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
         ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
-            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+            If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
                 If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
             End If
             processFound = True
@@ -2183,7 +2183,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     'During macro playback, "New text layer" actually means *create* a new text layer, using the settings specified in the parameter string.
     ElseIf Strings.StringsEqual(processID, "New text layer", True) Or Strings.StringsEqual(processID, "New typography layer", True) Then
         
-        If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+        If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
             
             'Start by creating a new layer
             If Strings.StringsEqual(processID, "New text layer", True) Then

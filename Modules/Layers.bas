@@ -1869,7 +1869,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         ' Undo/Redo generation - we simply need to flag the processor to update the screen and perform
         ' any maintenance tasks, but we explicitly request that the processor does *not* generate undo
         ' data on this internal call!)
-        If (Macros.GetMacroStatus = MacroPLAYBACK) Then undoType = UNDO_Nothing Else undoType = UNDO_Layer
+        If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then undoType = UNDO_Nothing Else undoType = UNDO_Layer
         Processor.Process processNameToUse, False, srcParamString, undoType, g_CurrentTool
         
         'Reset the scratch layer (if it hasn't already been freed)
@@ -1913,7 +1913,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         
         'Ask the central processor to create Undo/Redo data for us.  (See IMPORTANT NOTE on the
         ' previous section for details on why the undo status is set manually.)
-        If (Macros.GetMacroStatus = MacroPLAYBACK) Then undoType = UNDO_Nothing Else undoType = UNDO_Image_VectorSafe
+        If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then undoType = UNDO_Nothing Else undoType = UNDO_Image_VectorSafe
         Processor.Process processNameToUse, False, srcParamString, undoType, g_CurrentTool
         
         'Create a new scratch layer

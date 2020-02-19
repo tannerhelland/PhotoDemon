@@ -75,7 +75,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     
     'Produce a parameter string that stores all data for the current fill (including coordinates!)
     Dim curFillParams As String
-    If (Macros.GetMacroStatus <> MacroPLAYBACK) Then
+    If ((Macros.GetMacroStatus <> MacroPLAYBACK) And (Macros.GetMacroStatus <> MacroBATCH)) Then
         curFillParams = GetAllFillSettings(imgX, imgY)
     Else
         curFillParams = vbNullString
@@ -395,7 +395,7 @@ End Sub
 Public Sub PlayFillFromMacro(ByRef srcParams As String)
 
     'Failsafe check; the central processor should have verified this
-    If (Macros.GetMacroStatus = MacroPLAYBACK) Then
+    If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
     
         'Parse param string and call the appropriate filler
         Dim cParams As pdParamXML
