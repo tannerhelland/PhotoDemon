@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1710</langversion>
+<langversion>7.2.1721</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -557,7 +557,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Rotating image clockwise</original>
-<translation>Bild wird im UZS gedreht</translation>
+<translation>Bild wird im Uhrzeigersinn gedreht</translation>
 </phrase>
 
 <phrase>
@@ -567,7 +567,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Rotating image counter-clockwise</original>
-<translation>Bild wird gegen UZS gedreht</translation>
+<translation>Bild wird entgegen dem Uhrzeigersinn gedreht</translation>
 </phrase>
 
 <phrase>
@@ -1641,12 +1641,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation>Bild 90° im UZS drehen</translation>
+<translation>Bild 90° im Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation>Bild 90° gegen UZS drehen</translation>
+<translation>Bild 90° entgegen dem Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
@@ -1826,12 +1826,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation>Layer 90° im UZS drehen</translation>
+<translation>Layer 90° im Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation>Layer 90° gegen UZS drehen</translation>
+<translation>Layer 90° entgegen dem Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
@@ -1871,7 +1871,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Fit layer to image</original>
-<translation></translation>
+<translation>Layer an Bild anpassen</translation>
 </phrase>
 
 <phrase>
@@ -1881,7 +1881,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Luminance to alpha</original>
-<translation></translation>
+<translation>Luminanz zu Alpha</translation>
 </phrase>
 
 <phrase>
@@ -2515,8 +2515,8 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
-<original>Pan and zoom</original>
-<translation>Schwenken und Zoomen</translation>
+<original>Offset and zoom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5179,7 +5179,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation>Farbton im UZS drehen</translation>
+<translation>Farbton im Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
@@ -5219,7 +5219,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation>Farbton gegen UZS drehen</translation>
+<translation>Farbton entgegen dem Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
@@ -5824,7 +5824,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation>Bild an Bildschirm anpassen</translation>
+<translation>Anpassen des BIldes auf dem Bildschirm</translation>
 </phrase>
 
 <phrase>
@@ -6083,12 +6083,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>90 clockwise</original>
-<translation>90° im UZS</translation>
+<translation>90° im Uhrzeigersinn</translation>
 </phrase>
 
 <phrase>
 <original>90 counter-clockwise</original>
-<translation>90° gegen UZS</translation>
+<translation>90° entgegen dem Uhrzeigersinn</translation>
 </phrase>
 
 <phrase>
@@ -6233,12 +6233,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation>90° im UZS drehen</translation>
+<translation>90° im Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation>90° gegen UZS drehen</translation>
+<translation>90° entgegen dem Uhrzeigersinn drehen</translation>
 </phrase>
 
 <phrase>
@@ -6263,7 +6263,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit to image</original>
-<translation></translation>
+<translation>An Bild anpassen</translation>
 </phrase>
 
 <phrase>
@@ -6273,12 +6273,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>From color (chroma key)</original>
-<translation></translation>
+<translation>Aus Farbe (farbbasierte Bildfreistellung)</translation>
 </phrase>
 
 <phrase>
 <original>From luminance</original>
-<translation></translation>
+<translation>Aus Luminanz</translation>
 </phrase>
 
 <phrase>
@@ -6523,7 +6523,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Unsharp masking</original>
-<translation>Unscharfe Maskierung</translation>
+<translation>Unscharfmaskierung</translation>
 </phrase>
 
 <phrase>
@@ -7645,7 +7645,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können das Menü "Effekte > Schärfen > Unscharfe Maskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
+<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild erzeugen. Sie können das Menü "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10891,7 +10891,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying unsharp mask (step %1 of %2)</original>
-<translation>Unscharfe Maske wird angewendet (Schritt %1 von %2)</translation>
+<translation>Unscharf maskieren wird angewendet (Schritt %1 von %2)</translation>
 </phrase>
 
 <!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -11139,13 +11139,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Transform_PanZoom.frm (FormPanAndZoom) -->
 
 <phrase>
-<original>horizontal pan</original>
-<translation>Horizontalschwenk</translation>
+<original>horizontal offset</original>
+<translation>Horizontales Offset</translation>
 </phrase>
 
 <phrase>
-<original>vertical pan</original>
-<translation>Vertikalschwenk</translation>
+<original>vertical offset</original>
+<translation>Vertikales Offset</translation>
 </phrase>
 
 <phrase>
@@ -11289,16 +11289,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Transform_Sphere.frm (FormSpherize) -->
 
 <phrase>
-<original>vertical offset</original>
-<translation>Vertikales Offset</translation>
-</phrase>
-
-<phrase>
-<original>horizontal offset</original>
-<translation>Horizontales Offset</translation>
-</phrase>
-
-<phrase>
 <original>area outside sphere</original>
 <translation>Bereich außerhalb Kugel</translation>
 </phrase>
@@ -11318,7 +11308,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Strahlen des Lichts</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
@@ -12382,7 +12372,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschließlich Apps aus dem Windows-Store) erlauben kein direktes Screen-Capture. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschließlich Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
@@ -12759,7 +12749,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>chroma subsampling</original>
-<translation>Chroma-Subsampling</translation>
+<translation>Farbunterabtastung</translation>
 </phrase>
 
 <phrase>
@@ -13953,22 +13943,22 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Generate mask from luminance</original>
-<translation></translation>
+<translation>Maske aus Luminanz generieren</translation>
 </phrase>
 
 <phrase>
 <original>black is transparent</original>
-<translation></translation>
+<translation>Schwarz ist trasparent</translation>
 </phrase>
 
 <phrase>
 <original>white is transparent</original>
-<translation></translation>
+<translation>Weiß ist transparent</translation>
 </phrase>
 
 <phrase>
 <original>gray is transparent</original>
-<translation></translation>
+<translation>Grau ist transparent</translation>
 </phrase>
 
 <!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -16396,10 +16386,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2731</phrasecount>
+<phrasecount>2729</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2309 are duplicates, so only 2731 unique phrases have been written to file. -->
-<!-- These 2731 phrases contain approximately 12757 total words. -->
+<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12753 total words. -->
 
 </pdData>

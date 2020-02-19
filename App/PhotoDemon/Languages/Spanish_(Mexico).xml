@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.463</langversion>
+<langversion>6.7.464</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -2511,8 +2511,8 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
-<original>Pan and zoom</original>
-<translation>Pan y el zoom</translation>
+<original>Offset and zoom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11132,13 +11132,13 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Transform_PanZoom.frm (FormPanAndZoom) -->
 
 <phrase>
-<original>horizontal pan</original>
-<translation>pan horizontal</translation>
+<original>horizontal offset</original>
+<translation>desplazamiento horizontal</translation>
 </phrase>
 
 <phrase>
-<original>vertical pan</original>
-<translation>pan verticales</translation>
+<original>vertical offset</original>
+<translation>desviación vertical</translation>
 </phrase>
 
 <phrase>
@@ -11282,16 +11282,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Transform_Sphere.frm (FormSpherize) -->
 
 <phrase>
-<original>vertical offset</original>
-<translation>desviación vertical</translation>
-</phrase>
-
-<phrase>
-<original>horizontal offset</original>
-<translation>desplazamiento horizontal</translation>
-</phrase>
-
-<phrase>
 <original>area outside sphere</original>
 <translation>área fuera de la esfera</translation>
 </phrase>
@@ -11311,7 +11301,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>rayos de luz</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
@@ -16390,10 +16380,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2731</phrasecount>
+<phrasecount>2729</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2309 are duplicates, so only 2731 unique phrases have been written to file. -->
-<!-- These 2731 phrases contain approximately 12757 total words. -->
+<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12753 total words. -->
 
 </pdData>

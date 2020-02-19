@@ -1844,7 +1844,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     'Transform filters
-    ElseIf Strings.StringsEqual(processID, "Pan and zoom", True) Then
+    ElseIf Strings.StringsEqual(processID, "Offset and zoom", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormPanAndZoom Else FormPanAndZoom.PanAndZoomFilter processParameters
         Process_EffectsMenu = True
         

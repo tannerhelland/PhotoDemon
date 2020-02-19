@@ -494,7 +494,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Twins...", "effects_twins", 6, 10, 7
         AddMenuItem "Vignetting...", "effects_vignetting", 6, 10, 8
     AddMenuItem "Transform", "effects_transform", 6, 11
-        AddMenuItem "Pan and zoom...", "effects_panandzoom", 6, 11, 0
+        AddMenuItem "Offset and zoom...", "effects_panandzoom", 6, 11, 0
         AddMenuItem "Perspective...", "effects_perspective", 6, 11, 1
         AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 11, 2
         AddMenuItem "Rotate...", "effects_rotate", 6, 11, 3
@@ -2364,7 +2364,7 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
         Case "effects_transform"
             Case "effects_panandzoom"
-                Process "Pan and zoom", True
+                Process "Offset and zoom", True
                 
             Case "effects_perspective"
                 Process "Perspective", True

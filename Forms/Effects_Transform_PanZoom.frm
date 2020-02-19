@@ -3,7 +3,7 @@ Begin VB.Form FormPanAndZoom
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Pan and zoom"
+   Caption         =   " Offset and zoom"
    ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
@@ -53,9 +53,9 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "horizontal pan"
-      Min             =   -64
-      Max             =   64
+      Caption         =   "horizontal offset"
+      Min             =   -100
+      Max             =   100
       SigDigits       =   1
    End
    Begin PhotoDemon.pdSlider sltVertical 
@@ -66,9 +66,9 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "vertical pan"
-      Min             =   -64
-      Max             =   64
+      Caption         =   "vertical offset"
+      Min             =   -100
+      Max             =   100
       SigDigits       =   1
    End
    Begin PhotoDemon.pdSlider sltZoom 
@@ -115,11 +115,12 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Pan and Zoom Effect Interface
+'Pan (offset) and Zoom Effect Interface
 'Copyright 2013-2020 by Tanner Helland
 'Created: 28/May/13
-'Last updated: 27/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 18/February/20
+'Last update: change horizontal/vertical offsets to ratios; this simplifies a "50%" value for
+'              creating tileable patterns.  Also, huge performance improvements!
 '
 'Dialog for handling a Ken Burns transform (http://en.wikipedia.org/wiki/Ken_burns_effect).
 '
@@ -147,54 +148,49 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     Dim edgeHandling As Long, superSamplingAmount As Long
     
     With cParams
-        hPan = .GetDouble("horizontal", sltHorizontal.Value)
-        vPan = .GetDouble("vertical", sltVertical.Value)
+        hPan = .GetDouble("horizontal-ratio", 0#)
+        vPan = .GetDouble("vertical-ratio", 0#)
         newZoom = .GetDouble("zoom", sltZoom.Value)
         edgeHandling = .GetLong("edges", cboEdges.ListIndex)
         superSamplingAmount = .GetLong("quality", sltQuality.Value)
     End With
     
+    'Quality settings above 3 are only relevant if the image is being *zoomed out*
+    ' (that's when supersampling provides some benefit).
+    'If the image is *not* being zoomed out, forcibly turn supersampling off.
+    If (newZoom >= 0#) And (superSamplingAmount > 2) Then superSamplingAmount = 2
+    
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
+    'Create a copy of the current image; we will use it as our source reference.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'If this is a preview, adjust incoming parameters so they are representative of the final image
-    If toPreview Then
-        hPan = hPan * curDIBValues.previewModifier
-        vPan = vPan * curDIBValues.previewModifier
-    End If
+    'Convert the passed horizontal/vertical ratios to absolute values
+    hPan = hPan * curDIBValues.Width
+    vPan = vPan * curDIBValues.Height
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-                
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
-    'Create a filter support class, which will aid with edge handling and interpolation
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
+    
+    'Create a filter support class, which handles edge pixel calculation and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
@@ -246,9 +242,9 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) / 2#
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) / 2#
     midY = midY + initY
     
     'Invert the vertical pan parameters, as that seems to be more intuitive to non-programmers
@@ -267,17 +263,18 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
-        
-    'Max radius is calculated as the distance from the center of the image to a corner
-    Dim tWidth As Long, tHeight As Long
-    tWidth = curDIBValues.Width
-    tHeight = curDIBValues.Height
+    Dim hOffsetFixed As Double, vOffsetFixed As Double
+    hOffsetFixed = midX - hPan
+    vOffsetFixed = midY - vPan
+    
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
-                         
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
+        
         'Reset all supersampling values
         newR = 0
         newG = 0
@@ -297,11 +294,15 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
             j = nX + ssX(sampleIndex)
             k = nY + ssY(sampleIndex)
             
-            srcX = midX - hPan + j * newZoom
-            srcY = midY - vPan + k * newZoom
+            srcX = hOffsetFixed + j * newZoom
+            srcY = vOffsetFixed + k * newZoom
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -336,23 +337,24 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
         newB = newB * avgSamples
         newA = newA * avgSamples
         
-        dstImageData(quickVal, y) = newB
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 3, y) = newA
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -360,7 +362,7 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , GetLocalParamString(), UNDO_Layer
+    Process "Offset and zoom", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -376,23 +378,6 @@ Private Sub Form_Load()
 
     'Suspend previews while we initialize all the controls
     cmdBar.SetPreviewStatus False
-
-    'Note the current image's width and height, which will be needed to adjust the preview effect
-    Dim iWidth As Long, iHeight As Long
-    If PDImages.GetActiveImage.IsSelectionActive Then
-        Dim selBounds As RectF
-        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
-        iWidth = selBounds.Width
-        iHeight = selBounds.Height
-    Else
-        iWidth = PDImages.GetActiveImage.Width
-        iHeight = PDImages.GetActiveImage.Height
-    End If
-        
-    sltHorizontal.Min = -1 * (iWidth \ 2)
-    sltHorizontal.Max = iWidth \ 2
-    sltVertical.Min = -1 * (iHeight \ 2)
-    sltVertical.Max = iHeight \ 2
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -441,8 +426,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "horizontal", sltHorizontal.Value
-        .AddParam "vertical", sltVertical.Value
+        .AddParam "horizontal-ratio", sltHorizontal.Value / 100#
+        .AddParam "vertical-ratio", sltVertical.Value / 100#
         .AddParam "zoom", sltZoom.Value
         .AddParam "edges", cboEdges.ListIndex
         .AddParam "quality", sltQuality.Value

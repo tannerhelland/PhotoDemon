@@ -1366,7 +1366,7 @@ Begin VB.Form FormMain
          Caption         =   "Transform"
          Index           =   11
          Begin VB.Menu MnuEffectTransform 
-            Caption         =   "Pan and zoom..."
+            Caption         =   "Offset and zoom..."
             Index           =   0
          End
          Begin VB.Menu MnuEffectTransform 

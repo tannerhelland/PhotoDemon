@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3443</langversion>
+<langversion>6.8.3444</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2506,8 +2506,8 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
-<original>Pan and zoom</original>
-<translation>Pan és zoom</translation>
+<original>Offset and zoom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11116,13 +11116,13 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Transform_PanZoom.frm (FormPanAndZoom) -->
 
 <phrase>
-<original>horizontal pan</original>
-<translation>vízszintes pan</translation>
+<original>horizontal offset</original>
+<translation>vízszintes eltolás</translation>
 </phrase>
 
 <phrase>
-<original>vertical pan</original>
-<translation>függőleges pan</translation>
+<original>vertical offset</original>
+<translation>függőleges eltolás</translation>
 </phrase>
 
 <phrase>
@@ -11266,16 +11266,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Transform_Sphere.frm (FormSpherize) -->
 
 <phrase>
-<original>vertical offset</original>
-<translation>függőleges eltolás</translation>
-</phrase>
-
-<phrase>
-<original>horizontal offset</original>
-<translation>vízszintes eltolás</translation>
-</phrase>
-
-<phrase>
 <original>area outside sphere</original>
 <translation>területen kívüli területen</translation>
 </phrase>
@@ -11295,7 +11285,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>fénysugarak</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
@@ -16369,10 +16359,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2731</phrasecount>
+<phrasecount>2729</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2309 are duplicates, so only 2731 unique phrases have been written to file. -->
-<!-- These 2731 phrases contain approximately 12757 total words. -->
+<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12753 total words. -->
 
 </pdData>

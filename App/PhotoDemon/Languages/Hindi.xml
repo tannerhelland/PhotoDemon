@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.163</langversion>
+<langversion>1.0.164</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2513,8 +2513,8 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
-<original>Pan and zoom</original>
-<translation>पैन और ज़ूम करें</translation>
+<original>Offset and zoom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11131,13 +11131,13 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Transform_PanZoom.frm (FormPanAndZoom) -->
 
 <phrase>
-<original>horizontal pan</original>
-<translation>क्षैतिज पैन</translation>
+<original>horizontal offset</original>
+<translation>क्षैतिज ऑफसेट</translation>
 </phrase>
 
 <phrase>
-<original>vertical pan</original>
-<translation>ऊर्ध्वाधर पैन</translation>
+<original>vertical offset</original>
+<translation>ऊर्ध्वाधर ऑफसेट</translation>
 </phrase>
 
 <phrase>
@@ -11281,16 +11281,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Transform_Sphere.frm (FormSpherize) -->
 
 <phrase>
-<original>vertical offset</original>
-<translation>ऊर्ध्वाधर ऑफसेट</translation>
-</phrase>
-
-<phrase>
-<original>horizontal offset</original>
-<translation>क्षैतिज ऑफसेट</translation>
-</phrase>
-
-<phrase>
 <original>area outside sphere</original>
 <translation>क्षेत्र के बाहर क्षेत्र</translation>
 </phrase>
@@ -11310,7 +11300,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>प्रकाश की किरणें</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
@@ -16389,10 +16379,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2731</phrasecount>
+<phrasecount>2729</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2309 are duplicates, so only 2731 unique phrases have been written to file. -->
-<!-- These 2731 phrases contain approximately 12757 total words. -->
+<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
+<!-- These 2729 phrases contain approximately 12753 total words. -->
 
 </pdData>
