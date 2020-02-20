@@ -184,7 +184,7 @@ Public Sub ApplyReliefEffect(ByVal effectParams As String, Optional ByVal toPrev
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, EDGE_CLAMP, True, curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters qvDepth, pdeo_Clamp, True, curDIBValues.maxX, curDIBValues.maxY
     
     'During previews, adjust the distance parameter to compensate for preview size
     If toPreview Then eDistance = eDistance * curDIBValues.previewModifier

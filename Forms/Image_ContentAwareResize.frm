@@ -98,9 +98,9 @@ Option Explicit
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
-Private m_ResizeTarget As PD_ACTION_TARGET
+Private m_ResizeTarget As PD_ActionTarget
 
-Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
+Public Property Let ResizeTarget(newTarget As PD_ActionTarget)
     m_ResizeTarget = newTarget
 End Property
 
@@ -115,16 +115,16 @@ Private Sub cmdBar_OKClick()
         .AddParam "height", ucResize.ResizeHeight
         .AddParam "unit", ucResize.UnitOfMeasurement
         .AddParam "ppi", ucResize.ResizeDPIAsPPI
-        If (m_ResizeTarget = PD_AT_SINGLELAYER) Then
+        If (m_ResizeTarget = pdat_SingleLayer) Then
             .AddParam "target", "layer"
         Else
             .AddParam "target", "image"
         End If
     End With
     
-    If (m_ResizeTarget = PD_AT_WHOLEIMAGE) Then
+    If (m_ResizeTarget = pdat_Image) Then
         Process "Content-aware image resize", , cParams.GetParamString(), UNDO_Image
-    ElseIf (m_ResizeTarget = PD_AT_SINGLELAYER) Then
+    ElseIf (m_ResizeTarget = pdat_SingleLayer) Then
         Process "Content-aware layer resize", , cParams.GetParamString(), UNDO_Layer
     End If
 
@@ -138,11 +138,11 @@ Private Sub cmdBar_RandomizeClick()
     
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
             ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False))
             ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False))
     
@@ -157,10 +157,10 @@ Private Sub cmdBar_ResetClick()
     'Automatically set the width and height text boxes to match the relevant image or layer's current dimensions
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
     
     End Select
@@ -174,10 +174,10 @@ Private Sub Form_Activate()
     'Set the dialog caption to match the current resize operation (resize image or resize single layer)
     Select Case m_ResizeTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Me.Caption = g_Language.TranslateMessage("Content-aware image resize")
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Me.Caption = g_Language.TranslateMessage("Content-aware layer resize")
         
     End Select
@@ -187,16 +187,16 @@ Private Sub Form_Activate()
     
     Select Case m_ResizeTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
     
     'Warn about flattening if the entire image is being content-aware-resized
-    lblFlatten.Visible = (m_ResizeTarget = PD_AT_WHOLEIMAGE)
+    lblFlatten.Visible = (m_ResizeTarget = pdat_Image)
     
     ucResize.LockAspectRatio = False
 
@@ -211,10 +211,10 @@ Private Sub Form_Load()
     ' a width/height/resolution of 0, which will cause divide-by-zero errors.)
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
@@ -244,18 +244,18 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     cParams.SetParamString xmlParams
     
     Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Double
-    Dim thingToResize As PD_ACTION_TARGET
+    Dim thingToResize As PD_ActionTarget
     
     With cParams
         imgWidth = .GetDouble("width")
         imgHeight = .GetDouble("height")
         imgResizeUnit = .GetLong("unit", mu_Pixels)
         imgDPI = .GetDouble("ppi", 96)
-        thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
+        thingToResize = .GetLong("target", pdat_Image)
     End With
     
     'If the entire image is being resized, some extra preparation is required
-    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+    If (thingToResize = pdat_Image) Then
         
         'If a selection is active, remove it now
         If PDImages.GetActiveImage.IsSelectionActive Then
@@ -295,7 +295,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
-        If thingToResize = PD_AT_WHOLEIMAGE Then
+        If thingToResize = pdat_Image Then
             PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
             PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
             DisplaySize PDImages.GetActiveImage()

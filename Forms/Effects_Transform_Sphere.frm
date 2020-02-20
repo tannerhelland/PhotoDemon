@@ -457,7 +457,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltQuality = 2
-    cboEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = pdeo_Wrap
 End Sub
 
 Private Sub Form_Load()
@@ -467,7 +467,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Populate the "area outside sphere" button
     btsExterior.AddItem "empty", 0

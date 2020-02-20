@@ -135,16 +135,16 @@ End Enum
 #End If
 
 'Edge-handling methods for distort-style filters
-Public Enum EDGE_OPERATOR
-    EDGE_CLAMP = 0
-    EDGE_REFLECT = 1
-    EDGE_WRAP = 2
-    EDGE_ERASE = 3
-    EDGE_ORIGINAL = 4
+Public Enum PD_EdgeOperator
+    pdeo_Clamp = 0
+    pdeo_Reflect = 1
+    pdeo_Wrap = 2
+    pdeo_Erase = 3
+    pdeo_Original = 4
 End Enum
 
 #If False Then
-    Private Const EDGE_CLAMP = 0, EDGE_REFLECT = 1, EDGE_WRAP = 2, EDGE_ERASE = 3, EDGE_ORIGINAL = 4
+    Private Const pdeo_Clamp = 0, pdeo_Reflect = 1, pdeo_Wrap = 2, pdeo_Erase = 3, pdeo_Original = 4
 #End If
 
 'Orientation (used in a whole bunch of different situations)
@@ -160,13 +160,13 @@ End Enum
 
 'Some PhotoDemon actions can operate on the whole image, or on just a specific layer (e.g. resize).  When initiating
 ' one of these dual-action operations, the constants below can be used to specify the mode.
-Public Enum PD_ACTION_TARGET
-    PD_AT_WHOLEIMAGE = 0
-    PD_AT_SINGLELAYER = 1
+Public Enum PD_ActionTarget
+    pdat_Image = 0
+    pdat_SingleLayer = 1
 End Enum
 
 #If False Then
-    Private Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
+    Private Const pdat_Image = 0, pdat_SingleLayer = 1
 #End If
 
 'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
@@ -245,28 +245,28 @@ End Enum
 #End If
 
 'Supported edge-detection algorithms
-Public Enum PD_EDGE_DETECTION
-    PD_EDGE_ARTISTIC_CONTOUR = 0
-    PD_EDGE_HILITE = 1
-    PD_EDGE_LAPLACIAN = 2
-    PD_EDGE_PHOTODEMON = 3
-    PD_EDGE_PREWITT = 4
-    PD_EDGE_ROBERTS = 5
-    PD_EDGE_SOBEL = 6
+Public Enum PD_EdgeDetector
+    pded_Contour = 0
+    pded_Hilite = 1
+    pded_Laplacian = 2
+    pded_PhotoDemon = 3
+    pded_Prewitt = 4
+    pded_Roberts = 5
+    pded_Sobel = 6
 End Enum
 
 #If False Then
-    Private Const PD_EDGE_ARTISTIC_CONTOUR = 0, PD_EDGE_HILITE = 1, PD_EDGE_LAPLACIAN = 2, PD_EDGE_PHOTODEMON = 3, PD_EDGE_PREWITT = 4, PD_EDGE_ROBERTS = 5, PD_EDGE_SOBEL = 6
+    Private Const pded_Contour = 0, pded_Hilite = 1, pded_Laplacian = 2, pded_PhotoDemon = 3, pded_Prewitt = 4, pded_Roberts = 5, pded_Sobel = 6
 #End If
 
-Public Enum PD_EDGE_DETECTION_DIRECTION
-    PD_EDGE_DIR_ALL = 0
-    PD_EDGE_DIR_HORIZONTAL = 1
-    PD_EDGE_DIR_VERTICAL = 2
+Public Enum PD_EdgeDirection
+    pded_All = 0
+    pded_Horizontal = 1
+    pded_Vertical = 2
 End Enum
 
 #If False Then
-    Private Const PD_EDGE_DIR_ALL = 0, PD_EDGE_DIR_HORIZONTAL = 1, PD_EDGE_DIR_VERTICAL = 2
+    Private Const pded_All = 0, pded_Horizontal = 1, pded_Vertical = 2
 #End If
 
 'PhotoDemon performance settings are generally provided in three groups: Max Quality, Balanced, and Max Performance

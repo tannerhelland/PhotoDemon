@@ -199,7 +199,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, cParams.GetLong("edges", EDGE_ERASE), (cParams.GetLong("quality", 1) <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, cParams.GetLong("edges", pdeo_Erase), (cParams.GetLong("quality", 1) <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -572,7 +572,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
         
     'Set edge handling to match the default specified in Form_Load
-    cboEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = pdeo_Erase
     
     'Default quality is interpolation, but no supersampling
     sltQuality.Value = 2
@@ -601,7 +601,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, pdeo_Erase
     
     'Populate the mapping type combo box
     cboMapping.Clear

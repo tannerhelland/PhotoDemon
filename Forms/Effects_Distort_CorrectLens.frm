@@ -854,8 +854,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboEdges(0).ListIndex = EDGE_CLAMP
-    cboEdges(1).ListIndex = EDGE_CLAMP
+    cboEdges(0).ListIndex = pdeo_Clamp
+    cboEdges(1).ListIndex = pdeo_Clamp
 End Sub
 
 Private Sub Form_Load()
@@ -870,8 +870,8 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges(0), EDGE_CLAMP
-    PopDistortEdgeBox cboEdges(1), EDGE_CLAMP
+    PopDistortEdgeBox cboEdges(0), pdeo_Clamp
+    PopDistortEdgeBox cboEdges(1), pdeo_Clamp
     
     ApplyThemeAndTranslations Me
     cmdBar.SetPreviewStatus True

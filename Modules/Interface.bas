@@ -1541,7 +1541,7 @@ Public Sub ClearImageCoordinatesDisplay()
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
-Public Sub PopDistortEdgeBox(ByRef cboEdges As pdDropDown, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
+Public Sub PopDistortEdgeBox(ByRef cboEdges As pdDropDown, Optional ByVal defaultEdgeMethod As PD_EdgeOperator)
 
     cboEdges.Clear
     cboEdges.AddItem "clamp them to the nearest available pixel"

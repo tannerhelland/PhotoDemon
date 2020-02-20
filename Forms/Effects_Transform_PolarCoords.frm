@@ -202,7 +202,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
     chkSwapXY.Value = False
-    cboEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = pdeo_Erase
 End Sub
 
 Private Sub Form_Load()
@@ -216,7 +216,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, pdeo_Erase
     
     'Populate the polar conversion technique drop-down
     cboConvert.AddItem "Rectangular to polar", 0

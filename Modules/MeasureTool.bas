@@ -431,7 +431,7 @@ Public Sub StraightenImageToMatch()
         
         With cParams
             .AddParam "angle", -1# * curAngle
-            .AddParam "target", PD_AT_WHOLEIMAGE
+            .AddParam "target", pdat_Image
         End With
         
         Process "Straighten image", , cParams.GetParamString(), UNDO_Image
@@ -462,7 +462,7 @@ Public Sub StraightenLayerToMatch()
         
         With cParams
             .AddParam "angle", -1# * curAngle
-            .AddParam "target", PD_AT_SINGLELAYER
+            .AddParam "target", pdat_SingleLayer
         End With
         
         Process "Straighten layer", , cParams.GetParamString(), UNDO_Image

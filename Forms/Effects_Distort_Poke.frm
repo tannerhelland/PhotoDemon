@@ -435,7 +435,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltXCenter.Value = 0.5
     sltYCenter.Value = 0.5
-    cboEdges.ListIndex = EDGE_CLAMP
+    cboEdges.ListIndex = pdeo_Clamp
     sltStrength.Value = 1
     sltQuality.Value = 2
 End Sub
@@ -447,7 +447,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_CLAMP
+    PopDistortEdgeBox cboEdges, pdeo_Clamp
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

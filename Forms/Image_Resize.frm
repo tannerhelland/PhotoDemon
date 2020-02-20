@@ -123,9 +123,9 @@ Option Explicit
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
-Private m_ResizeTarget As PD_ACTION_TARGET
+Private m_ResizeTarget As PD_ActionTarget
 
-Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
+Public Property Let ResizeTarget(newTarget As PD_ActionTarget)
     m_ResizeTarget = newTarget
 End Property
 
@@ -136,10 +136,10 @@ Private Sub cmdBar_OKClick()
     ' layers in the image) vs resizing a single layer.
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Process "Resize image", , GetLocalParamString(), UNDO_Image
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Process "Resize layer", , GetLocalParamString(), UNDO_Layer
     
     End Select
@@ -161,10 +161,10 @@ Private Sub cmdBar_ResetClick()
     
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
@@ -187,10 +187,10 @@ Private Sub Form_Activate()
     
     'Set the dialog caption to match the current resize operation (resize image or resize single layer),
     ' and also set the width/height text boxes to match.
-    If (m_ResizeTarget = PD_AT_WHOLEIMAGE) Then
+    If (m_ResizeTarget = pdat_Image) Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize image")
         ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
-    ElseIf (m_ResizeTarget = PD_AT_SINGLELAYER) Then
+    ElseIf (m_ResizeTarget = pdat_SingleLayer) Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize layer")
         ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
     End If
@@ -236,10 +236,10 @@ Private Sub Form_Load()
     ' a width/height/resolution of 0, which will cause divide-by-zero errors.)
     Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
@@ -314,7 +314,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Dim imgWidth As Double, imgHeight As Double, imgDPI As Double
     Dim resampleMethod As PD_ResampleCurrent, fitMethod As PD_ResizeFit, newBackColor As Long
     Dim imgResizeUnit As PD_MeasurementUnit
-    Dim thingToResize As PD_ACTION_TARGET
+    Dim thingToResize As PD_ActionTarget
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -327,7 +327,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         imgDPI = .GetDouble("ppi", 96)
         fitMethod = .GetLong("fit", ResizeFitStretch)
         newBackColor = .GetLong("fillcolor", vbWhite)
-        thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
+        thingToResize = .GetLong("target", pdat_Image)
         
         'In July 2018, the resample options for this tool were updated.  As such, we must manually map
         ' old enums to new ones, as necessary.
@@ -364,11 +364,11 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Dim srcWidth As Long, srcHeight As Long
     Select Case thingToResize
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             srcWidth = PDImages.GetActiveImage.Width
             srcHeight = PDImages.GetActiveImage.Height
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
             srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
@@ -398,7 +398,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     End Select
     
     'If the image contains an active selection, automatically deactivate it
-    If PDImages.GetActiveImage.IsSelectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
+    If PDImages.GetActiveImage.IsSelectionActive And (thingToResize = pdat_Image) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If
@@ -426,7 +426,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     'Because we will likely use outside libraries for the resize (FreeImage, GDI+), we won't be able to track
     ' detailed progress of the actions.  Instead, let the user know when a layer has been resized by using
     ' the number of layers as our progress guide.
-    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+    If (thingToResize = pdat_Image) Then
         SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Message "Resizing image..."
     Else
@@ -448,11 +448,11 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     
     Select Case thingToResize
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             firstLayerIndex = 0
             lastLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             firstLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
             lastLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
     
@@ -461,13 +461,13 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Dim i As Long
     For i = firstLayerIndex To lastLayerIndex
     
-        If (thingToResize = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
+        If (thingToResize = pdat_Image) Then SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
         
         'Null-pad the layer
-        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, False
+        If (thingToResize = pdat_Image) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
@@ -584,7 +584,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         
         'With the layer now successfully resized, we can remove any null-padding that may still exist.
         ' (Note that we skip this step when resizing a single layer only.)
-        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
+        If (thingToResize = pdat_Image) Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
@@ -596,7 +596,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Set tmpDIB = Nothing
     
     'Update the main image's size and DPI values
-    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+    If (thingToResize = pdat_Image) Then
         PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
         PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
         DisplaySize PDImages.GetActiveImage()

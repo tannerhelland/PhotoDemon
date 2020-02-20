@@ -228,7 +228,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltXCenter.Value = 0.5
     sltYCenter.Value = 0.5
-    cboEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = pdeo_Wrap
 End Sub
 
 Private Sub Form_Load()
@@ -242,7 +242,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Provide an explanation on why this tool doesn't enlarge the canvas to match
     lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")

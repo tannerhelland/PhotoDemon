@@ -2051,11 +2051,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
     ' we add the old "Resize" operator here as well.
     ElseIf Strings.StringsEqual(processID, "Resize image", True) Or Strings.StringsEqual(processID, "Resize", True) Then
-        If raiseDialog Then ShowResizeDialog PD_AT_WHOLEIMAGE Else FormResize.ResizeImage processParameters
+        If raiseDialog Then ShowResizeDialog pdat_Image Else FormResize.ResizeImage processParameters
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Content-aware image resize", True) Then
-        If raiseDialog Then ShowContentAwareResizeDialog PD_AT_WHOLEIMAGE Else FormResizeContentAware.SmartResizeImage processParameters
+        If raiseDialog Then ShowContentAwareResizeDialog pdat_Image Else FormResizeContentAware.SmartResizeImage processParameters
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Canvas size", True) Then
@@ -2081,7 +2081,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Process_ImageMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Straighten image", True) Then
-        If raiseDialog Then ShowStraightenDialog PD_AT_WHOLEIMAGE Else FormStraighten.StraightenImage processParameters
+        If raiseDialog Then ShowStraightenDialog pdat_Image Else FormStraighten.StraightenImage processParameters
         Process_ImageMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Rotate image 90 clockwise", True) Or Strings.StringsEqual(processID, "Rotate 90 clockwise", True) Then
@@ -2097,7 +2097,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Process_ImageMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Arbitrary image rotation", True) Or Strings.StringsEqual(processID, "Arbitrary rotation", True) Then
-        If raiseDialog Then ShowRotateDialog PD_AT_WHOLEIMAGE Else FormRotate.RotateArbitrary processParameters
+        If raiseDialog Then ShowRotateDialog pdat_Image Else FormRotate.RotateArbitrary processParameters
         Process_ImageMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Flip image vertically", True) Or Strings.StringsEqual(processID, "Flip vertically", True) Then
@@ -2327,7 +2327,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     'Destructive layer orientation changes
     ElseIf Strings.StringsEqual(processID, "Straighten layer", True) Then
-        If raiseDialog Then ShowStraightenDialog PD_AT_SINGLELAYER Else FormStraighten.StraightenImage processParameters
+        If raiseDialog Then ShowStraightenDialog pdat_SingleLayer Else FormStraighten.StraightenImage processParameters
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Rotate layer 90 clockwise", True) Then
@@ -2343,7 +2343,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Arbitrary layer rotation", True) Then
-        If raiseDialog Then ShowRotateDialog PD_AT_SINGLELAYER Else FormRotate.RotateArbitrary processParameters
+        If raiseDialog Then ShowRotateDialog pdat_SingleLayer Else FormRotate.RotateArbitrary processParameters
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Flip layer horizontally", True) Then
@@ -2356,11 +2356,11 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
             
     'Destructive layer size changes
     ElseIf Strings.StringsEqual(processID, "Resize layer", True) Then
-        If raiseDialog Then ShowResizeDialog PD_AT_SINGLELAYER Else FormResize.ResizeImage processParameters
+        If raiseDialog Then ShowResizeDialog pdat_SingleLayer Else FormResize.ResizeImage processParameters
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Content-aware layer resize", True) Then
-        If raiseDialog Then ShowContentAwareResizeDialog PD_AT_SINGLELAYER Else FormResizeContentAware.SmartResizeImage processParameters
+        If raiseDialog Then ShowContentAwareResizeDialog pdat_SingleLayer Else FormResizeContentAware.SmartResizeImage processParameters
         Process_LayerMenu = True
         
     'Change layer alpha

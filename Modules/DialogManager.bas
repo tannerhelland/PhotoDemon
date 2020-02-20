@@ -239,25 +239,25 @@ Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsg
 End Function
 
 'A thin wrapper to showPDDialog, customized for generic resizing.
-Public Sub ShowResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
+Public Sub ShowResizeDialog(ByVal ResizeTarget As PD_ActionTarget)
     FormResize.ResizeTarget = ResizeTarget
     ShowPDDialog vbModal, FormResize
 End Sub
 
 'A thin wrapper to showPDDialog, customized for content-aware resizing.
-Public Sub ShowContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
+Public Sub ShowContentAwareResizeDialog(ByVal ResizeTarget As PD_ActionTarget)
     FormResizeContentAware.ResizeTarget = ResizeTarget
     ShowPDDialog vbModal, FormResizeContentAware
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
-Public Sub ShowRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
+Public Sub ShowRotateDialog(ByVal RotateTarget As PD_ActionTarget)
     FormRotate.RotateTarget = RotateTarget
     ShowPDDialog vbModal, FormRotate
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
-Public Sub ShowStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
+Public Sub ShowStraightenDialog(ByVal StraightenTarget As PD_ActionTarget)
     FormStraighten.StraightenTarget = StraightenTarget
     ShowPDDialog vbModal, FormStraighten
 End Sub

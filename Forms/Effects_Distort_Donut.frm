@@ -511,7 +511,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltXCenter.Value = 0.5
     sltYCenter.Value = 0.5
-    cboEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = pdeo_Erase
     sltRadius.Value = 0
     sltQuality.Value = 2
     sltSpread.Value = 360
@@ -525,7 +525,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, pdeo_Erase
     
     'Set up the basic/advanced panels
     btsOptions.AddItem "basic", 0

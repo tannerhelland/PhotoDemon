@@ -88,9 +88,9 @@ Private smallDIB As pdDIB
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
-Private m_StraightenTarget As PD_ACTION_TARGET
+Private m_StraightenTarget As PD_ActionTarget
 
-Public Property Let StraightenTarget(newTarget As PD_ACTION_TARGET)
+Public Property Let StraightenTarget(newTarget As PD_ActionTarget)
     m_StraightenTarget = newTarget
 End Property
 
@@ -100,15 +100,15 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
     
-    Dim rotationAngle As Double, thingToRotate As PD_ACTION_TARGET
+    Dim rotationAngle As Double, thingToRotate As PD_ActionTarget
     
     With cParams
         rotationAngle = .GetDouble("angle", 0#)
-        thingToRotate = .GetLong("target", PD_AT_WHOLEIMAGE)
+        thingToRotate = .GetLong("target", pdat_Image)
     End With
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
+    If (thingToRotate = pdat_Image) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If
@@ -134,10 +134,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         srcHeight = smallDIB.GetDIBHeight
     Else
         Select Case thingToRotate
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
                 srcWidth = PDImages.GetActiveImage.Width
                 srcHeight = PDImages.GetActiveImage.Height
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 srcWidth = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
                 srcHeight = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
         End Select
@@ -212,7 +212,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     Else
             
         'When rotating the entire image, we can use the number of layers as a stand-in progress parameter.
-        If (thingToRotate = PD_AT_WHOLEIMAGE) Then
+        If (thingToRotate = pdat_Image) Then
             Message "Straightening image..."
             SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Else
@@ -226,10 +226,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         Dim lInit As Long, lFinal As Long
         
         Select Case thingToRotate
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
                 lInit = 0
                 lFinal = PDImages.GetActiveImage.GetNumOfLayers - 1
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 lInit = PDImages.GetActiveImage.GetActiveLayerIndex
                 lFinal = PDImages.GetActiveImage.GetActiveLayerIndex
         End Select
@@ -237,13 +237,13 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         Dim i As Long
         For i = lInit To lFinal
         
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
+            If (thingToRotate = pdat_Image) Then SetProgBarVal i
         
             'Retrieve a pointer to the layer of interest
             Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
             
             'Null-pad the layer
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+            If (thingToRotate = pdat_Image) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
             'Calculating the corner points of the layer, when rotated at the specified angle.
             PDMath.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
@@ -285,7 +285,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
             
             'If resizing the entire image, remove any null-padding now
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
+            If (thingToRotate = pdat_Image) Then tmpLayerRef.CropNullPaddedLayer
             
             'Notify the parent of the change
             PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
@@ -296,7 +296,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         'All layers have been rotated successfully!
         
         'Update the image's size (not technically necessary, but this triggers some other backend notifications that are relevant)
-        If (thingToRotate = PD_AT_WHOLEIMAGE) Then
+        If (thingToRotate = pdat_Image) Then
             PDImages.GetActiveImage.UpdateSize False, srcWidth, srcHeight
             DisplaySize PDImages.GetActiveImage()
         End If
@@ -316,9 +316,9 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     Select Case m_StraightenTarget
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Process "Straighten image", , GetLocalParamString(), UNDO_Image
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Process "Straighten layer", , GetLocalParamString(), UNDO_Layer
     End Select
     
@@ -336,10 +336,10 @@ Private Sub Form_Load()
     'Set the dialog caption to match the current resize operation (resize image or resize single layer)
     Select Case m_StraightenTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Me.Caption = g_Language.TranslateMessage("Straighten image")
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Me.Caption = g_Language.TranslateMessage("Straighten layer")
         
     End Select
@@ -354,11 +354,11 @@ Private Sub Form_Load()
     
     Select Case m_StraightenTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             srcWidth = PDImages.GetActiveImage.Width
             srcHeight = PDImages.GetActiveImage.Height
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
             srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
@@ -373,7 +373,7 @@ Private Sub Form_Load()
         
         Select Case m_StraightenTarget
         
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
             
                 Dim dstRectF As RectF, srcRectF As RectF
                 With dstRectF
@@ -392,7 +392,7 @@ Private Sub Form_Load()
                 
                 PDImages.GetActiveImage.GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
@@ -402,10 +402,10 @@ Private Sub Form_Load()
     
         Select Case m_StraightenTarget
         
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
                 PDImages.GetActiveImage.GetCompositedImage smallDIB
             
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
             
         End Select

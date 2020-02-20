@@ -181,11 +181,11 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim edgeDetectionType As PD_EDGE_DETECTION, edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, blackBackground As Boolean
+    Dim edgeDetectionType As PD_EdgeDetector, edgeDirectionality As PD_EdgeDirection, blackBackground As Boolean
     
     With cParams
         edgeDetectionType = .GetLong("method", lstEdgeOptions.ListIndex)
-        edgeDirectionality = .GetLong("direction", PD_EDGE_DIR_ALL)
+        edgeDirectionality = .GetLong("direction", pded_All)
         blackBackground = .GetBool("invert", True)
     End With
     
@@ -199,7 +199,7 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
     
     'Before doing anything else, check for the Artistic Contour filter type.  This is handled via its own dedicated
     ' function, separate from traditional convolution matrix processing
-    If edgeDetectionType = PD_EDGE_ARTISTIC_CONTOUR Then
+    If edgeDetectionType = pded_Contour Then
         FilterSmoothContour blackBackground, toPreview, dstPic
         
     Else
@@ -262,7 +262,7 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
             With cParamsOut
                 .AddParam "name", GetNameOfEdgeDetector(edgeDetectionType)
                 .AddParam "invert", Not blackBackground
-                GetParamStringForEdgeDetector edgeDetectionType, PD_EDGE_DIR_HORIZONTAL, fWeight, fBias, fMatrix
+                GetParamStringForEdgeDetector edgeDetectionType, pded_Horizontal, fWeight, fBias, fMatrix
                 .AddParam "weight", fWeight
                 .AddParam "bias", fBias
                 .AddParam "matrix", fMatrix
@@ -298,26 +298,26 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
 End Sub
 
 'Return the name of an edge detection type as a human-readable string
-Private Function GetNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
+Private Function GetNameOfEdgeDetector(ByVal edgeDetectionType As PD_EdgeDetector) As String
 
     Select Case edgeDetectionType
                 
-        Case PD_EDGE_HILITE
+        Case pded_Hilite
             GetNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
             
-        Case PD_EDGE_LAPLACIAN
+        Case pded_Laplacian
             GetNameOfEdgeDetector = g_Language.TranslateMessage("Laplacian edge detection")
         
-        Case PD_EDGE_PHOTODEMON
+        Case pded_PhotoDemon
             GetNameOfEdgeDetector = g_Language.TranslateMessage("PhotoDemon edge detection")
             
-        Case PD_EDGE_PREWITT
+        Case pded_Prewitt
             GetNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
         
-        Case PD_EDGE_ROBERTS
+        Case pded_Roberts
             GetNameOfEdgeDetector = g_Language.TranslateMessage("Roberts cross edge detection")
             
-        Case PD_EDGE_SOBEL
+        Case pded_Sobel
             GetNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
             
     End Select
@@ -326,7 +326,7 @@ End Function
 
 'Given an edge detection type and a direction, return TRUE if the requested edge detector can be applied in a single pass.
 ' Return FALSE if the function requires multiple image passes.
-Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
+Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EdgeDetector, Optional ByVal edgeDirectionality As PD_EdgeDirection = pded_All) As Boolean
 
     'Convolution matrix strings are assembled in two or three steps:
     ' 1) Add divisor and offset values
@@ -334,41 +334,41 @@ Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
     ' 3) Build actual convolution matrix
     Select Case edgeDetectionType
         
-        Case PD_EDGE_ARTISTIC_CONTOUR
+        Case pded_Contour
             IsEdgeDetectionSinglePass = True
     
         'Hilite detection (doesn't support directionality)
-        Case PD_EDGE_HILITE
+        Case pded_Hilite
             IsEdgeDetectionSinglePass = True
         
         'Laplacian is unique because it supports a different operator for all directionalities, so even horizontal/vertical can
         ' be done in a single pass.
-        Case PD_EDGE_LAPLACIAN
+        Case pded_Laplacian
             IsEdgeDetectionSinglePass = True
                 
         'PhotoDemon edge detection (doesn't support directionality)
-        Case PD_EDGE_PHOTODEMON
+        Case pded_PhotoDemon
             IsEdgeDetectionSinglePass = True
         
         'Prewitt edge detection is unidirectional
-        Case PD_EDGE_PREWITT
-            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+        Case pded_Prewitt
+            If (edgeDirectionality = pded_Horizontal) Or (edgeDirectionality = pded_Vertical) Then
                 IsEdgeDetectionSinglePass = True
             Else
                 IsEdgeDetectionSinglePass = False
             End If
             
         'Roberts cross edge detection is unidirectional
-        Case PD_EDGE_ROBERTS
-            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+        Case pded_Roberts
+            If (edgeDirectionality = pded_Horizontal) Or (edgeDirectionality = pded_Vertical) Then
                 IsEdgeDetectionSinglePass = True
             Else
                 IsEdgeDetectionSinglePass = False
             End If
         
         'Sobel edge detection is unidirectional
-        Case PD_EDGE_SOBEL
-            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+        Case pded_Sobel
+            If (edgeDirectionality = pded_Horizontal) Or (edgeDirectionality = pded_Vertical) Then
                 IsEdgeDetectionSinglePass = True
             Else
                 IsEdgeDetectionSinglePass = False
@@ -379,7 +379,7 @@ Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
 End Function
 
 'Given an internal edge detection type (and optionally, a direction), calculate a matching convolution matrix and return it
-Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, ByRef fWeight As Double, ByRef fBias As Double, ByRef fMatrix As String) As String
+Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EdgeDetector, ByVal edgeDirectionality As PD_EdgeDirection, ByRef fWeight As Double, ByRef fBias As Double, ByRef fMatrix As String) As String
 
     Dim convoString As String
     
@@ -390,7 +390,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     Select Case edgeDetectionType
     
         'Hilite detection (doesn't support directionality)
-        Case PD_EDGE_HILITE
+        Case pded_Hilite
             
             'Divisor/offset
             fWeight = 1#: fBias = 0#
@@ -402,10 +402,10 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             convoString = convoString & "0|-1|0|0|0|"
             convoString = convoString & "0|0|0|0|0"
         
-        Case PD_EDGE_LAPLACIAN
+        Case pded_Laplacian
             
             'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+            If edgeDirectionality = pded_Horizontal Then
             
                 'Divisor/offset
                 fWeight = 0.25: fBias = 0#
@@ -416,7 +416,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|0|0|0|0"
                 
-            ElseIf edgeDirectionality = PD_EDGE_DIR_VERTICAL Then
+            ElseIf edgeDirectionality = pded_Vertical Then
             
                 'Divisor/offset
                 fWeight = 0.25: fBias = 0#
@@ -441,7 +441,7 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             End If
         
         'PhotoDemon edge detection (doesn't support directionality)
-        Case PD_EDGE_PHOTODEMON
+        Case pded_PhotoDemon
         
             'Divisor/offset
             fWeight = 1#: fBias = 0#
@@ -454,13 +454,13 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             convoString = convoString & "0|0|0|-1|0"
         
         'Prewitt edge detection (directionality supported)
-        Case PD_EDGE_PREWITT
+        Case pded_Prewitt
         
             'Divisor/offset
             fWeight = 1#: fBias = 0#
             
             'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+            If edgeDirectionality = pded_Horizontal Then
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|-1|0|1|0|"
                 convoString = convoString & "0|-1|0|1|0|"
@@ -475,13 +475,13 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             End If
         
         'Roberts cross edge detection (directionality supported)
-        Case PD_EDGE_ROBERTS
+        Case pded_Roberts
         
             'Divisor/offset
             fWeight = 0.5: fBias = 0#
             
             'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+            If edgeDirectionality = pded_Horizontal Then
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|-1|0|0|0|"
                 convoString = convoString & "0|0|1|0|0|"
@@ -496,13 +496,13 @@ Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             End If
         
         'Sobel edge detection (directionality supported)
-        Case PD_EDGE_SOBEL
+        Case pded_Sobel
             
             'Divisor/offset
             fWeight = 1#: fBias = 0#
             
             'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+            If edgeDirectionality = pded_Horizontal Then
                 convoString = convoString & "0|0|0|0|0|"
                 convoString = convoString & "0|-1|0|1|0|"
                 convoString = convoString & "0|-2|0|2|0|"
@@ -583,25 +583,25 @@ Private Sub LstEdgeOptions_Click()
     ' capabilities of the selected transform
     Select Case lstEdgeOptions.ListIndex
     
-        Case PD_EDGE_ARTISTIC_CONTOUR
+        Case pded_Contour
             ChangeCheckboxActivation False
         
-        Case PD_EDGE_HILITE
+        Case pded_Hilite
             ChangeCheckboxActivation False
         
-        Case PD_EDGE_LAPLACIAN
+        Case pded_Laplacian
             ChangeCheckboxActivation True
         
-        Case PD_EDGE_PHOTODEMON
+        Case pded_PhotoDemon
             ChangeCheckboxActivation False
         
-        Case PD_EDGE_PREWITT
+        Case pded_Prewitt
             ChangeCheckboxActivation True
         
-        Case PD_EDGE_ROBERTS
+        Case pded_Roberts
             ChangeCheckboxActivation True
             
-        Case PD_EDGE_SOBEL
+        Case pded_Sobel
             ChangeCheckboxActivation True
     
     End Select
@@ -634,14 +634,14 @@ Private Sub ChangeCheckboxActivation(ByVal toEnable As Boolean)
 End Sub
 
 'Convert the directionality checkboxes to PD's internal edge detection definitions
-Private Function GetDirectionality() As PD_EDGE_DETECTION_DIRECTION
+Private Function GetDirectionality() As PD_EdgeDirection
 
     If chkDirection(0).Value And Not chkDirection(1).Value Then
-        GetDirectionality = PD_EDGE_DIR_HORIZONTAL
+        GetDirectionality = pded_Horizontal
     ElseIf chkDirection(1).Value And Not chkDirection(0).Value Then
-        GetDirectionality = PD_EDGE_DIR_VERTICAL
+        GetDirectionality = pded_Vertical
     Else
-        GetDirectionality = PD_EDGE_DIR_ALL
+        GetDirectionality = pded_All
     End If
 
 End Function

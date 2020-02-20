@@ -332,7 +332,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = pdeo_Wrap
     sltQuality = 2
 End Sub
 
@@ -343,7 +343,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

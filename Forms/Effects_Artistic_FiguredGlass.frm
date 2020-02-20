@@ -411,7 +411,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cboEdges, EDGE_REFLECT
+    PopDistortEdgeBox cboEdges, pdeo_Reflect
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

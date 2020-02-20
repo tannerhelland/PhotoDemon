@@ -1739,7 +1739,7 @@ Private Sub PrepareForBatchConversion()
                             .AddParam "algorithm", ResizeSincLanczos
                             .AddParam "fit", cmbResizeFit.ListIndex
                             .AddParam "fillcolor", vbWhite
-                            .AddParam "target", PD_AT_WHOLEIMAGE
+                            .AddParam "target", pdat_Image
                         End With
                         
                         Process "Resize image", , resizeParams.GetParamString

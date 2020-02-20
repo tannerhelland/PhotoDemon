@@ -127,9 +127,9 @@ Private smallDIB As pdDIB
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
-Private m_RotateTarget As PD_ACTION_TARGET
+Private m_RotateTarget As PD_ActionTarget
 
-Public Property Let RotateTarget(newTarget As PD_ACTION_TARGET)
+Public Property Let RotateTarget(newTarget As PD_ActionTarget)
     m_RotateTarget = newTarget
 End Property
 
@@ -140,8 +140,8 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     Set cParams = New pdParamXML
     cParams.SetParamString rotationParameters
     
-    Dim thingToRotate As PD_ACTION_TARGET
-    thingToRotate = cParams.GetLong("target", PD_AT_WHOLEIMAGE)
+    Dim thingToRotate As PD_ActionTarget
+    thingToRotate = cParams.GetLong("target", pdat_Image)
     
     Dim rotationAngle As Double
     rotationAngle = -1# * cParams.GetDouble("angle", 0#)
@@ -166,7 +166,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     End If
     
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
+    If (thingToRotate = pdat_Image) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If
@@ -194,7 +194,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             
         'We don't currently use a progress callback for GDI+ events, but in this case, we can use the number of layers as
         ' a stand-in progress parameter.
-        If (thingToRotate = PD_AT_WHOLEIMAGE) Then
+        If (thingToRotate = pdat_Image) Then
             Message "Rotating image..."
             SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Else
@@ -212,11 +212,11 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         
         Select Case thingToRotate
         
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
                 lInit = 0
                 lFinal = PDImages.GetActiveImage.GetNumOfLayers - 1
             
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 lInit = PDImages.GetActiveImage.GetActiveLayerIndex
                 lFinal = PDImages.GetActiveImage.GetActiveLayerIndex
         
@@ -225,7 +225,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         Dim i As Long
         For i = lInit To lFinal
         
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
+            If (thingToRotate = pdat_Image) Then SetProgBarVal i
         
             'Retrieve a pointer to the layer of interest
             Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
@@ -236,7 +236,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             origOffsetY = tmpLayerRef.GetLayerOffsetY + (tmpLayerRef.GetLayerHeight(False) \ 2)
             
             'Null-pad the layer
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+            If (thingToRotate = pdat_Image) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
             'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
             ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
@@ -244,7 +244,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
                 
                 'If the user wants us to fill the border regions of the rotated image with color, we only obey their command
                 ' for the base layer.  Layers atop the base layer can receive transparency in their border regions without trouble.
-                If (thingToRotate = PD_AT_WHOLEIMAGE) And (Not rotationTransparent) And (i > lInit) Then
+                If (thingToRotate = pdat_Image) And (Not rotationTransparent) And (i > lInit) Then
                     GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, True
                 Else
                     GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, False, gdipRotationQuality, rotationTransparent, rotationBackColor
@@ -257,7 +257,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
                     tmpDIB.ResetDIB 0
                 End If
                 
-                If (thingToRotate = PD_AT_WHOLEIMAGE) And (Not rotationTransparent) And (i > lInit) Then
+                If (thingToRotate = pdat_Image) And (Not rotationTransparent) And (i > lInit) Then
                     GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, True
                 Else
                     GDI_Plus.GDIPlus_RotateDIBPlgStyle tmpLayerRef.layerDIB, tmpDIB, rotationAngle, True, gdipRotationQuality, rotationTransparent, rotationBackColor
@@ -269,7 +269,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
             
             'If resizing the entire image, remove any null-padding now
-            If thingToRotate = PD_AT_WHOLEIMAGE Then
+            If thingToRotate = pdat_Image Then
                 tmpLayerRef.CropNullPaddedLayer
             
             'If resizing only a single layer, re-center it according to its old offset
@@ -287,7 +287,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         'All layers have been rotated successfully!
         
         'Update the image's size
-        If (thingToRotate = PD_AT_WHOLEIMAGE) And resizeToFit Then
+        If (thingToRotate = pdat_Image) And resizeToFit Then
             Dim newWidth As Double, newHeight As Double
             PDMath.FindBoundarySizeOfRotatedRect PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, rotationAngle, newWidth, newHeight, False
             PDImages.GetActiveImage.UpdateSize False, newWidth, newHeight
@@ -327,10 +327,10 @@ Private Sub cmdBar_OKClick()
     
     Select Case m_RotateTarget
     
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Process "Arbitrary image rotation", , GetFunctionParamString(), UNDO_Image
             
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Process "Arbitrary layer rotation", , GetFunctionParamString(), UNDO_Layer
             
     End Select
@@ -389,10 +389,10 @@ Private Sub Form_Load()
     'Set the dialog caption to match the current resize operation (resize image or resize single layer)
     Select Case m_RotateTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             Me.Caption = g_Language.TranslateMessage("Rotate image")
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             Me.Caption = g_Language.TranslateMessage("Rotate layer")
         
     End Select
@@ -407,11 +407,11 @@ Private Sub Form_Load()
     
     Select Case m_RotateTarget
         
-        Case PD_AT_WHOLEIMAGE
+        Case pdat_Image
             srcWidth = PDImages.GetActiveImage.Width
             srcHeight = PDImages.GetActiveImage.Height
         
-        Case PD_AT_SINGLELAYER
+        Case pdat_SingleLayer
             srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
             srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
@@ -426,7 +426,7 @@ Private Sub Form_Load()
         
         Select Case m_RotateTarget
         
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
             
                 Dim dstRectF As RectF, srcRectF As RectF
                 With dstRectF
@@ -445,7 +445,7 @@ Private Sub Form_Load()
                 
                 PDImages.GetActiveImage.GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
@@ -455,10 +455,10 @@ Private Sub Form_Load()
     
         Select Case m_RotateTarget
         
-            Case PD_AT_WHOLEIMAGE
+            Case pdat_Image
                 PDImages.GetActiveImage.GetCompositedImage smallDIB
             
-            Case PD_AT_SINGLELAYER
+            Case pdat_SingleLayer
                 smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
             
         End Select

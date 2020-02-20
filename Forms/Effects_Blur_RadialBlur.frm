@@ -147,7 +147,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     newProgBarMax = finalX * 2 + (workingDIB.GetDIBHeight + actualBlurSize * 2)
     
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-    If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax) Then
+    If CreatePolarCoordDIB(1, 100, pdeo_Clamp, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax) Then
     
         'We now need to do something a little unconventional.  When converting to polar coordinates, the line running from
         ' the top-center of the image to the center point ends up being separated onto the full left and right sides of the
@@ -202,7 +202,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             tmpDIB.EraseDIB
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-            CreatePolarCoordDIB 0, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + workingDIB.GetDIBHeight
+            CreatePolarCoordDIB 0, 100, pdeo_Clamp, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + workingDIB.GetDIBHeight
             
         End If
         
