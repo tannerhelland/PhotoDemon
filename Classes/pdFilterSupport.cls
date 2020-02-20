@@ -32,11 +32,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_FinalX As Long, m_FinalY As Long
-Private m_imgWidth As Long, m_imgHeight As Long
-Private m_EdgeMethod As Long
+Private m_FinalX As Double, m_FinalY As Double
+Private m_imgWidth As Double, m_imgHeight As Double
+Private m_EdgeMethod As PD_EdgeOperator
 Private m_Interpolate As Boolean
-Private m_DstX As Long, m_DstY As Long
+Private m_DstX As Double, m_DstY As Double
 
 'PD now allows functions to "unsafely" pass a reference to a source image array.
 ' The benefit of doing this in advance is that it makes subsequent array references very fast.
@@ -81,7 +81,7 @@ End Sub
 Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByVal origX As Long, Optional ByVal origY As Long)
     
     'Cache the original x/y values as necessary
-    If (m_EdgeMethod = EDGE_ORIGINAL) Then
+    If (m_EdgeMethod = pdeo_Original) Then
         m_DstX = origX
         m_DstY = origY
     End If
@@ -134,13 +134,13 @@ End Sub
 Friend Function GetColorsFromSource_Fast(ByVal srcX As Double, ByVal srcY As Double, ByVal origX As Long, ByVal origY As Long) As RGBQuad
     
     'Cache the original x/y values as necessary
-    If (m_EdgeMethod = EDGE_ORIGINAL) Then
+    If (m_EdgeMethod = pdeo_Original) Then
         m_DstX = origX
         m_DstY = origY
     End If
     
     'fixDistort will only be set to TRUE when the current pixel needs to be erased
-    ' (e.g. the edge mode is set to EDGE_ERASE and this pixel lies outside the image).
+    ' (e.g. the edge mode is set to pdeo_Erase and this pixel lies outside the image).
     ' When this occurs, note that the function return has already been intialized to
     ' [0, 0, 0, 0] so we don't need to do anything.  If the function returns FALSE,
     ' however, srcX and srcY will contain the newly calculated coordinates, which
@@ -165,7 +165,7 @@ End Function
 ' new pixel values are calculated and assigned automagically.
 Friend Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
 
-    If (m_EdgeMethod = EDGE_ORIGINAL) Then
+    If (m_EdgeMethod = pdeo_Original) Then
         m_DstX = x
         m_DstY = y
     End If
@@ -204,13 +204,13 @@ End Sub
 
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster
 ' to set these once and store them instead of passing them every time a pixel needs to be handled.
-Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As EDGE_OPERATOR, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
+Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As PD_EdgeOperator, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
     m_EdgeMethod = edgeMethod
     m_Interpolate = toInterpolate
     m_FinalX = finalX
     m_FinalY = finalY
-    m_imgWidth = finalX + 1
-    m_imgHeight = finalY + 1
+    m_imgWidth = m_FinalX + 0.99999999  'Cheat to avoid the need for bounds-checking later
+    m_imgHeight = m_FinalY + 0.99999999
 End Sub
 
 'If a pixel lies outside image boundaries, move it in-bounds using one of several methods
@@ -220,7 +220,7 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
 
     Select Case m_EdgeMethod
     
-        Case EDGE_CLAMP
+        Case pdeo_Clamp
         
             If (srcX >= 0#) Then
                 If (srcX > m_FinalX) Then srcX = m_FinalX
@@ -234,28 +234,28 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
                 srcY = 0#
             End If
             
-        Case EDGE_REFLECT
+        Case pdeo_Reflect
         
             srcX = PDMath.Modulo(srcX, m_FinalX * 2)
             srcY = PDMath.Modulo(srcY, m_FinalY * 2)
             If (srcX > m_FinalX) Then srcX = (m_FinalX - (srcX - m_FinalX))
             If (srcY > m_FinalY) Then srcY = (m_FinalY - (srcY - m_FinalY))
             
-        Case EDGE_WRAP
+        Case pdeo_Wrap
             
             If (srcX >= 0#) Then
-                If (srcX > m_FinalX) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
+                If (srcX >= m_imgWidth) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
             Else
                 srcX = PDMath.Modulo(srcX, m_imgWidth)
             End If
             
             If (srcY >= 0#) Then
-                If (srcY > m_FinalY) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
+                If (srcY >= m_imgHeight) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
             Else
                 srcY = PDMath.Modulo(srcY, m_imgHeight)
             End If
             
-        Case EDGE_ERASE
+        Case pdeo_Erase
         
             If (srcX < 0#) Then
                 FixDistortEdges = True
@@ -277,7 +277,7 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
                 Exit Function
             End If
             
-        Case EDGE_ORIGINAL
+        Case pdeo_Original
         
             If (srcX < 0#) Or (srcY < 0#) Then
                 srcX = m_DstX
@@ -376,7 +376,10 @@ Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RG
     Dim topLeft As RGBQuad, topRight As RGBQuad, bottomLeft As RGBQuad, bottomRight As RGBQuad
     
     'Pixel coordinates are always guaranteed in-bounds on the left/top boundary
-    topLeft = m_Pixels(Int(x1), Int(y1))
+    Dim intLeft As Long, intTop As Long
+    intLeft = Int(x1)
+    intTop = Int(y1)
+    topLeft = m_Pixels(intLeft, intTop)
     
     'The other three pixels can potentially lie out-of-bounds, so we need to bounds-check 'em
     Dim fixX As Double, fixY As Double
@@ -387,13 +390,14 @@ Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RG
     'Top-right next
     If (x1 < m_FinalX) Then
     
-        topRight = m_Pixels(Int(x1 + 1#), Int(y1))
+        topRight = m_Pixels(intLeft + 1, intTop)
         
         'We know the x-coord is in-bounds; perform a quick check on y to see if we can short-circuit
         ' the rest of the function.  (If x is in-bounds, the odds of y also being in-bounds is very high.)
         If (y1 < m_FinalY) Then
-            bottomLeft = m_Pixels(Int(x1), Int(y1 + 1#))
-            bottomRight = m_Pixels(Int(x1 + 1#), Int(y1 + 1#))
+            intTop = intTop + 1
+            bottomLeft = m_Pixels(intLeft, intTop)
+            bottomRight = m_Pixels(intLeft + 1, intTop)
             GoTo ShortCircuit
         End If
         
@@ -403,8 +407,9 @@ Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RG
         If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(topRight), 0& Else topRight = m_Pixels(Int(fixX), Int(fixY))
     End If
     
+    'Bottom-left
     If (y1 < m_FinalY) Then
-        bottomLeft = m_Pixels(Int(x1), Int(y1 + 1#))
+        bottomLeft = m_Pixels(intLeft, intTop + 1)
     Else
         fixX = x1
         fixY = y1 + 1#
@@ -412,15 +417,11 @@ Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RG
     End If
     
     If (x1 < m_FinalX) And (y1 < m_FinalY) Then
-        bottomRight = m_Pixels(Int(x1 + 1#), Int(y1 + 1#))
+        bottomRight = m_Pixels(intLeft + 1, intTop + 1)
     Else
         fixX = x1 + 1#
         fixY = y1 + 1#
-        If FixDistortEdges(fixX, fixY) Then
-            PutMem4 VarPtr(bottomRight), 0&
-        Else
-            bottomRight = m_Pixels(Int(fixX), Int(fixY))
-        End If
+        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(bottomRight), 0& Else bottomRight = m_Pixels(Int(fixX), Int(fixY))
     End If
     
 ShortCircuit:
