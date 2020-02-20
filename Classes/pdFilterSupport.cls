@@ -218,41 +218,43 @@ End Sub
 ' must be erased.  If FALSE is returned, the pixel can be handled normally.
 Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
 
-    FixDistortEdges = False
-    
     Select Case m_EdgeMethod
     
-        'Clamp
         Case EDGE_CLAMP
         
-            If (srcX < 0) Then srcX = 0#
-            If (srcY < 0) Then srcY = 0#
-            If (srcX > m_FinalX) Then srcX = m_FinalX
-            If (srcY > m_FinalY) Then srcY = m_FinalY
-        
-        'Reflect
+            If (srcX >= 0#) Then
+                If (srcX > m_FinalX) Then srcX = m_FinalX
+            Else
+                srcX = 0#
+            End If
+            
+            If (srcY >= 0#) Then
+                If (srcY > m_FinalY) Then srcY = m_FinalY
+            Else
+                srcY = 0#
+            End If
+            
         Case EDGE_REFLECT
         
-            If (srcX < 0#) Then srcX = Abs(srcX)
-            If (srcY < 0#) Then srcY = Abs(srcY)
-            If (srcX > m_FinalX) Then srcX = m_FinalX - (srcX - m_FinalX)
-            If (srcY > m_FinalY) Then srcY = m_FinalY - (srcY - m_FinalY)
-        
-            'If the modified pixel STILL lies outside the image, use modulo to move it in-bounds
-            If (srcX < 0#) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
-            If (srcY < 0#) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
-            If (srcX > m_FinalX) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
-            If (srcY > m_FinalY) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
-        
-        'Wrap
+            srcX = PDMath.Modulo(srcX, m_FinalX * 2)
+            srcY = PDMath.Modulo(srcY, m_FinalY * 2)
+            If (srcX > m_FinalX) Then srcX = (m_FinalX - (srcX - m_FinalX))
+            If (srcY > m_FinalY) Then srcY = (m_FinalY - (srcY - m_FinalY))
+            
         Case EDGE_WRAP
-        
-            If (srcX < 0#) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
-            If (srcY < 0#) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
-            If (srcX > m_FinalX) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
-            If (srcY > m_FinalY) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
-        
-        'Erase
+            
+            If (srcX >= 0#) Then
+                If (srcX > m_FinalX) Then srcX = PDMath.Modulo(srcX, m_imgWidth)
+            Else
+                srcX = PDMath.Modulo(srcX, m_imgWidth)
+            End If
+            
+            If (srcY >= 0#) Then
+                If (srcY > m_FinalY) Then srcY = PDMath.Modulo(srcY, m_imgHeight)
+            Else
+                srcY = PDMath.Modulo(srcY, m_imgHeight)
+            End If
+            
         Case EDGE_ERASE
         
             If (srcX < 0#) Then
@@ -277,22 +279,12 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
             
         Case EDGE_ORIGINAL
         
-            If (srcX < 0#) Then
+            If (srcX < 0#) Or (srcY < 0#) Then
                 srcX = m_DstX
                 srcY = m_DstY
             End If
             
-            If (srcY < 0#) Then
-                srcX = m_DstX
-                srcY = m_DstY
-            End If
-            
-            If (srcX > m_FinalX) Then
-                srcX = m_DstX
-                srcY = m_DstY
-            End If
-            
-            If (srcY > m_FinalY) Then
+            If (srcX > m_FinalX) Or (srcY > m_FinalY) Then
                 srcX = m_DstX
                 srcY = m_DstY
             End If
@@ -380,24 +372,35 @@ End Function
 ' for an imaginary pixel in that location.  Results are returned as an RGBQuad.
 Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RGBQuad
     
-    'Retrieve the four surrounding pixel values
+    'We first need to retrieve the four surrounding pixel values
     Dim topLeft As RGBQuad, topRight As RGBQuad, bottomLeft As RGBQuad, bottomRight As RGBQuad
+    
+    'Pixel coordinates are always guaranteed in-bounds on the left/top boundary
     topLeft = m_Pixels(Int(x1), Int(y1))
     
+    'The other three pixels can potentially lie out-of-bounds, so we need to bounds-check 'em
     Dim fixX As Double, fixY As Double
     
     'Pixels at the far edges of the image require special treatment during interpolation
     ' (treatment that varies depending on the current edge-handling model).
+    
+    'Top-right next
     If (x1 < m_FinalX) Then
-        topRight = m_Pixels(Int(x1 + 1), Int(y1))
+    
+        topRight = m_Pixels(Int(x1 + 1#), Int(y1))
+        
+        'We know the x-coord is in-bounds; perform a quick check on y to see if we can short-circuit
+        ' the rest of the function.  (If x is in-bounds, the odds of y also being in-bounds is very high.)
+        If (y1 < m_FinalY) Then
+            bottomLeft = m_Pixels(Int(x1), Int(y1 + 1#))
+            bottomRight = m_Pixels(Int(x1 + 1#), Int(y1 + 1#))
+            GoTo ShortCircuit
+        End If
+        
     Else
         fixX = x1 + 1#
         fixY = y1
-        If FixDistortEdges(fixX, fixY) Then
-            PutMem4 VarPtr(topRight), 0&
-        Else
-            topRight = m_Pixels(Int(fixX), Int(y1))
-        End If
+        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(topRight), 0& Else topRight = m_Pixels(Int(fixX), Int(fixY))
     End If
     
     If (y1 < m_FinalY) Then
@@ -405,38 +408,22 @@ Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RG
     Else
         fixX = x1
         fixY = y1 + 1#
-        If FixDistortEdges(fixX, fixY) Then
-            PutMem4 VarPtr(bottomLeft), 0&
-        Else
-            bottomLeft = m_Pixels(Int(x1), Int(fixY))
-        End If
+        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(bottomLeft), 0& Else bottomLeft = m_Pixels(Int(fixX), Int(fixY))
     End If
     
-    If (x1 < m_FinalX) Then
-        If (y1 < m_FinalY) Then
-            bottomRight = m_Pixels(Int(x1 + 1), Int(y1 + 1#))
-        Else
-            fixX = x1 + 1#
-            fixY = y1 + 1#
-            If FixDistortEdges(fixX, fixY) Then
-                PutMem4 VarPtr(bottomRight), 0&
-            Else
-                bottomRight = m_Pixels(Int(x1 + 1#), Int(fixY))
-            End If
-        End If
+    If (x1 < m_FinalX) And (y1 < m_FinalY) Then
+        bottomRight = m_Pixels(Int(x1 + 1#), Int(y1 + 1#))
     Else
         fixX = x1 + 1#
         fixY = y1 + 1#
         If FixDistortEdges(fixX, fixY) Then
             PutMem4 VarPtr(bottomRight), 0&
         Else
-            If (y1 < m_FinalY) Then
-                bottomRight = m_Pixels(Int(fixX), Int(y1 + 1#))
-            Else
-                bottomRight = m_Pixels(Int(fixX), Int(fixY))
-            End If
+            bottomRight = m_Pixels(Int(fixX), Int(fixY))
         End If
     End If
+    
+ShortCircuit:
     
     'Calculate blend ratios
     Dim yBlend As Double, xBlend As Double, xBlendInv As Double, yBlendInv As Double
