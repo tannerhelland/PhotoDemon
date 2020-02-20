@@ -144,7 +144,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
     Dim newProgBarMax As Long
-    newProgBarMax = finalX * 2 + (workingDIB.GetDIBHeight + actualBlurSize * 2)
+    newProgBarMax = finalY * 3
     
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
     If CreatePolarCoordDIB(1, 100, pdeo_Clamp, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax) Then
@@ -189,7 +189,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
         Dim leftRadius As Long
         If blurSymmetrically Then leftRadius = actualBlurSize Else leftRadius = 0
         
-        If CreateHorizontalBlurDIB(leftRadius, actualBlurSize, tmpDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+        If CreateHorizontalBlurDIB(leftRadius, actualBlurSize, tmpDIB, srcDIB, toPreview, newProgBarMax, finalY) Then
         
             'Copy the blurred results of the source DIB back into the temporary DIB
             tmpDIB.CreateFromExistingDIB srcDIB
@@ -202,7 +202,7 @@ Public Sub RadialBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
             tmpDIB.EraseDIB
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-            CreatePolarCoordDIB 0, 100, pdeo_Clamp, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + workingDIB.GetDIBHeight
+            CreatePolarCoordDIB 0, 100, pdeo_Clamp, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalY * 2
             
         End If
         

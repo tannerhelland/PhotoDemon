@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'Image Shear Distortion
 'Copyright 2013-2020 by Tanner Helland
 'Created: 03/April/13
-'Last updated: 28/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 20/February/20
+'Last update: large performance improvements
 '
 'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.
 ' Supersampling and reverse-mapped interpolation are available for a high-quality transformation.
@@ -145,21 +145,17 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image,
     ' and we will use it as our source reference.
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -167,19 +163,15 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
@@ -238,12 +230,13 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
-    Dim avgSamples As Double
-              
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
        
        'Reset all supersampling values
         newR = 0
@@ -262,9 +255,13 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
             
             srcX = j + ((finalY - k) * sinX) * 2#
             srcY = k + (j * sinY) * 2#
-                
+            
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -293,29 +290,31 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        avgSamples = 1# / numSamplesUsed
-        newR = newR * avgSamples
-        newG = newG * avgSamples
-        newB = newB * avgSamples
-        newA = newA * avgSamples
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
+            newA = newA \ numSamplesUsed
+        End If
         
-        dstImageData(quickVal, y) = newB
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 3, y) = newA
-                
-    Next y
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

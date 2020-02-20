@@ -1484,41 +1484,26 @@ End Function
 Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim dstImageData() As RGBQuad, dstSA1D As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If (modifyProgBarMax = -1) Then SetProgBarMax finalX Else SetProgBarMax modifyProgBarMax
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
     
     'Polar conversion requires a number of specialized variables
     
@@ -1544,7 +1529,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     tWidth = finalX - initX
     tHeight = finalY - initY
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
-              
+    
     sRadius = sRadius * (polarRadius / 100#)
     If (sRadius < 1E-20) Then sRadius = 1E-20
     sRadius2 = sRadius * sRadius
@@ -1553,17 +1538,28 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     
     'Check for extremely small images and exit, to avoid OOB problems
     If (tWidth <= 1) Or (tHeight <= 1) Then
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         CreatePolarCoordDIB = 1
         Exit Function
     End If
     
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    'A few final caches to improve inner-loop performance
+    Dim finalXModifier As Double, finalYModifier As Double
+    If (conversionMethod = 0) Then
+        finalXModifier = finalX / PI_DOUBLE
+        finalYModifier = finalY / sRadius
+    ElseIf (conversionMethod = 1) Then
+        finalXModifier = PI_DOUBLE / finalX
+        finalYModifier = sRadius / finalY
+    End If
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+        workingDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
+       
         'Each polar conversion requires a unique set of code
         Select Case conversionMethod
         
@@ -1580,12 +1576,12 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                 If (sDistance <= sRadius2) Then
                 
                     'X is handled differently based on its relation to the center of the image
-                    If x >= midX Then
+                    If (x >= midX) Then
                         nX = x - midX
-                        If y > midY Then
+                        If (y > midY) Then
                             theta = PI - Atn(nX / nY)
                             r = Sqr(sDistance)
-                        ElseIf y < midY Then
+                        ElseIf (y < midY) Then
                             theta = Atn(nX / (midY - y))
                             r = Sqr(nX * nX + (midY - y) * (midY - y))
                         Else
@@ -1594,10 +1590,10 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                         End If
                     Else
                         nX = midX - x
-                        If y > midY Then
+                        If (y > midY) Then
                             theta = PI + Atn(nX / nY)
                             r = Sqr(sDistance)
-                        ElseIf y < midY Then
+                        ElseIf (y < midY) Then
                             theta = PI_DOUBLE - Atn(nX / (midY - y))
                             r = Sqr(nX * nX + (midY - y) * (midY - y))
                         Else
@@ -1606,14 +1602,12 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                         End If
                     End If
                                         
-                    srcX = finalX - (finalX / PI_DOUBLE * theta)
-                    srcY = finalY * (r / sRadius)
+                    srcX = finalX - (finalXModifier * theta)
+                    srcY = r * finalYModifier
                     
                 Else
-                
                     srcX = x
                     srcY = y
-                    
                 End If
                 
             'Polar to rectangular
@@ -1626,32 +1620,32 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
             
-                If sDistance <= sRadius2 Then
+                If (sDistance <= sRadius2) Then
                 
-                    theta = (x / finalX) * PI_DOUBLE
+                    theta = x * finalXModifier
                     
-                    If theta >= (PI * 1.5) Then
+                    If (theta >= (PI * 1.5)) Then
                         t = PI_DOUBLE - theta
-                    ElseIf theta >= PI Then
+                    ElseIf (theta >= PI) Then
                         t = theta - PI
-                    ElseIf theta > PI_HALF Then
+                    ElseIf (theta > PI_HALF) Then
                         t = PI - theta
                     Else
                         t = theta
                     End If
                     
-                    r = sRadius * (y / finalY)
+                    r = y * finalYModifier
                     
                     nX = -r * Sin(t)
                     nY = r * Cos(t)
                     
-                    If theta >= 1.5 * PI Then
+                    If (theta >= 1.5 * PI) Then
                         srcX = midX - nX
                         srcY = midY - nY
-                    ElseIf theta >= PI Then
+                    ElseIf (theta >= PI) Then
                         srcX = midX - nX
                         srcY = midY + nY
-                    ElseIf theta >= PI_HALF Then
+                    ElseIf (theta >= PI_HALF) Then
                         srcX = midX + nX
                         srcY = midY + nY
                     Else
@@ -1660,10 +1654,8 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                     End If
                     
                 Else
-                
                     srcX = x
                     srcY = y
-                
                 End If
                             
             'Polar inversion
@@ -1677,8 +1669,9 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                 sDistance = (nX * nX) + (nY * nY)
                 
                 If (sDistance <> 0#) Then
-                    srcX = midX + midX * midX * (nX / sDistance) * polarRadius
-                    srcY = midY + midY * midY * (nY / sDistance) * polarRadius
+                    sDistance = (1# / sDistance) * polarRadius
+                    srcX = midX + midX * midX * nX * sDistance
+                    srcY = midY + midY * midY * nY * sDistance
                     srcX = PDMath.Modulo(srcX, finalX)
                     srcY = PDMath.Modulo(srcY, finalY)
                 Else
@@ -1688,21 +1681,21 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
             
         End Select
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
-                
-    Next y
+        'Use the filter support class to interpolate and edge-wrap pixels as necessary
+        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        
+    Next x
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapRGBQuadArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then CreatePolarCoordDIB = 0 Else CreatePolarCoordDIB = 1
 
@@ -1715,53 +1708,34 @@ End Function
 Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim dstImageData() As RGBQuad, dstSA1D As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
     
     'Polar conversion requires a number of specialized variables
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
-    midX = CDbl(finalX - initX) / 2
+    midX = CDbl(finalX - initX) / 2#
     midX = midX + initX
-    midY = CDbl(finalY - initY) / 2
+    midY = CDbl(finalY - initY) / 2#
     midY = midY + initY
     
     'Rotation values
@@ -1788,16 +1762,17 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     
     'Check for extremely small images and exit, to avoid OOB problems
     If (tWidth <= 1) Or (tHeight <= 1) Then
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         CreateXSwappedPolarCoordDIB = 1
         Exit Function
     End If
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
     
         'Each polar conversion requires a unique set of code
         Select Case conversionMethod
@@ -1812,15 +1787,15 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
                 
-                If sDistance <= sRadius2 Then
+                If (sDistance <= sRadius2) Then
                 
                     'X is handled differently based on its relation to the center of the image
-                    If y >= midY Then
+                    If (y >= midY) Then
                         nY = y - midY
-                        If x > midX Then
+                        If (x > midX) Then
                             theta = PI - Atn(nY / nX)
                             r = Sqr(sDistance)
-                        ElseIf x < midX Then
+                        ElseIf (x < midX) Then
                             theta = Atn(nY / (midX - x))
                             r = Sqr(nY * nY + (midX - x) * (midX - x))
                         Else
@@ -1829,10 +1804,10 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                         End If
                     Else
                         nY = midY - y
-                        If x > midX Then
+                        If (x > midX) Then
                             theta = PI + Atn(nY / nX)
                             r = Sqr(sDistance)
-                        ElseIf x < midX Then
+                        ElseIf (x < midX) Then
                             theta = PI_DOUBLE - Atn(nY / (midX - x))
                             r = Sqr(nY * nY + (midX - x) * (midX - x))
                         Else
@@ -1845,10 +1820,8 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                     srcX = finalX * (r / sRadius)
                     
                 Else
-                
                     srcX = x
                     srcY = y
-                    
                 End If
                 
             'Polar to rectangular
@@ -1861,15 +1834,15 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
             
-                If sDistance <= sRadius2 Then
+                If (sDistance <= sRadius2) Then
                 
                     theta = (y / finalY) * PI_DOUBLE
                     
-                    If theta >= (PI * 1.5) Then
+                    If (theta >= (PI * 1.5)) Then
                         t = PI_DOUBLE - theta
-                    ElseIf theta >= PI Then
+                    ElseIf (theta >= PI) Then
                         t = theta - PI
-                    ElseIf theta > PI_HALF Then
+                    ElseIf (theta > PI_HALF) Then
                         t = PI - theta
                     Else
                         t = theta
@@ -1880,13 +1853,13 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                     nY = -r * Sin(t)
                     nX = r * Cos(t)
                     
-                    If theta >= 1.5 * PI Then
+                    If (theta >= 1.5 * PI) Then
                         srcY = midY - nY
                         srcX = midX - nX
-                    ElseIf theta >= PI Then
+                    ElseIf (theta >= PI) Then
                         srcY = midY - nY
                         srcX = midX + nX
-                    ElseIf theta >= PI_HALF Then
+                    ElseIf (theta >= PI_HALF) Then
                         srcY = midY + nY
                         srcX = midX + nX
                     Else
@@ -1895,10 +1868,8 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                     End If
                     
                 Else
-                
                     srcX = x
                     srcY = y
-                
                 End If
                             
             'Polar inversion
@@ -1911,11 +1882,11 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
                 
-                If sDistance <> 0 Then
+                If (sDistance <> 0) Then
                     srcX = midX + midX * midX * (nX / sDistance) * polarRadius
                     srcY = midY + midY * midY * (nY / sDistance) * polarRadius
-                    srcX = Modulo(srcX, finalX)
-                    srcY = Modulo(srcY, finalY)
+                    srcX = PDMath.Modulo(srcX, finalX)
+                    srcY = PDMath.Modulo(srcY, finalY)
                 Else
                     srcX = x
                     srcY = y
@@ -1923,21 +1894,21 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
             
         End Select
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
-                
-    Next y
+        'Use the filter support class to interpolate and edge-wrap pixels as necessary
+        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        
+    Next x
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapRGBQuadArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then CreateXSwappedPolarCoordDIB = 0 Else CreateXSwappedPolarCoordDIB = 1
 
@@ -2569,35 +2540,20 @@ End Function
 Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent rotated pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim dstImageData() As RGBQuad, dstSA1D As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
+        If (modifyProgBarMax = -1) Then
+            SetProgBarMax finalY
         Else
             SetProgBarMax modifyProgBarMax
         End If
@@ -2607,7 +2563,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -2645,29 +2601,32 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
         
         srcX = xCos(x) - ySin(y)
         srcY = yCos(y) + xSin(x)
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
+        'Use the filter support class to interpolate and edge-wrap pixels as necessary
+        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
         
-    Next y
+    Next x
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapRGBQuadArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then CreateRotatedDIB = 0 Else CreateRotatedDIB = 1
 
