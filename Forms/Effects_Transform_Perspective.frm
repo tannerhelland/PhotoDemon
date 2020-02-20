@@ -103,8 +103,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright 2013-2020 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 26/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 19/February/20
+'Last update: large performance improvements, overhaul UI to properly support theming
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -129,15 +129,17 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'When previewing, we need to modify all measurements by the ratio between the (generally smaller) preview image
-' and the full-size image.  These values are also required for mapping between the interactive UI area and the
-' image coordinate space during the final transform.
+'When previewing, we need to modify all measurements by the ratio between the (generally smaller)
+' preview image and the original full-size image.  These values are required for mapping between
+' the interactive UI area and the image coordinate space during the final transform.
 Private m_OrigImageWidth As Double, m_OrigImageHeight As Double
 
-'Width and height of the preview image
+'Width and height of the preview image, cached locally
 Private m_PreviewWidth As Long, m_PreviewHeight As Long
 
-'To improve performance, we cache a second DIB locally; this used when generating previews
+'To improve performance, we cache a copy of the source image; the perspective transform obviously
+' requires discrete source and destination images, and we reduce memory thrashing by maintaining a
+' persistent source copy during previews.
 Private m_srcDIB As pdDIB
 
 'We track two sets of control point coordinates - the original points, and the new points.  The difference between
@@ -145,11 +147,14 @@ Private m_srcDIB As pdDIB
 Private m_oPoints(0 To 3) As PointFloat
 Private m_nPoints(0 To 3) As PointFloat
 
-'Track mouse status between MouseDown and MouseMove events
+'Mouse status is tracked between MouseDown and MouseMove events; this allows for drag events.
 Private m_isMouseDown As Boolean
 
-'Currently selected node in the workspace area
-Private m_selPoint As Long
+'Currently selected and hovered nodes in the workspace area (if any); -1 = no point selected
+Private m_ActivePoint As Long, m_HoverPoint As Long
+
+'Buffer to which the current interactive "perspective" control is rendered.
+Private m_Buffer As pdDIB
 
 Private Sub cboEdges_Click()
     UpdatePreview
@@ -169,32 +174,23 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     cParams.SetParamString effectParams
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent translated pixels from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    
     If (m_srcDIB Is Nothing) Then Set m_srcDIB = New pdDIB
     m_srcDIB.CreateFromExistingDIB workingDIB
-    PrepSafeArray srcSA, m_srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
+    
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-    
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'See if the user wants a rect -> quad ("Normal" in GIMP) or quad -> rect ("Corrective" in GIMP) mapping
     Dim correctiveProjection As Boolean
@@ -203,7 +199,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, cParams.GetLong("edges", EDGE_ERASE), (cParams.GetLong("quality", 1) <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, cParams.GetLong("edges", EDGE_ERASE), (cParams.GetLong("quality", 1) <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -414,12 +410,14 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     Dim srcX As Double, srcY As Double
     Dim newX As Double, newY As Double
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB m_srcDIB
+    
     'Loop through each pixel in the image, converting values as we go.  Note that PD now guarantees 32-bpp inputs,
     ' which allows us to skip the "check for alpha" part of this process.
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
     For x = initX To finalX
-        
-        quickX = x * 4
         
         'Reset all supersampling values
         newR = 0
@@ -442,9 +440,13 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
             
             srcX = imgWidth * (hA * newX + hB * newY + hC) * chkDenom
             srcY = imgHeight * (hD * newX + hE * newY + hF) * chkDenom
-                
+            
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -480,11 +482,12 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
             newA = newA \ numSamplesUsed
         End If
         
-        dstImageData(quickX, y) = newB
-        dstImageData(quickX + 1, y) = newG
-        dstImageData(quickX + 2, y) = newR
-        dstImageData(quickX + 3, y) = newA
-                
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
+        
     Next x
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
@@ -495,8 +498,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -504,7 +507,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
 End Sub
 
 Private Sub cboMapping_Click()
-    RedrawPreviewBox
+    RedrawEditor
     UpdatePreview
 End Sub
 
@@ -562,7 +565,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    RedrawPreviewBox
+    RedrawEditor
     UpdatePreview
 End Sub
 
@@ -581,7 +584,7 @@ Private Sub cmdBar_ResetClick()
         m_nPoints(i).y = m_oPoints(i).y
     Next i
         
-    RedrawPreviewBox
+    RedrawEditor
     UpdatePreview
     
 End Sub
@@ -589,6 +592,9 @@ End Sub
 Private Sub Form_Load()
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    
+    Set m_Buffer = New pdDIB
+    m_Buffer.CreateBlank picDraw.ScaleWidth, picDraw.ScaleHeight, 32, 0, 255
     
     'Disable all previews while we initialize the dialog
     cmdBar.SetPreviewStatus False
@@ -633,13 +639,15 @@ Private Sub Form_Load()
         
     'Mark the mouse as not being down
     m_isMouseDown = False
+    m_ActivePoint = -1
+    m_HoverPoint = -1
         
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
         
     'Create the preview
     cmdBar.SetPreviewStatus True
-    RedrawPreviewBox
+    RedrawEditor
     UpdatePreview
     
 End Sub
@@ -653,79 +661,144 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then PerspectiveImage GetPerspectiveParamString, True, pdFxPreview
 End Sub
 
-Private Sub RedrawPreviewBox()
-
-    picDraw.Cls
+Private Sub RedrawEditor()
     
-    'Start by drawing a grid through the center of the image
-    picDraw.DrawWidth = 1
-    picDraw.ForeColor = RGB(172, 172, 172)
-    picDraw.Line (0, picDraw.Height / 2)-(picDraw.Width, picDraw.Height / 2)
-    picDraw.Line (picDraw.Width / 2, 0)-(picDraw.Width / 2, picDraw.Height)
+    'Start by clearing the back buffer (using the current theme's backcolor)
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundPDDIB m_Buffer
+    
+    Set cBrush = New pd2DBrush
+    If (Not g_Themer Is Nothing) Then cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
+    PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight
+    
+    'Next, we want to draw a grid across the buffer.  This helps orient the user as to where the
+    ' image's endpoints normally lie.
+    Dim cPen As pd2DPen
+    Set cPen = New pd2DPen
+    cPen.SetPenWidth 1!
+    cPen.SetPenOpacity 33!
+    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayDefault)
+    
+    PD2D.DrawLineI cSurface, cPen, 0!, m_Buffer.GetDIBHeight \ 2, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight \ 2
+    PD2D.DrawLineI cSurface, cPen, m_Buffer.GetDIBHeight \ 2, 0, m_Buffer.GetDIBWidth \ 2, m_Buffer.GetDIBHeight
     
     'Next, we will do one of two things:
     ' 1) For forward mapping, draw a silhouette around the original image outline.
     ' 2) For reverse mapping, just draw the image itself.
-    If cboMapping.ListIndex = 0 Then
+    If (cboMapping.ListIndex = 0) Then
+        
+        cPen.SetPenOpacity 100!
+        
         Dim i As Long
         For i = 0 To 3
-            If i < 3 Then
-                picDraw.Line (m_oPoints(i).x, m_oPoints(i).y)-(m_oPoints(i + 1).x, m_oPoints(i + 1).y)
+            
+            'For all points but the first, connect point (n) to (n+1); on the last point,
+            ' reconnect to (0)
+            If (i < 3) Then
+                PD2D.DrawLineI cSurface, cPen, m_oPoints(i).x, m_oPoints(i).y, m_oPoints(i + 1).x, m_oPoints(i + 1).y
             Else
-                picDraw.Line (m_oPoints(i).x, m_oPoints(i).y)-(m_oPoints(0).x, m_oPoints(0).y)
+                PD2D.DrawLineI cSurface, cPen, m_oPoints(i).x, m_oPoints(i).y, m_oPoints(0).x, m_oPoints(0).y
             End If
+            
         Next i
+        
     Else
+    
         If cmdBar.PreviewsAllowed Then
+            
             Dim tmpSA As SafeArray2D
             EffectPrep.PrepImageData tmpSA, True, pdFxPreview
-            GDI.StretchBltWrapper picDraw.hDC, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
+            
+            Dim cSrcSurface As pd2DSurface
+            Set cSrcSurface = New pd2DSurface
+            cSrcSurface.WrapSurfaceAroundPDDIB workingDIB
+            
+            PD2D.DrawSurfaceResizedCroppedF cSurface, m_oPoints(0).x, m_oPoints(0).y, m_oPoints(1).x - m_oPoints(0).x, m_oPoints(2).y - m_oPoints(0).y, cSrcSurface, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+            
         End If
+        
     End If
     
     'Next, draw connecting lines to form an image outline.  Use GDI+ for superior results (e.g. antialiasing).
-    Dim oTransparency As Long
-    oTransparency = 192
+    cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
     
-    picDraw.ForeColor = RGB(0, 0, 255)
+    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
+    cPen.SetPenWidth 1.6!
+    
     For i = 0 To 3
-        If i < 3 Then
-            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).x, m_nPoints(i).y, m_nPoints(i + 1).x, m_nPoints(i + 1).y, picDraw.ForeColor, oTransparency, 2
+        If (i < 3) Then
+            PD2D.DrawLineF cSurface, cPen, m_nPoints(i).x, m_nPoints(i).y, m_nPoints(i + 1).x, m_nPoints(i + 1).y
         Else
-            GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(i).x, m_nPoints(i).y, m_nPoints(0).x, m_nPoints(0).y, picDraw.ForeColor, oTransparency, 2
+            PD2D.DrawLineF cSurface, cPen, m_nPoints(i).x, m_nPoints(i).y, m_nPoints(0).x, m_nPoints(0).y
         End If
     Next i
     
-    'Next, draw circles at the corners of the perspective area
+    'Next, draw circles at the corners of the perspective area, and hover the currently active node (if any)
+    Dim targetColor As Long
+    Dim clrActive As Long, clrDefault As Long
+    If (Not g_Themer Is Nothing) Then
+        clrDefault = g_Themer.GetGenericUIColor(UI_Accent, True)
+        clrActive = g_Themer.GetGenericUIColor(UI_AccentDark, True)
+    End If
+    
+    Dim targetThickness As Single, defaultThickness As Single, hoverThickness As Single
+    defaultThickness = 2!
+    hoverThickness = 3.5!
+    
     For i = 0 To 3
-        GDIPlusDrawCanvasCircle picDraw.hDC, m_nPoints(i).x, m_nPoints(i).y, 7, oTransparency
+        
+        If ((i = m_ActivePoint) Or (i = m_HoverPoint)) Then targetColor = clrActive Else targetColor = clrDefault
+        cPen.SetPenColor targetColor
+        
+        'When hovered/active, draw a larger point
+        If ((i = m_ActivePoint) Or (i = m_HoverPoint)) Then targetThickness = hoverThickness Else targetThickness = defaultThickness
+        cPen.SetPenWidth targetThickness
+        
+        'Draw the circle
+        PD2D.DrawCircleF cSurface, cPen, m_nPoints(i).x, m_nPoints(i).y, Interface.FixDPIFloat(7)
+        
     Next i
     
     'Finally, draw the center cross to help the user orient to the center point of the perspective effect
-    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y, RGB(0, 0, 255), 128
-    GDIPlusDrawLineToDC picDraw.hDC, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y, RGB(0, 0, 255), 128
+    If (Not g_Themer Is Nothing) Then cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
+    cPen.SetPenWidth 1!
+    cPen.SetPenOpacity 50!
+    PD2D.DrawLineF cSurface, cPen, m_nPoints(0).x, m_nPoints(0).y, m_nPoints(2).x, m_nPoints(2).y
+    PD2D.DrawLineF cSurface, cPen, m_nPoints(1).x, m_nPoints(1).y, m_nPoints(3).x, m_nPoints(3).y
     
+    'Flip the completed buffer to the screen
+    Set cSurface = Nothing
+    GDI.BitBltWrapper picDraw.hDC, 0, 0, m_Buffer.GetDIBWidth, m_Buffer.GetDIBHeight, m_Buffer.GetDIBDC, 0, 0, vbSrcCopy
+    Set picDraw.Picture = picDraw.Image
     picDraw.Refresh
 
 End Sub
 
 Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
     m_isMouseDown = True
     
     'If the mouse is over a point, mark it as the active point
-    m_selPoint = CheckClick(x, y)
+    m_ActivePoint = CheckClick(x, y)
     
 End Sub
 
 Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If the mouse is not down, indicate to the user that points can be moved
-    If Not m_isMouseDown Then
+    If (Not m_isMouseDown) Then
+        
+        Dim origHoverPoint As Long
+        origHoverPoint = m_HoverPoint
         
         'If the user is close to a knot, change the mousepointer to 'move'
-        If CheckClick(x, y) > -1 Then
-            If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
+        m_HoverPoint = CheckClick(x, y)
+        If (m_HoverPoint >= 0) Then
+        
+            If (picDraw.MousePointer <> vbSizePointer) Then picDraw.MousePointer = vbSizePointer
             
+            'Display a tool-tip (helpful when the user wants a severely distorted transform matrix)
             Select Case CheckClick(x, y)
                 Case 0
                     picDraw.ToolTipText = g_Language.TranslateMessage("top-left")
@@ -739,16 +812,21 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             End Select
             
         Else
-            If picDraw.MousePointer <> 0 Then picDraw.MousePointer = 0
+            If (picDraw.MousePointer <> vbDefault) Then picDraw.MousePointer = vbDefault
+            picDraw.ToolTipText = vbNullString
         End If
+        
+        If (origHoverPoint <> m_HoverPoint) Then RedrawEditor
     
     'If the mouse is down, move the current point and redraw the preview
     Else
-    
-        If m_selPoint >= 0 Then
-            m_nPoints(m_selPoint).x = x
-            m_nPoints(m_selPoint).y = y
-            RedrawPreviewBox
+        
+        m_HoverPoint = m_ActivePoint
+        
+        If (m_ActivePoint >= 0) Then
+            m_nPoints(m_ActivePoint).x = x
+            m_nPoints(m_ActivePoint).y = y
+            RedrawEditor
             UpdatePreview
         End If
     
@@ -758,7 +836,7 @@ End Sub
 
 Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_isMouseDown = False
-    m_selPoint = -1
+    m_ActivePoint = -1
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
@@ -767,20 +845,23 @@ Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
     'Returning -1 says we're not close to an existing point
     CheckClick = -1
     
-    Dim dist As Double
     Dim i As Long
+    Dim dist As Double, bestDist As Double, bestIndex As Long
+    bestDist = DOUBLE_MAX
+    bestIndex = -1
     
     For i = 0 To 3
     
         dist = PDMath.DistanceTwoPoints(x, y, m_nPoints(i).x, m_nPoints(i).y)
-        
-        'If we're close to an existing point, return the index of that point
-        If (dist < g_MouseAccuracy) Then
-            CheckClick = i
-            Exit For
+        If (dist < bestDist) Then
+            bestDist = dist
+            bestIndex = i
         End If
         
     Next i
+    
+    'If we're close to an existing point, return the index of that point
+    If (bestDist < g_MouseAccuracy) Then CheckClick = bestIndex
     
 End Function
 
@@ -836,6 +917,13 @@ End Function
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
+End Sub
+
+Private Sub picDraw_Resize()
+    If (Not m_Buffer Is Nothing) Then
+        m_Buffer.CreateBlank picDraw.ScaleWidth, picDraw.ScaleHeight, 32, 0, 255
+        RedrawEditor
+    End If
 End Sub
 
 Private Sub sltQuality_Change()

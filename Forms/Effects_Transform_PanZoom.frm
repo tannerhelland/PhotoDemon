@@ -203,7 +203,6 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     Dim newR As Long, newG As Long, newB As Long, newA As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim tmpSum As Long, tmpSumFirst As Long
-    Dim avgSamples As Double
     
     'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
     ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
@@ -331,11 +330,12 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        avgSamples = 1# / numSamplesUsed
-        newR = newR * avgSamples
-        newG = newG * avgSamples
-        newB = newB * avgSamples
-        newA = newA * avgSamples
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
+            newA = newA \ numSamplesUsed
+        End If
         
         xStride = x * 4
         dstImageData(xStride) = newB
