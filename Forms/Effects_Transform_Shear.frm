@@ -148,8 +148,7 @@ Public Sub ShearImage(ByVal effectParams As String, Optional ByVal toPreview As 
     Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
+    'Create a copy of the current image; we will use it as our source reference.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB

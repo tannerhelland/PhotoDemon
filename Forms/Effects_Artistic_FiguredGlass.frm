@@ -117,22 +117,25 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright 2013-2020 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 26/July/17
-'Last update: performance optimizations (10+% time reduction), convert to XML params
+'Last updated: 20/February/20
+'Last update: large performance optimizations
 '
-'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
-' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
-' dislike); other software calls it "marbling".  I chose figured glass because it's an actual type of uneven glass - see:
+'This tool allows the user to apply a distort operation to an image that mimicks seeing it
+' through warped glass, perhaps glass tiles of some sort.  Many different names are used for
+' this effect - Paint.NET calls it "dents" (which I quite dislike); other software calls it
+' "marbling".  I chose figured glass because it's an actual type of uneven glass - see:
 ' http://en.wikipedia.org/wiki/Architectural_glass#Rolled_plate_.28figured.29_glass
 '
-'As with other distorts in the program, bilinear interpolation (via reverse-mapping) and optional supersampling are
-' available for those who desire very a high-quality transformation.
+'As with other distorts in the program, bilinear interpolation (via reverse-mapping) and
+' optional supersampling are available for those who desire very a high-quality transformation.
 '
-'Unlike other distorts, no radius is required for this effect.  It always operates on the entire image/selection.
+'Unlike other distorts, no radius is required for this effect.  It always operates on the
+' entire image/selection.
 '
-'Finally, the transformation used by this tool is a modified version of a transformation originally written by
-' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
-' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
+'Finally, the transformation used by this tool is a modified version of a transformation
+' originally written by Jerry Huxtable of JH Labs.  Jerry's original code is licensed under
+' an Apache 2.0 license.  You may download his original version at the following link
+' (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -168,21 +171,16 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
+    'Create a copy of the current image; we will use it as our source reference.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -190,19 +188,15 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'During a preview, shrink the scale so that the preview accurately reflects how the final image will appear
@@ -283,12 +277,13 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     ' "Perlin" nomenclature, but we have since moved onto better noise generation methods.)
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
-    Dim multAvg As Double
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
                 
         'Reset all supersampling values
         newR = 0
@@ -323,7 +318,11 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
             srcY = k + perlinCacheCos
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -352,29 +351,31 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        multAvg = 1# / numSamplesUsed
-        newR = newR * multAvg
-        newG = newG * multAvg
-        newB = newB * multAvg
-        newA = newA * multAvg
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
+            newA = newA \ numSamplesUsed
+        End If
         
-        dstImageData(quickVal, y) = newB
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 3, y) = newA
-                
-    Next y
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
