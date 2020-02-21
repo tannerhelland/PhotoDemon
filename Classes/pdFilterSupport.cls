@@ -15,10 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright 2013-2020 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 21/May/14
-'Last update: add new getColorsFromSource function, which can be used to RGB values from anywhere in the image,
-'              but with all the usual support for edge wrapping, interpolation, and more.  The updated Fragment
-'              tool makes use of these capabilities.
+'Last updated: 20/February/20
+'Last update: massive performance improvements via new wrapper functions; myriad bug-fixes for weird
+'             edge-cases on various edge-handling strategies. See GitHub for details:
+'             https://github.com/tannerhelland/PhotoDemon/commit/35c583a111bc21ceffc768cb3194fcf814702ecd
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -41,14 +41,13 @@ Private m_DstX As Double, m_DstY As Double
 'PD now allows functions to "unsafely" pass a reference to a source image array.
 ' The benefit of doing this in advance is that it makes subsequent array references very fast.
 ' The downside is that you *MUST* free the reference manually or crashes will occur.
-' (This is technically bypassable by setting flags in the SafeArray header, but I like to enforce
-' strict array freeing behavior in PhotoDemon as it removes the risk for surprise crashes down
-' the road.)
 '
-'Anyway - not all filters use the faster, less-safe wrappers yet, but I hope to migrate
-' the whole program to them in the future.
-Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
-Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
+'(This is technically bypassable by setting different flags in the passed SafeArray header,
+' but I like to deliberately enforce strict array freeing behavior in PhotoDemon as it removes
+' the risk for surprise crashes down the road.)
+'
+'Anyway - not all filters use these faster, less-safe wrappers yet, but I hope to migrate
+' the whole program to them in the coming days.
 Private m_PixelSA2D As SafeArray2D, m_Pixels() As RGBQuad
 Private m_ByteArrayPtr As Long, m_ArrayWidth As Long, m_ArrayHeight As Long
 
@@ -141,10 +140,13 @@ Friend Function GetColorsFromSource_Fast(ByVal srcX As Double, ByVal srcY As Dou
     
     'fixDistort will only be set to TRUE when the current pixel needs to be erased
     ' (e.g. the edge mode is set to pdeo_Erase and this pixel lies outside the image).
-    ' When this occurs, note that the function return has already been intialized to
+    '
+    'When this occurs, note that the function return has already been intialized to
     ' [0, 0, 0, 0] so we don't need to do anything.  If the function returns FALSE,
-    ' however, srcX and srcY will contain the newly calculated coordinates, which
-    ' we will then pass to the interpolator as necessary.
+    ' however, srcX and srcY will contain potentially modified source coordinates
+    ' (with the current edge-handling settings taken into account).  We then need to
+    ' interpolate a value for that position, or simply return an integer-aligned
+    ' copy of the source at that position.
     If (Not FixDistortEdges(srcX, srcY)) Then
         
         'Interpolate a new pixel value
@@ -160,48 +162,6 @@ Friend Function GetColorsFromSource_Fast(ByVal srcX As Double, ByVal srcY As Dou
 
 End Function
 
-'After a transform has generated a set of reverse-mapped pixel coordinates, they can be passed to
-' this function.  Based on already established parameters (such as interpolation, edge handling, etc),
-' new pixel values are calculated and assigned automagically.
-Friend Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
-
-    If (m_EdgeMethod = pdeo_Original) Then
-        m_DstX = x
-        m_DstY = y
-    End If
-
-    Dim fixDistort As Boolean
-
-    'First, fix any pixels that lie outside the image
-    fixDistort = FixDistortEdges(srcX, srcY)
-    
-    'Now, interpolate as necessary
-    Dim i As Long, quickVal As Long, quickVal2 As Long
-    
-    quickVal = x * 4
-    
-    'fixDistort will only be set to TRUE when the current pixel needs to be erased
-    If fixDistort Then
-        For i = 0 To 3
-            dstData(quickVal + i, y) = 0
-        Next i
-    Else
-        If m_Interpolate Then
-            For i = 0 To 3
-                dstData(quickVal + i, y) = PInterpolate(srcX, srcY, srcData, i)
-            Next i
-        Else
-    
-            quickVal2 = Int(srcX) * 4
-        
-            For i = 0 To 3
-                dstData(quickVal + i, y) = srcData(quickVal2 + i, Int(srcY))
-            Next i
-        End If
-    End If
-
-End Sub
-
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster
 ' to set these once and store them instead of passing them every time a pixel needs to be handled.
 Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As PD_EdgeOperator, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
@@ -209,7 +169,7 @@ Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As
     m_Interpolate = toInterpolate
     m_FinalX = finalX
     m_FinalY = finalY
-    m_imgWidth = m_FinalX + 0.99999999  'Cheat to avoid the need for bounds-checking later
+    m_imgWidth = m_FinalX + 0.99999999  'Cheat to avoid the need for subsequent bounds-checking
     m_imgHeight = m_FinalY + 0.99999999
 End Sub
 

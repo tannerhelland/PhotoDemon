@@ -201,8 +201,8 @@ Attribute VB_Exposed = False
 'Image "Kaleiodoscope" Distortion
 'Copyright 2013-2020 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 26/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 20/February/18
+'Last update: large performance improvements
 '
 'This tool allows the user to apply a simulated kaleidoscope distort to the image.  A number of variables can be
 ' set as part of the transformation; simply playing with the sliders should give a good indication of how they
@@ -244,21 +244,14 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As RGBQuad, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image,
     ' and we will use it as our source reference.
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
-    
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -266,19 +259,15 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, pdeo_Clamp, useBilinear, curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters 4, pdeo_Clamp, useBilinear, curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
           
     'Kaleidoscoping requires some specialized variables
@@ -309,13 +298,16 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) * 0.5
-              
+    
     sRadius = sRadius * (effectRadius / 100#)
-                  
+    
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
     
         'Remap the coordinates around a center point of (0, 0)
         nX = x - midX
@@ -323,15 +315,15 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
         
         'Calculate distance
         sDistance = Sqr((nX * nX) + (nY * nY))
-                
+        
         'Calculate theta
         theta = PDMath.Atan2_Faster(nY, nX) - primaryAngle - secondaryAngle
-        theta = convertTriangle((theta * ONE_DIV_PI) * numMirrors * 0.5)
-                
+        theta = ConvertTriangle((theta * ONE_DIV_PI) * numMirrors * 0.5)
+        
         'Calculate remapped x and y values
         If (sRadius > 0#) Then
             tRadius = sRadius / Cos(theta)
-            sDistance = tRadius * convertTriangle(sDistance / tRadius)
+            sDistance = tRadius * ConvertTriangle(sDistance / tRadius)
         Else
             tRadius = sDistance
         End If
@@ -341,21 +333,21 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
         srcX = midX + sDistance * Cos(theta)
         srcY = midY + sDistance * Sin(theta)
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
-                
-    Next y
+        'Retrieve the source pixel at this position and render it into the destination buffer
+        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapRGBQuadArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -426,11 +418,15 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then KaleidoscopeImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
-'Return a repeating triangle shape in the range [0, 1] with wavelength 1
-Private Function convertTriangle(ByVal trInput As Double) As Double
-    Dim tmpCalc As Double
-    tmpCalc = Modulo(trInput, 1)
-    If (tmpCalc < 0.5) Then convertTriangle = tmpCalc Else convertTriangle = 1# - tmpCalc
+'Return a repeating triangle shape in the range [0, 1] with wavelength 1.
+'
+'For correct results you need to multiply the output by 2 (to achieve [0, 1] amplitude),
+' but this effect actually looks a little better when halved!  (The kaleidoscope pattern
+' looks really busy otherwise.)
+Private Function ConvertTriangle(ByVal trInput As Double) As Double
+    ConvertTriangle = (trInput - Int(trInput))
+    If (ConvertTriangle >= 0.5) Then ConvertTriangle = 1# - ConvertTriangle
+    'ConvertTriangle = ConvertTriangle * 2#
 End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
