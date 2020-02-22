@@ -120,8 +120,8 @@ Attribute VB_Exposed = False
 '"Plastic Wrap" Image effect
 'Copyright 2017-2020 by Tanner Helland
 'Created: 03/August/17
-'Last updated: 07/August/17
-'Last update: put finishing touches on the algorithm
+'Last updated: 22/February/20
+'Last update: performance improvements
 '
 '"Plastic wrap" has been available in Photoshop for well over two decades at this point, but I've yet to see
 ' an open-source software package reproduce the effect well.  (For example, try GIMP's analog of it, in the
@@ -130,21 +130,21 @@ Attribute VB_Exposed = False
 'As usual, this means I had to design PhotoDemon's implementation from scratch, and also as usual, I think
 ' the end result is pretty darn great!  To my knowledge, this the closest anyone's come to reproducing
 ' Photoshop's effect, and while there are still differences (some by design, to improve output on modern photo
-' sizes), I think our technique is actually the preferable one - and any differences are small enough that you
-' can still use our technique to mimic tutorials that utilize the Photoshop effect.
+' sizes), I think PD's technique is actually the preferable one - and any differences are small enough that you
+' can still use PD's technique to mimic tutorials that utilize the Photoshop effect.
 '
 'The actual effect implementation is simple: it's basically a modified "Metal" filter, which reduces image
 ' structure to a series of alternating ridges and troughs, followed by a modified "Emboss" filter, which
-' basically calculates a slope and direction at each point in the image.  We also apply some highlight and
-' smoothing effects, obviously, to produce a "shiny" result that looks like the filter's namesake.
+' calculates a slope and direction at each point in the image.  We also apply some highlight and smoothing
+' effects, obviously, to produce a "shiny" result that looks like the filter's namesake.
 '
 'Thanks to the simplicity of our implementation, most of the work can be done in a grayscale color space,
-' which means performance is quite snappy.  (In fact, I believe this is how Photoshop does it as well, which
-' could explain how they were able to implement a demanding filter like this so many years ago.)
+' which means performance is snappy.  (In fact, I believe this is how Photoshop does it as well, which
+' might explain how they were able to implement a demanding filter like this so many years ago.)
 '
-'Anyway, that should explain the geometry behind our implementation, and why the effect's settings bear some
-' resemblance to the "Metal" and "Emboss" effects.  I particularly like the lighting controls in our
-' implementation, which are a neat improvement over the Photoshop version.
+'Anyway, that's the basic geometry behind this implementation, and hopefully it explains why the effect's
+' settings bear some similarity to the "Metal" and "Emboss" effects.  I particularly like the lighting
+' controls in our implementation, which are a IMO nice improvement over the Photoshop version.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -260,13 +260,10 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     'Convert the rotation angle to radians
     lightAngle = lightAngle * (PI / 180#)
     
-    'Find the cos and sin of this angle and store the values
-    Dim cosTheta As Double, sinTheta As Double
-    cosTheta = Cos(lightAngle)
-    sinTheta = Sin(lightAngle)
-    
-    'New X value, remapped around a center point of (0, 0)
-    Dim nX As Double
+    'X and Y offsets can be pre-calculated based on the specified angle and distance
+    Dim xOffset As Double, yOffset As Double
+    xOffset = Cos(lightAngle) * lightDistance
+    yOffset = Sin(lightAngle) * lightDistance
     
     'Source X and Y values, which are used to solve for the hue of a given point
     Dim srcX As Double, srcY As Double
@@ -288,12 +285,9 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
         'Retrieve source graymap value
         g = grayMap(x, y)
         
-        'Move x according to the user's distance parameter
-        nX = x + lightDistance
-    
         'Calculate a rotated source x/y pixel
-        srcX = cosTheta * (nX - x) + x
-        srcY = sinTheta * (nX - x) + y
+        srcX = x + xOffset
+        srcY = y + yOffset
         
         'Interpolate the hypothetical pixel value at this position
         x0 = Int(srcX)
@@ -303,29 +297,14 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
         y1 = y0 + 1
         yDiff = srcY - y0
         
-        If (x0 < initX) Then
-            x0 = initX
-        ElseIf (x0 > finalX) Then
-            x0 = finalX
-        End If
-        
-        If (x1 < initX) Then
-            x1 = initX
-        ElseIf (x1 > finalX) Then
-            x1 = finalX
-        End If
-        
-        If (y0 < initY) Then
-            y0 = initY
-        ElseIf (y0 > finalY) Then
-            y0 = finalY
-        End If
-        
-        If (y1 < initY) Then
-            y1 = initY
-        ElseIf (y1 > finalY) Then
-            y1 = finalY
-        End If
+        If (x0 < initX) Then x0 = initX
+        If (x0 > finalX) Then x0 = finalX
+        If (x1 < initX) Then x1 = initX
+        If (x1 > finalX) Then x1 = finalX
+        If (y0 < initY) Then y0 = initY
+        If (y0 > finalY) Then y0 = finalY
+        If (y1 < initY) Then y1 = initY
+        If (y1 > finalY) Then y1 = finalY
         
         'Blend in the x-direction
         topRowValue = CDbl(grayMap(x0, y0)) * (1# - xDiff) + CDbl(grayMap(x1, y0)) * xDiff
@@ -339,12 +318,8 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
         g = (g - gInterp) * lightDepth
                 
         'Clamp for safety
-        If (g > 255) Then
-            g = 255
-        ElseIf (g < 0) Then
-            g = 0
-        End If
-        
+        If (g < 0) Then g = 0
+        If (g > 255) Then g = 255
         finalGrayMap(x, y) = g
         
     Next x
