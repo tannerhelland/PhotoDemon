@@ -295,8 +295,8 @@ Attribute VB_Exposed = False
 'Fix Lens Distort Tool
 'Copyright 2013-2020 by Tanner Helland
 'Created: 22/January/13
-'Last updated: 27/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 21/February/20
+'Last update: large performance improvements
 '
 'This tool allows the user to correct an existing lens distortion on an image.  Bilinear interpolation
 ' (via reverse-mapping) is available for a higher quality correction.
@@ -374,45 +374,33 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
     'For now, auto-calculate d
     paramD = 2# ^ paramD
     
-    'todo: add center point positioning
-    'paramD = 1# - (paramA + paramB + paramC)
-    
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    
+    'Create a copy of the current image; we will use it as our source reference.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-                
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
@@ -459,7 +447,6 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
     
-    
     'Lens distort correction requires a number of specialized variables
     
     'Calculate the center of the image
@@ -483,22 +470,26 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
-    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) '/ 2
-              
-    'Dim refDistance As Double
-    'If fixStrength = 0 Then fixStrength = 0.00000001
-    Dim refDistance As Double
-    refDistance = sRadius '* 2 '/ fixStrength
+    sRadius = Sqr(tWidth * tWidth + tHeight * tHeight)
     
+    Dim refDistance As Double, invRefDistance As Double
+    refDistance = sRadius
+    If (refDistance <> 0#) Then invRefDistance = 1# / refDistance
+    
+    'Lens radius could theoretically be user-controlled; at present, we default to the size
+    ' of the underlying image (as the UI is already overflowing with toggles).
     Dim lensRadius As Double
-    lensRadius = 100
-    sRadius = sRadius * (lensRadius / 100)
+    lensRadius = 100#
+    sRadius = sRadius * (lensRadius / 100#)
     sRadius2 = sRadius * sRadius
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
         
         'Reset all supersampling values
         newR = 0
@@ -527,7 +518,7 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
                 
                 'Calculate a normalized radius and angle
                 sDistance = Sqr(sDistance)
-                radius = sDistance / refDistance
+                radius = sDistance * invRefDistance
                 theta = PDMath.Atan2(k, j)
                 
                 'Calculate a new radius, using the distortion correction parameters to modify
@@ -541,14 +532,16 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
                 srcY = midY + (radius * Sin(theta))
                 
             Else
-            
                 srcX = x
                 srcY = y
-                
             End If
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -577,28 +570,31 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
-        newA = newA \ numSamplesUsed
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
+            newA = newA \ numSamplesUsed
+        End If
         
-        dstImageData(quickVal, y) = newB
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 3, y) = newA
-                
-    Next y
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -626,41 +622,32 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
     End With
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D, dstSA1D As SafeArray1D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    
+    'Create a copy of the current image; we will use it as our source reference.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    'At present, stride is always width * 4 (32-bit RGBA)
+    Dim xStride As Long
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-                
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     '***************************************
@@ -706,7 +693,6 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
     
     ' /* END SUPERSAMPLING PREPARATION */
     '*************************************
-    
     
     'Lens distort correction requires a number of specialized variables
     
@@ -737,13 +723,16 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
     If fixStrength = 0 Then fixStrength = 0.00000001
     refDistance = sRadius * 2 / fixStrength
                   
-    sRadius = sRadius * (lensRadius / 100)
+    sRadius = sRadius * (lensRadius / 100#)
     sRadius2 = sRadius * sRadius
     
+    Dim tmpQuad As RGBQuad
+    fSupport.AliasTargetDIB srcDIB
+    
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
+    For x = initX To finalX
         
         'Reset all supersampling values
         newR = 0
@@ -772,19 +761,21 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
                 sDistance = Sqr(sDistance)
                 radius = sDistance / refDistance
                 
-                If (radius = 0) Then theta = 1 Else theta = Atn(radius) / radius
+                If (radius = 0#) Then theta = 1# Else theta = Atn(radius) / radius
                 srcX = midX + theta * j * fixZoom
                 srcY = midY + theta * k * fixZoom
                 
             Else
-            
                 srcX = x
                 srcY = y
-                
             End If
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            tmpQuad = fSupport.GetColorsFromSource(srcX, srcY, x, y)
+            b = tmpQuad.Blue
+            g = tmpQuad.Green
+            r = tmpQuad.Red
+            a = tmpQuad.Alpha
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -808,37 +799,36 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
             newR = newR + r
             newG = newG + g
             newB = newB + b
-            If qvDepth = 4 Then newA = newA + a
+            newA = newA + a
             
         Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ numSamplesUsed
-        newG = newG \ numSamplesUsed
-        newB = newB \ numSamplesUsed
-        
-        dstImageData(quickVal, y) = newB
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal + 2, y) = newR
-        
-        'If the image has an alpha channel, repeat the calculation there too
-        If qvDepth = 4 Then
+        If (numSamplesUsed > 1) Then
+            newR = newR \ numSamplesUsed
+            newG = newG \ numSamplesUsed
+            newB = newB \ numSamplesUsed
             newA = newA \ numSamplesUsed
-            dstImageData(quickVal + 3, y) = newA
         End If
-                
-    Next y
+        
+        xStride = x * 4
+        dstImageData(xStride) = newB
+        dstImageData(xStride + 1) = newG
+        dstImageData(xStride + 2) = newR
+        dstImageData(xStride + 3) = newA
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    fSupport.UnaliasTargetDIB
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

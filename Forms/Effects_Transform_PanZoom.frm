@@ -185,7 +185,7 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     'Create a filter support class, which handles edge pixel calculation and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -297,7 +297,7 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
             srcY = vOffsetFixed + k * newZoom
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            tmpQuad = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+            tmpQuad = fSupport.GetColorsFromSource(srcX, srcY, x, y)
             b = tmpQuad.Blue
             g = tmpQuad.Green
             r = tmpQuad.Red

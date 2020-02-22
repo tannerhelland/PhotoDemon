@@ -1503,7 +1503,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters edgeHandling, useBilinear, finalX, finalY
     
     'Polar conversion requires a number of specialized variables
     
@@ -1682,7 +1682,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         End Select
         
         'Use the filter support class to interpolate and edge-wrap pixels as necessary
-        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        dstImageData(x) = fSupport.GetColorsFromSource(srcX, srcY, x, y)
         
     Next x
         If Not suppressMessages Then
@@ -1727,7 +1727,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters edgeHandling, useBilinear, finalX, finalY
     
     'Polar conversion requires a number of specialized variables
     
@@ -1895,7 +1895,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         End Select
         
         'Use the filter support class to interpolate and edge-wrap pixels as necessary
-        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        dstImageData(x) = fSupport.GetColorsFromSource(srcX, srcY, x, y)
         
     Next x
         If Not suppressMessages Then
@@ -2563,7 +2563,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, edgeHandling, useBilinear, finalX, finalY
+    fSupport.SetDistortParameters edgeHandling, useBilinear, finalX, finalY
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -2613,7 +2613,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         srcY = yCos(y) + xSin(x)
         
         'Use the filter support class to interpolate and edge-wrap pixels as necessary
-        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        dstImageData(x) = fSupport.GetColorsFromSource(srcX, srcY, x, y)
         
     Next x
         If Not suppressMessages Then

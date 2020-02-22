@@ -77,60 +77,7 @@ End Sub
 ' do something with the colors from those various positions.
 '
 'Said another way, the caller need only calculate srcX and srcY, then this class will do the rest!
-Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByVal origX As Long, Optional ByVal origY As Long)
-    
-    'Cache the original x/y values as necessary
-    If (m_EdgeMethod = pdeo_Original) Then
-        m_DstX = origX
-        m_DstY = origY
-    End If
-    
-    'First, fix any coordinates that lie outside the image
-    Dim fixDistort As Boolean
-    fixDistort = FixDistortEdges(srcX, srcY)
-    
-    'Now, interpolate as necessary
-    Dim quickValX As Long, quickValY As Long
-    
-    'fixDistort will only be set to TRUE when the current pixel needs to be erased
-    If fixDistort Then
-        r = 0
-        g = 0
-        b = 0
-        a = 0
-    Else
-    
-        'Interpolate a new pixel value
-        If m_Interpolate Then
-            
-            b = PInterpolate(srcX, srcY, srcData, 0)
-            g = PInterpolate(srcX, srcY, srcData, 1)
-            r = PInterpolate(srcX, srcY, srcData, 2)
-            a = PInterpolate(srcX, srcY, srcData, 3)
-        
-        'Round to the nearest coordinate value
-        Else
-    
-            quickValX = Int(srcX) * 4
-            quickValY = Int(srcY)
-            
-            b = srcData(quickValX, quickValY)
-            g = srcData(quickValX + 1, quickValY)
-            r = srcData(quickValX + 2, quickValY)
-            a = srcData(quickValX + 3, quickValY)
-            
-        End If
-        
-    End If
-
-End Sub
-
-'If a function simply wants RGB/A values returned for a given source position, then can use this function to capture
-' those values.  This is helpful for tools that calculate multiple source positions (like a Blur tool), and need to
-' do something with the colors from those various positions.
-'
-'Said another way, the caller need only calculate srcX and srcY, then this class will do the rest!
-Friend Function GetColorsFromSource_Fast(ByVal srcX As Double, ByVal srcY As Double, ByVal origX As Long, ByVal origY As Long) As RGBQuad
+Friend Function GetColorsFromSource(ByVal srcX As Double, ByVal srcY As Double, ByVal origX As Long, ByVal origY As Long) As RGBQuad
     
     'Cache the original x/y values as necessary
     If (m_EdgeMethod = pdeo_Original) Then
@@ -151,11 +98,11 @@ Friend Function GetColorsFromSource_Fast(ByVal srcX As Double, ByVal srcY As Dou
         
         'Interpolate a new pixel value
         If m_Interpolate Then
-            GetColorsFromSource_Fast = PInterpolate_Fast(srcX, srcY)
+            GetColorsFromSource = BilinearInterpolate(srcX, srcY)
             
         'Clamp to the nearest integer coordinate value
         Else
-            GetColorsFromSource_Fast = m_Pixels(Int(srcX), Int(srcY))
+            GetColorsFromSource = m_Pixels(Int(srcX), Int(srcY))
         End If
         
     End If
@@ -164,7 +111,7 @@ End Function
 
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster
 ' to set these once and store them instead of passing them every time a pixel needs to be handled.
-Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As PD_EdgeOperator, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
+Friend Sub SetDistortParameters(ByVal edgeMethod As PD_EdgeOperator, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
     m_EdgeMethod = edgeMethod
     m_Interpolate = toInterpolate
     m_FinalX = finalX
@@ -176,7 +123,7 @@ End Sub
 'If a pixel lies outside image boundaries, move it in-bounds using one of several methods
 ' If the edge handle method is "Erase", this function will return a boolean indicating whether the supplied pixel
 ' must be erased.  If FALSE is returned, the pixel can be handled normally.
-Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
+Private Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
 
     Select Case m_EdgeMethod
     
@@ -242,11 +189,13 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
             If (srcX < 0#) Or (srcY < 0#) Then
                 srcX = m_DstX
                 srcY = m_DstY
+                Exit Function
             End If
             
             If (srcX > m_FinalX) Or (srcY > m_FinalY) Then
                 srcX = m_DstX
                 srcY = m_DstY
+                Exit Function
             End If
             
     End Select
@@ -254,83 +203,8 @@ Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As B
 End Function
 
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
-' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Private Function PInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByVal iOffset As Long) As Byte
-    
-    'Retrieve the four surrounding pixel values
-    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
-    topLeft = iData(Int(x1) * 4 + iOffset, Int(y1))
-    Dim fixX As Double, fixY As Double
-    
-    'Pixels at the far edges of the image require special treatment during interpolation
-    If x1 < m_FinalX Then
-        topRight = iData(Int(x1 + 1) * 4 + iOffset, Int(y1))
-    Else
-        fixX = x1 + 1
-        fixY = y1
-        If FixDistortEdges(fixX, fixY) Then
-            topRight = 0
-        Else
-            topRight = iData(Int(fixX) * 4 + iOffset, Int(y1))
-        End If
-    End If
-    If y1 < m_FinalY Then
-        bottomLeft = iData(Int(x1) * 4 + iOffset, Int(y1 + 1))
-    Else
-        fixX = x1
-        fixY = y1 + 1
-        If FixDistortEdges(fixX, fixY) Then
-            bottomLeft = 0
-        Else
-            bottomLeft = iData(Int(x1) * 4 + iOffset, Int(fixY))
-        End If
-    End If
-    If x1 < m_FinalX Then
-        If y1 < m_FinalY Then
-            bottomRight = iData(Int(x1 + 1) * 4 + iOffset, Int(y1 + 1))
-        Else
-            fixX = x1 + 1
-            fixY = y1 + 1
-            If FixDistortEdges(fixX, fixY) Then
-                bottomRight = 0
-            Else
-                bottomRight = iData(Int(x1 + 1) * 4 + iOffset, Int(fixY))
-            End If
-        End If
-    Else
-        fixX = x1 + 1
-        fixY = y1 + 1
-        If FixDistortEdges(fixX, fixY) Then
-            bottomRight = 0
-        Else
-            If y1 < m_FinalY Then
-                bottomRight = iData(Int(fixX) * 4 + iOffset, Int(y1 + 1))
-            Else
-                bottomRight = iData(Int(fixX) * 4 + iOffset, Int(fixY))
-            End If
-        End If
-    End If
-    
-    'Calculate blend ratios
-    Dim yBlend As Double
-    Dim xBlend As Double, xBlendInv As Double
-    yBlend = y1 - Int(y1)
-    xBlend = x1 - Int(x1)
-    xBlendInv = 1# - xBlend
-    
-    'Blend in the x-direction
-    Dim topRowColor As Double, bottomRowColor As Double
-    topRowColor = topRight * xBlend + topLeft * xBlendInv
-    bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
-    
-    'Blend in the y-direction
-    PInterpolate = bottomRowColor * yBlend + topRowColor * (1# - yBlend)
-
-End Function
-
-'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Results are returned as an RGBQuad.
-Private Function PInterpolate_Fast(ByVal x1 As Double, ByVal y1 As Double) As RGBQuad
+Private Function BilinearInterpolate(ByVal x1 As Double, ByVal y1 As Double) As RGBQuad
     
     'We first need to retrieve the four surrounding pixel values
     Dim topLeft As RGBQuad, topRight As RGBQuad, bottomLeft As RGBQuad, bottomRight As RGBQuad
@@ -398,18 +272,18 @@ ShortCircuit:
     
     topRow = topRight.Blue * xBlend + topLeft.Blue * xBlendInv
     bottomRow = bottomRight.Blue * xBlend + bottomLeft.Blue * xBlendInv
-    PInterpolate_Fast.Blue = bottomRow * yBlend + topRow * yBlendInv
+    BilinearInterpolate.Blue = bottomRow * yBlend + topRow * yBlendInv
     
     topRow = topRight.Green * xBlend + topLeft.Green * xBlendInv
     bottomRow = bottomRight.Green * xBlend + bottomLeft.Green * xBlendInv
-    PInterpolate_Fast.Green = bottomRow * yBlend + topRow * yBlendInv
+    BilinearInterpolate.Green = bottomRow * yBlend + topRow * yBlendInv
     
     topRow = topRight.Red * xBlend + topLeft.Red * xBlendInv
     bottomRow = bottomRight.Red * xBlend + bottomLeft.Red * xBlendInv
-    PInterpolate_Fast.Red = bottomRow * yBlend + topRow * yBlendInv
+    BilinearInterpolate.Red = bottomRow * yBlend + topRow * yBlendInv
     
     topRow = topRight.Alpha * xBlend + topLeft.Alpha * xBlendInv
     bottomRow = bottomRight.Alpha * xBlend + bottomLeft.Alpha * xBlendInv
-    PInterpolate_Fast.Alpha = bottomRow * yBlend + topRow * yBlendInv
+    BilinearInterpolate.Alpha = bottomRow * yBlend + topRow * yBlendInv
     
 End Function

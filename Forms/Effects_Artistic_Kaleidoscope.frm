@@ -262,7 +262,7 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.SetDistortParameters 4, pdeo_Clamp, useBilinear, curDIBValues.maxX, curDIBValues.maxY
+    fSupport.SetDistortParameters pdeo_Clamp, useBilinear, curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -334,7 +334,7 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
         srcY = midY + sDistance * Sin(theta)
         
         'Retrieve the source pixel at this position and render it into the destination buffer
-        dstImageData(x) = fSupport.GetColorsFromSource_Fast(srcX, srcY, x, y)
+        dstImageData(x) = fSupport.GetColorsFromSource(srcX, srcY, x, y)
         
     Next x
         If (Not toPreview) Then
