@@ -83,7 +83,7 @@ Attribute VB_Exposed = False
 'Last update: totally overhaul UI
 '
 'Advanced photo filter simulation tool.  A full discussion of photographic filters and how they work are available
-' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
+' at this Wikipedia article: https://en.wikipedia.org/wiki/Photographic_filter
 '
 'This code is very similar to PhotoDemon's "Temperature" algorithm.  The main difference is the way the user
 ' selects a filter to apply.  The available list of filters is flexible, and I have gone to great lengths to find and
@@ -105,10 +105,10 @@ Attribute VB_Exposed = False
 ' order, thank you to:
 '
 'http://www.karmalimbo.com/aro/pics/filters/transmision%20of%20wratten%20filters.pdf
-'http://en.wikipedia.org/wiki/Wratten_85#Reference_table
+'https://en.wikipedia.org/wiki/Wratten_85#Reference_table
 'http://www.redisonellis.com/wratten.html
 'http://www.vistaview360.com/cameras/filters_by_the_numbers.htm
-'http://en.wikipedia.org/wiki/Photographic_filter
+'https://en.wikipedia.org/wiki/Photographic_filter
 'http://photo.net/learn/optics/edscott/cf000020.htm
 'http://www.olympusmicro.com/primer/photomicrography/bwfilters.html
 'http://web.archive.org/web/20091028192325/http://www.geocities.com/cokinfiltersystem/color_corection.htm

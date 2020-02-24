@@ -14,15 +14,15 @@ Super Patrons:
 
 The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these developers for freely sharing their work.  
 
-* [ExifTool](http://www.sno.phy.queensu.ca/~phil/exiftool/)
+* [ExifTool](https://exiftool.org/)
 * [EZTwain](http://eztwain.com/eztwain1.htm)
 * [FreeImage](http://freeimage.sourceforge.net/)
 * [LittleCMS](http://www.littlecms.com)
-* [LZ4](http://www.lz4.org)
+* [LZ4](https://lz4.github.io/lz4/)
 * [OptiPNG](http://optipng.sourceforge.net/)
-* [Pngquant](http://pngquant.org/)
-* [ZLib](http://zlib.net)
-* [ZStandard](http://www.zstd.net)
+* [Pngquant](https://pngquant.org/)
+* [ZLib](https://www.zlib.net/)
+* [ZStandard](https://github.com/facebook/zstd)
 
 ### Direct contributors
 
@@ -42,6 +42,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Carles P.V.](http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1)
 * ChenLin
 * [Chiahong Hong](https://github.com/ChiahongHong)
+* [Clément Mariage](https://www.medexprim.com/)
 * Cody Robertson
 * [Dana Seaman](http://www.cyberactivex.com/)
 * DarkAlchy

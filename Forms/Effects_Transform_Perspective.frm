@@ -110,7 +110,7 @@ Attribute VB_Exposed = False
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
 ' For a more detailed explanation of the math and theory behind projective transforms, please visit:
 '
-' http://en.wikipedia.org/wiki/Homography
+' https://en.wikipedia.org/wiki/Homography
 '
 'As with all distorts, reverse-mapping plus supersampling is supported for high-quality antialiasing.
 '

@@ -104,8 +104,8 @@ Attribute VB_Exposed = False
 'Last updated: 08/April/17
 'Last update: convert to XML params, performance improvements
 '
-'PhotoDemon's crystallize effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
-' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
+'PhotoDemon's crystallize effect is implemented using Worley Noise (https://en.wikipedia.org/wiki/Worley_noise),
+' which is basically a special algorithmic approach to Voronoi diagrams (https://en.wikipedia.org/wiki/Voronoi_diagram).
 '
 'The associated pdVoronoi class does most the heavy lifting for this effect.  For details on this class and how it
 ' works, I recommend referring to the Stained Glass effect dialog, which details it in much more detail.

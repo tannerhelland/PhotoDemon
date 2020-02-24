@@ -332,6 +332,7 @@ Private Sub Form_Load()
     GenerateContributor "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateContributor "ChenLin"
     GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
+    GenerateContributor "Clément Mariage", "https:/www.medexprim.com"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
     GenerateContributor "DarkAlchy"

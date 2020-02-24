@@ -127,7 +127,7 @@ Attribute VB_Exposed = False
 '
 'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
 ' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
-' http://en.wikipedia.org/wiki/Exposure_%28photography%29) inherent in the scene itself, with a technical definition
+' https://en.wikipedia.org/wiki/Exposure_%28photography%29) inherent in the scene itself, with a technical definition
 ' of "the accumulated physical quantity of visible light energy applied to a surface during a given exposure time."
 ' Once a set amount of light energy has been applied to a digital sensor and the resulting photo is captured, actual
 ' exposure can never fully be corrected or adjusted in post-production.
@@ -136,7 +136,7 @@ Attribute VB_Exposed = False
 ' applied in post-production, with the understanding that missing shadows and highlights cannot be "magically"
 ' recreated out of thin air.  This is done by approximating an EV adjustment using a simple power-of-two formula.
 ' For more information on exposure compensation, see
-' http://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
+' https://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
 '
 'Also, I have mixed feelings about dumping brightness and gamma corrections on this dialog, but Photoshop does it,
 ' so we may as well, too.  (They can always be ignored if you just want "pure" exposure correction.)

@@ -301,7 +301,7 @@ Attribute VB_Exposed = False
 'Last update: migrate to XML params, many performance improvements
 '
 'Images with more than 8-bits per channel cannot be displayed on conventional monitors.  These images must undergo a
-' process called Tone Mapping (http://en.wikipedia.org/wiki/Tone_mapping) which reduces their color count to a range
+' process called Tone Mapping (https://en.wikipedia.org/wiki/Tone_mapping) which reduces their color count to a range
 ' acceptable for display.
 '
 'Unfortunately, there are many nuances to tone-mapping, which makes handling difficult to automate.  HDR images

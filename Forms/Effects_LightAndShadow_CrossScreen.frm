@@ -137,7 +137,7 @@ Attribute VB_Exposed = False
 'Last update: performance improvements, migrate to XML params
 '
 'Cross-screen filters are physical filters placed over the lens of a camera:
-' http://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
+' https://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
 '
 'Different diffraction patterns in the lens create stars of varying spoke counts in regions where lighting is strong.
 '

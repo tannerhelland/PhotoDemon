@@ -188,7 +188,7 @@ Attribute VB_Exposed = False
 '             adjustment method has been rewritten to use improved coefficients, courtesy of http://www.zombieprototypes.com/?p=210
 '
 'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
-' http://en.wikipedia.org/wiki/Color_temperature
+' https://en.wikipedia.org/wiki/Color_temperature
 '
 'Many cameras provide the ability to compensate for shooting under various types of lights by reversing the color casts
 ' caused by certain wavelengths.  For example, you may have seen options like "tungsten" or "fluorescent" or "overcast"
@@ -205,7 +205,7 @@ Attribute VB_Exposed = False
 '     but I've never found a function capable of doing this - especially not in VB - so it's better than anything out there right now.
 '
 'For a detailed explanation of how I reverse-engineered the math, please see this article:
-' http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+' https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

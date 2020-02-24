@@ -132,8 +132,8 @@ Attribute VB_Exposed = False
 'Last update: performance improvements, migrate to XML params
 'Dependencies: pdRandomize
 '
-'PhotoDemon's stained glass effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
-' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
+'PhotoDemon's stained glass effect is implemented using Worley Noise (https://en.wikipedia.org/wiki/Worley_noise),
+' which is basically a special algorithmic approach to Voronoi diagrams (https://en.wikipedia.org/wiki/Voronoi_diagram).
 '
 'The associated pdVoronoi class does most the heavy lifting for this effect.  The main fxStainedGlass function basically
 ' forwards all relevant parameters to a pdVoronoi instance, applies a first pass over the image, caching matching

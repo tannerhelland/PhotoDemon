@@ -317,7 +317,7 @@ End Sub
 'Resize a DIB via seam carving ("content-aware resize" in Photoshop, or "liquid rescale" in GIMP).
 Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long) As Boolean
 
-    'For more information on how seam-carving works, visit http://en.wikipedia.org/wiki/Seam_carving
+    'For more information on how seam-carving works, visit https://en.wikipedia.org/wiki/Seam_carving
     
     Message "Initializing content-aware resize engine..."
     

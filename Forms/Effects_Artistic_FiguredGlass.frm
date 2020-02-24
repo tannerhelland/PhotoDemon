@@ -124,7 +124,7 @@ Attribute VB_Exposed = False
 ' through warped glass, perhaps glass tiles of some sort.  Many different names are used for
 ' this effect - Paint.NET calls it "dents" (which I quite dislike); other software calls it
 ' "marbling".  I chose figured glass because it's an actual type of uneven glass - see:
-' http://en.wikipedia.org/wiki/Architectural_glass#Rolled_plate_.28figured.29_glass
+' https://en.wikipedia.org/wiki/Architectural_glass#Rolled_plate_.28figured.29_glass
 '
 'As with other distorts in the program, bilinear interpolation (via reverse-mapping) and
 ' optional supersampling are available for those who desire very a high-quality transformation.

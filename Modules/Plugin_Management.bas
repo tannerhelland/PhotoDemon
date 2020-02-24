@@ -446,23 +446,23 @@ End Function
 Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
         Case CCP_ExifTool
-            GetPluginHomepage = "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+            GetPluginHomepage = "https://exiftool.org/"
         Case CCP_EZTwain
             GetPluginHomepage = "http://eztwain.com/eztwain1.htm"
         Case CCP_FreeImage
-            GetPluginHomepage = "http://freeimage.sourceforge.net/"
+            GetPluginHomepage = "https://sourceforge.net/projects/freeimage/"
         Case CCP_libdeflate
             GetPluginHomepage = "https://github.com/ebiggers/libdeflate"
         Case CCP_LittleCMS
             GetPluginHomepage = "http://www.littlecms.com"
         Case CCP_lz4
-            GetPluginHomepage = "http://www.lz4.org"
+            GetPluginHomepage = "https://lz4.github.io/lz4/"
         Case CCP_OptiPNG
             GetPluginHomepage = "http://optipng.sourceforge.net/"
         Case CCP_PNGQuant
             GetPluginHomepage = "https://pngquant.org"
         Case CCP_zstd
-            GetPluginHomepage = "http://www.zstd.net"
+            GetPluginHomepage = "https://facebook.github.io/zstd/"
     End Select
 End Function
 

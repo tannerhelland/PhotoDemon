@@ -19,7 +19,7 @@ Attribute VB_Exposed = False
 'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
-' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
+' See https://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'Because metadata handling is complicated, I have created this dedicated metadata handler class.  Each pdImage object
 ' has one (1) metadata class called "imgMetadata".  That class is publicly accessible.  If metadata is available at

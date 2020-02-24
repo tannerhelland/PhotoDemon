@@ -19,14 +19,14 @@ Attribute VB_Exposed = False
 'Last update: fix potential crash on very small input images (thank you to GioRock for reporting)
 'Dependencies: pdRandomize (for randomizing point distribution)
 '
-'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (http://en.wikipedia.org/wiki/Worley_noise),
-' that uses only the Voronoi aspects most relevant to image processing (http://en.wikipedia.org/wiki/Voronoi_diagram).
+'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (https://en.wikipedia.org/wiki/Worley_noise),
+' that uses only the Voronoi aspects most relevant to image processing (https://en.wikipedia.org/wiki/Voronoi_diagram).
 ' For a full Voronoi toolkit, you'll need to look elsewhere, but if all you need is the bits relevant to generating Worley Noise,
 ' you're in for a treat, because this class is mostly free of dependencies to other PhotoDemon code - so have at it!
 '
 'Voronoi diagrams work by taking a series of points, and for the relevant space around them, finding the nearest Voronoi
 ' point to each location.  When performed at a sufficiently detailed level (e.g. for each pixel in a grid), you are left
-' with a puzzle-like appearance a la http://en.wikipedia.org/wiki/Voronoi_diagram#mediaviewer/File:Euclidean_Voronoi_Diagram.png
+' with a puzzle-like appearance a la https://en.wikipedia.org/wiki/Voronoi_diagram#mediaviewer/File:Euclidean_Voronoi_Diagram.png
 '
 'For image processing, Voronoi noise is an especially helpful technique for image segmentation.  Its biggest issue is that
 ' it is painfully slow - comparing each pixel in an image to thousands (or more) Voronoi points, until you find the nearest one,

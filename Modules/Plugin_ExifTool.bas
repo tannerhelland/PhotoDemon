@@ -14,7 +14,7 @@ Attribute VB_Name = "ExifTool"
 ' is available, so PhotoDemon relies on the stock Windows ExifTool executable file for all interfacing.
 ' You can read more about ExifTool at its homepage:
 '
-'http://www.sno.phy.queensu.ca/~phil/exiftool/
+'https://exiftool.org/
 '
 'As of version 6.1 build 499, all ExifTool interaction is piped across stdin/out.  This includes sending requests
 ' to ExifTool, retrieving ExifTool results, and checking ExifTool returns for success/failure.  All of PhotoDemon's
@@ -33,7 +33,7 @@ Attribute VB_Name = "ExifTool"
 ' to drop-in the latest 11.XX build of ExifTool's Windows EXE release without probems.
 '
 'Additional documentation regarding the use of ExifTool can be found in the official ExifTool package,
-' downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/
+' downloadable from https://exiftool.org/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -1891,7 +1891,7 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     If Strings.StringsEqual(sCategoryName, "ICC PROFILE", False) Then groupSkippable = True
     
     'Technically, we should be able to get away with not checking inferred tags (called "Composite" by ExifTool), per this link:
-    ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Composite.html
+    ' https://exiftool.org/TagNames/Composite.html
     '
     'But because this is a sensitive topic, we err on the side of caution and check tags in the inferred group.
     'If StrComp(sCategoryName, "INFERRED", vbBinaryCompare) = 0 Then groupSkippable = True

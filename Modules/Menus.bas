@@ -2613,7 +2613,7 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
             
         Case "help_website"
-            Web.OpenURL "http://www.photodemon.org"
+            Web.OpenURL "https://photodemon.org"
             
         Case "help_sourcecode"
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon"

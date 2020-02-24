@@ -519,7 +519,7 @@ Attribute VB_Exposed = False
 ' This is helpful for creating a translation file from scratch, which can then be reviewed by a human at their
 ' own leisure.
 '
-'Note: for the Google Translate Terms of Use, please visit http://www.google.com/policies/terms/
+'Note: for the Google Translate Terms of Use, please visit https://www.google.com/policies/terms/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

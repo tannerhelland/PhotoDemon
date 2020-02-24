@@ -292,7 +292,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
             r = imageData(x + 2, y)
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
-            ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
+            ' see https://en.wikipedia.org/wiki/Color_difference for a full report)
             If useLCMS Then
                 cDistance = PDMath.Distance3D_FastFloat(labValues(x), labValues(x + 1), labValues(x + 2), labL2f, labA2f, labB2f)
             Else

@@ -436,7 +436,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             
             
         'Ordered dither (Bayer 4x4).  Unfortunately, this routine requires a unique set of code owing to its
-        ' specialized implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
+        ' specialized implementation. Coefficients derived from https://en.wikipedia.org/wiki/Ordered_dithering
         Case 1
         
             'First, prepare a Bayer dither table
@@ -478,7 +478,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             Next y
 
         'Ordered dither (Bayer 8x8).  Unfortunately, this routine requires a unique set of code owing to its specialized
-        ' implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
+        ' implementation. Coefficients derived from https://en.wikipedia.org/wiki/Ordered_dithering
         Case 2
         
             'First, prepare a Bayer dither table

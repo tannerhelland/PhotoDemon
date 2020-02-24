@@ -209,7 +209,7 @@ Private Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLe
                 lIsUtf8 = lIsUtf8 + 1
                 pos = pos + utf8Size + 1
             
-            'Byte values above 0xF4 are always invalid (http://en.wikipedia.org/wiki/UTF-8).  Exit immediately and report failure.
+            'Byte values above 0xF4 are always invalid (https://en.wikipedia.org/wiki/UTF-8).  Exit immediately and report failure.
             Else
                 AreBytesUTF8 = False
                 Exit Function

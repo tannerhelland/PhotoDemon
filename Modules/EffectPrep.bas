@@ -11,7 +11,7 @@ Attribute VB_Name = "EffectPrep"
 ' live without it. These functions are arguably the most integral part of PhotoDemon.
 '
 'If you want to know more about how DIB sections work - and why they're so fast compared to VB's internal
-' .PSet and .Point methods - please visit http://www.tannerhelland.com/42/vb-graphics-programming-3/
+' .PSet and .Point methods - please visit https://tannerhelland.com/2008/06/18/vb-graphics-programming-3.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

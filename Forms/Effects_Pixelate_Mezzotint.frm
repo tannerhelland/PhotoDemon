@@ -108,7 +108,7 @@ Attribute VB_Exposed = False
 ' of whatever they do.)
 '
 'Traditional mezzotinting was developed as a less labor-intensive alternative to traditional cross-hatching or
-' stippling (http://en.wikipedia.org/wiki/Mezzotint).  It makes very little sense in a digital world, but Photoshop's
+' stippling (https://en.wikipedia.org/wiki/Mezzotint).  It makes very little sense in a digital world, but Photoshop's
 ' incredibly weird implementation shows up frequently in effect tutorials, so even though the digital filter bears little
 ' resemblance to the traditional technique, there seems to be merit in including it.
 '

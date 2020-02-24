@@ -317,7 +317,7 @@ Attribute VB_Exposed = False
 'Last update: add new buttons for copying metadata to the clipboard
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
-' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
+' See https://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'This dialog interacts heavily with the pdMetadata class to present users with a relatively simple interface for
 ' perusing (and eventually, editing) an image's metadata.

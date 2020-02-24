@@ -394,7 +394,7 @@ Public Sub FilterGridBlur()
 End Sub
 
 'Given a quality setting (direct from the user), populate a table of supersampling offsets.  For maximum quality, PD uses a modified
-' rotated grid approach (see http://en.wikipedia.org/wiki/Spatial_anti-aliasing), with hard-coded offset tables based on the passed
+' rotated grid approach (see https://en.wikipedia.org/wiki/Spatial_anti-aliasing), with hard-coded offset tables based on the passed
 ' quality param.  At present, a maximum of 12 supersamples (plus the original sample) are used at maximum quality.  Beyond this level,
 ' performance takes a huge hit, but output results are not significantly improved.
 Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples As Long, ByRef ssOffsetsX() As Single, ByRef ssOffsetsY() As Single)
