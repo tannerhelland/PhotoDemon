@@ -247,9 +247,9 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             
             If (m_DownloadList(itemIndex).ExpectedChecksum <> 0) Then
                 
-                'Use pdPackagerLegacy to checksum the retrieved data
-                Dim cPackage As pdPackagerLegacy
-                Set cPackage = New pdPackagerLegacy
+                'Use pdPackageLegacyV1 to checksum the retrieved data
+                Dim cPackage As pdPackageLegacyV1
+                Set cPackage = New pdPackageLegacyV1
                 
                 Dim chksumVerify As Long
                 chksumVerify = cPackage.ChecksumArbitraryArray(m_DownloadList(itemIndex).DataBytes)
@@ -262,7 +262,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             'If requested, copy the contents out to file.
             With m_DownloadList(itemIndex)
             
-                If (Len(.TargetFileWhenComplete) > 0) Then
+                If (LenB(.TargetFileWhenComplete) > 0) Then
                     
                     'Make sure the checksum passed (if one was specified).
                     If checkSumPassed Then

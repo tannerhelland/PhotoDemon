@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.129</langversion>
+<langversion>1.0.131</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -714,21 +714,6 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation>PDI 파일 " %1"에 압축 된 데이터가 있지만 필수 플러그인이 누락되었거나 사용 불가능합니다.</translation>
-</phrase>
-
-<phrase>
-<original>Compression plugin missing</original>
-<translation>압축 플러그인 누락</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>PDI 노드를 읽을 수 없습니다. 파일이 유효하지 않거나 손상되었을 수 있습니다. 버려진로드.</translation>
-</phrase>
-
-<phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
 <translation>오류가 발생했습니다 (#  %1 -  %2). 버려진 PDI로드.</translation>
 </phrase>
@@ -738,12 +723,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>오류가 발생했습니다 (#</translation>
 </phrase>
 
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>선택한 파일이 PDI 형식이 아닙니다. 버려진로드.</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -1179,14 +1159,15 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 
 <!-- END text for Layers.bas-->
 
+<!-- BEGIN text for Legacy.bas -->
+
+<!-- Legacy.bas contains 0 phrases. -->
+
+<!-- END text for Legacy.bas-->
+
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC 변환이 요청되었지만 데이터가 없습니다. 시도 포기.</translation>
-</phrase>
-
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -16376,10 +16357,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2724</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12753 total words. -->
+<!-- As of this build, PhotoDemon contains 5026 phrases. -->
+<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
+<!-- These 2724 phrases contain approximately 12701 total words. -->
 
 </pdData>

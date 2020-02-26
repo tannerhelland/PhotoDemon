@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.403</langversion>
+<langversion>6.6.405</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -716,21 +716,6 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation>File PDI " %1" berisi data terkompresi, namun plugin yang dibutuhkan hilang atau dinonaktifkan.</translation>
-</phrase>
-
-<phrase>
-<original>Compression plugin missing</original>
-<translation>Kompresi plugin hilang</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>PDI simpul tidak dapat dibaca; File mungkin tidak sah atau rusak. Beban ditinggalkan.</translation>
-</phrase>
-
-<phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
 <translation>Sebuah kesalahan telah terjadi (#%1 - %2). PDI beban ditinggalkan.</translation>
 </phrase>
@@ -740,12 +725,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Sebuah kesalahan telah terjadi (#</translation>
 </phrase>
 
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Berkas Yang Di Pilih Tidak ada Dalam Format PDI. Beban Ditinggalkan.</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -1181,14 +1161,15 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 
 <!-- END text for Layers.bas-->
 
+<!-- BEGIN text for Legacy.bas -->
+
+<!-- Legacy.bas contains 0 phrases. -->
+
+<!-- END text for Legacy.bas-->
+
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC mengubah diminta, tetapi tiada data dijumpai. Percubaan meninggalkan.</translation>
-</phrase>
-
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -16388,10 +16369,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2724</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12753 total words. -->
+<!-- As of this build, PhotoDemon contains 5026 phrases. -->
+<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
+<!-- These 2724 phrases contain approximately 12701 total words. -->
 
 </pdData>

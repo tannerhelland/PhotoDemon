@@ -20,22 +20,24 @@ Attribute VB_Exposed = False
 '
 'Per its name, this class provides a simple key/value approach to storing data.
 '
-'Why not use Scripting.Dictionary instead?  Scripting.Dictionary is great, but it's much heavier than PD requires,
-' and it's a strict dictionary (meaning there is no notion of order, so you must use a For...Each approach to iterate
-' its contents).  As PD dictionary collections tend to be small - < 10 items - and we typically use dictionaries to
-' store variable-length data lists that must eventually be written to file, it's often preferable to know both the
-' number of items in a dictionary, and to also have control over their order, so we can write consistent files.
+'Why not use Scripting.Dictionary instead?  Scripting.Dictionary is great, but it's much heavier
+' than PD requires, and it's a strict dictionary (meaning there is no notion of order, so you must
+' use a For...Each approach to iterate its contents).  As PD dictionary collections tend to be small
+' - < 10 items - and we typically use dictionaries to store variable-length data lists that must
+' eventually be written to file, it's often preferable to know both the number of items in the
+' dictionary, and to also have control over their order, so we can write consistent files.
 '
-'I also prefer that wrapper functions explicitly state data types - e.g. GetDouble() or GetString() - to reduce
-' the potential for Variant-related trouble, especially now that PD is used across so many locales.  Similarly, if a
-' requested entry cannot be found in the dictionary, I like to allow functions to specify their own default value,
-' which will be returned if an entry cannot be located.
+'I also prefer that wrapper functions explicitly state data types - e.g. GetDouble() or
+' GetString() - to reduce the potential for Variant-related trouble, especially now that PD is used
+' across so many locales.  Similarly, if a requested entry cannot be found in the dictionary, I like
+' to allow functions to specify their own default value, which will be returned if an entry cannot
+' be located.
 '
-'Thus this class.  (If Scripting.Dictionary did ever become a preferable alternative, it would be easy to modify this
-' class to wrap it, so I'll be rewriting all existing Scripting.Dictionary occurrences to use this instead.)
+'Thus this class.  I have not made any attempts to optimize it thus far, as its main use-case is
+' for very short, transient lists.
 '
-'As far as implementation details go, the only really relevant one to outside users is that this class treats keys
-' as case-specific (e.g. "key" and "KEY" would be treated as separate entries).
+'As far as implementation details go, the only really relevant one to outside users is that this
+' class treats keys as case-specific (e.g. "key" and "KEY" would be treated as separate entries).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -177,9 +179,9 @@ Friend Function DeleteEntry(ByVal entryKey As String) As Boolean
     
 End Function
 
-'Deleting entries does not actually remove them from the dictionary.  It just flags them for future removal.  To physically
-' remove those entries, this function must be called.  (Note that the dictionary is not resized to match the new dictionary
-' size, by design.)
+'Deleting entries does not actually remove them from the dictionary.  It just flags them for future removal.
+' To physically remove those entries, this function must be called.
+' (Note that the dictionary is not resized to match the new, potentially lower dictionary size, by design.)
 Friend Function TrimDeletedEntries() As Boolean
     
     Dim numValidEntries As Long

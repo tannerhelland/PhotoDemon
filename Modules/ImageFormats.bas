@@ -539,6 +539,99 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
 End Function
 
+'Given a file extension, return the corresponding best-guess PDIF (PhotoDemon image format constant.
+Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_FORMAT
+    
+    'Shortcut check for non-existent extensions
+    If (LenB(srcExtension) = 0) Then
+        GetPDIFFromExtension = PDIF_PDI
+        Exit Function
+    End If
+    
+    srcExtension = LCase$(srcExtension)
+    
+    'Note that not all extensions are covered, by design.  Only ones used internally by PD
+    ' are checked and returned.
+    Select Case srcExtension
+    
+        Case "bmp"
+            GetPDIFFromExtension = PDIF_BMP
+        Case "cut"
+            GetPDIFFromExtension = PDIF_CUT
+        Case "dds"
+            GetPDIFFromExtension = PDIF_DDS
+        Case "emf"
+            GetPDIFFromExtension = PDIF_EMF
+        Case "exr"
+            GetPDIFFromExtension = PDIF_EXR
+        Case "g3"
+            GetPDIFFromExtension = PDIF_FAXG3
+        Case "gif", "agif"
+            GetPDIFFromExtension = PDIF_GIF
+        Case "hdr"
+            GetPDIFFromExtension = PDIF_HDR
+        Case "ico"
+            GetPDIFFromExtension = PDIF_ICO
+        Case "iff"
+            GetPDIFFromExtension = PDIF_IFF
+        Case "j2k"
+            GetPDIFFromExtension = PDIF_J2K
+        Case "jng"
+            GetPDIFFromExtension = PDIF_JNG
+        Case "jp2"
+            GetPDIFFromExtension = PDIF_JP2
+        Case "jpg", "jpe", "jpeg"
+            GetPDIFFromExtension = PDIF_JPEG
+        Case "jxr"
+            GetPDIFFromExtension = PDIF_JXR
+        Case "koa"
+            GetPDIFFromExtension = PDIF_KOALA
+        Case "lbm"
+            GetPDIFFromExtension = PDIF_LBM
+        Case "mng"
+            GetPDIFFromExtension = PDIF_MNG
+        Case "ora"
+            GetPDIFFromExtension = PDIF_ORA
+        Case "pcd"
+            GetPDIFFromExtension = PDIF_PCD
+        Case "pcx"
+            GetPDIFFromExtension = PDIF_PCX
+        Case "pdi"
+            GetPDIFFromExtension = PDIF_PDI
+        Case "pct"
+            GetPDIFFromExtension = PDIF_PICT
+        Case "png", "apng"
+            GetPDIFFromExtension = PDIF_PNG
+        Case "pbm", "pfm", "pgm", "pnm", "ppm"
+            GetPDIFFromExtension = PDIF_PNM
+        Case "psd"
+            GetPDIFFromExtension = PDIF_PSD
+        Case "ras"
+            GetPDIFFromExtension = PDIF_RAS
+        Case "sgi"
+            GetPDIFFromExtension = PDIF_SGI
+        Case "tga"
+            GetPDIFFromExtension = PDIF_TARGA
+        Case "tif", "tiff"
+            GetPDIFFromExtension = PDIF_TIFF
+        Case "wbm", "wbmp"
+            GetPDIFFromExtension = PDIF_WBMP
+        Case "webp"
+            GetPDIFFromExtension = PDIF_WEBP
+        Case "wmf"
+            GetPDIFFromExtension = PDIF_WMF
+        Case "xbm"
+            GetPDIFFromExtension = PDIF_XBM
+        Case "xpm"
+            GetPDIFFromExtension = PDIF_XPM
+        
+        Case Else
+            GetPDIFFromExtension = PDIF_PDI
+    
+    End Select
+
+End Function
+
 'This can be used to see if an output format supports multiple color depths.
 Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 

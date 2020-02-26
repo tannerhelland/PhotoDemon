@@ -1170,7 +1170,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
                     With PDImages.GetActiveImage.GetActiveLayer
-                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML), UNDO_Image_VectorSafe
+                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML()), UNDO_Image_VectorSafe
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.

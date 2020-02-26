@@ -62,7 +62,7 @@ Private m_layerID As Long
 'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
 ' Default values will be set at creation time, but never assume that these values are constant, and never attempt to reference
 '  a layer by one of these properties (INCLUDING NAME, as it can be modified without warning)
-Private Type LayerData
+Private Type PD_LayerData
     l_Name As String                    'Layer name, as entered by the user
     l_GroupID As Long                   'Layer group (0 if not assigned to a group)
     l_Opacity As Single                 'Layer opacity ([0, 100] - defaults to 100)
@@ -82,7 +82,7 @@ Private Type LayerData
 End Type
 
 'Local instance of layer data for this layer
-Private myLayerData As LayerData
+Private myLayerData As PD_LayerData
 
 'This class supports getting/setting layer properties via generic Get/SetGenericLayerProperty functions.  This enum is
 ' used to differentiate between layer properties, and any additions to LayerData, above, should be mirrored here.
@@ -1231,7 +1231,7 @@ Private Sub Class_Terminate()
     
 End Sub
 
-'This function initializes a layer header from an XML-format string created by GetLayerHeaderAsXML_New().
+'This function initializes a layer header from an XML-format string created by GetLayerHeaderAsXML().
 '
 'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function
 ' will create a blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.
@@ -1243,7 +1243,7 @@ End Sub
 'Note also that this function will try to match color-managed layers against matching ICC profiles in the
 ' master ColorManagement cache.  Make *sure* you have added all embedded color profiles to the master cache
 ' before invoking this function.
-Friend Function CreateNewLayerFromXML_New(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
+Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
     Dim xmlEngine As pdParamXML
@@ -1254,7 +1254,7 @@ Friend Function CreateNewLayerFromXML_New(ByRef xmlString As String, Optional By
     If (xmlEngine.DoesParamExist("photodemon-layer") And (xmlEngine.GetLong("layer-version", 0) >= 1)) Then
         
         'If the caller has not specified their own layer ID, use the one from file.
-        If (useCustomLayerID = -1) Then m_layerID = xmlEngine.GetLong("id") Else m_layerID = useCustomLayerID
+        If (useCustomLayerID = -1) Then m_layerID = xmlEngine.GetLong("layer-id") Else m_layerID = useCustomLayerID
         
         'Read in the layer type.  Remember that this value is immutable, and cannot be changed
         ' for the life of the layer.
@@ -1327,14 +1327,14 @@ Friend Function CreateNewLayerFromXML_New(ByRef xmlString As String, Optional By
                         
                         'Return success; note that we create a backing surface even for vector layers,
                         ' as it's required for features like adjustment layers that sit above this one.
-                        CreateNewLayerFromXML_New = True
+                        CreateNewLayerFromXML = True
                         
                     Else
-                        InternalError "CreateNewLayerFromXML_New", "bad dimensions: " & srfWidth & "x" & srfHeight & ", " & srfStride
+                        InternalError "CreateNewLayerFromXML", "bad dimensions: " & srfWidth & "x" & srfHeight & ", " & srfStride
                     End If
                     
                 Else
-                    InternalError "CreateNewLayerFromXML_New", "bad color-depth or details: " & srfColorDepth & ", " & srfColorDetails
+                    InternalError "CreateNewLayerFromXML", "bad color-depth or details: " & srfColorDepth & ", " & srfColorDetails
                 End If
                 
             End With
@@ -1343,14 +1343,14 @@ Friend Function CreateNewLayerFromXML_New(ByRef xmlString As String, Optional By
             Me.NotifyOfDestructiveChanges
             
         Else
-            CreateNewLayerFromXML_New = True
+            CreateNewLayerFromXML = True
         End If
         
     'If the layer XML data can't be validated, try the legacy serialization engine
     Else
         Set xmlEngine = Nothing
-        PDDebug.LogAction "pdLayer.CreateNewLayerFromXML is trying again using the legacy serialization engine..."
-        CreateNewLayerFromXML_New = CreateNewLayerFromXML(xmlString, useCustomLayerID, createNonDestructively)
+        PDDebug.LogAction "pdLayer.CreateNewLayerFromXML() is trying again using the legacy serialization engine..."
+        CreateNewLayerFromXML = CreateNewLayerFromXML_Legacy(xmlString, useCustomLayerID, createNonDestructively)
     End If
     
 End Function
@@ -1359,7 +1359,7 @@ End Function
 ' recreate this layer from scratch must be included in this string, EXCEPT FOR PIXEL DATA.
 ' (For obvious performance reasons, the pixel contents of this layer must be handled separately,
 ' in a dedicated binary format.)
-Friend Function GetLayerHeaderAsXML_New() As String
+Friend Function GetLayerHeaderAsXML() As String
     
     'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
     Dim xmlEngine As pdParamXML
@@ -1370,7 +1370,7 @@ Friend Function GetLayerHeaderAsXML_New() As String
     xmlEngine.AddParam "layer-version", 1&, True, True
     
     'Start by writing out the hard-coded layer ID.
-    xmlEngine.AddParam "id", m_layerID, True, True
+    xmlEngine.AddParam "layer-id", m_layerID, True, True
     
     'Next, write out the layer type (raster, vector, etc).  Remember that this value is immutable,
     ' and cannot be changed for the life of the layer.  (If you want to change it, you must perform
@@ -1417,161 +1417,7 @@ Friend Function GetLayerHeaderAsXML_New() As String
     xmlEngine.AddXMLString "</photodemon-layer>"
     
     'The layer XML string is now complete.  Return it.
-    GetLayerHeaderAsXML_New = xmlEngine.GetParamString()
-    
-End Function
-
-'Write a copy of the layer header to an XML-format string.  All data necessary to recreate a layer from scratch will be
-' included in this string, EXCEPT FOR DIB DATA.  For obvious performance reasons, the DIB contents of this layer must be
-' handled separately, in binary format.
-'
-'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
-' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
-' Undo/Redo entries.
-Friend Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
-    
-    'Prepare an XML engine, which greatly simplifies the process of assembling XML data
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Add a basic header and explanatory comment
-    xmlEngine.PrepareNewXML "pdLayer"
-    
-    'Add a helpful comment, if requested.
-    If Not avoidFluffEntries Then
-        xmlEngine.WriteBlankLine
-        xmlEngine.WriteComment "This file contains a summary of crucial data for a given pdLayer entry."
-        xmlEngine.WriteBlankLine
-    End If
-    
-    'Start by writing out the m_layerID.  Note that functions making use of this XML data must be very careful about how they
-    ' handle this value.  Depending on the context, it may not be advisable to re-use this data at load-time.
-    xmlEngine.WriteTag "ID", m_layerID
-    
-    'Next, write out the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-    xmlEngine.WriteTag "Type", m_LayerType
-    
-    'Write out the contents of our current LayerData header.  (NOTE: this must be manually modified if new entries are
-    ' added to the LayerData type.
-    With myLayerData
-        xmlEngine.WriteTag "Name", .l_Name
-        xmlEngine.WriteTag "GroupID", .l_GroupID
-        xmlEngine.WriteTag "Opacity", .l_Opacity
-        xmlEngine.WriteTag "BlendMode", .l_BlendMode
-        xmlEngine.WriteTag "OffsetX", .l_OffsetX
-        xmlEngine.WriteTag "OffsetY", .l_OffsetY
-        xmlEngine.WriteTag "CanvasXModifier", .l_CanvasXModifier
-        xmlEngine.WriteTag "CanvasYModifier", .l_CanvasYModifier
-        xmlEngine.WriteTag "Angle", .l_Angle
-        xmlEngine.WriteTag "RotateCenterX", .l_RotateCenterX
-        xmlEngine.WriteTag "RotateCenterY", .l_RotateCenterY
-        xmlEngine.WriteTag "Visibility", .l_Visibility
-        xmlEngine.WriteTag "ResizeQuality", .l_ResizeQuality
-        xmlEngine.WriteTag "ShearX", .l_ShearX
-        xmlEngine.WriteTag "ShearY", .l_ShearY
-        xmlEngine.WriteTag "AlphaMode", .l_AlphaMode
-    End With
-    
-    'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
-    ' in the future.
-    With xmlEngine
-        .WriteTag "DIB_ColorDepth", layerDIB.GetDIBColorDepth
-        .WriteTag "DIB_Width", layerDIB.GetDIBWidth
-        .WriteTag "DIB_Height", layerDIB.GetDIBHeight
-        .WriteTag "DIB_ArrayWidth", layerDIB.GetDIBStride
-        .WriteTag "DIB_AlphaPremultiplication", layerDIB.GetAlphaPremultiplication
-    End With
-    
-    'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
-    
-    If (Not avoidFluffEntries) Then xmlEngine.WriteBlankLine
-    
-    'The layer XML string is now complete.  Return it.
-    GetLayerHeaderAsXML = xmlEngine.ReturnCurrentXMLString(avoidFluffEntries)
-    
-End Function
-
-'The sister function to "GetLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
-'
-'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function will create a
-' blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.  However, it will obviously
-' NOT apply any stored image data.  That must be handled separately, as the layer data varies by layer type.  (Raster layers
-' store their data as a raw byte stream, while vector and text layers store XML data and we simply recreate the raster copy
-' at run-time.)
-'
-'Note also that this function will try to match color-managed layers against matching ICC profiles in the master
-' ColorManagement cache.  Make *sure* you have added all embedded color profiles to the master cache before invoking this function.
-Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
-
-    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Validate the XML header...
-    If (xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdLayer")) Then
-        
-        'If the caller has not specified their own layer ID, use the one from file.
-        If (useCustomLayerID = -1) Then
-            m_layerID = xmlEngine.GetUniqueTag_Long("ID")
-        Else
-            m_layerID = useCustomLayerID
-        End If
-    
-        'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-        m_LayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_Image)
-        
-        'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
-        ' added to the LayerData type.
-        With myLayerData
-            .l_Name = xmlEngine.GetUniqueTag_String("Name")
-            .l_GroupID = xmlEngine.GetUniqueTag_Long("GroupID")
-            .l_Opacity = xmlEngine.GetUniqueTag_Long("Opacity")
-            .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BM_Normal)
-            .l_OffsetX = xmlEngine.GetUniqueTag_Double("OffsetX")
-            .l_OffsetY = xmlEngine.GetUniqueTag_Double("OffsetY")
-            .l_CanvasXModifier = xmlEngine.GetUniqueTag_Double("CanvasXModifier", 1)
-            .l_CanvasYModifier = xmlEngine.GetUniqueTag_Double("CanvasYModifier", 1)
-            .l_Angle = xmlEngine.GetUniqueTag_Double("Angle")
-            .l_RotateCenterX = xmlEngine.GetUniqueTag_Double("RotateCenterX", 0.5)
-            .l_RotateCenterY = xmlEngine.GetUniqueTag_Double("RotateCenterY", 0.5)
-            .l_Visibility = xmlEngine.GetUniqueTag_Boolean("Visibility")
-            .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_Bilinear)
-            .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
-            .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
-            .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", AM_Normal)
-        End With
-        
-        'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
-        ' using the DIB header supplied in the XML, but we're *not* going to fill the DIB!  An external function will
-        ' handle that, because the actual DIB bits are stored in binary format.  (Serializing them to XML is not feasible
-        ' for the image sizes PD deals with.)
-        '
-        'Note that this behavior can be overridden by setting the optional createNonDestructively parameter to TRUE.
-        ' This is used by the Undo/Redo engine to re-load an image's header data, without actually overwriting the
-        ' current layer DIB.
-        If (Not createNonDestructively) Then
-        
-            Set layerDIB = New pdDIB
-            With xmlEngine
-                layerDIB.CreateBlank .GetUniqueTag_Long("DIB_Width", 1), .GetUniqueTag_Long("DIB_Height", 1), .GetUniqueTag_Long("DIB_ColorDepth", 32)
-                
-                'Mark alpha premultiplication in advance
-                layerDIB.SetInitialAlphaPremultiplicationState .GetUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
-            
-            End With
-            
-            'Note that all internal layer caches are no longer valid
-            Me.NotifyOfDestructiveChanges
-            
-        End If
-        
-        CreateNewLayerFromXML = True
-    
-    'If the layer XML data can't be validated, there's nothing we can do but exit.
-    Else
-        InternalError "CreateNewLayerFromXML", "layer could not be created: are you sure the supplied data was valid?"
-        CreateNewLayerFromXML = False
-    End If
+    GetLayerHeaderAsXML = xmlEngine.GetParamString()
     
 End Function
 
@@ -1579,11 +1425,11 @@ End Function
 ' a vector layer from scratch must be included in this string.  For obvious performance reasons,
 ' the pixel contents of this layer are not part of this function.  PD regenerates the actual backing
 ' surface of vector layers from scratch, at load-time.
-Friend Function GetVectorDataAsXML_New() As String
+Friend Function GetVectorDataAsXML() As String
     
     'First, make sure this is not an image layer
     If Not Me.IsLayerVector() Then
-        InternalError "GetVectorDataAsXML_New", "can't get vector data for raster layers"
+        InternalError "GetVectorDataAsXML", "can't get vector data for raster layers"
         Exit Function
     End If
     
@@ -1602,20 +1448,20 @@ Friend Function GetVectorDataAsXML_New() As String
         
         'pdTextRenderer (used for both basic and advanced text layers) handles XML serialization on its own
         Case PDL_TextBasic, PDL_TextAdvanced
-            xmlEngine.AddParam "vector-text-data", myTextRenderer.GetAllFontSettingsAsXML_New(), True
+            xmlEngine.AddParam "vector-text-data", myTextRenderer.GetAllFontSettingsAsXML(), True
         
     End Select
     
     xmlEngine.AddXMLString "</photodemon-vector-object>"
         
     'The layer XML string is now complete.  Return it.
-    GetVectorDataAsXML_New = xmlEngine.GetParamString()
+    GetVectorDataAsXML = xmlEngine.GetParamString()
 
 End Function
 
-'As the sister function to GetVectorDataAsXML_New(), this function initializes a
+'As the sister function to GetVectorDataAsXML(), this function initializes a
 ' vector layer's contents from an XML-format string.
-Friend Function SetVectorDataFromXML_New(ByRef xmlString As String) As Boolean
+Friend Function SetVectorDataFromXML(ByRef xmlString As String) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
     Dim xmlEngine As pdParamXML
@@ -1629,7 +1475,7 @@ Friend Function SetVectorDataFromXML_New(ByRef xmlString As String) As Boolean
     
     If useLegacyLoader Then
         Set xmlEngine = Nothing
-        SetVectorDataFromXML_New = SetVectorDataFromXML(xmlString)
+        SetVectorDataFromXML = SetVectorDataFromXML_Legacy(xmlString)
     Else
         
         'All vector layers store some similar data
@@ -1643,105 +1489,14 @@ Friend Function SetVectorDataFromXML_New(ByRef xmlString As String) As Boolean
             
             'pdTextRenderer handles its own XML serialization, thankfully
             Case PDL_TextBasic, PDL_TextAdvanced
-                myTextRenderer.SetAllFontSettingsFromXML_New xmlEngine.GetString("vector-text-data", vbNullString, True)
+                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.GetString("vector-text-data", vbNullString, True)
                 
         End Select
         
         'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
         Me.NotifyOfDestructiveChanges
-        SetVectorDataFromXML_New = True
-    
-    End If
-    
-End Function
-
-'Write a copy of a vector layer's contents to an XML-format string.  All data necessary to recreate a vector layer
-' from scratch will be included in this string.  For obvious performance reasons, the DIB contents of this layer are not
-' part of this function.  PD regenerates the DIB copy of vector layers from scratch, at load-time.
-'
-'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
-' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
-' Undo/Redo entries.
-Friend Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
-    
-    'First, make sure this is not an image layer
-    If Not Me.IsLayerVector() Then
-        Debug.Print "WARNING!  The getVectorDataAsXML() function is only valid for vector layers!"
-        Exit Function
-    End If
-    
-    'Prepare an XML engine, which greatly simplifies the process of assembling XML data
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Add a basic header and explanatory comment
-    xmlEngine.PrepareNewXML "pdVector"
-    
-    'Add a helpful comment, if requested.
-    If (Not avoidFluffEntries) Then
-        xmlEngine.WriteBlankLine
-        xmlEngine.WriteComment "This XML string contains a summary of crucial data for a pdVector object."
-        xmlEngine.WriteBlankLine
-    End If
-    
-    'All vector layers store some similar data
-    With xmlEngine
-        .WriteTag "GenericVectorWidth", myVectorData.vd_Width
-        .WriteTag "GenericVectorHeight", myVectorData.vd_Height
-    End With
-    
-    'Additional vector data varies by layer type
-    Select Case m_LayerType
-        
-        Case PDL_TextBasic, PDL_TextAdvanced
-            
-            'pdTextRenderer serializes all its data to XML for us, making this step very simple
-            xmlEngine.WriteGenericText myTextRenderer.GetAllFontSettingsAsXML()
-        
-    End Select
-        
-    If (Not avoidFluffEntries) Then xmlEngine.WriteBlankLine
-    
-    'The layer XML string is now complete.  Return it.
-    GetVectorDataAsXML = xmlEngine.ReturnCurrentXMLString(avoidFluffEntries)
-
-End Function
-
-'The sister function to "getVectorDataAsXML" above, this function will initialize a vector layer's contents from an XML-format string.
-Friend Function SetVectorDataFromXML(ByRef xmlString As String) As Boolean
-
-    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Validate the XML header...
-    If xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdVector") Then
-        
-        'All vector layers store some similar data
-        With myVectorData
-            .vd_Width = xmlEngine.GetUniqueTag_Long("GenericVectorWidth", 1)
-            .vd_Height = xmlEngine.GetUniqueTag_Long("GenericVectorHeight", 1)
-        End With
-        
-        'Next, the vector tags we look for vary by layer type
-        Select Case m_LayerType
-            
-            Case PDL_TextBasic, PDL_TextAdvanced
-                
-                'pdTextRenderer serializes all its data from XML for us, making this step very simple
-                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.ReturnCurrentXMLString(True)
-                
-        End Select
-                
-        'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
-        Me.NotifyOfDestructiveChanges
-        
         SetVectorDataFromXML = True
     
-    'If the layer XML data can't be validated, there's nothing we can do but exit.
-    Else
-        Debug.Print "Vector layer could not be initialized: are you sure the supplied data is valid?"
-        SetVectorDataFromXML = False
     End If
     
 End Function
@@ -1849,7 +1604,7 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
             myVectorData.vd_Height = srcLayer.GetLayerHeight
             
             'Other vector-specific data can be transferred via XML, saving us the hassle of explicitly copying it here
-            Me.SetVectorDataFromXML srcLayer.GetVectorDataAsXML(True)
+            Me.SetVectorDataFromXML srcLayer.GetVectorDataAsXML()
         
         Case PDL_Adjustment
     
@@ -2634,4 +2389,123 @@ Private Sub InternalError(ByRef funcName As String, ByRef errDescription As Stri
         Debug.Print "pdLayer." & funcName & "() reported an error: " & errDescription
     End If
 End Sub
+
+
+
+
+'**********************************************************************************************
+'Legacy support functions follow.  Do NOT modify these functions except to fix security issues.
+
+'Legacy create-from-XML function
+Private Function CreateNewLayerFromXML_Legacy(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
+
+    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Validate the XML header...
+    If (xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdLayer")) Then
+        
+        'If the caller has not specified their own layer ID, use the one from file.
+        If (useCustomLayerID = -1) Then
+            m_layerID = xmlEngine.GetUniqueTag_Long("ID")
+        Else
+            m_layerID = useCustomLayerID
+        End If
+    
+        'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
+        m_LayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_Image)
+        
+        'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
+        ' added to the LayerData type.
+        With myLayerData
+            .l_Name = xmlEngine.GetUniqueTag_String("Name")
+            .l_GroupID = xmlEngine.GetUniqueTag_Long("GroupID")
+            .l_Opacity = xmlEngine.GetUniqueTag_Long("Opacity")
+            .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BM_Normal)
+            .l_OffsetX = xmlEngine.GetUniqueTag_Double("OffsetX")
+            .l_OffsetY = xmlEngine.GetUniqueTag_Double("OffsetY")
+            .l_CanvasXModifier = xmlEngine.GetUniqueTag_Double("CanvasXModifier", 1)
+            .l_CanvasYModifier = xmlEngine.GetUniqueTag_Double("CanvasYModifier", 1)
+            .l_Angle = xmlEngine.GetUniqueTag_Double("Angle")
+            .l_RotateCenterX = xmlEngine.GetUniqueTag_Double("RotateCenterX", 0.5)
+            .l_RotateCenterY = xmlEngine.GetUniqueTag_Double("RotateCenterY", 0.5)
+            .l_Visibility = xmlEngine.GetUniqueTag_Boolean("Visibility")
+            .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_Bilinear)
+            .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
+            .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
+            .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", AM_Normal)
+        End With
+        
+        'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
+        ' using the DIB header supplied in the XML, but we're *not* going to fill the DIB!  An external function will
+        ' handle that, because the actual DIB bits are stored in binary format.  (Serializing them to XML is not feasible
+        ' for the image sizes PD deals with.)
+        '
+        'Note that this behavior can be overridden by setting the optional createNonDestructively parameter to TRUE.
+        ' This is used by the Undo/Redo engine to re-load an image's header data, without actually overwriting the
+        ' current layer DIB.
+        If (Not createNonDestructively) Then
+        
+            Set layerDIB = New pdDIB
+            With xmlEngine
+                layerDIB.CreateBlank .GetUniqueTag_Long("DIB_Width", 1), .GetUniqueTag_Long("DIB_Height", 1), .GetUniqueTag_Long("DIB_ColorDepth", 32)
+                
+                'Mark alpha premultiplication in advance
+                layerDIB.SetInitialAlphaPremultiplicationState .GetUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
+            
+            End With
+            
+            'Note that all internal layer caches are no longer valid
+            Me.NotifyOfDestructiveChanges
+            
+        End If
+        
+        CreateNewLayerFromXML_Legacy = True
+    
+    'If the layer XML data can't be validated, there's nothing we can do but exit.
+    Else
+        InternalError "CreateNewLayerFromXML_Legacy", "layer could not be created: are you sure the supplied data was valid?"
+        CreateNewLayerFromXML_Legacy = False
+    End If
+    
+End Function
+
+'Legacy vector data parser
+Private Function SetVectorDataFromXML_Legacy(ByRef xmlString As String) As Boolean
+
+    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Validate the XML header...
+    If xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdVector") Then
+        
+        'All vector layers store some similar data
+        With myVectorData
+            .vd_Width = xmlEngine.GetUniqueTag_Long("GenericVectorWidth", 1)
+            .vd_Height = xmlEngine.GetUniqueTag_Long("GenericVectorHeight", 1)
+        End With
+        
+        'Next, the vector tags we look for vary by layer type
+        Select Case m_LayerType
+            
+            Case PDL_TextBasic, PDL_TextAdvanced
+                
+                'pdTextRenderer serializes all its data from XML for us, making this step very simple
+                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.ReturnCurrentXMLString(True)
+                
+        End Select
+                
+        'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
+        Me.NotifyOfDestructiveChanges
+        SetVectorDataFromXML_Legacy = True
+    
+    'If the layer XML data can't be validated, there's nothing we can do but exit.
+    Else
+        Debug.Print "Vector layer could not be initialized: are you sure the supplied data is valid?"
+        SetVectorDataFromXML_Legacy = False
+    End If
+    
+End Function
 

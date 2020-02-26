@@ -365,7 +365,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
     Saving.BeginSaveProcess
-    MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , False, True)
+    MenuSaveLosslessCopy = SavePDI_Image(srcImage, dstFilename, False, cf_Zstd, cf_Zstd, False, True)
         
     'At this point, it's safe to re-enable the main form and restore the default cursor
     Saving.EndSaveProcess

@@ -3329,7 +3329,7 @@ Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional igno
     If packageIsModern Then
         ReadSelectionFromFile = ReadSelectionFromFile_New(srcFilename, ignoreLockStatus)
     Else
-        ReadSelectionFromFile = ReadSelectionFromFile_Old(srcFilename, ignoreLockStatus)
+        ReadSelectionFromFile = ReadSelectionFromFile_Legacy(srcFilename, ignoreLockStatus)
     End If
     
 End Function
@@ -3486,14 +3486,14 @@ End Function
 'Create a selection from selection data previously saved to file
 ' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
 '        request a render if they want one.)
-Friend Function ReadSelectionFromFile_Old(ByRef srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
+Friend Function ReadSelectionFromFile_Legacy(ByRef srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
-    ReadSelectionFromFile_Old = False
+    ReadSelectionFromFile_Legacy = False
     PDDebug.LogAction "Reading legacy selection data from file: " & srcFilename
     
     'Like all other PD-specific files, selection files are just pdPackage instances
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
+    Dim cPackage As pdPackageLegacyV2
+    Set cPackage = New pdPackageLegacyV2
     If cPackage.ReadPackageFromFile(srcFilename, SELECTION_IDENTIFIER, PD_SM_FileBacked) Then
     
         'Reset some of our internal trackers prior to reading the selection data
@@ -3600,7 +3600,7 @@ Friend Function ReadSelectionFromFile_Old(ByRef srcFilename As String, Optional 
                         End If
                     End If
                     
-                    ReadSelectionFromFile_Old = True
+                    ReadSelectionFromFile_Legacy = True
                     
                 Else
                     PDDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
@@ -3621,7 +3621,7 @@ Friend Function ReadSelectionFromFile_Old(ByRef srcFilename As String, Optional 
     
 End Function
 
-'As of v7.0, pdPackager is used to read/write selection files.  Note that this function will blindly overwrite the destination
+'As of v7.0, pdPackageChunky is used to read/write selection files.  Note that this function will blindly overwrite the destination
 ' file if it exists; it's up to the caller to plan for this.
 Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal compressXML As PD_CompressionFormat = cf_Zstd, Optional ByVal xmlCompressionLevel As Long = -1, Optional ByVal compressRaster As PD_CompressionFormat = cf_Zstd, Optional ByVal rasterCompressionLevel As Long = -1, Optional ByRef dstUndoFileSize As Long) As Boolean
     

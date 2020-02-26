@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.461</langversion>
+<langversion>6.7.463</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -716,21 +716,6 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation>Il file PDI " %1" contiene dati compressi, ma il plug-in richiesto è mancante o disabilitato.</translation>
-</phrase>
-
-<phrase>
-<original>Compression plugin missing</original>
-<translation>Plug-In di compressione mancante</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>Il nodo PDI potrebbe non essere letto; il file può essere non valido o danneggiato.  Caricamento abbandonato.</translation>
-</phrase>
-
-<phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
 <translation>Si è verificato un errore (#%1 - %2).  Caricamento PDI abbandonato.</translation>
 </phrase>
@@ -740,12 +725,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Si è verificato un errore (#</translation>
 </phrase>
 
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Il file selezionato non è in formato PDI.  Caricamento abbandonato.</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -1181,14 +1161,15 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 
 <!-- END text for Layers.bas-->
 
+<!-- BEGIN text for Legacy.bas -->
+
+<!-- Legacy.bas contains 0 phrases. -->
+
+<!-- END text for Legacy.bas-->
+
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>trasformazione ICC richiesta, ma nessun dato trovato.  Abbandono del tentativo.</translation>
-</phrase>
-
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -16379,10 +16360,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2729</phrasecount>
+<phrasecount>2724</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2311 are duplicates, so only 2729 unique phrases have been written to file. -->
-<!-- These 2729 phrases contain approximately 12753 total words. -->
+<!-- As of this build, PhotoDemon contains 5026 phrases. -->
+<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
+<!-- These 2724 phrases contain approximately 12701 total words. -->
 
 </pdData>

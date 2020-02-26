@@ -51,13 +51,16 @@ Public Function GetImportPref_JPEGOrientation() As Boolean
     GetImportPref_JPEGOrientation = (m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
 End Function
 
-'PDI loading.  "PhotoDemon Image" files are the only format PD supports for saving layered images.  PDI to PhotoDemon is like
-' PSD to PhotoShop, or XCF to Gimp.
+'PDI loading.
+' "PhotoDemon Image" files are the only format PD supports for saving layered images.
+' (PDI to PhotoDemon is like PSD to PhotoShop, or XCF to GIMP.)
 '
-'Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used to store undo/redo data, and when one of their
-' kind is loaded as part of an Undo/Redo action, we must ignore certain elements stored in the file (e.g. settings like "LastSaveFormat"
-' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
-Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
+'Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used
+' to store undo/redo data, and when a PDI file is loaded as part of an Undo/Redo action,
+' we want to ignore certain segments in the file (e.g. settings like "LastSaveFormat"
+' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer,
+' and it tells it to ignore certain settings.
+Public Function LoadPDI_Normal(ByRef pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
     PDDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
     
@@ -69,186 +72,167 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     'PDI files require a parent pdImage container
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     
-    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
-    ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    'First things first: create a pdPackage instance.
+    Dim pdiReader As pdPackageChunky
+    Set pdiReader = New pdPackageChunky
     
-    'Load the file into the pdPackager instance.  Note that this step will also validate the incoming file.
-    ' (Also, prior to v7.0, PD would copy the entire source file into memory, then load the PDI from there.  This no longer occurs;
-    '  instead, the file is left on-disk, and data is only loaded on a per-node basis.  This greatly reduces memory load.)
-    ' (Also, because PDI files store data roughly sequentially, we can use OptimizeSequentialAccess for a small perf boost.)
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER, PD_SM_MemoryBacked, PD_SA_ReadOnly, OptimizeSequentialAccess) Then
+    'Load the file.  If this step fails, it means the file is not a modern PDI file.
+    ' We want to drop back to legacy loaders and avoid further handling.
+    If (Not pdiReader.OpenPackage_File(pdiPath, "PDIF")) Then
+        PDDebug.LogAction "Legacy PDI file encountered; dropping back to pdPackage v2 functions..."
+        Set pdiReader = Nothing
+        LoadPDI_Normal = LoadPDI_LegacyV2(pdiPath, dstDIB, dstImage, sourceIsUndoFile)
+        Exit Function
+    End If
     
-        PDDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
-        
-        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
-        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String, retSize As Long
-        
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
-            
-            PDDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
-            
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            
-            'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.SetHeaderFromXML retString, sourceIsUndoFile
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+    'Still here?  The file validated successfully.
+    PDDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
+    
+    'The first chunk in the file must *always* be an image header chunk ("IHDR").  Validate it before continuing.
+    If (pdiReader.GetChunkName() <> "IHDR") Then
+        PDDebug.LogAction "First chunk in file is not IHDR; attempting legacy loader..."
+        Set pdiReader = Nothing
+        LoadPDI_Normal = LoadPDI_LegacyV2(pdiPath, dstDIB, dstImage, sourceIsUndoFile)
+        Exit Function
+    End If
+    
+    'Retrieve the image header and initialize a pdImage object against it
+    Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
+    If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+    
+        If (Not dstImage.SetHeaderFromXML(chunkData.ReadString_UTF8(chunkLength), sourceIsUndoFile)) Then
+            PDDebug.LogAction "pdImage failed to interpret IHDR string; abandoning import."
+            LoadPDI_Normal = False
+            Exit Function
         End If
-        
-        PDDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
-        
-        'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
-        ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
-        ' 2) Layer-specific information, which varies by layer type.  For DIBs, this will be a raw stream of bytes
-        '    containing the layer DIB's raster data.  For text or other vector layers, this is an XML stream containing
-        '    whatever information is necessary to construct the layer from scratch.
-        
-        Dim i As Long
-        For i = 0 To dstImage.GetNumOfLayers - 1
-        
-            PDDebug.LogAction "Retrieving layer header " & i & "..."
-            
-            'First, retrieve the layer's header
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, False, retSize) Then
-            
-                'Copy the received bytes into a string
-                retString = Space$(retSize \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-                
-                'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString) Then
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-                End If
-                
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-            
-            'How we extract the rest of the layer's data varies by layer type.  Raster layers can skip the need for a temporary buffer,
-            ' because we've already created a DIB with a built-in buffer for the pixel data.
-            '
-            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
-            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
-            Dim nodeLoadedSuccessfully As Boolean
-            nodeLoadedSuccessfully = False
-            
-            'Image (raster) layers
-            If dstImage.GetLayerByIndex(i).IsLayerRaster Then
-                
-                PDDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
-                
-                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
-                Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                
-                'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
-                dstImage.GetLayerByIndex(i).layerDIB.SetInitialAlphaPremultiplicationState True
-                
-                nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer)
-            
-            'Text and other vector layers
-            ElseIf dstImage.GetLayerByIndex(i).IsLayerVector Then
-                
-                PDDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
-                
-                If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, False, retSize) Then
-                
-                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
-                    retString = Space$(retSize \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-                    
-                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
-                        nodeLoadedSuccessfully = True
-                    Else
-                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                    End If
-                    
-                Else
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                End If
-                    
-            'In the future, additional layer types can be handled here
-            Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.GetLayerByIndex(i).GetLayerType
-            End If
-            
-            'If successful, notify the parent of the change
-            If nodeLoadedSuccessfully Then
-                dstImage.NotifyImageChanged UNDO_Layer, i
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-        
-        Next i
-        
-        PDDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
-        
-        Dim nonEssentialParseTime As Currency
-        VBHacks.GetHighResTime nonEssentialParseTime
-        
-        'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
-        
-            PDDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
-            
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            
-            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
-            ' internal metadata struct.
-            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID, sourceIsUndoFile) Then
-                
-                'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
-                PDDebug.LogAction "WARNING: PDI Metadata Node rejected by metadata parser."
-                
-            End If
-        
-        End If
-        
-        '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
-        ' and other changes.)
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, False, retSize) Then
-        
-            PDDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
-            
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            
-            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
-            ' internal metadata struct.
-            dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
-        
-        End If
-        
-        PDDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-        PDDebug.LogAction "(Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & ", non-essential components took " & VBHacks.GetTimeDiffNowAsString(nonEssentialParseTime) & ")"
-        
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        dstDIB.CreateBlank 16, 16, 32, 0
-        
-        'That's all there is to it!  Mark the load as successful and carry on.
-        LoadPhotoDemonImage = True
     
     Else
-    
-        'If we made it to this block, the first stage of PDI validation failed.  This may be a legacy PDI file -- try that function next.
-        PDDebug.LogAction "Legacy PDI file encountered; dropping back to pdPackage v1 functions..."
-        LoadPhotoDemonImage = LoadPDI_Legacy(pdiPath, dstDIB, dstImage, sourceIsUndoFile)
-    
+        PDDebug.LogAction "Failed to read IHDR chunk; abandoning import."
+        LoadPDI_Normal = False
+        Exit Function
     End If
+    
+    'If we're still here, the base pdImage object initialized successfully.  Load all remaining chunks,
+    ' skipping ones that we don't know how to interpret.
+    PDDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
+    
+    'Raster layers will be decompressed directly into their primary buffer.
+    Dim tmpDIBPointer As Long, tmpDIBLength As Long
+    
+    Dim curLayerIndex As Long, layerInitializedOK As Boolean
+    curLayerIndex = 0
+    layerInitializedOK = False
+    
+    Do While pdiReader.ChunksRemain()
+            
+        chunkName = UCase$(pdiReader.GetChunkName())
+        chunkLength = pdiReader.GetChunkDataSize()
+        
+        Select Case chunkName
+        
+            'Layer header
+            Case "LHDR"
+            
+                'Initialize the target layer against the chunk data
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    layerInitializedOK = dstImage.GetLayerByIndex(curLayerIndex).CreateNewLayerFromXML(chunkData.ReadString_UTF8(chunkLength))
+                    If (Not layerInitializedOK) Then PDDebug.LogAction "WARNING! Layer #" & curLayerIndex & " failed to initialize header."
+                Else
+                    PDDebug.LogAction "WARNING! Layer #" & curLayerIndex & " failed to read header."
+                End If
+            
+            'Layer data (raster or vector)
+            Case "LDAT"
+            
+                'Hopefully this layer was already initialized successfully!
+                If layerInitializedOK Then
+                    
+                    layerInitializedOK = False
+                    
+                    'Raster vs vector layers are initialized differently.
+                    If dstImage.GetLayerByIndex(curLayerIndex).IsLayerRaster Then
+                    
+                        'Decompress directly into a DIB buffer
+                        If (Not dstImage.GetLayerByIndex(curLayerIndex).layerDIB Is Nothing) Then
+                            dstImage.GetLayerByIndex(curLayerIndex).layerDIB.SetInitialAlphaPremultiplicationState True
+                            dstImage.GetLayerByIndex(curLayerIndex).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                            If (tmpDIBLength <> 0) Then
+                                layerInitializedOK = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer)
+                                If (Not layerInitializedOK) Then PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because GetNextChunk failed!"
+                            Else
+                                PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target pointer was null!"
+                            End If
+                        Else
+                            PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target buffer wasn't initialized!"
+                        End If
+                        
+                    ElseIf dstImage.GetLayerByIndex(curLayerIndex).IsLayerVector Then
+                    
+                        'Vector layers are stored as lightweight XML.  Retrieve the string now.
+                        If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                            layerInitializedOK = dstImage.GetLayerByIndex(curLayerIndex).SetVectorDataFromXML(chunkData.ReadString_UTF8(chunkLength))
+                            If (Not layerInitializedOK) Then PDDebug.LogAction "WARNING!  Vector layer couldn't parse XML packet."
+                        Else
+                            PDDebug.LogAction "WARNING! Layer #" & curLayerIndex & " failed to read vector string."
+                        End If
+                        
+                    'Other layer types are not currently supported
+                    Else
+                        PDDebug.LogAction "WARNING!  Unknown layer type found??"
+                    End If
+                    
+                    'Reset the "layer has been initialized" flag and advance the layer index tracker
+                    If layerInitializedOK Then
+                        curLayerIndex = curLayerIndex + 1
+                        layerInitializedOK = False
+                    Else
+                        PDDebug.LogAction "WARNING!  Layer # " & curLayerIndex & " did not load its data chunk."
+                    End If
+                    
+                'Encountering a layer data chunk when no corresponding layer header has been initialized
+                ' is (obviously) a failure state.
+                Else
+                    PDDebug.LogAction "WARNING!  Layer data chunk found but no layer header was encountered first?"
+                End If
+            
+            'Metadata chunks are messy; we just offload them to the metadata engine at present
+            'ExifTool metadata chunk (a bare XML packet as received directly from ExifTool)
+            Case "MDET"
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    If (Not dstImage.ImgMetadata.LoadAllMetadata(chunkData.ReadString_UTF8(chunkLength), dstImage.imageID, sourceIsUndoFile)) Then
+                        PDDebug.LogAction "WARNING: MDET metadata chunk rejected by metadata parser."
+                    End If
+                Else
+                    PDDebug.LogAction "WARNING!  Failed to retrieve MDET metadata chunk."
+                End If
+            
+            'Serialized, post-parsing metadata struct
+            Case "MDPD"
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    dstImage.ImgMetadata.RecreateFromSerializedXMLData chunkData.ReadString_UTF8(chunkLength)
+                Else
+                    PDDebug.LogAction "WARNING!  Failed to retrieve MDPD metadata chunk."
+                End If
+                
+            'Any other chunks are unknown; just skip 'em
+            Case Else
+                pdiReader.SkipToNextChunk
+            
+        End Select
+        
+    'Continue parsing chunks until none remain
+    Loop
+    
+    PDDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
+    PDDebug.LogAction "(Time required to load PDI file: " & VBHacks.GetTimeDiffNowAsString(startTime) & ")"
+    
+    'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+    ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank 16, 16, 32, 0
+    
+    'That's all there is to it!  Mark the load as successful and carry on.
+    LoadPDI_Normal = True
     
     Exit Function
     
@@ -257,302 +241,336 @@ LoadPDIFail:
     PDDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
     
     'Before falling back to a generic error message, check for a couple known problem states.
+    Message "An error has occurred (#%1 - %2).  PDI load abandoned.", Err.Number, Err.Description
     
-    'Case 1: this file is compressed (using one or more libraries), and the user has somehow messed up their PD plugin situation
-    Dim cmpMissing As Boolean
-    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate))
-    cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_ZstdRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zstd))
-    cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_Lz4Required, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_lz4))
-    
-    If cmpMissing Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the required plugin is missing or disabled.", vbCritical Or vbOKOnly, "Compression plugin missing", Files.FileGetName(pdiPath)
-        Exit Function
-    End If
-
-    Select Case Err.Number
-    
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-            Message "An error has occurred (#%1 - %2).  PDI load abandoned.", Err.Number, Err.Description
-        
-    End Select
-    
-    LoadPhotoDemonImage = False
+    LoadPDI_Normal = False
     Exit Function
 
 End Function
 
 'Load just the layer stack from a standard PDI file, and non-destructively align our current layer stack to match.
 ' At present, this function is only used internally by the Undo/Redo engine.
-Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dstImage As pdImage) As Boolean
+Public Function LoadPDI_HeadersOnly(ByRef pdiPath As String, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadPDIHeaderFail
     
-    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
-    ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    'First things first: create a pdPackage instance.
+    Dim pdiReader As pdPackageChunky
+    Set pdiReader = New pdPackageChunky
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
-    
-        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
-        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String, retSize As Long
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
-        
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            
-            'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.SetHeaderFromXML retString, True, True
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-        End If
-        
-        'With the main pdImage now assembled, the next task is to populate all layer headers.  This is a bit more
-        ' confusing than a regular PDI load, because we have to maintain existing layer DIB data (ugh!).
-        ' So basically, we must:
-        ' 1) Extract each layer header from file, in turn
-        ' 2) See if the current pdImage copy of this layer is in the proper position in the layer stack; if it isn't,
-        '    move it into the location specified by the PDI file.
-        ' 3) Ask the layer to non-destructively overwrite its header with the header from the PDI file (e.g. don't
-        '    touch its DIB or vector-specific contents).
-        '
-        'Note also that header data may include image metadata; this is handled separately.
-        Dim layerNodeName As String, layerNodeID As Long, layerNodeType As Long
-        
-        Dim i As Long
-        For i = 0 To dstImage.GetNumOfLayers - 1
-        
-            'Before doing anything else, retrieve the ID of the node at this position.  (Retrieve the rest of the node
-            ' header too, although we don't actually have a use for those values at present.)
-            pdiReader.GetNodeInfo i + 1, layerNodeName, layerNodeID, layerNodeType
-            
-            'We now know what layer ID is supposed to appear at this position in the layer stack.  If that layer ID
-            ' is *not* in its proper position, move it now.
-            If (dstImage.GetLayerIndexFromID(layerNodeID) <> i) Then dstImage.SwapTwoLayers dstImage.GetLayerIndexFromID(layerNodeID), i
-            
-            'Now that the node is in place, we can retrieve its header.
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, False, retSize) Then
-            
-                'Copy the received bytes into a string
-                retString = Space$(retSize \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-                
-                'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString, , True) Then
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-                End If
-                
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-            
-            'Normally we would load the layer's DIB data here, but we don't care about that when loading just the headers!
-            ' Continue to the next layer.
-        
-        Next i
-        
-        'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
-            
-            'Copy the received bytes into a string, then pass that string to the parent image's metadata handler
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            If dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID, True) Then
-                
-                '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
-                ' and other changes.)
-                If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, False, retSize) Then
-                    retString = Space$(retSize \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-                    dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
-                End If
-                
-            Else
-                PDDebug.LogAction "WARNING!  ImageImporter.LoadPhotoDemonImageHeaderOnly() failed to retrieve to parse this image's metadata chunk."
-            End If
-        
-        Else
-            Debug.Print "FYI, this PDI file does not contain metadata information."
-            
-            'As a failsafe (because the target image may already exist, and this operation can be triggered by
-            ' something like "Redo: Remove all metadata", meaning the target image already has a full metadata
-            ' manager), erase the target image's metadata collection, if any.
-            dstImage.ImgMetadata.Reset
-            
-        End If
-        
-        'That's all there is to it!  Mark the load as successful and carry on.
-        LoadPhotoDemonImageHeaderOnly = True
-    
-    Else
-    
-        'If we made it to this block, the first stage of PDI validation failed, meaning this file may be a legacy PDI format.
-        PDDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
-        LoadPhotoDemonImageHeaderOnly = LoadPhotoDemonImageHeaderOnly_Legacy(pdiPath, dstImage)
-    
+    'Load the file.  If this step fails, it means the file is not a modern PDI file.
+    ' We want to drop back to legacy loaders and avoid further handling.
+    If (Not pdiReader.OpenPackage_File(pdiPath, "PDIF")) Then
+        PDDebug.LogAction "LoadPDI_HeadersOnly failed - target file is not PDI?"
+        Exit Function
     End If
     
+    'Still here?  The file validated successfully.
+    PDDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
+    
+    'The first chunk in the file must *always* be an image header chunk ("IHDR").  Validate it before continuing.
+    If (pdiReader.GetChunkName() <> "IHDR") Then
+        PDDebug.LogAction "First chunk in file is not IHDR; abandoning load..."
+        Exit Function
+    End If
+    
+    'Retrieve the image header and NON-DESTRUCTIVELY initialize a pdImage object against it.
+    ' (Non-destructively means no layers are destroyed in the process - we need them around because
+    ' we're gonna be reusing them!)
+    Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
+    If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+    
+        If (Not dstImage.SetHeaderFromXML(chunkData.ReadString_UTF8(chunkLength), True, True)) Then
+            PDDebug.LogAction "pdImage failed to interpret IHDR string; abandoning import."
+            LoadPDI_HeadersOnly = False
+            Exit Function
+        End If
+    
+    Else
+        PDDebug.LogAction "Failed to read IHDR chunk; abandoning import."
+        LoadPDI_HeadersOnly = False
+        Exit Function
+    End If
+    
+    'With the main pdImage now assembled, the next task is to populate all layer headers.  This is a bit more
+    ' confusing than a regular PDI load, because we have to maintain existing layer DIB data (ugh!).
+    
+    'In a nutshell, we need to:
+    ' 1) Extract each layer header from file, in turn
+    ' 2) Compare each layer in the current image against the layer header data found in the file.  If header
+    '    values are inconsistent (e.g. a layer is in the wrong z-order), we need to non-destructively move it
+    '    to the index specified by the PDI file.
+    ' 3) After moving the layer into place, we need to ask it to non-destructively overwrite its header with
+    '    the header from the PDI file (e.g. don't touch they layer's pixel or vector data - only the header!).
+    '
+    'Note also that header-only files may include image metadata; this is also grabbed while here, as metadata
+    ' changes fall under the "header-only undo required" banner.
+    Dim layerHeaders As pdStringStack
+    Set layerHeaders = New pdStringStack
+    
+    Dim mdFound As Boolean
+    mdFound = False
+    
+    Do While pdiReader.ChunksRemain()
+            
+        chunkName = UCase$(pdiReader.GetChunkName())
+        chunkLength = pdiReader.GetChunkDataSize()
+        
+        Select Case chunkName
+    
+            'Layer header
+            Case "LHDR"
+            
+                'Retrieve the XML but don't do anything with it just yet; instead, just cache it locally.
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    layerHeaders.AddString chunkData.ReadString_UTF8(chunkLength)
+                Else
+                    PDDebug.LogAction "WARNING! Layer #" & layerHeaders.GetNumOfStrings() & " failed to read header."
+                End If
+                
+            'Metadata chunks come in two varieties
+            
+            'ExifTool metadata chunk (a bare XML packet as received directly from ExifTool)
+            Case "MDET"
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    mdFound = dstImage.ImgMetadata.LoadAllMetadata(chunkData.ReadString_UTF8(chunkLength), dstImage.imageID, True)
+                    If (Not mdFound) Then
+                        PDDebug.LogAction "WARNING: MDET metadata chunk rejected by metadata parser."
+                    End If
+                Else
+                    PDDebug.LogAction "WARNING!  Failed to retrieve MDET metadata chunk."
+                End If
+            
+            'Serialized, post-parsing metadata struct.  This only exists if the user has edited metadata
+            ' manually during the current session.
+            Case "MDPD"
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    dstImage.ImgMetadata.RecreateFromSerializedXMLData chunkData.ReadString_UTF8(chunkLength)
+                    mdFound = True
+                Else
+                    'Metadata editing is actually pretty rare
+                    'PDDebug.LogAction "WARNING!  Failed to retrieve MDPD metadata chunk."
+                End If
+                
+            'Any other chunks are unknown; just skip 'em
+            Case Else
+                pdiReader.SkipToNextChunk
+    
+        End Select
+        
+    'Keep iterating chunks
+    Loop
+    
+    'We now have a copy of all layer header data as it appears in the file (yay?).
+    
+    'We now need to iterate through the collection and retrieve a corresponding layer ID from each XML string.
+    ' This allows us to match headers from the file against headers in the current pdImage object, and detect
+    ' any mismatches in z-order.
+    Dim xmlReader As pdParamXML
+    Set xmlReader = New pdParamXML
+    
+    Dim layerIDs As pdStack
+    Set layerIDs = New pdStack
+    
+    Dim i As Long
+    For i = 0 To layerHeaders.GetNumOfStrings - 1
+        xmlReader.SetParamString layerHeaders.GetString(i)
+        layerIDs.AddInt xmlReader.GetLong("layer-id", , True)
+    Next i
+    
+    'We now have a collection of all layer headers, and their corresponding layer IDs.
+    
+    'Our last job is to compare each discovered ID (and its corresponding index) against the current
+    ' layer collection.  Mismatches must be manually resolved.
+    Dim curLayerID As Long
+    
+    For i = 0 To dstImage.GetNumOfLayers - 1
+        
+        'Retrieve the ID for this index
+        curLayerID = layerIDs.GetInt(i)
+        
+        'Ensure the layer is in its correct position
+        If (dstImage.GetLayerIndexFromID(curLayerID) <> i) Then dstImage.SwapTwoLayers dstImage.GetLayerIndexFromID(curLayerID), i
+        
+        'Forcibly overwrite the layer's header data with whatever we retrieved from file
+        If (Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(layerHeaders.GetString(i), , True)) Then
+            PDDebug.LogAction "WARNING! Layer #" & i & " failed to initialize header."
+        End If
+        
+    'Repeat for all layers
+    Next i
+    
+    'Finally, cover the case of metadata modifications.  If metadata has been removed from the image,
+    ' no metadata chunks will appear in the file.  Erase any metadata now.
+    If (Not mdFound) Then dstImage.ImgMetadata.Reset
+    
+    LoadPDI_HeadersOnly = True
     Exit Function
     
 LoadPDIHeaderFail:
-
-    Select Case Err.Number
+    Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI header-only load abandoned."
+    LoadPDI_HeadersOnly = False
     
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-
-        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
-        
-    End Select
-    
-    LoadPhotoDemonImageHeaderOnly = False
-    Exit Function
-
 End Function
 
 'Load a single layer from a standard PDI file.
-' At present, this function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific change is a
-' full pdImage stack, this function is used to extract only the relevant layer (or layer header) from the PDI file.
-Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+'
+'This function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific
+' change is a full pdImage stack, this function is used to extract only the relevant layer (or layer header)
+' from the target undo/redo file.
+Public Function LoadPDI_SingleLayer(ByRef pdiPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadLayerFromPDIFail
+    LoadPDI_SingleLayer = False
     
-    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
-    ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    'Before doing anything else, load and validate the target file.
+    Dim pdiReader As pdPackageChunky
+    Set pdiReader = New pdPackageChunky
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
+    If (Not pdiReader.OpenPackage_File(pdiPath, "PDIF")) Then
+        PDDebug.LogAction "LoadPDI_SingleLayer() failed - target file isn't in PDI format?"
+        Set pdiReader = Nothing
+        Exit Function
+    End If
     
-        'PDI files all follow a standard format: a pdImage node at the top, which contains the full pdImage header,
-        ' followed by individual nodes for each layer.  Layers are stored in stack order, which makes it very fast and easy
-        ' to reconstruct the layer stack.
+    'The first chunk in the file must *always* be an image header chunk ("IHDR").  Validate it before continuing.
+    If (pdiReader.GetChunkName() <> "IHDR") Then
+        PDDebug.LogAction "First chunk in file is not IHDR; abandoning load..."
+        Exit Function
+    End If
+    
+    'Still here?  The file appears valid.
+    Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
+    chunkLoaded = False
+    
+    Dim tmpString As String, xmlReader As pdParamXML
+    Set xmlReader = New pdParamXML
+    
+    'Start iterating chunks in the file, looking for layer header chunks specifically.
+    Do While pdiReader.ChunksRemain()
         
-        'Unfortunately, stack order is not helpful in this function, because the target layer's position may have changed
-        ' since the time this pdImage file was created.  To work around that, we must located the layer using its cardinal
-        ' ID value, which is helpfully stored as the node ID parameter for a given layer node.
+        chunkName = UCase$(pdiReader.GetChunkName())
         
-        Dim retBytes() As Byte, retString As String, retSize As Long
+        'Is this a layer header chunk?
+        If (chunkName = "LHDR") Then
         
-        If pdiReader.GetNodeDataByID(targetLayerID, True, retBytes, False, retSize) Then
-        
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-            
-            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
-            ' Note that we also pass along the loadHeaderOnly flag, which will instruct the layer to erase its current
-            ' DIB as necessary.
-            If (Not dstLayer.CreateNewLayerFromXML(retString, , loadHeaderOnly)) Then
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-        End If
-        
-        'If this is not a header-only operation, repeat the above steps, but for the layer DIB this time
-        If (Not loadHeaderOnly) Then
-        
-            'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
-            ' already created a DIB with a built-in buffer for the pixel data.
-            '
-            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
-            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
-            Dim nodeLoadedSuccessfully As Boolean
-            nodeLoadedSuccessfully = False
-            
-            'Image (raster) layers
-            If dstLayer.IsLayerRaster Then
+            'Load the underlying XML directly into a parser
+            If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
                 
-                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
-                Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
-                dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                tmpString = chunkData.ReadString_UTF8(chunkLength)
+                xmlReader.SetParamString tmpString
                 
-                nodeLoadedSuccessfully = pdiReader.GetNodeDataByID_UnsafeDstPointer(targetLayerID, False, tmpDIBPointer)
+                'Look for the layer ID we were passed
+                If (xmlReader.GetLong("layer-id", -1, True) = targetLayerID) Then
                     
-            'Text and other vector layers
-            ElseIf dstLayer.IsLayerVector Then
-                
-                If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes, False, retSize) Then
-                
-                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager received Unicode compatibility.
-                    retString = Space$(retSize \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+                    'This header belongs to the layer in question.  Initialize the layer against it.
+                    If dstLayer.CreateNewLayerFromXML(tmpString, , loadHeaderOnly) Then
                     
-                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstLayer.SetVectorDataFromXML(retString) Then
-                        nodeLoadedSuccessfully = True
+                        'The target layer has now been rebuilt using the data from the target PDI file.
+                        
+                        'If this is not a header-only load, we now need to iterate chunks until we encounter
+                        ' this layer's data chunk (LDAT).  The spec requires the next LDAT in the file to
+                        ' be the one belonging to this header.
+                        If loadHeaderOnly Then
+                            chunkLoaded = True
+                        Else
+                            
+                            chunkLoaded = False
+                            Do While pdiReader.ChunksRemain()
+                                
+                                chunkName = UCase$(pdiReader.GetChunkName())
+                                If (chunkName = "LDAT") Then
+                                
+                                    'This is the data chunk we want!
+                                    chunkLoaded = True
+                                    
+                                    'Raster vs vector layers are initialized differently.
+                                    If dstLayer.IsLayerRaster Then
+                                    
+                                        'Decompress directly into a DIB buffer
+                                        If (Not dstLayer.layerDIB Is Nothing) Then
+                                            
+                                            Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                                            dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+                                            dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                                            
+                                            If (tmpDIBLength <> 0) Then
+                                                chunkLoaded = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer)
+                                                If (Not chunkLoaded) Then PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because GetNextChunk failed!"
+                                            Else
+                                                PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target pointer was null!"
+                                            End If
+                                            
+                                        Else
+                                            PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target buffer wasn't initialized!"
+                                        End If
+                                        
+                                    ElseIf dstLayer.IsLayerVector Then
+                                    
+                                        'Vector layers are stored as lightweight XML.  Retrieve the string now.
+                                        If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                                            chunkLoaded = dstLayer.SetVectorDataFromXML(chunkData.ReadString_UTF8(chunkLength))
+                                            If (Not chunkLoaded) Then PDDebug.LogAction "WARNING!  Vector layer couldn't parse XML packet."
+                                        Else
+                                            PDDebug.LogAction "WARNING! Layer failed to read vector string."
+                                        End If
+                                        
+                                    'Other layer types are not currently supported
+                                    Else
+                                        PDDebug.LogAction "WARNING!  Unknown layer type found??"
+                                    End If
+                                    
+                                    'Regardless of success/failure, exit this loop
+                                    Exit Do
+                                    
+                                End If
+            
+                            Loop
+                            
+                            'If we finished loading the chunk, exit the loop completely
+                            If chunkLoaded Then
+                                dstLayer.NotifyOfDestructiveChanges
+                                Exit Do
+                            End If
+                        
+                        End If
+                        
+                    'Failsafe only
                     Else
-                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+                        PDDebug.LogAction "WARNING!  LoadPDI_SingleLayer() couldn't initialize layer header."
                     End If
                 
-                Else
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+                'No "else" branch required.  (If the layer ID doesn't match, we just want to keep iterating chunks.)
                 End If
-            
-            'In the future, additional layer types can be handled here
+                
             Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.GetLayerType
+                PDDebug.LogAction "WARNING! Bad layer header found in " & pdiPath
+            End If
             
-            End If
-                
-            'If successful, notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-            If nodeLoadedSuccessfully Then
-                dstLayer.NotifyOfDestructiveChanges
-                
-            'Bytes could not be read, or alternately, checksums didn't match for the first node.
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-                
+        'If this isn't a layer header, skip ahead to the next one
+        Else
+            pdiReader.SkipToNextChunk
         End If
         
-        'That's all there is to it!  Mark the load as successful and carry on.
-        LoadSingleLayerFromPDI = True
+    'Keep searching for the header we want
+    Loop
     
-    End If
+    'That's all there is to it!  Mark the load as successful and carry on.
+    LoadPDI_SingleLayer = True
     
     Exit Function
     
 LoadLayerFromPDIFail:
-
-    Select Case Err.Number
-    
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-
-        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
-        
-    End Select
-    
-    LoadSingleLayerFromPDI = False
+    Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  LoadLayerFromPDI() canceled."
+    LoadPDI_SingleLayer = False
     Exit Function
 
 End Function
 
 'Load a single PhotoDemon layer from a standalone pdLayer file (which is really just a modified PDI file).
-' This function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
+' This function is only used internally by the Undo/Redo engine.  Its counterpart is SavePDI_SingleLayer in
 ' the Saving module; any changes there must be mirrored here.
-Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+Private Function LoadPDLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadPDLayerFail
     
@@ -561,8 +579,8 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
     Dim pdiReader As pdPackageChunky
     Set pdiReader = New pdPackageChunky
     
-    'Load the file into the pdPackager instance.  The reader uses memory-mapped file I/O, so don't modify
-    ' the file until the read process completes.  (Note that this step will also validate the incoming file.)
+    'Load the file.  The reader uses memory-mapped file I/O, so do not modify the file until the
+    ' read process completes.  (Note that this step will also validate the incoming file.)
     If pdiReader.OpenPackage_File(pdiPath, "UNDO") Then
     
         Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
@@ -580,7 +598,7 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
             If (chunkName = "LHDR") Then
                 If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
                     layerHeaderFound = True
-                    dstLayer.CreateNewLayerFromXML_New chunkData.ReadString_UTF8(chunkLength), , loadHeaderOnly
+                    dstLayer.CreateNewLayerFromXML chunkData.ReadString_UTF8(chunkLength), , loadHeaderOnly
                     chunkLoaded = True
                 End If
             End If
@@ -610,7 +628,7 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
                 
                 Else
                     nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, chunkData)
-                    nodeLoadedSuccessfully = dstLayer.SetVectorDataFromXML_New(chunkData.ReadString_UTF8(chunkLength))
+                    nodeLoadedSuccessfully = dstLayer.SetVectorDataFromXML(chunkData.ReadString_UTF8(chunkLength))
                 End If
                 
                 'If the load was successful, notify the target layer that its DIB data has been changed; the layer will use this to
@@ -621,7 +639,7 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
                 'Failure means package bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently
                 ' disabled for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
                 Else
-                    PDDebug.LogAction "LoadPhotoDemonLayer: node was not loaded successfully."
+                    PDDebug.LogAction "LoadPDLayer: node was not loaded successfully."
                 End If
                 
                 chunkLoaded = True
@@ -634,19 +652,19 @@ Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As 
         Loop
         
         'That's all there is to it!  Mark the load as successful and carry on.
-        LoadPhotoDemonLayer = True
+        LoadPDLayer = True
     
     'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
     Else
-        PDDebug.LogAction "LoadPhotoDemonLayer: file didn't pass validation."
-        LoadPhotoDemonLayer = False
+        PDDebug.LogAction "LoadPDLayer: file didn't pass validation."
+        LoadPDLayer = False
     End If
     
     Exit Function
     
 LoadPDLayerFail:
-    PDDebug.LogAction "LoadPhotoDemonLayer: VB error #" & Err.Number & ": " & Err.Description
-    LoadPhotoDemonLayer = False
+    PDDebug.LogAction "LoadPDLayer: VB error #" & Err.Number & ": " & Err.Description
+    LoadPDLayer = False
     Exit Function
 
 End Function
@@ -768,7 +786,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
         Case UNDO_Everything
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
+            ImageImporter.LoadPDI_Normal undoFile, tmpDIB, PDImages.GetActiveImage(), True
             PDImages.GetActiveImage.MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
@@ -776,7 +794,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE/_VECTORSAFE, we
         '             don't have to do any special processing to the file - just load the whole damn thing.
         Case UNDO_Image, UNDO_Image_VectorSafe
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
+            ImageImporter.LoadPDI_Normal undoFile, tmpDIB, PDImages.GetActiveImage(), True
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -790,7 +808,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             required, due to the messy business of non-destructively aligning the current layer stack with
         '             the layer stack described by the file.
         Case UNDO_ImageHeader
-            ImageImporter.LoadPhotoDemonImageHeaderOnly undoFile, PDImages.GetActiveImage()
+            ImageImporter.LoadPDI_HeadersOnly undoFile, PDImages.GetActiveImage()
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -813,11 +831,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
                 Case UNDO_Layer, UNDO_Layer_VectorSafe
-                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
+                    ImageImporter.LoadPDLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_Everything, UNDO_Image, UNDO_Image_VectorSafe
-                    ImageImporter.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
+                    ImageImporter.LoadPDI_SingleLayer undoFile, customLayerDestination, targetLayerID, False
                 
             End Select
         
@@ -833,11 +851,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
                 ' header data from this file.
                 Case UNDO_Layer, UNDO_Layer_VectorSafe, UNDO_LayerHeader
-                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", PDImages.GetActiveImage.GetLayerByID(targetLayerID), True
+                    ImageImporter.LoadPDLayer undoFile & ".layer", PDImages.GetActiveImage.GetLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_Everything, UNDO_Image, UNDO_Image_VectorSafe, UNDO_ImageHeader
-                    ImageImporter.LoadSingleLayerFromPDI undoFile, PDImages.GetActiveImage.GetLayerByID(targetLayerID), targetLayerID, True
+                    ImageImporter.LoadPDI_SingleLayer undoFile, PDImages.GetActiveImage.GetLayerByID(targetLayerID), targetLayerID, True
                 
             End Select
         
@@ -852,7 +870,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'For now, any unhandled Undo types result in a request for the full pdImage stack.  This line can be removed when
         ' all Undo types finally have their own custom handling implemented.
         Case Else
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
+            ImageImporter.LoadPDI_Normal undoFile, tmpDIB, PDImages.GetActiveImage(), True
             
         
     End Select
@@ -1048,7 +1066,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
         
             'PDI images require various compression plugins to be present, and are only loaded via a custom routine
             ' (obviously, since they are PhotoDemon's native format)
-            CascadeLoadInternalImage = LoadPhotoDemonImage(srcFile, dstDIB, dstImage)
+            CascadeLoadInternalImage = LoadPDI_Normal(srcFile, dstDIB, dstImage)
             
             dstImage.SetOriginalFileFormat PDIF_PDI
             dstImage.SetOriginalColorDepth 32
@@ -1338,355 +1356,3 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     If addToRecentFiles And (Macros.GetMacroStatus <> MacroBATCH) Then g_RecentFiles.AddFileToList srcFile, srcImage
     
 End Sub
-
-'Legacy import functions for old PDI versions are found below.  These functions are no longer maintained; use at your own risk.
-Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
-
-    PDDebug.LogAction "Legacy PDI file identified.  Starting pdPackage decompression..."
-    
-    On Error GoTo LoadPDIFail
-    
-    'PDI files require a parent pdImage container
-    If (dstImage Is Nothing) Then Set dstImage = New pdImage
-    
-    'First things first: create a legacy pdPackage instance.  It will handle all the messy business of extracting individual
-    ' data bits from the source file.
-    Dim pdiReader As pdPackagerLegacy
-    Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib
-    
-    'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
-    
-        PDDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
-        
-        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
-        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String
-        
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
-            
-            PDDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
-            
-            'Copy the received bytes into a string
-            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-            Else
-                retString = StrConv(retBytes, vbUnicode)
-            End If
-            
-            'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.SetHeaderFromXML retString, sourceIsUndoFile
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-        End If
-        
-        PDDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
-        
-        'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
-        ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
-        ' 2) Layer-specific information, which varies by layer type.  For DIBs, this will be a raw stream of bytes
-        '    containing the layer DIB's raster data.  For text or other vector layers, this is an XML stream containing
-        '    whatever information is necessary to construct the layer from scratch.
-        
-        Dim i As Long
-        For i = 0 To dstImage.GetNumOfLayers - 1
-        
-            PDDebug.LogAction "Retrieving layer header " & i & "..."
-            
-            'First, retrieve the layer's header
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
-            
-                'Copy the received bytes into a string
-                If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-                Else
-                    retString = StrConv(retBytes, vbUnicode)
-                End If
-                
-                'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString) Then
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-                End If
-                
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-            
-            'How we extract the rest of the layer's data varies by layer type.  Raster layers can skip the need for a temporary buffer,
-            ' because we've already created a DIB with a built-in buffer for the pixel data.
-            '
-            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
-            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
-            Dim nodeLoadedSuccessfully As Boolean
-            nodeLoadedSuccessfully = False
-            
-            'Image (raster) layers
-            If dstImage.GetLayerByIndex(i).IsLayerRaster Then
-                
-                PDDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
-                
-                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
-                Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                
-                'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
-                dstImage.GetLayerByIndex(i).layerDIB.SetInitialAlphaPremultiplicationState True
-                
-                nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
-            
-            'Text and other vector layers
-            ElseIf dstImage.GetLayerByIndex(i).IsLayerVector Then
-                
-                PDDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
-                
-                If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
-                
-                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackagerLegacy gained full Unicode compatibility.
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-                    
-                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
-                        nodeLoadedSuccessfully = True
-                    Else
-                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                    End If
-                    
-                Else
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                End If
-                    
-            'In the future, additional layer types can be handled here
-            Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.GetLayerByIndex(i).GetLayerType
-            
-            End If
-            
-            'If successful, notify the parent of the change
-            If nodeLoadedSuccessfully Then
-                dstImage.NotifyImageChanged UNDO_Layer, i
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-        
-        Next i
-        
-        PDDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
-        
-        'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
-        
-            PDDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
-            
-            'Copy the received bytes into a string
-            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-            Else
-                retString = StrConv(retBytes, vbUnicode)
-            End If
-            
-            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
-            ' internal metadata struct.
-            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
-                
-                'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
-                Debug.Print "PDI Metadata Node rejected by metadata parser."
-                
-            End If
-        
-        End If
-        
-        '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
-        ' and other changes.)
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
-        
-            PDDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
-            
-            'Copy the received bytes into a string
-            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-            Else
-                retString = StrConv(retBytes, vbUnicode)
-            End If
-            
-            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
-            ' internal metadata struct.
-            dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
-        
-        End If
-        
-        PDDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-        
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        dstDIB.CreateBlank 16, 16, 32, 0
-        
-        'That's all there is to it!  Mark the load as successful and carry on.
-        LoadPDI_Legacy = True
-    
-    Else
-    
-        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
-        Message "Selected file is not in PDI format.  Load abandoned."
-        LoadPDI_Legacy = False
-    
-    End If
-    
-    Exit Function
-    
-LoadPDIFail:
-    
-    PDDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
-    
-    'Before falling back to a generic error message, check for a couple known problem states.
-    
-    'Case 1: compression is enabled for this file, but the user doesn't have the right compression plugin
-    Dim cmpMissing As Boolean
-    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate))
-    
-    If cmpMissing Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the required plugin is missing or disabled.", vbCritical Or vbOKOnly, "Compression plugin missing", Files.FileGetName(pdiPath)
-        Exit Function
-    End If
-    
-    Select Case Err.Number
-    
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-            Message "An error has occurred (#%1 - %2).  PDI load abandoned.", Err.Number, Err.Description
-        
-    End Select
-    
-    LoadPDI_Legacy = False
-    Exit Function
-
-End Function
-
-'Load just the layer stack from a standard PDI file, and non-destructively align our current layer stack to match.
-' At present, this function is only used internally by the Undo/Redo engine.
-Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, ByRef dstImage As pdImage) As Boolean
-    
-    On Error GoTo LoadPDIHeaderFail
-    
-    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
-    ' from the source file.
-    Dim pdiReader As pdPackagerLegacy
-    Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib
-    
-    'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
-    
-        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
-        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String
-        
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes, True) Then
-        
-            'Copy the received bytes into a string
-            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-            Else
-                retString = StrConv(retBytes, vbUnicode)
-            End If
-            
-            'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
-            dstImage.SetHeaderFromXML retString, True, True
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-        End If
-        
-        'With the main pdImage now assembled, the next task is to populate all layer headers.  This is a bit more
-        ' confusing than a regular PDI load, because we have to maintain existing layer DIB data (ugh!).
-        ' So basically, we must:
-        ' 1) Extract each layer header from file, in turn
-        ' 2) See if the current pdImage copy of this layer is in the proper position in the layer stack; if it isn't,
-        '    move it into the location specified by the PDI file.
-        ' 3) Ask the layer to non-destructively overwrite its header with the header from the PDI file (e.g. don't
-        '    touch its DIB or vector-specific contents).
-        
-        Dim layerNodeName As String, layerNodeID As Long, layerNodeType As Long
-        
-        Dim i As Long
-        For i = 0 To dstImage.GetNumOfLayers - 1
-        
-            'Before doing anything else, retrieve the ID of the node at this position.  (Retrieve the rest of the node
-            ' header too, although we don't actually have a use for those values at present.)
-            pdiReader.GetNodeInfo i + 1, layerNodeName, layerNodeID, layerNodeType
-            
-            'We now know what layer ID is supposed to appear at this position in the layer stack.  If that layer ID
-            ' is *not* in its proper position, move it now.
-            If dstImage.GetLayerIndexFromID(layerNodeID) <> i Then dstImage.SwapTwoLayers dstImage.GetLayerIndexFromID(layerNodeID), i
-            
-            'Now that the node is in place, we can retrieve its header.
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, True) Then
-            
-                'Copy the received bytes into a string
-                If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-                Else
-                    retString = StrConv(retBytes, vbUnicode)
-                End If
-                
-                'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString, , True) Then
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-                End If
-                
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-            End If
-            
-            'Normally we would load the layer's DIB data here, but we don't care about that when loading just the headers!
-            ' Continue to the next layer.
-        
-        Next i
-        
-        'That's all there is to it!  Mark the load as successful and carry on.
-        LoadPhotoDemonImageHeaderOnly_Legacy = True
-    
-    Else
-    
-        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
-        Message "Selected file is not in PDI format.  Load abandoned."
-        LoadPhotoDemonImageHeaderOnly_Legacy = False
-    
-    End If
-    
-    Exit Function
-    
-LoadPDIHeaderFail:
-
-    Select Case Err.Number
-    
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-
-        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
-        
-    End Select
-    
-    LoadPhotoDemonImageHeaderOnly_Legacy = False
-    Exit Function
-
-End Function
-

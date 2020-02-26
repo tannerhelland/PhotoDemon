@@ -770,7 +770,7 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             tmpImage.UpdateSize
             
             'Write the image out to file, then free its associated memory
-            Saving.SavePhotoDemonImage tmpImage, tmpLayerFile, True, cf_Lz4, cf_Lz4
+            Saving.SavePDI_Image tmpImage, tmpLayerFile, True, cf_Lz4, cf_Lz4
             Set tmpImage = Nothing
             
             'Construct a title (name) for the new image, and insert the original layer index.
@@ -982,7 +982,7 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
             'Ask the target file to write itself out to a temp PDI file
             Dim tmpLayerFile As String
             tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
-            If Saving.SavePhotoDemonImage(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
+            If Saving.SavePDI_Image(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
                 
                 'We now want to load the resulting image as a standalone layer.  We use a convenient
                 ' wrapper function that ensures the image is loaded as a single layer, even if it

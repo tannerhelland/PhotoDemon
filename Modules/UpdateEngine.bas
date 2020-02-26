@@ -338,8 +338,8 @@ Public Function PatchProgramFiles() As Boolean
     
     'The patching .exe is embedded inside the update package.  Extract it now; it will handle the rest
     ' of the patching process after we exit.
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
+    Dim cPackage As pdPackageLegacyV2
+    Set cPackage = New pdPackageLegacyV2
     
     Dim patchFileName As String
     patchFileName = "\PD_Update_Patcher.exe"

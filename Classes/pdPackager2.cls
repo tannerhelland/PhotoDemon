@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdPackager"
+Attribute VB_Name = "pdPackageLegacyV2"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -15,8 +15,12 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2020 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 23/September/17
-'Last update: revert to writing original, uncompressed data if compression doesn't reduce data size
+'Last updated: 25/February/20
+'Last update: deprecate this class in favor of the new pdPackageChunky format (which is smaller,
+'             faster, and simpler).  As part of deprecation, I have commented out many debug logging
+'             statements in this class.  This class is extremely stable and I do not plan to debug it
+'             in the future; if this changes (oh I hope it doesn't) the debug statements can easily be
+'             reenabled.
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -27,20 +31,20 @@ Attribute VB_Exposed = False
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
 '
-'pdPackager v2.0 is not backwards compatible with pdPackage v1.0.  It is an entirely separate format, with many
+'v2.0 of this class is not backwards compatible with pdPackage v1.0.  It is an entirely separate format, with many
 ' improvements over v1.0.
 '
-'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
+'Though I have created this class specifically for use with PhotoDemon, it should be easily usable by others
 ' with only minor modifications.  Note that compression support requires an explicit path to libdeflate,
 ' zstandard (zstd), or lz4/lz4-hc, with the expected filename of "libdeflate.dll", "libzstd.dll", or "liblz4.dll",
-' respectively.  pdPackage can also be used without compression, though its benefits are greatly reduced.
+' respectively.  This class can also be used without compression, though its benefits are greatly reduced.
 ' (And obviously, you will not be able to open compressed archives from other sources.)
 '
-'While pdPackages have many similarities to ZIP files, THEY ARE NOT ACTUAL ZIP FILES, and this class cannot read or
-' write actual ZIP files.  pdPackages are, by design, much simpler than ZIP files, and their structure and layout
-' plays better with VB's inherent limitations.
+'While the files created by this class have many similarities to ZIP files, THEY ARE NOT ACTUAL ZIP FILES,
+' and this class cannot read or write ZIP files.  Files from this class are, by design, much simpler than
+' ZIP files, and their structure and layout plays better with VB's inherent limitations.
 '
-'Key pdPackage features include:
+'Key features include:
 '
 ' 1) Data agnosticism, e.g. everything is treated as byte arrays, so you can store whatever data you'd like.
 ' 2) Very small front-loaded header, and rear-loaded directory.  A small front-loaded header allows for quick file
@@ -243,7 +247,6 @@ Private m_CompressionBuffer() As Byte
 'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
 Private m_File As pdFSO
 
-
 'pdPackage operations are roughly divided into two groups:
 '
 ' - GET operations, for retrieving data from existing pdPackage files.  GET operations include:
@@ -397,7 +400,7 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_numOfNodes - 1) Then
-        InternalErrorMsg "Node index out of range - try again with a valid node index!"
+        'InternalErrorMsg "Node index out of range - try again with a valid node index!"
         AddNodeDataFromPointer = False
         Exit Function
     End If
@@ -584,7 +587,7 @@ Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
         End If
     
     Else
-        InternalErrorMsg "WARNING! pdPackage.AutoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
+        'InternalErrorMsg "WARNING! pdPackage.AutoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
         AutoAddNodeFromFile = False
     End If
 
@@ -668,14 +671,14 @@ Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
         'Display some debug info if one or more nodes failed to add
         If (Not nodeAdditionSuccess) Then
             If recurseSubfolders Then
-                InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
+                'InternalErrorMsg "WARNING! AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
             Else
-                InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
+                'InternalErrorMsg "WARNING! AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
             End If
         End If
         
     Else
-        InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
+        'InternalErrorMsg "WARNING! AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
         AutoAddNodesFromFolder = False
     End If
 
@@ -748,7 +751,7 @@ Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             End If
         
         Else
-            InternalErrorMsg "WARNING!  pdPackager.AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
+            'InternalErrorMsg "WARNING!  AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
         End If
     
     Loop
@@ -916,7 +919,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         WritePackageToFile = True
     
     Else
-        InternalErrorMsg "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
+        'InternalErrorMsg "WARNING!  WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
     End If
         
@@ -977,7 +980,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     
     'Before doing anything else, make sure the file exists
     If (Not m_File.FileExists(srcFilename)) Then
-        InternalErrorMsg "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
+        'InternalErrorMsg "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
     
@@ -1002,21 +1005,21 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
         'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
         If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
-            InternalErrorMsg "File doesn't have valid pdPackage header.  Abandoning load."
+            'InternalErrorMsg "File doesn't have valid pdPackage header.  Abandoning load."
             GoTo StopPackageFileRead
         End If
         
         'If the caller requested a sub-type validation, perform that now
         If (subTypeValidator <> 0) Then
             If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
-                InternalErrorMsg "File doesn't match requested sub-type value.  Abandoning load."
+                'InternalErrorMsg "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
         End If
         
         'Finally, check the PDP version.  This check is currently meaningless, as this class only supports the current pdPackage version.
         If (m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION) Then
-            InternalErrorMsg "Legacy file format could not be decoded."
+            'InternalErrorMsg "Legacy file format could not be decoded."
             GoTo StopPackageFileRead
             
         'This is the current PDP version.  Continue the normal loading process.
@@ -1025,7 +1028,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
             Dim tmpNode As PDP_NODE
             If (m_FileHeader.NodeStructSize <> LenB(tmpNode)) Then
-                InternalErrorMsg "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                'InternalErrorMsg "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                 GoTo StopPackageFileRead
             End If
             
@@ -1070,31 +1073,31 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
+                        'InternalErrorMsg "WARNING!  ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
                         Dim i As PD_CompressionFormat
                         For i = cf_Zlib To cf_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
                             If decompressionResult Then
-                                InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
+                                'InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                                 Exit For
                             End If
                         Next i
                         
                         'If all decompression attempts failed, we're shit out of luck
                         If (Not decompressionResult) Then
-                            InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this package."
+                            'InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this package."
                         End If
                         
                     End If
                     
                 Else
-                    InternalErrorMsg "WARNING!  Required decompression engine missing; pdPackage directory cannot be read."
+                    'InternalErrorMsg "WARNING!  Required decompression engine missing; pdPackage directory cannot be read."
                 End If
                 
                 'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
                 If (Not decompressionResult) Then
-                    InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
+                    'InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
                     GoTo StopPackageFileRead
                 End If
                     
@@ -1154,7 +1157,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 End If
                 
             Else
-                InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
+                'InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
                 GoTo StopPackageFileRead
             End If
             
@@ -1165,14 +1168,14 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
     Else
         ReadPackageFromFile = False
-        InternalErrorMsg "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
+        'InternalErrorMsg "WARNING!  ReadPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
     End If
     
     Exit Function
     
 StopPackageFileRead:
     
-    InternalErrorMsg "An internal error occurred in the pdPackager.ReadPackageFromFile function."
+    'InternalErrorMsg "An internal error occurred in the ReadPackageFromFile function."
     If (hFile <> 0) Then m_File.FileCloseHandle hFile
     ReadPackageFromFile = False
     Exit Function
@@ -1200,27 +1203,27 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
     If (srcLength > LenB(m_FileHeader)) Then
         CopyMemoryStrict VarPtr(m_FileHeader), srcPointer, LenB(m_FileHeader)
     Else
-        InternalErrorMsg "Bad memory length specified (smaller than pdPackage header).  Abandoning load."
+        'InternalErrorMsg "Bad memory length specified (smaller than pdPackage header).  Abandoning load."
         GoTo StopPackageMemoryRead
     End If
     
     'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
     If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
-        InternalErrorMsg "Memory doesn't have valid pdPackage header.  Abandoning load."
+        'InternalErrorMsg "Memory doesn't have valid pdPackage header.  Abandoning load."
         GoTo StopPackageMemoryRead
     End If
         
     'If the caller requested a sub-type validation, perform that now
     If (subTypeValidator <> 0) Then
         If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
-            InternalErrorMsg "Memory doesn't match requested sub-type value.  Abandoning load."
+            'InternalErrorMsg "Memory doesn't match requested sub-type value.  Abandoning load."
             GoTo StopPackageMemoryRead
         End If
     End If
         
     'Finally, check the PDP version.  This check is currently meaningless, as this class only supports the current pdPackage version.
     If (m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION) Then
-        InternalErrorMsg "Legacy file format could not be decoded."
+        'InternalErrorMsg "Legacy file format could not be decoded."
         GoTo StopPackageMemoryRead
         
     'This is the current PDP version.  Continue the normal loading process.
@@ -1229,7 +1232,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
         'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
         Dim tmpNode As PDP_NODE
         If (m_FileHeader.NodeStructSize <> LenB(tmpNode)) Then
-            InternalErrorMsg "Node struct size in header is invalid.  This memory looks to be invalid!  Abandoning load."
+            'InternalErrorMsg "Node struct size in header is invalid.  This memory looks to be invalid!  Abandoning load."
             GoTo StopPackageMemoryRead
         End If
         
@@ -1273,31 +1276,31 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
+                        'InternalErrorMsg "WARNING!  ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
                         Dim i As PD_CompressionFormat
                         For i = cf_Zlib To cf_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
                             If decompressionResult Then
-                                InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
+                                'InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                                 Exit For
                             End If
                         Next i
                         
                         'If all decompression attempts failed, we're shit out of luck
                         If (Not decompressionResult) Then
-                            InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this package."
+                            'InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this package."
                         End If
                         
                     End If
                     
                 Else
-                    InternalErrorMsg "WARNING!  Required decompression engine missing; pdPackage directory cannot be read."
+                    'InternalErrorMsg "WARNING!  Required decompression engine missing; pdPackage directory cannot be read."
                 End If
                 
                 'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
                 If (Not decompressionResult) Then
-                    InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
+                    'InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
                     GoTo StopPackageMemoryRead
                 End If
                     
@@ -1305,7 +1308,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
             
         'Source length is invalid (too small)
         Else
-            InternalErrorMsg "WARNING!  Could not retrieve pdPackage directory; supplied mem length too small."
+            'InternalErrorMsg "WARNING!  Could not retrieve pdPackage directory; supplied mem length too small."
             GoTo StopPackageMemoryRead
         End If
         
@@ -1341,7 +1344,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
             m_DataBuffer.SetPosition 0
                 
         Else
-            InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
+            'InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
             GoTo StopPackageMemoryRead
         End If
         
@@ -1355,7 +1358,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
     
 StopPackageMemoryRead:
     
-    InternalErrorMsg "An internal error occurred in the pdPackager.ReadPackageFromMemory function."
+    'InternalErrorMsg "An internal error occurred in the ReadPackageFromMemory function."
     ReadPackageFromMemory = False
     
 End Function
@@ -1378,7 +1381,7 @@ Friend Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_numOfNodes - 1) Then
-        InternalErrorMsg "Node index out of range - try again with a valid node index!"
+        'InternalErrorMsg "Node index out of range - try again with a valid node index!"
         GetNodeInfo = False
         Exit Function
     End If
@@ -1568,13 +1571,13 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
             End If
             
         Else
-            InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
-            InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+            'InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
+            'InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
             AutoExtractSingleFile = False
         End If
         
     Else
-        InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile couldn't find the requested source file: " & srcFilename
+        'InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile couldn't find the requested source file: " & srcFilename
         AutoExtractSingleFile = False
     End If
 
@@ -1714,19 +1717,19 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                 m_File.FileCreateFromByteArray retBytes, fullDestinationPath
                                 
                             Else
-                                InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
+                                'InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
                                 allNodesSuccessful = False
                             End If
                             
                         Else
-                            InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
-                            InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+                            'InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
+                            'InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
                             allNodesSuccessful = False
                         End If
                         
                     Else
                         allNodesSuccessful = False
-                        InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
+                        'InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
                     End If
                     
                 'This set of 3 EndIf's looks confusing, but they simply terminate all file node detection criteria blocks.
@@ -1934,7 +1937,7 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             m_DataBuffer.ReadBytes dstArray, dataPackedSize, trimDstArray
             dstFinalSize = dataOriginalSize
         Else
-            InternalErrorMsg "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
+            'InternalErrorMsg "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
             GetNodeDataByIndex = False
             Exit Function
         End If
@@ -1952,7 +1955,7 @@ End Function
 '
 'What makes this function different is that it completely relies on the caller to create a correctly sized buffer for the extracted data.
 ' For common cases, this is simply not possible, as the caller does not have enough knowledge necessary to prep such a buffer.  Instead, it relies
-' on pdPackager to construct the destination buffer for it, using the size values stored inside the pdPackage instance.
+' on this class to construct the destination buffer for it, using the size values stored inside the pdPackage instance.
 '
 'PhotoDemon is unique in this regard, as it can correctly calculate the size of raster layer pixel buffers (because it knows the associated
 ' width, height, stride and color depth of the buffer).  Because PD has to create a matching DIB in advance, a destination buffer of perfect size
@@ -2021,19 +2024,19 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                 ' than the one flagged in the file.)  Try again using a different compression method.
                 If (Not decompressionResult) Then
                 
-                    InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
+                    'InternalErrorMsg "WARNING!  GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                     
                     For i = cf_Zlib To cf_Lz4
                         decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, i)
                         If decompressionResult Then
-                            InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
+                            'InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                             Exit For
                         End If
                     Next i
                     
                     'If all decompression attempts failed, we're shit out of luck
                     If (Not decompressionResult) Then
-                        InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this node."
+                        'InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this node."
                     End If
                     
                 End If
@@ -2059,19 +2062,19 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
+                        'InternalErrorMsg "WARNING!  GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                         
                         For i = cf_Zlib To cf_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, i)
                             If decompressionResult Then
-                                InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
+                                'InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                                 Exit For
                             End If
                         Next i
                         
                         'If all decompression attempts failed, we're shit out of luck
                         If (Not decompressionResult) Then
-                            InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this node."
+                            'InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this node."
                         End If
                         
                     End If
@@ -2083,7 +2086,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
         If (Not decompressionResult) Then
-            InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
+            'InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
             GetNodeDataByIndex_UnsafeDstPointer = False
             Exit Function
         End If
@@ -2149,7 +2152,7 @@ Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, B
         End If
         
     Else
-        InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        'InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Sub
@@ -2169,7 +2172,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         GetBitFlag = ((srcLong And longMask) <> 0)
         
     Else
-        InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        'InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Function
@@ -2238,10 +2241,13 @@ End Sub
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
 Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
         
-    If (UBound(ExtraText) >= LBound(ExtraText)) Then
-        PDDebug.LogAction msgString & " (extra parameters were supplied)"
-    Else
-        PDDebug.LogAction msgString
-    End If
+    'Upon being deprecated (in favor of the new pdPackageChunky class), I've commented out all
+    ' debug calls from this class.  This is intentional, as I do not intend to debug this class
+    ' further... barring catastrophic failure somewhere, of course!
+    'If (UBound(ExtraText) >= LBound(ExtraText)) Then
+    '    PDDebug.LogAction msgString & " (extra parameters were supplied)"
+    'Else
+    '    PDDebug.LogAction msgString
+    'End If
     
 End Sub

@@ -792,46 +792,42 @@ Friend Sub SetSelectionActive(ByVal newState As Boolean)
 End Sub
 
 'Serialize all relevant image header data to an XML string.
+' (This uses the new, much-improved 2020 header format.  ALL new PD code must use this function from now on.)
 Friend Function GetHeaderAsXML() As String
 
     'Prepare an XML engine, which will handle the actual writing of the file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
     
-    'Add a basic header and explanatory comment
-    xmlEngine.PrepareNewXML "pdImage"
+    'Add a basic header and version info
+    xmlEngine.AddXMLString "<photodemon-image>"
+    xmlEngine.AddParam "image-version", 1&, True, True
     
-    xmlEngine.WriteBlankLine
-    xmlEngine.WriteComment "This file contains a summary of crucial data for a given pdImage entry."
-    xmlEngine.WriteBlankLine
+    'Start by writing out the hard-coded image ID.  This value can effectively be ignored at load-time;
+    ' we only use it when recovering autosave data after a crash (as this ID helps us match up autosaved
+    ' file data).
+    xmlEngine.AddParam "image-id", imageID, True, True
     
-    'Start by writing out the imageID.  This value will not be re-used in subsequent session, but it's helpful for matching up
-    ' this image's data with any saved Undo/Redo entries (which are created by imageID for privacy reasons)
-    xmlEngine.WriteTag "ID", imageID
+    'Write relevant master-image data
+    xmlEngine.AddParam "width", Me.Width, True, True
+    xmlEngine.AddParam "height", Me.Height, True, True
+    xmlEngine.AddParam "x-resolution", m_XResolution, True, True
+    xmlEngine.AddParam "y-resolution", m_YResolution, True, True
+    xmlEngine.AddParam "dpi", m_DPI, True, True
+    xmlEngine.AddParam "file-format-original", ImageFormats.GetExtensionFromPDIF(m_originalFileFormat), True, True
+    xmlEngine.AddParam "file-format-current", ImageFormats.GetExtensionFromPDIF(m_currentFileFormat), True, True
+    xmlEngine.AddParam "color-depth-original", m_originalColorDepth, True, True
+    xmlEngine.AddParam "layer-count-max", m_numOfLayersEverCreated, True, True
+    xmlEngine.AddParam "layer-count-active", m_numOfLayers, True, True
+    xmlEngine.AddParam "active-layer", m_curLayer, True, True
+    xmlEngine.AddParam "animated", m_Animated, True, True
     
-    'Start writing any tags that may be useful for reconstructing an autosave version of this image.  We limit the information to
-    ' properties independent of a given session (e.g. imageID); session-dependent properties will be recreated anew by PD.
-    xmlEngine.WriteTag "Width", Width
-    xmlEngine.WriteTag "Height", Height
-    xmlEngine.WriteTag "XResolution", m_XResolution
-    xmlEngine.WriteTag "YResolution", m_YResolution
-    xmlEngine.WriteTag "DPI", m_DPI
-    xmlEngine.WriteTag "OriginalFileFormat", m_originalFileFormat
-    xmlEngine.WriteTag "CurrentFileFormat", m_currentFileFormat
-    xmlEngine.WriteTag "OriginalColorDepth", m_originalColorDepth
-    xmlEngine.WriteTag "numOfLayersEverCreated", m_numOfLayersEverCreated
-    xmlEngine.WriteTag "numOfLayers", m_numOfLayers
-    xmlEngine.WriteTag "curLayer", m_curLayer
-    xmlEngine.WriteTag "animated", m_Animated
+    'Next comes conditional data, which may not exist in the catch-all property dictionary.
+    ' (Note that we manually pull out tags that we care about.  At present, we don't bother writing
+    ' the full dictionary, as most dictionary data is only useful per-session anyway.)
     
-    'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
-    If ImgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.WriteTag "pngBackgroundColor", ImgStorage.GetEntry_Long("pngBackgroundColor")
-    If ImgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.WriteTag "OriginalFileSize", ImgStorage.GetEntry_Long("OriginalFileSize")
-    
-    xmlEngine.WriteBlankLine
-    
-    'That should be enough information to reconstruct the original image state.
-    GetHeaderAsXML = xmlEngine.ReturnCurrentXMLString(True)
+    'Return the finished XML string
+    GetHeaderAsXML = xmlEngine.GetParamString()
     
 End Function
 
@@ -846,53 +842,51 @@ End Function
 ' data for operations like reordering the layer stack.)
 Friend Function SetHeaderFromXML(ByRef srcText As String, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
     
-    'Prepare an XML engine, which will handle the actual reading and parsing of the file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
+    'Prep a fast XML param engine, which greatly simplifies the process of retrieving XML data
+    Dim xmlEngine As pdParamXML
+    Set xmlEngine = New pdParamXML
+    xmlEngine.SetParamString srcText
     
-    'We now have two choices, depending on the value of filePathIsActuallyString.  Load the supposed XML contents
-    ' (either from file or directly) into the XML engine; note that both steps validate the incoming data automatically.
-    Dim xmlLoadSuccessful As Boolean
-    xmlLoadSuccessful = xmlEngine.LoadXMLFromString(srcText)
+    'Validate the XML header...
+    If (xmlEngine.DoesParamExist("photodemon-image") And (xmlEngine.GetLong("image-version", 0) >= 1)) Then
     
-    'Make sure the supplied XML actually contains pdImage data.
-    If xmlLoadSuccessful And xmlEngine.IsPDDataType("pdImage") Then
-    
-        'The XML file checked out.  Start retrieving relevant values.
-        Me.Width = xmlEngine.GetUniqueTag_Long("Width")
-        Me.Height = xmlEngine.GetUniqueTag_Long("Height")
-        m_XResolution = xmlEngine.GetUniqueTag_Double("XResolution")
-        m_YResolution = xmlEngine.GetUniqueTag_Double("YResolution")
-        m_DPI = xmlEngine.GetUniqueTag_Double("DPI")
-        m_Animated = xmlEngine.GetUniqueTag_Boolean("animated")
+        'The XML package appears to be valid.  Start retrieving values.
+        Me.Width = xmlEngine.GetLong("width", 0, True)
+        Me.Height = xmlEngine.GetLong("height", 0, True)
+        m_XResolution = xmlEngine.GetDouble("x-resolution", 0#, True)
+        m_YResolution = xmlEngine.GetDouble("y-resolution", 0#, True)
+        m_DPI = xmlEngine.GetDouble("dpi", 0#, True)
+        m_Animated = xmlEngine.GetBool("animated", False, True)
         
-        'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
-        ' the Undo/Redo stack.
+        'All settings past this point are only relevant when loading a file anew,
+        ' *not* when it's being used as part of the Undo/Redo stack.
         If (Not sourceIsUndoFile) Then
             
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
-            Me.SetOriginalColorDepth xmlEngine.GetUniqueTag_Long("originalColorDepth")
+            Me.SetOriginalColorDepth xmlEngine.GetLong("color-depth-original", 32, True)
+            Me.SetOriginalFileFormat ImageFormats.GetPDIFFromExtension(xmlEngine.GetString("file-format-original", vbNullString, True))
+            Me.SetCurrentFileFormat ImageFormats.GetPDIFFromExtension(xmlEngine.GetString("file-format-current", vbNullString, True))
             
-            'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
-            ' only as necessary.
-            If xmlEngine.DoesTagExist("pngBackgroundColor") Then ImgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
+            'Dictionary tags are conditional, and may not exist in the PDI file.
+            ' Check for their existence, and load only as necessary.
             
         End If
         
         'Finally, retrieve layer values from the file
-        m_numOfLayersEverCreated = xmlEngine.GetUniqueTag_Long("numOfLayersEverCreated")
-        m_numOfLayers = xmlEngine.GetUniqueTag_Long("numOfLayers")
-        m_curLayer = xmlEngine.GetUniqueTag_Long("curLayer")
+        m_numOfLayersEverCreated = xmlEngine.GetLong("layer-count-max", 0, True)
+        m_numOfLayers = xmlEngine.GetLong("layer-count-active", 0, True)
+        m_curLayer = xmlEngine.GetLong("active-layer", 0, True)
         
-        'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
-        ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
+        'If this is a standard "destructive" load (e.g. we are overwriting all existing properties
+        ' with incoming ones), we can now prepare the layer collection to receive layer data.
+        
+        '(Otherwise, we must leave the current layer collection as it is - this operation will
+        ' only reorder existing data!)
         If (Not loadNonDestructively) Then
         
-            'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
-            ' fill each layer with usable data, because we can't do that here!)
+            'Initialize the layer array
             ReDim imgLayers(0 To m_numOfLayers - 1) As pdLayer
-            
             Dim i As Long
             For i = 0 To m_numOfLayers - 1
                 Set imgLayers(i) = New pdLayer
@@ -902,8 +896,11 @@ Friend Function SetHeaderFromXML(ByRef srcText As String, Optional ByVal sourceI
         
         SetHeaderFromXML = True
     
+    'Basic validation failed.  Attempt the legacy loader.
     Else
-        PDDebug.LogAction "WARNING!  pdImage.SetHeaderFromXML() couldn't validate XML header."
+        Set xmlEngine = Nothing
+        PDDebug.LogAction "pdImage.SetHeaderFromXML() is trying again using the legacy serialization engine..."
+        SetHeaderFromXML = SetHeaderFromXML_Legacy(srcText, sourceIsUndoFile, loadNonDestructively)
     End If
     
 End Function
@@ -1697,3 +1694,75 @@ End Sub
 Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
     If (Not MainSelection Is Nothing) Then MainSelection.NotifyAnimationsAllowed allowedState
 End Sub
+
+
+
+
+'**********************************************************************************************
+'Legacy support functions follow.  Do NOT modify these functions except to fix security issues.
+
+'Legacy header creator
+Private Function SetHeaderFromXML_Legacy(ByRef srcText As String, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
+    
+    'Prepare an XML engine, which will handle the actual reading and parsing of the file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'We now have two choices, depending on the value of filePathIsActuallyString.  Load the supposed XML contents
+    ' (either from file or directly) into the XML engine; note that both steps validate the incoming data automatically.
+    Dim xmlLoadSuccessful As Boolean
+    xmlLoadSuccessful = xmlEngine.LoadXMLFromString(srcText)
+    
+    'Make sure the supplied XML actually contains pdImage data.
+    If xmlLoadSuccessful And xmlEngine.IsPDDataType("pdImage") Then
+    
+        'The XML file checked out.  Start retrieving relevant values.
+        Me.Width = xmlEngine.GetUniqueTag_Long("Width")
+        Me.Height = xmlEngine.GetUniqueTag_Long("Height")
+        m_XResolution = xmlEngine.GetUniqueTag_Double("XResolution")
+        m_YResolution = xmlEngine.GetUniqueTag_Double("YResolution")
+        m_DPI = xmlEngine.GetUniqueTag_Double("DPI")
+        m_Animated = xmlEngine.GetUniqueTag_Boolean("animated")
+        
+        'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
+        ' the Undo/Redo stack.
+        If (Not sourceIsUndoFile) Then
+            
+            'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
+            ' them in the first place, but for now, just ignore them.
+            Me.SetOriginalColorDepth xmlEngine.GetUniqueTag_Long("originalColorDepth")
+            
+            'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
+            ' only as necessary.
+            If xmlEngine.DoesTagExist("pngBackgroundColor") Then ImgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
+            
+        End If
+        
+        'Finally, retrieve layer values from the file
+        m_numOfLayersEverCreated = xmlEngine.GetUniqueTag_Long("numOfLayersEverCreated")
+        m_numOfLayers = xmlEngine.GetUniqueTag_Long("numOfLayers")
+        m_curLayer = xmlEngine.GetUniqueTag_Long("curLayer")
+        
+        'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
+        ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
+        If (Not loadNonDestructively) Then
+        
+            'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
+            ' fill each layer with usable data, because we can't do that here!)
+            ReDim imgLayers(0 To m_numOfLayers - 1) As pdLayer
+            
+            Dim i As Long
+            For i = 0 To m_numOfLayers - 1
+                Set imgLayers(i) = New pdLayer
+            Next i
+            
+        End If
+        
+        SetHeaderFromXML_Legacy = True
+    
+    Else
+        PDDebug.LogAction "WARNING!  pdImage.SetHeaderFromXML_Legacy() couldn't validate XML header."
+    End If
+    
+End Function
+

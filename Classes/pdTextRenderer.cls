@@ -719,7 +719,7 @@ Private Function GetWordwrapEnumFromString(ByRef srcValue As String) As PD_TextW
 End Function
 
 'XML get/set functions for getting/setting all parameters at once.
-Friend Function GetAllFontSettingsAsXML_New() As String
+Friend Function GetAllFontSettingsAsXML() As String
 
     'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
     Dim cSerialize As pdParamXML
@@ -773,14 +773,14 @@ Friend Function GetAllFontSettingsAsXML_New() As String
     cSerialize.AddXMLString "</photodemon-text-object>"
     
     'Return the completed XML string
-    GetAllFontSettingsAsXML_New = cSerialize.GetParamString()
+    GetAllFontSettingsAsXML = cSerialize.GetParamString()
 
 End Function
 
 'Set all text and font parameters at once, using an XML string created by a previous call
-' to GetAllFontSettingsAsXML_New(). (Note that this function manually marks the font cache
+' to GetAllFontSettingsAsXML(). (Note that this function manually marks the font cache
 ' as dirty, so you should only use it when loading a serialized object for the first time.)
-Friend Function SetAllFontSettingsFromXML_New(ByRef srcXMLString As String) As Boolean
+Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
     
     'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
     Dim cSerialize As pdParamXML
@@ -794,7 +794,7 @@ Friend Function SetAllFontSettingsFromXML_New(ByRef srcXMLString As String) As B
     
     If useLegacyLoader Then
         Set cSerialize = Nothing
-        SetAllFontSettingsFromXML_New = SetAllFontSettingsFromXML(srcXMLString)
+        SetAllFontSettingsFromXML = SetAllFontSettingsFromXML_Legacy(srcXMLString)
     Else
         
         With cSerialize
@@ -837,116 +837,10 @@ Friend Function SetAllFontSettingsFromXML_New(ByRef srcXMLString As String) As B
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
-        SetAllFontSettingsFromXML_New = True
+        SetAllFontSettingsFromXML = True
         
     End If
         
-End Function
-
-'XML get/set functions for getting/setting all parameters at once
-Friend Function GetAllFontSettingsAsXML() As String
-
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
-    Dim cSerialize As pdParamXML
-    Set cSerialize = New pdParamXML
-    
-    With cSerialize
-        .Reset 1#
-        .AddParam "TextLayerText", m_CurrentText
-        .AddParam "TextLayerColor", m_FontColor
-        .AddParam "TextLayerFontFace", m_FontFace
-        .AddParam "TextLayerFontSize", m_FontSize
-        .AddParam "TextLayerFontSizeUnit", m_FontSizeUnit
-        .AddParam "TextLayerFontBold", m_FontBold
-        .AddParam "TextLayerFontItalic", m_FontItalic
-        .AddParam "TextLayerFontUnderline", m_FontUnderline
-        .AddParam "TextLayerFontStrikeout", m_FontStrikeout
-        .AddParam "TextLayerHorizontalAlignment", m_HorizontalAlignment
-        .AddParam "TextLayerVerticalAlignment", m_VerticalAlignment
-        .AddParam "TextLayerAntialiasing", m_TextAntialiasing
-        .AddParam "TextLayerContrast", m_TextContrast
-        .AddParam "TextRenderingEngine", m_RenderingEngine
-        .AddParam "TextHinting", m_TextHinting
-        .AddParam "TextWordWrap", m_WordWrap
-        .AddParam "TextFillActive", m_FillActive
-        .AddParam "TextFillBrush", m_FillBrush
-        .AddParam "TextOutlineActive", m_OutlineActive
-        .AddParam "TextOutlinePen", m_OutlinePen
-        .AddParam "TextBackgroundActive", m_BackgroundActive
-        .AddParam "TextBackgroundBrush", m_BackgroundBrush
-        .AddParam "TextBackBorderActive", m_BackBorderActive
-        .AddParam "TextBackBorderPen", m_BackBorderPen
-        .AddParam "TextLineSpacing", m_LineSpacing
-        .AddParam "TextMarginLeft", m_MarginLeft
-        .AddParam "TextMarginTop", m_MarginTop
-        .AddParam "TextMarginRight", m_MarginRight
-        .AddParam "TextMarginBottom", m_MarginBottom
-        .AddParam "TextCharRemap", m_CharRemap
-        .AddParam "TextCharSpacing", m_CharSpacing
-        .AddParam "TextCharOrientation", m_CharOrientation
-        .AddParam "TextCharJitterX", m_CharJitterX
-        .AddParam "TextCharJitterY", m_CharJitterY
-        .AddParam "TextCharInflation", m_CharInflation
-        .AddParam "TextCharMirror", m_CharMirror
-    End With
-    
-    'Return the completed XML string
-    GetAllFontSettingsAsXML = cSerialize.GetParamString()
-
-End Function
-
-'Set all text and font parameters at once, using an XML string created by a previous call to getAllFontSettingsAsXML.
-' (Note that this function manually marks the font cache as dirty, so you should only use it when loading a file for the first time.)
-Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
-    
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
-    Dim cSerialize As pdParamXML
-    Set cSerialize = New pdParamXML
-    
-    With cSerialize
-        .SetParamString srcXMLString
-        
-        SetGenericTextProperty ptp_Text, .GetString("TextLayerText", vbNullString)
-        SetGenericTextProperty ptp_FontColor, .GetLong("TextLayerColor", 0)
-        SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", Fonts.GetUIFontName())
-        SetGenericTextProperty ptp_FontSize, .GetDouble("TextLayerFontSize", 16#)
-        SetGenericTextProperty ptp_FontSizeUnit, .GetLong("TextLayerFontSizeUnit", fu_Pixel)
-        SetGenericTextProperty ptp_FontBold, .GetBool("TextLayerFontBold", False)
-        SetGenericTextProperty ptp_FontItalic, .GetBool("TextLayerFontItalic", False)
-        SetGenericTextProperty ptp_FontUnderline, .GetBool("TextLayerFontUnderline", False)
-        SetGenericTextProperty ptp_FontStrikeout, .GetBool("TextLayerFontStrikeout", False)
-        SetGenericTextProperty ptp_HorizontalAlignment, .GetLong("TextLayerHorizontalAlignment", StringAlignmentNear)
-        SetGenericTextProperty ptp_VerticalAlignment, .GetLong("TextLayerVerticalAlignment", StringAlignmentNear)
-        SetGenericTextProperty ptp_TextAntialiasing, .GetLong("TextLayerAntialiasing", pdta_Standard)
-        SetGenericTextProperty ptp_TextContrast, .GetLong("TextLayerContrast", 5)
-        SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", te_WAPI)
-        SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
-        SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tww_AutoWord)
-        SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
-        SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
-        SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)
-        SetGenericTextProperty ptp_OutlinePen, .GetString("TextOutlinePen", vbNullString)
-        SetGenericTextProperty ptp_BackgroundActive, .GetBool("TextBackgroundActive", False)
-        SetGenericTextProperty ptp_BackgroundBrush, .GetString("TextBackgroundBrush", vbNullString)
-        SetGenericTextProperty ptp_BackBorderActive, .GetBool("TextBackBorderActive", False)
-        SetGenericTextProperty ptp_BackBorderPen, .GetString("TextBackBorderPen", vbNullString)
-        SetGenericTextProperty ptp_LineSpacing, .GetDouble("TextLineSpacing", 0)
-        SetGenericTextProperty ptp_MarginLeft, .GetDouble("TextMarginLeft", 0)
-        SetGenericTextProperty ptp_MarginTop, .GetDouble("TextMarginTop", 0)
-        SetGenericTextProperty ptp_MarginRight, .GetDouble("TextMarginRight", 0)
-        SetGenericTextProperty ptp_MarginBottom, .GetDouble("TextMarginBottom", 0)
-        SetGenericTextProperty ptp_CharRemap, .GetLong("TextCharRemap", 0)
-        SetGenericTextProperty ptp_CharSpacing, .GetDouble("TextCharSpacing", 0)
-        SetGenericTextProperty ptp_CharOrientation, .GetDouble("TextCharOrientation", 0)
-        SetGenericTextProperty ptp_CharJitterX, .GetDouble("TextCharJitterX", 0)
-        SetGenericTextProperty ptp_CharJitterY, .GetDouble("TextCharJitterY", 0)
-        SetGenericTextProperty ptp_CharInflation, .GetDouble("TextCharInflation", 0)
-        SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
-    End With
-    
-    'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
-    SetAllFontSettingsFromXML = True
-    
 End Function
 
 Private Function GetAlignmentStringFromUnit(ByVal srcValue As GdiPlusStringAlignment) As String
@@ -2464,3 +2358,64 @@ Private Sub Class_Terminate()
     If (m_GDIFont <> 0) Then DeleteObject m_GDIFont
     
 End Sub
+
+
+
+
+'**********************************************************************************************
+'Legacy support functions follow.  Do NOT modify these functions except to fix security issues.
+
+'Set all text and font parameters at once, using an XML string created by a previous call to GetAllFontSettingsAsXML.
+' (Note that this function manually marks the font cache as dirty, so you should only use it when loading a file for the first time.)
+Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) As Boolean
+    
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
+    Dim cSerialize As pdParamXML
+    Set cSerialize = New pdParamXML
+    
+    With cSerialize
+        .SetParamString srcXMLString
+        
+        SetGenericTextProperty ptp_Text, .GetString("TextLayerText", vbNullString)
+        SetGenericTextProperty ptp_FontColor, .GetLong("TextLayerColor", 0)
+        SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", Fonts.GetUIFontName())
+        SetGenericTextProperty ptp_FontSize, .GetDouble("TextLayerFontSize", 16#)
+        SetGenericTextProperty ptp_FontSizeUnit, .GetLong("TextLayerFontSizeUnit", fu_Pixel)
+        SetGenericTextProperty ptp_FontBold, .GetBool("TextLayerFontBold", False)
+        SetGenericTextProperty ptp_FontItalic, .GetBool("TextLayerFontItalic", False)
+        SetGenericTextProperty ptp_FontUnderline, .GetBool("TextLayerFontUnderline", False)
+        SetGenericTextProperty ptp_FontStrikeout, .GetBool("TextLayerFontStrikeout", False)
+        SetGenericTextProperty ptp_HorizontalAlignment, .GetLong("TextLayerHorizontalAlignment", StringAlignmentNear)
+        SetGenericTextProperty ptp_VerticalAlignment, .GetLong("TextLayerVerticalAlignment", StringAlignmentNear)
+        SetGenericTextProperty ptp_TextAntialiasing, .GetLong("TextLayerAntialiasing", pdta_Standard)
+        SetGenericTextProperty ptp_TextContrast, .GetLong("TextLayerContrast", 5)
+        SetGenericTextProperty ptp_RenderingEngine, .GetLong("TextRenderingEngine", te_WAPI)
+        SetGenericTextProperty ptp_TextHinting, .GetBool("TextHinting", False)
+        SetGenericTextProperty ptp_WordWrap, .GetLong("TextWordWrap", tww_AutoWord)
+        SetGenericTextProperty ptp_FillActive, .GetBool("TextFillActive", True)
+        SetGenericTextProperty ptp_FillBrush, .GetString("TextFillBrush", vbNullString)
+        SetGenericTextProperty ptp_OutlineActive, .GetBool("TextOutlineActive", False)
+        SetGenericTextProperty ptp_OutlinePen, .GetString("TextOutlinePen", vbNullString)
+        SetGenericTextProperty ptp_BackgroundActive, .GetBool("TextBackgroundActive", False)
+        SetGenericTextProperty ptp_BackgroundBrush, .GetString("TextBackgroundBrush", vbNullString)
+        SetGenericTextProperty ptp_BackBorderActive, .GetBool("TextBackBorderActive", False)
+        SetGenericTextProperty ptp_BackBorderPen, .GetString("TextBackBorderPen", vbNullString)
+        SetGenericTextProperty ptp_LineSpacing, .GetDouble("TextLineSpacing", 0)
+        SetGenericTextProperty ptp_MarginLeft, .GetDouble("TextMarginLeft", 0)
+        SetGenericTextProperty ptp_MarginTop, .GetDouble("TextMarginTop", 0)
+        SetGenericTextProperty ptp_MarginRight, .GetDouble("TextMarginRight", 0)
+        SetGenericTextProperty ptp_MarginBottom, .GetDouble("TextMarginBottom", 0)
+        SetGenericTextProperty ptp_CharRemap, .GetLong("TextCharRemap", 0)
+        SetGenericTextProperty ptp_CharSpacing, .GetDouble("TextCharSpacing", 0)
+        SetGenericTextProperty ptp_CharOrientation, .GetDouble("TextCharOrientation", 0)
+        SetGenericTextProperty ptp_CharJitterX, .GetDouble("TextCharJitterX", 0)
+        SetGenericTextProperty ptp_CharJitterY, .GetDouble("TextCharJitterY", 0)
+        SetGenericTextProperty ptp_CharInflation, .GetDouble("TextCharInflation", 0)
+        SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
+    End With
+    
+    'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
+    SetAllFontSettingsFromXML_Legacy = True
+    
+End Function
+

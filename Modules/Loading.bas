@@ -578,14 +578,14 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case "PDI"
         
             'PDI images require zstd, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
-            loadSuccessful = LoadPhotoDemonImage(imagePath, targetDIB, tmpPDImage)
+            loadSuccessful = LoadPDI_Normal(imagePath, targetDIB, tmpPDImage)
             
             'Retrieve a copy of the fully composited image
             tmpPDImage.GetCompositedImage targetDIB
             
-        'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and easier for PD than wrapping
-        ' the pdDIB object inside a pdPackage layer (especially if this function is going to be used, since we're just going to
-        ' decode the saved file into a pdDIB anyway).
+        'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and
+        ' easier for PD than wrapping the pdDIB object inside a pdPackage layer (especially if this function
+        ' is going to be used, since we're just going to decode the saved file into a pdDIB anyway).
         Case "TMPDIB", "PDTMPDIB"
             loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
@@ -796,7 +796,7 @@ Public Sub DuplicateCurrentImage()
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
     tmpDuplicationFile = UserPrefs.GetTempPath & "PDDuplicate.pdi"
-    SavePhotoDemonImage PDImages.GetActiveImage(), tmpDuplicationFile, True, cf_Lz4, cf_Lz4, False
+    SavePDI_Image PDImages.GetActiveImage(), tmpDuplicationFile, True, cf_Lz4, cf_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String

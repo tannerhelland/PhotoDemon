@@ -1967,7 +1967,7 @@ End Function
 Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As String
 
     On Error GoTo SerializeFailed
-
+    
     If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
     m_ParseXML.Reset
     
@@ -2033,7 +2033,7 @@ End Function
 
 Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)
     
-    If (Len(srcString) <> 0) Then
+    If (LenB(srcString) <> 0) Then
         
         If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
         m_ParseXML.SetParamString srcString

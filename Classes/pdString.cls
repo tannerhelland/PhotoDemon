@@ -163,8 +163,9 @@ End Function
 'Want to erase the entire buffer with some new string?  This function provides a shortcut way to do it
 ' (vs clearing the buffer and manually appending a string).
 Friend Sub Reset(Optional ByRef newString As String = vbNullString)
-    m_Buffer = newString
-    m_Length = Len(m_Buffer)
+    EnsureCapacity Len(newString)
+    CopyMemoryStrict StrPtr(m_Buffer), StrPtr(newString), Len(newString) * 2
+    m_Length = Len(newString)
 End Sub
 
 'Modify the current "end of data" pointer.  *ZERO VALIDATION IS PERFORMED ON THE PASSED LENGTH PARAMETER*,

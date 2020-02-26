@@ -866,7 +866,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB, ByRef srcIccPro
     
     'Before doing anything else, make sure we actually have an ICC profile to apply!
     If (Not srcIccProfile.HasICCData) Then
-        Message "ICC transform requested, but no data found.  Abandoning attempt."
+        PDDebug.LogAction "ICC transform requested, but no data found.  Abandoning attempt."
         Exit Function
     End If
     

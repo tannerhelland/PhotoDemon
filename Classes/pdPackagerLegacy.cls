@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdPackagerLegacy"
+Attribute VB_Name = "pdPackageLegacyV1"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -15,8 +15,12 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2020 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 12/February/19
-'Last update: minor cleanup to prepare for transition from zlib to libdeflate
+'Last updated: 25/February/20
+'Last update: comment out debug statements; this class is now two versions removed from the
+'             current PDI format, and there's no point wasting bytes on lengthy debug
+'             statements when few - if any - files that require this class are still out in
+'             the wild!  I have not had a bug report for this format in many years, so I do
+'             not expect to need the (many) debug statements in this class any time soon.
 'Dependencies: pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -208,7 +212,6 @@ Private m_DataBuffer As pdStream
 'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
 Private m_File As pdFSO
 
-
 'pdPackage operations are roughly divided into two groups:
 '
 ' - GET operations, for retrieving data from existing pdPackage files.  GET operations include:
@@ -345,7 +348,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_numOfNodes - 1 Then
-        Debug.Print "Node index out of range - try again with a valid node index!"
+        'Debug.Print "Node index out of range - try again with a valid node index!"
         AddNodeDataFromPointer = False
         Exit Function
     End If
@@ -397,12 +400,12 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         If CopyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format$(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
+            'Debug.Print "Node data compressed successfully; compressed data is " & Format$(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
             
         Else
             
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
-            Debug.Print "zLib compression failed; writing original uncompressed data to buffer instead..."
+            'Debug.Print "zLib compression failed; writing original uncompressed data to buffer instead..."
         
         End If
         
@@ -510,7 +513,7 @@ Public Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
         End If
     
     Else
-        Debug.Print "WARNING! pdPackage.autoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
+        'Debug.Print "WARNING! pdPackage.autoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
         AutoAddNodeFromFile = False
     End If
 
@@ -596,18 +599,16 @@ Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
         If Not nodeAdditionSuccess Then
             
             If recurseSubfolders Then
-                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
+                'Debug.Print "WARNING! AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
             Else
-                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
+                'Debug.Print "WARNING! AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
             End If
         
         End If
         
     Else
-        
-        Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
+        'Debug.Print "WARNING! AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
         AutoAddNodesFromFolder = False
-        
     End If
 
 End Function
@@ -680,7 +681,7 @@ Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             End If
         
         Else
-            Debug.Print "WARNING!  pdPackager.AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
+            'Debug.Print "WARNING!  AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
         End If
     
     Loop
@@ -809,7 +810,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         WritePackageToFile = True
     
     Else
-        PDDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
+        'PDDebug.LogAction "WARNING!  WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
     End If
         
@@ -896,7 +897,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     
     'Before doing anything else, make sure the file exists
     If Not m_File.FileExists(srcFilename) Then
-        Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
+        'Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
     
@@ -952,7 +953,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                PDDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
+                'PDDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1007,7 +1008,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                PDDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
+                'PDDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1055,14 +1056,14 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
     Else
         ReadPackageFromFile = False
-        PDDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
+        'PDDebug.LogAction "WARNING!  readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
     End If
     
     Exit Function
     
 StopPackageFileRead:
     
-    Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
+    'Debug.Print "An error occurred in the readPackageFromFile function.  Additional data should have been supplied by the Message() function."
     If hFile <> 0 Then m_File.FileCloseHandle hFile
     ReadPackageFromFile = False
     Exit Function
@@ -1073,7 +1074,7 @@ End Function
 ' Unicode-aware parsing code, FYI!
 Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
     
-    PDDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
+    'PDDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
     
     'Open the file
     Dim fileNum As Integer
@@ -1148,7 +1149,7 @@ Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_numOfNodes - 1 Then
-        Debug.Print "Node index out of range - try again with a valid node index!"
+        'Debug.Print "Node index out of range - try again with a valid node index!"
         GetNodeInfo = False
         Exit Function
     End If
@@ -1354,8 +1355,8 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
             End If
             
         Else
-            Debug.Print "WARNING! pdPackage.autoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
-            Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+            'Debug.Print "WARNING! pdPackage.autoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
+            'Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
             AutoExtractSingleFile = False
         End If
         
@@ -1446,7 +1447,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
                         CopyMemoryStrict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
-                        Debug.Print "First: " & strFilename
+                        'Debug.Print "First: " & strFilename
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
                         
@@ -1510,19 +1511,19 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                 Close #fileNum
                                 
                             Else
-                                Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
+                                'Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
                                 allNodesSuccessful = False
                             End If
                             
                         Else
-                            Debug.Print "WARNING! pdPackage.autoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
-                            Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+                            'Debug.Print "WARNING! pdPackage.autoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
+                            'Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
                             allNodesSuccessful = False
                         End If
                         
                     Else
                         allNodesSuccessful = False
-                        Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
+                        'Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
                     End If
                     
                 'This set of 3 EndIf's looks confusing, but they simply terminate all file node detection criteria blocks.
@@ -1754,9 +1755,9 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             Exit Function
         Else
             If useHeaderBuffer Then
-                PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
+                'PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
             Else
-                PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
+                'PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
             End If
         End If
         
@@ -1774,7 +1775,7 @@ End Function
 '
 'What makes this function different is that it completely relies on the caller to create a correctly sized buffer for the extracted data.
 ' For common cases, this is simply not possible, as the caller does not have enough knowledge necessary to prep such a buffer.  Instead, it relies
-' on pdPackager to construct the destination buffer for it, using the size values stored inside the pdPackage instance.
+' on this class to construct the destination buffer for it, using the size values stored inside this instance.
 '
 'PhotoDemon is unique in this regard, as it can correctly calculate the size of raster layer pixel buffers (because it knows the associated
 ' width, height, stride and color depth of the buffer).  Because PD has to create a matching DIB in advance, a destination buffer of perfect size
@@ -1853,9 +1854,9 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             Exit Function
         Else
             If useHeaderBuffer Then
-                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (header)."
+                'Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (header)."
             Else
-                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (data)."
+                'Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (data)."
             End If
         End If
         
@@ -1905,7 +1906,7 @@ Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, B
         End If
         
     Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        'Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Sub
@@ -1925,7 +1926,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         GetBitFlag = ((srcLong And longMask) <> 0)
         
     Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        'Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Function
