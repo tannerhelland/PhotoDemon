@@ -107,8 +107,8 @@ Public Sub ApplyAtmosphereEffect(ByVal effectParams As String, Optional ByVal to
 
     If (Not toPreview) Then Message "Creating artificial atmosphere..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim atmIntensity As Double, atmStyle As Long, atmBlend As PD_BlendMode
@@ -270,8 +270,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "blendmode", cboBlendMode.ListIndex

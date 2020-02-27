@@ -108,8 +108,8 @@ End Property
 Private Sub cmdBar_OKClick()
     
     'Place all settings in an XML string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "width", ucResize.ResizeWidth
         .AddParam "height", ucResize.ResizeHeight
@@ -239,8 +239,8 @@ End Sub
 Public Sub SmartResizeImage(ByVal xmlParams As String)
     
     'Parse incoming parameters from the XML string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString xmlParams
     
     Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Double

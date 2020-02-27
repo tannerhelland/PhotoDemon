@@ -140,8 +140,8 @@ Public Sub PanAndZoomFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     If (Not toPreview) Then Message "Applying pan and zoom (Ken Burns) effect..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim hPan As Double, vPan As Double, newZoom As Double
@@ -422,8 +422,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "horizontal-ratio", sltHorizontal.Value / 100#

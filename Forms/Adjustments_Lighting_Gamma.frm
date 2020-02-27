@@ -198,8 +198,8 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
      
     If (Not toPreview) Then Message "Adjusting gamma values..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim rGamma As Double, gGamma As Double, bGamma As Double
@@ -424,8 +424,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "redgamma", sltGamma(0).Value

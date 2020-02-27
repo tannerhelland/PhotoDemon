@@ -50,8 +50,8 @@ End Type
     
 'XML-based wrapper for AddBlankLayer(), below
 Public Sub AddBlankLayer_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     Layers.AddBlankLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), cParams.GetLong("layertype", PDL_Image)
 End Sub
@@ -94,8 +94,8 @@ End Sub
 
 'XML-based wrapper for AddNewLayer(), below
 Public Sub AddNewLayer_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     With cParams
         Layers.AddNewLayer .GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
@@ -531,8 +531,8 @@ End Sub
 
 'XML-based wrapper for DuplicateLayerByIndex(), below
 Public Sub DuplicateLayerByIndex_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     Layers.DuplicateLayerByIndex cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex)
 End Sub
@@ -702,8 +702,8 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
     SplitLayerToImage = False
     
     'Retrieve any conversion parameters
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     Dim targetIndex As Long
@@ -799,8 +799,8 @@ End Function
 
 'XML-based wrapper to DeleteLayer(), below
 Public Sub DeleteLayer_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     Layers.DeleteLayer cParams.GetLong("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex)
 End Sub
@@ -888,8 +888,8 @@ End Sub
 'Given all open images (besides the current one), assemble them as layers into the current image.
 Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNullString)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     Dim i As Long, j As Long
@@ -1226,8 +1226,8 @@ End Sub
 ' including discarding invisible ones.
 Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString functionParams
     
     Dim removeTransparency As Boolean, newBackgroundColor As Long
@@ -1450,8 +1450,8 @@ End Sub
 Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
@@ -1483,8 +1483,8 @@ End Sub
 Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString resizeParams
     
     'Apply the passed parameter to the specified layer
@@ -1504,8 +1504,8 @@ End Sub
 Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer

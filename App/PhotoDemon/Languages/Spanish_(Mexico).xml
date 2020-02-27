@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.466</langversion>
+<langversion>6.7.467</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -4648,12 +4648,6 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for pdPaletteChild.cls-->
 
-<!-- BEGIN text for pdParamXML.cls -->
-
-<!-- pdParamXML.cls contains 0 phrases. -->
-
-<!-- END text for pdParamXML.cls-->
-
 <!-- BEGIN text for pdPixelBlender.cls -->
 
 <!-- pdPixelBlender.cls contains 0 phrases. -->
@@ -4764,6 +4758,12 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdSerialize.cls -->
+
+<!-- pdSerialize.cls contains 0 phrases. -->
+
+<!-- END text for pdSerialize.cls-->
 
 <!-- BEGIN text for pdSpriteSheet.cls -->
 

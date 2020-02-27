@@ -2080,10 +2080,10 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     uiRange = uiMax - uiMin
     ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
     
-    If (ConvertPixelCoordsToNodeCoords < 0) Then
+    If (ConvertPixelCoordsToNodeCoords < 0!) Then
         ConvertPixelCoordsToNodeCoords = 0
-    ElseIf (ConvertPixelCoordsToNodeCoords > 1) Then
-        ConvertPixelCoordsToNodeCoords = 1
+    ElseIf (ConvertPixelCoordsToNodeCoords > 1!) Then
+        ConvertPixelCoordsToNodeCoords = 1!
     End If
     
 End Function

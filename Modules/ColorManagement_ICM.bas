@@ -852,7 +852,7 @@ Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal
     If (srcImage Is Nothing) Then Exit Function
     If (LenB(srcImage.GetColorProfile_Original) = 0) Then Exit Function
     
-    Dim dstFilename As String, cParams As pdParamXML
+    Dim dstFilename As String, cParams As pdSerialize
     
     If raiseDialog Then
     
@@ -892,7 +892,7 @@ Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal
             UserPrefs.SetColorProfilePath Files.FileGetPath(dstFilename)
             
             'Call this function again - with raiseDialog set to *false* - to initiate the actual save.
-            Set cParams = New pdParamXML
+            Set cParams = New pdSerialize
             cParams.AddParam "export-filename", dstFilename
             Process "Export color profile", False, cParams.GetParamString()
             
@@ -901,7 +901,7 @@ Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal
     'If we aren't showing a dialog, we can just dump the associated image's profile to the target file
     Else
         
-        Set cParams = New pdParamXML
+        Set cParams = New pdSerialize
         cParams.SetParamString exportParams
         dstFilename = cParams.GetString("export-filename")
         

@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Outline ("Pen" in GDI/GDI+ parlance) Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 04/July/15 (but assembled from many bits written earlier)
-'Last updated: 13/May/16
-'Last update: total overhaul
+'Last updated: 27/February/20
+'Last update: remove PenAlignment property; it is half-baked and poorly implemented in GDI+, and if we
+'             ever switch to a homebrew renderer, it won't be used anyway.
 '
 'This class manages a single GDI+ WAPI pen instance.  Pens are used to trace shapes and paths.
 '
@@ -43,7 +44,6 @@ Private m_PenLineJoin As PD_2D_LineJoin
 Private m_PenLineCap As PD_2D_LineCap
 Private m_PenDashCap As PD_2D_DashCap
 Private m_PenMiterLimit As Single
-Private m_PenAlignment As PD_2D_PenAlignment
 Private m_PenStartCap As PD_2D_LineCap
 Private m_PenEndCap As PD_2D_LineCap
 Private m_PenDashOffset As Single
@@ -51,7 +51,7 @@ Private m_PenDashOffset As Single
 'Pen transform properties (TBD)
 
 'This class is capable of serializing itself to/from XML strings
-Private cSerialize As pdParamXML
+Private m_Serialize As pdSerialize
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
@@ -60,10 +60,6 @@ Private m_DebugMode As Boolean
 Private m_PenHandle As Long
 
 'Get/set individual settings.
-Friend Function GetPenAlignment() As PD_2D_PenAlignment
-    GetPenAlignment = m_PenAlignment
-End Function
-
 Friend Function GetPenColor() As Long
     GetPenColor = m_PenColor
 End Function
@@ -107,11 +103,6 @@ End Function
 Friend Function GetPenWidth() As Single
     GetPenWidth = m_PenWidth
 End Function
-
-Friend Sub SetPenAlignment(ByVal newSetting As PD_2D_PenAlignment)
-    m_PenAlignment = newSetting
-    If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenAlignment, m_PenAlignment
-End Sub
 
 Friend Sub SetPenColor(ByVal newSetting As Long)
     m_PenColor = newSetting
@@ -186,24 +177,23 @@ End Sub
 'For interop purposes, pens are passed around PD as XML strings.
 Friend Function GetPenPropertiesAsXML() As String
     
-    If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
-    With cSerialize
+    If (m_Serialize Is Nothing) Then Set m_Serialize = New pdSerialize
+    With m_Serialize
         .Reset 1#
-        .AddParam "PenMode", m_PenStyle
-        .AddParam "PenColor", m_PenColor
-        .AddParam "PenOpacity", m_PenOpacity
-        .AddParam "PenWidth", m_PenWidth
-        .AddParam "PenLineJoin", m_PenLineJoin
-        .AddParam "PenLineCap", m_PenLineCap
-        .AddParam "PenDashCap", m_PenDashCap
-        .AddParam "PenMiterLimit", m_PenMiterLimit
-        .AddParam "PenAlignment", m_PenAlignment
-        .AddParam "PenStartCap", m_PenStartCap
-        .AddParam "PenEndCap", m_PenEndCap
-        .AddParam "PenDashOffset", m_PenDashOffset
+        .AddParam "pen-color", m_PenColor, True, True
+        .AddParam "pen-opacity", m_PenOpacity, True, True
+        .AddParam "pen-width", m_PenWidth, True, True
+        .AddParam "pen-line-join", Drawing2D.XML_GetNameOfLineJoin(m_PenLineJoin), True, True
+        .AddParam "pen-miter-limit", m_PenMiterLimit, True, True
+        .AddParam "pen-style", Drawing2D.XML_GetNameOfDashStyle(m_PenStyle), True, True
+        .AddParam "pen-line-cap", Drawing2D.XML_GetNameOfLineCap(m_PenLineCap), True, True
+        .AddParam "pen-start-cap", Drawing2D.XML_GetNameOfLineCap(m_PenStartCap), True, True
+        .AddParam "pen-end-cap", Drawing2D.XML_GetNameOfLineCap(m_PenEndCap), True, True
+        .AddParam "pen-dash-cap", Drawing2D.XML_GetNameOfDashCap(m_PenDashCap), True, True
+        .AddParam "pen-dash-offset", m_PenDashOffset, True, True
     End With
     
-    GetPenPropertiesAsXML = cSerialize.GetParamString
+    GetPenPropertiesAsXML = m_Serialize.GetParamString
     
 End Function
 
@@ -214,21 +204,40 @@ Friend Sub SetPenPropertiesFromXML(ByRef srcString As String)
         Me.ResetAllProperties
     Else
     
-        If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
-        With cSerialize
+        If (m_Serialize Is Nothing) Then Set m_Serialize = New pdSerialize
+        With m_Serialize
             .SetParamString srcString
-            Me.SetPenStyle .GetLong("PenMode", P2_DS_Solid)
-            Me.SetPenColor .GetLong("PenColor", vbBlack)
-            Me.SetPenOpacity .GetDouble("PenOpacity", 100)
-            Me.SetPenWidth .GetDouble("PenWidth", 1#)
-            Me.SetPenLineJoin .GetLong("PenLineJoin", P2_LJ_Miter)
-            Me.SetPenLineCap .GetLong("PenLineCap", P2_LC_Flat)
-            Me.SetPenDashCap .GetLong("PenDashCap", P2_DC_Flat)
-            Me.SetPenMiterLimit .GetDouble("PenMiterLimit", 3#)
-            Me.SetPenAlignment .GetLong("PenAlignment", P2_PA_Center)
-            Me.SetPenStartCap .GetLong("PenStartCap", m_PenLineCap)
-            Me.SetPenEndCap .GetLong("PenEndCap", m_PenLineCap)
-            Me.SetPenDashOffset .GetSingle("PenDashOffset", m_PenDashOffset)
+            
+            'Check for modern property storage
+            If .DoesParamExist("pen-color") Then
+                
+                Me.SetPenColor .GetLong("pen-color", vbBlack, True)
+                Me.SetPenOpacity .GetSingle("pen-opacity", 100!, True)
+                Me.SetPenWidth .GetSingle("pen-width", 1!, True)
+                Me.SetPenLineJoin Drawing2D.XML_GetLineJoinFromName(.GetString("pen-line-join", , True))
+                Me.SetPenMiterLimit .GetSingle("pen-miter-limit", 3!, True)
+                Me.SetPenStyle Drawing2D.XML_GetDashStyleFromName(.GetString("pen-style", , True))
+                Me.SetPenLineCap Drawing2D.XML_GetLineCapFromName(.GetString("pen-line-cap", , True))
+                Me.SetPenStartCap Drawing2D.XML_GetLineCapFromName(.GetString("pen-start-cap", , True))
+                Me.SetPenEndCap Drawing2D.XML_GetLineCapFromName(.GetString("pen-end-cap", , True))
+                Me.SetPenDashCap Drawing2D.XML_GetDashCapFromName(.GetString("pen-dash-cap", , True))
+                Me.SetPenDashOffset .GetSingle("pen-dash-offset", m_PenDashOffset, True)
+                
+            'Use legacy naming scheme
+            Else
+                Me.SetPenStyle .GetLong("PenMode", P2_DS_Solid)
+                Me.SetPenColor .GetLong("PenColor", vbBlack)
+                Me.SetPenOpacity .GetDouble("PenOpacity", 100)
+                Me.SetPenWidth .GetDouble("PenWidth", 1#)
+                Me.SetPenLineJoin .GetLong("PenLineJoin", P2_LJ_Miter)
+                Me.SetPenLineCap .GetLong("PenLineCap", P2_LC_Flat)
+                Me.SetPenDashCap .GetLong("PenDashCap", P2_DC_Flat)
+                Me.SetPenMiterLimit .GetDouble("PenMiterLimit", 3#)
+                Me.SetPenStartCap .GetLong("PenStartCap", m_PenLineCap)
+                Me.SetPenEndCap .GetLong("PenEndCap", m_PenLineCap)
+                Me.SetPenDashOffset .GetSingle("PenDashOffset", m_PenDashOffset)
+            End If
+            
         End With
         
     End If
@@ -264,7 +273,7 @@ Friend Function CreatePen() As Boolean
     
     If (m_PenHandle <> 0) Then ReleasePen
     
-    m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, m_PenAlignment)
+    m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, GP_PA_Center)
             
     If (m_PenHandle <> 0) Then
         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenDashCap, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
@@ -326,7 +335,6 @@ Friend Sub ResetAllProperties()
     Me.SetPenLineCap P2_LC_Flat
     Me.SetPenDashCap P2_DC_Flat
     Me.SetPenMiterLimit 3#
-    Me.SetPenAlignment P2_PA_Center
     Me.SetPenStartCap P2_LC_Flat
     Me.SetPenEndCap P2_LC_Flat
     Me.SetPenDashOffset 0!

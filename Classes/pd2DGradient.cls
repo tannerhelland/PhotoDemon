@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager
 'Copyright 2015-2020 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 28/February/19
-'Last update: add support for importing/exporting SVG gradient files
+'Last updated: 27/February/20
+'Last update: switch XML serializer to use strings instead of hard-coded enums
 '
 'This class manages a single PD gradient instance.
 '
@@ -54,7 +54,7 @@ Private m_GradientName As String
 Private m_Path As pd2DPath
 
 'This class is capable of serializing itself to/from XML strings
-Private m_Serializer As pdParamXML
+Private m_Serializer As pdSerialize
 
 'Quick and dirty memory swap APIs
 Private Type tmpLong
@@ -133,17 +133,17 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
     
     If (Not m_GradientIsDefault) Then
         
-        Dim tmpXML As pdParamXML
-        Set tmpXML = New pdParamXML
-        tmpXML.SetParamVersion 1.1
+        Dim tmpXML As pdSerialize
+        Set tmpXML = New pdSerialize
+        tmpXML.SetParamVersion 2#
         
         With tmpXML
             
             'Add two management parameters: the point count (which simplifies parsing), and whether we have already sorted the list.
             ' (If we have, this saves future functions from needing to perform their own sort.)
-            .AddParam "GradientPointCount", m_NumOfPoints, True, True
-            .AddParam "GradientListAlreadySorted", m_IsSorted, True, True
-            .AddParam "GradientNodesUseBase64", useBase64ForNodes, True, True
+            .AddParam "num-points", m_NumOfPoints, True, True
+            .AddParam "sorted", m_IsSorted, True, True
+            .AddParam "use-base64", useBase64ForNodes, True, True
             
             If (m_NumOfPoints > 0) Then
                 
@@ -151,20 +151,18 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
                 ' Base64 to dump the full node array to a string.  For very large gradients, this provides a nice
                 ' speed boost over manually encoding individual nodes.
                 If useBase64ForNodes Then
-                
                     Dim strBase64 As String
                     Strings.BytesToBase64Ex VarPtr(m_GradientPoints(0)), m_NumOfPoints * LenB(m_GradientPoints(0)), strBase64
-                    .AddParam "GradientNodesBase64", strBase64, True, False
-                
+                    .AddParam "nodes-base64", strBase64, True, False
                 Else
                 
                     'Add the gradient point list; for convenience, RGB and opacity are manually separated.
-                    Dim i As Long, iString As String
+                    Dim i As Long, sTmp As String
                     For i = 0 To m_NumOfPoints - 1
-                        iString = Trim$(Str$(i))
-                        .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
-                        .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
-                        .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
+                        sTmp = Trim$(Str$(i))
+                        .AddParam "node-rgb-" & sTmp, m_GradientPoints(i).PointRGB, True, True
+                        .AddParam "node-opacity-" & sTmp, m_GradientPoints(i).PointOpacity, True, True
+                        .AddParam "node-pos-" & sTmp, m_GradientPoints(i).PointPosition, True, True
                     Next i
                     
                 End If
@@ -172,7 +170,7 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
             Else
                 InternalError "GetGradientNodesAsString", "0 points in gradient " & m_GradientName
             End If
-                
+            
         End With
         
         GetGradientNodesAsString = tmpXML.GetParamString()
@@ -181,70 +179,122 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
         
 End Function
 
-Private Sub SetGradientNodesFromString(ByRef srcString As String)
+Private Sub SetGradientNodesFromString(ByRef srcXML As String)
     
-    If (LenB(srcString) = 0) Then
+    If (LenB(srcXML) = 0) Then
         Me.ResetAllProperties
     Else
     
-        Dim tmpXML As pdParamXML
-        Set tmpXML = New pdParamXML
-        With tmpXML
+        Dim tmpXML As pdSerialize
+        Set tmpXML = New pdSerialize
+        tmpXML.SetParamString srcXML
         
-            .SetParamString srcString
+        'Check for legacy parameter structures
+        If (tmpXML.GetParamVersion() < 2#) Then
+            SetGradientNodesFromString_Legacy tmpXML
+        
+        'This is a modern XML packet
+        Else
             
-            m_NumOfPoints = .GetLong("GradientPointCount", 2)
-            m_IsSorted = .GetBool("GradientListAlreadySorted", False)
+            With tmpXML
                 
-            ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
-            
-            Dim i As Long, iString As String
-            
-            'Past versions of the gradient class use slightly different class names
-            If (.GetParamVersion = 1.1) Then
+                m_NumOfPoints = .GetLong("num-points", 2, True)
+                If (m_NumOfPoints <= 0) Then Exit Sub
+                ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
                 
-                'As of v7.0, callers can choose to save gradient data as Base64 (for a nice performance boost).
-                ' Check for Base64 encoding before proceeding; if it exists, we'll obviously decode the next
-                ' segment differently.
-                If .GetBool("GradientNodesUseBase64", False) Then
-                    
-                    'Base 64 was used.  Retrieve the full tag.
-                    Dim strBase64 As String
-                    strBase64 = .GetString("GradientNodesBase64")
+                m_IsSorted = .GetBool("sorted", False, True)
+                
+                'Internally, we don't serialize point lists to XML - instead, we just dump them to
+                ' Base64 for a large perf boost.
+                If .GetBool("use-base64", False, True) Then
                     
                     'Translate the result directly into the target gradient points array
                     Dim dstBufferSize As Long
                     dstBufferSize = m_NumOfPoints * LenB(m_GradientPoints(0))
+                    
+                    Dim strBase64 As String
+                    strBase64 = .GetString("nodes-base64", vbNullString, True)
                     Strings.BytesFromBase64Ex VarPtr(m_GradientPoints(0)), dstBufferSize, strBase64
                     
                 'Base64 was not used, meaning gradient nodes are encoded as a (potentially large) set of
                 ' individual tags.  Parse each tag in turn.
                 Else
-                
+                    
+                    Dim i As Long, sTmp As String
                     For i = 0 To m_NumOfPoints - 1
-                        iString = Trim$(Str$(i))
-                        m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
-                        m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
-                        m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
+                        sTmp = Trim$(Str$(i))
+                        m_GradientPoints(i).PointRGB = .GetLong("node-rgb-" & sTmp, vbBlack, True)
+                        m_GradientPoints(i).PointOpacity = .GetDouble("node-opacity-" & sTmp, 100#, True)
+                        m_GradientPoints(i).PointPosition = .GetDouble("node-pos-" & sTmp, 0#, True)
                     Next i
                     
                 End If
                 
-            Else
-                
-                For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str$(i))
-                    m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
-                    m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
-                    m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
-                Next i
+            End With
             
-            End If
-            
-        End With
-        
+        '/Modern vs legacy param string
+        End If
+    
+    '/Non-zero-length input
     End If
     
+End Sub
+
+'Legacy XML parameter handler.  Do *not* pass a null pdSerialize object to this class (it will crash).
+Private Sub SetGradientNodesFromString_Legacy(ByRef tmpXML As pdSerialize)
+
+    With tmpXML
+        
+        m_NumOfPoints = .GetLong("GradientPointCount", 2)
+        m_IsSorted = .GetBool("GradientListAlreadySorted", False)
+            
+        ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
+        
+        Dim i As Long, iString As String
+        
+        'Past versions of the gradient class use slightly different class names
+        If (.GetParamVersion = 1.1) Then
+            
+            'As of v7.0, callers can choose to save gradient data as Base64 (for a nice performance boost).
+            ' Check for Base64 encoding before proceeding; if it exists, we'll obviously decode the next
+            ' segment differently.
+            If .GetBool("GradientNodesUseBase64", False) Then
+                
+                'Base 64 was used.  Retrieve the full tag.
+                Dim strBase64 As String
+                strBase64 = .GetString("GradientNodesBase64")
+                
+                'Translate the result directly into the target gradient points array
+                Dim dstBufferSize As Long
+                dstBufferSize = m_NumOfPoints * LenB(m_GradientPoints(0))
+                Strings.BytesFromBase64Ex VarPtr(m_GradientPoints(0)), dstBufferSize, strBase64
+                
+            'Base64 was not used, meaning gradient nodes are encoded as a (potentially large) set of
+            ' individual tags.  Parse each tag in turn.
+            Else
+            
+                For i = 0 To m_NumOfPoints - 1
+                    iString = Trim$(Str$(i))
+                    m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
+                    m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
+                    m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
+                Next i
+                
+            End If
+            
+        Else
+            
+            For i = 0 To m_NumOfPoints - 1
+                iString = Trim$(Str$(i))
+                m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
+                m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
+                m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
+            Next i
+        
+        End If
+        
+    End With
+            
 End Sub
 
 'For interop purposes, gradients are passed around PD as XML strings.  To improve performance, you can specify
@@ -254,23 +304,24 @@ Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
     
     If (Not m_GradientIsDefault) Then
         
-        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdParamXML
+        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdSerialize
         With m_Serializer
-            .Reset 1#
+            
+            .Reset 2#
             
             'Add whole-gradient parameters
-            .AddParam "GradientShape", m_GradientShape
-            .AddParam "GradientAngle", m_GradientAngle
-            .AddParam "GradientWrapMode", m_GradientWrapMode
-            If (LenB(m_GradientName) <> 0) Then .AddParam "GradientName", m_GradientName
-            .AddParam "GradientGammaMode", m_GradientGammaMode
+            .AddParam "shape", Drawing2D.XML_GetNameOfGradientShape(m_GradientShape), True, True
+            .AddParam "angle", m_GradientAngle, True, True
+            .AddParam "wrap-mode", Drawing2D.XML_GetNameOfWrapMode(m_GradientWrapMode), True, True
+            .AddParam "gamma-mode", m_GradientGammaMode, True, True
+            If (LenB(m_GradientName) <> 0) Then .AddParam "name", m_GradientName, True
             
             'Add the gradient point list (and associated params, like number of points) as one contiguous string
-            .AddParam "GradientNodes", GetGradientNodesAsString(useBase64ForNodes), True, True
+            .AddParam "nodes", GetGradientNodesAsString(useBase64ForNodes), True, useBase64ForNodes
             
         End With
         
-        GetGradientAsString = m_Serializer.GetParamString
+        GetGradientAsString = m_Serializer.GetParamString()
         
     Else
         GetGradientAsString = vbNullString
@@ -280,54 +331,83 @@ End Function
 
 Friend Sub CreateGradientFromString(ByRef srcString As String)
 
-    'If the string is empty, prep a default object
+    'If the string is empty, prep a default gradient object
     If (LenB(Trim$(srcString)) = 0) Then
         Me.ResetAllProperties
     Else
         
         m_GradientIsDefault = False
         
-        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdParamXML
-        With m_Serializer
-            .SetParamString srcString
-            
-            'Retrieve parameters whose size and count do not vary
-            m_GradientShape = .GetLong("GradientShape", P2_GS_Linear)
-            m_GradientAngle = .GetDouble("GradientAngle", 0)
-            m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
-            m_GradientName = .GetString("GradientName", vbNullString)
-            m_GradientGammaMode = .GetBool("GradientGammaMode", False)
-            
-            'There are several possible options for gradient storage:
-            ' 1) New versions of PD stick gradient nodes into their own XML entry.  Retrieve these and pass them off to a
-            '    dedicated node parsing function.
-            If m_Serializer.DoesParamExist("GradientNodes") Then
-                SetGradientNodesFromString .GetString("GradientNodes", vbNullString)
-                
-            ' 2) Old versions of PD stored bare node data right there in the main XML string.  Parse them manually.
-            Else
-            
-                m_NumOfPoints = .GetLong("GradientPointCount", 0)
-                m_IsSorted = .GetBool("GradientListAlreadySorted", False)
-            
-                ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
-                
-                Dim i As Long, iString As String
-                For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str$(i))
-                    m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
-                    m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
-                    m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
-                Next i
-                
-            End If
-                
-        End With
+        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdSerialize
+        m_Serializer.SetParamString srcString
         
-        'Failsafe check
+        'Check for legacy gradient implementations
+        If (m_Serializer.GetParamVersion < 2#) Then
+            CreateGradientFromString_Legacy
+        Else
+            
+            With m_Serializer
+                
+                'Retrieve parameters whose size and count do not vary
+                m_GradientShape = Drawing2D.XML_GetGradientShapeFromName(.GetString("shape", , True))
+                m_GradientAngle = .GetDouble("angle", 0)
+                m_GradientWrapMode = Drawing2D.XML_GetWrapModeFromName(.GetString("wrap-mode", , True))
+                m_GradientName = .GetString("name", vbNullString)
+                m_GradientGammaMode = .GetBool("gamma-mode", False)
+                
+                'Retrieve the gradient node collection using a separate function
+                SetGradientNodesFromString .GetString("nodes", vbNullString)
+                    
+            End With
+        
+        End If
+        
+        'Regardless of using the legacy or modern deserializer, perform a failsafe check for
+        ' node count and reset as necessary.
         If (m_NumOfPoints < 2) Then Me.ResetAllProperties
         
     End If
+    
+End Sub
+
+'Legacy (versions < 2.0) gradient deserializer.  You must ensure m_Serializer is initialized with a
+' valid gradient string before calling this function!
+Private Sub CreateGradientFromString_Legacy()
+
+    With m_Serializer
+        
+        'Retrieve parameters whose size and count do not vary
+        m_GradientShape = .GetLong("GradientShape", P2_GS_Linear)
+        m_GradientAngle = .GetDouble("GradientAngle", 0)
+        m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
+        m_GradientName = .GetString("GradientName", vbNullString)
+        m_GradientGammaMode = .GetBool("GradientGammaMode", False)
+        
+        'There are several possible options for gradient storage:
+        ' 1) New versions of PD stick gradient nodes into their own XML entry.  Retrieve these and pass them off to a
+        '    dedicated node parsing function.
+        If .DoesParamExist("GradientNodes") Then
+            SetGradientNodesFromString .GetString("GradientNodes", vbNullString)
+            
+        ' 2) Old versions of PD stored bare node data right there in the main XML string.  Parse them manually.
+        Else
+        
+            m_NumOfPoints = .GetLong("GradientPointCount", 0)
+            m_IsSorted = .GetBool("GradientListAlreadySorted", False)
+        
+            ReDim m_GradientPoints(0 To m_NumOfPoints) As GradientPoint
+            
+            Dim i As Long, iString As String
+            For i = 0 To m_NumOfPoints - 1
+                iString = Trim$(Str$(i))
+                m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
+                m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
+                m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
+            Next i
+            
+        End If
+            
+    End With
     
 End Sub
 

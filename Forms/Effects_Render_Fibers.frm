@@ -212,8 +212,8 @@ Public Sub FxRenderFibers(ByVal effectParams As String, Optional ByVal toPreview
 
     If (Not toPreview) Then Message "Rendering fibers..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     'At present, some parameters are hard-coded.  This is primarily to free up UI space and simplify the
@@ -490,8 +490,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "size", sldSize.Value

@@ -162,8 +162,8 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
 
     If (Not toPreview) Then Message "Let it snow, let it snow, let it snow..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim snowIntensity As Double, flakeSize As Double, snowAngle As Double, windStrength As Double
@@ -387,8 +387,8 @@ End Sub
 
 Private Function GetLocalParamString(Optional ByVal isPreview As Boolean = False) As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         

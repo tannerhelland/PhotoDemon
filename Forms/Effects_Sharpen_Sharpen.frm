@@ -87,16 +87,16 @@ Option Explicit
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub ApplySharpenFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim sStrength As Double
     sStrength = cParams.GetDouble("strength", 0.01)
     
     'Sharpening uses a basic 3x3 convolution filter, which we generate dynamically based on the requested strength
-    Dim cParamsOut As pdParamXML
-    Set cParamsOut = New pdParamXML
+    Dim cParamsOut As pdSerialize
+    Set cParamsOut = New pdSerialize
     
     With cParamsOut
     
@@ -158,8 +158,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "strength", sltStrength.Value

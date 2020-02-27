@@ -137,8 +137,8 @@ Option Explicit
 'Inputs: distance of the blur
 Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString functionParams
     
     Dim zDistance As Double, zCenterX As Double, zCenterY As Double
@@ -356,8 +356,8 @@ End Sub
 
 Private Function GetFilterParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "distance", sltDistance.Value
         .AddParam "center-x", sltXCenter.Value

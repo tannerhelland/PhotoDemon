@@ -84,8 +84,8 @@ Public Sub SolarizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     
     If (Not toPreview) Then Message "Solarizing image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim sThreshold As Byte
@@ -186,8 +186,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "threshold", sltThreshold.Value

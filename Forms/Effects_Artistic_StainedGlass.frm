@@ -172,8 +172,8 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     
     If (Not toPreview) Then Message "Carving image from stained glass..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim cellSize As Long, shadeQuality As Long, colorSamplingMethod As Long, distanceMethod As Long
@@ -573,8 +573,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "size", sltSize.Value

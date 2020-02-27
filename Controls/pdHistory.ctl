@@ -175,8 +175,8 @@ Public Function GetHistoryAsString() As String
 
     If (m_HistoryCount > 0) Then
     
-        Dim cXML As pdParamXML
-        Set cXML = New pdParamXML
+        Dim cXML As pdSerialize
+        Set cXML = New pdSerialize
         
         With cXML
             
@@ -207,8 +207,8 @@ Public Sub SetHistoryFromString(ByRef srcString As String)
                 
     If (Len(srcString) <> 0) Then
     
-        Dim cXML As pdParamXML
-        Set cXML = New pdParamXML
+        Dim cXML As pdSerialize
+        Set cXML = New pdSerialize
         
         With cXML
         

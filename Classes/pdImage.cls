@@ -796,8 +796,8 @@ End Sub
 Friend Function GetHeaderAsXML() As String
 
     'Prepare an XML engine, which will handle the actual writing of the file
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     
     'Add a basic header and version info
     xmlEngine.AddXMLString "<photodemon-image>"
@@ -843,8 +843,8 @@ End Function
 Friend Function SetHeaderFromXML(ByRef srcText As String, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
     
     'Prep a fast XML param engine, which greatly simplifies the process of retrieving XML data
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     xmlEngine.SetParamString srcText
     
     'Validate the XML header...

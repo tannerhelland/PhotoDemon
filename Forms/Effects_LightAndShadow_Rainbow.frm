@@ -117,8 +117,8 @@ Public Sub ApplyRainbowEffect(ByVal effectParams As String, Optional ByVal toPre
     
     If (Not toPreview) Then Message "Sprinkling image with shimmering rainbows..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim hueOffset As Double, rainbowAngle As Double, rainbowStrength As Double, saturationBoost As Double
@@ -314,8 +314,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "offset", sltOffset.Value

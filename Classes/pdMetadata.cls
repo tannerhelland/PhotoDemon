@@ -71,8 +71,8 @@ Friend Function GetSerializedXMLData() As String
     
     If (m_NumOfTags > 0) Then
         
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.Reset 1#
         
         cParams.AddParam "PDMetadataTagCount", m_NumOfTags
@@ -90,8 +90,8 @@ End Function
 
 Friend Sub RecreateFromSerializedXMLData(ByRef srcString As String)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString srcString
     
     If (cParams.GetLong("PDMetadataTagCount", 0) > 0) Then
@@ -1353,8 +1353,8 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
     Dim metadataParams As String
     metadataParams = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString metadataParams
     
     'First, see if metadata export is even allowed

@@ -304,8 +304,8 @@ End Sub
 
 Friend Sub ClipboardCutSpecial(ByRef paramString As String)
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString paramString
     
     With cParams
@@ -377,8 +377,8 @@ End Sub
 
 Friend Sub ClipboardCopySpecial(ByRef paramString As String)
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString paramString
     
     With cParams

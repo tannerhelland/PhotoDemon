@@ -125,8 +125,8 @@ Public Sub AntiqueEffect(ByVal effectParams As String, Optional ByVal toPreview 
     
     If (Not toPreview) Then Message "Sending image back in time..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim antiqueStrength As Double, antiqueSoftness As Double, antiqueGrain As Double, antiqueVignette As Double
@@ -198,8 +198,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "color", sldColor.Value

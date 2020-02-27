@@ -114,8 +114,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
     
     'Parse out the parameter list
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
     Dim snnRadius As Long

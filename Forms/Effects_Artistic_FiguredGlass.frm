@@ -155,8 +155,8 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
 
     If (Not toPreview) Then Message "Projecting image through simulated glass..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim fxScale As Double, fxTurbulence As Double, edgeHandling As Long, superSamplingAmount As Long
@@ -453,8 +453,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "scale", sltScale.Value

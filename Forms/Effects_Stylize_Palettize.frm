@@ -416,8 +416,8 @@ End Sub
 Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse the parameter string and determine concrete values for our color conversion
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString toolParams
     
     Dim useRGBAQuantizer As Boolean
@@ -566,8 +566,8 @@ End Sub
 Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse the parameter string and determine concrete values for our color conversion
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString toolParams
     
     Dim srcPaletteFile As String
@@ -661,8 +661,8 @@ End Sub
 ' palettize the image.  (This was added in Jan '18 as part of supporting "apply palette from file" behavior.)
 Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString toolParams
     
     Dim paletteMode As Long
@@ -721,8 +721,8 @@ End Sub
 
 Private Function GetToolParamString() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         

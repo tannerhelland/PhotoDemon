@@ -142,8 +142,8 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
         
     If (Not toPreview) Then Message "Applying gaussian blur..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim gRadius As Double, gaussQuality As String, gaussAlgo As String, gaussIterations As Long
@@ -299,8 +299,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         

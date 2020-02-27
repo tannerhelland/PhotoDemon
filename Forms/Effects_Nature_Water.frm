@@ -126,8 +126,8 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
 
     If (Not toPreview) Then Message "Submerging image in artificial water..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim fxScale As Double, fxTurbulence As Double, fxSeed As String, fxColor As Double
@@ -358,8 +358,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "scale", sltScale.Value

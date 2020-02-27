@@ -273,8 +273,8 @@ End Sub
 
 Private Function GetCurrentParams() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "width", ucResize.ResizeWidth
         .AddParam "height", ucResize.ResizeHeight
@@ -340,8 +340,8 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     
     Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString functionParams
     
     With cParams

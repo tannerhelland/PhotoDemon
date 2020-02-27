@@ -335,8 +335,8 @@ Public Sub CorrectLensDistortion(ByVal effectParameters As String, Optional ByVa
 
     'This form supports two different lens distortion correction models.  Parse out the model required, and forward
     ' the request to the appropriate destination function.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParameters
     
     If (cParams.GetLong("lenscorrect_model", 0) = 0) Then
@@ -356,8 +356,8 @@ Public Sub ApplyLensCorrection_Advanced(ByVal effectParameters As String, Option
     Dim paramA As Double, paramB As Double, paramC As Double, paramD As Double, edgeHandling As Long, superSamplingAmount As Long
     Dim centerX As Double, centerY As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParameters
     
     With cParams
@@ -609,8 +609,8 @@ Public Sub ApplyLensCorrection_Basic(ByVal effectParameters As String, Optional 
     'Parse out individual effect parameters
     Dim fixStrength As Double, fixZoom As Double, lensRadius As Double, edgeHandling As Long, superSamplingAmount As Long
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParameters
     
     With cParams
@@ -921,8 +921,8 @@ End Sub
 
 Private Function GetEffectParams() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "lenscorrect_model", btsOptions.ListIndex

@@ -111,8 +111,8 @@ Option Explicit
 Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
     Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PixelRegionShape

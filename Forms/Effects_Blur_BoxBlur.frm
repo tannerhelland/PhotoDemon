@@ -120,8 +120,8 @@ Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview 
     If (Not toPreview) Then Message "Applying box blur to image..."
     
     'Parse out specific parameters
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim hRadius As Long, vRadius As Long
@@ -215,8 +215,8 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "radius-x", sltWidth.Value
     cParams.AddParam "radius-y", sltHeight.Value
     GetLocalParamString = cParams.GetParamString()

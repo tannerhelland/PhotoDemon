@@ -107,8 +107,8 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     If (Not toPreview) Then Message "Increasing image noise..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim noiseAmount As Double, useMono As Boolean, useGaussian As Boolean
@@ -292,8 +292,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "amount", sltNoise.Value

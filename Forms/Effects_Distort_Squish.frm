@@ -130,8 +130,8 @@ Public Sub SquishImage(ByVal effectParams As String, Optional ByVal toPreview As
 
     If (Not toPreview) Then Message "Squeezing image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim xRatio As Double, yRatio As Double
@@ -423,8 +423,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "xratio", sltRatioX.Value

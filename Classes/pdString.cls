@@ -219,7 +219,9 @@ Friend Sub XMLAppend(ByRef appendTagName As String, ByRef appendTagValue As Stri
     
     'We need 5 extra chars: "<></>" in addition to the length of the strings we're passed.  (Note also
     ' that we need 2x the length of the tag name - 1x for the opening tag, 1x for the closing tag.)
-    EnsureCapacity m_Length + Len(appendTagName) * 2 + Len(appendTagValue) + 5
+    Dim lenRequired As Long
+    lenRequired = Len(appendTagName) * 2 + Len(appendTagValue) + 5
+    EnsureCapacity m_Length + lenRequired
     
     'Manually write all tags in order.  This is kinda tedious, but it's faster than calling "Append"
     ' for each char, as that would force multiple validations of the buffer size.
@@ -256,7 +258,7 @@ Friend Sub XMLAppend(ByRef appendTagName As String, ByRef appendTagValue As Stri
     targetPtr = targetPtr + 2
     
     'Perform a final update of the current length
-    m_Length = m_Length + Len(appendTagName) * 2 + Len(appendTagValue) + 5
+    m_Length = m_Length + lenRequired
 
 End Sub
 

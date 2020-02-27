@@ -224,8 +224,8 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     If (Not toPreview) Then Message "Applying vignetting..."
     
     'Parse out individual parameters from the incoming XML packet.  (Note that not all modes will use all settings.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString vignetteParams
     
     Dim maxRadius As Double, vFeathering As Double, vTransparency As Double, vMode As Long
@@ -540,8 +540,8 @@ End Sub
 
 Private Function GetFunctionParams() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "radius", sltRadius.Value

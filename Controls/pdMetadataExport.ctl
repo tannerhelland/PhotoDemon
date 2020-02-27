@@ -309,8 +309,8 @@ End Sub
 'Retrieve the current metadata settings in XML format
 Public Function GetMetadataSettings() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     cParams.AddParam "MetadataExportAllowed", chkMetadata.Value
     cParams.AddParam "MetadataAnonymize", chkAnonymize.Value
@@ -328,8 +328,8 @@ End Function
 'Retrieve a stock metadata XML packet that corresponds to "don't write metadata".  This gives the dialog a way to
 ' forcibly prevent metadata from being written (which we do with web-optimized images, for example).
 Public Function GetNullMetadataSettings() As String
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "MetadataExportAllowed", False
     GetNullMetadataSettings = cParams.GetParamString
 End Function
@@ -337,8 +337,8 @@ End Function
 'Update the UI against a previously saved set of metadata settings in XML format
 Public Sub SetMetadataSettings(ByRef srcXML As String, Optional ByVal srcIsPresetManager As Boolean = False)
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString srcXML
     
     chkMetadata.Value = cParams.GetBool("MetadataExportAllowed", True)

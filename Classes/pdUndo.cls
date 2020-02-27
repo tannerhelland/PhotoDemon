@@ -504,8 +504,8 @@ End Sub
 
 'Safe XML-based wrapper for MoveToSpecificUndoPoint(), above.
 Friend Sub MoveToSpecificUndoPoint_XML(ByVal paramList As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString paramList
     Me.MoveToSpecificUndoPoint cParams.GetLong("UndoHistoryPoint", 1)
 End Sub

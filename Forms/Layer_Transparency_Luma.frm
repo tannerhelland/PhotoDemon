@@ -172,8 +172,8 @@ End Sub
 ' LittleCMS is used for transforms, if present.
 Public Sub LuminanceToAlpha(ByVal processParameters As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     Dim targetGray As Long
@@ -283,8 +283,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim targetGray As Long
     If rdoSource(0).Value Then

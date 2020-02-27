@@ -122,8 +122,8 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     If (Not toPreview) Then Message "Sketching image with pencils..."
     
     'Parse parameters out of the incoming param string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim penRadius As Long, colorIntensity As Double, pencilStyle As Long
@@ -421,8 +421,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "radius", sltRadius.Value

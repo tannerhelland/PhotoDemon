@@ -426,8 +426,8 @@ Public Sub StraightenImageToMatch()
             If (curAngle > 0#) Then curAngle = curAngle - 90# Else curAngle = curAngle + 90#
         End If
         
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         
         With cParams
             .AddParam "angle", -1# * curAngle
@@ -457,8 +457,8 @@ Public Sub StraightenLayerToMatch()
             If (curAngle > 0#) Then curAngle = curAngle - 90# Else curAngle = curAngle + 90#
         End If
         
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         
         With cParams
             .AddParam "angle", -1# * curAngle

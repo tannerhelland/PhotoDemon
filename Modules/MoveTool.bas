@@ -105,8 +105,8 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     'See if the control key is down; if it is, we want to move the active layer to the current position.
     If ((Shift And vbCtrlMask) = vbCtrlMask) Then
     
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         
         With cParams
             .AddParam "layer-offsetx", imgX

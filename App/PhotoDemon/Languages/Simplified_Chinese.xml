@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1516</langversion>
+<langversion>7.2.1517</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4644,12 +4644,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPaletteChild.cls-->
 
-<!-- BEGIN text for pdParamXML.cls -->
-
-<!-- pdParamXML.cls contains 0 phrases. -->
-
-<!-- END text for pdParamXML.cls-->
-
 <!-- BEGIN text for pdPixelBlender.cls -->
 
 <!-- pdPixelBlender.cls contains 0 phrases. -->
@@ -4760,6 +4754,12 @@ Please enter a numeric value.</original>
 <!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdSerialize.cls -->
+
+<!-- pdSerialize.cls contains 0 phrases. -->
+
+<!-- END text for pdSerialize.cls-->
 
 <!-- BEGIN text for pdSpriteSheet.cls -->
 

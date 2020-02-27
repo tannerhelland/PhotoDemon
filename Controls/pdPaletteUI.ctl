@@ -348,8 +348,8 @@ End Function
 
 Public Sub CreateFromXML(ByRef srcXML As String)
     
-    Dim cXML As pdParamXML
-    Set cXML = New pdParamXML
+    Dim cXML As pdSerialize
+    Set cXML = New pdSerialize
     cXML.SetParamString srcXML
     
     With cXML
@@ -364,8 +364,8 @@ End Sub
 
 Public Function SerializeToXML() As String
 
-    Dim cXML As pdParamXML
-    Set cXML = New pdParamXML
+    Dim cXML As pdSerialize
+    Set cXML = New pdSerialize
     cXML.AddParam "palette-filename", Me.PaletteFile
     cXML.AddParam "palette-group", Me.PaletteGroup
     cXML.AddParam "palette-index", Me.PaletteIndex

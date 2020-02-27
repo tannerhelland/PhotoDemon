@@ -112,8 +112,8 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
     
     Dim hModifier As Double, sModifier As Double, lModifier As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     With cParams
@@ -263,8 +263,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "hue", sltHue.Value

@@ -302,8 +302,8 @@ Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDI
     
     Dim saveIsMultipage As Boolean: saveIsMultipage = False
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString saveParameters
     
     'TIFF is currently the only image format that supports multipage export
@@ -380,8 +380,8 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     
     'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
     ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString saveParameters
     
     Select Case outputPDIF

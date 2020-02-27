@@ -413,8 +413,8 @@ End Sub
 
 Private Function GetExportParamString() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'Convert the color depth option buttons into a usable numeric value
     Dim outputColorMode As String

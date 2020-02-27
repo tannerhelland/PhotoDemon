@@ -143,8 +143,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'Create a parameter parser to handle the parameter string.  This can parse out individual function parameters as specific
     ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
-    Dim cXMLParams As pdParamXML
-    Set cXMLParams = New pdParamXML
+    Dim cXMLParams As pdSerialize
+    Set cXMLParams = New pdSerialize
     If (LenB(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
     
     'Next, we need to check for actions that may require us to rasterize one or more vector layers before proceeding.
@@ -507,8 +507,8 @@ Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericPro
     If Strings.StringsNotEqual(CStr(layerSettingValue), CStr(prevGenericSetting(layerSettingID))) Then
         
         'Raise a generic "layer setting change" processor request
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         With cParams
             .AddParam "id", layerSettingID
             .AddParam "value", layerSettingValue
@@ -553,8 +553,8 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
                 If Strings.StringsNotEqual(CStr(textSettingValue), CStr(prevTextSetting(textSettingID))) Then
                     
                     'Raise a generic "text setting change" processor request
-                    Dim cParams As pdParamXML
-                    Set cParams = New pdParamXML
+                    Dim cParams As pdSerialize
+                    Set cParams = New pdSerialize
                     With cParams
                         .AddParam "id", textSettingID
                         .AddParam "value", textSettingValue
@@ -597,8 +597,8 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types when it comes time to use them.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     'Perform the actual command processing.
@@ -1042,8 +1042,8 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
     
     'Some functions require us to parse parameters for additional details; for example, "merge layers" requires us to
     ' check the involved layers to see if they are vector or text layers.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     'If the current layer is a vector layer, and the requested operation is *not* vector-safe, raise a rasterization warning.
@@ -2164,8 +2164,8 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     
     'A number of layer functions pass the relevant layer index in the parameter string (as future-proofing against selecting
     ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     'Add layers to an image
@@ -2426,8 +2426,8 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
     
     'A number of selection functions pass the relevant layer index in the parameter string (as future-proofing against selecting
     ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
         
     'Create/remove selections

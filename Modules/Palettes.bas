@@ -2068,8 +2068,8 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
             Message "Exporting palette..."
             
             'Parse settings and perform the actual export
-            Dim cParams As pdParamXML
-            Set cParams = New pdParamXML
+            Dim cParams As pdSerialize
+            Set cParams = New pdSerialize
             cParams.SetParamString exportSettings
             
             Dim cPalette As pdPalette

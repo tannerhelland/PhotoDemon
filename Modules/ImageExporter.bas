@@ -636,8 +636,8 @@ End Sub
 ' 1) All functions take four input parameters:
 '    - [required] srcPDImage: the image to be saved
 '    - [required] dstFile: destination path + filename + extension, as a single string
-'    - [optional] formatParams: format-specific parameters, in XML format (created via pdParamXML)
-'    - [optional] metadataParams: metadata-specific parameters, in XML format (created via pdParamXML)
+'    - [optional] formatParams: format-specific parameters, in XML format (created via pdSerialize)
+'    - [optional] metadataParams: metadata-specific parameters, in XML format (created via pdSerialize)
 '
 ' 2) Format-specific parameters must not be required for saving a proper image.  Default values must be intelligently
 '     applied if the format-specific parameter string is missing.
@@ -661,8 +661,8 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim sFileType As String: sFileType = "BMP"
     
     'Parse all relevant BMP parameters.  (See the BMP export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     Dim bmpCompression As Boolean, bmpForceGrayscale As Boolean, bmp16bpp_555Mode As Boolean, bmpCustomColors As Long
@@ -767,8 +767,8 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim sFileType As String: sFileType = "GIF"
     
     'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     'Only two parameters are mandatory; the others are used on an as-needed basis
@@ -848,8 +848,8 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers
     
     'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
@@ -1395,8 +1395,8 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming JP2 parameters
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString formatParams
         
         'The only output parameter JP2 supports is compression level
@@ -1465,13 +1465,13 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim sFileType As String: sFileType = "JPEG"
     
     'Parse all relevant JPEG parameters.  (See the JPEG export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     'Some JPEG information (like embedding a thumbnail) is handled by the metadata parameter string.
-    Dim cParamsMetadata As pdParamXML
-    Set cParamsMetadata = New pdParamXML
+    Dim cParamsMetadata As pdSerialize
+    Set cParamsMetadata = New pdSerialize
     cParamsMetadata.SetParamString metadataParams
     
     Dim jpegQuality As Long
@@ -1598,8 +1598,8 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming JXR parameters
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString formatParams
         
         'The only output parameter JXR supports is compression level
@@ -1674,8 +1674,8 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'TODO: parse incoming HDR parameters.  (FreeImage doesn't support any HDR export parameters at present, but we could still provide
         ' options for things like gamma correction, background color for 32-bpp images, etc.)
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString formatParams
         
         'Generate a composited image copy, with alpha automatically un-premultiplied
@@ -1852,12 +1852,12 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     srcPDImage.GetCompositedImage tmpImageCopy, False
     
     'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
-    Dim cParamsDepth As pdParamXML
-    Set cParamsDepth = New pdParamXML
+    Dim cParamsDepth As pdSerialize
+    Set cParamsDepth = New pdSerialize
     cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
     
     Dim useWebOptimizedPath As Boolean
@@ -1951,8 +1951,8 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     ExportPNG_Animated = False
     Dim sFileType As String: sFileType = "APNG"
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     'The only settings we need to extract here is compression level; everything else is handled automatically
@@ -2009,8 +2009,8 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     Dim sFileType As String: sFileType = "PNM"
     
     'Parse all relevant PNM parameters.  (See the PNM export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     Dim pnmColorModel As String, pnmColorDepth As String
@@ -2158,8 +2158,8 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim sFileType As String: sFileType = "PSD"
     
     'Parse all relevant PSD parameters.  (See the PSD export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
     Dim useMaxCompatibility As Boolean
@@ -2227,8 +2227,8 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     If ImageFormats.IsFreeImageEnabled Then
     
         'TODO: parse incoming TGA parameters.  (This requires a TGA export dialog, which I haven't constructed yet...)
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString formatParams
         
         'The only output parameter TGA supports is whether to enable basic RLE compression
@@ -2301,12 +2301,12 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim sFileType As String: sFileType = "TIFF"
     
     'Parse all relevant TIFF parameters.  (See the TIFF export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
-    Dim cParamsDepth As pdParamXML
-    Set cParamsDepth = New pdParamXML
+    Dim cParamsDepth As pdSerialize
+    Set cParamsDepth = New pdSerialize
     cParamsDepth.SetParamString cParams.GetString("TIFFColorDepth")
     
     'First come generic TIFF settings (compression methods, basically)
@@ -2689,8 +2689,8 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming WebP parameters
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString formatParams
         
         'The only output parameter WebP supports is compression level

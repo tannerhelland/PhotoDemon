@@ -226,8 +226,8 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
 
     If (Not toPreview) Then Message "Peering at image through imaginary kaleidoscope..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim numMirrors As Long, primaryAngle As Double, secondaryAngle As Double, effectRadius As Double
@@ -455,8 +455,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "mirrors", sltMirrors.Value

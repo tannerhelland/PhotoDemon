@@ -154,8 +154,8 @@ Private Sub cmdBar_OKClick()
     Next i
     
     'As of v7.0, all parameter strings must be XML-based
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "WidthInPixels", ucResize.ResizeWidthInPixels

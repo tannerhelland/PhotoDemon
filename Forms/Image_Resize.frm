@@ -316,8 +316,8 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Dim imgResizeUnit As PD_MeasurementUnit
     Dim thingToResize As PD_ActionTarget
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString resizeParams
     
     With cParams
@@ -615,8 +615,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
     
         'In July 2018, the parameters for this tool were modified

@@ -152,8 +152,8 @@ Public Sub ColorHalftoneFilter(ByVal effectParams As String, Optional ByVal toPr
     
     If (Not toPreview) Then Message "Printing image to digital halftone surface..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim pxRadius As Double, cyanAngle As Double, magentaAngle As Double, yellowAngle As Double, dotDensity As Double
@@ -239,8 +239,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "radius", sltRadius.Value

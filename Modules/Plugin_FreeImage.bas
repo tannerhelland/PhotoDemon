@@ -1872,8 +1872,8 @@ Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByRef inputSettings As
     Dim newHandle As Long, rgbfHandle As Long
     
     'toneMapSettings contains all conversion instructions.  Parse it to determine which tone-map function to use.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString inputSettings
     
     'The first parameter contains the requested tone-mapping operation.

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Fill ("Brush" in GDI/GDI+ parlance) Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 13/May/16
-'Last update: total overhaul
+'Last updated: 26/February/20
+'Last update: future-proof XML serialization by using text descriptors of enums
 '
 'This class manages a single brush (fill) instance.  Brushes are used to fill shapes, regions, and/or paths.
 '
@@ -71,7 +71,7 @@ Private m_TextureSrc As pdDIB
 Private m_TextureWrapMode As PD_2D_WrapMode
 
 'This class is capable of serializing itself to/from XML strings
-Private cSerialize As pdParamXML
+Private cSerialize As pdSerialize
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
@@ -170,88 +170,58 @@ Friend Sub SetBrushOpacity(ByVal newSetting As Single)
 End Sub
 
 Friend Sub SetBrushPatternStyle(ByVal newSetting As PD_2D_PatternStyle)
-    
     m_PatternStyle = newSetting
-    
     'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushPattern1Color(ByVal newSetting As Long)
-    
     m_Pattern1Color = newSetting
-    
     'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushPattern1Opacity(ByVal newSetting As Single)
-    
     m_Pattern1Opacity = newSetting
-    
     'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushPattern2Color(ByVal newSetting As Long)
-    
     m_Pattern2Color = newSetting
-    
     'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushPattern2Opacity(ByVal newSetting As Single)
-    
     m_Pattern2Opacity = newSetting
-    
     'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushGradientAllSettings(ByRef newSetting As String)
-
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.CreateGradientFromString newSetting
-    
     'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
-    
 End Sub
     
 Friend Sub SetBrushGradientShape(ByVal newSetting As PD_2D_GradientShape)
-    
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientShape newSetting
-    
     'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushGradientAngle(ByVal newSetting As Single)
-    
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientAngle newSetting
-    
     'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushGradientWrapMode(ByVal newSetting As PD_2D_WrapMode)
-    
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientWrapMode newSetting
-    
     'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushGradientNodes(ByRef newSetting As String)
-    
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientNodes newSetting
-    
     'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
-    
 End Sub
 
 Friend Sub SetBrushTextureFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcColorDepth As Long = 32)
@@ -297,30 +267,34 @@ End Sub
 'For interop purposes, brushes are often passed around PD as strings.  Any brush can be perfectly re-created from just this string.
 Friend Function GetBrushPropertiesAsXML() As String
     
-    If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
+    If (cSerialize Is Nothing) Then Set cSerialize = New pdSerialize
     With cSerialize
-        .Reset 1#
-        .AddParam "BrushMode", m_BrushMode, True
-        .AddParam "BrushPrimaryColor", m_PrimaryColor, True
-        .AddParam "BrushPrimaryOpacity", m_PrimaryOpacity, True
-        .AddParam "BrushPatternID", m_PatternStyle, True
-        .AddParam "BrushPatternColor1", m_Pattern1Color, True
-        .AddParam "BrushPatternColor1Opacity", m_Pattern1Opacity, True
-        .AddParam "BrushPatternColor2", m_Pattern2Color, True
-        .AddParam "BrushPatternColor2Opacity", m_Pattern2Opacity, True
+        
+        'We are now on version 2 of brush parameters (yay?)
+        .Reset 2#
+        
+        .AddParam "brush-mode", Drawing2D.XML_GetNameOfBrushMode(m_BrushMode), True, True
+        .AddParam "brush-color", m_PrimaryColor, True, True
+        .AddParam "brush-opacity", m_PrimaryOpacity, True, True
+        .AddParam "brush-pattern-id", Drawing2D.XML_GetNameOfPattern(m_PatternStyle), True, True
+        .AddParam "brush-pattern-color-1", m_Pattern1Color, True, True
+        .AddParam "brush-pattern-opacity-1", m_Pattern1Opacity, True, True
+        .AddParam "brush-pattern-color-2", m_Pattern2Color, True, True
+        .AddParam "brush-pattern-opacity-2", m_Pattern2Opacity, True, True
         
         'All other gradient parameters derive from this master string, so we do not need to set them individually
         If (Not m_Gradient Is Nothing) Then
-            .AddParam "BrushGradientString", m_Gradient.GetGradientAsString(), True
+            .AddParam "brush-gradient", m_Gradient.GetGradientAsString(), True, False
         End If
         
         'Textures themselves are not stored.  A solution to this is TBD, but I'm honestly not thrilled about the notion of
         ' serializing an entire texture (which may be enormous) to Base-64.  Texture brushes may just be an exception to
         ' the rule, and you'll be forced to always create them manually.  IDK.
-        .AddParam "BrushTextureWrapMode", m_TextureWrapMode, True
+        .AddParam "brush-wrap-mode", Drawing2D.XML_GetNameOfWrapMode(m_TextureWrapMode), True, True
+        
     End With
     
-    GetBrushPropertiesAsXML = cSerialize.GetParamString
+    GetBrushPropertiesAsXML = cSerialize.GetParamString()
     
 End Function
 
@@ -331,7 +305,49 @@ Friend Sub SetBrushPropertiesFromXML(ByRef srcString As String)
         Me.ResetAllProperties
     Else
         
-        If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
+        If (cSerialize Is Nothing) Then Set cSerialize = New pdSerialize
+        cSerialize.SetParamString srcString
+        
+        'Check for legacy XML patterns
+        If (Not cSerialize.DoesParamExist("brush-mode", True)) Then
+            SetBrushPropertiesFromXML_Legacy srcString
+            Exit Sub
+        End If
+        
+        'This is a modern XML entry.
+        With cSerialize
+            m_BrushMode = Drawing2D.XML_GetBrushModeFromName(.GetString("brush-mode", , True))
+            m_PrimaryColor = .GetLong("brush-color", vbWhite, True)
+            m_PrimaryOpacity = .GetSingle("brush-opacity", 100!, True)
+            m_PatternStyle = Drawing2D.XML_GetPatternFromName(.GetString("brush-pattern-id", , True))
+            m_Pattern1Color = .GetLong("brush-pattern-color-1", vbWhite, True)
+            m_Pattern1Opacity = .GetSingle("brush-pattern-opacity-1", 100!, True)
+            m_Pattern2Color = .GetLong("brush-pattern-color-2", vbBlack, True)
+            m_Pattern2Opacity = .GetSingle("brush-pattern-opacity-2", 100!, True)
+            
+            'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
+            If .DoesParamExist("brush-gradient") Then
+                If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+                m_Gradient.CreateGradientFromString .GetString("brush-gradient", vbNullString)
+            End If
+            
+            'Texture brush *properties* are retrieved, but at present, the texture itself cannot be serialized.
+            m_TextureWrapMode = Drawing2D.XML_GetWrapModeFromName(.GetString("brush-wrap-mode", , True))
+            
+        End With
+        
+    End If
+    
+End Sub
+
+Friend Sub SetBrushPropertiesFromXML_Legacy(ByRef srcString As String)
+    
+    'If the string is empty, prep a default object
+    If (LenB(srcString) = 0) Then
+        Me.ResetAllProperties
+    Else
+        
+        If (cSerialize Is Nothing) Then Set cSerialize = New pdSerialize
         With cSerialize
         
             .SetParamString srcString
@@ -434,12 +450,12 @@ Friend Sub ResetAllProperties()
     
     Me.SetBrushMode P2_BM_Solid
     Me.SetBrushColor vbWhite
-    Me.SetBrushOpacity 100#
+    Me.SetBrushOpacity 100!
     Me.SetBrushPatternStyle P2_PS_Horizontal
     Me.SetBrushPattern1Color vbWhite
-    Me.SetBrushPattern1Opacity 100#
+    Me.SetBrushPattern1Opacity 100!
     Me.SetBrushPattern2Color vbBlack
-    Me.SetBrushPattern2Opacity 100#
+    Me.SetBrushPattern2Opacity 100!
     
     'All other gradient parameters derive from this master string, so we do not need to set them individually
     Me.SetBrushGradientAllSettings vbNullString

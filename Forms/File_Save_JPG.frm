@@ -284,8 +284,8 @@ Private Sub cmdBar_OKClick()
     'If (Not sltQuality.IsValid) Then Exit Sub
     
     'Store all parameters inside an XML string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "JPEGQuality", sltQuality.Value
     cParams.AddParam "JPEGCompressionMode", btsCompression.ListIndex
     cParams.AddParam "JPEGSubsampling", btsSubsampling.ListIndex

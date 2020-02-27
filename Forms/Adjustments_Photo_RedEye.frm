@@ -171,8 +171,8 @@ Private Const RENDER_DEBUG_REDEYE_DATA As Boolean = False
 Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
     Dim colorSensitivity As Double, objectSensitivity As Double

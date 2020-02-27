@@ -133,8 +133,8 @@ End Sub
 Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Start by extract individual function parameters from the XML string we're passed
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString functionParams
     
     Dim newBrightness As Long, newContrast As Double
@@ -331,8 +331,8 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Function GetFunctionParamString() As String
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "brightness", sltBright.Value
         .AddParam "contrast", sltContrast.Value

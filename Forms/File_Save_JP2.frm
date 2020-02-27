@@ -227,8 +227,8 @@ Private Sub cmdBar_OKClick()
     'Determine the compression ratio for the JPEG2000 wavelet transformation
     If (Not sltQuality.IsValid) Then Exit Sub
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "JP2Quality", Abs(sltQuality)
     
     m_FormatParamString = cParams.GetParamString

@@ -267,8 +267,8 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
             End If
             
             'If that huge list of above criteria are met, we can apply a non-destructive crop operation.
-            Dim cParams As pdParamXML
-            Set cParams = New pdParamXML
+            Dim cParams As pdSerialize
+            Set cParams = New pdSerialize
             cParams.AddParam "nondestructive", selectionIsPureRectangle
             Processor.Process "Crop", False, cParams.GetParamString(), UNDO_Everything
             
@@ -280,8 +280,8 @@ End Sub
 
 'XML-based wrapper for CropToSelection, below
 Public Sub CropToSelection_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     Filters_Transform.CropToSelection -1, cParams.GetBool("nondestructive", False)
 End Sub
@@ -954,8 +954,8 @@ End Function
 
 'XML-param wrapper for MenuFitCanvasToLayer, below
 Public Sub FitCanvasToLayer_XML(ByRef processParameters As String)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     MenuFitCanvasToLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex)
 End Sub

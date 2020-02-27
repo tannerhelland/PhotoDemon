@@ -202,8 +202,8 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Function GetFunctionParamString() As String
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "threshold", sltThreshold.Value
         .AddParam "dither", cboDither.ListIndex
@@ -321,8 +321,8 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     
     If (Not toPreview) Then Message "Converting image to two colors..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString monochromeParams
     
     Dim cThreshold As Long, ditherMethod As Long, ditherAmount As Single

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1723</langversion>
+<langversion>7.2.1724</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4654,12 +4654,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- END text for pdPaletteChild.cls-->
 
-<!-- BEGIN text for pdParamXML.cls -->
-
-<!-- pdParamXML.cls contains 0 phrases. -->
-
-<!-- END text for pdParamXML.cls-->
-
 <!-- BEGIN text for pdPixelBlender.cls -->
 
 <!-- pdPixelBlender.cls contains 0 phrases. -->
@@ -4770,6 +4764,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdSerialize.cls -->
+
+<!-- pdSerialize.cls contains 0 phrases. -->
+
+<!-- END text for pdSerialize.cls-->
 
 <!-- BEGIN text for pdSpriteSheet.cls -->
 

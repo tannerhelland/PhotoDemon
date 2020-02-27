@@ -182,8 +182,8 @@ Public Sub RotateFilter(ByVal effectParams As String, Optional ByVal toPreview A
     
     If (Not toPreview) Then Message "Rotating area..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim rotateAngle As Double, centerX As Double, centerY As Double
@@ -293,8 +293,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "angle", sltAngle.Value

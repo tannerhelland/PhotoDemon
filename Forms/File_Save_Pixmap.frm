@@ -207,8 +207,8 @@ End Sub
 Private Sub cmdBar_OKClick()
     
     'Store all parameters inside an XML string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim pnmColorModel As String
     Select Case btsColorModel.ListIndex

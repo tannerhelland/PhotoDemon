@@ -63,7 +63,7 @@ Public Function DisplaySelectionDialog(ByVal typeOfDialog As PD_SelectionDialog,
 
 End Function
 
-'Create a new selection using the settings stored in a pdParamXML-compatible string
+'Create a new selection using the settings stored in a pdSerialize-compatible string
 Public Sub CreateNewSelection(ByRef paramString As String)
     
     'Use the passed parameter string to initialize the selection
@@ -167,8 +167,8 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         
     Else
         
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString loadSettings
         
         Message "Loading selection..."

@@ -211,9 +211,9 @@ End Function
 'As of PD 7.0, XML strings are universally used for parameter parsing.
 Public Function BuildParamList(ParamArray allParams() As Variant) As String
     
-    'pdParamXML handles all the messy work for us
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    'pdSerialize handles all the messy work for us
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     On Error GoTo BuildParamListFailure
     

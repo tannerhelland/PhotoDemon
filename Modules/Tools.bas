@@ -442,8 +442,8 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     ' request to PD's central processor, so an Undo/Redo entry can be generated.
     If finalizeTransform Then
         
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         
         'As a convenience to the user, layer resize and move operations are listed separately.
         Select Case m_CurPOI

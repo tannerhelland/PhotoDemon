@@ -550,8 +550,8 @@ End Sub
 Private Function GetToneMapParamString() As String
     
     'Like everything else in PD, parameters are returned as XML strings
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         

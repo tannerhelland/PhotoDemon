@@ -160,8 +160,8 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     Dim oldColor As Long, newColor As Long
     Dim eraseThreshold As Double, blendThreshold As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     With cParams
@@ -374,8 +374,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "oldcolor", colorOld.Color

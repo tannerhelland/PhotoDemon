@@ -315,7 +315,7 @@ Private m_NumGroupsInCache As Long
 Private m_ModalWaitWindowActive As Boolean
 
 'This module has to do a ton of XML parsing.  Rather than recreate a parser on every call, we just reuse a stock one
-Private m_ParseXML As pdParamXML
+Private m_ParseXML As pdSerialize
 
 Public Function IsDatabaseModeActive() As Boolean
     IsDatabaseModeActive = m_DatabaseModeActive
@@ -900,8 +900,8 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     
     'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
     ' processing instructions.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString originalMetadataParams
     
     'The preferred metadata format affects many of the requests sent to ExifTool.  Tag write requests are typically prefixed by
@@ -1968,7 +1968,7 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
 
     On Error GoTo SerializeFailed
     
-    If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
+    If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdSerialize
     m_ParseXML.Reset
     
     'Basically, this is just a long-ass process of assembling all tag properties into XML tags.
@@ -2035,7 +2035,7 @@ Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMe
     
     If (LenB(srcString) <> 0) Then
         
-        If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdParamXML
+        If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdSerialize
         m_ParseXML.SetParamString srcString
         
         'Basically, this is just a long-ass process of retrieving all tag properties from their specific XML tags.

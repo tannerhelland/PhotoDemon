@@ -35,7 +35,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This class is not yet capable of serializing itself to/from XML strings, but it may be possible in the future...
-'Private cSerialize As pdParamXML
+'Private cSerialize As pdSerialize
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean

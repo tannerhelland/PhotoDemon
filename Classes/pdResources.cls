@@ -51,7 +51,7 @@ Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMono
 
 'Individual resources are always stored as two chunks: a raw data chunk, and an XML chunk that describes resource attributes.
 ' To improve performance, a dedicated XML parser is always created alongside this class.
-Private m_XML As pdParamXML
+Private m_XML As pdSerialize
 
 'When loading image resources during startup, 99% of resources will be an identical size.  To cut down on the amount
 ' of memory we need to allocate, we try to reuse the same image buffer over and over again.
@@ -521,6 +521,6 @@ Private Sub Class_Initialize()
     m_ResourcesAvailable = False
     m_ThemeIconsMonochrome = False
     
-    Set m_XML = New pdParamXML
+    Set m_XML = New pdSerialize
     
 End Sub

@@ -112,8 +112,8 @@ End Property
 
 Public Function GetParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Select Case m_OpMode
         Case co_Cut, co_Copy

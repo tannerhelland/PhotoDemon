@@ -1729,8 +1729,8 @@ Private Sub PrepareForBatchConversion()
                     'If the user has requested an image resize, apply it now
                     If chkActions(1).Value Then
                         
-                        Dim resizeParams As pdParamXML
-                        Set resizeParams = New pdParamXML
+                        Dim resizeParams As pdSerialize
+                        Set resizeParams = New pdSerialize
                         With resizeParams
                             .AddParam "width", ucResize.ResizeWidth
                             .AddParam "height", ucResize.ResizeHeight

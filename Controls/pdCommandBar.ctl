@@ -230,7 +230,7 @@ Private m_ParentAvailable As Boolean
 Private m_Presets As pdToolPreset
 
 'Individual preset values are parsed using PD's high-performance XML parser
-Private m_Params As pdParamXML
+Private m_Params As pdSerialize
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -964,7 +964,7 @@ End Sub
 Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "last-used settings") As String
 
     'Initialize a param handler and initialize it with the passed preset name
-    If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+    If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
     m_Params.Reset
     If (LenB(srcPresetName) <> 0) Then m_Params.AddParam "fullPresetName", srcPresetName, True
     
@@ -1118,7 +1118,7 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
     If presetExists Then
         
         'Copy this preset's XML into a local param evaluator
-        If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+        If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
         m_Params.SetParamString m_Presets.GetPresetXML(srcPresetName)
         
         'Loading preset values involves (potentially) changing the value of every single object on this form.  To prevent each

@@ -743,8 +743,8 @@ End Sub
 
 Private Function GetExportParamString() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'The parameters this function returns vary based on the current PNG mode (standard vs web-optimized).
     cParams.AddParam "PNGCreateWebOptimized", (btsMasterType.ListIndex = 1)
@@ -802,14 +802,14 @@ Private Sub UpdatePreview()
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core PNG encoder
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString GetExportParamString()
         
         'The color-depth-specific options are embedded as a single option, so extract them into their
         ' own parser.
-        Dim cParamsDepth As pdParamXML
-        Set cParamsDepth = New pdParamXML
+        Dim cParamsDepth As pdSerialize
+        Set cParamsDepth = New pdSerialize
         cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", vbNullString)
         
         'Retrieve color and alpha model for this preview; everything else extends from these

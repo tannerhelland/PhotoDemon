@@ -160,8 +160,8 @@ Public Sub WaveImage(ByVal effectParams As String, Optional ByVal toPreview As B
 
     If (Not toPreview) Then Message "Dipping image in virtual wave pool..."
         
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim xWavelength As Double, xAmplitude As Double, yWavelength As Double, yAmplitude As Double
@@ -433,8 +433,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "xwavelength", sltWavelengthX.Value

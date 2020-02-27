@@ -721,9 +721,9 @@ End Function
 'XML get/set functions for getting/setting all parameters at once.
 Friend Function GetAllFontSettingsAsXML() As String
 
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
-    Dim cSerialize As pdParamXML
-    Set cSerialize = New pdParamXML
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdSerialize class
+    Dim cSerialize As pdSerialize
+    Set cSerialize = New pdSerialize
     
     'Add a basic header and version info
     cSerialize.AddXMLString "<photodemon-text-object>"
@@ -782,9 +782,9 @@ End Function
 ' as dirty, so you should only use it when loading a serialized object for the first time.)
 Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
     
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
-    Dim cSerialize As pdParamXML
-    Set cSerialize = New pdParamXML
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdSerialize class
+    Dim cSerialize As pdSerialize
+    Set cSerialize = New pdSerialize
     cSerialize.SetParamString srcXMLString
     
     'If basic validation fails, revert to the legacy font serialization engine
@@ -2369,9 +2369,9 @@ End Sub
 ' (Note that this function manually marks the font cache as dirty, so you should only use it when loading a file for the first time.)
 Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) As Boolean
     
-    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
-    Dim cSerialize As pdParamXML
-    Set cSerialize = New pdParamXML
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdSerialize class
+    Dim cSerialize As pdSerialize
+    Set cSerialize = New pdSerialize
     
     With cSerialize
         .SetParamString srcXMLString

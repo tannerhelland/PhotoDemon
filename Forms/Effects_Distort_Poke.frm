@@ -183,8 +183,8 @@ Public Sub ApplyPokeDistort(ByVal effectParams As String, Optional ByVal toPrevi
     
     If (Not toPreview) Then Message "Poking image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim pokeStrength As Double, edgeHandling As Long, superSamplingAmount As Long
@@ -496,8 +496,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "strength", sltStrength.Value

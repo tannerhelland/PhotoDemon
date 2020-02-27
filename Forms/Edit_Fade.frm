@@ -158,8 +158,8 @@ End Sub
 'Fade the current image against its most recent previous state, using the opacity and blend mode supplied by the user.
 Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim fadeOpacity As Double, dstBlendMode As PD_BlendMode
@@ -247,8 +247,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "opacity", sltOpacity.Value

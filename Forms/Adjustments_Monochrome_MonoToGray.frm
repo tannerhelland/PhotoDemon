@@ -118,8 +118,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     
     If (Not toPreview) Then Message "Converting monochrome image to grayscale..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim mRadius As Long
@@ -437,8 +437,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "radius", sltRadius.Value
     GetLocalParamString = cParams.GetParamString()
     

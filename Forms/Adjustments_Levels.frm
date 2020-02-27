@@ -582,8 +582,8 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
     
     'Convert the calculated values to a valid paramstring equivalent
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "redinputmin", rMin
@@ -1553,8 +1553,8 @@ Private Function GetLevelsParamString() As String
     'Remember that the layout of our master tracking array is [channel R/G/B/L, level adjustment].
     ' Level adjustment values are, in order: input min, input mid, input max, output min, output max.
     ' Private m_LevelValues(0 To 3, 0 To 4) As Double
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim i As Long, thisColorName As String
     For i = 0 To 3
@@ -1587,8 +1587,8 @@ End Function
 'Given an XML param string, fill the m_LevelValues() array with the stored param string values
 Private Sub FillLevelsFromParamString(ByVal paramString As String, ByRef dstLevels() As Double)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString paramString
     
     Dim i As Long, thisColorName As String

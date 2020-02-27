@@ -40,8 +40,8 @@ Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString
 
     If (Not toPreview) Then Message "Adjusting image white balance..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim dstSA As SafeArray2D

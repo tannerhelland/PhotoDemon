@@ -133,8 +133,8 @@ End Function
 
 Private Sub cmdBar_OKClick()
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "UndoHistoryPoint", lstUndo.ListIndex + 1
     Process "Undo history", , cParams.GetParamString(), UNDO_Nothing
     

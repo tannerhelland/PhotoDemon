@@ -295,8 +295,8 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     
     Dim tmpTransfer As Long
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString listOfPoints
     
     Dim i As Long
@@ -386,8 +386,8 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long, j As Long
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim newNodeName As String
     
@@ -474,8 +474,8 @@ Private Sub cmdBar_ReadCustomPresetData()
     
     Dim tmpString As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim i As Long, j As Long
     For i = 0 To 3
@@ -1169,8 +1169,8 @@ End Sub
 ' a list of histogram points, in PD string parameter format.
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim i As Long, j As Long
     

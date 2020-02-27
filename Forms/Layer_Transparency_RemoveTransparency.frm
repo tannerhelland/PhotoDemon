@@ -132,8 +132,8 @@ Public Sub RemoveLayerTransparency(ByVal processParameters As String)
     
     Message "Removing transparency..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     Dim newBackColor As Long
@@ -155,8 +155,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "backcolor", csBackground.Color

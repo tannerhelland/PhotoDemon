@@ -137,8 +137,8 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
    
     If (Not toPreview) Then Message "Calculating image fragments..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim numOfFragments As Long, fragmentDistance As Double, startingAngle As Double
@@ -301,8 +301,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "count", sltFragments.Value

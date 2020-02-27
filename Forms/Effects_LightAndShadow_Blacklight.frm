@@ -85,8 +85,8 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     
     If (Not toPreview) Then Message "Illuminating image with imaginary blacklight..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim weight As Double
@@ -207,8 +207,8 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "intensity", sltIntensity.Value
     GetLocalParamString = cParams.GetParamString()
 End Function

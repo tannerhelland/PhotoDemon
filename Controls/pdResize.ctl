@@ -1000,8 +1000,8 @@ End Function
 ' control instance, and these settings can be restored via SetAllSettingsFromXML(), below.
 Public Function GetCurrentSettingsAsXML() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
     
@@ -1024,8 +1024,8 @@ End Function
 
 Public Sub SetAllSettingsFromXML(ByVal xmlData As String)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString xmlData
     
     'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size

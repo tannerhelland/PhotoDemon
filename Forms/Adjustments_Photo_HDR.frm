@@ -120,8 +120,8 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         
     If (Not toPreview) Then Message "Generating HDR map for image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim fxQuality As Double, blendStrength As Double
@@ -320,8 +320,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "radius", sltRadius.Value

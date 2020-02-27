@@ -197,8 +197,8 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     
     If (Not toPreview) Then Message "Adjusting color balance..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim rVal As Long, gVal As Long, bVal As Long
@@ -390,8 +390,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "red", sltRed.Value

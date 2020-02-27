@@ -131,8 +131,8 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
         
     If (Not toPreview) Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim umRadius As Double, umAmount As Double, umThreshold As Long, gaussQuality As Long
@@ -373,8 +373,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "radius", sltRadius.Value

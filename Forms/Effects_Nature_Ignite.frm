@@ -126,8 +126,8 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     If (Not toPreview) Then Message "Lighting image on fire..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim fxIntensity As Double
@@ -351,8 +351,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "intensity", sltIntensity.Value

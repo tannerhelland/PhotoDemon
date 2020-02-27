@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdParamXML"
+Attribute VB_Name = "pdSerialize"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -18,26 +18,31 @@ Attribute VB_Exposed = False
 'Last updated: 07/October/17
 'Last update: switch to pdString, which greatly improves parameter assembly performance
 '
-'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
-' macros, the program needs a way to not only trade around parameters, but also store them in a file.
+'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all
+' actions as part of macros, it also requires a way to standardize parameter lists (regardless of
+' count or type), and this standardization also needs to be easy to read/write from files.
 '
-'The problem occurs when trying to develop a single system that works with all possible function parameters.  Some actions,
-' like "Invert Image", require no additional information.  Others, like "Curves", require a huge amount of custom data.
-' Various functions utilize conceivable every type of value (bool, int, float, custom types, etc), and if a macro is
-' recording a function, all those specialized parameters need to be tracked and written to file.
+'When first developing a solution to this, the biggest complication was finding a single system that
+' worked with all possible function parameters.  Some actions, like "Invert Image", require no
+' additional information.  Others, like "Curves", require a huge amount of custom data.  Various
+' functions utilize conceivable every type of value (bool, int, float, custom types, etc), and if a
+' macro's being recorded, all those specialized parameters need to be tracked and saved to file.
 '
-'The easiest way to handle that kind of variety from within VB is to use a string.  This allows any amount - and type -
-' of custom parameter data to be recorded, stored, and easily transferred between functions.
+'The easiest way to handle that kind of variety from within VB is to use a string.  This allows any
+' amount - and type - of custom data to be recorded, stored, and easily transferred between functions,
+' provided that string serializers exist for all data types (obviously).
 '
 'Individual functions therefore rely on this class to create and parse parameter strings for them.
 '
-'In summer 2015, I moved from a pipe-delimited parameter system (where parameters were listed in order, and retrieved by order)
-' to an order-agnostic XML system, where parameters are retrieved by name.  This class uses its own XML parsing code, which
-' includes a few greatly stripped-down (and speed-optimized) basic XML functions from the main pdXML class.  This micro-XML
-' parsing code introduces a few restrictions:
-' 1) All comparisons are case-sensitive.  If you change case in PD's source, you will invalidate old parameters, by design.
+'In summer 2015, I moved from a pipe-delimited parameter system (where parameters were stored/retrieved
+' by ordinal) to an order-agnostic XML system, where parameters are retrieved by name.  This class uses
+' its own lightweight, custom-built XML parser, which is designed purely against the needs of this class.
+' (For example, it doesn't make any attempt to construct a DOM - it just retrieves tags in order as fast
+' as it possibly can.)  Specifically, the micro-XML parser used here requires these restrictions:
+' 1) All comparisons are case-sensitive.  If you change case in PD's source, you will invalidate old
+'    parameters, by design.
 ' 2) All parameter names must be unique.
-' 3) Parameter names do not support attribute tags.  Come up with different parameter names, instead.
+' 3) Parameter names do not support attribute tags.  Instead, use different parameter names.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -78,7 +83,8 @@ Private Sub Class_Initialize()
     
 End Sub
 
-'If a function changes drastically enough, it is free to use the "created-by-default" version tag to adjust handling as necessary.
+'If a function changes its parameter structure, it can use this "created-by-default" version tag
+' to adjust handling as necessary.
 Friend Function GetParamVersion() As Double
     
     Dim versionString As String
@@ -235,7 +241,7 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
             
             'If tag end is less than tag start, it means there's an XML parsing problem
             Else
-                PDDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
+                PDDebug.LogAction "pdSerialize.GetParamValue failed.  Param string follows."
                 PDDebug.LogAction m_ParamString.ToString()
                 dstString = vbNullString
             End If
@@ -298,7 +304,7 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     
 AddParamFailed:
     AddParam = False
-    PDDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
+    PDDebug.LogAction "WARNING!  pdSerialize failed to add param named " & paramName
     
 End Function
 
@@ -335,7 +341,7 @@ Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     Exit Function
     
 MultiParamFailure:
-    PDDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
+    PDDebug.LogAction "WARNING!  Parse failure in pdSerialize.AddParamList()."
     AddParamList = False
 
 End Function

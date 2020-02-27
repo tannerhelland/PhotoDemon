@@ -2153,8 +2153,8 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     End If
     
     'Parse all relevant APNG parameters.  (See the APNG export dialog for details on how these are generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
      
     'Initialize a progress bar
@@ -2835,14 +2835,14 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     
     'Prep a parameter parser for the source XML.
     ' (See the PNG export dialog for details on how the XML string is generated.)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
     'Some color-depth-specific parameters are stored in their own XML packet. (This is because they are handled
     ' by a standalone color depth control that's shared between multiple export dialogs.)
-    Dim cParamsDepth As pdParamXML
-    Set cParamsDepth = New pdParamXML
+    Dim cParamsDepth As pdSerialize
+    Set cParamsDepth = New pdSerialize
     cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", , True)
     
     Dim outputColorModel As String, outputAlphaModel As String
@@ -3161,8 +3161,8 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
     
     'Background color and chunk creation need to be detected up front, as they must be added to the PNG file
     ' in a specific order ("After PLTE; before IDAT" per the spec)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
     m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
@@ -3690,8 +3690,8 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
     
     'Background color and chunk creation need to be detected up front, as they must be added to the PNG file
     ' in a specific order ("After PLTE; before IDAT" per the spec)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
     m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
@@ -4088,8 +4088,8 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'Prep a parameter parser, as certain bit-depth and color mode combinations may require specialized pixel handling
     ' (e.g. compositing against a specific backcolor).
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
     'At present, we produce a full copy of the image in the required bit-depth and layout.  In the future,

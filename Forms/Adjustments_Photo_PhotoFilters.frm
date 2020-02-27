@@ -363,8 +363,8 @@ Public Sub ApplyPhotoFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     If (Not toPreview) Then Message "Applying photo filter..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim filterColor As Long, filterDensity As Double, preserveLuminance As Boolean
@@ -464,8 +464,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "color", m_Filters(lstFilters.ListIndex).RGBColor

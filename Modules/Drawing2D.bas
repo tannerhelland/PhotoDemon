@@ -3,8 +3,8 @@ Attribute VB_Name = "Drawing2D"
 'High-Performance 2D Rendering Interface
 'Copyright 2012-2020 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 11/May/16
-'Last update: continue migrating various rendering bits out of GDI+ and into this generic renderer.
+'Last updated: 26/February/20
+'Last update: new helper functions for safer XML serialization of enums
 '
 'In 2015-2020, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton
 ' of 2D rendering tasks, so it was finally time to migrate PD's hoary old GDI+ interface to a more
@@ -785,3 +785,479 @@ Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullSt
     PDDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
     If (ErrNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
 End Sub
+
+'These functions exist to help with XML serialization.  They use consistent names against
+' the current enums, and if the enums ever change order in the future, existing XML strings
+' will still produce correct results.
+Public Function XML_GetNameOfWrapMode(ByVal srcWrapMode As PD_2D_WrapMode) As String
+    Select Case srcWrapMode
+        Case P2_WM_Tile
+            XML_GetNameOfWrapMode = "tile"
+        Case P2_WM_TileFlipX
+            XML_GetNameOfWrapMode = "tile-flip-x"
+        Case P2_WM_TileFlipY
+            XML_GetNameOfWrapMode = "tile-flip-y"
+        Case P2_WM_TileFlipXY
+            XML_GetNameOfWrapMode = "tile-flip-xy"
+        Case P2_WM_Clamp
+            XML_GetNameOfWrapMode = "clamp"
+        Case Else
+            XML_GetNameOfWrapMode = "tile"
+    End Select
+End Function
+
+Public Function XML_GetWrapModeFromName(ByRef srcName As String) As PD_2D_WrapMode
+    Select Case srcName
+        Case "tile"
+            XML_GetWrapModeFromName = P2_WM_Tile
+        Case "tile-flip-x"
+            XML_GetWrapModeFromName = P2_WM_TileFlipX
+        Case "tile-flip-y"
+            XML_GetWrapModeFromName = P2_WM_TileFlipY
+        Case "tile-flip-xy"
+            XML_GetWrapModeFromName = P2_WM_TileFlipXY
+        Case "clamp"
+            XML_GetWrapModeFromName = P2_WM_Clamp
+        Case Else
+            XML_GetWrapModeFromName = P2_WM_Tile
+    End Select
+End Function
+
+Public Function XML_GetNameOfBrushMode(ByVal srcBrushMode As PD_2D_BrushMode) As String
+    Select Case srcBrushMode
+        Case P2_BM_Solid
+            XML_GetNameOfBrushMode = "solid"
+        Case P2_BM_Pattern
+            XML_GetNameOfBrushMode = "pattern"
+        Case P2_BM_Gradient
+            XML_GetNameOfBrushMode = "gradient"
+        Case P2_BM_Texture
+            XML_GetNameOfBrushMode = "texture"
+        Case Else
+            XML_GetNameOfBrushMode = "solid"
+    End Select
+End Function
+
+Public Function XML_GetBrushModeFromName(ByRef srcName As String) As PD_2D_BrushMode
+    Select Case srcName
+        Case "solid"
+            XML_GetBrushModeFromName = P2_BM_Solid
+        Case "pattern"
+            XML_GetBrushModeFromName = P2_BM_Pattern
+        Case "gradient"
+            XML_GetBrushModeFromName = P2_BM_Gradient
+        Case "texture"
+            XML_GetBrushModeFromName = P2_BM_Texture
+        Case Else
+            XML_GetBrushModeFromName = P2_BM_Solid
+    End Select
+End Function
+
+Public Function XML_GetNameOfPattern(ByVal srcPattern As PD_2D_PatternStyle) As String
+    Select Case srcPattern
+        Case P2_PS_Horizontal
+            XML_GetNameOfPattern = "x"
+        Case P2_PS_Vertical
+            XML_GetNameOfPattern = "y"
+        Case P2_PS_ForwardDiagonal
+            XML_GetNameOfPattern = "forward-dg"
+        Case P2_PS_BackwardDiagonal
+            XML_GetNameOfPattern = "backward-dg"
+        Case P2_PS_Cross
+            XML_GetNameOfPattern = "cross"
+        Case P2_PS_DiagonalCross
+            XML_GetNameOfPattern = "dg-cross"
+        Case P2_PS_05Percent
+            XML_GetNameOfPattern = "pc-05"
+        Case P2_PS_10Percent
+            XML_GetNameOfPattern = "pc-10"
+        Case P2_PS_20Percent
+            XML_GetNameOfPattern = "pc-20"
+        Case P2_PS_25Percent
+            XML_GetNameOfPattern = "pc-25"
+        Case P2_PS_30Percent
+            XML_GetNameOfPattern = "pc-30"
+        Case P2_PS_40Percent
+            XML_GetNameOfPattern = "pc-40"
+        Case P2_PS_50Percent
+            XML_GetNameOfPattern = "pc-50"
+        Case P2_PS_60Percent
+            XML_GetNameOfPattern = "pc-60"
+        Case P2_PS_70Percent
+            XML_GetNameOfPattern = "pc-70"
+        Case P2_PS_75Percent
+            XML_GetNameOfPattern = "pc-75"
+        Case P2_PS_80Percent
+            XML_GetNameOfPattern = "pc-80"
+        Case P2_PS_90Percent
+            XML_GetNameOfPattern = "pc-90"
+        Case P2_PS_LightDownwardDiagonal
+            XML_GetNameOfPattern = "light-down-dg"
+        Case P2_PS_LightUpwardDiagonal
+            XML_GetNameOfPattern = "light-up-dg"
+        Case P2_PS_DarkDownwardDiagonal
+            XML_GetNameOfPattern = "dark-down-dg"
+        Case P2_PS_DarkUpwardDiagonal
+            XML_GetNameOfPattern = "dark-up-dg"
+        Case P2_PS_WideDownwardDiagonal
+            XML_GetNameOfPattern = "wide-down-dg"
+        Case P2_PS_WideUpwardDiagonal
+            XML_GetNameOfPattern = "wide-up-dg"
+        Case P2_PS_LightVertical
+            XML_GetNameOfPattern = "light-y"
+        Case P2_PS_LightHorizontal
+            XML_GetNameOfPattern = "light-x"
+        Case P2_PS_NarrowVertical
+            XML_GetNameOfPattern = "narrow-y"
+        Case P2_PS_NarrowHorizontal
+            XML_GetNameOfPattern = "narrow-x"
+        Case P2_PS_DarkVertical
+            XML_GetNameOfPattern = "dark-y"
+        Case P2_PS_DarkHorizontal
+            XML_GetNameOfPattern = "dark-x"
+        Case P2_PS_DashedDownwardDiagonal
+            XML_GetNameOfPattern = "dash-down-dg"
+        Case P2_PS_DashedUpwardDiagonal
+            XML_GetNameOfPattern = "dash-up-dg"
+        Case P2_PS_DashedHorizontal
+            XML_GetNameOfPattern = "dash-x"
+        Case P2_PS_DashedVertical
+            XML_GetNameOfPattern = "dash-y"
+        Case P2_PS_SmallConfetti
+            XML_GetNameOfPattern = "confetti-s"
+        Case P2_PS_LargeConfetti
+            XML_GetNameOfPattern = "confetti-l"
+        Case P2_PS_ZigZag
+            XML_GetNameOfPattern = "zigzag"
+        Case P2_PS_Wave
+            XML_GetNameOfPattern = "wave"
+        Case P2_PS_DiagonalBrick
+            XML_GetNameOfPattern = "brick-dg"
+        Case P2_PS_HorizontalBrick
+            XML_GetNameOfPattern = "brick-x"
+        Case P2_PS_Weave
+            XML_GetNameOfPattern = "weave"
+        Case P2_PS_Plaid
+            XML_GetNameOfPattern = "plaid"
+        Case P2_PS_Divot
+            XML_GetNameOfPattern = "divot"
+        Case P2_PS_DottedGrid
+            XML_GetNameOfPattern = "dot-grid"
+        Case P2_PS_DottedDiamond
+            XML_GetNameOfPattern = "dot-diamond"
+        Case P2_PS_Shingle
+            XML_GetNameOfPattern = "shingle"
+        Case P2_PS_Trellis
+            XML_GetNameOfPattern = "trellis"
+        Case P2_PS_Sphere
+            XML_GetNameOfPattern = "sphere"
+        Case P2_PS_SmallGrid
+            XML_GetNameOfPattern = "grid-s"
+        Case P2_PS_SmallCheckerBoard
+            XML_GetNameOfPattern = "checker-s"
+        Case P2_PS_LargeCheckerBoard
+            XML_GetNameOfPattern = "checker-l"
+        Case P2_PS_OutlinedDiamond
+            XML_GetNameOfPattern = "diamond-outline"
+        Case P2_PS_SolidDiamond
+            XML_GetNameOfPattern = "diamond-solid"
+        Case Else
+            XML_GetNameOfPattern = "x"
+    End Select
+End Function
+
+Public Function XML_GetPatternFromName(ByRef srcName As String) As PD_2D_PatternStyle
+    Select Case srcName
+        Case "x"
+            XML_GetPatternFromName = P2_PS_Horizontal
+        Case "y"
+            XML_GetPatternFromName = P2_PS_Vertical
+        Case "forward-dg"
+            XML_GetPatternFromName = P2_PS_ForwardDiagonal
+        Case "backward-dg"
+            XML_GetPatternFromName = P2_PS_BackwardDiagonal
+        Case "cross"
+            XML_GetPatternFromName = P2_PS_Cross
+        Case "dg-cross"
+            XML_GetPatternFromName = P2_PS_DiagonalCross
+        Case "pc-05"
+            XML_GetPatternFromName = P2_PS_05Percent
+        Case "pc-10"
+            XML_GetPatternFromName = P2_PS_10Percent
+        Case "pc-20"
+            XML_GetPatternFromName = P2_PS_20Percent
+        Case "pc-25"
+            XML_GetPatternFromName = P2_PS_25Percent
+        Case "pc-30"
+            XML_GetPatternFromName = P2_PS_30Percent
+        Case "pc-40"
+            XML_GetPatternFromName = P2_PS_40Percent
+        Case "pc-50"
+            XML_GetPatternFromName = P2_PS_50Percent
+        Case "pc-60"
+            XML_GetPatternFromName = P2_PS_60Percent
+        Case "pc-70"
+            XML_GetPatternFromName = P2_PS_70Percent
+        Case "pc-75"
+            XML_GetPatternFromName = P2_PS_75Percent
+        Case "pc-80"
+            XML_GetPatternFromName = P2_PS_80Percent
+        Case "pc-90"
+            XML_GetPatternFromName = P2_PS_90Percent
+        Case "light-down-dg"
+            XML_GetPatternFromName = P2_PS_LightDownwardDiagonal
+        Case "light-up-dg"
+            XML_GetPatternFromName = P2_PS_LightUpwardDiagonal
+        Case "dark-down-dg"
+            XML_GetPatternFromName = P2_PS_DarkDownwardDiagonal
+        Case "dark-up-dg"
+            XML_GetPatternFromName = P2_PS_DarkUpwardDiagonal
+        Case "wide-down-dg"
+            XML_GetPatternFromName = P2_PS_WideDownwardDiagonal
+        Case "wide-up-dg"
+            XML_GetPatternFromName = P2_PS_WideUpwardDiagonal
+        Case "light-y"
+            XML_GetPatternFromName = P2_PS_LightVertical
+        Case "light-x"
+            XML_GetPatternFromName = P2_PS_LightHorizontal
+        Case "narrow-y"
+            XML_GetPatternFromName = P2_PS_NarrowVertical
+        Case "narrow-x"
+            XML_GetPatternFromName = P2_PS_NarrowHorizontal
+        Case "dark-y"
+            XML_GetPatternFromName = P2_PS_DarkVertical
+        Case "dark-x"
+            XML_GetPatternFromName = P2_PS_DarkHorizontal
+        Case "dash-down-dg"
+            XML_GetPatternFromName = P2_PS_DashedDownwardDiagonal
+        Case "dash-up-dg"
+            XML_GetPatternFromName = P2_PS_DashedUpwardDiagonal
+        Case "dash-x"
+            XML_GetPatternFromName = P2_PS_DashedHorizontal
+        Case "dash-y"
+            XML_GetPatternFromName = P2_PS_DashedVertical
+        Case "confetti-s"
+            XML_GetPatternFromName = P2_PS_SmallConfetti
+        Case "confetti-l"
+            XML_GetPatternFromName = P2_PS_LargeConfetti
+        Case "zigzag"
+            XML_GetPatternFromName = P2_PS_ZigZag
+        Case "wave"
+            XML_GetPatternFromName = P2_PS_Wave
+        Case "brick-dg"
+            XML_GetPatternFromName = P2_PS_DiagonalBrick
+        Case "brick-x"
+            XML_GetPatternFromName = P2_PS_HorizontalBrick
+        Case "weave"
+            XML_GetPatternFromName = P2_PS_Weave
+        Case "plaid"
+            XML_GetPatternFromName = P2_PS_Plaid
+        Case "divot"
+            XML_GetPatternFromName = P2_PS_Divot
+        Case "dot-grid"
+            XML_GetPatternFromName = P2_PS_DottedGrid
+        Case "dot-diamond"
+            XML_GetPatternFromName = P2_PS_DottedDiamond
+        Case "shingle"
+            XML_GetPatternFromName = P2_PS_Shingle
+        Case "trellis"
+            XML_GetPatternFromName = P2_PS_Trellis
+        Case "sphere"
+            XML_GetPatternFromName = P2_PS_Sphere
+        Case "grid-s"
+            XML_GetPatternFromName = P2_PS_SmallGrid
+        Case "checker-s"
+            XML_GetPatternFromName = P2_PS_SmallCheckerBoard
+        Case "checker-l"
+            XML_GetPatternFromName = P2_PS_LargeCheckerBoard
+        Case "diamond-outline"
+            XML_GetPatternFromName = P2_PS_OutlinedDiamond
+        Case "diamond-solid"
+            XML_GetPatternFromName = P2_PS_SolidDiamond
+        Case Else
+            XML_GetPatternFromName = P2_PS_Horizontal
+    End Select
+End Function
+
+Public Function XML_GetNameOfGradientShape(ByVal srcShape As PD_2D_GradientShape) As String
+    Select Case srcShape
+        Case P2_GS_Linear
+            XML_GetNameOfGradientShape = "linear"
+        Case P2_GS_Reflection
+            XML_GetNameOfGradientShape = "reflect"
+        Case P2_GS_Radial
+            XML_GetNameOfGradientShape = "radial"
+        Case P2_GS_Rectangle
+            XML_GetNameOfGradientShape = "rectangle"
+        Case P2_GS_Diamond
+            XML_GetNameOfGradientShape = "diamond"
+        Case Else
+            XML_GetNameOfGradientShape = "linear"
+    End Select
+End Function
+
+Public Function XML_GetGradientShapeFromName(ByRef srcName As String) As PD_2D_GradientShape
+    Select Case srcName
+        Case "linear"
+            XML_GetGradientShapeFromName = P2_GS_Linear
+        Case "reflect"
+            XML_GetGradientShapeFromName = P2_GS_Reflection
+        Case "radial"
+            XML_GetGradientShapeFromName = P2_GS_Radial
+        Case "rectangle"
+            XML_GetGradientShapeFromName = P2_GS_Rectangle
+        Case "diamond"
+            XML_GetGradientShapeFromName = P2_GS_Diamond
+        Case Else
+            XML_GetGradientShapeFromName = P2_GS_Linear
+    End Select
+End Function
+
+Public Function XML_GetNameOfLineCap(ByVal srcLineCap As PD_2D_LineCap) As String
+    Select Case srcLineCap
+        Case P2_LC_Flat
+            XML_GetNameOfLineCap = "flat"
+        Case P2_LC_Square
+            XML_GetNameOfLineCap = "square"
+        Case P2_LC_Round
+            XML_GetNameOfLineCap = "round"
+        Case P2_LC_Triangle
+            XML_GetNameOfLineCap = "triangle"
+        Case P2_LC_FlatAnchor
+            XML_GetNameOfLineCap = "anchor-flat"
+        Case P2_LC_SquareAnchor
+            XML_GetNameOfLineCap = "anchor-square"
+        Case P2_LC_RoundAnchor
+            XML_GetNameOfLineCap = "anchor-round"
+        Case P2_LC_DiamondAnchor
+            XML_GetNameOfLineCap = "anchor-diamond"
+        Case P2_LC_ArrowAnchor
+            XML_GetNameOfLineCap = "anchor-arrow"
+        Case P2_LC_Custom
+            XML_GetNameOfLineCap = "custom"
+        Case Else
+            XML_GetNameOfLineCap = "flat"
+    End Select
+End Function
+
+Public Function XML_GetLineCapFromName(ByRef srcName As String) As PD_2D_LineCap
+    Select Case srcName
+        Case "flat"
+            XML_GetLineCapFromName = P2_LC_Flat
+        Case "square"
+            XML_GetLineCapFromName = P2_LC_Square
+        Case "round"
+            XML_GetLineCapFromName = P2_LC_Round
+        Case "triangle"
+            XML_GetLineCapFromName = P2_LC_Triangle
+        Case "anchor-flat"
+            XML_GetLineCapFromName = P2_LC_FlatAnchor
+        Case "anchor-square"
+            XML_GetLineCapFromName = P2_LC_SquareAnchor
+        Case "anchor-round"
+            XML_GetLineCapFromName = P2_LC_RoundAnchor
+        Case "anchor-diamond"
+            XML_GetLineCapFromName = P2_LC_DiamondAnchor
+        Case "anchor-arrow"
+            XML_GetLineCapFromName = P2_LC_ArrowAnchor
+        Case "custom"
+            XML_GetLineCapFromName = P2_LC_Custom
+        Case Else
+            XML_GetLineCapFromName = P2_LC_Flat
+    End Select
+End Function
+
+Public Function XML_GetNameOfDashCap(ByVal srcDashCap As PD_2D_DashCap) As String
+    Select Case srcDashCap
+        Case P2_DC_Flat
+            XML_GetNameOfDashCap = "flat"
+        Case P2_DC_Square
+            XML_GetNameOfDashCap = "square"
+        Case P2_DC_Round
+            XML_GetNameOfDashCap = "round"
+        Case P2_DC_Triangle
+            XML_GetNameOfDashCap = "triangle"
+        Case Else
+            XML_GetNameOfDashCap = "flat"
+    End Select
+End Function
+
+Public Function XML_GetDashCapFromName(ByRef srcName As String) As PD_2D_DashCap
+    Select Case srcName
+        Case "flat"
+            XML_GetDashCapFromName = P2_DC_Flat
+        Case "square"
+            XML_GetDashCapFromName = P2_DC_Square
+        Case "round"
+            XML_GetDashCapFromName = P2_DC_Round
+        Case "triangle"
+            XML_GetDashCapFromName = P2_DC_Triangle
+        Case Else
+            XML_GetDashCapFromName = P2_DC_Flat
+    End Select
+End Function
+
+Public Function XML_GetNameOfLineJoin(ByVal srcLineJoin As PD_2D_LineJoin) As String
+    Select Case srcLineJoin
+        Case P2_LJ_Miter
+            XML_GetNameOfLineJoin = "miter"
+        Case P2_LJ_Bevel
+            XML_GetNameOfLineJoin = "bevel"
+        Case P2_LJ_Round
+            XML_GetNameOfLineJoin = "round"
+        Case Else
+            XML_GetNameOfLineJoin = "miter"
+    End Select
+End Function
+
+Public Function XML_GetLineJoinFromName(ByRef srcName As String) As PD_2D_LineJoin
+    Select Case srcName
+        Case "miter"
+            XML_GetLineJoinFromName = P2_LJ_Miter
+        Case "bevel"
+            XML_GetLineJoinFromName = P2_LJ_Bevel
+        Case "round"
+            XML_GetLineJoinFromName = P2_LJ_Round
+        Case Else
+            XML_GetLineJoinFromName = P2_LJ_Miter
+    End Select
+End Function
+
+Public Function XML_GetNameOfDashStyle(ByVal srcPenStyle As PD_2D_DashStyle) As String
+    Select Case srcPenStyle
+        Case P2_DS_Solid
+            XML_GetNameOfDashStyle = "solid"
+        Case P2_DS_Dash
+            XML_GetNameOfDashStyle = "dash"
+        Case P2_DS_Dot
+            XML_GetNameOfDashStyle = "dot"
+        Case P2_DS_DashDot
+            XML_GetNameOfDashStyle = "dash-dot"
+        Case P2_DS_DashDotDot
+            XML_GetNameOfDashStyle = "dash-dot-dot"
+        Case P2_DS_Custom
+            XML_GetNameOfDashStyle = "custom"
+        Case Else
+            XML_GetNameOfDashStyle = "solid"
+    End Select
+End Function
+
+Public Function XML_GetDashStyleFromName(ByRef srcName As String) As PD_2D_DashStyle
+    Select Case srcName
+        Case "solid"
+            XML_GetDashStyleFromName = P2_DS_Solid
+        Case "dash"
+            XML_GetDashStyleFromName = P2_DS_Dash
+        Case "dot"
+            XML_GetDashStyleFromName = P2_DS_Dot
+        Case "dash-dot"
+            XML_GetDashStyleFromName = P2_DS_DashDot
+        Case "dash-dot-dot"
+            XML_GetDashStyleFromName = P2_DS_DashDotDot
+        Case "custom"
+            XML_GetDashStyleFromName = P2_DS_Custom
+        Case Else
+            XML_GetDashStyleFromName = P2_DS_Solid
+    End Select
+End Function
+

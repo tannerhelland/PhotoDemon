@@ -93,8 +93,8 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "removetransparency", (btsFlatten.ListIndex = 2)

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3446</langversion>
+<langversion>6.8.3447</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4637,12 +4637,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPaletteChild.cls-->
 
-<!-- BEGIN text for pdParamXML.cls -->
-
-<!-- pdParamXML.cls contains 0 phrases. -->
-
-<!-- END text for pdParamXML.cls-->
-
 <!-- BEGIN text for pdPixelBlender.cls -->
 
 <!-- pdPixelBlender.cls contains 0 phrases. -->
@@ -4753,6 +4747,12 @@ Please enter a numeric value.</original>
 <!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdSerialize.cls -->
+
+<!-- pdSerialize.cls contains 0 phrases. -->
+
+<!-- END text for pdSerialize.cls-->
 
 <!-- BEGIN text for pdSpriteSheet.cls -->
 

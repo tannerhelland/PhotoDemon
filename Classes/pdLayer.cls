@@ -1246,8 +1246,8 @@ End Sub
 Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     xmlEngine.SetParamString xmlString
     
     'Validate the XML header...
@@ -1362,8 +1362,8 @@ End Function
 Friend Function GetLayerHeaderAsXML() As String
     
     'Prep a fast XML param engine, which greatly simplifies the process of assembling XML data
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     
     'Add a basic header and version info
     xmlEngine.AddXMLString "<photodemon-layer>"
@@ -1434,8 +1434,8 @@ Friend Function GetVectorDataAsXML() As String
     End If
     
     'Prepare an XML engine, which greatly simplifies the process of assembling XML data
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     xmlEngine.AddXMLString "<photodemon-vector-object>"
     xmlEngine.AddParam "vector-version", 1&, True, True
     
@@ -1464,8 +1464,8 @@ End Function
 Friend Function SetVectorDataFromXML(ByRef xmlString As String) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
-    Dim xmlEngine As pdParamXML
-    Set xmlEngine = New pdParamXML
+    Dim xmlEngine As pdSerialize
+    Set xmlEngine = New pdSerialize
     xmlEngine.SetParamString xmlString
     
     'If basic validation fails, revert to the legacy font serialization engine

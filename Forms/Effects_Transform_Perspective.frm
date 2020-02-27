@@ -169,8 +169,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     If (Not toPreview) Then Message "Applying new perspective..."
     
     'We use an XML parser to retrieve individual parameters from the incoming parameter string
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     'Create a local array and point it at the pixel data of the current image
@@ -514,8 +514,8 @@ End Sub
 Private Sub cmdBar_AddCustomPresetData()
     
     'Place all node data into a single string, then write that string out to file
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     Dim i As Long
     For i = 0 To 3
@@ -547,8 +547,8 @@ End Sub
 Private Sub cmdBar_ReadCustomPresetData()
     
     'Retrieve the string that contains the node coordinates, and place it into an XML parser
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString cmdBar.RetrievePresetData("NodeLocations")
     
     Dim i As Long
@@ -868,8 +868,8 @@ End Function
 'Take the current tool settings and merge them into a parameter string
 Private Function GetPerspectiveParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'First, add the four corner points of the transform.  Note that these have to be mapped from the current UI
     ' coordinate space to an absolute coordinate space (suitable for storage in screen-independent places like macros).

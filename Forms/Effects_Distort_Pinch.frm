@@ -202,8 +202,8 @@ Public Sub PinchImage(ByVal effectParams As String, Optional ByVal toPreview As 
 
     If (Not toPreview) Then Message "Pinching and whirling image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim pinchAmount As Double, whirlAngle As Double, effectRadius As Double
@@ -539,8 +539,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "amount", sltAmount.Value

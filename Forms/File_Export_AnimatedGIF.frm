@@ -432,8 +432,8 @@ End Sub
 
 Private Function GetExportParamString() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'The loop setting is a little weird.  0 = loop infinitely, 1 = loop once, 2+ = loop that many times exactly
     If (btsLoop.ListIndex = 0) Then

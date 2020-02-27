@@ -123,8 +123,8 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     
     If (Not toPreview) Then Message "Applying motion blur..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim bAngle As Double, bDistance As Long, blurSymmetrically As Boolean, blurAlgorithm As Long
@@ -260,8 +260,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "angle", sltAngle.Value

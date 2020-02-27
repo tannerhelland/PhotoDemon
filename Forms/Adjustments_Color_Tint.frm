@@ -94,8 +94,8 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
     
     If (Not toPreview) Then Message "Re-tinting image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim tintAdjustment As Long
@@ -211,8 +211,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "tint", sltTint.Value

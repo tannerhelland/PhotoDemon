@@ -255,8 +255,8 @@ Public Sub RippleImage(ByVal effectParams As String, Optional ByVal toPreview As
 
     If (Not toPreview) Then Message "Simulating ripples across image surface..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim rippleWavelength As Double, rippleAmplitude As Double, ripplePhase As Double, rippleRadius As Double
@@ -589,8 +589,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "wavelength", sltWavelength.Value

@@ -244,8 +244,8 @@ Public Sub ApplyShadowHighlight(ByVal effectParams As String, Optional ByVal toP
     Dim shadowAmount As Double, midtoneContrast As Double, highlightAmount As Double
     Dim shadowWidth As Long, shadowRadius As Double, highlightWidth As Long, highlightRadius As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     With cParams
@@ -329,8 +329,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "shadowamount", sltShadowAmount

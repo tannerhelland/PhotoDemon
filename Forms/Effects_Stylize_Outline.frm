@@ -118,8 +118,8 @@ Option Explicit
 Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list.  Note that not all parameters are used by all modes.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
     Dim edgeThreshold As Double, edgeType As Long, edgeColor As Long, edgeStyle As String

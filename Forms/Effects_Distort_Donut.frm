@@ -260,8 +260,8 @@ Public Sub ApplyDonutDistortion(ByVal effectParams As String, Optional ByVal toP
 
     If (Not toPreview) Then Message "Deep-frying image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim initialAngle As Double, donutSpread As Double, interiorRadius As Double, donutHeight As Double
@@ -592,8 +592,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "angle", sltAngle.Value

@@ -124,8 +124,8 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
     
     If (Not toPreview) Then Message "Mezzotinting image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim mType As Long, mRandom As Long, mSmoothness As Long, mStipplingLevel As Long
@@ -313,8 +313,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "type", btsType.ListIndex

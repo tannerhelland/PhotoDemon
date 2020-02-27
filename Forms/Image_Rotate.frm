@@ -136,8 +136,8 @@ End Property
 Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal isPreview As Boolean = False)
     
     'First, parse out individual XML parameters
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString rotationParameters
     
     Dim thingToRotate As PD_ActionTarget
@@ -339,8 +339,8 @@ End Sub
 
 Private Function GetFunctionParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "target", m_RotateTarget

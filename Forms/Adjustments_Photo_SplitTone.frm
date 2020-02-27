@@ -135,8 +135,8 @@ Public Sub SplitTone(ByVal effectParams As String, Optional ByVal toPreview As B
     
     If (Not toPreview) Then Message "Split-toning image..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim highlightColor As Long, shadowColor As Long, balance As Double, strength As Double
@@ -335,8 +335,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "highlightcolor", cpHighlight.Color

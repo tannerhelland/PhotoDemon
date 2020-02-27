@@ -398,8 +398,8 @@ Public Sub PlayFillFromMacro(ByRef srcParams As String)
     If ((Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH)) Then
     
         'Parse param string and call the appropriate filler
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString srcParams
         
         'Some properties come directly from the fill object
@@ -518,8 +518,8 @@ End Sub
 'Retrieve all current settings as a param string
 Private Function GetAllFillSettings(ByVal srcX As Single, ByVal srcY As Single) As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'Some properties come directly from the fill object
     If EnsureFillerExists Then

@@ -173,8 +173,8 @@ End Sub
 
 Private Sub cmdBar_OKClick()
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.AddParam "compression", btsCompression.ListIndex
     cParams.AddParam "max-compatibility", CBool(btsCompatibility.ListIndex = 1)
     

@@ -160,8 +160,8 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     
     If (Not toPreview) Then Message "Wrapping image in plastic..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim wrapDetail As Long, wrapSmoothness As Double
@@ -413,8 +413,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "detail", sldDetail.Value

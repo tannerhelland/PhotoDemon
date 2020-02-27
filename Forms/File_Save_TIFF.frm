@@ -353,8 +353,8 @@ End Sub
 
 Private Function GetExportParamString() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'Start with the standard TIFF settings
     Dim compressName As String
@@ -435,14 +435,14 @@ Private Sub UpdatePreviewSource()
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core TIFF encoder
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
+        Dim cParams As pdSerialize
+        Set cParams = New pdSerialize
         cParams.SetParamString GetExportParamString()
         
         'The color-depth-specific options are embedded as a single option, so extract them into their
         ' own parser.
-        Dim cParamsDepth As pdParamXML
-        Set cParamsDepth = New pdParamXML
+        Dim cParamsDepth As pdSerialize
+        Set cParamsDepth = New pdSerialize
         cParamsDepth.SetParamString cParams.GetString("TIFFColorDepth", vbNullString)
         
         'Color and grayscale modes require different processing, so start there

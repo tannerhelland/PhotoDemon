@@ -227,8 +227,8 @@ End Sub
 'Get/Set all control settings as a single XML packet
 Public Function GetAllSettings() As String
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     'All entries use text to make it easier to pass changed/upgraded settings in the future
     Dim outputColorModel As String
@@ -300,8 +300,8 @@ End Function
 'Used by the "last-used settings" manager to reset all settings to the user's previous value(s)
 Public Sub SetAllSettings(ByVal newSettings As String)
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString newSettings
     
     Dim srcParam As String

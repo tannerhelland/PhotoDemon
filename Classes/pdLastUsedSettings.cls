@@ -39,7 +39,7 @@ Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
 
 'XML handling (used to save/load presets) is handled through a specialized class
-Private m_Params As pdParamXML
+Private m_Params As pdSerialize
 
 'Each instance of this control must be tied to a unique form.  The form's name is used to generate a unique key
 ' at initialization time, and that key is used to set/retrieve preset data from the master preset file.
@@ -69,7 +69,7 @@ Friend Function LoadAllControlValues() As Boolean
     
     'To remedy this, v7.0 moved to a new system, where individual last-used values are all cached inside a single
     ' XML file.  This file is managed by the user preferences engine.
-    If (m_Params Is Nothing) Then Set m_Params = New pdParamXML
+    If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
     m_ParentID = Replace$(m_ParentForm.Name, "Form", vbNullString, , , vbTextCompare) & "-presets"
     
     Dim presetPacket As String
@@ -317,7 +317,7 @@ Private Function InControlArray(ByRef Ctl As Object) As Boolean
 End Function
 
 Private Sub Class_Initialize()
-    Set m_Params = New pdParamXML
+    Set m_Params = New pdSerialize
 End Sub
 
 Private Sub Class_Terminate()

@@ -156,8 +156,8 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     If (Not toPreview) Then Message "Adjusting image exposure..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim exposureAdjust As Double, offsetAdjust As Double, gammaAdjust As Double
@@ -366,8 +366,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "exposure", sltExposure

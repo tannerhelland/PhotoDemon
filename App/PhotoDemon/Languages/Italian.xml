@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.463</langversion>
+<langversion>6.7.464</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4648,12 +4648,6 @@ Per favore inserisci un valore numerico.</translation>
 
 <!-- END text for pdPaletteChild.cls-->
 
-<!-- BEGIN text for pdParamXML.cls -->
-
-<!-- pdParamXML.cls contains 0 phrases. -->
-
-<!-- END text for pdParamXML.cls-->
-
 <!-- BEGIN text for pdPixelBlender.cls -->
 
 <!-- pdPixelBlender.cls contains 0 phrases. -->
@@ -4764,6 +4758,12 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdSerialize.cls -->
+
+<!-- pdSerialize.cls contains 0 phrases. -->
+
+<!-- END text for pdSerialize.cls-->
 
 <!-- BEGIN text for pdSpriteSheet.cls -->
 

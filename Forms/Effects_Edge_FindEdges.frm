@@ -177,8 +177,8 @@ End Sub
 ' algorithms support the parameter.
 Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim edgeDetectionType As PD_EdgeDetector, edgeDirectionality As PD_EdgeDirection, blackBackground As Boolean
@@ -206,8 +206,8 @@ Public Sub ApplyEdgeDetection(ByVal effectParams As String, Optional ByVal toPre
     
         'Because some of these parameters are handled separately, we now need to build a special parameter string
         ' for just the convolver.
-        Dim cParamsOut As pdParamXML
-        Set cParamsOut = New pdParamXML
+        Dim cParamsOut As pdSerialize
+        Set cParamsOut = New pdSerialize
         
         With cParamsOut
             .AddParam "name", GetNameOfEdgeDetector(edgeDetectionType)
@@ -658,8 +658,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "method", lstEdgeOptions.ListIndex

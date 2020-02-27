@@ -96,8 +96,8 @@ End Property
 
 Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isPreview As Boolean = False)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
     Dim rotationAngle As Double, thingToRotate As PD_ActionTarget
@@ -444,8 +444,8 @@ End Sub
 ' "straighten image/layer using this angle" feature.
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "angle", sltAngle.Value

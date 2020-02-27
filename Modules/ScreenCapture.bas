@@ -63,8 +63,8 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 'Simple routine for capturing the screen and loading it as an image
 Public Sub CaptureScreen(ByRef screenCaptureParams As String)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString screenCaptureParams
     
     Dim captureFullDesktop As Boolean, minimizePD As Boolean, alternateWindowHwnd As Long, includeChrome As Boolean, alternateWindowName As String

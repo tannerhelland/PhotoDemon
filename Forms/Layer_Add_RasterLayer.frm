@@ -212,8 +212,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     With cParams
         .AddParam "targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex
         .AddParam "layertype", PDL_Image

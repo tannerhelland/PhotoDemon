@@ -137,8 +137,8 @@ Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview 
 
     If (Not toPreview) Then Message "Simulating large image explosion..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim xDiffuse As Long, yDiffuse As Long, wrapPixels As Boolean
@@ -266,8 +266,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "xsize", sltX.Value

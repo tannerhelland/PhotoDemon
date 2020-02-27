@@ -404,11 +404,11 @@ Public Sub MenuCloseAll()
 
 End Sub
 
-'Create a new, blank image from scratch.  Incoming parameters must be assembled as XML (via pdParamXML, typically)
+'Create a new, blank image from scratch.  Incoming parameters must be assembled as XML (via pdSerialize, typically)
 Public Function CreateNewImage(Optional ByRef newImageParameters As String) As Boolean
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString newImageParameters
     
     Dim newWidth As Long, newHeight As Long, newDPI As Double

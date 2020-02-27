@@ -275,8 +275,8 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim isMonochrome As Boolean, preserveLuminance As Boolean
     Dim channelModifiers(0 To 3, 0 To 3) As Double
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString channelMixerParams
     
     With cParams
@@ -468,8 +468,8 @@ Private Sub cmdBar_ReadCustomPresetData()
     'Because this control encompasses a bunch of "invisible" settings (e.g. the same sliders are reused
     ' against multiple channels, and we cache those settings independent of UI objects), we must read out
     ' a custom preset string that contains the ENTIRE CHANNEL ARRAY - not just the active one.
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString cmdBar.RetrievePresetData("channelArray")
     
     'We can now parse that string to retrieve the values for each individual channel
@@ -688,8 +688,8 @@ End Sub
 ' This function handles the creation of that string for both previews and full-image applications.
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
     

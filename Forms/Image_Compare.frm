@@ -159,8 +159,8 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     
     Message "Analyzing images..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString listOfParameters
     
     Dim srcImageID As Long, srcLayerIdx As Long
@@ -468,8 +468,8 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "source-image-id", m_OpenImageIDs.GetInt(ddSource(0).ListIndex)

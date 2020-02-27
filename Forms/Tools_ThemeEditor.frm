@@ -466,7 +466,7 @@ Private Sub cmdExport_Click()
         ' current theme and/or request information from the caller.)  Some icons come pre-colored, and as such,
         ' they obey different rules.  This must all be stored in the resource file.
         Dim i As Long, nodeIndex As Long
-        Dim cXML As pdParamXML: Set cXML = New pdParamXML
+        Dim cXML As pdSerialize: Set cXML = New pdSerialize
         Dim tmpDIB As pdDIB, tmpDIBSize As Long, tmpDIBPointer As Long
         Const PD_RES_NODE_ID_IMG As String = "PDRSI"
         

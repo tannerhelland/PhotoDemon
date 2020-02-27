@@ -366,8 +366,8 @@ Public Function LoadPDI_HeadersOnly(ByRef pdiPath As String, ByRef dstImage As p
     'We now need to iterate through the collection and retrieve a corresponding layer ID from each XML string.
     ' This allows us to match headers from the file against headers in the current pdImage object, and detect
     ' any mismatches in z-order.
-    Dim xmlReader As pdParamXML
-    Set xmlReader = New pdParamXML
+    Dim xmlReader As pdSerialize
+    Set xmlReader = New pdSerialize
     
     Dim layerIDs As pdStack
     Set layerIDs = New pdStack
@@ -443,8 +443,8 @@ Public Function LoadPDI_SingleLayer(ByRef pdiPath As String, ByRef dstLayer As p
     Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
     chunkLoaded = False
     
-    Dim tmpString As String, xmlReader As pdParamXML
-    Set xmlReader = New pdParamXML
+    Dim tmpString As String, xmlReader As pdSerialize
+    Set xmlReader = New pdSerialize
     
     'Start iterating chunks in the file, looking for layer header chunks specifically.
     Do While pdiReader.ChunksRemain()

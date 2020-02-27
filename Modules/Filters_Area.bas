@@ -60,8 +60,8 @@ End Type
 Public Sub ApplyConvolutionFilter_XML(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Prepare a param parser
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
         
     'Note that the only purpose of the FilterType string is to display this message
@@ -95,8 +95,8 @@ End Sub
 Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Parameters are passed via XML; this parser will retrieve individual values for us
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     'Create a local array and point it at the destination pixel data

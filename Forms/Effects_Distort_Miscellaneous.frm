@@ -111,8 +111,8 @@ Option Explicit
 'Correct lens distortion in an image
 Public Sub ApplyMiscDistort(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim distortName As String, distortStyle As Long, edgeHandling As Long, superSamplingAmount As Long
@@ -458,8 +458,8 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         .AddParam "name", lstDistorts.List(lstDistorts.ListIndex)

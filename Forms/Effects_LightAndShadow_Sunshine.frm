@@ -255,8 +255,8 @@ Public Sub fxSunshine(ByVal effectParams As String, Optional ByVal toPreview As 
     
     If (Not toPreview) Then Message "Generating light beams..."
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
     Dim sunRadius As Double, numBeams As Long, baseColor As Long, colorVariance As Long
@@ -609,8 +609,8 @@ End Sub
 
 Private Function GetLocalParamString(Optional ByVal isPreview As Boolean = True) As String
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
     
     With cParams
         
