@@ -125,7 +125,7 @@ Friend Sub EnsureCapacity(ByVal requiredCapacityInChars As Long)
         'Time to enlarge the buffer!  Figure out what our new size would be using the current growth strategy.
         ' (See the top of the class for details on how this multiplier was selected.)
         Dim newSize As Long
-        newSize = Len(m_Buffer) * GROWTH_STRATEGY
+        newSize = Int(Len(m_Buffer) * GROWTH_STRATEGY + 0.5)
         
         'If the caller wants more size than the default allocator would give us, just use their request.
         If (requiredCapacityInChars > newSize) Then newSize = requiredCapacityInChars
@@ -162,10 +162,16 @@ End Function
 
 'Want to erase the entire buffer with some new string?  This function provides a shortcut way to do it
 ' (vs clearing the buffer and manually appending a string).
-Friend Sub Reset(Optional ByRef newString As String = vbNullString)
-    EnsureCapacity Len(newString)
-    CopyMemoryStrict StrPtr(m_Buffer), StrPtr(newString), Len(newString) * 2
+Friend Sub Reset(Optional ByRef newString As String = vbNullString, Optional ByVal ensureTrailingNulls As Boolean = True)
+    
+    'Reuse our existing allocation if we can (taking care to zero-out trailing bytes, as a precaution)
     m_Length = Len(newString)
+    If (LenB(m_Buffer) > 0) Then VBHacks.ZeroMemory StrPtr(m_Buffer), Len(m_Buffer) * 2
+    EnsureCapacity m_Length
+    
+    'Copy the new string directly into place
+    If (LenB(newString) > 0) Then CopyMemoryStrict StrPtr(m_Buffer), StrPtr(newString), LenB(newString)
+    
 End Sub
 
 'Modify the current "end of data" pointer.  *ZERO VALIDATION IS PERFORMED ON THE PASSED LENGTH PARAMETER*,
