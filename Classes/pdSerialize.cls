@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Internal Parameter Handler v2
 'Copyright 2013-2020 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 07/October/17
-'Last update: switch to pdString, which greatly improves parameter assembly performance
+'Last updated: 28/February/20
+'Last update: make .AddParam() smarter - we know numeric datatypes are already XML-safe, so don't bother
+'             manually delimiting them.
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all
 ' actions as part of macros, it also requires a way to standardize parameter lists (regardless of
@@ -268,22 +269,30 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
         strParamValue = paramValue
     ElseIf (VarType(paramValue) = vbByte) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbInteger) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbLong) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbSingle) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbDouble) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbBoolean) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbDecimal) Then
         strParamValue = Trim$(Str$(paramValue))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbCurrency) Then
         strParamValue = Trim$(Str$(paramValue))
     ElseIf (VarType(paramValue) = vbNull) Then
         strParamValue = Trim$(Str$(0))
+        valueGuaranteedXMLSafe = True
     ElseIf (VarType(paramValue) = vbDate) Then
         strParamValue = Format$(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
     
@@ -398,18 +407,22 @@ Friend Function GetXMLSafeName(ByRef srcString As String) As String
     
 End Function
 
-'Given a parameter value string, make it XML-safe (e.g. replace "<" and ">" with HTML equivalents).
+'Given a parameter value string, make it XML-safe (e.g. replace "&", "<", ">" with HTML equivalents).
 ' Note that we don't currently delimit other chars because PD uses only a subset of XML functionality, by design.
 Private Function DelimitParamValue(ByVal srcString As String) As String
     DelimitParamValue = srcString
+    If (InStr(1, srcString, "&") <> 0) Then DelimitParamValue = Replace$(DelimitParamValue, "&", "&amp;")
     If (InStr(1, srcString, "<") <> 0) Then DelimitParamValue = Replace$(DelimitParamValue, "<", "&lt;")
     If (InStr(1, srcString, ">") <> 0) Then DelimitParamValue = Replace$(DelimitParamValue, ">", "&gt;")
 End Function
 
+'When un-delimiting param values, it's important to do it in the *opposite* order in which we initially
+' delimited them.  (This ensures that ampersands in escaped entities are restored correctly.)
 Private Function UnDelimitParamValue(ByRef srcString As String) As String
     UnDelimitParamValue = srcString
-    If (InStr(1, srcString, "&lt;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&lt;", "<")
     If (InStr(1, srcString, "&gt;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&gt;", ">")
+    If (InStr(1, srcString, "&lt;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&lt;", "<")
+    If (InStr(1, srcString, "&amp;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&amp;", "&")
 End Function
 
 'A custom CDbl function that accepts both commas and decimals as a separator; this is important when moving floating-point data,
