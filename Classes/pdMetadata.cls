@@ -71,20 +71,85 @@ Friend Function GetSerializedXMLData() As String
     
     If (m_NumOfTags > 0) Then
         
-        Dim cParams As pdSerialize
-        Set cParams = New pdSerialize
-        cParams.Reset 1#
+        'We're actually going to use two serializers - one for the full metadata collection,
+        ' and a second one for individual tags (which have *huge* lists of properties).
+        Dim mainSerializer As pdSerialize
+        Set mainSerializer = New pdSerialize
+        mainSerializer.Reset 2#
+        mainSerializer.AddParam "tag-count", m_NumOfTags, True, True
         
-        cParams.AddParam "PDMetadataTagCount", m_NumOfTags
+        Dim tagSerializer As pdSerialize
+        Set tagSerializer = New pdSerialize
         
         Dim i As Long
         For i = 0 To m_NumOfTags - 1
-            cParams.AddParam "PDMD_TAG_NO_" & CStr(i), ExifTool.SerializeTagToString(m_Tags(i)), True
+            
+            'Serialize each tag in turn, then add the finished result to the main serializer
+            tagSerializer.Reset 2#
+            
+            'It's important to note that we need to be careful here with flagging items as "XML-safe".
+            ' (This is an optional shortcut parameter to .AddParam() that tells it the passed value
+            '  does *not* need to be manually delimited.)  .AddParam() is smart enough to know that
+            ' numeric values are XML-safe, but strings may or may not be depending on the presence of
+            ' invalid XML chars ("<", ">", "&").  Flagging entries as "XML-safe" improves performance,
+            ' but it will break subsequent parsing if used incorrectly - so be wary!
+            With m_Tags(i)
+                tagSerializer.AddParam "group-and-name", .TagGroupAndName, True
+                tagSerializer.AddParam "group", .TagGroup, True
+                tagSerializer.AddParam "group-readable", .TagGroupFriendly, True
+                tagSerializer.AddParam "name", .tagName, True
+                tagSerializer.AddParam "name-readable", .TagNameFriendly, True
+                tagSerializer.AddParam "table", .TagTable, True
+                tagSerializer.AddParam "id", .TagID, True
+                tagSerializer.AddParam "value-readable", .TagValueFriendly, True
+                tagSerializer.AddParam "value", .TagValue, True
+                tagSerializer.AddParam "has-index", .HasIndex, True
+                tagSerializer.AddParam "is-list", .IsTagList, True
+                tagSerializer.AddParam "is-binary", .IsTagBinary, True
+                tagSerializer.AddParam "binary-was-extracted", .WasBinaryExtracted, True
+                tagSerializer.AddParam "base64", .TagBase64Value, True, True
+                tagSerializer.AddParam "internal-use", .InternalUseOnly, True
+                tagSerializer.AddParam "internal-index", .TagIndexInternal, True
+                tagSerializer.AddParam "remove", .TagMarkedForRemoval, True
+                tagSerializer.AddParam "modified-now", .UserModifiedThisSession, True
+                tagSerializer.AddParam "modified-any", .UserModifiedAllSessions, True
+                tagSerializer.AddParam "user-value", .UserValueNew, True
+                tagSerializer.AddParam "user-id", .UserIDNew, True
+                tagSerializer.AddParam "hit-database", .DB_TagHitDatabase, True
+                tagSerializer.AddParam "is-writable", .DB_IsWritable, True
+                tagSerializer.AddParam "type-count", .DB_TypeCount, True
+                tagSerializer.AddParam "data-type", .DB_DataType, True
+                tagSerializer.AddParam "data-type-strict", .DB_DataTypeStrict, True
+                tagSerializer.AddParam "is-avoid", .DBF_IsAvoid, True
+                tagSerializer.AddParam "is-bag", .DBF_IsBag, True
+                tagSerializer.AddParam "is-binary", .DBF_IsBinary, True
+                tagSerializer.AddParam "is-flattened", .DBF_IsFlattened, True
+                tagSerializer.AddParam "is-list", .DBF_IsList, True
+                tagSerializer.AddParam "is-mandatory", .DBF_IsMandatory, True
+                tagSerializer.AddParam "is-permanent", .DBF_IsPermanent, True
+                tagSerializer.AddParam "is-protected", .DBF_IsProtected, True
+                tagSerializer.AddParam "is-sequence", .DBF_IsSequence, True
+                tagSerializer.AddParam "is-unknown", .DBF_IsUnknown, True
+                tagSerializer.AddParam "is-unsafe", .DBF_IsUnsafe, True
+                tagSerializer.AddParam "description", .DB_Description, True
+                tagSerializer.AddParam "hardcoded-list", .DB_HardcodedList, True
+                tagSerializer.AddParam "hardcoded-list-size", .DB_HardcodedListSize, True
+                If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
+                    If (Not .DB_StackIDs Is Nothing) Then tagSerializer.AddParam "stack-ids", .DB_StackIDs.SerializeStackToSingleString(), True
+                    If (Not .DB_StackValues Is Nothing) Then tagSerializer.AddParam "stack-values", .DB_StackValues.SerializeStackToSingleString(), True
+                End If
+                'During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
+                'tagSerializer.AddParam "debug-data", .TagDebugData, True
+            End With
+            
+            'Add the finished XML string to the main serializer
+            mainSerializer.AddParam "tag-" & CStr(i), tagSerializer.GetParamString(), True, False
+            
         Next i
         
     End If
     
-    GetSerializedXMLData = cParams.GetParamString
+    GetSerializedXMLData = mainSerializer.GetParamString()
     
 End Function
 
@@ -94,15 +159,103 @@ Friend Sub RecreateFromSerializedXMLData(ByRef srcString As String)
     Set cParams = New pdSerialize
     cParams.SetParamString srcString
     
-    If (cParams.GetLong("PDMetadataTagCount", 0) > 0) Then
+    Dim i As Long
     
-        m_NumOfTags = cParams.GetLong("PDMetadataTagCount", 0)
+    'Check for legacy encoding
+    If (cParams.GetParamVersion() >= 2#) Then
+        
+        'Make sure there's a non-zero amount of tags to decode
+        m_NumOfTags = cParams.GetLong("tag-count", 0, True)
+        If (m_NumOfTags < 0) Then m_NumOfTags = 0
         ReDim m_Tags(0 To m_NumOfTags) As PDMetadataItem
         
-        Dim i As Long
-        For i = 0 To m_NumOfTags - 1
-            ExifTool.RecoverTagFromSerializedString cParams.GetString("PDMD_TAG_NO_" & CStr(i)), m_Tags(i)
-        Next i
+        If (m_NumOfTags > 0) Then
+            
+            Dim tagSerializer As pdSerialize
+            Set tagSerializer = New pdSerialize
+            
+            For i = 0 To m_NumOfTags - 1
+                
+                'Serialize each tag in turn, then add the finished result to the main serializer
+                tagSerializer.Reset
+                tagSerializer.SetParamString cParams.GetString("tag-" & CStr(i), vbNullString, True)
+                
+                'It's important to note that we need to be careful here with flagging items as "XML-safe".
+                ' (This is an optional shortcut parameter to .AddParam() that tells it the passed value
+                '  does *not* need to be manually delimited.)  .AddParam() is smart enough to know that
+                ' numeric values are XML-safe, but strings may or may not be depending on the presence of
+                ' invalid XML chars ("<", ">", "&").  Flagging entries as "XML-safe" improves performance,
+                ' but it will break subsequent parsing if used incorrectly - so be wary!
+                With m_Tags(i)
+                    .TagGroupAndName = tagSerializer.GetString("group-and-name", , True)
+                    .TagGroup = tagSerializer.GetString("group", , True)
+                    .TagGroupFriendly = tagSerializer.GetString("group-readable", , True)
+                    .tagName = tagSerializer.GetString("name", , True)
+                    .TagNameFriendly = tagSerializer.GetString("name-readable", , True)
+                    .TagTable = tagSerializer.GetString("table", , True)
+                    .TagID = tagSerializer.GetString("id", , True)
+                    .TagValueFriendly = tagSerializer.GetString("value-readable", , True)
+                    .TagValue = tagSerializer.GetString("value", , True)
+                    .HasIndex = tagSerializer.GetBool("has-index", , True)
+                    .IsTagList = tagSerializer.GetBool("is-list", , True)
+                    .IsTagBinary = tagSerializer.GetBool("is-binary", , True)
+                    .WasBinaryExtracted = tagSerializer.GetBool("binary-was-extracted", , True)
+                    .TagBase64Value = tagSerializer.GetString("base64", , True)
+                    .InternalUseOnly = tagSerializer.GetBool("internal-use", , True)
+                    .TagIndexInternal = tagSerializer.GetLong("internal-index", , True)
+                    .TagMarkedForRemoval = tagSerializer.GetBool("remove", , True)
+                    .UserModifiedThisSession = tagSerializer.GetBool("modified-now", , True)
+                    .UserModifiedAllSessions = tagSerializer.GetBool("modified-any", , True)
+                    .UserValueNew = tagSerializer.GetString("user-value", , True)
+                    .UserIDNew = tagSerializer.GetString("user-id", , True)
+                    .DB_TagHitDatabase = tagSerializer.GetBool("hit-database")
+                    .DB_IsWritable = tagSerializer.GetBool("is-writable", , True)
+                    .DB_TypeCount = tagSerializer.GetLong("type-count", , True)
+                    .DB_DataType = tagSerializer.GetString("data-type", , True)
+                    .DB_DataTypeStrict = tagSerializer.GetLong("data-type-strict", , True)
+                    .DBF_IsAvoid = tagSerializer.GetBool("is-avoid", , True)
+                    .DBF_IsBag = tagSerializer.GetBool("is-bag", , True)
+                    .DBF_IsBinary = tagSerializer.GetBool("is-binary", , True)
+                    .DBF_IsFlattened = tagSerializer.GetBool("is-flattened", , True)
+                    .DBF_IsList = tagSerializer.GetBool("is-list", , True)
+                    .DBF_IsMandatory = tagSerializer.GetBool("is-mandatory", , True)
+                    .DBF_IsPermanent = tagSerializer.GetBool("is-permanent", , True)
+                    .DBF_IsProtected = tagSerializer.GetBool("is-protected", , True)
+                    .DBF_IsSequence = tagSerializer.GetBool("is-sequence", , True)
+                    .DBF_IsUnknown = tagSerializer.GetBool("is-unknown", , True)
+                    .DBF_IsUnsafe = tagSerializer.GetBool("is-unsafe", , True)
+                    .DB_Description = tagSerializer.GetString("description", , True)
+                    .DB_HardcodedList = tagSerializer.GetBool("hardcoded-list", , True)
+                    .DB_HardcodedListSize = tagSerializer.GetLong("hardcoded-list-size", , True)
+                    If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
+                        Set .DB_StackIDs = New pdStringStack
+                        Set .DB_StackValues = New pdStringStack
+                        .DB_StackIDs.RecreateStackFromSerializedString tagSerializer.GetString("stack-ids", , True)
+                        .DB_StackValues.RecreateStackFromSerializedString tagSerializer.GetString("stack-values", , True)
+                    End If
+                    
+                    'During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
+                    '.TagDebugData = tagSerializer.GetString("debug-data", , True)
+                    
+                End With
+                
+            Next i
+            
+        End If
+    
+    'Legacy block
+    Else
+    
+        If (cParams.GetLong("PDMetadataTagCount", 0) > 0) Then
+        
+            m_NumOfTags = cParams.GetLong("PDMetadataTagCount", 0)
+            ReDim m_Tags(0 To m_NumOfTags) As PDMetadataItem
+            
+            For i = 0 To m_NumOfTags - 1
+                ExifTool.RecoverSerializedTag_Legacy cParams.GetString("PDMD_TAG_NO_" & CStr(i)), m_Tags(i)
+            Next i
+            
+        End If
         
     End If
     

@@ -1962,76 +1962,9 @@ Public Function ShouldTagNeverBeWritten(ByRef srcTag As PDMetadataItem) As Boole
                     
 End Function
 
-'This function is slow, as you'd expect, because tags can potentially be *huge*, including many
-' variable-length strings.  Try not to call it any more than absolutely necessary.
-Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As String
-
-    On Error GoTo SerializeFailed
-    
-    If (m_ParseXML Is Nothing) Then Set m_ParseXML = New pdSerialize
-    m_ParseXML.Reset
-    
-    'Basically, this is just a long-ass process of assembling all tag properties into XML tags.
-    With srcMetadata
-        m_ParseXML.AddParam "PDMD_TagGroupAndName", .TagGroupAndName, True
-        m_ParseXML.AddParam "PDMD_TagGroup", .TagGroup, True
-        m_ParseXML.AddParam "PDMD_TagGroupFriendly", .TagGroupFriendly, True
-        m_ParseXML.AddParam "PDMD_TagName", .tagName, True
-        m_ParseXML.AddParam "PDMD_TagNameFriendly", .TagNameFriendly, True
-        m_ParseXML.AddParam "PDMD_TagTable", .TagTable, True
-        m_ParseXML.AddParam "PDMD_TagID", .TagID, True
-        m_ParseXML.AddParam "PDMD_TagValueFriendly", .TagValueFriendly, True
-        m_ParseXML.AddParam "PDMD_TagValue", .TagValue, True
-        m_ParseXML.AddParam "PDMD_HasIndex", .HasIndex, True
-        m_ParseXML.AddParam "PDMD_IsTagList", .IsTagList, True
-        m_ParseXML.AddParam "PDMD_IsTagBinary", .IsTagBinary, True
-        If (LenB(.TagBase64Value) <> 0) Then m_ParseXML.AddParam "PDMD_TagBase64", .TagBase64Value, True
-        m_ParseXML.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted, True
-        m_ParseXML.AddParam "PDMD_InternalUseOnly", .InternalUseOnly, True
-        m_ParseXML.AddParam "PDMD_TagIndexInternal", .TagIndexInternal, True
-        m_ParseXML.AddParam "PDMD_TagBase64Value", .TagBase64Value, True
-        m_ParseXML.AddParam "PDMD_TagMarkedForRemoval", .TagMarkedForRemoval, True
-        m_ParseXML.AddParam "PDMD_UserModifiedThisSession", .UserModifiedThisSession, True
-        m_ParseXML.AddParam "PDMD_UserModifiedAllSessions", .UserModifiedAllSessions, True
-        m_ParseXML.AddParam "PDMD_UserValueNew", .UserValueNew, True
-        m_ParseXML.AddParam "PDMD_UserIDNew", .UserIDNew, True
-        m_ParseXML.AddParam "PDMD_DBTagHitDatabase", .DB_TagHitDatabase, True
-        m_ParseXML.AddParam "PDMD_DBISWritable", .DB_IsWritable, True
-        m_ParseXML.AddParam "PDMD_DBTypeCount", .DB_TypeCount, True
-        m_ParseXML.AddParam "PDMD_DBDataType", .DB_DataType, True
-        m_ParseXML.AddParam "PDMD_DBDataTypeStrict", .DB_DataTypeStrict, True
-        m_ParseXML.AddParam "PDMD_DBFIsAvoid", .DBF_IsAvoid, True
-        m_ParseXML.AddParam "PDMD_DBFIsBag", .DBF_IsBag, True
-        m_ParseXML.AddParam "PDMD_DBFIsBinary", .DBF_IsBinary, True
-        m_ParseXML.AddParam "PDMD_DBFIsFlattened", .DBF_IsFlattened, True
-        m_ParseXML.AddParam "PDMD_DBFIsList", .DBF_IsList, True
-        m_ParseXML.AddParam "PDMD_DBFIsMandatory", .DBF_IsMandatory, True
-        m_ParseXML.AddParam "PDMD_DBFIsPermanent", .DBF_IsPermanent, True
-        m_ParseXML.AddParam "PDMD_DBFIsProtected", .DBF_IsProtected, True
-        m_ParseXML.AddParam "PDMD_DBFIsSequence", .DBF_IsSequence, True
-        m_ParseXML.AddParam "PDMD_DBFIsUnknown", .DBF_IsUnknown, True
-        m_ParseXML.AddParam "PDMD_DBFIsUnsafe", .DBF_IsUnsafe, True
-        m_ParseXML.AddParam "PDMD_DBDescription", .DB_Description, True
-        m_ParseXML.AddParam "PDMD_DBHardCodedList", .DB_HardcodedList, True
-        m_ParseXML.AddParam "PDMD_DBHardCodedListSize", .DB_HardcodedListSize, True
-        If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
-            If (Not .DB_StackIDs Is Nothing) Then m_ParseXML.AddParam "PDMD_StackIDs", .DB_StackIDs.SerializeStackToSingleString(), True
-            If (Not .DB_StackValues Is Nothing) Then m_ParseXML.AddParam "PDMD_StackValues", .DB_StackValues.SerializeStackToSingleString(), True
-        End If
-        'During debugging, it may be helpful to cache the pure data returned from ExifTool; uncomment to allow this
-        'm_ParseXML.AddParam "PDMD_TagDebugData", .TagDebugData, True
-    End With
-    
-    SerializeTagToString = m_ParseXML.GetParamString()
-    
-    Exit Function
-    
-SerializeFailed:
-    PDDebug.LogAction "WARNING!  ExifTool.SerializeTagToString failed with Error #" & Err.Number & ", " & Err.Description
-    
-End Function
-
-Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)
+'The pdMetadata class now handles this function internally.  This copy exists solely for legacy
+' PDI files that used the old format.
+Public Sub RecoverSerializedTag_Legacy(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)
     
     If (LenB(srcString) <> 0) Then
         

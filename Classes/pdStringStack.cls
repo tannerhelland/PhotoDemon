@@ -522,7 +522,7 @@ Friend Function RecreateStackFromSerializedString(ByRef srcString As String) As 
         For i = 0 To m_NumOfStrings - 1
             
             If (InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0) Then
-                Me.AddString Replace(stringArray(i + 1), rplPipeString, tstPipeString, , , vbBinaryCompare)
+                Me.AddString Replace$(stringArray(i + 1), rplPipeString, tstPipeString, , , vbBinaryCompare)
             Else
                 Me.AddString stringArray(i + 1)
             End If
