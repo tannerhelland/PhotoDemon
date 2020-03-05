@@ -1,7 +1,7 @@
 #define RT_MANIFEST 24
 
 // Icon for the main application
-AAA				ICON		PHOTO_all.ico
+AAA				ICON		pd_icons_new.ico
 
 // Manifest
 1				RT_MANIFEST	PhotoDemon.exe.manifest
