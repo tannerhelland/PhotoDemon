@@ -156,9 +156,15 @@ Public Type PDMetadataItem
     TagIndexInternal As Long        'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
     
-    'Used to flag tags that need to be removed by the image export engine.  The edit dialog may set this function,
-    ' and the "remove privacy concern tags" option may also set this at export-time.
+    'Used to flag tags that need to be removed by the image export engine.  Users can set this flag
+    ' through the Image > Metadata > Edit Metadata dialog.
     TagMarkedForRemoval As Boolean
+    
+    'When saving image files, users can also select the convenient "remove tags with privacy concerns" option.
+    ' When that flag is set, PD will mark this internal removal flag.  (This is kept distinct from the
+    ' normal marked-for-removal flag, because we don't want to save this value persistently to PDI files,
+    ' or display it to the user in the normal metadata edit dialog.
+    TagMarkedForRemoval_Export As Boolean
     
     'Used to flag tags that the user has touched from the metadata editing dialog
     UserModifiedThisSession As Boolean
@@ -997,7 +1003,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
             ' needing to rely on ExifTool for the behavior, and similarly, if we request removal "just in case",
             ' ExifTool is likely to spew a whole bunch of warnings, which we don't want - but I've left this code here
             ' as an example, in case I need to someday reinstate it.
-            'If tmpMetadata.TagMarkedForRemoval Then
+            'If tmpMetadata.TagMarkedForRemoval or tmpMetadata.TagMarkedForRemoval_Export Then
             '    cmdParams.AppendLine "-" & tmpMetadata.TagGroupAndName & "="
             'End If
             
@@ -1891,7 +1897,7 @@ End Function
 '
 'For now, however, you can call this function to see if PD will remove the tag if the Anonymization option is checked.
 Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Boolean
-
+    
     Dim potentialConcern As Boolean
     potentialConcern = False
     

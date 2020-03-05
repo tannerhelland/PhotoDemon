@@ -111,6 +111,8 @@ Friend Function GetSerializedXMLData() As String
                 tagSerializer.AddParam "internal-use", .InternalUseOnly, True
                 tagSerializer.AddParam "internal-index", .TagIndexInternal, True
                 tagSerializer.AddParam "remove", .TagMarkedForRemoval, True
+                'Note that there is another internal "marked for removal" flag here - we do *not* save it, however.
+                ' (See comments in parameter description in the ExifTool module for details.)
                 tagSerializer.AddParam "modified-now", .UserModifiedThisSession, True
                 tagSerializer.AddParam "modified-any", .UserModifiedAllSessions, True
                 tagSerializer.AddParam "user-value", .UserValueNew, True
@@ -510,7 +512,7 @@ Private Function RetrieveModifiedXMLString() As String
         Dim i As Long
         For i = 0 To m_NumOfTags - 1
         
-            If m_Tags(i).TagMarkedForRemoval Then
+            If m_Tags(i).TagMarkedForRemoval Or m_Tags(i).TagMarkedForRemoval_Export Then
             
                 'Find this tag's start position
                 tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName & ">")
@@ -1549,7 +1551,9 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
             'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
             ' privacy-problematic tags must be manually flagged.
             For i = 0 To m_NumOfTags - 1
-                If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
+                If (Not m_Tags(i).TagMarkedForRemoval) Then
+                    m_Tags(i).TagMarkedForRemoval_Export = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
+                End If
             Next i
             
         End If
@@ -1558,7 +1562,9 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
         ' format or ExifTool version numbers, which ExifTool will raise warnings about (as those values need to be implicitly
         ' handled by ExifTool itself, rather than being forcibly set to their previous values).
         For i = 0 To m_NumOfTags - 1
-            If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
+            If (Not m_Tags(i).TagMarkedForRemoval) Then
+                m_Tags(i).TagMarkedForRemoval_Export = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
+            End If
         Next i
         
         'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
