@@ -98,10 +98,11 @@ Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 ' be set independently.
 Private m_FontSize As Single
 
-'In a normal dropdown, we can use the same metrics for both the list and the box itself.  For a font box, however,
-' the list entries must be taller than the dropdown area.  As such, we let the (more intelligent) list manager handle
-' the list box metrics, while we manually control the dropdown box's height.
-Private m_IdealComboBoxHeight As Single
+'In a normal dropdown, we can use the same metrics for both the list and the box itself.
+' For a font box, however, the list entries must be taller than the dropdown area.
+' As such, we let the (more intelligent) list manager handle the list box metrics,
+' while we manually control the dropdown box's height.
+Private m_IdealControlHeight As Single
 
 'The font drop-down box is unique in that its list area is deliberately wider than the dropdown area (which tends to
 ' be quite small, on account of the tool options area being snug).  When the font size of the control changes,
@@ -287,7 +288,7 @@ Public Property Let FontSize(ByVal newSize As Single)
     
     'A *ton* of rendering metrics are tied to the current font size.  All must be refreshed upon a change.
     m_LargestWidth = 0
-    m_IdealComboBoxHeight = Fonts.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
+    m_IdealControlHeight = Fonts.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
     lbPrimary.ListItemHeight = Fonts.GetDefaultStringHeight(m_FontSize) * 2 + 2
     listSupport.DefaultItemHeight = lbPrimary.ListItemHeight
     
@@ -671,7 +672,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_ComboBox
+    listSupport.ListSupportMode = PDLM_DropDown
     
     'Prep font-specific managers and renderers
     Set m_listOfFonts = New pdStringStack
@@ -932,7 +933,7 @@ Private Sub RaiseListBox()
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
     ' scroll bar's maximum value is contingent on the available pixel size of the dropdown.
-    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_CB
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_DD
     
     'Now we can show the window
     With popupRect
@@ -1034,7 +1035,7 @@ Private Sub UpdateControlLayout()
     ' constants at the top of this module.
     Dim desiredControlHeight As Long
     If ucSupport.IsCaptionActive Then desiredControlHeight = ucSupport.GetCaptionBottom + 2 Else desiredControlHeight = 0
-    desiredControlHeight = desiredControlHeight + m_IdealComboBoxHeight + COMBO_PADDING_VERTICAL * 2
+    desiredControlHeight = desiredControlHeight + m_IdealControlHeight + COMBO_PADDING_VERTICAL * 2
     
     'Apply the new height to this UC instance, as necessary
     If ucSupport.GetControlHeight <> desiredControlHeight Then

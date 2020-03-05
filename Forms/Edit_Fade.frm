@@ -220,7 +220,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         ProgressBars.SetProgBarVal 0
         ReleaseProgressBar

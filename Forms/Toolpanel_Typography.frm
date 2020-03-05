@@ -820,7 +820,7 @@ Private Sub bsText_BrushChanged()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -848,7 +848,7 @@ Private Sub bsTextBackground_BrushChanged()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -894,7 +894,7 @@ Private Sub btnFontStyles_Click(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -996,7 +996,7 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1028,7 +1028,7 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1056,7 +1056,7 @@ Private Sub cboCharCase_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1084,7 +1084,7 @@ Private Sub cboCharMirror_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1112,7 +1112,7 @@ Private Sub cboTextFontFace_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1140,7 +1140,7 @@ Private Sub cboTextRenderingHint_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1168,7 +1168,7 @@ Private Sub cboWordWrap_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1196,7 +1196,7 @@ Private Sub chkBackground_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1224,7 +1224,7 @@ Private Sub chkBackgroundBorder_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1252,7 +1252,7 @@ Private Sub chkFillText_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1280,7 +1280,7 @@ Private Sub chkHinting_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1308,7 +1308,7 @@ Private Sub chkOutlineText_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1453,7 +1453,7 @@ Private Sub lblConvertLayerConfirm_Click()
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     Interface.SyncInterfaceToCurrentImage
     
 End Sub
@@ -1482,7 +1482,7 @@ Private Sub psText_PenChanged()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1510,7 +1510,7 @@ Private Sub psTextBackground_PenChanged()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1538,7 +1538,7 @@ Private Sub sldTextFontSize_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1566,7 +1566,7 @@ Private Sub sltCharInflation_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1594,7 +1594,7 @@ Private Sub sltCharOrientation_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1622,7 +1622,7 @@ Private Sub sltCharSpacing_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1650,7 +1650,7 @@ Private Sub tudJitter_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1678,7 +1678,7 @@ Private Sub tudLineSpacing_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1720,7 +1720,7 @@ Private Sub tudMargin_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1781,7 +1781,7 @@ Private Sub txtTextTool_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
 End Sub
 

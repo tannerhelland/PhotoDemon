@@ -302,7 +302,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     'Failsafe check for seam carving failure; this should never trigger
     Else

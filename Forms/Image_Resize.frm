@@ -603,7 +603,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     End If
         
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Release the progress bar
     SetProgBarVal 0

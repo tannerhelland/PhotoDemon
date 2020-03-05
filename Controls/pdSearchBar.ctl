@@ -939,7 +939,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_ComboBox
+    listSupport.ListSupportMode = PDLM_DropDown
     
 End Sub
 
@@ -1259,7 +1259,7 @@ Private Sub RaiseListBox()
                             If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
                         End If
                         
-                        lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_CB
+                        lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_DD
                         Exit Sub
                         
                     End If
@@ -1302,7 +1302,7 @@ Private Sub RaiseListBox()
         End If
     End If
     
-    lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_CB
+    lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_Inside_DD
     
     'Now we can show the window; we also notify the window of its changed window style bits
     With popupRect

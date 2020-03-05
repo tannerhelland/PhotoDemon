@@ -46,7 +46,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         'Redraw the viewport if necessary
         If canvasUpdateRequired Then
             markEventHandled = True
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
         
     'Handle non-arrow keys next
@@ -80,7 +80,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
             
             'Activate the new layer, then redraw the viewport and interface to match
             PDImages.GetActiveImage.SetActiveLayerByIndex curLayerIndex
-            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             SyncInterfaceToCurrentImage
             
         End If
@@ -89,7 +89,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         If (vkCode = VK_SPACE) Then
             markEventHandled = True
             PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             Interface.SyncInterfaceToCurrentImage
         End If
         
@@ -130,7 +130,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
                 'If the layer under the mouse is not already active, activate it now
                 If (layerUnderMouse <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
                     Layers.SetActiveLayerByIndex layerUnderMouse, False
-                    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                    Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 End If
             
             End If

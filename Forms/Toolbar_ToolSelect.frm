@@ -895,7 +895,7 @@ Private Sub NewToolSelected()
     
     'Because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    If PDImages.IsImageActive() Then ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If PDImages.IsImageActive() Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage

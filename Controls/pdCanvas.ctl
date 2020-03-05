@@ -786,7 +786,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     
     'Generate a default viewport parameter object
     Dim tmpViewportParams As PD_ViewportParams
-    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+    tmpViewportParams = Viewport.GetDefaultParamObject()
             
     'Check mouse button use
     If (Button = vbLeftButton) Then
@@ -875,7 +875,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Redraw the viewport immediately
                     tmpViewportParams.curPOI = poi_CornerSE
-                    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+                    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
                     
                 End If
             
@@ -925,7 +925,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     
     Select Case g_CurrentTool
         Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
-            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
@@ -1151,7 +1151,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         Tools.SyncToolOptionsUIToCurrentLayer
                         
                         'Manually force a viewport redraw
-                        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                         
                     'If the user already specified a size, use their values to finalize the layer size
                     Else
@@ -1263,25 +1263,25 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     ConvertCanvasCoordsToImageCoords Me, PDImages.GetActiveImage(), x, y, imgX, imgY, True
     
     'Suspend automatic viewport redraws until we are done with our calculations
-    ViewportEngine.DisableRendering
+    Viewport.DisableRendering
     hRuler.SetRedrawSuspension True
     vRuler.SetRedrawSuspension True
     
     'Calculate a new zoom value
     If StatusBar.IsZoomEnabled Then
         If (zoomAmount > 0) Then
-            If (StatusBar.GetZoomDropDownIndex > 0) Then StatusBar.SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(StatusBar.GetZoomDropDownIndex)
+            If (StatusBar.GetZoomDropDownIndex > 0) Then StatusBar.SetZoomDropDownIndex Zoom.GetNearestZoomInIndex(StatusBar.GetZoomDropDownIndex)
         ElseIf (zoomAmount < 0) Then
-            If (StatusBar.GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then StatusBar.SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(StatusBar.GetZoomDropDownIndex)
+            If (StatusBar.GetZoomDropDownIndex <> Zoom.GetZoomCount) Then StatusBar.SetZoomDropDownIndex Zoom.GetNearestZoomOutIndex(StatusBar.GetZoomDropDownIndex)
         End If
     End If
     
     'Re-enable automatic viewport redraws
-    ViewportEngine.EnableRendering
+    Viewport.EnableRendering
     
-    'Request a manual redraw from ViewportEngine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
+    'Request a manual redraw from Viewport.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
     
     'Notify external UI elements of the change
     hRuler.SetRedrawSuspension False, False
@@ -1363,7 +1363,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     
     'Request the scroll-specific viewport pipeline stage, and notify all relevant UI elements of the change
     If (Not Me.GetRedrawSuspension) Then
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
         RelayViewportChanges
     End If
     
@@ -1600,7 +1600,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     If (Not Me.GetRedrawSuspension) Then
     
         'Request the scroll-specific viewport pipeline stage
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), Me
         
         'Notify any other relevant UI elements
         RelayViewportChanges
@@ -1699,7 +1699,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     'Prepare a default viewport parameter object; some cursor objects are rendered directly onto the
     ' primary canvas, so we may need to perform a viewport refresh
     Dim tmpViewportParams As PD_ViewportParams
-    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+    tmpViewportParams = Viewport.GetDefaultParamObject()
             
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
@@ -1774,18 +1774,18 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If (m_LastPOI <> curPOI) Then
                 m_LastPOI = curPOI
                 tmpViewportParams.curPOI = curPOI
-                ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
+                Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
             End If
             
         'The color-picker custom-draws its own outline.
         Case COLOR_PICKER
             CanvasView.RequestCursor_System IDC_ICON
-            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
         
         'The measurement tool uses a combination of cursors and on-canvas UI to do its thing
         Case ND_MEASURE
             If Tools_Measure.SpecialCursorWanted() Then CanvasView.RequestCursor_System IDC_SIZEALL Else CanvasView.RequestCursor_System IDC_ARROW
-            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
         
         Case SELECT_RECT, SELECT_CIRC
         
@@ -1935,7 +1935,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 If (m_LastPOI <> curPOI) Then
                     m_LastPOI = curPOI
                     tmpViewportParams.curPOI = curPOI
-                    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
+                    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
                 End If
                 
             'If the current layer is *not* a text layer, clicking anywhere will create a new text layer
@@ -1948,16 +1948,16 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         ' request a viewport refresh.)
         Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE
             CanvasView.RequestCursor_System IDC_ICON
-            If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            If (Button = 0) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             
         'The fill tool needs to manually render a custom "paint bucket" icon regardless of mouse button state
         Case PAINT_FILL
             CanvasView.RequestCursor_System IDC_ICON
-            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             
         Case PAINT_GRADIENT
             CanvasView.RequestCursor_System IDC_ICON
-            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             
         Case Else
             CanvasView.RequestCursor_System IDC_ARROW

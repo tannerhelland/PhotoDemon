@@ -29,13 +29,13 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     If PDImages.IsImageActive() Then
     
-        ViewportEngine.DisableRendering
+        Viewport.DisableRendering
             
         'If the "fit all" zoom value is greater than 100%, use 100%.  Otherwise, use the "fit all" value as-is.
         Dim newZoomIndex As Long
-        newZoomIndex = g_Zoom.GetZoomFitAllIndex
+        newZoomIndex = Zoom.GetZoomFitAllIndex
         
-        If (g_Zoom.GetZoomValue(newZoomIndex) > 1#) Then newZoomIndex = g_Zoom.GetZoom100Index
+        If (Zoom.GetZoomRatioFromIndex(newZoomIndex) > 1#) Then newZoomIndex = Zoom.GetZoom100Index
         
         'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
         ' the user switches between loaded images).
@@ -43,10 +43,10 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         PDImages.GetActiveImage.SetZoom newZoomIndex
         
         'Re-enable scrolling
-        ViewportEngine.EnableRendering
+        Viewport.EnableRendering
             
         'Now fix scrollbars and everything
-        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
+        If (Not suppressRendering) Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -60,17 +60,17 @@ Public Sub FitOnScreen()
     
     If PDImages.IsImageActive() Then
         
-        ViewportEngine.DisableRendering
+        Viewport.DisableRendering
         
         'Set zoom to the "fit whole" index
-        FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
-        PDImages.GetActiveImage.SetZoom g_Zoom.GetZoomFitAllIndex
+        FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetZoomFitAllIndex
+        PDImages.GetActiveImage.SetZoom Zoom.GetZoomFitAllIndex
         
         'Re-enable scrolling
-        ViewportEngine.EnableRendering
+        Viewport.EnableRendering
             
         'Now fix scrollbars and everything
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -95,7 +95,7 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
         FormMain.MainCanvas(0).SetRedrawSuspension False
             
         'Now fix scrollbars and everything
-        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        If (Not suspendImmediateRedraw) Then Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -193,7 +193,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal displayM
         If (PDImages.GetNumOpenImages() = 0) And (Macros.GetMacroStatus <> MacroBATCH) Then
             
             'Unload the backbuffer of the primary canvas
-            ViewportEngine.EraseViewportBuffers
+            Viewport.EraseViewportBuffers
             
             'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based
             ' on the current image, so if no images are loaded, their contents may shift.)
@@ -425,16 +425,16 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         If (associatedUndoType = UNDO_Everything) Or (associatedUndoType = UNDO_Image) Or (associatedUndoType = UNDO_Image_VectorSafe) Or (associatedUndoType = UNDO_ImageHeader) Then
             
-            ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToCustom, PDImages.GetActiveImage.ImgViewport.GetHScrollValue, PDImages.GetActiveImage.ImgViewport.GetVScrollValue
+            Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToCustom, PDImages.GetActiveImage.ImgViewport.GetHScrollValue, PDImages.GetActiveImage.ImgViewport.GetVScrollValue
             
             'Reflow any image-window-specific chrome (status bar, rulers, etc)
             FormMain.MainCanvas(0).AlignCanvasView
             
         Else
             Dim tmpViewportParams As PD_ViewportParams
-            tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            tmpViewportParams = Viewport.GetDefaultParamObject()
             tmpViewportParams.curPOI = poi_ReuseLast
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
         End If
         
         'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image

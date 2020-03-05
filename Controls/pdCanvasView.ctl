@@ -434,7 +434,7 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
         ' is slower than the automatic repaints requested by our parent pdUCSupport instance.  As such,
         ' we manually disable repaints until the viewport buffer is ready.
         ucSupport.SuspendAutoRepaintBehavior True
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         ucSupport.SuspendAutoRepaintBehavior False
         
         'Because we suspended auto-repaints, we must manually request a final paint-to-screen

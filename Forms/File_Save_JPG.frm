@@ -342,7 +342,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
-Private Sub UpdateComboBox()
+Private Sub UpdateDropDown()
     
     Select Case sltQuality.Value
         Case 40
@@ -455,7 +455,7 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltQuality_Change()
-    If (Not m_CheckBoxUpdatingDisabled) Then UpdateComboBox
+    If (Not m_CheckBoxUpdatingDisabled) Then UpdateDropDown
 End Sub
 
 'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),

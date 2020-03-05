@@ -417,7 +417,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
                     If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
                         Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
                         Layers.SetActiveLayerByIndex clickedLayer, False
-                        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                     End If
                     
                 End If
@@ -482,14 +482,14 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         If (vkCode = VK_RIGHT) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
             'sltLayerOpacity.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOpacity + 10
-            'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
+            'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
         End If
         
         'Left key decreases active layer opacity
         If (vkCode = VK_LEFT) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
             'sltLayerOpacity.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOpacity - 10
-            'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
+            'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
         End If
         
         'Delete key: delete the active layer (if allowed)
@@ -525,7 +525,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 PDImages.GetActiveImage.SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -540,7 +540,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
             PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             SyncInterfaceToCurrentImage
         End If
         
@@ -638,7 +638,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             Me.RequestRedraw True
             
             'Redraw the viewport
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         End If
         
@@ -678,7 +678,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
                 Me.RequestRedraw True
                 
                 'Redraw the viewport
-                ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 
             End If
             

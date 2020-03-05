@@ -149,7 +149,7 @@ Public Sub RemoveLayerTransparency(ByVal processParameters As String)
     Message "Finished."
     
     'Redraw the main window
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 

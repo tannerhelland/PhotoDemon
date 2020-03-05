@@ -2787,7 +2787,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' by user setting; this is done to match the main viewport pipeline, and ensure accurate results when the viewport
         ' is greatly zoomed-out.
         Dim isZoomedIn As Boolean
-        isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
+        isZoomedIn = (Zoom.GetZoomRatioFromIndex(srcImage.GetZoom()) > 1#)
         
         Dim interpolationType As GP_InterpolationMode
         If isZoomedIn Then
@@ -3989,9 +3989,9 @@ Private Sub m_AntTimer_Timer()
         
         If okayToRender Then
             Dim tmpViewportParams As PD_ViewportParams
-            tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            tmpViewportParams = Viewport.GetDefaultParamObject()
             tmpViewportParams.curPOI = poi_ReuseLast
-            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
         Else
             m_AntTimer.StopTimer
         End If

@@ -416,9 +416,9 @@ Private Sub SyncUI_CurrentImageSettings()
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If (PDImages.GetActiveImage.Width <> 0) Then
-        ViewportEngine.DisableRendering
+        Viewport.DisableRendering
         FormMain.MainCanvas(0).SetZoomDropDownIndex PDImages.GetActiveImage.GetZoom
-        ViewportEngine.EnableRendering
+        Viewport.EnableRendering
     End If
     
 End Sub
@@ -1613,9 +1613,9 @@ Public Sub EnableUserInput()
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
         FormMain.MainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
         Dim tmpViewportParams As PD_ViewportParams
-        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams = Viewport.GetDefaultParamObject()
         tmpViewportParams.curPOI = poi_ReuseLast
-        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+        Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
     End If
     
 End Sub

@@ -407,7 +407,7 @@ Public Function PlayMacroFromFile(ByRef srcMacroPath As String) As Boolean
     If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroSTOP
     
     'Some processor requests may not manually update the screen; as such, perform a manual update now
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Our work here is complete!
     Message "Macro complete!"

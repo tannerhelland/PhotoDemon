@@ -1912,7 +1912,7 @@ Private Sub MnuTest_Click()
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
     ' then uncomment these two lines:
     'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest
@@ -2627,7 +2627,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
+            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetZoom100Index
         End If
         
         'Various zoom values

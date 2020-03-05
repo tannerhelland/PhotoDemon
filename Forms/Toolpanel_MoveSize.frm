@@ -357,7 +357,7 @@ Private Sub cboLayerResizeQuality_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -398,7 +398,7 @@ End Sub
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
     Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -412,7 +412,7 @@ End Sub
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -425,7 +425,7 @@ End Sub
 
 Private Sub chkRotateNode_Click()
     Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
@@ -527,7 +527,7 @@ Private Sub sltLayerAngle_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
@@ -564,7 +564,7 @@ Private Sub sltLayerShearX_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
@@ -605,7 +605,7 @@ Private Sub sltLayerShearY_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
@@ -667,7 +667,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)

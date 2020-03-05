@@ -139,7 +139,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
     'Sub-pixel panning is now allowed (because we're awesome like that)
     Dim zoomRatio As Double
-    zoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
+    zoomRatio = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
     
     'Calculate new scroll values
     Dim hOffset As Long, vOffset As Long
@@ -173,7 +173,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.SetRedrawSuspension False
     
     'Request the scroll-specific viewport pipeline stage
-    ViewportEngine.Stage2_CompositeAllLayers srcImage, FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers srcImage, FormMain.MainCanvas(0)
     
     'As of 7.2, rulers also need to be notified of this change.  (Normally they are notified
     ' of all canvas mouse events, but this tool is a little strange because we move the canvas
@@ -499,9 +499,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     
         'Manually request a canvas redraw
         Dim tmpViewportParams As PD_ViewportParams
-        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams = Viewport.GetDefaultParamObject()
         tmpViewportParams.curPOI = m_CurPOI
-        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, VarPtr(tmpViewportParams)
+        Viewport.Stage2_CompositeAllLayers srcImage, srcCanvas, VarPtr(tmpViewportParams)
     
     End If
     

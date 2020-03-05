@@ -444,14 +444,13 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Initialize viewport engine"
     LogStartupEvent "Initializing viewport engine..."
     
-    'Create the program's primary zoom handler
-    Set g_Zoom = New pdZoom
-    g_Zoom.InitializeViewportEngine
+    'The viewport engine is currently compartmentalized into a few different pieces.
+    ' The "zoom" portion deals with the UI that translates user-facing zoom attributes
+    ' (e.g. mousewheel events or the canvas zoom dropdown) into actual zoom ratios.
+    Zoom.InitializeZoomEngine
+    Zoom.PopulateZoomDropdown FormMain.MainCanvas(0).GetZoomDropDownReference
     
-    'Populate the main form's zoom drop-down
-    g_Zoom.PopulateZoomComboBox FormMain.MainCanvas(0).GetZoomDropDownReference
-    
-    'Populate the main canvas's size unit dropdown
+    'Manually populate the main canvas's size unit dropdown
     FormMain.MainCanvas(0).PopulateSizeUnits
     
     
@@ -638,14 +637,13 @@ Public Sub FinalShutdown()
     Set g_Themer = Nothing
     Set g_Displays = Nothing
     Set g_CheckerboardPattern = Nothing
-    Set g_Zoom = Nothing
     Set g_WindowManager = Nothing
     
     'Release any remaining data associated with user-loaded images
     PDImages.ReleaseAllPDImageResources
     
     'Report final profiling data
-    ViewportEngine.ReportViewportProfilingData
+    Viewport.ReportViewportProfilingData
     PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
     
     'Free any ugly VB-specific workaround data

@@ -654,7 +654,7 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         'If an image has been loaded, and it is valid, redraw it now
         If (PDImages.GetActiveImage.Width > 0) And (PDImages.GetActiveImage.Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And PDImages.GetActiveImage.IsActive Then
-            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
         
     End If

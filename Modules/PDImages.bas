@@ -89,7 +89,7 @@ End Function
 ' is added to the main m_PDImages() collection (via AddImageToMasterCollection(), above).
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
-    dstImage.SetZoom g_Zoom.GetZoom100Index
+    dstImage.SetZoom Zoom.GetZoom100Index
 End Sub
 
 Public Function GetImageByID(ByVal imgID As Long) As pdImage

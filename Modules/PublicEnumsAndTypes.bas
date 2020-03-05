@@ -467,12 +467,12 @@ End Enum
 ' mouse and key events; e.g. MouseWheel has a different meaning for a scrollable list vs a closed dropdown.)
 Public Enum PD_ListSupportMode
     PDLM_ListBox = 0
-    PDLM_ComboBox = 1
-    PDLM_LB_Inside_CB = 2
+    PDLM_DropDown = 1
+    PDLM_LB_Inside_DD = 2
 End Enum
 
 #If False Then
-    Private Const PDLM_ListBox = 0, PDLM_ComboBox = 1, PDLM_LB_Inside_CB = 2
+    Private Const PDLM_ListBox = 0, PDLM_DropDown = 1, PDLM_LB_Inside_DD = 2
 #End If
 
 Public Type PD_Dynamic_Region

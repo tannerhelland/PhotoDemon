@@ -779,7 +779,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Pass control to the viewport renderer, which will perform the actual rendering
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         Message "Finished."
     

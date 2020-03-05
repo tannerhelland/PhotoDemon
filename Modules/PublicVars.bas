@@ -19,9 +19,6 @@ Public g_Clipboard As pdClipboardMain
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools
 
-'Primary zoom handler for the program
-Public g_Zoom As pdZoom
-
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 

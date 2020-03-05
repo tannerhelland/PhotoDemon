@@ -402,7 +402,7 @@ Private Sub RandomizeSettings()
     ' 2) Color pickers will be assigned a random color.
     ' 3) Check boxes will be randomly set to checked or unchecked.
     ' 4) Each option button has a 1 in (num of option buttons) chance of being set to TRUE.
-    ' 5) Listboxes and comboboxes will be given a random ListIndex value.
+    ' 5) Listboxes and dropdowns will be given a random ListIndex value.
     ' 6) Text boxes will be set to a value between -10 and 10.
     ' If other settings are expected or required, they must be set by the client in the RandomizeClick event.
     
@@ -664,7 +664,7 @@ Private Sub ResetSettings()
     ' 3) Color pickers will be turned WHITE.
     ' 4) Check boxes will be CHECKED.
     ' 5) The FIRST encountered option button on the dialog will be selected.
-    ' 6) The FIRST entry in a listbox or combobox will be selected.
+    ' 6) The FIRST entry in a listbox or dropdown will be selected.
     ' 7) Text boxes will be set to 0.
     ' If other settings are expected or required, they must be set by the client in the ResetClick event.
     
@@ -1192,7 +1192,7 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
                         Case "HScrollBar", "VScrollBar"
                             eControl.Value = CLng(controlValue)
                         
-                        'List boxes, combo boxes, and pdComboBox all use a Long-type .ListIndex property
+                        'List boxes and dropdowns all use a Long-type .ListIndex property
                         Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
                         
                             'Validate range before setting

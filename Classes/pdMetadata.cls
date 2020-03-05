@@ -969,7 +969,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                             
                             'If the image is active, redraw the display to reflect the new colors
                             If (parentImageID = PDImages.GetActiveImageID()) Then
-                                ViewportEngine.Stage1_InitializeBuffer PDImages.GetImageByID(parentImageID), FormMain.MainCanvas(0)
+                                Viewport.Stage1_InitializeBuffer PDImages.GetImageByID(parentImageID), FormMain.MainCanvas(0)
                                 Interface.NotifyImageChanged parentImageID
                             End If
                         

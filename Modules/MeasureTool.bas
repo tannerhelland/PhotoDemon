@@ -127,7 +127,7 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     If clickEventAlsoFiring Then
         InitializeMeasureTool
         toolpanel_Measure.UpdateUIText
-        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     Else
     
         'Update the final position, if any
@@ -171,7 +171,7 @@ Public Sub RequestRedraw()
     If (Not m_MeasurementReady) Then Exit Sub
     If (Not m_PointsSet(0)) Then Exit Sub
     
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     toolpanel_Measure.UpdateUIText
     
 End Sub
@@ -200,7 +200,7 @@ Public Sub SwapPoints()
     m_Points(0) = m_Points(1)
     m_Points(1) = tmpPoint
 
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     toolpanel_Measure.UpdateUIText
     
 End Sub
@@ -213,7 +213,7 @@ Private Function IsMouseOverPoint(ByVal chkX As Single, ByVal chkY As Single) As
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(PDImages.GetActiveImage.GetZoom))
+    mouseAccuracy = g_MouseAccuracy * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.GetZoom))
     
     IsMouseOverPoint = -1
     
@@ -390,7 +390,7 @@ End Sub
 Public Sub ResetPoints(Optional ByVal alsoRedrawViewport As Boolean = True)
     InitializeMeasureTool
     toolpanel_Measure.UpdateUIText
-    If alsoRedrawViewport Then ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If alsoRedrawViewport Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Public Sub Rotate2ndPoint90Degrees()
@@ -402,7 +402,7 @@ Public Sub Rotate2ndPoint90Degrees()
     PDMath.RotatePointAroundPoint m_Points(1).x, m_Points(1).y, m_Points(0).x, m_Points(0).y, PDMath.DegreesToRadians(90), tmpPoint.x, tmpPoint.y
     m_Points(1) = tmpPoint
     
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     toolpanel_Measure.UpdateUIText
     
 End Sub

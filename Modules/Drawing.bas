@@ -215,7 +215,7 @@ Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
     
         'Get the current zoom value from the source image, then invert it.  (We're only going to use that value in division.)
         Dim zoomVal As Double
-        zoomVal = 1# / g_Zoom.GetZoomValue(srcImage.GetZoom)
+        zoomVal = 1# / Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
         
         'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
@@ -252,7 +252,7 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
     
         'Get the current zoom value from the source image
         Dim zoomVal As Double
-        zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+        zoomVal = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
             
         'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
@@ -291,7 +291,7 @@ Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, B
     
         'Get the current zoom value from the source image
         Dim zoomVal As Double
-        zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+        zoomVal = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
             
         'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
@@ -441,7 +441,7 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     
     'Get the current zoom value from the source image
     Dim zoomVal As Double
-    zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+    zoomVal = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
     
     'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
     ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
@@ -485,7 +485,7 @@ End Sub
 
 'If you want to convert a position-agnostic size between image and canvas space, use this function
 Public Function ConvertImageSizeToCanvasSize(ByVal srcSize As Double, ByRef srcImage As pdImage) As Double
-    ConvertImageSizeToCanvasSize = srcSize * g_Zoom.GetZoomValue(srcImage.GetZoom)
+    ConvertImageSizeToCanvasSize = srcSize * Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
 End Function
 
 'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
@@ -517,7 +517,7 @@ Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, By
 
     'Get the current zoom value from the source image
     Dim zoomVal As Double
-    zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+    zoomVal = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
     
     'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
     ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,

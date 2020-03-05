@@ -283,7 +283,7 @@ Private Sub cboAlphaMode_Click()
     If PDImages.IsImageActive() Then
         If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
             PDImages.GetActiveImage.GetActiveLayer.SetLayerAlphaMode cboAlphaMode.ListIndex
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 
@@ -308,7 +308,7 @@ Private Sub cboBlendMode_Click()
     If PDImages.IsImageActive() Then
         If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
             PDImages.GetActiveImage.GetActiveLayer.SetLayerBlendMode cboBlendMode.ListIndex
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 
@@ -389,7 +389,7 @@ Private Sub sltLayerOpacity_Change()
     If PDImages.IsImageActive() Then
         If Not (PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
             PDImages.GetActiveImage.GetActiveLayer.SetLayerOpacity sltLayerOpacity.Value
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 

@@ -265,12 +265,12 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltQuality_Change()
-    UpdateComboBox
+    UpdateDropDown
     UpdatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub UpdateComboBox()
+Private Sub UpdateDropDown()
     
     Select Case sltQuality.Value
         

@@ -233,7 +233,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         ReleaseProgressBar
         
         'Redraw the image
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
 
@@ -519,7 +519,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         If applyNonDestructively Then
             PDImages.GetActiveImage.UpdateSize False, selectionWidth, selectionHeight
             Interface.DisplaySize PDImages.GetActiveImage()
-            ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Because the selection boundaries are not guaranteed to be the new image boundaries (as the selection can
         ' lie partially off-image, or it can be comprised of complicated border outlines), simply shrink the image
@@ -532,7 +532,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     
     'For individual layers, we can use some existing viewport pipeline data
     Else
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
     
     'Reset the progress bar to zero, then exit
@@ -597,7 +597,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     Message "Finished. "
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -650,7 +650,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     Message "Finished. "
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -730,7 +730,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Finished. "
     
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -787,7 +787,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
             
     Message "Finished. "
     
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -867,7 +867,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Finished. "
     
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -995,7 +995,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Finished. "
     
@@ -1058,7 +1058,7 @@ Public Sub MenuFitCanvasToAllLayers()
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Finished. "
     
@@ -1245,7 +1245,7 @@ Public Sub TrimImage()
         ReleaseProgressBar
         
         'Redraw the image
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
 

@@ -2464,12 +2464,12 @@ Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
             
         Case "view_zoomin"
             If FormMain.MainCanvas(0).IsZoomEnabled Then
-                If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
+                If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
             End If
             
         Case "view_zoomout"
             If FormMain.MainCanvas(0).IsZoomEnabled Then
-                If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
+                If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
             End If
             
         Case "view_zoomtop"
@@ -2486,7 +2486,7 @@ Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 10
                 
             Case "zoom_actual"
-                If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
+                If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetZoom100Index
                 
             Case "zoom_1_2"
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 14

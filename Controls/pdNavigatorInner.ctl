@@ -356,7 +356,7 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         FormMain.MainCanvas(0).SetScrollValue pdo_Vertical, newVscroll
         FormMain.MainCanvas(0).SetRedrawSuspension False
         
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges

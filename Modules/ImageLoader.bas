@@ -892,7 +892,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
-    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If (Not suspendRedraw) Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1337,7 +1337,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     CheckParentMonitor True
     
     'Reset the main viewport's scroll bars to (0, 0)
-    ViewportEngine.DisableRendering
+    Viewport.DisableRendering
     FormMain.MainCanvas(0).SetScrollVisibility pdo_Both, True
     FormMain.MainCanvas(0).SetScrollValue pdo_Both, 0
     
@@ -1347,7 +1347,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'Fit the current image to the active viewport
     FitImageToViewport
-    ViewportEngine.EnableRendering
+    Viewport.EnableRendering
     
     'Notify the UI manager that it now has one more image to deal with
     If (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageAdded srcImage.imageID

@@ -722,13 +722,13 @@ Private Sub UpdateViewportWhilePainting(ByVal strokeStartTime As Currency, ByRef
     
         'Retrieve viewport parameters, then perform a full layer stack merge and repaint the screen
         Dim tmpViewportParams As PD_ViewportParams
-        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams = Viewport.GetDefaultParamObject()
         tmpViewportParams.renderScratchLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
     
     'If not enough time has passed since the last redraw, simply update the cursor
     Else
-        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
+        Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
     End If
     
     'Notify the paint engine that we refreshed the image; it will add this to its running fps tracker

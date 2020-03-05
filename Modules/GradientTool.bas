@@ -376,13 +376,13 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     
     'Notify the viewport of the need for a redraw
     Dim tmpViewportParams As PD_ViewportParams
-    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+    tmpViewportParams = Viewport.GetDefaultParamObject()
     tmpViewportParams.renderScratchLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
     
     'If fast previews are active, we want to inject our own local scratch layer instead of using
     ' the standard (full-image-sized) one.
     If (g_ViewportPerformance >= PD_PERF_BALANCED) And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
-    If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
+    If mouseButtonDown Then Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
     
     'We can mark rendering as "complete" now
     m_GradientRendering = False

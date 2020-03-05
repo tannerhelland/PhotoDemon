@@ -280,7 +280,7 @@ End Sub
 
 'Want to clone some other list instance?  This function handles it in one fell swoop, including initializing our internal
 ' rendering parameters.
-Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_ListSupportMode = PDLM_LB_Inside_CB)
+Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_ListSupportMode = PDLM_LB_Inside_DD)
     
     'The order in which we copy data from the target list support is crucial; copying in the
     ' wrong order will cause crashes, especially because we are copying the data using direct
@@ -591,7 +591,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             markEventHandled = True
             
         Case VK_PAGEDOWN
-            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
+            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_DD) Then
                 newListIndex = m_LastRenderIndex + 1
             Else
                 newListIndex = newListIndex + 1
@@ -599,7 +599,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             markEventHandled = True
             
         Case VK_PAGEUP
-            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
+            If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_DD) Then
                 newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
             Else
                 newListIndex = newListIndex - 1
@@ -616,7 +616,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'Return only matters for listboxes embedded inside combo boxes.
         Case VK_RETURN, VK_SPACE
-            If (m_ListMode = PDLM_LB_Inside_CB) Then
+            If (m_ListMode = PDLM_LB_Inside_DD) Then
                 markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
@@ -627,7 +627,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         'For listboxes embedded inside combo boxes, the escape key can hide the dropdown.  Raise a Click() event to mimic this.
         Case VK_ESCAPE
-            If (m_ListMode = PDLM_LB_Inside_CB) Then
+            If (m_ListMode = PDLM_LB_Inside_DD) Then
                 markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
@@ -644,7 +644,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     
     'Listboxes dynamically raised by combo boxes should not raise Click() events on keypresses.  This will erroneously cause
     ' the list box to close.  Instead, they simply reassign their .ListIndex and redraw themselves immediately.
-    If (m_ListMode = PDLM_LB_Inside_CB) Then
+    If (m_ListMode = PDLM_LB_Inside_DD) Then
         
         m_ListIndex = newListIndex
         
@@ -709,7 +709,7 @@ Friend Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
     
     'The behavior of the mousewheel varies by the current "listmode", e.g. if our parent is a scrollable listview, we behave
     ' differently than if our parent is a closed dropdown box.
-    If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_CB) Then
+    If (m_ListMode = PDLM_ListBox) Or (m_ListMode = PDLM_LB_Inside_DD) Then
         
         If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
         
@@ -752,7 +752,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
     MakeSureListIndexFitsOnscreen = False
     
     'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
-    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode <> PDLM_ComboBox) Then
+    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode <> PDLM_DropDown) Then
         
         Dim liTop As Single, liBottom As Single
         liTop = m_Items(m_ListIndex).itemTop

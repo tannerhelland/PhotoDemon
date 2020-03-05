@@ -1,4 +1,4 @@
-Attribute VB_Name = "ViewportEngine"
+Attribute VB_Name = "Viewport"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2020 by Tanner Helland
@@ -7,14 +7,14 @@ Attribute VB_Name = "ViewportEngine"
 'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
-' - ViewportEngine.Stage1_InitializeBuffer: calculate all viewport position and overlay rects (required only on first image load,
+' - Viewport.Stage1_InitializeBuffer: calculate all viewport position and overlay rects (required only on first image load,
 '                                           when image size is changed, or when viewport zoom changes)
-' - ViewportEngine.Stage2_CompositeAllLayers: composite all layers in the active image, while accounting for things like
+' - Viewport.Stage2_CompositeAllLayers: composite all layers in the active image, while accounting for things like
 '                                             non-destructive modifications.  Because this function only composites the subset of
 '                                             the image relevant to the target viewport, it must be called on canvas scrollbar changes.
-' - ViewportEngine.Stage3_CompositeCanvas: composite the image with any underlying/overlying canvas UI elements.  At present, this stage
+' - Viewport.Stage3_CompositeCanvas: composite the image with any underlying/overlying canvas UI elements.  At present, this stage
 '                                          handles color management and selection tool compositing, when active.
-' - ViewportEngine.Stage4_FlipBufferAndDrawUI: composite any interactive UI elements (transform nodes, paint tool outlines, etc) to the
+' - Viewport.Stage4_FlipBufferAndDrawUI: composite any interactive UI elements (transform nodes, paint tool outlines, etc) to the
 '                                              canvas, then flip everything to the screen.
 '
 'If you need to draw something to the screen, you need to call the *latest possible pipeline stage*.  Stages are sorted in rough order
@@ -114,7 +114,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If (ptrToViewportParams <> 0) Then
                 CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
             Else
-                localViewportParams = ViewportEngine.GetDefaultParamObject()
+                localViewportParams = Viewport.GetDefaultParamObject()
             End If
             
             'If the "reuse last POI" indicator is passed, substitute our last-saved POI for the one passed in
@@ -211,7 +211,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         If (ptrToViewportParams <> 0) Then
             CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
         Else
-            localViewportParams = ViewportEngine.GetDefaultParamObject()
+            localViewportParams = Viewport.GetDefaultParamObject()
         End If
         
         'If no images have been loaded, clear the canvas and exit
@@ -286,7 +286,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         If (ptrToViewportParams <> 0) Then
             CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
         Else
-            localViewportParams = ViewportEngine.GetDefaultParamObject()
+            localViewportParams = Viewport.GetDefaultParamObject()
         End If
         
         'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
@@ -329,7 +329,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         yScroll_Image = dstCanvas.GetScrollValue(pdo_Vertical)
         
         'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
-        If (m_ZoomRatio = 0#) Then m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
+        If (m_ZoomRatio = 0#) Then m_ZoomRatio = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
         xScroll_Canvas = xScroll_Image * m_ZoomRatio
         yScroll_Canvas = yScroll_Image * m_ZoomRatio
         
@@ -522,7 +522,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
             ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
             ' by PD's zoom handler.
-            m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
+            m_ZoomRatio = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
             
             'Next, we're going to calculate a bunch of rects in various coordinate spaces.  Because PD 7.0 added the ability to scroll past the
             ' edge of the image (at any zoom), these rects are crucial for figuring out the overlap between the zoomed image, and the available
@@ -616,16 +616,16 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             End With
             
             'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
-            If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
+            If (hScrollMax > 15) And (Zoom.GetZoomRatioFromIndex(srcImage.GetZoom) <= 1) Then
                 dstCanvas.SetScrollLargeChange pdo_Horizontal, hScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange pdo_Horizontal, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
+                dstCanvas.SetScrollLargeChange pdo_Horizontal, PDMath.Max2Int(64# / Zoom.GetZoomRatioFromIndex(srcImage.GetZoom), 1)
             End If
             
-            If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
+            If (vScrollMax > 15) And (Zoom.GetZoomRatioFromIndex(srcImage.GetZoom) <= 1) Then
                 dstCanvas.SetScrollLargeChange pdo_Vertical, vScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange pdo_Vertical, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
+                dstCanvas.SetScrollLargeChange pdo_Vertical, PDMath.Max2Int(64# / Zoom.GetZoomRatioFromIndex(srcImage.GetZoom), 1)
             End If
             
             'Scroll bars are now prepped and ready!

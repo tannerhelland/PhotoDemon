@@ -223,7 +223,7 @@ Private Sub Form_Load()
     
     cmdBar.SetPreviewStatus False
     
-    'Populate the dither combobox
+    'Populate the dither dropdown
     Palettes.PopulateDitheringDropdown cboDither
     cboDither.ListIndex = 6
     

@@ -507,7 +507,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
-    listSupport.ListSupportMode = PDLM_ComboBox
+    listSupport.ListSupportMode = PDLM_DropDown
     
 End Sub
 
@@ -733,7 +733,7 @@ Private Sub RaiseListBox()
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
     ' scroll bar's maximum value is contingent on the available pixel size of the dropdown.
-    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_CB
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_Inside_DD
     
     'Now we can show the window; we also notify the window of its changed window style bits
     With popupRect

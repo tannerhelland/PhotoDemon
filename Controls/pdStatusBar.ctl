@@ -366,7 +366,7 @@ End Function
 
 Public Sub SetZoomDropDownIndex(ByVal newIndex As Long)
     cmbZoom.ListIndex = newIndex
-    If (cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex) Then cmdZoomFit.Value = True
+    If (cmbZoom.ListIndex = Zoom.GetZoomFitAllIndex) Then cmdZoomFit.Value = True
 End Sub
 
 Public Function IsZoomEnabled() As Boolean
@@ -432,22 +432,22 @@ Private Sub CmbZoom_Click()
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
         cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)
-        cmdZoomOut.Enabled = (cmbZoom.ListIndex <> g_Zoom.GetZoomCount)
+        cmdZoomOut.Enabled = (cmbZoom.ListIndex <> Zoom.GetZoomCount)
         
         'Highlight the "zoom fit" button while fit mode is active
-        cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex)
+        cmdZoomFit.Value = (cmbZoom.ListIndex = Zoom.GetZoomFitAllIndex)
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
-        If ViewportEngine.IsRenderingEnabled Then
+        If Viewport.IsRenderingEnabled Then
             
             'If the user has selected any of the "fit xyz" zoom options, we want to re-center the viewport as part
             ' of updating zoom.  If they have *not* selected this, we want to preserve the current center point
             ' of the viewport.
-            If (cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex) Then
-                ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+            If (cmbZoom.ListIndex < Zoom.GetZoomFitWidthIndex) Then
+                Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
             Else
-                ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
+                Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
             End If
         
             'Notify any other relevant UI elements
@@ -468,11 +468,11 @@ Private Sub cmdZoomFit_Click()
 End Sub
 
 Private Sub cmdZoomIn_Click()
-    cmbZoom.ListIndex = g_Zoom.GetNearestZoomInIndex(cmbZoom.ListIndex)
+    cmbZoom.ListIndex = Zoom.GetNearestZoomInIndex(cmbZoom.ListIndex)
 End Sub
 
 Private Sub cmdZoomOut_Click()
-    cmbZoom.ListIndex = g_Zoom.GetNearestZoomOutIndex(cmbZoom.ListIndex)
+    cmbZoom.ListIndex = Zoom.GetNearestZoomOutIndex(cmbZoom.ListIndex)
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -735,8 +735,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         backupSizeIndex = cmbSizeUnit.ListIndex
         
         'Repopulate zoom dropdown text
-        If Not (g_Zoom Is Nothing) Then g_Zoom.InitializeViewportEngine
-        If Not (g_Zoom Is Nothing) Then g_Zoom.PopulateZoomComboBox cmbZoom, backupZoomIndex
+        Zoom.InitializeZoomEngine
+        Zoom.PopulateZoomDropdown cmbZoom, backupZoomIndex
         Me.PopulateSizeUnits
         
         'Auto-size the newly populated combo boxes, according to the width of their longest entries

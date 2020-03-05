@@ -443,7 +443,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Finished."
     

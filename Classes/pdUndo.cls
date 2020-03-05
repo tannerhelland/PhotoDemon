@@ -494,7 +494,7 @@ Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     Me.WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Image successfully restored."
     
@@ -691,7 +691,7 @@ Friend Sub RestoreUndoData()
         End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
     

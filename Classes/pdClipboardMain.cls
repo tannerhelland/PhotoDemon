@@ -298,7 +298,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean, Optional ByVal cFormat As PD
     Processor.MarkProgramBusyState False
     
     'Redraw the active viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 

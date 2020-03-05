@@ -977,7 +977,7 @@ Private Sub Form_Load()
     cboMethod.SetAutomaticRedraws True
     cboMethod.ListIndex = 1
     
-    'Populate the dither combobox
+    'Populate the dither dropdown
     Palettes.PopulateDitheringDropdown cboDithering
     cboDithering.ListIndex = 6
     

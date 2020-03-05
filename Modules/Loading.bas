@@ -399,7 +399,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             End If
             
             'With all pages/frames/icons successfully loaded, redraw the main viewport
-            ViewportEngine.Stage1_InitializeBuffer targetImage, FormMain.MainCanvas(0), VSR_ResetToZero
+            Viewport.Stage1_InitializeBuffer targetImage, FormMain.MainCanvas(0), VSR_ResetToZero
             
         'Add a flag to this pdImage object noting that the multipage loading path was *not* utilized.
         Else
