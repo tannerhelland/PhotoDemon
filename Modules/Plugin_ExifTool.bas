@@ -474,11 +474,11 @@ Public Function RetrieveMetadataString() As String
     
         'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
         ' to standard characters before returning the retrieved metadata.
-        If (InStr(1, m_currentMetadataText, "&amp;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&amp;", "&")
         If (InStr(1, m_currentMetadataText, "&#39;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&#39;", "'")
         If (InStr(1, m_currentMetadataText, "&quot;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&quot;", """")
         If (InStr(1, m_currentMetadataText, "&gt;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&gt;", ">")
         If (InStr(1, m_currentMetadataText, "&lt;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&lt;", "<")
+        If (InStr(1, m_currentMetadataText, "&amp;") > 0) Then m_currentMetadataText = Replace(m_currentMetadataText, "&amp;", "&")
         
     End If
         
@@ -1135,6 +1135,20 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.
     If forciblyAnonymize Then cmdParams.AppendLine "-XMPToolkit="
+    
+    'Finally, remove any other groups with potential privacy implications.
+    ' (Normally, we want to remove individual tags instead of doing this, but ExifTool may attempt
+    ' to be "helpful" and auto-convert data from other categories to these ones.  I've had recurring
+    ' issues with this and iPhone photos, for example - so this adds another layer of failsafes.)
+    If forciblyAnonymize Then
+        cmdParams.AppendLine "-XMP-mwg-rs:all="
+        cmdParams.AppendLine "-XMP-apdi:all="
+        cmdParams.AppendLine "-XMP-depthData:all="
+        cmdParams.AppendLine "-XMP-depthBlurEffect:all="
+        cmdParams.AppendLine "-XMP-portraitLightingEffect:all="
+        cmdParams.AppendLine "-XMP-portraitEffectsMatte:all="
+        cmdParams.AppendLine "-XMP-semanticSegmentationMatte:all="
+    End If
     
     'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
     If (outputMetadataFormat = PDMF_XMP) And srcFileAvailable Then
@@ -1901,46 +1915,49 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         
         'First, we check technical tag names for known problematic text
         Dim sMetadataName As String
-        sMetadataName = UCase$(Trim$(srcTag.tagName))
+        sMetadataName = LCase$(Trim$(srcTag.tagName))
         
-        If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "AUTHOR", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "DESCRIPTION", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "DIGEST", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "DOCUMENTID", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "GPS", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "INSTANCEID", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "SUBJECT", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "TITLE", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then potentialConcern = True
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "firmware", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "about", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "artist", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "author", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "baby", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "by-line", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "city", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "comment", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "copyright", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "country", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "creator", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "date", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "description", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "digest", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "documentid", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "gps", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "history", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "info", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "instanceid", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "location", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "make", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "model", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "name", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "program", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "region", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "rights", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "serial", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "software", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "subject", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "time", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "title", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "tool", vbBinaryCompare) > 0)
+        potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "version", vbBinaryCompare) > 0)
         
         'Next, check actual tag values for known problematic text
         If (Not potentialConcern) Then
             Dim sMetadataValue As String
-            sMetadataValue = UCase$(Trim$(srcTag.TagValue))
-            If InStr(1, sMetadataValue, "XMP.IID", vbBinaryCompare) > 0 Then potentialConcern = True
-            If InStr(1, sMetadataValue, "XMP.DID", vbBinaryCompare) > 0 Then potentialConcern = True
-            If InStr(1, sMetadataValue, "UUID", vbBinaryCompare) > 0 Then potentialConcern = True
+            sMetadataValue = LCase$(Trim$(srcTag.TagValue))
+            potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "xmp.iid", vbBinaryCompare) > 0)
+            potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "xmp.did", vbBinaryCompare) > 0)
+            potentialConcern = potentialConcern Or (InStr(1, sMetadataName, "uuid", vbBinaryCompare) > 0)
         End If
         
     End If
@@ -1957,7 +1974,9 @@ Public Function ShouldTagNeverBeWritten(ByRef srcTag As PDMetadataItem) As Boole
     Dim potentialConcern As Boolean: potentialConcern = False
     potentialConcern = Strings.StringsEqual(srcTag.tagName, "ExifToolVersion", True) Or potentialConcern
     potentialConcern = Strings.StringsEqual(srcTag.tagName, "JFIFVersion", True) Or potentialConcern
-    
+    potentialConcern = Strings.StringsEqual(srcTag.TagGroup, "File", True) Or potentialConcern
+    potentialConcern = Strings.StringsEqual(srcTag.TagGroup, "System", True) Or potentialConcern
+    potentialConcern = Strings.StringsEqual(srcTag.TagGroup, "XMP-depthData", True) Or potentialConcern
     ShouldTagNeverBeWritten = potentialConcern
                     
 End Function

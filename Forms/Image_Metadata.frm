@@ -98,6 +98,17 @@ Begin VB.Form FormMetadata
       _ExtentY        =   1111
       AutoToggle      =   -1  'True
    End
+   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
+      Height          =   630
+      Index           =   2
+      Left            =   1560
+      TabIndex        =   17
+      Top             =   6600
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      AutoToggle      =   -1  'True
+   End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
       Index           =   1
@@ -186,17 +197,6 @@ Begin VB.Form FormMetadata
          _ExtentY        =   979
          Caption         =   "Remove tags that might contain personal information"
       End
-   End
-   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
-      Height          =   630
-      Index           =   2
-      Left            =   1560
-      TabIndex        =   17
-      Top             =   6600
-      Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1111
-      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
@@ -1171,7 +1171,19 @@ Private Sub UpdateTagView()
                 lstValue.Visible = False
                 txtValue.Visible = False
                 lblValue.Visible = True
-                If (btsTechnical(1).ListIndex = 0) Then lblValue.Caption = .TagValueFriendly Else lblValue.Caption = .TagValue
+                
+                'We still need to check for list-type values. (If this is a list-type tag,
+                ' we will replace the default separator (;) with newlines.)
+                If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
+                    If (btsTechnical(1).ListIndex = 0) Then
+                        lblValue.Caption = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
+                    Else
+                        lblValue.Caption = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
+                    End If
+                Else
+                    If (btsTechnical(1).ListIndex = 0) Then lblValue.Caption = .TagValueFriendly Else lblValue.Caption = .TagValue
+                End If
+                
                 reflowTop = lblValue.GetTop + lblValue.GetHeight
             End If
             
@@ -1464,7 +1476,7 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
                         If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
                     End If
                     
-                    If Strings.StringsEqual(txtValue.Text, testString, True) Then
+                    If Strings.StringsNotEqual(txtValue.Text, testString, True) Then
                         
                         'This string is different from the one we placed inside.  Mark the tag as edited, and store the
                         ' user-supplied value.

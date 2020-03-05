@@ -492,6 +492,19 @@ Private Function RetrieveModifiedXMLString() As String
         
         Dim tagStart As Long, tagEnd As Long
         
+        'Before searching for individual tags, we need to manually remove the "rdf:about" entry
+        ' ExifTool now places in the file.  (This points to the original file where the metadata
+        ' came from - we don't want to write that to a temp file if we don't have to.)
+        tagStart = InStr(1, newXMLString, "rdf:about=", vbBinaryCompare)
+        If (tagStart > 0) Then
+        
+            'This is not the most robust solution, but as of v11.89, ExifTool always follows this
+            ' rdf:about line with a newline character.  Search for that and use it as our anchor for removal.
+            tagEnd = InStr(tagStart, newXMLString, vbCrLf, vbBinaryCompare)
+            If (tagEnd > tagStart) Then newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
+        
+        End If
+        
         'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
         ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
         Dim i As Long
@@ -500,14 +513,24 @@ Private Function RetrieveModifiedXMLString() As String
             If m_Tags(i).TagMarkedForRemoval Then
             
                 'Find this tag's start position
-                tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName)
+                tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName & ">")
+                If (tagStart > 0) Then
                 
-                'Next, find this tag's end position
-                tagEnd = InStr(tagStart, newXMLString, "</" & m_Tags(i).TagGroupAndName) + Len(m_Tags(i).TagGroupAndName) + 3
-                
-                'Use those positions to fully remove the tag from the master XML string
-                newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
-            
+                    'Remove the leading newline, if any
+                    If (InStrRev(newXMLString, vbCrLf, tagStart, vbBinaryCompare) = tagStart - 3) Then tagStart = tagStart - 2
+                    
+                    'Next, find this tag's end position
+                    tagEnd = InStr(tagStart, newXMLString, "</" & m_Tags(i).TagGroupAndName & ">") + Len(m_Tags(i).TagGroupAndName) + 3
+                    If (tagEnd > tagStart) Then
+                        
+                        'If the tag is followed by a newline, remove that too
+                        If (InStr(tagEnd, newXMLString, vbCrLf, vbBinaryCompare) = tagEnd + 1) Then tagEnd = tagEnd + 2
+                        
+                        'Use those positions to fully remove the tag from the master XML string
+                        newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
+                        
+                    End If
+                End If
             End If
         
         Next i
@@ -1537,7 +1560,7 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
         For i = 0 To m_NumOfTags - 1
             If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
         Next i
-            
+        
         'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
         ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
         '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
@@ -1553,15 +1576,14 @@ Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As p
             
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
             tmpXMLPath = UserPrefs.GetTempPath()
-                    
+            
             'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
             Dim cHash As pdCrypto: Set cHash = New pdCrypto
             tmpXMLPath = tmpXMLPath & "metadata_" & cHash.QuickHashString(CStr(Timer) & outputPath) & ".xml"
             
             'Write the XML file
-            xmlEngine.LoadXMLFromString newXMLString
-            xmlEngine.WriteXMLToFile tmpXMLPath, True
-        
+            Files.FileSaveAsText newXMLString, tmpXMLPath, True, False
+            
         Else
             tmpXMLPath = vbNullString
         End If
