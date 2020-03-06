@@ -40,7 +40,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
         ' the user switches between loaded images).
         FormMain.MainCanvas(0).SetZoomDropDownIndex newZoomIndex
-        PDImages.GetActiveImage.SetZoom newZoomIndex
+        PDImages.GetActiveImage.SetZoomIndex newZoomIndex
         
         'Re-enable scrolling
         Viewport.EnableRendering
@@ -64,7 +64,7 @@ Public Sub FitOnScreen()
         
         'Set zoom to the "fit whole" index
         FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetZoomFitAllIndex
-        PDImages.GetActiveImage.SetZoom Zoom.GetZoomFitAllIndex
+        PDImages.GetActiveImage.SetZoomIndex Zoom.GetZoomFitAllIndex
         
         'Re-enable scrolling
         Viewport.EnableRendering

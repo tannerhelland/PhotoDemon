@@ -85,11 +85,11 @@ End Function
 
 'Pass this function to obtain a default pdImage object, instantiated to match current UI settings and
 ' user preferences.  Note that this function *does not touch* the main pdImages object, and as such,
-' the created image will not yet have an imageID value.  An I value will be assigned when the object
+' the created image will not yet have an imageID value.  An ID value will be assigned when the object
 ' is added to the main m_PDImages() collection (via AddImageToMasterCollection(), above).
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
-    dstImage.SetZoom Zoom.GetZoom100Index
+    dstImage.SetZoomIndex Zoom.GetZoom100Index
 End Sub
 
 Public Function GetImageByID(ByVal imgID As Long) As pdImage

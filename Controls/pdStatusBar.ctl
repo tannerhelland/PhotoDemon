@@ -428,7 +428,7 @@ Private Sub CmbZoom_Click()
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
         
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
-        PDImages.GetActiveImage.SetZoom cmbZoom.ListIndex
+        PDImages.GetActiveImage.SetZoomIndex cmbZoom.ListIndex
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
         cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)

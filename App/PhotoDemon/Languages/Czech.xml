@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3447</langversion>
+<langversion>6.8.3448</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3832,27 +3832,7 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for ViewportEngine.bas -->
 
-<phrase>
-<original>Operation halted.</original>
-<translation>Operace se zastavila.</translation>
-</phrase>
-
-<phrase>
-<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Není k dispozici dostatek paměti pro pokračování této operace. Uvolněte systémovou paměť (RAM) a zkuste to znovu. Pokud problém přetrvává, snižte hodnotu zvětšení a zkuste to znovu.</translation>
-</phrase>
-
-<phrase>
-<original>Out of memory</original>
-<translation>Nedostatek paměti</translation>
-</phrase>
-
-<phrase>
-<original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Vykreslení výřezu zobrazení bylo pozastaveno kvůli neočekávané chybě (# %1)</translation>
-</phrase>
-
-<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 0 phrases. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -3877,6 +3857,27 @@ Při zadání číselné hodnoty.</translation>
 <!-- WIC.bas contains 0 phrases. -->
 
 <!-- END text for WIC.bas-->
+
+<!-- BEGIN text for Zoom.bas -->
+
+<phrase>
+<original>Fit width</original>
+<translation>Šířka přizpůsobení</translation>
+</phrase>
+
+<phrase>
+<original>Fit height</original>
+<translation>Vyrovnejte výšku</translation>
+</phrase>
+
+<phrase>
+<original>Fit image</original>
+<translation>Přizpůsobit obrázek</translation>
+</phrase>
+
+<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Zoom.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -4917,27 +4918,6 @@ Při zadání číselné hodnoty.</translation>
 <!-- pdXML.cls contains 0 phrases. -->
 
 <!-- END text for pdXML.cls-->
-
-<!-- BEGIN text for pdZoom.cls -->
-
-<phrase>
-<original>Fit width</original>
-<translation>Šířka přizpůsobení</translation>
-</phrase>
-
-<phrase>
-<original>Fit height</original>
-<translation>Vyrovnejte výšku</translation>
-</phrase>
-
-<phrase>
-<original>Fit image</original>
-<translation>Přizpůsobit obrázek</translation>
-</phrase>
-
-<!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for pdZoom.cls-->
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
@@ -16357,10 +16337,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2724</phrasecount>
+<phrasecount>2720</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5026 phrases. -->
-<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
-<!-- These 2724 phrases contain approximately 12701 total words. -->
+<!-- As of this build, PhotoDemon contains 5022 phrases. -->
+<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
+<!-- These 2720 phrases contain approximately 12657 total words. -->
 
 </pdData>

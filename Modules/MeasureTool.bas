@@ -213,7 +213,7 @@ Private Function IsMouseOverPoint(ByVal chkX As Single, ByVal chkY As Single) As
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1# / Zoom.GetZoomRatioFromIndex(PDImages.GetActiveImage.GetZoom))
+    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(g_MouseAccuracy, PDImages.GetActiveImage)
     
     IsMouseOverPoint = -1
     

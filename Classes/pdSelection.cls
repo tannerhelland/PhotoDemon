@@ -2787,7 +2787,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' by user setting; this is done to match the main viewport pipeline, and ensure accurate results when the viewport
         ' is greatly zoomed-out.
         Dim isZoomedIn As Boolean
-        isZoomedIn = (Zoom.GetZoomRatioFromIndex(srcImage.GetZoom()) > 1#)
+        isZoomedIn = (Zoom.GetZoomRatioFromIndex(srcImage.GetZoomIndex()) > 1#)
         
         Dim interpolationType As GP_InterpolationMode
         If isZoomedIn Then

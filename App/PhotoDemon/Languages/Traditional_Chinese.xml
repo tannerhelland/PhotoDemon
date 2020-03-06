@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.134</langversion>
+<langversion>7.0.135</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3792,27 +3792,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for ViewportEngine.bas -->
 
-<phrase>
-<original>Operation halted.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Out of memory</original>
-<translation>記憶體不足</translation>
-</phrase>
-
-<phrase>
-<original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation></translation>
-</phrase>
-
-<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 0 phrases. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -3837,6 +3817,27 @@ Please enter a numeric value.</original>
 <!-- WIC.bas contains 0 phrases. -->
 
 <!-- END text for WIC.bas-->
+
+<!-- BEGIN text for Zoom.bas -->
+
+<phrase>
+<original>Fit width</original>
+<translation>依照寬度</translation>
+</phrase>
+
+<phrase>
+<original>Fit height</original>
+<translation>依照高度</translation>
+</phrase>
+
+<phrase>
+<original>Fit image</original>
+<translation>合適大小</translation>
+</phrase>
+
+<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Zoom.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -4877,27 +4878,6 @@ Please enter a numeric value.</original>
 <!-- pdXML.cls contains 0 phrases. -->
 
 <!-- END text for pdXML.cls-->
-
-<!-- BEGIN text for pdZoom.cls -->
-
-<phrase>
-<original>Fit width</original>
-<translation>依照寬度</translation>
-</phrase>
-
-<phrase>
-<original>Fit height</original>
-<translation>依照高度</translation>
-</phrase>
-
-<phrase>
-<original>Fit image</original>
-<translation>合適大小</translation>
-</phrase>
-
-<!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for pdZoom.cls-->
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
@@ -16304,10 +16284,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2724</phrasecount>
+<phrasecount>2720</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5026 phrases. -->
-<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
-<!-- These 2724 phrases contain approximately 12701 total words. -->
+<!-- As of this build, PhotoDemon contains 5022 phrases. -->
+<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
+<!-- These 2720 phrases contain approximately 12657 total words. -->
 
 </pdData>

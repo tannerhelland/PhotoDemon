@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3447</langversion>
+<langversion>6.8.3448</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3830,27 +3830,7 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- BEGIN text for ViewportEngine.bas -->
 
-<phrase>
-<original>Operation halted.</original>
-<translation>Operation stoppades.</translation>
-</phrase>
-
-<phrase>
-<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Det finns inte tillräckligt med minne för att fortsätta denna operation. Frigör systemminne (RAM) och försök igen. Om problemet kvarstår, minska zoomvärdet och försök igen.</translation>
-</phrase>
-
-<phrase>
-<original>Out of memory</original>
-<translation>Slut på minne</translation>
-</phrase>
-
-<phrase>
-<original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>View rendering pausas på grund av oväntat fel (# %1)</translation>
-</phrase>
-
-<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 0 phrases. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -3875,6 +3855,27 @@ Please ange ett numeriskt värde.</translation>
 <!-- WIC.bas contains 0 phrases. -->
 
 <!-- END text for WIC.bas-->
+
+<!-- BEGIN text for Zoom.bas -->
+
+<phrase>
+<original>Fit width</original>
+<translation>Fit bredd</translation>
+</phrase>
+
+<phrase>
+<original>Fit height</original>
+<translation>Fit höjd</translation>
+</phrase>
+
+<phrase>
+<original>Fit image</original>
+<translation>Fit bild</translation>
+</phrase>
+
+<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Zoom.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -4915,27 +4916,6 @@ Please ange ett numeriskt värde.</translation>
 <!-- pdXML.cls contains 0 phrases. -->
 
 <!-- END text for pdXML.cls-->
-
-<!-- BEGIN text for pdZoom.cls -->
-
-<phrase>
-<original>Fit width</original>
-<translation>Fit bredd</translation>
-</phrase>
-
-<phrase>
-<original>Fit height</original>
-<translation>Fit höjd</translation>
-</phrase>
-
-<phrase>
-<original>Fit image</original>
-<translation>Fit bild</translation>
-</phrase>
-
-<!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for pdZoom.cls-->
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
@@ -16358,10 +16338,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2724</phrasecount>
+<phrasecount>2720</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5026 phrases. -->
-<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
-<!-- These 2724 phrases contain approximately 12701 total words. -->
+<!-- As of this build, PhotoDemon contains 5022 phrases. -->
+<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
+<!-- These 2720 phrases contain approximately 12657 total words. -->
 
 </pdData>

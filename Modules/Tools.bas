@@ -139,7 +139,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
     'Sub-pixel panning is now allowed (because we're awesome like that)
     Dim zoomRatio As Double
-    zoomRatio = Zoom.GetZoomRatioFromIndex(srcImage.GetZoom)
+    zoomRatio = Zoom.GetZoomRatioFromIndex(srcImage.GetZoomIndex())
     
     'Calculate new scroll values
     Dim hOffset As Long, vOffset As Long

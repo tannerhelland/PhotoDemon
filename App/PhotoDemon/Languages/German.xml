@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1724</langversion>
+<langversion>7.2.1725</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3839,27 +3839,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for ViewportEngine.bas -->
 
-<phrase>
-<original>Operation halted.</original>
-<translation>Operation angehalten.</translation>
-</phrase>
-
-<phrase>
-<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei und versuchen es erneut. Wenn das Problem weiterhin besteht, reduzieren Sie den Zoom-Wert und versuchen es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Out of memory</original>
-<translation>Platz im Hauptspeicher reicht nicht aus</translation>
-</phrase>
-
-<phrase>
-<original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Viewport-Rendering pausiert aufgrund eines unerwarteten Fehlers (#%1)</translation>
-</phrase>
-
-<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 0 phrases. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -3884,6 +3864,27 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- WIC.bas contains 0 phrases. -->
 
 <!-- END text for WIC.bas-->
+
+<!-- BEGIN text for Zoom.bas -->
+
+<phrase>
+<original>Fit width</original>
+<translation>Breite anpassen</translation>
+</phrase>
+
+<phrase>
+<original>Fit height</original>
+<translation>Höhe anpassen</translation>
+</phrase>
+
+<phrase>
+<original>Fit image</original>
+<translation>Bild anpassen</translation>
+</phrase>
+
+<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Zoom.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 
@@ -4924,27 +4925,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdXML.cls contains 0 phrases. -->
 
 <!-- END text for pdXML.cls-->
-
-<!-- BEGIN text for pdZoom.cls -->
-
-<phrase>
-<original>Fit width</original>
-<translation>Breite anpassen</translation>
-</phrase>
-
-<phrase>
-<original>Fit height</original>
-<translation>Höhe anpassen</translation>
-</phrase>
-
-<phrase>
-<original>Fit image</original>
-<translation>Bild anpassen</translation>
-</phrase>
-
-<!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for pdZoom.cls-->
 
 <!-- BEGIN text for pdAccelerator.ctl -->
 
@@ -16367,10 +16347,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2724</phrasecount>
+<phrasecount>2720</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5026 phrases. -->
-<!-- 2302 are duplicates, so only 2724 unique phrases have been written to file. -->
-<!-- These 2724 phrases contain approximately 12701 total words. -->
+<!-- As of this build, PhotoDemon contains 5022 phrases. -->
+<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
+<!-- These 2720 phrases contain approximately 12657 total words. -->
 
 </pdData>

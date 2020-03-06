@@ -71,9 +71,9 @@ Public g_Themer As pdTheme
 Public g_RecentFiles As pdRecentFiles
 Public g_RecentMacros As pdMRUManager
 
-'Mouse accuracy for collision detection with on-screen objects.  This is typically 6 pixels, but it's re-calculated
-' at run-time to account for high-DPI screens.  (It may even be worthwhile to let users adjust this value, or to
-' retrieve some system metric for it... if such a thing exists.)
+'Mouse accuracy for collision detection with on-screen objects.  This is currently set by the
+' PDMain.ContinueLoadingProgram() function; it must be calculated at run-time to account
+' for high-DPI settings.
 Public g_MouseAccuracy As Double
 
 'If a double-click action closes a window (e.g. double-clicking a file from a common dialog), Windows incorrectly

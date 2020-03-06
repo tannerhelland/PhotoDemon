@@ -104,10 +104,6 @@ Private m_DPI As Double
 ' PD uses this to activate contextual "play" and "pause" buttons in the navigator.
 Private m_Animated As Boolean
 
-'Current index of the associated zoom combo box; this is stored locally so zoom is preserved when switching
-' between images.
-Private m_ZoomIndex As Long
-
 'Each pdImage stores two file format constants:
 ' 1) Original file format.  This is the format the image was in when it was loaded from file (if applicable).
 '    Original file format is only set once, at load-time, and not changed during a given session.  We must retain
@@ -275,12 +271,12 @@ End Sub
 
 'Zoom is stored as an index into PD's default zoom table.  To resolve these to actual floating-point modifiers,
 ' use a pdZoom class instance.
-Friend Function GetZoom() As Long
-    GetZoom = m_ZoomIndex
+Friend Function GetZoomIndex() As Long
+    GetZoomIndex = ImgViewport.GetZoomIndex()
 End Function
 
-Friend Sub SetZoom(ByVal newZoomIndex As Long)
-    m_ZoomIndex = newZoomIndex
+Friend Sub SetZoomIndex(ByVal newIndex As Long)
+    ImgViewport.SetZoomIndex newIndex
 End Sub
 
 'Time at last modification.  This cannot be directly set by external sources; instead, use the safe "NotifyImageChanged" function.
