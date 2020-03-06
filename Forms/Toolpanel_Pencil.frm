@@ -208,7 +208,7 @@ End Sub
 Public Sub SyncAllPencilSettingsToUI()
     Tools_Pencil.SetBrushSize sltBrushSetting(0).Value
     Tools_Pencil.SetBrushOpacity sltBrushSetting(1).Value
-    Tools_Pencil.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
+    Tools_Pencil.SetBrushColor layerpanel_Colors.GetCurrentColor()
     Tools_Pencil.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Pencil.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     If chkAntialiasing.Value Then Tools_Pencil.SetBrushAntialiasing P2_AA_HighQuality Else Tools_Pencil.SetBrushAntialiasing P2_AA_None

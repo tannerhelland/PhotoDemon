@@ -27,7 +27,6 @@ Private m_BrushOutlinePath As pd2DPath
 Private m_GDIPPen As pd2DPen
 
 'Brush attributes are stored in these variables
-Private m_BrushSource As PD_BrushSource
 Private m_BrushSize As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As PD_BlendMode
@@ -35,7 +34,7 @@ Private m_BrushAlphamode As PD_AlphaMode
 Private m_BrushAntialiasing As PD_2D_Antialiasing
 
 'Note that some brush attributes only exist for certain brush sources.
-Private m_BrushSourceColor As Long
+Private m_BrushColor As Long
 
 'If brush properties have changed since the last brush creation, this is set to FALSE.
 ' (We use this to optimize brush creation behavior.)
@@ -89,12 +88,8 @@ Public Function GetBrushSize() As Single
     GetBrushSize = m_BrushSize
 End Function
 
-Public Function GetBrushSource() As PD_BrushSource
-    GetBrushSource = m_BrushSource
-End Function
-
-Public Function GetBrushSourceColor() As Long
-    GetBrushSourceColor = m_BrushSourceColor
+Public Function GetBrushColor() As Long
+    GetBrushColor = m_BrushColor
 End Function
 
 'Property set functions.  Note that not all brush properties are used by all styles.
@@ -134,16 +129,9 @@ Public Sub SetBrushSize(ByVal newSize As Single)
     End If
 End Sub
 
-Public Sub SetBrushSource(ByVal newSource As PD_BrushSource)
-    If (newSource <> m_BrushSource) Then
-        m_BrushSource = newSource
-        m_BrushIsReady = False
-    End If
-End Sub
-
-Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
-    If (newColor <> m_BrushSourceColor) Then
-        m_BrushSourceColor = newColor
+Public Sub SetBrushColor(Optional ByVal newColor As Long = vbWhite)
+    If (newColor <> m_BrushColor) Then
+        m_BrushColor = newColor
         m_BrushIsReady = False
     End If
 End Sub
@@ -154,7 +142,7 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
     
         'For now, create a circular pen at the current size
         If (m_GDIPPen Is Nothing) Then Set m_GDIPPen = New pd2DPen
-        Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushColor, , P2_LJ_Round, P2_LC_Round
         
         'Whenever we create a new brush, we should also refresh the current brush outline
         If alsoCreateBrushOutline Then CreateCurrentBrushOutline
@@ -225,7 +213,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         m_MouseY = srcY
         
         'Notify the central "color history" manager of the color currently being used
-        If (m_BrushSource = BS_Color) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
+        UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushColor, , True
         
         'Initialize any relevant GDI+ objects for the current brush
         Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)

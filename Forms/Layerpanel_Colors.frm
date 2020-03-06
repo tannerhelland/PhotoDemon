@@ -400,7 +400,7 @@ Private Sub RelayColorChange(ByVal newColor As Long)
     Select Case g_CurrentTool
     
         Case PAINT_PENCIL
-            Tools_Pencil.SetBrushSourceColor newColor
+            Tools_Pencil.SetBrushColor newColor
         
         Case PAINT_SOFTBRUSH
             Tools_Paint.SetBrushSourceColor newColor
