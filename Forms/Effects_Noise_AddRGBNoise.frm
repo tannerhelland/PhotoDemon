@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormNoise 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Add Noise"
+   Caption         =   " Noise"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

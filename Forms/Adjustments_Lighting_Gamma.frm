@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormGamma 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Gamma Correction"
+   Caption         =   " Gamma"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

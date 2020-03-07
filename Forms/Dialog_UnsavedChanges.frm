@@ -3,7 +3,7 @@ Begin VB.Form dialog_UnsavedChanges
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Unsaved Changes"
+   Caption         =   " Unsaved changes"
    ClientHeight    =   4620
    ClientLeft      =   45
    ClientTop       =   390

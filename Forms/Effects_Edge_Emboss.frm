@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormEmbossEngrave 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Emboss/Engrave"
+   Caption         =   " Emboss"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

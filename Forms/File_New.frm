@@ -3,7 +3,7 @@ Begin VB.Form FormNewImage
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Create new image"
+   Caption         =   " New image"
    ClientHeight    =   7035
    ClientLeft      =   45
    ClientTop       =   315

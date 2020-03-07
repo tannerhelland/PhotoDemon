@@ -1229,7 +1229,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     cFile.FileReadData hFile, VarPtr(DIBIDCheck), 4&
         
     If (DIBIDCheck <> DIB_IDENTIFIER) Then
-        Message "Failed to load embedded image; invalid header found."
+        PDDebug.LogAction "Failed to load embedded image; invalid header found."
         CreateFromFile = False
         If (Not useEmbeddedLocation) Then cFile.FileCloseHandle hFile
         Exit Function

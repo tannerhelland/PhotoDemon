@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3448</langversion>
+<langversion>6.8.3450</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Rydding gamle autolagringsdata </translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Automatisk lagring rekonstruksjon komplett for %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Automatisk lagring kan ikke være fullt rekonstruert. Delvis rekonstruksjon forsøkt stedet.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Ingen metadata tilgjengelig.</translation>
+<original>No metadata available</original>
+<translation>Ingen metadata tilgjengelig</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Dette bildet inneholder ingen metadata.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Ingen metadata tilgjengelig</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Dette filformatet støtter ikke metadata. Metadata behandling hoppet.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Kunne ikke starte plugin-tjenesten (kan ikke opprette rør).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Kunne ikke starte plugin-tjenesten (kan ikke opprette prosessen: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Analysere øvre kant av bildet</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Analysere venstre kant av bildet</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Analysere høyre kant av bildet</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Analysere nedre kant av bildet</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Bildet er allerede beskåret  intelligent. Automatisk beskjæring forlatt. (Ingen endringer ble gjort i bildet.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Beskjæring bilde til nye dimensjoner</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Beskjæring bilde til valgt område</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Flipping  bilde</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Roterende bilde klokken</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>roterende bilde</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Roterende bilde mot klokken</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Trimming bilde til nye dimensjoner</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Lagre filen</translation>
+<original>Saving</original>
+<translation>Lagrer</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analysere image histogram for maksimums- og minimumsverdier </translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>stretching histogram</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Ingen %1 encoder funnet. Lagre avbrutt.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -692,7 +627,7 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 <translation>Lagre kan ikke fullføres  uten FreeImage bibliotek.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -724,7 +659,7 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 <translation>Det har oppstått en feil (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -781,28 +716,28 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>klemme dem til nærmeste tilgjengelige pixel</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>reflektere dem over nærmeste kant</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>vikle dem rundt bildet</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>slette dem</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>Ignorer dem</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1021,8 +956,8 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Avbryt bildebehandling</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1087,8 +1022,8 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Beskjæring lag til valgt område</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1246,24 +1181,6 @@ Please bruke et annet program for å lagre dette bildet i en generisk  format (f
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Dessverre, PhotoDemon var ikke i stand til å legge inn følgende bilde: 
-
- %1
-
-Please bruke et annet program for å lagre dette bildet i en generisk  format (for eksempel JPEG eller PNG) før du legger det inn PhotoDemon. Takk!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Bilde Import mislyktes</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Layer import kansellert.</translation>
 </phrase>
@@ -1304,7 +1221,7 @@ Kontroller at disse bilde (r) eksisterer, og at de bruker en støttet bildeforma
 <translation>Bilde duplisering fullført.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2757,8 +2674,8 @@ Please make sure the device is turned on and ready for use.</original>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Skannergrensesnittet  Feil</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2773,6 +2690,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>Den skanner/digitalkamera grensesnitt plug-in (EZTW32.dll) ble merket som manglet på programmet initialization.
 
 To aktivere skannerstøtten, kan du kopiere EZTW32.dll filen (tilgjengelig for nedlasting fra http://eztwain.com/ezt1_download.htm) inn i plug-in-katalogen og laste programmet.</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Skannergrensesnittet  Feil</translation>
 </phrase>
 
 <phrase>
@@ -2793,11 +2715,6 @@ To aktivere skannerstøtten, kan du kopiere EZTW32.dll filen (tilgjengelig for n
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Bilde ervervet vellykket</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Scanner/digitalkamera import deaktivert</translation>
 </phrase>
 
 <phrase>
@@ -3380,11 +3297,6 @@ In mellomtiden  kan du prøve å lagre bildet til et alternativt format. Du kan 
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Screen Capture</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Screen capture fullført.</translation>
 </phrase>
@@ -3394,7 +3306,7 @@ In mellomtiden  kan du prøve å lagre bildet til et alternativt format. Du kan 
 <translation>Skjermbilde alternativer</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4066,12 +3978,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Kunne ikke laste innebygd  bilde; ugyldig header funnet.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4225,16 +4132,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>nytt lag</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>nytt lag</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6795,8 +6697,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynkron metadata sjekk komplett! Oppdaterer metadata samling</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6882,11 +6784,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Lysstyrke/kontrast</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>modell</translation>
 </phrase>
@@ -6921,7 +6818,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>arven</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7030,11 +6927,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Juster fargebalansen </translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>ny balanse</translation>
 </phrase>
@@ -7044,16 +6936,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Justere fargebalansen </translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>Farge alternativer</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7070,7 +6957,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>colorizing bilde</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7133,8 +7020,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Juster Hue/Saturation/Letthet</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7430,11 +7317,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>utjevne Histogram</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>radius</translation>
 </phrase>
@@ -7452,11 +7334,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>kernel shape</original>
 <translation>kernel form</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Analysere bilde histogram</translation>
 </phrase>
 
 <phrase>
@@ -7479,16 +7356,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>lokal</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Juster bilde Levels</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7520,7 +7392,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Kartlegging nye bilde nivåer</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7558,11 +7430,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>gamma Correction</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>holde alle farger i sync</translation>
 </phrase>
@@ -7577,7 +7444,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Justere gammaverdier </translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8022,11 +7889,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Fjern røde øyne</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>strenghet</translation>
 </phrase>
@@ -8076,7 +7938,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Bruke endelige rettelser røde øyne ( %1 av %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8114,11 +7976,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Shadow/Mellomtone/Highlight </translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>skygger</translation>
 </phrase>
@@ -8143,7 +8000,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Justere skygger, mellomtoner  og høylys</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8325,11 +8182,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>fylle opasitet</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>farger</translation>
 </phrase>
@@ -8379,7 +8231,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>rektangel</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8679,11 +8531,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Visual Basic IDE oppdaget</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Jeg forstår risikoen ved å kjøre PhotoDemon i IDE</translation>
 </phrase>
@@ -8693,27 +8540,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Ikke vis denne advarselen igjen</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Du kjører PhotoDemon inne i Visual Basic IDE. Dette anbefales ikke.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Vennligst kompilere PhotoDemon før du bruker den. Mange funksjoner som er avhengige av subclassing er deaktivert i IDE, men noen - for eksempel egendefinerte  kommandoknapper  - kan ikke deaktiveres uten alvorlig påvirker programmets funksjonalitet. Som sådan, kan du oppleve IDE ustabilitet og krasj, spesielt hvis du lukker programmet ved hjelp av IDE stoppknappen.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>I tillegg, som alle andre fotoredigeringsprogrammer, avhengig PhotoDemon tungt på flerdimensjonale arrays. Array ytelsen er alvorlig svekket i IDE, så noen funksjoner kan utføre svært sakte.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Hvis du insisterer på å kjøre PhotoDemon i IDE, må du ikke sende bugs om IDE krasjer eller fryser. Photo Demon utviklere kan bare ta opp spørsmål og bugs som påvirker den kompilerte exe.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8738,16 +8565,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Outline settings</original>
 <translation>outline innstillinger</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>omriss farge og tetthet</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>omriss bredde</translation>
 </phrase>
 
 <phrase>
@@ -8810,7 +8627,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>bevel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8989,8 +8806,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>ulagrede endringer</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9799,11 +9616,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Riktig eller Fix Lens Distortion</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>korreksjon typen</translation>
 </phrase>
@@ -9853,7 +9665,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Korrigere bildeforvrengning </translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9886,8 +9698,8 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Diverse Distort Verktøy</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10058,11 +9870,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Relieff/Graver</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>base farge</translation>
 </phrase>
@@ -10072,16 +9879,11 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>embossing bilde</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Forbedre bildekantene</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10178,7 +9980,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10259,11 +10061,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Cross-skjerm (stjerner)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>eiker</translation>
 </phrase>
@@ -10278,7 +10075,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Bruk av kryss-skjerm filter</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10354,11 +10151,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Tenn (brann effekt)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>fargeintensitet </translation>
 </phrase>
@@ -10373,7 +10165,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Belysning bilde i brann</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10434,11 +10226,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Legg til støy</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>utseende</translation>
 </phrase>
@@ -10458,7 +10245,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>uniform</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10527,11 +10314,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Påfør Film Grain</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Generere film korn tekstur</translation>
 </phrase>
@@ -10541,23 +10323,18 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Oppmykning film korn</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Harmonisk middel</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Bruke harmonisk middelfilter</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10573,11 +10350,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>median Filter</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10599,22 +10371,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Bruk av medianfilter </translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erodere (Minimum rang filter)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Utvid (Maximum rang filter)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>median filter</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11047,11 +10804,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Generer Twins</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>orientering</translation>
 </phrase>
@@ -11061,16 +10813,11 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Generere bilde tvilling</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Påfør Vignette</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11087,7 +10834,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>sirkulær</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11166,11 +10913,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Polar Koordinatomregning</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>swap x- og y-koordinater</translation>
 </phrase>
@@ -11200,7 +10942,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>Polar inversjon</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12063,13 +11805,8 @@ Would du lagre din batch liste før du avslutter?</translation>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Last ned bilde</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>opphavsrett</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12180,7 +11917,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Venter på brukerundersøkelser </translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12349,11 +12086,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Opprett nytt bilde</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>gjennomsiktig</translation>
 </phrase>
@@ -12373,16 +12105,11 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>definert farge</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Skriv ut bilde</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12454,16 +12181,11 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>beste (mest blekk)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Skriv ut bilde</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12510,7 +12232,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>landskap</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13183,16 +12905,11 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Endre størrelse på lerret</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>ankerposisjon</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13304,11 +13021,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>metadata editor</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13555,7 +13267,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>liste over %1, én oppføring per linje</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13658,11 +13370,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Drei bilde</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>grenseregioner </translation>
 </phrase>
@@ -13717,7 +13424,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Roter lag</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14037,11 +13744,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>fargevelger </translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>oversikt</translation>
 </phrase>
@@ -14051,7 +13753,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>lag</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14588,22 +14290,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16190,11 +15877,6 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>Lagrer</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>Ytelse</translation>
 </phrase>
@@ -16224,16 +15906,11 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <translation>Denne nye midlertidige mappen vil ikke tre i kraft før du starter programmet.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Plugin manager</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16335,16 +16012,16 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <translation>savnet</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

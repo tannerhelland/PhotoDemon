@@ -4,7 +4,6 @@ Begin VB.Form dialog_IDEWarning
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Visual Basic IDE Detected"
    ClientHeight    =   6150
    ClientLeft      =   45
    ClientTop       =   315
@@ -98,7 +97,7 @@ Begin VB.Form dialog_IDEWarning
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   2
-      Caption         =   "You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended."
+      Caption         =   ""
       ForeColor       =   2105376
       Layout          =   1
    End
@@ -112,8 +111,9 @@ Attribute VB_Exposed = False
 'IDE Warning Dialog
 'Copyright 2011-2020 by Tanner Helland
 'Created: 15/December/12
-'Last updated: 15/December/12
-'Last update: initial build; this replaces the generic message box previously used
+'Last updated: 07/March/20
+'Last update: remove translation wrappers for text; it's fine for these warnings to appear
+'             in English, only - and it reduces burdens for volunteer translators!
 '
 'Generally speaking, it's not a great idea to run PhotoDemon in the IDE.  This dialog
 ' is used to warn the user of the associated risks with doing so.
@@ -147,12 +147,22 @@ Public Sub ShowDialog()
         picWarning.Visible = False
     End If
     
-    lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")
-    lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
-    lblWarning(3).Caption = g_Language.TranslateMessage("If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.")
+    'This hack prevents these strings from being picked up by PD's translation generator.
+    ' It does not inspect individual strings for translatable text.
+    Dim strDialog(0 To 4) As String
+    strDialog(0) = "You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended."
+    strDialog(1) = "Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button."
+    strDialog(2) = "Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly."
+    strDialog(3) = "If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe."
+    strDialog(4) = "Visual Basic IDE Detected"
+    lblWarning(0).Caption = strDialog(0)
+    lblWarning(1).Caption = strDialog(1)
+    lblWarning(2).Caption = strDialog(2)
+    lblWarning(3).Caption = strDialog(3)
+    Me.Caption = strDialog(4)
     
     Dim buttonIconSize As Long
-    buttonIconSize = FixDPI(32)
+    buttonIconSize = Interface.FixDPI(32)
     cmdOK.AssignImage "generic_ok", , buttonIconSize, buttonIconSize
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)

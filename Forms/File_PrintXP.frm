@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPrint 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Print Image"
+   Caption         =   " Print"
    ClientHeight    =   5745
    ClientLeft      =   45
    ClientTop       =   270

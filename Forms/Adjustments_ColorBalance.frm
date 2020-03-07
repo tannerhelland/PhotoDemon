@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormColorBalance 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Adjust Color Balance"
+   Caption         =   " Color balance"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

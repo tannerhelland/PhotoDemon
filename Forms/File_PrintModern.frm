@@ -3,7 +3,7 @@ Begin VB.Form FormPrintNew
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Print image"
+   Caption         =   " Print"
    ClientHeight    =   8565
    ClientLeft      =   45
    ClientTop       =   315
@@ -25,53 +25,25 @@ Begin VB.Form FormPrintNew
    ScaleWidth      =   665
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton cmdNext 
+   Begin PhotoDemon.pdButton cmdNext 
       Caption         =   "&Next"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Height          =   615
       Left            =   6480
       TabIndex        =   9
       Top             =   7875
       Width           =   1725
    End
-   Begin VB.CommandButton cmdCancel 
+   Begin PhotoDemon.pdButton cmdCancel 
       Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Height          =   615
       Left            =   8460
       TabIndex        =   8
       Top             =   7875
       Width           =   1365
    End
-   Begin VB.CommandButton cmdPrevious 
+   Begin PhotoDemon.pdButton cmdPrevious 
       Caption         =   "&Previous"
       Enabled         =   0   'False
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Height          =   615
       Left            =   4680
       TabIndex        =   7
@@ -142,56 +114,23 @@ Begin VB.Form FormPrintNew
          Max             =   256
          Value           =   1
       End
-      Begin VB.ComboBox cmbQuality 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
+      Begin PhotoDemon.pdDropdown cmbQuality 
          Height          =   360
          Left            =   480
-         Style           =   2  'Dropdown List
          TabIndex        =   11
          Top             =   1455
          Width           =   4335
       End
-      Begin VB.ComboBox cmbPaperSize 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
+      Begin PhotoDemon.pdDropdown cmbPaperSize 
          Height          =   360
          Left            =   5280
-         Style           =   2  'Dropdown List
          TabIndex        =   5
          Top             =   480
          Width           =   4335
       End
-      Begin VB.ComboBox cmbPrinter 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
+      Begin PhotoDemon.pdDropdown cmbPrinter 
          Height          =   360
          Left            =   480
-         Style           =   2  'Dropdown List
          TabIndex        =   3
          Top             =   480
          Width           =   4335
@@ -218,20 +157,8 @@ Begin VB.Form FormPrintNew
          _ExtentY        =   582
          Caption         =   "one image spread across multiple pages (poster print)"
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+      Begin PhotoDemon.pdLabel lblTitle 
          Caption         =   "type of print job"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
          Height          =   285
          Index           =   4
          Left            =   240
@@ -239,20 +166,8 @@ Begin VB.Form FormPrintNew
          Top             =   2040
          Width           =   1725
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+      Begin PhotoDemon.pdLabel lblTitle 
          Caption         =   "# of copies"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
          Height          =   285
          Index           =   3
          Left            =   5040
@@ -260,20 +175,8 @@ Begin VB.Form FormPrintNew
          Top             =   1080
          Width           =   1200
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+      Begin PhotoDemon.pdLabel lblTitle 
          Caption         =   "print quality"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
          Height          =   285
          Index           =   2
          Left            =   240
@@ -281,20 +184,8 @@ Begin VB.Form FormPrintNew
          Top             =   1080
          Width           =   1275
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+      Begin PhotoDemon.pdLabel lblTitle 
          Caption         =   "paper size"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
          Height          =   285
          Index           =   1
          Left            =   5040
@@ -302,20 +193,8 @@ Begin VB.Form FormPrintNew
          Top             =   120
          Width           =   1065
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+      Begin PhotoDemon.pdLabel lblTitle 
          Caption         =   "printer"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
          Height          =   285
          Index           =   0
          Left            =   240
@@ -324,56 +203,16 @@ Begin VB.Form FormPrintNew
          Width           =   705
       End
    End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   -5640
-      TabIndex        =   10
-      Top             =   7800
-      Width           =   17415
-   End
-   Begin VB.Label lblDescription 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblDescription 
       Caption         =   "In the next step, you can specify detailed layout information (margins, positioning, etc)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
       Height          =   285
       Left            =   240
       TabIndex        =   1
       Top             =   480
       Width           =   9240
    End
-   Begin VB.Label lblWizardTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblWizardTitle 
       Caption         =   "Step 1 of 2: basic print settings"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
       TabIndex        =   0

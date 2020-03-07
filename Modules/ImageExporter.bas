@@ -2138,7 +2138,7 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
         
     Else
         ExportPNM = False
-        Message "No %1 encoder found. Save aborted.", "PNM"
+        PDDebug.LogAction "No PNM encoder found. Save aborted."
     End If
     
     Exit Function

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPluginManager 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " PhotoDemon Plugin Manager"
+   Caption         =   " Plugin manager"
    ClientHeight    =   7125
    ClientLeft      =   45
    ClientTop       =   315

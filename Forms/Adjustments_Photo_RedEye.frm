@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormRedEye 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Red eye removal"
+   Caption         =   " Red-eye removal"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

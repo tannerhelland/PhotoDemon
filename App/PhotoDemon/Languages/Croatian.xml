@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3448</langversion>
+<langversion>6.8.3450</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Čišćenje starih podataka o automatskom spremanju podataka</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Obnova automatskog obnavljanja završena za %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Autosave nije moguće potpuno obnoviti. Umjesto toga pokušao je djelomični rekonstrukcija.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Nema dostupnih metapodataka.</translation>
+<original>No metadata available</original>
+<translation>Nema dostupnih metapodataka</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Ova slika ne sadrži nikakve metapodatke.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Nema dostupnih metapodataka</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Ovaj format datoteke ne podržava metapodatke. Obrada metapodataka preskočena.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Pokretanje dodatne usluge nije uspjelo (nije uspjelo izraditi cijev).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Pokretanje dodatne usluge nije uspjelo (ne može se izraditi postupak: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Analizirajući gornji rub slike</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Analiziranje lijevog ruba slike</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Analizirajući desni rub slike</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Analiziranje donjeg ruba slike</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Slika je već inteligentno izrezana. Napušteno automatsko napajanje. (Slika nije izmijenjena.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Obrezivanje slike u nove dimenzije</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Obrezivanje slike na odabrano područje</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Flipping image</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Zakretanje slike u smjeru kazaljke na satu</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>Rotirajuća slika</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Rotirajući sliku u suprotnom smjeru</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Rezanje slike u nove dimenzije</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Spremanje datoteke</translation>
+<original>Saving</original>
+<translation>Ušteda</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analiziranje histograma slike za maksimalne i minimalne vrijednosti</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>Istraživanje histograma</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Nije pronađen nijedan %1 enkoder. Spremi prekid.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -692,7 +627,7 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 <translation>Spremi se ne može dovršiti bez FreeImage knjižnice.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -724,7 +659,7 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 <translation>Došlo je do pogreške (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -781,28 +716,28 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>Pričvrstite ih na najbliži dostupni piksel</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>Odražavaju ih na najbližem rubu</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>Zamotajte ih oko slike</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>Izbrisati ih</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>Ignorirajte ih</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1021,8 +956,8 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Otkazivanje obrade slike</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1087,8 +1022,8 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Obrezivanje slojem na odabrano područje</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1246,24 +1181,6 @@ Preuzmite drugi program za spremanje ove slike u generički format (kao što je 
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Nažalost, PhotoDemon nije mogao učitati sljedeću sliku: 
-
- %1
-
-Postojite drugi program za spremanje ove slike u opći format (kao što je JPEG ili PNG) prije nego što ga učitate u PhotoDemon. Hvala!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Uvoz slika nije uspio</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Uvoz sloja je otkazan.</translation>
 </phrase>
@@ -1304,7 +1221,7 @@ Provjerite jesu li ove slike (e) postoje i da koriste podržani format slike (po
 <translation>Dovršavanje kopiranja slike dovršeno.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2757,8 +2674,8 @@ Provjerite je li uređaj uključen i spreman za upotrebu.</translation>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Pogreška sučelja skenera</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2771,6 +2688,11 @@ Provjerite je li uređaj uključen i spreman za upotrebu.</translation>
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Skener</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Pogreška sučelja skenera</translation>
 </phrase>
 
 <phrase>
@@ -2791,11 +2713,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Slika je uspješno stekla</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Skener</translation>
 </phrase>
 
 <phrase>
@@ -3378,11 +3295,6 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Zaslon Hvatanje</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Prikupljanje zaslona je dovršeno.</translation>
 </phrase>
@@ -3392,7 +3304,7 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 <translation>Opcije snimke zaslona</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4064,12 +3976,7 @@ Upišite numeričku vrijednost.</translation>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Učitavanje ugrađene slike nije uspjelo; Pronađeno je nevažeće zaglavlje.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4223,16 +4130,11 @@ Upišite numeričku vrijednost.</translation>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>Novi sloj</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>Novi sloj</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6791,8 +6693,8 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Pregled asinkronih metapodataka dovršen! Ažuriranje zbirke metapodataka</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6878,11 +6780,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Svjetlost</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>model</translation>
 </phrase>
@@ -6917,7 +6814,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>nasljedstvo</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7026,11 +6923,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Prilagodite ravnotežu boja</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>Nova ravnoteža</translation>
 </phrase>
@@ -7040,16 +6932,11 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Podešavanje ravnoteže boja</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>Colorize Opcije</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7066,7 +6953,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Slika za bojanje</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7129,8 +7016,8 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Podesite ton</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7426,11 +7313,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>Izjednačiti histogram</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>radius</translation>
 </phrase>
@@ -7448,11 +7330,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <phrase>
 <original>kernel shape</original>
 <translation>Oblik kernela</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Analiza histograma slike</translation>
 </phrase>
 
 <phrase>
@@ -7475,16 +7352,11 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>lokalne</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Prilagodite razine slike</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7516,7 +7388,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Mapiranje novih razina slike</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7554,11 +7426,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>Gamma korekcija</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>Zadržite sve boje sinkronizirano</translation>
 </phrase>
@@ -7573,7 +7440,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Podešavanje gama vrijednosti</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8018,11 +7885,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Uklanjanje crvenih očiju</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>strogost</translation>
 </phrase>
@@ -8072,7 +7934,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Primjena konačnih korekcija crvenih očiju ( %1 od %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8110,11 +7972,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Sjena</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>sjene</translation>
 </phrase>
@@ -8139,7 +7996,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Podešavanje sjena, srednjih tonova i naglašava</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8321,11 +8178,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>Ispunite neprozirnost</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>boje</translation>
 </phrase>
@@ -8375,7 +8227,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>pravokutnik</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8675,11 +8527,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Vizualni IDE otkriven</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Razumijem rizike pokretanja programa PhotoDemon u IDE-u</translation>
 </phrase>
@@ -8689,27 +8536,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Nemojte ponovno prikazati ovo upozorenje</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Pokrenuli ste PhotoDemon unutar Visual Basic IDE. To se ne preporučuje.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Molimo sastavite PhotoDemon prije korištenja. Mnoge značajke koje se oslanjaju na podklasi su onemogućene u IDE-u, no neke - kao što su gumbi za prilagođenu naredbu - ne mogu se onemogućiti, a da pritom ne utječu na funkcionalnost programa. Kao takav, možete doživjeti IDE nestabilnost i pad sustava, pogotovo ako zatvorite program pomoću IDE-a Stop gumb.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Osim toga, kao i svi drugi foto urednici, PhotoDemon se snažno oslanja na višedimenzionalne polja. Učinkovitost rasporeda je jako pogoršana u IDE-u, tako da neke funkcije mogu biti vrlo sporo.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Ako inzistirate na pokretanju programa PhotoDemon u IDE-u, nemojte slati bugove o IDE padu ili zamrzavanju. PhotoDemonovi programeri mogu rješavati samo probleme i greške koje utječu na sastavljeni.exe.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8734,16 +8561,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <phrase>
 <original>Outline settings</original>
 <translation>Postavke obrisa</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>Obrisi boje i neprozirnosti</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>Širina obrisa</translation>
 </phrase>
 
 <phrase>
@@ -8806,7 +8623,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>nagib</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8985,8 +8802,8 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>Nespremljene promjene</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9795,11 +9612,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Ispravite ili ispravite izobličenje objektiva</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>Tip korekcije</translation>
 </phrase>
@@ -9849,7 +9661,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Ispravljanje iskrivljenja slike</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9882,8 +9694,8 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Razni alati za iskrivljavanje</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10054,11 +9866,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Klesati</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>Osnovnu boju</translation>
 </phrase>
@@ -10068,16 +9875,11 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Embossing slika</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Poboljšajte rubove slike</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10174,7 +9976,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10255,11 +10057,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Križnog zaslona (zvijezde)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>žbice</translation>
 </phrase>
@@ -10274,7 +10071,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Primjena filtra križnog zaslona</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10350,11 +10147,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Ignite (požarni efekt)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>Intenzitet boje</translation>
 </phrase>
@@ -10369,7 +10161,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Slika rasvjete na vatri</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10430,11 +10222,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Dodaj buku</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>izgled</translation>
 </phrase>
@@ -10454,7 +10241,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>uniforma</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10523,11 +10310,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Nanesite film zrno</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Stvaranje teksture zrna filma</translation>
 </phrase>
@@ -10537,23 +10319,18 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Omekšavanje zrna filma</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Srednja harmonika</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Primjena harmonijskog srednjeg filtera</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10569,11 +10346,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>Median Filter</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10595,22 +10367,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Primjena medijskog filtra</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (minimalni rang filtar)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Dilate (maksimalni rang filtar)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>Medijski filtar</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11043,11 +10800,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Generiranje blizanaca</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>orijentacija</translation>
 </phrase>
@@ -11057,16 +10809,11 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Generiranje slike dvostruko</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Primijeni Vignetting</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11083,7 +10830,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>kružni</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11162,11 +10909,6 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Polarna konverzija koordinata</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>Zamijenite x i y koordinate</translation>
 </phrase>
@@ -11196,7 +10938,7 @@ If želite ga spremiti različitim nazivom datoteke, odaberite 'Cancel', a zatim
 <translation>Polarna inverzija</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12059,13 +11801,8 @@ Would you like to save your batch list before exiting?</original>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Preuzmite sliku</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>Autorsko Pravo</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12176,7 +11913,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Čeka se unos korisnika</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12345,11 +12082,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Izradi novu sliku</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>transparentan</translation>
 </phrase>
@@ -12369,16 +12101,11 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Prilagođenu boju</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Ispiši sliku</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12450,16 +12177,11 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Najbolje (većina tinte)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Ispis slike</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12506,7 +12228,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>pejzaž</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13179,16 +12901,11 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Promjena veličine platna</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>Sidro položaj</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13300,11 +13017,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>Uređivač metapodataka</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13551,7 +13263,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Popis %1, jedan unos po retku</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13654,11 +13366,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Rotiranje slike</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>Granične regije</translation>
 </phrase>
@@ -13713,7 +13420,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Zakrenite sloj</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14033,11 +13740,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>Izbornik boja</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>pregled</translation>
 </phrase>
@@ -14047,7 +13749,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>slojevi</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14584,22 +14286,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16188,11 +15875,6 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>Ušteda</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>Izvođenje</translation>
 </phrase>
@@ -16222,16 +15904,11 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <translation>Ova nova lokacija privremene mape neće imati učinka dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>Upravitelj dodataka za PhotoDemon</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16333,16 +16010,16 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <translation>nedostaje</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

@@ -1544,11 +1544,11 @@ End Sub
 Public Sub PopDistortEdgeBox(ByRef cboEdges As pdDropDown, Optional ByVal defaultEdgeMethod As PD_EdgeOperator)
 
     cboEdges.Clear
-    cboEdges.AddItem "clamp them to the nearest available pixel"
-    cboEdges.AddItem "reflect them across the nearest edge"
-    cboEdges.AddItem "wrap them around the image"
-    cboEdges.AddItem "erase them"
-    cboEdges.AddItem "ignore them"
+    cboEdges.AddItem "clamp"
+    cboEdges.AddItem "reflect"
+    cboEdges.AddItem "wrap"
+    cboEdges.AddItem "erase"
+    cboEdges.AddItem "ignore"
     cboEdges.ListIndex = defaultEdgeMethod
     
 End Sub
@@ -1895,7 +1895,7 @@ Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boole
                 'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
                 If displayConfirmationPrompt Then
                     Dim msgReturn As VbMsgBoxResult
-                    msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation Or vbYesNo, "Cancel image processing", Processor.GetLastProcessorID)
+                    msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation Or vbYesNo, "Cancel action", Processor.GetLastProcessorID)
                     g_cancelCurrentAction = (msgReturn = vbYes)
                 Else
                     g_cancelCurrentAction = True

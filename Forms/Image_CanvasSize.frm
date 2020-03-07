@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormCanvasSize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Resize Canvas"
+   Caption         =   " Canvas size"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   225

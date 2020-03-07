@@ -83,7 +83,7 @@ Begin VB.Form dialog_FillSettings
       Width           =   5940
       _ExtentX        =   10478
       _ExtentY        =   1244
-      Caption         =   "fill opacity"
+      Caption         =   "opacity"
       Max             =   100
       Value           =   100
       NotchPosition   =   2

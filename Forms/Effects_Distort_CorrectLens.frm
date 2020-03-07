@@ -3,7 +3,7 @@ Begin VB.Form FormLensCorrect
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Correct or Fix Lens Distortion"
+   Caption         =   " Correct existing distortion"
    ClientHeight    =   6690
    ClientLeft      =   -15
    ClientTop       =   225

@@ -35,7 +35,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
     
-    Message "Analyzing top edge of image..."
+    Message "Analyzing image..."
+    PDDebug.LogAction "Analyzing top edge of image..."
     
     'Make a copy of the current image
     Dim tmpDIB As pdDIB
@@ -88,8 +89,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
-        If Abs(curColor - initColor) > cThreshold Then colorFails = True
-        
+        colorFails = (Abs(curColor - initColor) > cThreshold)
         If colorFails Then Exit For
         
     Next x
@@ -101,7 +101,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     '2) The loop progressed part-way through the image and terminated
     
     'Check for case (1) and warn the user if it occurred
-    If Not colorFails Then
+    If (Not colorFails) Then
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
@@ -122,7 +122,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     ' the top crop failed - this saves processing time.
     colorFails = False
     
-    Message "Analyzing left edge of image..."
+    PDDebug.LogAction "Analyzing left edge of image..."
     initColor = gLookup(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
     SetProgBarVal 1
     
@@ -148,7 +148,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     ' the top crop failed - this saves processing time.
     colorFails = False
     
-    Message "Analyzing right edge of image..."
+    PDDebug.LogAction "Analyzing right edge of image..."
     quickVal = finalX * qvDepth
     initColor = gLookup(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
     SetProgBarVal 2
@@ -179,7 +179,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     quickVal = initX * qvDepth
     initColor = gLookup(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
     
-    Message "Analyzing bottom edge of image..."
+    PDDebug.LogAction "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
@@ -211,7 +211,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         Message "Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)"
     Else
     
-        Message "Cropping image to new dimensions..."
+        Message "Cropping image..."
         SetProgBarVal 4
         
         'Resize the current image's main DIB
@@ -299,7 +299,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         Exit Sub
     End If
     
-    Message "Cropping image to selected area..."
+    Message "Cropping image..."
     
     Dim progBarCheck As Long, progBarOffsetX As Long
     Dim tmpLayerRef As pdLayer
@@ -660,7 +660,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    Message "Rotating image clockwise..."
+    Message "Rotating image..."
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -797,7 +797,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     Dim flipAllLayers As Boolean
     flipAllLayers = (targetLayerIndex = -1)
     
-    Message "Rotating image counter-clockwise..."
+    Message "Rotating image..."
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -1068,7 +1068,8 @@ End Sub
 Public Sub TrimImage()
     
     'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.
-    Message "Analyzing top edge of image..."
+    Message "Analyzing image..."
+    PDDebug.LogAction "Analyzing top edge of image..."
     
     'Retrieve a copy of the composited image
     Dim tmpDIB As pdDIB
@@ -1139,7 +1140,7 @@ Public Sub TrimImage()
     ' the top trim failed - this saves processing time.
     colorFails = False
     
-    Message "Analyzing left edge of image..."
+    PDDebug.LogAction "Analyzing left edge of image..."
     SetProgBarVal 1
     
     For x = 0 To finalX
@@ -1161,7 +1162,7 @@ Public Sub TrimImage()
     ' the top trim failed - this saves processing time.
     colorFails = False
     
-    Message "Analyzing right edge of image..."
+    PDDebug.LogAction "Analyzing right edge of image..."
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
@@ -1185,7 +1186,7 @@ Public Sub TrimImage()
     initX = newLeft
     finalX = newRight
     
-    Message "Analyzing bottom edge of image..."
+    PDDebug.LogAction "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
@@ -1216,7 +1217,7 @@ Public Sub TrimImage()
         Message "Image is already trimmed.  (No changes were made to the image.)"
     Else
     
-        Message "Trimming image to new dimensions..."
+        Message "Trimming image..."
         SetProgBarVal 4
         
         'Now that we have new top-left corner coordinates (and new width/height values), resizing the canvas

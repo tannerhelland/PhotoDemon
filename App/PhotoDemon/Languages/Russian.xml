@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3448</langversion>
+<langversion>6.8.3450</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Промывка старые данные автосохранения</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Автосохранение реконструкция завершена для %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Автосохранение не может быть полностью реконструировано. Частичная реконструкция попытался вместо этого.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Нет метаданных доступны.</translation>
+<original>No metadata available</original>
+<translation>Нет метаданных доступны</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Это изображение не содержит каких-либо метаданных.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Нет метаданных доступны</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Этот формат файла не поддерживает метаданные. обработка метаданных пропускаются.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Не удалось запустить плагин службы (не удалось создать трубу).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Не удалось запустить плагин службы (не удалось создать процесс: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Анализируя верхний край изображения</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Анализируя левый край изображения</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Анализируя правый край изображения</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Анализируя нижний край изображения</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Изображение уже обрезаны разумно. Автокупирования отказались. (Никакие изменения не были сделаны к изображению.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Обрезка изображения к новым размерам</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Обрезка изображения в выбранной области</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Зеркальное изображение</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Поворот изображения по часовой стрелке</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>Поворот изображения</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Вращающиеся изображения против часовой стрелки</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Обрезка изображения к новым размерам</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Сохранение файла</translation>
+<original>Saving</original>
+<translation>экономия</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Анализ гистограммы изображения для максимальных и минимальных значений</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>Растяжение гистограммы</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Нет %1 кодер не найдено. Сохранить прервана.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -692,7 +627,7 @@ To включить поддержку этого формата изображ�
 <translation>Сохранить не может быть завершена без библиотеки FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -724,7 +659,7 @@ To включить поддержку этого формата изображ�
 <translation>Произошла ошибка (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -781,28 +716,28 @@ To включить поддержку этого формата изображ�
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>зажать их до ближайшего доступного пикселя</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>отражать их через ближайшего края</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>обернуть их вокруг изображения</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>стереть их</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>игнорируй их</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1021,8 +956,8 @@ To включить поддержку этого формата изображ�
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Отмена обработки изображений</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1087,8 +1022,8 @@ To включить поддержку этого формата изображ�
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Обрезка слой выбранной области</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1246,24 +1181,6 @@ Please использовать другую программу, чтобы со
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>К сожалению, PhotoDemon не удалось загрузить следующий файл: 
-
- %1
-
-Please использовать другую программу, чтобы сохранить это изображение в универсальном формате (например, JPEG или PNG) перед загрузкой в PhotoDemon. Благодаря!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Импорт изображения Ошибка</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>импорт слоя отменен.</translation>
 </phrase>
@@ -1304,7 +1221,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>дублирование изображения завершено.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2757,8 +2674,8 @@ Please make sure the device is turned on and ready for use.</original>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Ошибка интерфейс сканера</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2773,6 +2690,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>Интерфейс сканера/цифровая камера плагин (EZTW32.dll) был помечен как отсутствующий по программе initialization.
 
 To включить поддержку сканера, пожалуйста, скопируйте файл EZTW32.dll (доступен для загрузки из http://eztwain.com/ezt1_download.htm) в съемном директории и перезагрузите программу.</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Ошибка интерфейс сканера</translation>
 </phrase>
 
 <phrase>
@@ -2793,11 +2715,6 @@ To включить поддержку сканера, пожалуйста, с�
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Изображение успешно приобрела</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>импорт сканер/цифровая камера отключена</translation>
 </phrase>
 
 <phrase>
@@ -3380,11 +3297,6 @@ In Тем временем, пожалуйста, попытайтесь сох�
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Скриншот</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Захват экрана в комплекте.</translation>
 </phrase>
@@ -3394,7 +3306,7 @@ In Тем временем, пожалуйста, попытайтесь сох�
 <translation>Скриншот опции</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4066,12 +3978,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Не удалось загрузить внедренного изображения; неверный заголовок найден.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4225,16 +4132,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>Новый слой</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>Новый слой</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6795,8 +6697,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Асинхронные метаданные проверить полный! Сбор метаданных Обновление</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6882,11 +6784,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Контраст яркости</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>модель</translation>
 </phrase>
@@ -6921,7 +6818,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>наследие</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7030,11 +6927,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Регулировка цветового баланса</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>новый баланс</translation>
 </phrase>
@@ -7044,16 +6936,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Регулировка цветового баланса</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>Раскрасить Параметры</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7070,7 +6957,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Раскрашивание изображений</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7133,8 +7020,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Настройка Цветовой тон/Насыщенность/Яркость</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7430,11 +7317,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>Выровнять гистограмму</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>радиус</translation>
 </phrase>
@@ -7452,11 +7334,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>kernel shape</original>
 <translation>форма ядра</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Анализ гистограммы изображения</translation>
 </phrase>
 
 <phrase>
@@ -7479,16 +7356,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>местный</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Отрегулируйте уровни изображения</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7520,7 +7392,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Отображение новых уровней изображения</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7558,11 +7430,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>Гамма-коррекция</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>держать все цвета в синхронизации</translation>
 </phrase>
@@ -7577,7 +7444,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Регулировка значения гаммы</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8022,11 +7889,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Удаление эффекта красных глаз</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>взыскательность</translation>
 </phrase>
@@ -8076,7 +7938,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Применение окончательные поправки красных глаз ( %1 %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8114,11 +7976,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Тень/Midtone/Выделение</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>тени</translation>
 </phrase>
@@ -8143,7 +8000,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Настройка теней, полутонов и бликов</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8325,11 +8182,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>заполнить непрозрачности</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>цвета</translation>
 </phrase>
@@ -8379,7 +8231,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>прямоугольник</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8679,11 +8531,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Visual Basic IDE Обнаружен</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Я понимаю риски запуска PhotoDemon в IDE</translation>
 </phrase>
@@ -8693,27 +8540,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Не показывать это предупреждение</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Вы работаете в PhotoDemon внутри Visual Basic IDE. Это не рекомендуется.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Пожалуйста, соберите PhotoDemon перед его использованием. Многие функции, которые полагаются на подклассы отключены в IDE, но некоторые - такие как пользовательские командные кнопки - не может быть отключена без сильного влияния на функциональные возможности программы. Таким образом, могут возникнуть нестабильность IDE и сбои, особенно если закрыть программу с помощью кнопки в среде IDE Stop.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Кроме того, как и все другие фото редакторы, PhotoDemon во многом зависит от многомерных массивов. производительность массива сильно искажается в IDE, поэтому некоторые функции могут выполняться очень медленно.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Если вы настаиваете на PhotoDemon работает в IDE, пожалуйста, не отправляйте сообщения об ошибках относительно IDE аварий или замерзает. Разработчики Photo Демона могут решить только проблемы и ошибки, которые влияют на скомпилированный EXE-файл.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8738,16 +8565,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Outline settings</original>
 <translation>настройки Outline</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>обводки и непрозрачности</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>ширина наброски</translation>
 </phrase>
 
 <phrase>
@@ -8810,7 +8627,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>скос</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8989,8 +8806,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>Несохраненные изменения</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9799,11 +9616,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Правильно или Fix искажений объектива</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>Тип коррекции</translation>
 </phrase>
@@ -9853,7 +9665,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Коррекция искажений изображения</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9886,8 +9698,8 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Разное искажают Инструменты</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10058,11 +9870,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Рельефный/Гравировка</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>базовый цвет</translation>
 </phrase>
@@ -10072,16 +9879,11 @@ If вы хотите сохранить его с другим именем фа
 <translation>Чеканка изображения</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Улучшение краев изображения</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10178,7 +9980,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Собел</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10259,11 +10061,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Кросс-экран (звезды)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>спицы</translation>
 </phrase>
@@ -10278,7 +10075,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Применение фильтра кросс-экран</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10354,11 +10151,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Ignite (огонь эффект)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>интенсивность окраски</translation>
 </phrase>
@@ -10373,7 +10165,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Освещение изображение на огне</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10434,11 +10226,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Добавлять шум</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>появление</translation>
 </phrase>
@@ -10458,7 +10245,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>единообразный</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10527,11 +10314,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Нанести Film Grain</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Формирование пленки зернистой текстурой</translation>
 </phrase>
@@ -10541,23 +10323,18 @@ If вы хотите сохранить его с другим именем фа
 <translation>Смягчение зерна пленки</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Гармоническое среднее</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Применение гармонического среднего фильтра</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10573,11 +10350,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>медианный фильтр</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10599,22 +10371,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Применение медианного фильтра</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (минимальный ранг фильтра)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Разбавить (максимальный фильтр ранга)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>медианный фильтр</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11047,11 +10804,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Сформировать Twins</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>ориентация</translation>
 </phrase>
@@ -11061,16 +10813,11 @@ If вы хотите сохранить его с другим именем фа
 <translation>Создание близнеца изображения</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Применить виньетирование</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11087,7 +10834,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>круговой</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11166,11 +10913,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Полярные преобразования координат</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>своп координаты х и у</translation>
 </phrase>
@@ -11200,7 +10942,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Полярные инверсии</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12063,13 +11805,8 @@ Would вы хотите сохранить список партии перед 
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Загрузить изображение</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>Авторские права</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12180,7 +11917,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Ожидание ввода пользователя</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12349,11 +12086,6 @@ I искренние извинения за неудобства, но, к со
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Создать новое изображение</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>прозрачный</translation>
 </phrase>
@@ -12373,16 +12105,11 @@ I искренние извинения за неудобства, но, к со
 <translation>изготовленный под заказ цвет</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Печать изображения</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12454,16 +12181,11 @@ I искренние извинения за неудобства, но, к со
 <translation>лучший (большинство чернил)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Печать изображения</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12510,7 +12232,7 @@ I искренние извинения за неудобства, но, к со
 <translation>пейзаж</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13183,16 +12905,11 @@ I искренние извинения за неудобства, но, к со
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Изменение размера холста</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>креплення</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13304,11 +13021,6 @@ I искренние извинения за неудобства, но, к со
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>редактор метаданных</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13555,7 +13267,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Список %1, по одной записи в каждой строке</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13658,11 +13370,6 @@ I искренние извинения за неудобства, но, к со
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Поворот изображения</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>приграничных регионов</translation>
 </phrase>
@@ -13717,7 +13424,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Повернуть слой</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14037,11 +13744,6 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>выбора цвета</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>обзор</translation>
 </phrase>
@@ -14051,7 +13753,7 @@ I искренние извинения за неудобства, но, к со
 <translation>слои</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14588,22 +14290,7 @@ I искренние извинения за неудобства, но, к со
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16192,11 +15879,6 @@ If вы все еще отключить обновления, не забудь
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>экономия</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>Представление</translation>
 </phrase>
@@ -16226,16 +15908,11 @@ If вы все еще отключить обновления, не забудь
 <translation>Это новое местоположение временной папки не вступят в силу только после перезапуска программы.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Менеджер плагинов</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16337,16 +16014,16 @@ If вы все еще отключить обновления, не забудь
 <translation>отсутствует</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.168</langversion>
+<langversion>1.0.170</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>पुरानी ऑटोशेव डेटा को ख़त्म करना</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>ऑटोशेव पुनर्निर्माण %1 के लिए पूर्ण</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>स्वत: सहेजना पूरी तरह से खंगाला नहीं जा सका। आंशिक पुनर्निर्माण के बजाय प्रयास किया।</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,7 +217,7 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
+<original>No metadata available</original>
 <translation>कोई मेटाडेटा उपलब्ध नहीं है</translation>
 </phrase>
 
@@ -231,27 +226,7 @@
 <translation>इस चित्र में कोई भी मेटाडेटा नहीं है</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>कोई मेटाडेटा उपलब्ध नहीं है</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>यह फ़ाइल प्रारूप मेटाडेटा का समर्थन नहीं करता। मेटाडेटा प्रसंस्करण छोड़ दिया।</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>प्लगइन सेवा शुरू करने में विफल (पाइप नहीं बना सका)</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>प्लगइन सेवा प्रारंभ करने में विफल (प्रक्रिया नहीं बना सके: %1)।</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -494,8 +469,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>छवि के ऊपर किनारे का विश्लेषण करना</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -504,28 +479,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>छवि के बाईं किनारे का विश्लेषण करना</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>छवि के ठीक किनारे का विश्लेषण करना</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>छवि के निचले किनारे का विश्लेषण करना</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>छवि को पहले से ही समझदारी से क्रॉप किया गया है ऑटोक्रॉप छोड़ दिया (छवि में कोई परिवर्तन नहीं किए गए थे।)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>छवि को नए आयामों में फसल करना</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -539,11 +499,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>चयनित क्षेत्र में छवि काटना</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>फ्लिपिंग छवि</translation>
 </phrase>
@@ -554,18 +509,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>चित्र को दक्षिणावर्त घूर्णन करना</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>चित्र घूम रहा है</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>चित्र को घुमाएगी प्रति घड़ी की ओर</translation>
 </phrase>
 
 <phrase>
@@ -584,11 +529,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>छवि को नए आयामों में ट्रिम करना</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -612,8 +557,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>फ़ाइल को सहेजना</translation>
+<original>Saving</original>
+<translation>बचत</translation>
 </phrase>
 
 <phrase>
@@ -628,16 +573,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>अधिकतम और न्यूनतम मूल्यों के लिए छवि हिस्टोग्राम का विश्लेषण करना</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>हिस्टोग्राम टूटना</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -670,11 +610,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>कोई %1 एनकोडर नहीं मिला सहेजें निरस्त</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -693,7 +628,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>फ्री आईमेज लाइब्रेरी के बिना सहेजा नहीं जा सकता।</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -725,7 +660,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>एक गलती हुई है (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -782,28 +717,28 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>निकटतम उपलब्ध पिक्सेल में उन्हें क्लैंप करें</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>उन्हें निकटतम किनारे पर प्रतिबिंबित करें</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>छवि के आसपास उन्हें लपेटें</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>उन्हें मिटा दें</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>उन पर ध्यान न दें</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1022,8 +957,8 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>छवि प्रसंस्करण रद्द करें</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1088,8 +1023,8 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>चयनित क्षेत्र में परत काटना</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1247,24 +1182,6 @@ Please use another program to save this image in a generic format (such as JPEG 
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>दुर्भाग्य से, PhotoDemon निम्न चित्र को लोड करने में असमर्थ था: 
-
- %1
-
- कृपया इस छवि को PhotoDemon में लोड करने से पहले एक सामान्य प्रारूप (जैसे JPEG या PNG) में सहेजने के लिए किसी अन्य प्रोग्राम का उपयोग करें। धन्यवाद!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>छवि आयात अयशस्वी</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>परत आयात रद्द।</translation>
 </phrase>
@@ -1305,7 +1222,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>छवि दोहराव पूरी।</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2758,8 +2675,8 @@ Please make sure the device is turned on and ready for use.</original>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>स्कैनर इंटरफ़ेस त्रुटि</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2772,6 +2689,11 @@ Please make sure the device is turned on and ready for use.</original>
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>स्कैनर</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>स्कैनर इंटरफ़ेस त्रुटि</translation>
 </phrase>
 
 <phrase>
@@ -2792,11 +2714,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>Image acquired successfully</original>
 <translation>छवि सफलतापूर्वक प्राप्त की गई</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>स्कैनर</translation>
 </phrase>
 
 <phrase>
@@ -3379,11 +3296,6 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>स्क्रीन कैप्चर</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>स्क्रीन कैप्चर पूर्ण</translation>
 </phrase>
@@ -3393,7 +3305,7 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 <translation>स्क्रीनशॉट विकल्प</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4065,12 +3977,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>एम्बेडेड छवि लोड करने में विफल; अमान्य शीर्षलेख मिला</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4224,16 +4131,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>नई परत</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>नई परत</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6793,8 +6695,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>अतुल्यकालिक मेटाडेटा जांच पूर्ण! मेटाडेटा संग्रहण अपडेट करना</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6880,11 +6782,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>चमक</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>आदर्श</translation>
 </phrase>
@@ -6919,7 +6816,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>विरासत</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7028,11 +6925,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>रंग संतुलन को समायोजित करें</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>नया शेष</translation>
 </phrase>
@@ -7042,16 +6934,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>रंग संतुलन समायोजित करना</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>रंग विकल्प</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7068,7 +6955,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>छवि रंगाई करना</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7131,8 +7018,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>ह्यू समायोजित करें</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7428,11 +7315,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>हिस्टोग्राम को समान करें</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>त्रिज्या</translation>
 </phrase>
@@ -7450,11 +7332,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>kernel shape</original>
 <translation>कर्नेल आकार</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>छवि हिस्टोग्राम का विश्लेषण करना</translation>
 </phrase>
 
 <phrase>
@@ -7477,16 +7354,11 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>स्थानीय</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>छवि स्तर समायोजित करें</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7518,7 +7390,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>नए छवि स्तरों का मानचित्रण करना</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7556,11 +7428,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>गामा सुधार</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>सभी रंगों को सिंक में रखें</translation>
 </phrase>
@@ -7575,7 +7442,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>गामा मूल्यों को समायोजित करना</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8020,11 +7887,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>लाल आँख हटाने</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>कठोरता</translation>
 </phrase>
@@ -8074,7 +7936,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>अंतिम लाल-आँख सुधार ( %2 में से %1) को लागू करना</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8112,11 +7974,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>साया</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>छैया छैया</translation>
 </phrase>
@@ -8141,7 +7998,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>छाया, मिडटोन और हाइलाइट समायोजित करना</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8323,11 +8180,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>भरण अस्पष्टता</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>रंग की</translation>
 </phrase>
@@ -8377,7 +8229,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>आयत</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8677,11 +8529,6 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>विजुअल बेसिक आईडीई का पता चला</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>मैं IDE में PhotoDemon चलाने के जोखिमों को समझता हूं</translation>
 </phrase>
@@ -8691,27 +8538,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>इस चेतावनी को दोबारा न देखें</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>आप Visual Basic IDE के अंदर PhotoDemon चला रहे हैं यह अनुशंसित नहीं है।</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>कृपया इसे प्रयोग करने से पहले PhotoDemon को संकलित करें। उप-क्लासिंग पर निर्भर कई विशेषताएं IDE में अक्षम हैं, लेकिन कुछ - जैसे कस्टम कमांड बटन - प्रोग्राम की कार्यक्षमता को गंभीर रूप से प्रभावित किए बिना अक्षम नहीं किया जा सकता है जैसे, आपको IDE अस्थिरता और क्रैश होने का अनुभव हो सकता है, खासकर यदि आप आईडीई के स्टॉप बटन का उपयोग करके प्रोग्राम बंद कर देते हैं।</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>इसके अतिरिक्त, अन्य सभी फोटो एडिटर्स की तरह, फोटोडीमैन बहुआयामी arrays पर भारी निर्भर करता है। आईडीई में सरणी प्रदर्शन को गंभीर रूप से अपमानित किया जाता है, इसलिए कुछ फ़ंक्शन बहुत धीमे हो सकते हैं।</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>यदि आप IDE में PhotoDemon चलाने पर जोर देते हैं, तो कृपया IDE क्रैश या फ्रीज के बारे में बग सबमिट नहीं करें। PhotoDemon के डेवलपर्स केवल उन समस्याओं और बगों का समाधान कर सकते हैं जो संकलित.एक्सए को प्रभावित करते हैं।</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8736,16 +8563,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Outline settings</original>
 <translation>रूपरेखा सेटिंग्स</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>रूपरेखा रंग और अस्पष्टता</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>रूपरेखा चौड़ाई</translation>
 </phrase>
 
 <phrase>
@@ -8808,7 +8625,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>झुकना</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8987,8 +8804,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>सहेजे न गए परिवर्तन</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9797,11 +9614,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>सही या फिक्स लेंस विरूपण</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>सुधार प्रकार</translation>
 </phrase>
@@ -9851,7 +9663,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>छवि विरूपण को ठीक करना</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9884,8 +9696,8 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>विविध विकृत उपकरण</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10056,11 +9868,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>उभारदार नक्क़ाशी करना</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>आधारभूत रंग</translation>
 </phrase>
@@ -10070,16 +9877,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>इमेजिंग इमेज</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>छवि किनारों को बढ़ाएं</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10176,7 +9978,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>सोबेल</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10257,11 +10059,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>क्रॉस-स्क्रीन (सितारों)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>स्पोक्स</translation>
 </phrase>
@@ -10276,7 +10073,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>क्रॉस-स्क्रीन फ़िल्टर लागू करना</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10352,11 +10149,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>आग लगना (आग प्रभाव)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>रंग तीव्रता</translation>
 </phrase>
@@ -10371,7 +10163,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>आग पर प्रकाश छवि</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10432,11 +10224,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>शोर जोड़ना</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>दिखावट</translation>
 </phrase>
@@ -10456,7 +10243,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>वर्दी</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10525,11 +10312,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>फिल्म ग्रेन लागू करें</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>फिल्म अनाज बनावट उत्पन्न</translation>
 </phrase>
@@ -10539,23 +10321,18 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>फिल्म अनाज मृदुकरण</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>अनुकूल माध्य</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>हार्मोनिक माध्य फ़िल्टर लागू करना</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10571,11 +10348,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>औसत फ़िल्टर</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10597,22 +10369,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>औसत फ़िल्टर को लागू करना</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>ईरोड (न्यूनतम रैंक फ़िल्टर)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>व्याप्त करें (अधिकतम रैंक फ़िल्टर)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>औसत फिल्टर</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11045,11 +10802,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>जुड़वा जुड़ें</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>उन्मुखीकरण</translation>
 </phrase>
@@ -11059,16 +10811,11 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>उत्पन्न छवि जुड़वां</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>विगनेटिंग लागू करें</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11085,7 +10832,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>परिपत्र</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11164,11 +10911,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>ध्रुवीय निर्देशांक रूपांतरण</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>स्वैप एक्स और वाई निर्देशांक</translation>
 </phrase>
@@ -11198,7 +10940,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>ध्रुवीय उलटा</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12061,13 +11803,8 @@ Would you like to save your batch list before exiting?</original>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>छवि डाउनलोड करें</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>कॉपीराइट</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12178,7 +11915,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>उपयोगकर्ता के निर्देश का इंतज़ार</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12347,11 +12084,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>नई छवि बनाएं</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>पारदर्शक</translation>
 </phrase>
@@ -12371,16 +12103,11 @@ I में लोड करें, इस दुर्भावना के �
 <translation>कस्टम रंग</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>छवि छापें</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12452,16 +12179,11 @@ I में लोड करें, इस दुर्भावना के �
 <translation>सर्वश्रेष्ठ (सबसे स्याही)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>प्रिंट छवि</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12508,7 +12230,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परिदृश्य</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13181,16 +12903,11 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>कैनवास का आकार बदलें</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>लंगर की स्थिति</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13302,11 +13019,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>मेटाडाटा एडिटर</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13553,7 +13265,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation> %1 की सूची, प्रति पंक्ति एक प्रविष्टि</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13656,11 +13368,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>छवि को घुमाएं</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>सीमा क्षेत्रों</translation>
 </phrase>
@@ -13715,7 +13422,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परत घुमाएं</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14035,11 +13742,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>रंग चयनकर्ता</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>अवलोकन</translation>
 </phrase>
@@ -14049,7 +13751,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परतों</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14586,22 +14288,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16189,11 +15876,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>बचत</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>प्रदर्शन</translation>
 </phrase>
@@ -16223,16 +15905,11 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation>यह नया अस्थायी फ़ोल्डर स्थान प्रभावी नहीं होगा जब तक कि आप प्रोग्राम को पुनरारंभ न करें।</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon प्लगइन प्रबंधक</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16334,16 +16011,16 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation>लापता</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

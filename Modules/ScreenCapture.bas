@@ -115,7 +115,7 @@ Public Sub CaptureScreen(ByRef screenCaptureParams As String)
         
     'Once the capture is saved, load it up like any other bitmap
     Dim sTitle As String
-    If captureFullDesktop Then sTitle = g_Language.TranslateMessage("Screen Capture") Else sTitle = alternateWindowName
+    If captureFullDesktop Then sTitle = g_Language.TranslateMessage("Screen capture") Else sTitle = alternateWindowName
     
     'Sanitize the calculated string to remove any potentially invalid characters
     Dim cFile As pdFSO

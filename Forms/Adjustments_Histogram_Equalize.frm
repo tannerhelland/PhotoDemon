@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormEqualize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Equalize Histogram"
+   Caption         =   " Equalize"
    ClientHeight    =   6555
    ClientLeft      =   45
    ClientTop       =   285
@@ -217,7 +217,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Global histogram
     If ehMode = 0 Then
         
-        If (Not toPreview) Then Message "Analyzing image histogram..."
+        If (Not toPreview) Then Message "Analyzing image..."
         
         'Start by generating the initial histogram(s)
         For y = initY To finalY

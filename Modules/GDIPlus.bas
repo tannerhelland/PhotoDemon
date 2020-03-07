@@ -2810,7 +2810,7 @@ End Function
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
 Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As PD_2D_FileFormatExport, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
     
-    Message "Saving the file..."
+    Message "Saving..."
     
     On Error GoTo GDIPlusSaveError
     PDDebug.LogAction "Prepping image for GDI+ export..."

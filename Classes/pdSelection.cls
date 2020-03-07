@@ -3708,8 +3708,6 @@ End Function
 ' selection mask is blank.
 Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
-    'Message "Finding new selection boundaries..."
-
     'This function assumes two things: that a selection is not transformable (otherwise we'd know the boundaries already), and
     ' a mask has already been created.  If either of these two conditions is not met, this function may fail.
     '

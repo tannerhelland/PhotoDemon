@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.407</langversion>
+<langversion>6.6.409</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Penyingkiran data autosimpan lama</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Pembinaan semula Simpan auto lengkap untuk %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Simpan auto tidak dapat dibina semula sepenuhnya. Pembinaan semula separa cuba sebaliknya.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Tidak ada metadata yang tersedia.</translation>
+<original>No metadata available</original>
+<translation>Tidak ada metadata tersedia</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Gambar ini tidak mengandung metadata apapun.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Tidak ada metadata tersedia</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Format fail tidak menyokong metadata. Pemprosesan Metadata dilangkau.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Gagal untuk memulakan perkhidmatan plugin (tidak dapat membuat paip).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Gagal untuk memulakan perkhidmatan plugin (tidak boleh mewujudkan proses: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -494,8 +469,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Menganalisis tepi atas gambar</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -504,28 +479,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Menganalisis pinggir kiri gambar</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Menganalisis tepi kanan gambar</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Menganalisis tepi bahagian bawah imej</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>gambar sudah timbul bijak. Autopotong terbengkalai. (Tiada perubahan dibuat kepada gambar.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Memangkas gambar untuk dimensi baru</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -539,11 +499,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Memangkas gambar untuk kawasan terpilih</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>gambar Melibas</translation>
 </phrase>
@@ -554,18 +509,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>gambar Berputar mengikut arah jam</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>gambar berputar</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>gambar berputar melawan arah jam</translation>
 </phrase>
 
 <phrase>
@@ -584,11 +529,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Perapian gambar untuk dimensi baru</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -612,8 +557,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Menyimpan fail</translation>
+<original>Saving</original>
+<translation>menyimpan</translation>
 </phrase>
 
 <phrase>
@@ -628,16 +573,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Menganalisis histogram gambar untuk nilai maksimum dan minimum</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>peregangan histogram</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -670,11 +610,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>No %1 encoder Ditemukan. Menyimpan Gagal. </translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -693,7 +628,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Menyimpan Tidak Dapat Di Selesaikan Tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -725,7 +660,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Sebuah kesalahan telah terjadi (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -782,28 +717,28 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>mengetatkan kawalan mereka pixel yang ada terdekat</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>menggambarkan mereka di pinggir terdekat</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>membungkus mereka di sekitar imej</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>memadam mereka</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>mengabaikan mereka</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1022,8 +957,8 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Batal Memproses Gambar</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1088,8 +1023,8 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Cropping layer ke area yang dipilih</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1247,24 +1182,6 @@ Please gunakan program lain untuk menyimpan gambar ini dalam format generik (sep
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Sayangnya, PhotoDemon Tidak Dapat Memuat Gambar berikut:
-
-%1
-
-Tolong Menggunakan Program Berbeda Untuk Melindungi Gambar ini dalam format generik (seperti JPEG atau PNG) sebelum Memuat ke dalam PhotoDemon. Terima kasih!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Impor Gambar Gagal</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Lapisan Import Dibatalkan.</translation>
 </phrase>
@@ -1305,7 +1222,7 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 <translation>Duplikasi Gambar Berhasil.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2763,8 +2680,8 @@ Pastikan perangkat diaktifkan dan siap untuk digunakan.</translation>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Kesalahan pemindai Antarmuka</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2779,6 +2696,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>Scanner / kamera digital antarmuka plug-in (EZTW32.dll) ditandai sebagai hilang setelah inisialisasi Program.
 
 Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia untuk di-download dari http://eztwain.com/ezt1_download.htm) ke direktori plug-in dan kembali program.</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Kesalahan pemindai Antarmuka</translation>
 </phrase>
 
 <phrase>
@@ -2799,11 +2721,6 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Gambar yang diperolehi Berhasil</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Scanner / kamera digital impor dinonaktifkan</translation>
 </phrase>
 
 <phrase>
@@ -3386,11 +3303,6 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Tangkap Layar</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Menangkap Layar Lengkap.</translation>
 </phrase>
@@ -3400,7 +3312,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>pilihan screenshot</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4072,12 +3984,7 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Gagal memuatkan imej yang terbenam; header sah dijumpai.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4231,16 +4138,11 @@ Please masukkan nilai berangka.</translation>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>Lapisan baru</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>lapisan baru</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6801,8 +6703,8 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Metadata asynchronous periksa lengkap! Koleksi metadata memperbarui</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6888,11 +6790,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Brightness/Contrast</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>model</translation>
 </phrase>
@@ -6927,7 +6824,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>warisan</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7036,11 +6933,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Laraskan Warna Baki</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>keseimbangan baru</translation>
 </phrase>
@@ -7050,16 +6942,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Melaraskan keseimbangan warna</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>Colorize Pilihan</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7076,7 +6963,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>gambar Colorizing</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7139,8 +7026,8 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Laraskan Hue/Ketepuan/Lightness</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7436,11 +7323,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>Samakan Histogram</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>jejari</translation>
 </phrase>
@@ -7458,11 +7340,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <phrase>
 <original>kernel shape</original>
 <translation>bentuk kernel</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Menganalisis histogram imej</translation>
 </phrase>
 
 <phrase>
@@ -7485,16 +7362,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>lokal</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Laraskan Tahap gambar</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7526,7 +7398,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Pemetaan tahap gambar baru</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7564,11 +7436,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>koreksi gamma</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>menyimpan semua warna Serempak</translation>
 </phrase>
@@ -7583,7 +7450,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Melaraskan nilai gamma</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8028,11 +7895,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Penghapusan mata merah</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>kekerasan</translation>
 </phrase>
@@ -8082,7 +7944,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Menerapkan koreksi mata merah akhir ( %1 dari %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8120,11 +7982,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Shadow/Midtone/Highlight</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>bayang-bayang</translation>
 </phrase>
@@ -8149,7 +8006,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Melaraskan bayang-bayang, midtones, dan sorotan</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8331,11 +8188,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>isi opacity</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>warna</translation>
 </phrase>
@@ -8385,7 +8237,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>empat persegi panjang</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8685,11 +8537,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Visual Basic IDE Dikesan</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Saya faham risiko berjalan PhotoDemon dalam IDE</translation>
 </phrase>
@@ -8699,27 +8546,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Jangan memaparkan amaran ini sekali lagi</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Anda menjalankan PhotoDemon dalam IDE Asas Visual. Ini tidak digalakkan.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Sila menyusun PhotoDemon sebelum menggunakannya. Banyak ciri-ciri yang bergantung kepada subclassing dilumpuhkan dalam IDE, tetapi beberapa - seperti butang arahan adat - tidak boleh dilumpuhkan tanpa teruk memberi kesan kepada fungsi program ini. Oleh itu, anda mungkin mengalami ketidakstabilan IDE dan kemalangan, terutamanya jika anda menutup program tersebut menggunakan butang Stop IDE ini.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Selain itu, seperti semua editor foto lain, PhotoDemon bergantung kepada tatasusunan multidimensi. Prestasi Array adalah teruk dihina dalam IDE, jadi beberapa fungsi boleh melaksanakan dengan perlahan-lahan.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Jika anda berkeras berjalan PhotoDemon dalam IDE, jangan menyerahkan pepijat mengenai kemalangan IDE atau membeku. Pemaju PhotoDemon hanya boleh menangani isu-isu dan pepijat yang memberi kesan exe yang disusun.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8744,16 +8571,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <phrase>
 <original>Outline settings</original>
 <translation>Pengaturan garis besar</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>garis besar warna dan keburaman</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>garis besar lebar</translation>
 </phrase>
 
 <phrase>
@@ -8816,7 +8633,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>memiringkan</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8995,8 +8812,8 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>Perubahan yang tidak disimpan</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9805,11 +9622,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Betul atau Betulkan Lens Penyelewengan</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>tipe koreksi</translation>
 </phrase>
@@ -9859,7 +9671,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Membetulkan herotan imej</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9892,8 +9704,8 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Pelbagai memutarbelitkan Tools</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10064,11 +9876,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Emboss/mengukir</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>warna asas</translation>
 </phrase>
@@ -10078,16 +9885,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>gambar embossing</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Meningkatkan tepi imej</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10184,7 +9986,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Cetak Timbul</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10265,11 +10067,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Skrin Cross (bintang)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>jejari</translation>
 </phrase>
@@ -10284,7 +10081,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Menggunakan penapis skrin balas</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10360,11 +10157,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Menyalakan (kesan api)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>keamatan warna</translation>
 </phrase>
@@ -10379,7 +10171,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Lampu imej terbakar</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10440,11 +10232,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Tambah Noise</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>rupa</translation>
 </phrase>
@@ -10464,7 +10251,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>seragam</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10533,11 +10320,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Memohon Filem Bijian</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Menjana filem tekstur bijirin</translation>
 </phrase>
@@ -10547,23 +10329,18 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Filem bijirin Melembutkan</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Harmonic Mean</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Menerapkan filter rata-rata harmonis</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10579,11 +10356,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>Penapis median</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10605,22 +10377,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Menggunakan penapis median</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Menghakis (penapis Minimum pangkat)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Membesar (penapis maksimum pangkat)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>Penapis median</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11053,11 +10810,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Menghasilkan Kembaran</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>orientasi</translation>
 </phrase>
@@ -11067,16 +10819,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Menghasilkan Gambar Kembar</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>memohon vignetting</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11093,7 +10840,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>pekeliling</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11172,11 +10919,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Polar Menyelaras Penukaran</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>swap x dan y koordinat</translation>
 </phrase>
@@ -11206,7 +10948,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>penyongsangan kutub</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12069,13 +11811,8 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Unduh gambar</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>hak cipta</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12186,7 +11923,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Menunggu input pengguna</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12355,11 +12092,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Buat imej baru</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>telus</translation>
 </phrase>
@@ -12379,16 +12111,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>warna adat</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Cetak imej</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12460,16 +12187,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>terbaik (paling dakwat)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>cetak gambar</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12516,7 +12238,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>landskap</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13189,16 +12911,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Saiz semula Kanvas</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>kedudukan utama</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13310,11 +13027,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>Editor metadata</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13561,7 +13273,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>daftar %1, satu entri per baris</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13664,11 +13376,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Imej putar</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>daerah perbatasan</translation>
 </phrase>
@@ -13723,7 +13430,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>lapisan putar</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14043,11 +13750,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>pemilih warna</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>ikhtisar</translation>
 </phrase>
@@ -14057,7 +13759,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>lapisan</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14594,22 +14296,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16198,11 +15885,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>menyimpan</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>prestasi</translation>
 </phrase>
@@ -16232,16 +15914,11 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>Lokasi folder sementara yang baru ini tidak akan berpengaruh sampai Anda me-restart program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Plugin Manager</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16343,16 +16020,16 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>hilang</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

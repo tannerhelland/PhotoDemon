@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormMedian 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Median Filter"
+   Caption         =   " Median"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -239,21 +239,21 @@ End Sub
 Public Sub ShowMedianDialog(ByVal initPercentage As Long)
 
     If (initPercentage = 1) Then
-        Me.Caption = g_Language.TranslateMessage("Erode (Minimum rank filter)")
+        Me.Caption = g_Language.TranslateMessage("Erode")
         sltPercent.Value = 1
         sltPercent.Visible = False
         cmdBar.SetToolName "Erode"
         curMode = MEDIAN_ERODE
         
     ElseIf (initPercentage = 100) Then
-        Me.Caption = g_Language.TranslateMessage("Dilate (Maximum rank filter)")
+        Me.Caption = g_Language.TranslateMessage("Dilate")
         sltPercent.Value = 100
         sltPercent.Visible = False
         cmdBar.SetToolName "Dilate"
         curMode = MEDIAN_DILATE
         
     Else
-        Me.Caption = g_Language.TranslateMessage("Median filter")
+        Me.Caption = g_Language.TranslateMessage("Median")
         sltPercent.Value = initPercentage
         sltPercent.Visible = True
         curMode = MEDIAN_DEFAULT

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormShadowHighlight 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Shadow / Midtone / Highlight"
+   Caption         =   " Shadows and highlights"
    ClientHeight    =   6570
    ClientLeft      =   45
    ClientTop       =   285

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3448</langversion>
+<langversion>6.8.3450</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Vyčištění starých dat automatického ukládání</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Rekonstrukce Autosave dokončena pro %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Automatické ukládání nelze úplně zrekonstruovat. Opět se pokusila o částečnou rekonstrukci.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Žádné metadata nejsou k dispozici.</translation>
+<original>No metadata available</original>
+<translation>Žádné metadata nejsou k dispozici</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Tento obrázek neobsahuje žádné metadata.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Žádné metadata nejsou k dispozici</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Tento formát souborů nepodporuje metadata. Zpracování metadat bylo přeskočeno.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Nepodařilo se spustit službu pluginu (nelze vytvořit potrubí).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Nepodařilo se spustit službu pluginu (nelze vytvořit proces: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Analyzuje horní okraj obrazu</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Analyzuje levý okraj obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Analyzuje pravý okraj obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Analyzuje spodní okraj obrazu</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Obraz je již oříznut inteligentně. Autocrop opuštěný. (Nebyly provedeny žádné změny obrázku.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Oříznutí obrázku na nové dimenze</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Oříznutí obrázku do vybrané oblasti</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Otočení obrázku</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Otočný obraz ve směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>Otočný obraz</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Otočení obrazu proti směru hodinových ručiček</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Oříznutí obrazu na nové rozměry</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Uložení souboru</translation>
+<original>Saving</original>
+<translation>Uložení</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analýza histogramu obrazu pro maximální a minimální hodnoty</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>Protahování histogramu</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Nebyl nalezen žádný kodér %1. Uložit přerušeno.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -692,7 +627,7 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 <translation>Uložit nelze dokončit bez knihovny FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -724,7 +659,7 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 <translation>Došlo k chybě (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -781,28 +716,28 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>Uchopte je na nejbližší dostupný pixel</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>Odrážejí je přes nejbližší okraj</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>Zabalte je kolem obrazu</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>Vymazat je</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>ignorovat je</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1021,8 +956,8 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Zrušit zpracování obrazu</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1087,8 +1022,8 @@ Taktivovat podporu pro tento formát obrázku, zkopírujte soubor FreeImage.dll 
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Oříznutí vrstvy do vybrané oblasti</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1246,24 +1181,6 @@ Požádku použijte před uložením tohoto obrázku do jiného formátu (např.
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Bohužel, aplikace PhotoDemon nebyla schopna načíst následující obrázek: 
-
- %1
-
-Pro uložení do aplikace PhotoDemon použijte jiný program pro uložení tohoto obrázku v obecném formátu (např. JPEG nebo PNG). Dík!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Import obrazu se nezdařil</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Import vrstvy byl zrušen.</translation>
 </phrase>
@@ -1304,7 +1221,7 @@ Naše ověřte, zda tyto obrázky existují a zda používají podporovaný form
 <translation>Duplikace dokončena.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2757,8 +2674,8 @@ Zkontrolujte, zda je zařízení zapnuté a připravené k použití.</translati
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Chyba rozhraní skeneru</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2771,6 +2688,11 @@ Zkontrolujte, zda je zařízení zapnuté a připravené k použití.</translati
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Skener</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Chyba rozhraní skeneru</translation>
 </phrase>
 
 <phrase>
@@ -2791,11 +2713,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Obraz byl úspěšně načten</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Skener</translation>
 </phrase>
 
 <phrase>
@@ -3378,11 +3295,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Snímání obrazovky</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Snímání obrazovky je dokončeno.</translation>
 </phrase>
@@ -3392,7 +3304,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>Možnosti snímku</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4064,12 +3976,7 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Nepodařilo se načíst vložený obrázek; Nalezena neplatná záhlaví.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4223,16 +4130,11 @@ Při zadání číselné hodnoty.</translation>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>Nová vrstva</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>Nová vrstva</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6791,8 +6693,8 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchronní kontrola metadat je kompletní! Aktualizace sbírky metadat</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6878,11 +6780,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Jas</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>model</translation>
 </phrase>
@@ -6917,7 +6814,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>dědictví</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7026,11 +6923,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Upravte vyvážení barev</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>nová rovnováha</translation>
 </phrase>
@@ -7040,16 +6932,11 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Nastavení vyvážení barev</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>Volby barvy</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7066,7 +6953,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Barevný obraz</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7129,8 +7016,8 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Upravit odstín</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7426,11 +7313,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>Vyrovnejte histogram</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>poloměr</translation>
 </phrase>
@@ -7448,11 +7330,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <phrase>
 <original>kernel shape</original>
 <translation>Tvaru jádra</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Analýza histogramu obrázku</translation>
 </phrase>
 
 <phrase>
@@ -7475,16 +7352,11 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>místní</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Úprava úrovní obrazu</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7516,7 +7388,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Mapování nových úrovní obrazu</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7554,11 +7426,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>Gamma Correction</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>Synchronizovat všechny barvy</translation>
 </phrase>
@@ -7573,7 +7440,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Nastavení hodnot gama</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8018,11 +7885,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Odstranění červených očí</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>přísnost</translation>
 </phrase>
@@ -8072,7 +7934,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Aplikace konečných korekcí červených očí ( %1 z %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8110,11 +7972,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Stín</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>Stíny</translation>
 </phrase>
@@ -8139,7 +7996,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Nastavení stínů, středních tónů a zvýraznění</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8321,11 +8178,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>Vyplňte neprůhlednost</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>barvy</translation>
 </phrase>
@@ -8375,7 +8227,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>obdélník</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8675,11 +8527,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Zjištěno IDE jazyka Visual Basic</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Chápu rizika, že běží PhotoDemon v IDE</translation>
 </phrase>
@@ -8689,27 +8536,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Toto varování se znovu nezobrazuje</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Spustíte aplikaci PhotoDemon uvnitř IDE jazyka Visual Basic. To se nedoporučuje.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Před použitím použijte aplikaci PhotoDemon. Mnoho funkcí, které závisí na podtřídě, je zakázáno v IDE, ale některé - například uživatelské příkazové tlačítka - nemohou být deaktivovány, aniž by to vážně ovlivnilo funkčnost programu. Jako takové může dojít k nestabilitě IDE a dojde k selhání IDE, zejména pokud zavřete program pomocí tlačítka IDE Stop.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Navíc, stejně jako všichni ostatní editoři fotografií, PhotoDemon závisí silně na vícerozměrných polích. Výkon pole je v IDE silně narušen, takže některé funkce mohou fungovat velmi pomalu.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Pokud trváte na spuštění aplikace PhotoDemon v IDE, neposkytujte chyby týkající se zhroucení nebo zamrznutí IDE. Vývojáři aplikace PhotoDemon mohou řešit pouze problémy a chyby, které mají vliv na kompilovanou verzi exe.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8734,16 +8561,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <phrase>
 <original>Outline settings</original>
 <translation>Nastavení osnovy</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>Obrys barvy a opacity</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>Šířka obrysu</translation>
 </phrase>
 
 <phrase>
@@ -8806,7 +8623,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>úkos</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8985,8 +8802,8 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>Neuložené změny</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9795,11 +9612,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Opravte nebo opravte zkreslení objektivu</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>Typ korekce</translation>
 </phrase>
@@ -9849,7 +9661,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Oprava zkreslení obrazu</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9882,8 +9694,8 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Různé nástroje Distort</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10054,11 +9866,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Vytepat</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>Základní barvy</translation>
 </phrase>
@@ -10068,16 +9875,11 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Reliéfní obrázek</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Zvětšete hrany obrazu</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10174,7 +9976,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10255,11 +10057,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Křížová obrazovka (hvězdičky)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>Paprsky</translation>
 </phrase>
@@ -10274,7 +10071,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Aplikuje filtr na obrazovce</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10350,11 +10147,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Ignite (požární účinek)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>Intenzita barvy</translation>
 </phrase>
@@ -10369,7 +10161,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Osvětlení obrazu v ohni</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10430,11 +10222,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Přidat šum</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>vzhled</translation>
 </phrase>
@@ -10454,7 +10241,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>jednotný</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10523,11 +10310,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Aplikujte filmové zrno</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Vytváření struktury filmového zrna</translation>
 </phrase>
@@ -10537,23 +10319,18 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Změkčení zrna filmu</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Harmonický průměr</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Použití harmonického středního filtru</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10569,11 +10346,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>Mediální filtr</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10595,22 +10367,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Použití mediánového filtru</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (minimální hodnostní filtr)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Dilatovat (filtr maximální hodnosti)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>Mediánový filtr</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11043,11 +10800,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Generovat dvojčata</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>orientace</translation>
 </phrase>
@@ -11057,16 +10809,11 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Generování obrazu dvojče</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Použijte Vignetting</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11083,7 +10830,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>oběžník</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11162,11 +10909,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Konverze polárních souřadnic</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>Vyměňte souřadnice x a y</translation>
 </phrase>
@@ -11196,7 +10938,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Polární inverze</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12059,13 +11801,8 @@ Chcete uložit seznam dávky před ukončením?</translation>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Stáhnout obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>Autorská Práva</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12176,7 +11913,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Čekání na zadání uživatele</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12345,11 +12082,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Vytvořte nový obrázek</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>průhledný</translation>
 </phrase>
@@ -12369,16 +12101,11 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Vlastní barvy</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Tiskněte obrázek</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12450,16 +12177,11 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Nejlepší (většina inkoustu)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Tisk obrázku</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12506,7 +12228,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>krajina</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13179,16 +12901,11 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Změnit velikost plátna</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>Kotevní pozice</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13300,11 +13017,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>Editor metadat</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13551,7 +13263,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Seznam %1, jeden záznam na řádku</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13654,11 +13366,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Otočit obrázek</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>Přeshraničních regionů</translation>
 </phrase>
@@ -13713,7 +13420,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Otočte vrstvu</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14033,11 +13740,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>Volič barev</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>Přehled</translation>
 </phrase>
@@ -14047,7 +13749,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Vrstvy</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14584,22 +14286,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16186,11 +15873,6 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>Uložení</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>Představení</translation>
 </phrase>
@@ -16220,16 +15902,11 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <translation>Tato nová dočasná umístění složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>Správce pluginů PhotoDemon</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16331,16 +16008,16 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <translation>chybějící</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

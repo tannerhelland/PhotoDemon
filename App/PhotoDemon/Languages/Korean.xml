@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.133</langversion>
+<langversion>1.0.135</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>이전 자동 저장 데이터 제거</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation> %1에 대한 자동 저장 재구성 완료</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>자동 저장을 완전히 재구성 할 수 없습니다. 부분 재구성이 대신 시도되었습니다.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>사용할 수있는 메타 데이터가 없습니다.</translation>
+<original>No metadata available</original>
+<translation>메타 데이터 없음</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>이 이미지에는 메타 데이터가 없습니다.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>메타 데이터 없음</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>이 파일 형식은 메타 데이터를 지원하지 않습니다. 메타 데이터 처리가 생략되었습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>플러그인 서비스를 시작하지 못했습니다 (파이프를 만들 수 없음).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>플러그인 서비스를 시작하지 못했습니다 ( %1 프로세스를 생성 할 수 없습니다).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>이미지의 상단 가장자리 분석하기</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>이미지의 왼쪽 가장자리 분석하기</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>이미지의 오른쪽 가장자리 분석하기</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>이미지의 하단 가장자리 분석</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>이미 지능적으로 이미지가 잘립니다. 버려진 오토 프록. (이미지는 변경되지 않았습니다.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>새로운 차원으로 이미지 자르기</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>선택한 영역으로 이미지 자르기</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>이미지 뒤집기</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>시계 방향으로 이미지 회전</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>회전 이미지</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>시계 반대 방향으로 이미지 회전</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>새로운 차원으로 이미지 다듬기</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>파일 저장 중</translation>
+<original>Saving</original>
+<translation>절약</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>최대 값과 최소값에 대한 이미지 히스토그램 분석</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>히스토그램 스트레칭</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation> %1 인코더가 없습니다. 저장 중단되었습니다.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -691,7 +626,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>Freeimage 라이브러리가 없으면 저장을 완료 할 수 없습니다.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -723,7 +658,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>오류가 발생했습니다 (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -780,28 +715,28 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>그들을 가장 가까운 사용 가능한 픽셀로 고정시킨다.</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>가장 가까운 가장자리를 가로 질러 그들을 반영</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>그들을 이미지 주위에 감싼다.</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>그들을 지우다.</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>그들을 무시하라</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1020,8 +955,8 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>이미지 처리 취소</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1086,8 +1021,8 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>선택한 영역으로 레이어 자르기</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1245,24 +1180,6 @@ P 이미지를로드하기 전에 다른 프로그램을 사용하여이 이미�
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>불행히도 PhotoDemon은 다음 이미지를로드 할 수 없습니다. 
-
-  %1
-
-P PhotoDemon에로드하기 전에 다른 프로그램을 사용하여이 이미지를 일반 형식 (예: JPEG 또는 PNG)으로 저장하십시오. 감사!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>이미지 가져 오기 실패</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>레이어 가져 오기가 취소되었습니다.</translation>
 </phrase>
@@ -1303,7 +1220,7 @@ P 이러한 이미지가 존재하고 지원되는 이미지 형식 (예: JPEG �
 <translation>이미지 복제가 완료되었습니다.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2756,8 +2673,8 @@ P 기기가 켜져 있고 사용할 준비가되었는지 확인하십시오.</t
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>스캐너 인터페이스 오류</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2770,6 +2687,11 @@ P 기기가 켜져 있고 사용할 준비가되었는지 확인하십시오.</t
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>스캐너</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>스캐너 인터페이스 오류</translation>
 </phrase>
 
 <phrase>
@@ -2790,11 +2712,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>Image acquired successfully</original>
 <translation>이미지가 성공적으로 획득되었습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>스캐너</translation>
 </phrase>
 
 <phrase>
@@ -3377,11 +3294,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>화면 캡처</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>화면 캡처가 완료되었습니다.</translation>
 </phrase>
@@ -3391,7 +3303,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>스크린 샷 옵션</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4063,12 +3975,7 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>임베드 된 이미지를로드하지 못했습니다. 잘못된 헤더가 발견되었습니다.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4222,16 +4129,11 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>새 레이어</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>새 레이어</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6790,8 +6692,8 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>비동기 메타 데이터 검사가 완료되었습니다! 메타 데이터 수집 업데이트 중</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6877,11 +6779,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>명도</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>모델</translation>
 </phrase>
@@ -6916,7 +6813,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>유산</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7025,11 +6922,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>색상 균형 조정</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>새로운 균형</translation>
 </phrase>
@@ -7039,16 +6931,11 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>색상 균형 조정</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>색상 화 옵션</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7065,7 +6952,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>컬러 이미지</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7128,8 +7015,8 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>색조 조정</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7425,11 +7312,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>히스토그램 평준화</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>반지름</translation>
 </phrase>
@@ -7447,11 +7329,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <phrase>
 <original>kernel shape</original>
 <translation>커널 모양</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>이미지 히스토그램 분석</translation>
 </phrase>
 
 <phrase>
@@ -7474,16 +7351,11 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>노동 조합 지부</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>이미지 레벨 조정</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7515,7 +7387,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>새로운 이미지 레벨 매핑</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7553,11 +7425,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>감마 보정</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>모든 색상을 동기화 상태로 유지</translation>
 </phrase>
@@ -7572,7 +7439,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>감마값 조정</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8017,11 +7884,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>적목 현상 제거</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>엄밀</translation>
 </phrase>
@@ -8071,7 +7933,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>최종 적목 현상 보정 ( %2/ %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8109,11 +7971,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>그림자</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>그림자</translation>
 </phrase>
@@ -8138,7 +7995,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>그림자, 중간 톤 및 밝은 영역 조정</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8320,11 +8177,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>불투명도 채우기</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>그림 물감</translation>
 </phrase>
@@ -8374,7 +8226,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>구형</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8674,11 +8526,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>감지 된 Visual Basic IDE</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Ide에서 PhotoDemon을 실행할 때의 위험을 이해합니다.</translation>
 </phrase>
@@ -8688,27 +8535,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>이 경고를 다시 표시하지 마십시오.</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Visual Basic IDE에서 PhotoDemon을 실행하고 있습니다. 권장하지 않습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>사용하기 전에 PhotoDemon을 컴파일하십시오. 서브 클래 싱에 의존하는 많은 기능은 IDE에서는 사용할 수 없지만 사용자 정의 명령 단추와 같은 일부 기능은 프로그램의 기능에 심각한 영향을 미치지 않으면 사용할 수 없습니다. 따라서 특히 IDE의 중지 버튼을 사용하여 프로그램을 닫으면 IDE가 불안정 해지고 충돌이 발생할 수 있습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>또한 다른 모든 사진 편집기와 마찬가지로 PhotoDemon은 다차원 배열에 크게 의존합니다. IDE에서 배열 성능이 심각하게 저하되므로 일부 기능이 매우 느리게 수행 될 수 있습니다.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Ide에서 PhotoDemon을 실행하고 싶다면 IDE 충돌 또는 정지와 관련된 버그를 제출하지 마십시오. PhotoDemon의 개발자는 컴파일 된.exe에 영향을 미치는 문제와 버그 만 해결할 수 있습니다.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8733,16 +8560,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <phrase>
 <original>Outline settings</original>
 <translation>개요 설정</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>윤곽선 색상 및 불투명도</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>외곽선 너비</translation>
 </phrase>
 
 <phrase>
@@ -8805,7 +8622,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>사각</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8984,8 +8801,8 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>저장되지 않은 변경 사항</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9794,11 +9611,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>렌즈 왜곡 수정 또는 수정</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>보정 유형</translation>
 </phrase>
@@ -9848,7 +9660,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>이미지 왜곡 보정</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9881,8 +9693,8 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>기타 디스토트 도구</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10053,11 +9865,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>엠보싱</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>기본 색</translation>
 </phrase>
@@ -10067,16 +9874,11 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>엠보싱 이미지</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>이미지 가장자리 강화</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10173,7 +9975,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>소벨</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10254,11 +10056,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>교차 스크린 (별)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>쐐기</translation>
 </phrase>
@@ -10273,7 +10070,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>스크린 간 필터 적용</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10349,11 +10146,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>점화 (화재 효과)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>색상 강도</translation>
 </phrase>
@@ -10368,7 +10160,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>불의 조명 이미지</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10429,11 +10221,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>소음 추가</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>외관</translation>
 </phrase>
@@ -10453,7 +10240,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>제복</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10522,11 +10309,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>필름 그레인 적용</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>필름 그레인 텍스처 생성</translation>
 </phrase>
@@ -10536,23 +10318,18 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>필름 그레인 연화</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>고조파 평균</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>고조파 평균 필터 적용</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10568,11 +10345,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>메디안 필터</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10594,22 +10366,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>중앙값 필터 적용</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (최소 순위 필터)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>십자형 (최대 랭크 필터)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>중간 필터</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11042,11 +10799,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>쌍둥이 생성</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>정위</translation>
 </phrase>
@@ -11056,16 +10808,11 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>이미지 쌍둥이 생성하기</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>비네팅 적용</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11082,7 +10829,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>회보</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11161,11 +10908,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>극좌표 변환</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>스왑 x와 y 좌표</translation>
 </phrase>
@@ -11195,7 +10937,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>극좌표 반전</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12058,13 +11800,8 @@ Would you like to save your batch list before exiting?</original>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>이미지 다운로드</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>저작권</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12175,7 +11912,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>사용자 입력 대기 중</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12344,11 +12081,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>새 이미지 만들기</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>투명한</translation>
 </phrase>
@@ -12368,16 +12100,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>사용자 정의 색상</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>이미지 인쇄</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12449,16 +12176,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>최고 (대부분의 잉크)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>이미지 인쇄</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12505,7 +12227,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>경치</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13178,16 +12900,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>캔버스 크기 조정</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>앵커 위치</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13299,11 +13016,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>메타 데이터 편집기</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13550,7 +13262,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>한 줄에 하나씩 항목  %1 목록</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13653,11 +13365,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>이미지 회전</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>경계 지역</translation>
 </phrase>
@@ -13712,7 +13419,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>레이어 회전</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14032,11 +13739,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>색상 선택기</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>개요</translation>
 </phrase>
@@ -14046,7 +13748,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>층</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14583,22 +14285,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16186,11 +15873,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>절약</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>공연</translation>
 </phrase>
@@ -16220,16 +15902,11 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation>이 새 임시 폴더 위치는 프로그램을 다시 시작해야 적용됩니다.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon 플러그인 관리자</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16331,16 +16008,16 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation>있어야 할 곳에 없는</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

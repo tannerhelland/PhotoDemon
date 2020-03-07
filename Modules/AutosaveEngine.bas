@@ -241,8 +241,6 @@ Public Sub PurgeOldAutosaveData()
     
     If (m_numOfXMLFound > 0) Then
     
-        Message "Purging old autosave data..."
-        
         'Create a dummy pdUndo object.  This object will help us generate relevant filenames using PD's standard Undo filename formula.
         Dim tmpUndoEngine As pdUndo
         Set tmpUndoEngine = New pdUndo

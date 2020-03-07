@@ -3,7 +3,7 @@ Begin VB.Form FormTwins
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Generate Twins"
+   Caption         =   " Twins"
    ClientHeight    =   6525
    ClientLeft      =   -15
    ClientTop       =   390

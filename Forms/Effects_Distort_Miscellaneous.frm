@@ -3,7 +3,7 @@ Begin VB.Form FormMiscDistorts
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Miscellaneous Distort Tools"
+   Caption         =   " Miscellaneous distorts"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225

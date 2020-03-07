@@ -2094,8 +2094,9 @@ End Sub
 ' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
 Private Sub m_MetadataTimer_Timer()
 
-    'I don't like resorting to hackneyed error-handling, but ExifTool can be unpredictable, especially if the user loads a bajillion
-    ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
+    'I don't like resorting to hackneyed error-handling, but ExifTool can be unpredictable,
+    ' especially when loading a bajillion images simultaneously.  Rather than bring down the
+    ' whole program, I'd prefer to simply ignore metadata for problematic image(s).
     On Error Resume Next
 
     If ExifTool.IsMetadataFinished Then
@@ -2107,7 +2108,7 @@ Private Sub m_MetadataTimer_Timer()
         Dim prevMessage As String
         prevMessage = Interface.GetLastFullMessage()
                 
-        Message "Asynchronous metadata check complete!  Updating metadata collection..."
+        Message "Importing metadata..."
         
         'Retrieve the completed metadata string
         Dim mdString As String, tmpString As String

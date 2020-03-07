@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormFilmGrain 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Apply Film Grain"
+   Caption         =   " Add film grain"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

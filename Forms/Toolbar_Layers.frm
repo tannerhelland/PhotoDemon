@@ -60,7 +60,7 @@ Begin VB.Form toolbar_Layers
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   476
-      Caption         =   "color selector"
+      Caption         =   "colors"
       Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 

@@ -3,7 +3,7 @@ Begin VB.Form FormVignette
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Apply Vignetting"
+   Caption         =   " Vignetting"
    ClientHeight    =   6645
    ClientLeft      =   -15
    ClientTop       =   225

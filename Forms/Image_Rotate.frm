@@ -3,7 +3,7 @@ Begin VB.Form FormRotate
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Rotate Image"
+   Caption         =   " Rotate"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225

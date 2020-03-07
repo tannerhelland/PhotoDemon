@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormIgnite 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Ignite (fire effect)"
+   Caption         =   " Ignite"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

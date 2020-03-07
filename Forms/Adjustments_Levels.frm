@@ -3,7 +3,7 @@ Begin VB.Form FormLevels
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Adjust Image Levels"
+   Caption         =   " Levels"
    ClientHeight    =   7545
    ClientLeft      =   45
    ClientTop       =   195

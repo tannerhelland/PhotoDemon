@@ -254,7 +254,7 @@ End Sub
 'Stretch the histogram to reach from 0 to 255 (white balance correction is a far better method, FYI)
 Public Sub StretchHistogram()
    
-    Message "Analyzing image histogram for maximum and minimum values..."
+    Message "Analyzing image..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D

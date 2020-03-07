@@ -3,7 +3,7 @@ Begin VB.Form FormMetadata
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Metadata editor"
+   Caption         =   "Edit metadata"
    ClientHeight    =   8085
    ClientLeft      =   45
    ClientTop       =   315

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormHarmonicMean 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Harmonic Mean"
+   Caption         =   " Harmonic mean"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

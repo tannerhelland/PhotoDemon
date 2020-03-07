@@ -26,13 +26,14 @@ Begin VB.Form dialog_OutlineSettings
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.pdDropDown cboCorner 
-      Height          =   390
+      Height          =   750
       Left            =   6480
       TabIndex        =   6
-      Top             =   5820
+      Top             =   5400
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   688
+      _ExtentY        =   1323
+      Caption         =   "corner shape"
    End
    Begin PhotoDemon.pdColorSelector csOutline 
       Height          =   1215
@@ -42,7 +43,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   2143
-      Caption         =   "outline color and opacity"
+      Caption         =   "color and opacity"
    End
    Begin VB.PictureBox picPenPreview 
       Appearance      =   0  'Flat
@@ -79,7 +80,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   12375
       _ExtentX        =   21828
       _ExtentY        =   1931
-      Caption         =   "outline style"
+      Caption         =   "style"
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -116,7 +117,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   6060
       _ExtentX        =   10689
       _ExtentY        =   1270
-      Caption         =   "outline width"
+      Caption         =   "width"
       Min             =   1
       Max             =   100
       SigDigits       =   1
@@ -125,36 +126,15 @@ Begin VB.Form dialog_OutlineSettings
       NotchValueCustom=   100
       DefaultValue    =   1
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   1
-      Left            =   6480
-      Top             =   5400
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   556
-      Caption         =   "corner shape"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   2
-      Left            =   6480
-      Top             =   4440
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   556
-      Caption         =   "line cap shape"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdDropDown cboLineCap 
-      Height          =   390
+      Height          =   750
       Left            =   6480
       TabIndex        =   7
-      Top             =   4860
+      Top             =   4440
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   688
+      _ExtentY        =   1323
+      Caption         =   "line cap shape"
    End
    Begin PhotoDemon.pdSlider sltMiterLimit 
       CausesValidation=   0   'False

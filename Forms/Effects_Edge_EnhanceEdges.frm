@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormEdgeEnhance 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Enhance image edges"
+   Caption         =   " Enhance edges"
    ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285

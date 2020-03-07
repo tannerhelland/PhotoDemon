@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormInternetImport 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Download Image"
+   Caption         =   "Download image"
    ClientHeight    =   2685
    ClientLeft      =   45
    ClientTop       =   315
@@ -50,7 +50,7 @@ Begin VB.Form FormInternetImport
       Width           =   9615
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "Copyright"
+      Caption         =   ""
       FontSize        =   9
       ForeColor       =   8421504
       Layout          =   1

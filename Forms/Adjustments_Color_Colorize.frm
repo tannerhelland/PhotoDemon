@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormColorize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Colorize Options"
+   Caption         =   " Colorize"
    ClientHeight    =   6570
    ClientLeft      =   45
    ClientTop       =   285

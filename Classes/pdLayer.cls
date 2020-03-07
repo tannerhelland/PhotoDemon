@@ -1164,7 +1164,7 @@ Private Sub Class_Initialize()
 
     'Assign default values to this instance
     With myLayerData
-        .l_Name = g_Language.TranslateMessage("New Layer")
+        .l_Name = g_Language.TranslateMessage("New layer")
         .l_GroupID = 0
         .l_Opacity = 100!
         .l_BlendMode = BM_Normal

@@ -648,7 +648,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         If displayMessagesToUser Then
             If (freeImageReturn <> PD_FAILURE_USER_CANCELED) Then
                 Message "Failed to load %1", imagePath
-                PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation Or vbOKOnly, "Image Import Failed", imagePath
+                PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", imagePath
             Else
                 Message "Layer import canceled."
             End If

@@ -408,7 +408,7 @@ Public Function LoadPDI_HeadersOnly(ByRef pdiPath As String, ByRef dstImage As p
     Exit Function
     
 LoadPDIHeaderFail:
-    Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI header-only load abandoned."
+    PDDebug.LogAction "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI header-only load abandoned."
     LoadPDI_HeadersOnly = False
     
 End Function

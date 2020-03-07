@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormCrossScreen 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Cross-screen (stars)"
+   Caption         =   " Cross-screen"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

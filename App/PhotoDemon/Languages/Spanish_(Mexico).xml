@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.468</langversion>
+<langversion>6.7.470</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Purgar datos de autoguardado viejos</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Reconstrucción completa para %1 de guardado automático</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Guardado automático no podía ser reconstruida totalmente. La reconstrucción parcial intentó en su lugar.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>No hay metadatos disponibles.</translation>
+<original>No metadata available</original>
+<translation>No hay metadatos disponibles</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Esta imagen no contiene metadatos.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>No hay metadatos disponibles</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Este formato de archivo no admite metadatos. Procesamiento de metadatos saltado.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Error al iniciar el servicio el plugin (no se pudo crear la tubería).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Error al iniciar el servicio el plugin (no se pudo crear proceso: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -494,8 +469,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Analizando el borde superior de la imagen</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -504,28 +479,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Analizando borde izquierdo de la imagen</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Analizando el borde derecho de la imagen</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Analizando el borde inferior de la imagen</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Imagen ya se recorta de forma inteligente. Autorecorte abandonado. (No se hicieron cambios a la imagen.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Recorte de imágenes a las nuevas dimensiones</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -539,11 +499,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Recorte de imagen para el área seleccionada</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Mover de un tirón la imagen</translation>
 </phrase>
@@ -554,18 +509,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Rotar imagen en sentido horario</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>Rotación de la imagen</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Rotación de la imagen en sentido antihorario</translation>
 </phrase>
 
 <phrase>
@@ -584,11 +529,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Recorte de imagen a las nuevas dimensiones</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -612,8 +557,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Guardar el archivo</translation>
+<original>Saving</original>
+<translation>ahorro</translation>
 </phrase>
 
 <phrase>
@@ -628,16 +573,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>El análisis de la imagen de histograma para los valores máximos y mínimos</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>Estirar histograma</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -670,11 +610,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>No %1 codificador encontrado. Ahorra abortada.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -693,7 +628,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -725,7 +660,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Se ha producido un error (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -782,28 +717,28 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>sujetarlos al píxel más cercano disponible</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>reflejarlas en todo el borde más cercano</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>se envuelven alrededor de la imagen</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>borrarlas</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>ignorarlos</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1022,8 +957,8 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Cancelar el procesamiento de imágenes</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1088,8 +1023,8 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Recortando la capa al área seleccionada</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1245,24 +1180,6 @@ VBCRLPor favor, utilice otro programa para guardar esta imagen en un formato gen
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Desafortunadamente, PhotoDemon no pudo cargar la siguiente imagen:
-
-%1
-
-Please utilizar otro programa para guardar esta imagen en un formato genérico (como JPEG o PNG) antes de cargarlo en PhotoDemon. Gracias!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Importar imagen Error</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Capa de importación cancelada.</translation>
 </phrase>
@@ -1303,7 +1220,7 @@ PVerifique que estas imágenes existan y que utilicen un formato de imagen compa
 <translation>Completa la duplicación de imagen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2756,8 +2673,8 @@ Please asegurarse de que el dispositivo esté encendido y listo para su uso.</tr
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Interfaz del escáner Error</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2772,6 +2689,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>El escáner de interfaz de la cámara digital/plug-in (EZTW32.dll) se marcó como falta sobre programa initialization.
 
 To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disponible para su descarga desde http://eztwain.com/ezt1_download.htm) en el directorio de plug-in y volver a cargar el programa.</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Interfaz del escáner Error</translation>
 </phrase>
 
 <phrase>
@@ -2792,11 +2714,6 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Imagen adquirida con éxito</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Escáner/importación cámara digital deshabilitado</translation>
 </phrase>
 
 <phrase>
@@ -3379,11 +3296,6 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Captura de Pantalla</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Pantalla completa de captura.</translation>
 </phrase>
@@ -3393,7 +3305,7 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 <translation>opciones de pantalla</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4065,12 +3977,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>No se ha podido cargar la imagen incrustada; encabezado no válido encontrado.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4224,16 +4131,11 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>Nueva capa</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>nueva capa</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6794,8 +6696,8 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Metadatos asíncronos verificación completa! Colección de metadatos Actualización</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6881,11 +6783,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Brillo/Contraste</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>modelo</translation>
 </phrase>
@@ -6920,7 +6817,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>legado</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7029,11 +6926,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Ajuste del balance del color</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>nuevo equilibrio</translation>
 </phrase>
@@ -7043,16 +6935,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Ajuste el balance de color</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>colorear Opciones</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7069,7 +6956,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>colorear la imagen</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7132,8 +7019,8 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Ajustar Tono/Saturación/Luminosidad</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7429,11 +7316,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>ecualizar histograma</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>radio</translation>
 </phrase>
@@ -7451,11 +7333,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>kernel shape</original>
 <translation>forma de kernel</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>El análisis de la imagen de histograma</translation>
 </phrase>
 
 <phrase>
@@ -7478,16 +7355,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>local</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Ajustar los niveles de la Imagen</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7519,7 +7391,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Mapeo nuevos niveles de imagen</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7557,11 +7429,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>Corrección Gamma</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>mantener todos los colores en sintonía</translation>
 </phrase>
@@ -7576,7 +7443,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Ajuste de los valores de gamma</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8021,11 +7888,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Eliminación de ojos rojos</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>rigor</translation>
 </phrase>
@@ -8075,7 +7937,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Aplicar las correcciones finales de ojos rojos ( %1 de %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8113,11 +7975,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Shadow/tonos medios/Highlight</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>oscuridad</translation>
 </phrase>
@@ -8142,7 +7999,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Sombras de ajuste, los medios tonos y luces</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8324,11 +8181,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>llenar la opacidad</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>colores</translation>
 </phrase>
@@ -8378,7 +8230,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>rectángulo</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8678,11 +8530,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>IDE de Visual Basic Detectado</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Entiendo los riesgos de ejecutar PhotoDemon en el IDE</translation>
 </phrase>
@@ -8692,27 +8539,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>No mostrar este mensaje otra vez</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Está ejecutando PhotoDemon dentro del IDE de Visual Basic. Esto no es recomendable.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Por favor, compilar PhotoDemon antes de usarlo. Muchas de las funciones que se basan en la creación de subclases están desactivados en el IDE, pero algunos - como botones de comando personalizados - no se pueden desactivar sin afectar gravemente la funcionalidad del programa. Como tal, puede experimentar inestabilidad IDE y los accidentes, especialmente si usted cierra el programa con el botón de la IDE en Detener.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Además, como todos los otros editores de fotografía, PhotoDemon se basa principalmente en matrices multidimensionales. Rendimiento de la matriz está severamente degradada en el IDE, por lo que algunas funciones pueden realizar muy lentamente.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Si usted insiste en correr PhotoDemon en el IDE, por favor, no envíe errores relacionados con IDE se bloquea o se congela. Los desarrolladores de PhotoDemon sólo pueden abordar los problemas y errores que afectan el compilado. Exe.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8737,16 +8564,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>Outline settings</original>
 <translation>Configuración del esquema</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>contorno de color y opacidad</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>ancho del perfil</translation>
 </phrase>
 
 <phrase>
@@ -8809,7 +8626,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>bisel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8988,8 +8805,8 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>Los cambios no guardados</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9798,11 +9615,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Corrija o arreglo de la lente de distorsión</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>tipo de corrección</translation>
 </phrase>
@@ -9852,7 +9664,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Corrección de la distorsión de la imagen</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9885,8 +9697,8 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Herramientas Varios Distorsionar</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10057,11 +9869,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Relieve/Grabado</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>color base</translation>
 </phrase>
@@ -10071,16 +9878,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Relieve imagen</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Mejorar bordes de la imagen</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10177,7 +9979,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10258,11 +10060,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>De pantalla Cruz (estrellas)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>radios</translation>
 </phrase>
@@ -10277,7 +10074,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Aplicar filtro de pantalla cruz</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10353,11 +10150,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Ignite (efecto de fuego)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>intensidad de color</translation>
 </phrase>
@@ -10372,7 +10164,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Iluminación imagen en llamas</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10433,11 +10225,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Añadir ruido</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>apariencia</translation>
 </phrase>
@@ -10457,7 +10244,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>uniforme</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10526,11 +10313,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Aplicar Grano de película</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Película Generando textura de grano</translation>
 </phrase>
@@ -10540,23 +10322,18 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Ablandamiento grano de la película</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Significado armonico</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Aplicando filtro de media armónico</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10572,11 +10349,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>La mediana de Filtro</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10598,22 +10370,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>La aplicación de filtro de mediana</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (filtro de rango mínimo)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Dilatar (filtro de máximo rango)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>filtro Mediana</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11046,11 +10803,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Generar Twins</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>orientación</translation>
 </phrase>
@@ -11060,16 +10812,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>La generación de doble imagen</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Aplicar viñeteado</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11086,7 +10833,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>circular</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11165,11 +10912,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Conversión de coordenadas polares</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>canje de coordenadas X e Y</translation>
 </phrase>
@@ -11199,7 +10941,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>inversión Polar</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12062,13 +11804,8 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Descargar Imagen</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>derechos de autor</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12179,7 +11916,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>A la espera de la entrada del usuario</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12348,11 +12085,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Crear nueva imagen</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>transparente</translation>
 </phrase>
@@ -12372,16 +12104,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>color personalizado</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>imagen Imprimir</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12453,16 +12180,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>mejor (más tinta)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Imprimir Imagen</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12509,7 +12231,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>paisaje</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13182,16 +12904,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Cambiar el tamaño de la lona</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>posición de anclaje</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13303,11 +13020,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>Editor de metadatos</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13554,7 +13266,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>lista de %1, una entrada por línea</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13657,11 +13369,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Girar imagen</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>regiones fronterizas</translation>
 </phrase>
@@ -13716,7 +13423,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>capa Girar</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14036,11 +13743,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>selector de color</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>visión de conjunto</translation>
 </phrase>
@@ -14050,7 +13752,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>capas</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14587,22 +14289,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16190,11 +15877,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>ahorro</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>rendimiento</translation>
 </phrase>
@@ -16224,16 +15906,11 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>Esta nueva ubicación de carpeta temporal no tendrá efecto hasta que reinicie el programa.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Administrador de complementos</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16335,16 +16012,16 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>desaparecido</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

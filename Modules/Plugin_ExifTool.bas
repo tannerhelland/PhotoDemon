@@ -813,7 +813,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
         
         'TODO 7.2: still raise the form, and allow the user to add their own metadata to the image
         Else
-            Message "No metadata available."
+            Message "No metadata available"
             PDMsgBox "This image does not contain any metadata.", vbInformation Or vbOKOnly, "No metadata available"
         End If
         
@@ -891,7 +891,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     outputMetadataFormat = ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.GetCurrentFileFormat)
     
     If (outputMetadataFormat = PDMF_NONE) Then
-        Message "This file format does not support metadata.  Metadata processing skipped."
+        PDDebug.LogAction "This file format does not support metadata.  Metadata processing skipped."
         Files.FileDeleteIfExists srcMetadataFile
         WriteMetadata = True
         Exit Function
@@ -1332,9 +1332,9 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         .bInheritHandle = 1
     End With
 
-    If CreatePipe(hPipeRead, hPipeWrite, sa, BUFFER_SIZE) = 0 Then
+    If (CreatePipe(hPipeRead, hPipeWrite, sa, BUFFER_SIZE) = 0) Then
         ShellExecuteCapture = False
-        Message "Failed to start plugin service (couldn't create pipe)."
+        PDDebug.LogAction "Failed to start plugin service (couldn't create pipe)."
         Exit Function
     End If
 
@@ -1375,7 +1375,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         
     Else
         ShellExecuteCapture = False
-        Message "Failed to start plugin service (couldn't create process: %1).", Err.LastDllError
+        PDDebug.LogAction "Failed to start plugin service (couldn't create process: " & Err.LastDllError & ")."
         Exit Function
     End If
     

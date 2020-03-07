@@ -1746,7 +1746,7 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
         Exit Sub
     End If
     
-    Message "Cropping layer to selected area..."
+    Message "Cropping layer..."
     
     'Because PD is awesome, we already have a function capable of doing this!
     If PDImages.IsImageActive() Then PDImages.GetActiveImage.EraseProcessedSelection layerIndex

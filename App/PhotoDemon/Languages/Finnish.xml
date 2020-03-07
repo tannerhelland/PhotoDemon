@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3448</langversion>
+<langversion>6.8.3450</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -40,11 +40,6 @@
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
-<original>Purging old autosave data</original>
-<translation>Huuhtelua vanha automaattinen tallennus tiedot</translation>
-</phrase>
-
-<phrase>
 <original>Autosave reconstruction complete for %1</original>
 <translation>Autosave jälleenrakennus täydellisiä %1</translation>
 </phrase>
@@ -54,7 +49,7 @@
 <translation>Automaattinen tallennus ei pystytty täysin rekonstruoida. Osittainen jälleenrakennus yrittänyt sijaan.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
 
@@ -222,8 +217,8 @@
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>Ei metatiedot.</translation>
+<original>No metadata available</original>
+<translation>Ei metatiedot</translation>
 </phrase>
 
 <phrase>
@@ -231,27 +226,7 @@
 <translation>Tämä kuva ei sisällä metadataa.</translation>
 </phrase>
 
-<phrase>
-<original>No metadata available</original>
-<translation>Ei metatiedot</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Tämä tiedostomuoto ei tue metatietoja. Metadata käsittely ohitetaan.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Käynnistäminen epäonnistui plugin palvelu (ei voinut luoda putki).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Käynnistäminen epäonnistui plugin palvelu (ei voinut luoda prosessi: %1).</translation>
-</phrase>
-
-<!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Plugin_ExifTool.bas-->
 
@@ -493,8 +468,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
-<original>Analyzing top edge of image</original>
-<translation>Analysoimalla yläreuna kuva</translation>
+<original>Analyzing image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -503,28 +478,13 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Analyzing left edge of image</original>
-<translation>Analysoimalla vasen reuna kuvan</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing right edge of image</original>
-<translation>Analysoimalla oikeaan reunaan kuvan</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing bottom edge of image</original>
-<translation>Analysoimalla alareunaan kuvan</translation>
-</phrase>
-
-<phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
 <translation>Kuva on jo rajattu älykkäästi. Automaattirajaustoiminto hylätty. (Ei tehty muutoksia kuvaan.)</translation>
 </phrase>
 
 <phrase>
-<original>Cropping image to new dimensions</original>
-<translation>Rajaus kuvaa uusia ulottuvuuksia</translation>
+<original>Cropping image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -538,11 +498,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Cropping image to selected area</original>
-<translation>Rajaus kuva valitulle alueelle</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>käännetään kuva</translation>
 </phrase>
@@ -553,18 +508,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Rotating image clockwise</original>
-<translation>Pyörivä kuvaa myötäpäivään</translation>
-</phrase>
-
-<phrase>
 <original>Rotating image</original>
 <translation>pyörivä kuva</translation>
-</phrase>
-
-<phrase>
-<original>Rotating image counter-clockwise</original>
-<translation>Pyörivä kuva vastapäivään</translation>
 </phrase>
 
 <phrase>
@@ -583,11 +528,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Trimming image to new dimensions</original>
-<translation>Viimeistely kuvaa uusia ulottuvuuksia</translation>
+<original>Trimming image</original>
+<translation></translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -611,8 +556,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Saving the file</original>
-<translation>Tallenna tiedosto</translation>
+<original>Saving</original>
+<translation>Tallentaa</translation>
 </phrase>
 
 <phrase>
@@ -627,16 +572,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- BEGIN text for Histograms.bas -->
 
 <phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analysoidaan kuva histogramminäytön ääriarvot</translation>
-</phrase>
-
-<phrase>
 <original>Stretching histogram</original>
 <translation>venyttely histogrammi</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -669,11 +609,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>No %1 encoder found. Save aborted.</original>
-<translation>Ei %1 anturin löydetty. Tallenna keskeytetty.</translation>
-</phrase>
-
-<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -692,7 +627,7 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 <translation>Tallenna ei voida toteuttaa ilman FreeImage kirjasto.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -724,7 +659,7 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 <translation>Tapahtui virhe (#</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -781,28 +716,28 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 </phrase>
 
 <phrase>
-<original>clamp them to the nearest available pixel</original>
-<translation>puristin ne lähimpään käytettävissä pikseli</translation>
+<original>clamp</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reflect them across the nearest edge</original>
-<translation>heijastaa niitä poikki lähintä reunaa</translation>
+<original>reflect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>wrap them around the image</original>
-<translation>kääri ne ympärille kuva</translation>
+<original>wrap</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>erase them</original>
-<translation>tyhjentää ne</translation>
+<original>erase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ignore them</original>
-<translation>Jätä heidät huomiotta</translation>
+<original>ignore</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1021,8 +956,8 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 </phrase>
 
 <phrase>
-<original>Cancel image processing</original>
-<translation>Peruuta kuvankäsittely</translation>
+<original>Cancel action</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1087,8 +1022,8 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 </phrase>
 
 <phrase>
-<original>Cropping layer to selected area</original>
-<translation>Rajaus kerros valittu alue</translation>
+<original>Cropping layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1245,24 +1180,6 @@ Please käyttää toista ohjelmaa tallentaa tämän kuvan yleisessä muodossa (k
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Valitettavasti PhotoDemon voinut ladata seuraavat kuvat 
-
- %1
-
-Please käyttää toista ohjelmaa tallentaa tämän kuvan yleisessä muodossa (kuten JPEG tai PNG) ennen lataamalla sen PhotoDemon. Kiitos!</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>Kuva Tuo epäonnistui</translation>
-</phrase>
-
-<phrase>
 <original>Layer import canceled.</original>
 <translation>Layer tuonti peruutettu.</translation>
 </phrase>
@@ -1300,7 +1217,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Kuva päällekkäisyyksien täydellinen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Loading.bas contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Loading.bas-->
 
@@ -2753,8 +2670,8 @@ Varmista, että laite on päällä ja valmis käytettäväksi.</translation>
 </phrase>
 
 <phrase>
-<original>Scanner Interface Error</original>
-<translation>Skannerin käyttöliittymä Error</translation>
+<original>Scanner error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2769,6 +2686,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>Skanneri/digitaalikamera liitäntä plug-in (EZTW32.dll) oli merkitty kadonneeksi kun ohjelma initialization.
 
 To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitteesta http://eztwain.com/ezt1_download.htm) osaksi plug-in hakemistoon ja lataa ohjelman.</translation>
+</phrase>
+
+<phrase>
+<original>Scanner Interface Error</original>
+<translation>Skannerin käyttöliittymä Error</translation>
 </phrase>
 
 <phrase>
@@ -2789,11 +2711,6 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Kuva on saatu onnistuneesti</translation>
-</phrase>
-
-<phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Skanneri/digitaalikamera tuonti käytöstä</translation>
 </phrase>
 
 <phrase>
@@ -3374,11 +3291,6 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
-<original>Screen Capture</original>
-<translation>Kuvakaappaus</translation>
-</phrase>
-
-<phrase>
 <original>Screen capture complete.</original>
 <translation>Ruudunkaappaus valmis.</translation>
 </phrase>
@@ -3388,7 +3300,7 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 <translation>kuvakaappaus vaihtoehtoja</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ScreenCapture.bas-->
 
@@ -4060,12 +3972,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdDIB.cls -->
 
-<phrase>
-<original>Failed to load embedded image; invalid header found.</original>
-<translation>Lataaminen epäonnistui upotetun kuvan; virheellinen otsikko löytyy.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 0 phrases. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -4219,16 +4126,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdLayer.cls -->
 
 <phrase>
-<original>New Layer</original>
-<translation>uusi taso</translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>uusi kerros</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -6789,8 +6691,8 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchronous metadata Tarkistus valmis! Päivittäminen metadata kokoelma</translation>
+<original>Importing metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6876,11 +6778,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_BrightnessContrast.frm (FormBrightnessContrast) -->
 
 <phrase>
-<original>Brightness/Contrast</original>
-<translation>Kirkkaus/kontrasti</translation>
-</phrase>
-
-<phrase>
 <original>model</original>
 <translation>malli-</translation>
 </phrase>
@@ -6915,7 +6812,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>perintö</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -7024,11 +6921,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_ColorBalance.frm (FormColorBalance) -->
 
 <phrase>
-<original>Adjust Color Balance</original>
-<translation>Säädä Väritasapaino</translation>
-</phrase>
-
-<phrase>
 <original>new balance</original>
 <translation>uusi tasapaino</translation>
 </phrase>
@@ -7038,16 +6930,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Säätäminen väritasapainoa</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ColorBalance.frm-->
 
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
-
-<phrase>
-<original>Colorize Options</original>
-<translation>väritä Vaihtoehdot</translation>
-</phrase>
 
 <phrase>
 <original>preserve existing saturation</original>
@@ -7064,7 +6951,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>colorizing kuva</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7127,8 +7014,8 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_Color_HSL.frm (FormHSL) -->
 
 <phrase>
-<original>Adjust Hue / Saturation / Lightness</original>
-<translation>Säädä Sävy/värikylläisyys/valoisuus</translation>
+<original>Adjust HSL</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7424,11 +7311,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_Histogram_Equalize.frm (FormEqualize) -->
 
 <phrase>
-<original>Equalize Histogram</original>
-<translation>tasoittaa histogrammi</translation>
-</phrase>
-
-<phrase>
 <original>radius</original>
 <translation>säde</translation>
 </phrase>
@@ -7446,11 +7328,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <phrase>
 <original>kernel shape</original>
 <translation>ytimen muoto</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image histogram</original>
-<translation>Analysoidaan kuva histogrammi</translation>
 </phrase>
 
 <phrase>
@@ -7473,16 +7350,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>paikallinen</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
 <!-- BEGIN text for Adjustments_Levels.frm (FormLevels) -->
-
-<phrase>
-<original>Adjust Image Levels</original>
-<translation>Säädä kuvaa Levels</translation>
-</phrase>
 
 <phrase>
 <original>set levels automatically</original>
@@ -7514,7 +7386,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Mapping uusi kuva tasolle</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Levels.frm-->
 
@@ -7552,11 +7424,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_Lighting_Gamma.frm (FormGamma) -->
 
 <phrase>
-<original>Gamma Correction</original>
-<translation>gammakorjaus</translation>
-</phrase>
-
-<phrase>
 <original>keep all colors in sync</original>
 <translation>pitää kaikki värit sync</translation>
 </phrase>
@@ -7571,7 +7438,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Säätäminen gamma-arvot</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Gamma.frm-->
 
@@ -8016,11 +7883,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
 
 <phrase>
-<original>Red eye removal</original>
-<translation>Punasilmäisyyden poisto</translation>
-</phrase>
-
-<phrase>
 <original>strictness</original>
 <translation>tiukkuus</translation>
 </phrase>
@@ -8070,7 +7932,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Soveltamalla lopullinen punasilmäisyyden korjaukset ( %1 %2)</translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -8108,11 +7970,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_ShadowAndHighlight.frm (FormShadowHighlight) -->
 
 <phrase>
-<original>Shadow / Midtone / Highlight</original>
-<translation>Shadow/keskisävyjen/Highlight</translation>
-</phrase>
-
-<phrase>
 <original>shadows</original>
 <translation>varjot</translation>
 </phrase>
@@ -8137,7 +7994,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Säätäminen varjot, keskisävyjä, ja korostaa</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8319,11 +8176,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>fill opacity</original>
-<translation>täytteen läpinäkyvyyden</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>värit</translation>
 </phrase>
@@ -8373,7 +8225,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>suorakulmio</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8673,11 +8525,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Dialog_IDEWarning.frm (dialog_IDEWarning) -->
 
 <phrase>
-<original>Visual Basic IDE Detected</original>
-<translation>Visual Basic IDE havaittu</translation>
-</phrase>
-
-<phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
 <translation>Ymmärrän riskit käynnissä PhotoDemon että IDE</translation>
 </phrase>
@@ -8687,27 +8534,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Älä näytä tätä varoitusta uudelleen</translation>
 </phrase>
 
-<phrase>
-<original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Käytät PhotoDemon sisällä Visual Basic IDE. Tämä ei ole suositeltavaa.</translation>
-</phrase>
-
-<phrase>
-<original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Ole hyvä koota PhotoDemon ennen käyttöä. Monet ominaisuudet, jotka ovat riippuvaisia subclassing eivät ole käytössä IDE, mutta jotkut - kuten mukautettuja komentopainikkeita - ei voida poistaa käytöstä mikä vaikutti ohjelman toimivuutta. Sinänsä voi ilmetä IDE epävakautta ja kaatumisia, varsinkin jos sulkea ohjelman avulla IDE pysäytyspainiketta.</translation>
-</phrase>
-
-<phrase>
-<original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Lisäksi, kuten kaikki muut kuva toimitukselle PhotoDemon nojaa vahvasti moniulotteisia taulukoita. Array suorituskyky huonontuu IDE, joten jotkut toiminnot voivat suorittaa hyvin hitaasti.</translation>
-</phrase>
-
-<phrase>
-<original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Jos vaadit käynnissä PhotoDemon IDE, älä lähetä vikoja koskevat IDE kaatuu tai jumittuu. Kuva Hiiden kehittäjät voivat käsitellä ainoastaan ongelmia ja virheitä, jotka vaikuttavat koottu.exe.</translation>
-</phrase>
-
-<!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_IDEWarning.frm-->
 
@@ -8732,16 +8559,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <phrase>
 <original>Outline settings</original>
 <translation>ääriviivat asetukset</translation>
-</phrase>
-
-<phrase>
-<original>outline color and opacity</original>
-<translation>ääriviivat väriä ja peittävyyden</translation>
-</phrase>
-
-<phrase>
-<original>outline width</original>
-<translation>ääriviivat leveys</translation>
 </phrase>
 
 <phrase>
@@ -8804,7 +8621,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>viiste</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -8983,8 +8800,8 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
 <phrase>
-<original>Unsaved Changes</original>
-<translation>tallentamattomat muutokset</translation>
+<original>Unsaved changes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9793,11 +9610,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Distort_CorrectLens.frm (FormLensCorrect) -->
 
 <phrase>
-<original>Correct or Fix Lens Distortion</original>
-<translation>Korjaa tai Korjaa linssivääristymän</translation>
-</phrase>
-
-<phrase>
 <original>correction type</original>
 <translation>korjaus tyyppi</translation>
 </phrase>
@@ -9847,7 +9659,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Korjaaminen kuvan vääristyminen</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -9880,8 +9692,8 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Distort_Miscellaneous.frm (FormMiscDistorts) -->
 
 <phrase>
-<original>Miscellaneous Distort Tools</original>
-<translation>Sekalaiset Vääristä Työkalut</translation>
+<original>Miscellaneous distorts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10052,11 +9864,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Edge_Emboss.frm (FormEmbossEngrave) -->
 
 <phrase>
-<original>Emboss/Engrave</original>
-<translation>Kohokuvio/kaivertaa</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>perusväri</translation>
 </phrase>
@@ -10066,16 +9873,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Kohokuviointi kuva</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Emboss.frm-->
 
 <!-- BEGIN text for Effects_Edge_EnhanceEdges.frm (FormEdgeEnhance) -->
-
-<phrase>
-<original>Enhance image edges</original>
-<translation>Paranna kuvan reunoja</translation>
-</phrase>
 
 <phrase>
 <original>edge detection technique</original>
@@ -10172,7 +9974,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 11 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10253,11 +10055,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_LightAndShadow_CrossScreen.frm (FormCrossScreen) -->
 
 <phrase>
-<original>Cross-screen (stars)</original>
-<translation>Cross-näyttö (tähdet)</translation>
-</phrase>
-
-<phrase>
 <original>spokes</original>
 <translation>pinnoja</translation>
 </phrase>
@@ -10272,7 +10069,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Soveltamalla rajat pölynsuodatinta</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_CrossScreen.frm-->
 
@@ -10348,11 +10145,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Nature_Ignite.frm (FormIgnite) -->
 
 <phrase>
-<original>Ignite (fire effect)</original>
-<translation>Ignite (tulipalo vaikutus)</translation>
-</phrase>
-
-<phrase>
 <original>color intensity</original>
 <translation>värin voimakkuutta</translation>
 </phrase>
@@ -10367,7 +10159,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Valaistus kuva tulessa</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Ignite.frm-->
 
@@ -10428,11 +10220,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Noise_AddRGBNoise.frm (FormNoise) -->
 
 <phrase>
-<original>Add Noise</original>
-<translation>Lisää kohinaa</translation>
-</phrase>
-
-<phrase>
 <original>appearance</original>
 <translation>ulkomuoto</translation>
 </phrase>
@@ -10452,7 +10239,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>yhtenäinen</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
@@ -10521,11 +10308,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
-<original>Apply Film Grain</original>
-<translation>Käytä Film Grain</translation>
-</phrase>
-
-<phrase>
 <original>Generating film grain texture</original>
 <translation>Luodaan rakeisuutta koostumus</translation>
 </phrase>
@@ -10535,23 +10317,18 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Pehmentäminen rakeisuutta</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
 
 <!-- BEGIN text for Effects_Noise_HarmonicMean.frm (FormHarmonicMean) -->
 
 <phrase>
-<original>Harmonic Mean</original>
-<translation>Harmoninen keskiarvo</translation>
-</phrase>
-
-<phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Soveltuu harmonisen keskisuodatin</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -10567,11 +10344,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
-
-<phrase>
-<original>Median Filter</original>
-<translation>mediaani suodatin</translation>
-</phrase>
 
 <phrase>
 <original>percentile</original>
@@ -10593,22 +10365,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Hakeminen Mediaanisuodatinmoduuli</translation>
 </phrase>
 
-<phrase>
-<original>Erode (Minimum rank filter)</original>
-<translation>Erode (Minimi sijoitus suodatin)</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (Maximum rank filter)</original>
-<translation>Laajentuva (Maximum sijoitus suodatin)</translation>
-</phrase>
-
-<phrase>
-<original>Median filter</original>
-<translation>Mediaanisuodatinmoduuli</translation>
-</phrase>
-
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -11041,11 +10798,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Stylize_Twins.frm (FormTwins) -->
 
 <phrase>
-<original>Generate Twins</original>
-<translation>Luo Twins</translation>
-</phrase>
-
-<phrase>
 <original>orientation</original>
 <translation>suuntautuminen</translation>
 </phrase>
@@ -11055,16 +10807,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Luodaan kuva twin</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Twins.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Vignette.frm (FormVignette) -->
-
-<phrase>
-<original>Apply Vignetting</original>
-<translation>Käytä Vinjetointia</translation>
-</phrase>
 
 <phrase>
 <original>Applying vignetting</original>
@@ -11081,7 +10828,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>pyöreä</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -11160,11 +10907,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Transform_PolarCoords.frm (FormPolar) -->
 
 <phrase>
-<original>Polar Coordinate Conversion</original>
-<translation>Polar Koordinaatistomuunnos</translation>
-</phrase>
-
-<phrase>
 <original>swap x and y coordinates</original>
 <translation>swap x- ja y-koordinaattien</translation>
 </phrase>
@@ -11194,7 +10936,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Polar inversio</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Transform_PolarCoords.frm-->
 
@@ -12057,13 +11799,8 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
-<original>Download Image</original>
-<translation>Lataa kuva</translation>
-</phrase>
-
-<phrase>
-<original>Copyright</original>
-<translation>tekijänoikeus</translation>
+<original>Download image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12174,7 +11911,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Odotetaan käyttäjä syöttää</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 25 phrases. 3 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -12343,11 +12080,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- BEGIN text for File_New.frm (FormNewImage) -->
 
 <phrase>
-<original>Create new image</original>
-<translation>Luo uusi kuva</translation>
-</phrase>
-
-<phrase>
 <original>transparent</original>
 <translation>läpinäkyvä</translation>
 </phrase>
@@ -12367,16 +12099,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>mukautettu väri</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
 <!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
-
-<phrase>
-<original>Print image</original>
-<translation>Tulosta kuva</translation>
-</phrase>
 
 <phrase>
 <original>one image per page</original>
@@ -12448,16 +12175,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Paras (useimmat muste)</translation>
 </phrase>
 
-<!-- File_PrintModern.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_PrintModern.frm-->
 
 <!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>Print Image</original>
-<translation>Tulosta kuva</translation>
-</phrase>
 
 <phrase>
 <original>copies</original>
@@ -12504,7 +12226,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>maisema</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -13177,16 +12899,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
-<original>Resize Canvas</original>
-<translation>Asua Canvas</translation>
-</phrase>
-
-<phrase>
 <original>anchor position</original>
 <translation>ankkuri asema</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -13298,11 +13015,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- END text for Image_ContentAwareResize.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
-
-<phrase>
-<original>Metadata editor</original>
-<translation>Metadata editori</translation>
-</phrase>
 
 <phrase>
 <original>tools</original>
@@ -13549,7 +13261,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Luettelo %1, yksi riviä kohden</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -13652,11 +13364,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- BEGIN text for Image_Rotate.frm (FormRotate) -->
 
 <phrase>
-<original>Rotate Image</original>
-<translation>Kierrä kuvaa</translation>
-</phrase>
-
-<phrase>
 <original>border regions</original>
 <translation>raja-alueilla</translation>
 </phrase>
@@ -13711,7 +13418,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Kierrä kerros</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -14031,11 +13738,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>color selector</original>
-<translation>värin valitsin</translation>
-</phrase>
-
-<phrase>
 <original>overview</original>
 <translation>yleiskatsaus</translation>
 </phrase>
@@ -14045,7 +13747,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>kerrokset</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14582,22 +14284,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16186,11 +15873,6 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 </phrase>
 
 <phrase>
-<original>Saving</original>
-<translation>Tallentaa</translation>
-</phrase>
-
-<phrase>
 <original>Performance</original>
 <translation>suorituskyky</translation>
 </phrase>
@@ -16220,16 +15902,11 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <translation>Tämä uusi väliaikainen kansio sijainti ei tule voimaan ennen kuin käynnistät ohjelman.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
-
-<phrase>
-<original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Plugin Manager</translation>
-</phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
@@ -16331,16 +16008,16 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <translation>puuttuva</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2720</phrasecount>
+<phrasecount>2657</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5022 phrases. -->
-<!-- 2302 are duplicates, so only 2720 unique phrases have been written to file. -->
-<!-- These 2720 phrases contain approximately 12657 total words. -->
+<!-- As of this build, PhotoDemon contains 5000 phrases. -->
+<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
+<!-- These 2657 phrases contain approximately 12277 total words. -->
 
 </pdData>

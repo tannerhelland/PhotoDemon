@@ -3,7 +3,7 @@ Begin VB.Form FormPolar
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Polar Coordinate Conversion"
+   Caption         =   " Polar conversion"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
