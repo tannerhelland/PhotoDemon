@@ -652,13 +652,13 @@ Private Sub SaveWorkingFile()
     Dim okayToProceed As Boolean: okayToProceed = True
     
     'If the user isn't editing an existing file, prompt them for a filename
-    If (Len(txtResourcePath.Text) = 0) Then
+    If (LenB(Trim$(txtResourcePath.Text)) = 0) Then
     
         Dim srcFile As String
         
         Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
         If cCommonDialog.GetSaveFileName(srcFile, , True, "PD Resource Files (*.pdr)|*.pdr", , UserPrefs.GetThemePath, "Save resource file", "pdr", Me.hWnd) Then
-            If (Len(srcFile) <> 0) Then
+            If (LenB(srcFile) <> 0) Then
                 txtResourcePath.Text = srcFile
                 UserPrefs.SetPref_String "Themes", "LastResourceFile", srcFile
                 okayToProceed = True

@@ -324,8 +324,8 @@ Public Sub InitializeMenus()
     
     'Select Menu
     AddMenuItem "&Select", "select_top", 4
-    AddMenuItem "All", "select_all", 4, 0
-    AddMenuItem "None", "select_none", 4, 1
+    AddMenuItem "All", "select_all", 4, 0, , "select_all"
+    AddMenuItem "None", "select_none", 4, 1, , "select_none"
     AddMenuItem "Invert", "select_invert", 4, 2
     AddMenuItem "-", "-", 4, 3
     AddMenuItem "Grow...", "select_grow", 4, 4
@@ -334,7 +334,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Feather...", "select_feather", 4, 7
     AddMenuItem "Sharpen...", "select_sharpen", 4, 8
     AddMenuItem "-", "-", 4, 9
-    AddMenuItem "Erase selected area", "select_erasearea", 4, 10
+    AddMenuItem "Erase selected area", "select_erasearea", 4, 10, , "select_erase"
     AddMenuItem "-", "-", 4, 11
     AddMenuItem "Load selection...", "select_load", 4, 12, , "file_open"
     AddMenuItem "Save current selection...", "select_save", 4, 13, , "file_save"
