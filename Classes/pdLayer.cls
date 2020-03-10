@@ -68,8 +68,8 @@ Private Type PD_LayerData
     l_Opacity As Single                 'Layer opacity ([0, 100] - defaults to 100)
     l_BlendMode As PD_BlendMode         'Layer blend mode; defaults to BM_Normal
     l_AlphaMode As PD_AlphaMode         'Layer alpha mode; defaults to AM_Normal
-    l_OffsetX As Double                 'X/Y offset of the layer's top-left corner
-    l_OffsetY As Double
+    l_OffsetX As Long                   'X/Y offset of the layer's top-left corner
+    l_OffsetY As Long
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
     l_CanvasYModifier As Double
     l_Angle As Double                   'Layer angle (implemented in PD 7.0)
@@ -356,24 +356,24 @@ Friend Sub SetLayerVisibility(ByVal newVisibility As Boolean)
 End Sub
 
 'Get/set layer offsets
-Friend Function GetLayerOffsetX() As Double
+Friend Function GetLayerOffsetX() As Long
     GetLayerOffsetX = myLayerData.l_OffsetX
 End Function
 
-Friend Function GetLayerOffsetY() As Double
+Friend Function GetLayerOffsetY() As Long
     GetLayerOffsetY = myLayerData.l_OffsetY
 End Function
 
-Friend Sub SetLayerOffsetX(ByVal newOffsetX As Double)
+Friend Sub SetLayerOffsetX(ByVal newOffsetX As Long)
     myLayerData.l_OffsetX = newOffsetX
 End Sub
 
-Friend Sub SetLayerOffsetY(ByVal newOffsetY As Double)
+Friend Sub SetLayerOffsetY(ByVal newOffsetY As Long)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
 'Helper function for setting layer offset and non-destructive width/height all at once.
-Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLeftY As Single, ByVal bottomRightX As Single, ByVal bottomRightY As Single)
+Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Long, ByVal topLeftY As Long, ByVal bottomRightX As Long, ByVal bottomRightY As Long)
     
     With myLayerData
         
@@ -665,10 +665,10 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
             If (myLayerData.l_BlendMode <> CLng(newValue)) Then myLayerData.l_BlendMode = CLng(newValue)
             
         Case pgp_OffsetX
-            If (myLayerData.l_OffsetX <> CDbl(newValue)) Then myLayerData.l_OffsetX = CDbl(newValue)
+            If (myLayerData.l_OffsetX <> Int(newValue + 0.5)) Then myLayerData.l_OffsetX = Int(newValue + 0.5)
             
         Case pgp_OffsetY
-            If (myLayerData.l_OffsetY <> CDbl(newValue)) Then myLayerData.l_OffsetY = CDbl(newValue)
+            If (myLayerData.l_OffsetY <> Int(newValue + 0.5)) Then myLayerData.l_OffsetY = Int(newValue + 0.5)
             
         Case pgp_CanvasXModifier
             If (myLayerData.l_CanvasXModifier <> CDbl(newValue)) Then Me.SetLayerCanvasXModifier CDbl(newValue)
@@ -940,7 +940,16 @@ Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pd2DTransform, 
         If (.l_ShearX <> 0#) Or (.l_ShearY <> 0#) Then dstMatrix.ApplyShear .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
         
         'Finally, if translation is desired, scale all points by the current layer offset
-        If ApplyTranslation Then dstMatrix.ApplyTranslation .l_OffsetX, .l_OffsetY
+        If ApplyTranslation Then
+            
+            Dim tmpOffsetX As Single, tmpOffsetY As Single
+            tmpOffsetX = .l_OffsetX
+            tmpOffsetY = .l_OffsetY
+            dstMatrix.ApplyTranslation tmpOffsetX, tmpOffsetY
+            .l_OffsetX = Int(tmpOffsetX + 0.5)
+            .l_OffsetY = Int(tmpOffsetY + 0.5)
+            
+        End If
         
     End With
     
@@ -1269,8 +1278,8 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_Opacity = xmlEngine.GetSingle("opacity", 100!, True)
             .l_BlendMode = Colors.GetBlendModeIDFromString(xmlEngine.GetString("blend-mode", Colors.GetBlendModeStringFromID(BM_Normal), True))
             .l_AlphaMode = Colors.GetAlphaModeIDFromString(xmlEngine.GetString("alpha-mode", Colors.GetAlphaModeStringFromID(AM_Normal), True))
-            .l_OffsetX = xmlEngine.GetDouble("offset-x", 0#, True)
-            .l_OffsetY = xmlEngine.GetDouble("offset-y", 0#, True)
+            .l_OffsetX = xmlEngine.GetLong("offset-x", 0&, True)
+            .l_OffsetY = xmlEngine.GetLong("offset-y", 0&, True)
             .l_CanvasXModifier = xmlEngine.GetDouble("stretch-x", 1#, True)
             .l_CanvasYModifier = xmlEngine.GetDouble("stretch-y", 1#, True)
             .l_ShearX = xmlEngine.GetDouble("shear-x", 0#, True)
@@ -1822,7 +1831,7 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     nullPaddingUnnecessary = False
     
     With myLayerData
-        nullPaddingUnnecessary = (.l_OffsetX = 0) And (.l_OffsetY = 0) And (Me.GetLayerWidth(True) = parentImageWidth) And (Me.GetLayerHeight(True) = parentImageHeight)
+        nullPaddingUnnecessary = (.l_OffsetX = 0&) And (.l_OffsetY = 0&) And (Me.GetLayerWidth(True) = parentImageWidth) And (Me.GetLayerHeight(True) = parentImageHeight)
     End With
     
     'If the layer still requires specialized padding, carry on
@@ -1841,8 +1850,8 @@ Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         Set Me.layerDIB = tmpPaddingDIB
         
         'Reset layer offset values
-        myLayerData.l_OffsetX = 0
-        myLayerData.l_OffsetY = 0
+        myLayerData.l_OffsetX = 0&
+        myLayerData.l_OffsetY = 0&
     
         'Mark the layer as dirty
         Me.NotifyOfDestructiveChanges
@@ -2035,7 +2044,6 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     cTransform.ApplyScaling xScale, yScale
     
     'Finally, append transform settings using the current layer x/y offset
-    'cTransform.ApplyTranslation Me.GetLayerOffsetX * xScale, Me.GetLayerOffsetY * yScale
     cTransform.ApplyTranslation tmpRectF.Left, tmpRectF.Top
     
     'If the caller has manually specified a destination rectangle, we do *not* want to prepare a DIB for them
@@ -2230,8 +2238,8 @@ Friend Sub ResetLayerParameters()
         .l_GroupID = 0
         .l_Opacity = 100!
         .l_BlendMode = BM_Normal
-        .l_OffsetX = 0#
-        .l_OffsetY = 0#
+        .l_OffsetX = 0&
+        .l_OffsetY = 0&
         .l_CanvasXModifier = 1#
         .l_CanvasYModifier = 1#
         .l_Angle = 0#
@@ -2355,7 +2363,7 @@ Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
     
     With myLayerData
         tmpHash = (.l_Angle * 359013) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
-        tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
+        tmpHash = tmpHash Xor (.l_OffsetX * 13) Xor (.l_OffsetY * 29)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor Int(.l_Opacity * 65535)
         tmpHash = tmpHash Xor (.l_ShearX * 524287#) Xor (.l_ShearY * 1048575#)
@@ -2423,8 +2431,8 @@ Private Function CreateNewLayerFromXML_Legacy(ByRef xmlString As String, Optiona
             .l_GroupID = xmlEngine.GetUniqueTag_Long("GroupID")
             .l_Opacity = xmlEngine.GetUniqueTag_Long("Opacity")
             .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BM_Normal)
-            .l_OffsetX = xmlEngine.GetUniqueTag_Double("OffsetX")
-            .l_OffsetY = xmlEngine.GetUniqueTag_Double("OffsetY")
+            .l_OffsetX = Int(xmlEngine.GetUniqueTag_Double("OffsetX") + 0.5)
+            .l_OffsetY = Int(xmlEngine.GetUniqueTag_Double("OffsetY") + 0.5)
             .l_CanvasXModifier = xmlEngine.GetUniqueTag_Double("CanvasXModifier", 1)
             .l_CanvasYModifier = xmlEngine.GetUniqueTag_Double("CanvasYModifier", 1)
             .l_Angle = xmlEngine.GetUniqueTag_Double("Angle")

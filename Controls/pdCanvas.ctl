@@ -1134,10 +1134,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         PDImages.GetActiveImage.ImgViewport.GetIntersectRectImage curImageRectF
                         
                         With PDImages.GetActiveImage()
-                            .GetActiveLayer.SetLayerOffsetX curImageRectF.Left
-                            .GetActiveLayer.SetLayerOffsetY curImageRectF.Top
-                            .GetActiveLayer.SetLayerWidth curImageRectF.Width
-                            .GetActiveLayer.SetLayerHeight curImageRectF.Height
+                            .GetActiveLayer.SetLayerOffsetX Int(curImageRectF.Left + 0.5)
+                            .GetActiveLayer.SetLayerOffsetY Int(curImageRectF.Top + 0.5)
+                            .GetActiveLayer.SetLayerWidth Int(curImageRectF.Width + 0.5)
+                            .GetActiveLayer.SetLayerHeight Int(curImageRectF.Height + 0.5)
                         End With
                         
                         'If the current text box is empty, set some new text to orient the user

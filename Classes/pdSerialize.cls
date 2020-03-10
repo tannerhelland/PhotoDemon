@@ -148,7 +148,7 @@ End Function
 Friend Function GetLong(ByRef paramName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal nameGuaranteedXMLSafe As Boolean = False) As Long
     Dim paramValue As String
     If GetParamValue(paramName, paramValue, nameGuaranteedXMLSafe) Then
-        GetLong = CLng(CDblCustom(Trim$(paramValue)))
+        GetLong = Int(CDblCustom(Trim$(paramValue)) + 0.5)
     Else
         GetLong = defaultReturn
     End If

@@ -2904,8 +2904,8 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
             End If
         Else
             tmpLayerDIB.CreateFromExistingDIB srcLayer.layerDIB
-            layerOffsetX = Int(srcLayer.GetLayerOffsetX)
-            layerOffsetY = Int(srcLayer.GetLayerOffsetY)
+            layerOffsetX = srcLayer.GetLayerOffsetX()
+            layerOffsetY = srcLayer.GetLayerOffsetY()
         End If
         
         'Before continuing, we want to determine if alpha is relevant in this layer.  If a layer is fully opaque,
@@ -2918,8 +2918,8 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order
         cStream.WriteLong_BE layerOffsetY
         cStream.WriteLong_BE layerOffsetX
-        cStream.WriteLong_BE Int(layerOffsetY + tmpLayerDIB.GetDIBHeight())
-        cStream.WriteLong_BE Int(layerOffsetX + tmpLayerDIB.GetDIBWidth())
+        cStream.WriteLong_BE (layerOffsetY + tmpLayerDIB.GetDIBHeight())
+        cStream.WriteLong_BE (layerOffsetX + tmpLayerDIB.GetDIBWidth())
         
         'Next is number of channels in the layer; PD always writes RGB/A data
         If m_LayerHasAlpha Then cStream.WriteInt_BE 4 Else cStream.WriteInt_BE 3
