@@ -876,3 +876,47 @@ End Function
 Public Sub SetToolSetting_HighResMouse(ByVal newSetting As Boolean)
     m_HighResMouseInputAllowed = newSetting
 End Sub
+
+'Debug helper only; useful for logging tool-specific data in a human-readable way
+Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
+
+    Select Case toolIndex
+        Case NAV_DRAG
+            GetNameOfTool = "Hand"
+        Case NAV_MOVE
+            GetNameOfTool = "Move"
+        Case COLOR_PICKER
+            GetNameOfTool = "Color picker"
+        Case ND_MEASURE
+            GetNameOfTool = "Measure"
+        Case SELECT_RECT
+            GetNameOfTool = "Rectangle selection"
+        Case SELECT_CIRC
+            GetNameOfTool = "Circle selection"
+        Case SELECT_LINE
+            GetNameOfTool = "Line selection"
+        Case SELECT_POLYGON
+            GetNameOfTool = "Polygon selection"
+        Case SELECT_LASSO
+            GetNameOfTool = "Lasso selection"
+        Case SELECT_WAND
+            GetNameOfTool = "Magic wand selection"
+        Case TEXT_BASIC
+            GetNameOfTool = "Basic text"
+        Case TEXT_ADVANCED
+            GetNameOfTool = "Advanced text"
+        Case PAINT_PENCIL
+            GetNameOfTool = "Pencil"
+        Case PAINT_SOFTBRUSH
+            GetNameOfTool = "Paintbrush"
+        Case PAINT_ERASER
+            GetNameOfTool = "Eraser"
+        Case PAINT_CLONE
+            GetNameOfTool = "Clone brush"
+        Case PAINT_FILL
+            GetNameOfTool = "Paint bucket"
+        Case PAINT_GRADIENT
+            GetNameOfTool = "Gradient"
+    End Select
+
+End Function

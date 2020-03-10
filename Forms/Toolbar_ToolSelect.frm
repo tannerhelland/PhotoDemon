@@ -1216,6 +1216,7 @@ Private Sub cmdTools_Click(Index As Integer)
         m_MouseEvents.SetCursor_System IDC_ARROW
         
         'Repaint all tool buttons to reflect the new selection
+        PDDebug.LogAction "Selected tool: " & Tools.GetNameOfTool(g_CurrentTool)
         ResetToolButtonStates
     
     End If
