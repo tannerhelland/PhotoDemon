@@ -359,6 +359,7 @@ Private Sub Form_Load()
     GenerateContributor "Jian Ma", "https://www.cnblogs.com/stronghorse/"
     GenerateContributor "Johannes Nendel"
     GenerateContributor "John Desrosiers", "https://johndesrosiers.com"
+    GenerateContributor "Jose de TECNORAMA", "https://www.tecnorama.es/"
     GenerateContributor "Joseph Greco"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"

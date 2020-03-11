@@ -67,6 +67,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Jian Ma](https://www.cnblogs.com/stronghorse/)
 * Johannes Nendel
 * [John Desrosiers](https://johndesrosiers.com)
+* [Jose de TECNORAMA](https://www.tecnorama.es/)
 * Joseph Greco
 * [Kroc Camen](http://camendesign.com)
 * [LaVolpe](http://www.vbforums.com/showthread.php?t=606736)
