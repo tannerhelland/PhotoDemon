@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.470</langversion>
+<langversion>6.7.472</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -4864,6 +4864,11 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
+<original>Action canceled: target layer isn't visible.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Abrir ubicación en el Explorador</translation>
 </phrase>
@@ -4878,7 +4883,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation>Centre la imagen dentro de la ventana gráfica</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -16018,10 +16023,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 12277 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12282 total words. -->
 
 </pdData>

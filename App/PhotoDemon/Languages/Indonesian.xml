@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.409</langversion>
+<langversion>6.6.411</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -4871,6 +4871,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Action canceled: target layer isn't visible.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Lokasi terbuka di Explorer</translation>
 </phrase>
@@ -4885,7 +4890,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Pusatkan gambar di dalam area pandang</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -16026,10 +16031,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 12277 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12282 total words. -->
 
 </pdData>

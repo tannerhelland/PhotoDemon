@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.467</langversion>
+<langversion>6.7.469</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -4865,6 +4865,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 </phrase>
 
 <phrase>
+<original>Action canceled: target layer isn't visible.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Ouvrir emplacement dans E&xplorer</translation>
 </phrase>
@@ -4879,7 +4884,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Centrez l'image à l'intérieur de la fenêtre</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -16020,10 +16025,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 12277 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12282 total words. -->
 
 </pdData>

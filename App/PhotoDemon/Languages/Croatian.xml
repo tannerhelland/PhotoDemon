@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3450</langversion>
+<langversion>6.8.3452</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4863,6 +4863,11 @@ Upišite numeričku vrijednost.</translation>
 </phrase>
 
 <phrase>
+<original>Action canceled: target layer isn't visible.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Otvorite lokaciju u Exploreru</translation>
 </phrase>
@@ -4877,7 +4882,7 @@ Upišite numeričku vrijednost.</translation>
 <translation>Centrirajte sliku unutar prozora</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -16016,10 +16021,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 12277 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12282 total words. -->
 
 </pdData>

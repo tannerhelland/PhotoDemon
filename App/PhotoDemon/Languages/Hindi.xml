@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.170</langversion>
+<langversion>1.0.172</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4864,6 +4864,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Action canceled: target layer isn't visible.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open location in E&xplorer</original>
 <translation>एक्सप्लोरर में स्थान खोलें</translation>
 </phrase>
@@ -4878,7 +4883,7 @@ Please enter a numeric value.</original>
 <translation>व्यूपोर्ट के अंदर की छवि को केंद्र में रखें</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -16017,10 +16022,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2657</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5000 phrases. -->
-<!-- 2343 are duplicates, so only 2657 unique phrases have been written to file. -->
-<!-- These 2657 phrases contain approximately 12277 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12282 total words. -->
 
 </pdData>

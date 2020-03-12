@@ -383,8 +383,9 @@ Public Function IsControlFocusable(ByRef Ctl As Control) As Boolean
 
 End Function
 
-'PD's various user controls sometimes like to share data via custom window messages.  Instead of calling PostMessage directly,
-' use this wrapper function, which may perform additional maintenance.
+'PD's various user controls sometimes like to share data via custom window messages.
+' Instead of calling PostMessage directly, use this wrapper function, which may perform
+' additional maintenance.
 Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&, Optional ByVal lParam As Long = 0&, Optional ByVal usePostMessageInstead As Boolean = False)
     
     Dim pmReturn As Long

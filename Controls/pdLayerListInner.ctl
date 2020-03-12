@@ -173,6 +173,13 @@ Private WithEvents m_LayerPopup As pdPopupMenu
 Attribute m_LayerPopup.VB_VarHelpID = -1
 Private m_RightClickIndex As Long
 
+'In 2020, I added a "flash" action; the canvas uses this to draw attention to the active layer when
+' the user attempts to interact with it despite it being hidden.  (In the future, this could also be
+' useful if layer locking is added.)
+Private WithEvents m_FlashTimer As pdTimer
+Attribute m_FlashTimer.VB_VarHelpID = -1
+Private m_FlashCount As Long, m_FlashTimeElapsed As Long, m_FlashLength As Long
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_LayerListInner
 End Function
@@ -254,6 +261,23 @@ Public Property Let ScrollValue(ByRef newValue As Long)
     End If
 End Property
 
+Private Sub m_FlashTimer_Timer()
+
+    m_FlashCount = m_FlashCount + 1
+    m_FlashTimeElapsed = m_FlashTimeElapsed + m_FlashTimer.Interval
+    
+    'Only flash for three seconds (by default; the caller can configure this manually)
+    If (m_FlashTimeElapsed >= m_FlashLength) Then
+        m_FlashTimer.StopTimer
+        m_FlashCount = 0
+        m_FlashTimeElapsed = 0
+        RedrawBackBuffer True
+    Else
+        RedrawBackBuffer True
+    End If
+    
+End Sub
+
 Private Sub m_LayerPopup_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
     
     'Make sure a valid layer was clicked
@@ -324,7 +348,25 @@ Private Sub txtLayerName_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
-    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.RequestRedraw True
+    
+    Select Case wMsg
+        
+        'Different screen profile selected; this requires a redraw of layer thumbnails
+        Case WM_PD_COLOR_MANAGEMENT_CHANGE
+            Me.RequestRedraw True
+            
+        'User attempted to interact with a hidden/locked layer; flash the active layer's status
+        ' with wParam specifying flash length in ms (typically 500) and lParam specifying total
+        ' flash duration in ms (typically 3000)
+        Case WM_PD_FLASH_ACTIVE_LAYER
+            Set m_FlashTimer = New pdTimer
+            m_FlashTimer.Interval = IIf(wParam <= 0, 500, wParam)
+            m_FlashLength = IIf(lParam <= 0, 3000, lParam)
+            m_FlashTimeElapsed = 0
+            m_FlashTimer.StartTimer
+            
+    End Select
+
 End Sub
 
 'Double-clicks on the layer box raise "layer title edit mode", if the mouse is within a layer's title area
@@ -741,6 +783,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_DELETE, VK_INSERT, VK_SPACE, VK_TAB
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
+    ucSupport.SubclassCustomMessage WM_PD_FLASH_ACTIVE_LAYER, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -947,7 +990,7 @@ End Function
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub RedrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     Dim enabledState As Boolean
     enabledState = Me.Enabled
@@ -964,6 +1007,13 @@ Private Sub RedrawBackBuffer()
     
     'This bunch of checks are basically failsafes to ensure we have valid pdLayer objects to pull from
     If PDMain.IsProgramRunning() Then
+        
+        'Some special circumstances require us to perform rendering even when we'd normally
+        ' skip a step.  (For example, if the user attempts to paint on an invisible layer,
+        ' the canvas will post a message that tells us to flash the visibility icon as a
+        ' warning message is displayed.)
+        Dim needToRenderAnimation As Boolean
+        needToRenderAnimation = (m_FlashCount > 0)
         
         'If the list either 1) has keyboard focus, or 2) is actively being hovered by the mouse, we render
         ' it differently, using PD's standard hover behavior (accent colors and chunky border)
@@ -1025,22 +1075,21 @@ Private Sub RedrawBackBuffer()
             blockHeightDPIAware = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
             
             'Loop through the current layer list, drawing layers as we go
-            Dim i As Long
-            For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+            Dim i As Long, tmpLayerRef As pdLayer
+            For i = 0 To PDImages.GetActiveImage.GetNumOfLayers() - 1
             
                 'Because layers are displayed in reverse order (layer 0 is displayed at the bottom of the list, not the top),
                 ' we need to convert our For loop index into a matching layer index
-                layerIndex = (PDImages.GetActiveImage.GetNumOfLayers - 1) - i
+                layerIndex = (PDImages.GetActiveImage.GetNumOfLayers() - 1) - i
                 offsetX = m_ListRect.Left
                 offsetY = m_ListRect.Top + Interface.FixDPI(i * LAYER_BLOCK_HEIGHT) - scrollOffset
                 
                 'Start by figuring out if this layer is even visible in the current box; if it isn't,
                 ' skip drawing entirely
-                If (((offsetY + blockHeightDPIAware) > 0) And (offsetY < m_ListRect.Top + m_ListRect.Height)) Then
+                If (((offsetY + blockHeightDPIAware) >= 0) And (offsetY < m_ListRect.Top + m_ListRect.Height)) Or needToRenderAnimation Then
                     
                     'For performance reasons, retrieve a local reference to the corresponding pdLayer object.
                     ' We need to pull a *lot* of information from this object.
-                    Dim tmpLayerRef As pdLayer
                     Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     
                     If (Not tmpLayerRef Is Nothing) Then
@@ -1080,16 +1129,29 @@ Private Sub RedrawBackBuffer()
                         'First, the layer visibility toggle
                         If (Not img_EyeOpen Is Nothing) Then
                             
-                            'Start by calculating the "clickable" rect where the visibility icon lives.  (It is the
-                            ' left-most item in the layer box.)  This rect is module-level, and this UC also uses
-                            ' it for hit-detection, so it needs to be pixel-accurate.
-                            If layerIsHovered Then
+                            'Start by calculating the "clickable" rect where the visibility icon lives.
+                            ' (It is the left-most item in the layer box.)  This rect is module-level,
+                            ' and this UC also uses it for hit-detection, so it needs to be pixel-accurate.
+                            ' Note that we calculate this rect under two conditions:
+                            ' 1) the layer is actively hovered by the mouse (so we need to highlight it), or...
+                            ' 2) the user has attempted to interact with an invisible layer (so we need to flash it)
+                            If layerIsHovered Or (needToRenderAnimation And layerIsSelected) Then
+                                
                                 With m_VisibilityRect
                                     .Left = blockRect.Left
                                     .Right = .Left + HORIZONTAL_ITEM_PADDING * 2 + img_EyeOpen.GetDIBWidth
                                     .Top = blockRect.Top
                                     .Bottom = .Top + blockHeightDPIAware
                                 End With
+                                
+                                'If the icon area needs to be "flickered", do so now
+                                If (needToRenderAnimation And layerIsSelected) Then
+                                    If ((m_FlashCount And 1&) = 1&) Then
+                                        Drawing2D.QuickCreateSolidBrush cBrush, itemColorUnselectedFill
+                                        PD2D.FillRectangleI_AbsoluteCoords cSurface, cBrush, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
+                                    End If
+                                End If
+                                
                             End If
                             
                             'Paint the appropriate visibility icon, centered in the current area
@@ -1182,16 +1244,16 @@ Private Sub RedrawBackBuffer()
             layerFont.ReleaseFromDC
             
             'After painting all layers, if a layer is currently hovered by the mouse, highlight any clickable regions
-            If (layerHoverIndex >= 0) Then
+            If (layerHoverIndex >= 0) Or needToRenderAnimation Then
                 
                 'First, draw a thin border around the hovered layer
-                If (layerHoverIndex = layerSelectedIndex) Then paintColor = itemColorSelectedBorderHover Else paintColor = itemColorUnselectedBorderHover
+                If (layerHoverIndex = layerSelectedIndex) Or needToRenderAnimation Then paintColor = itemColorSelectedBorderHover Else paintColor = itemColorUnselectedBorderHover
                 Drawing2D.QuickCreateSolidPen cPen, 1, paintColor
-                PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
+                If (layerHoverIndex >= 0) Then PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
                 
                 'Next, if the mouse is specifically within the "toggle layer visibility" rect, paint *that* region
                 ' with a chunky border.
-                If PDMath.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
+                If PDMath.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Or needToRenderAnimation Then
                     Drawing2D.QuickCreateSolidPen cPen, 3!, paintColor
                     PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
                 End If
@@ -1221,7 +1283,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint raiseImmediateDrawEvent
     If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub

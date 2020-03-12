@@ -217,10 +217,15 @@ Private m_SuspendRedraws As Boolean
 ' accurate feedback on what a given action will affect.
 Private m_LayerAutoActivateIndex As Long
 
-'Selection tools need to know if a selection was active before mouse events start.  If it is, creation of an invalid new selection
-' will add "Remove Selection" to the Undo/Redo chain; however, if no selection was active, the working selection will simply
-' be erased.
+'Selection tools need to know if a selection was active before mouse events start.
+' If it was, creation of an invalid new selection will add "Remove Selection" to the
+' Undo/Redo chain; however, if no selection was active, the working selection will
+' simply be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
+
+'If the user attempts to initiate a paint operation on an invisible or locked layer,
+' we will ignore subsequent mouse events until the mouse button is released.
+Private m_IgnoreMouseActions As Boolean
 
 'When we reflow the interface, we mark a special "resize" state to prevent recursive automatic reflow event notifications
 Private m_InternalResize As Boolean
@@ -879,20 +884,22 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                 End If
             
+            'Note for all paint tools: mouse interactions are disallowed if the active layer
+            ' is locked or invisible.
             Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If DoesLayerAllowPainting(True) Then Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
             
             Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If DoesLayerAllowPainting(True) Then Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If DoesLayerAllowPainting(True) Then Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
             
             Case PAINT_FILL
-                Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                If DoesLayerAllowPainting(True) Then Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If DoesLayerAllowPainting(True) Then Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             'In the future, other tools can be handled here
             Case Else
@@ -994,22 +1001,23 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If (Not m_IgnoreMouseActions) Then Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If (Not m_IgnoreMouseActions) Then Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
             
             Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                If (Not m_IgnoreMouseActions) Then Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
-                Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
-                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+                If (Not m_IgnoreMouseActions) Then
+                    Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
+                    SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+                End If
                 
             Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-        
-                
+                If (Not m_IgnoreMouseActions) Then Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+            
         End Select
     
     'This else means the LEFT mouse button is NOT down
@@ -1192,23 +1200,31 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             
             'Notify the brush engine of the final result, then permanently commit this round of brush work
             Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                Tools_Pencil.CommitBrushResults
+                If (Not m_IgnoreMouseActions) Then
+                    Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    Tools_Pencil.CommitBrushResults
+                End If
                 
             Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                Tools_Paint.CommitBrushResults
+                If (Not m_IgnoreMouseActions) Then
+                    Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    Tools_Paint.CommitBrushResults
+                End If
             
             Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                Tools_Clone.CommitBrushResults
+                If (Not m_IgnoreMouseActions) Then
+                    Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    Tools_Clone.CommitBrushResults
+                End If
                 
             Case PAINT_FILL
-                Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                If (Not m_IgnoreMouseActions) Then Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
             
             Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                Tools_Gradient.CommitGradientResults
+                If (Not m_IgnoreMouseActions) Then
+                    Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    Tools_Gradient.CommitGradientResults
+                End If
                 
             Case Else
                     
@@ -1682,6 +1698,26 @@ End Function
 
 Public Function GetNextMouseMovePoint(ByVal ptrToDstMMP As Long) As Boolean
     GetNextMouseMovePoint = CanvasView.GetNextMouseMovePoint(ptrToDstMMP)
+End Function
+
+'Paint tool mouse operations need to query this function before allowing paint interactions
+Private Function DoesLayerAllowPainting(Optional ByVal displayUIFeedback As Boolean = False) As Boolean
+    
+    'This function only matters if the left mouse button is currently *down*.
+    If m_LMBDown Then
+    
+        DoesLayerAllowPainting = PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()
+        If (Not DoesLayerAllowPainting) And displayUIFeedback Then
+            Message "Action canceled: target layer isn't visible."
+            UserControls.PostPDMessage WM_PD_FLASH_ACTIVE_LAYER, 500&, 4000&
+        End If
+        m_IgnoreMouseActions = (Not DoesLayerAllowPainting)
+    
+    Else
+        DoesLayerAllowPainting = True
+        m_IgnoreMouseActions = False
+    End If
+    
 End Function
 
 'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature

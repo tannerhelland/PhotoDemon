@@ -112,8 +112,8 @@ Private m_AutoToggle As Boolean
 'StickyToggle mode allows the button to operate as a checkbox (e.g. a persistent value, that switches on every click)
 Private m_StickyToggle As Boolean
 
-'In some circumstances, an image alone is sufficient for indicating "pressed" state.  This value tells the control to *not* render a custom
-' highlight state when a button is depressed.
+'In some circumstances, an image alone is sufficient for indicating "pressed" state.
+' This value tells the control to *not* render a custom highlight state when a button is depressed.
 Private m_DontHighlightDownState As Boolean
 
 'In 2019, I added a "flash" action to this button; the search bar uses this to draw attention to a given tool when it
@@ -450,6 +450,7 @@ Public Sub FlashButton(Optional ByVal flashIntervalInMs As Long = 500, Optional 
     Set m_FlashTimer = New pdTimer
     m_FlashTimer.Interval = flashIntervalInMs
     m_FlashLength = flashLengthInMs
+    m_FlashTimeElapsed = 0
     m_FlashTimer.StartTimer
 End Sub
 
@@ -503,6 +504,7 @@ Private Sub m_FlashTimer_Timer()
     If (m_FlashTimeElapsed >= m_FlashLength) Then
         m_FlashTimer.StopTimer
         m_FlashCount = 0
+        m_FlashTimeElapsed = 0
         RedrawBackBuffer True, True
     Else
         RedrawBackBuffer True, False
