@@ -15,16 +15,15 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackageChunky" v2.0 Interface (e.g. chunk-based archive handler)
 'Copyright 2014-2020 by Tanner Helland
 'Created: 03/June/19
-'Last updated: 03/October/19
-'Last update: allow packages loaded from memory to cache the source data locally; this allows for
-'             lightweight "self-contained" resource packages
+'Last updated: 11/March/20
+'Last update: require callers to manually validate buffer length when requesting blind write-to-ptr behavior
 'Dependencies: - pdPackaging module from photodemon.org (defines public enums and structs)
 '              - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-aware file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
 '              - VBHacks module from photodemon.org (optimized workarounds for lacking VB functionality)
-'              - If you want compression support, one or more 3rd-party compression libraries
-'                (e.g. zstd, zlib) are also required.
+'              - If you want compression support, relevant 3rd-party compression libraries (e.g. zstd)
+'                 are obviously required
 '
 'This class provides an interface for creating and reading chunk-based pdPackage files.  pdPackage is
 ' the file format originally developed for PhotoDemon (www.photodemon.org), and as the program
@@ -562,7 +561,11 @@ End Function
 ' allocations whenever possible.  You *must* use dstChunkSize to handle the data correctly.
 '
 'If the chunk is compressed, this function will automatically decompress it for you.
-Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As Long, Optional ByRef dstChunkStream As pdStream, Optional ByVal loadToThisPtrInstead As Long = 0) As Boolean
+'
+'In rare cases, it may be preferable to have this function decompress chunk data directly to a blind pointer.  If you
+' request this behavior (via the optional loadToThisPtrInstead parameter), you *MUST* also pass the size of your
+' destination buffer; the function will double-check this to ensure the write is safe.
+Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As Long, Optional ByRef dstChunkStream As pdStream, Optional ByVal loadToThisPtrInstead As Long = 0, Optional ByVal dstAllocationSize As Long = 0) As Boolean
     
     GetNextChunk = GetNextChunk_Helper(dstChunkName, dstChunkSize)
     If GetNextChunk Then
@@ -608,6 +611,7 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
             'Perform decompression.  If a destination pointer was supplied, presume the caller knows what
             ' they're doing and they have already prepared sufficient space for us.
             If (loadToThisPtrInstead <> 0) Then
+                If (dstAllocationSize < dstChunkSize) Then PDDebug.LogAction "WARNING!  pdPackageChunky.GetNextChunk requires a larger buffer: " & dstAllocationSize & " vs " & dstChunkSize
                 GetNextChunk = Compression.DecompressPtrToPtr(loadToThisPtrInstead, dstChunkSize, ptrSrcComp, m_Chunks(m_chunkIndex - 1).chnkCompressedSize, cmpFormat)
             Else
                 GetNextChunk = Compression.DecompressPtrToPtr(dstChunkStream.Peek_PointerOnly(0), dstChunkSize, ptrSrcComp, m_Chunks(m_chunkIndex - 1).chnkCompressedSize, cmpFormat)
@@ -621,6 +625,7 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
             dstChunkSize = m_Chunks(m_chunkIndex - 1).chnkUncompressedSize
             
             If (loadToThisPtrInstead <> 0) Then
+                If (dstAllocationSize < dstChunkSize) Then PDDebug.LogAction "WARNING!  pdPackageChunky.GetNextChunk requires a larger buffer: " & dstAllocationSize & " vs " & dstChunkSize
                 GetNextChunk = m_Stream.ReadBytesToBarePointer(loadToThisPtrInstead, dstChunkSize)
             Else
                 GetNextChunk = m_Stream.ReadBytesToStream(dstChunkStream, dstChunkSize)

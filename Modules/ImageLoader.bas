@@ -157,7 +157,7 @@ Public Function LoadPDI_Normal(ByRef pdiPath As String, ByRef dstDIB As pdDIB, B
                             dstImage.GetLayerByIndex(curLayerIndex).layerDIB.SetInitialAlphaPremultiplicationState True
                             dstImage.GetLayerByIndex(curLayerIndex).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                             If (tmpDIBLength <> 0) Then
-                                layerInitializedOK = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer)
+                                layerInitializedOK = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer, tmpDIBLength)
                                 If (Not layerInitializedOK) Then PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because GetNextChunk failed!"
                             Else
                                 PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target pointer was null!"
@@ -494,8 +494,8 @@ Public Function LoadPDI_SingleLayer(ByRef pdiPath As String, ByRef dstLayer As p
                                             dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
                                             dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                                             
-                                            If (tmpDIBLength <> 0) Then
-                                                chunkLoaded = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer)
+                                            If (tmpDIBPointer <> 0) Then
+                                                chunkLoaded = pdiReader.GetNextChunk(chunkName, chunkLength, Nothing, tmpDIBPointer, tmpDIBLength)
                                                 If (Not chunkLoaded) Then PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because GetNextChunk failed!"
                                             Else
                                                 PDDebug.LogAction "WARNING!  Layer bitmap wasn't retrieved because target pointer was null!"
@@ -624,7 +624,7 @@ Private Function LoadPDLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer,
                     'Because we already know the decompressed size of the pixel data, we don't need to
                     ' double-allocate it - instead, decompress it directly from its (memory-mapped)
                     ' source into the already-allocated pixel container.
-                    nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, , tmpDIBPointer)
+                    nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, , tmpDIBPointer, tmpDIBLength)
                 
                 Else
                     nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, chunkData)
@@ -779,7 +779,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     selectionDataLoaded = False
     
     'Regardless of outcome, notify the parent image of this change
-    PDImages.GetActiveImage.NotifyImageChanged undoTypeOfAction, targetLayerID
+    PDImages.GetActiveImage.NotifyImageChanged undoTypeOfAction, PDImages.GetActiveImage.GetLayerIndexFromID(targetLayerID)
     
     'Depending on the Undo data requested, we may end up loading one or more diff files at this location
     Select Case undoTypeOfAction

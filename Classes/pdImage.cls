@@ -570,8 +570,8 @@ Friend Function GetLayerByIndex(ByVal layerIndex As Long, Optional ByVal forceTo
     
     'As a failsafe, validate the incoming layer index
     If (layerIndex > UBound(imgLayers)) And forceToValidIndex Then
-        layerIndex = UBound(imgLayers)
         Debug.Print "WARNING! Invalid layerIndex requested (" & layerIndex & ":" & UBound(imgLayers) & ")"
+        layerIndex = UBound(imgLayers)
     End If
     
     If (layerIndex < 0) And forceToValidIndex Then layerIndex = 0

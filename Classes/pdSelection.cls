@@ -3439,12 +3439,12 @@ Friend Function ReadSelectionFromFile_New(ByRef srcFilename As String, Optional 
                     ' load the bits directly into our (already created) mask DIB
                     If (origWidth = m_parentPDImage.Width) And (origHeight = m_parentPDImage.Height) Then
                         m_SelMask.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                        If (Not cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer)) Then PDDebug.LogAction "WARNING!  Couldn't retrieve selection mask!"
+                        If (Not cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer, tmpDIBLength)) Then PDDebug.LogAction "WARNING!  Couldn't retrieve selection mask!"
                     Else
                         
                         tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                         
-                        If cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer) Then
+                        If cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer, tmpDIBLength) Then
                             m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB.GetDIBColorDepth, 0, 0
                             GDI_Plus.GDIPlusResizeDIB m_SelMask, 0, 0, m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
                             m_SelMask.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication()
