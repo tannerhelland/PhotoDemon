@@ -668,8 +668,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
             Case NAV_MOVE
                 
-                'The interface module actually has a nice function that already handles this
+                'The interface module actually has nice functions that handle this
                 Interface.SetUIGroupState PDUI_LayerTools, True
+                Interface.SyncUI_CurrentLayerSettings
                 
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
                 Tools.SetToolBusyState True

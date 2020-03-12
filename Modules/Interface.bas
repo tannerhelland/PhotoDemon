@@ -352,7 +352,7 @@ End Sub
 ' 1) At least one valid layer in the current image
 ' 2) Different behavior and/or appearances for different layers
 ' If a UI element appears the same for ANY layer (e.g. toggling visibility), use the SetUIMode_AtLeastOneLayer() function.
-Private Sub SyncUI_CurrentLayerSettings()
+Public Sub SyncUI_CurrentLayerSettings()
     
     'First, determine if the current layer is using any form of non-destructive resizing
     Dim nonDestructiveResizeActive As Boolean
