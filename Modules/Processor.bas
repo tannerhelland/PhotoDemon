@@ -64,8 +64,9 @@ Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 44
 Private prevTextLayerID As Long, prevTextSetting() As Variant
 
 
-'PhotoDemon's software processor.  (Almost) every action the program takes is first routed through this method.  This processor is what
-' makes recording and playing back macros possible, as well as a host of other features.  (See comment at top of page for more details.)
+'PhotoDemon's software processor.  (Almost) every action the program takes is first routed
+' through this method.  This processor is what makes recording and playing macros possible,
+' as well as a host of other features.  (See comment at top of page for more details.)
 '
 'INPUTS (asterisks denote optional parameters):
 ' - processID: a string identifying the action to be performed, e.g. "Blur"

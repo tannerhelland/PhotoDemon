@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1729</langversion>
-<langstatus>Up-to-Date</langstatus>
+<langversion>7.2.1841</langversion>
+<langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -472,7 +472,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Analyzing image</original>
-<translation></translation>
+<translation>Bild wird analysiert</translation>
 </phrase>
 
 <phrase>
@@ -487,7 +487,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Cropping image</original>
-<translation></translation>
+<translation>Bild wird zugeschnitten</translation>
 </phrase>
 
 <phrase>
@@ -532,7 +532,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Trimming image</original>
-<translation></translation>
+<translation>Bild wird getrimmt</translation>
 </phrase>
 
 <!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -735,12 +735,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>erase</original>
-<translation></translation>
+<translation>Löschen</translation>
 </phrase>
 
 <phrase>
 <original>ignore</original>
-<translation></translation>
+<translation>Ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -960,7 +960,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Cancel action</original>
-<translation></translation>
+<translation>Aktion abbrechen</translation>
 </phrase>
 
 <phrase>
@@ -1026,7 +1026,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Cropping layer</original>
-<translation></translation>
+<translation>Layer wird zugeschnitten</translation>
 </phrase>
 
 <phrase>
@@ -2189,7 +2189,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>Sonstiges Verzerren</translation>
+<translation>Verschiedenes Verzerren</translation>
 </phrase>
 
 <phrase>
@@ -2414,7 +2414,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Offset and zoom</original>
-<translation></translation>
+<translation>Offset und Zoom</translation>
 </phrase>
 
 <phrase>
@@ -2671,14 +2671,14 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <original>The selected scanner or digital camera isn't responding.
 
 Please make sure the device is turned on and ready for use.</original>
-<translation>Ausgewählter Scanner oder ausgewählte Digitalkamera reagieren nicht.
+<translation>Der ausgewählte Scanner oder die ausgewählte Digitalkamera reagieren nicht.
 
 Bitte stellen Sie sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
 <original>Scanner error</original>
-<translation></translation>
+<translation>Scanner-Fehler</translation>
 </phrase>
 
 <phrase>
@@ -2692,7 +2692,7 @@ Bitte stellen Sie sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde nach Programminitialisierung als fehlend markiert.
 
-Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
+Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -3578,7 +3578,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>(none)</original>
-<translation>(kein Profil)</translation>
+<translation>(keine)</translation>
 </phrase>
 
 <!-- MoveTool.bas contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -4871,7 +4871,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Action canceled: target layer isn't visible.</original>
-<translation></translation>
+<translation>Aktion abgebrochen: Ziel-Layer ist nicht sichtbar</translation>
 </phrase>
 
 <phrase>
@@ -6709,7 +6709,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Importing metadata</original>
-<translation></translation>
+<translation>Metadaten werden importiert</translation>
 </phrase>
 
 <phrase>
@@ -7032,7 +7032,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Adjust HSL</original>
-<translation></translation>
+<translation>HSL anpassen</translation>
 </phrase>
 
 <phrase>
@@ -8818,7 +8818,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Unsaved changes</original>
-<translation></translation>
+<translation>Ungesicherte Änderungen</translation>
 </phrase>
 
 <phrase>
@@ -9710,7 +9710,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Miscellaneous distorts</original>
-<translation></translation>
+<translation>Verschiedenes Verzerren</translation>
 </phrase>
 
 <phrase>
@@ -11815,7 +11815,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Download image</original>
-<translation></translation>
+<translation>Bild herunterladen</translation>
 </phrase>
 
 <phrase>
@@ -13349,7 +13349,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>Anpassung exklusiv, und zuschneiden wie erforderlich</translation>
+<translation>Anpassung exklusiv, und Zuschneidung wie erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -13574,7 +13574,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>close images normally (prompt for unsaved changes)</original>
-<translation>Bilder normal schließen (Aufforderung für ungesicherte Änderungen)</translation>
+<translation>Bilder normal schließen (Aufforderung bei ungesicherten Änderungen)</translation>
 </phrase>
 
 <phrase>
@@ -13595,7 +13595,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>erase threshold</original>
-<translation>Löschungsschwellenwert</translation>
+<translation>Löschschwellenwert</translation>
 </phrase>
 
 <phrase>
@@ -14076,7 +14076,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Erase tool</original>
-<translation>Radierer-Tool</translation>
+<translation>Radieren-Tool</translation>
 </phrase>
 
 <phrase>

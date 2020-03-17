@@ -14,9 +14,6 @@ Attribute VB_Name = "Loading"
 'Note that these high-level functions call into a number of lower-level functions inside the ImageImporter module, and potentially various
 ' plugin-specific interfaces (e.g. FreeImage).
 '
-'TODO list: add GDI+ support for multipage TIFF loading.  This doesn't look too hard, and given the complexity of TIFF files,
-' it'd be worthwhile to have a backup plan if FreeImage chokes on a file.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '

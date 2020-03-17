@@ -8,7 +8,11 @@ Attribute VB_Name = "PDImages"
 '             behind safe wrapper functions.
 '
 'In "ye good ol' days", PhotoDemon exposed the collection of currently loaded user images as a bare array.
-' This was a terrible idea for many reasons.
+' This was a terrible idea (for too many reasons to count).
+'
+'These days, the open image collection is instead managed by this module.  This provides much more
+' flexibility in how we manage the collection "behind-the-scenes", with improved options for tasks
+' like memory management (e.g. suspending inactive images to disk).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
