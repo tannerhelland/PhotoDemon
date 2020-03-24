@@ -124,8 +124,8 @@ Attribute VB_Exposed = False
 'Color/Transparency depth selector User Control
 'Copyright 2016-2020 by Tanner Helland
 'Created: 22/April/16
-'Last updated: 19/January/17
-'Last update: migrate copy+paste implementation to dedicated UC
+'Last updated: 24/March/20
+'Last update: improve UI reflow behavior when control is not yet visible (e.g. first load)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -157,6 +157,12 @@ Attribute ucSupport.VB_VarHelpID = -1
 'After reflowing controls, we store the final calculated "ideal" size of the control.  Our parent can ask us to
 ' sync to this size (although some may not care, and will ignore this).
 Private m_IdealControlHeight As Long
+
+'To ensure that we can reflow layouts successfully even with the control hidden,
+' we mirror some visibility settings to local variables.
+Private m_ColorCountVisible As Boolean, m_DepthColorVisible As Boolean, m_DepthGrayscaleVisible As Boolean
+Private m_AlphaModelVisible As Boolean, m_AlphaCutoffVisible As Boolean, m_AlphaColorVisible As Boolean
+Private m_CompositeColorVisible As Boolean
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ColorDepth
@@ -517,26 +523,29 @@ Private Sub UpdateColorDepthVisibility()
     
         'Auto
         Case 0
-            cboDepthColor.Visible = False
-            cboDepthGrayscale.Visible = False
+            m_DepthColorVisible = False
+            m_DepthGrayscaleVisible = False
         
         'Color
         Case 1
-            cboDepthColor.Visible = True
-            cboDepthGrayscale.Visible = False
+            m_DepthColorVisible = True
+            m_DepthGrayscaleVisible = False
         
         'Grayscale
         Case 2
-            cboDepthColor.Visible = False
-            cboDepthGrayscale.Visible = True
+            m_DepthColorVisible = False
+            m_DepthGrayscaleVisible = True
             
         'Original file
         Case 3
-            cboDepthColor.Visible = False
-            cboDepthGrayscale.Visible = False
+            m_DepthColorVisible = False
+            m_DepthGrayscaleVisible = False
     
     End Select
-
+    
+    cboDepthColor.Visible = m_DepthColorVisible
+    cboDepthGrayscale.Visible = m_DepthGrayscaleVisible
+    
     UpdateColorDepthOptions
 
 End Sub
@@ -544,29 +553,33 @@ End Sub
 Private Sub UpdateColorDepthOptions()
     
     'Indexed color modes allow for variable palette sizes
-    If (cboDepthColor.Visible) Then
-        sldColorCount.Visible = (cboDepthColor.ListIndex = 2)
+    If (cboColorModel.ListIndex = 1) Then
+        m_ColorCountVisible = (cboDepthColor.ListIndex = 2)
         
     'Indexed grayscale mode also allows for variable palette sizes
-    ElseIf (cboDepthGrayscale.Visible) Then
-        sldColorCount.Visible = (cboDepthGrayscale.ListIndex = 1)
+    ElseIf (cboColorModel.ListIndex = 2) Then
+        m_ColorCountVisible = (cboDepthGrayscale.ListIndex = 1)
         
     'Other modes do not expose palette settings
     Else
-        sldColorCount.Visible = False
+        m_ColorCountVisible = False
     End If
+    
+    sldColorCount.Visible = m_ColorCountVisible
     
     'Alpha options are hidden when the "use original file settings" option is used
     If (cboColorModel.ListIndex = 3) Then
-        cboAlphaModel.Visible = False
-        sldAlphaCutoff.Visible = False
-        clsAlphaColor.Visible = False
-        clsComposite.Visible = False
+        m_AlphaModelVisible = False
+        m_AlphaCutoffVisible = False
+        m_AlphaColorVisible = False
+        m_CompositeColorVisible = False
         RaiseEvent ColorSelectionRequired(False)
     Else
-        cboAlphaModel.Visible = True
+        m_AlphaModelVisible = True
         UpdateTransparencyOptions
     End If
+    
+    cboAlphaModel.Visible = m_AlphaModelVisible
     
     ReflowColorPanel
     
@@ -578,33 +591,37 @@ Private Sub UpdateTransparencyOptions()
     
         'auto, full alpha
         Case 0, 1
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = False
-            clsComposite.Visible = False
+            m_AlphaCutoffVisible = False
+            m_AlphaColorVisible = False
+            m_CompositeColorVisible = False
             If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
             
         'alpha by cut-off
         Case 2
-            sldAlphaCutoff.Visible = True
-            clsAlphaColor.Visible = False
-            clsComposite.Visible = True
+            m_AlphaCutoffVisible = True
+            m_AlphaColorVisible = False
+            m_CompositeColorVisible = True
             If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
         
         'alpha by color
         Case 3
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = True
-            clsComposite.Visible = True
+            m_AlphaCutoffVisible = False
+            m_AlphaColorVisible = True
+            m_CompositeColorVisible = True
             If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(True)
             
         'no alpha
         Case 4
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = False
-            clsComposite.Visible = True
+            m_AlphaCutoffVisible = False
+            m_AlphaColorVisible = False
+            m_CompositeColorVisible = True
             If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
     
     End Select
+    
+    sldAlphaCutoff.Visible = m_AlphaCutoffVisible
+    clsAlphaColor.Visible = m_AlphaColorVisible
+    clsComposite.Visible = m_CompositeColorVisible
     
     ReflowColorPanel
     
@@ -621,15 +638,15 @@ Private Sub ReflowColorPanel()
     yPadding = Interface.FixDPI(8)
     yOffset = cboColorModel.GetTop + cboColorModel.GetHeight + yPadding
     
-    If cboDepthColor.Visible Then
+    If m_DepthColorVisible Then
         cboDepthColor.SetTop yOffset
         yOffset = yOffset + cboDepthColor.GetHeight + yPadding
-    ElseIf cboDepthGrayscale.Visible Then
+    ElseIf m_DepthGrayscaleVisible Then
         cboDepthGrayscale.SetTop yOffset
         yOffset = yOffset + cboDepthGrayscale.GetHeight + yPadding
     End If
     
-    If sldColorCount.Visible Then
+    If m_ColorCountVisible Then
         sldColorCount.SetTop yOffset
         yOffset = yOffset + sldColorCount.GetHeight + yPadding
     End If
@@ -639,16 +656,16 @@ Private Sub ReflowColorPanel()
     'Now restart at the top, and perform the same steps for the "alpha settings column" of controls
     yOffset = cboAlphaModel.GetTop + cboAlphaModel.GetHeight + yPadding
     
-    If sldAlphaCutoff.Visible Then
+    If m_AlphaCutoffVisible Then
         sldAlphaCutoff.SetTop yOffset
         yOffset = yOffset + sldAlphaCutoff.GetHeight + yPadding
-    ElseIf clsAlphaColor.Visible Then
+    ElseIf m_AlphaColorVisible Then
         clsAlphaColor.SetTop yOffset
         yOffset = yOffset + clsAlphaColor.GetHeight + yPadding
     End If
     
-    If clsComposite.Visible Then
-        If sldColorCount.Visible And (cboAlphaModel.ListIndex <> 4) Then yOffset = sldColorCount.GetTop
+    If m_CompositeColorVisible Then
+        If m_ColorCountVisible And (cboAlphaModel.ListIndex <> 4) Then yOffset = sldColorCount.GetTop
         clsComposite.SetTop yOffset
         yOffset = yOffset + clsComposite.GetHeight + yPadding
     End If
