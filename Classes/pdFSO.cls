@@ -680,11 +680,17 @@ End Function
 'For correct operation, the same access tokens as the underlying file handle should be used -
 ' e.g. if the source file handle wasn't created with write access, don't request write access here!
 Friend Function FileGetMMHandle_Local(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByVal sizeInBytes As Long, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal nameOfMap As String = vbNullString) As Long
+    
     Dim ptrName As Long, fFlags As Long
     If (LenB(nameOfMap) <> 0) Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
     If requestWriteAccess Then fFlags = PAGE_READWRITE Else fFlags = PAGE_READONLY
+    
+    'If the passed file handle is null, reset to INVALID_FILE_HANDLE; this tells the system
+    ' to use the page file as backing (instead of an actual filesystem file)
+    If (srcFileHandle = 0) Then srcFileHandle = INVALID_HANDLE_VALUE
     dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, fFlags, 0&, sizeInBytes, ptrName)
     FileGetMMHandle_Local = (dstMappedHandle <> 0)
+    
 End Function
 
 'Return just the filename from a full path.  Optionally, you can ask the function to strip the extension (if any)

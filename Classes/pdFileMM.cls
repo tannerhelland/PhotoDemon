@@ -161,15 +161,24 @@ Friend Function EnsureMapAvailable(ByVal offsetRequired As Long, ByVal sizeRequi
     ' our map from scratch.
     If (m_MapOffset + sizeRequired > m_MapLimit) Then
         
-        'We have no choice but to recreate our map from scratch.  Start by releasing our current handle.
-        m_FSO.FileCloseHandle m_FileHandleMM
+        'Note that we can only auto-resize the target file if it's backed by an actual file!
+        ' Otherwise, the map only exists in memory, and it will be deleted (permanently)
+        ' when freed!
+        If (m_FileHandle <> 0) Then
         
-        'Using our existing file handle, resize the file to the required size
-        m_MapLimit = m_MapOffset + sizeRequired
-        If (Not m_FSO.FileSetLength(m_FileHandle, m_MapLimit)) Then InternalError "EnsureMapAvailable", "couldn't automatically resize underlying file", Err.LastDllError
-        
-        'Re-create our map
-        If (Not m_FSO.FileGetMMHandle_Local(m_FileHandle, m_FileHandleMM, 0&, m_WriteAccessRequired)) Then InternalError "EnsureMapAvailable", "couldn't reacquire map handle", Err.LastDllError
+            'We have no choice but to recreate our map from scratch.  Start by releasing our current handle.
+            m_FSO.FileCloseHandle m_FileHandleMM
+            
+            'Using our existing file handle, resize the file to the required size
+            m_MapLimit = m_MapOffset + sizeRequired
+            If (Not m_FSO.FileSetLength(m_FileHandle, m_MapLimit)) Then InternalError "EnsureMapAvailable", "couldn't automatically resize underlying file", Err.LastDllError
+            
+            'Re-create our map
+            If (Not m_FSO.FileGetMMHandle_Local(m_FileHandle, m_FileHandleMM, 0&, m_WriteAccessRequired)) Then InternalError "EnsureMapAvailable", "couldn't reacquire map handle", Err.LastDllError
+            
+        Else
+            InternalError "EnsureMapAvailable", "page-backed file cannot be auto-resized - you must back with an *actual* file for this feature!"
+        End If
         
     Else
         
@@ -214,7 +223,7 @@ End Function
 ' the function will attempt to map the entire target file into memory; the success of this is obviously
 ' contingent on available memory vs the size of the source stream.  (By default, this function attempts
 ' to write the target file in 32-mb increments; limited local testing showed this to be a relatively
-' safe sweet spot between memory consump
+' safe sweet spot between memory consumption and performance.)
 Friend Function FastDumpStreamToFile(ByRef srcStream As pdStream, ByRef dstFile As String, Optional ByVal chunkSize As Long = 2 ^ 25) As Boolean
     
     Dim dataTotal As Long
@@ -302,23 +311,36 @@ Friend Function OpenExistingFile(ByRef srcFile As String, Optional ByVal writeAc
     
 End Function
 
+Friend Sub UnmapAllViews()
+    ResetMapTrackers
+End Sub
+
 'Start a new memory-mapped file for writing.  Note that the maximum size of the file *must* be specified
-' in advance; per the API docs, "After a file mapping object is created, the size of the file
-' must not exceed the size of the file mapping object; if it does, not all of the file contents are
-' available for sharing."  This makes memory-mapping somewhat inconvenient when writing files, as you
-' need to know an upper limit of required space in advance - and when you are done with the file,
-' you will likely want to set a byte-accurate EOF to replace the "maxPossibleSize" calculated here.
+' in advance if the destination file does not exist (e.g. if you are using a temporary page-backed file).
+' Per the API docs, "After a file mapping object is created, the size of the file must not exceed the
+' size of the file mapping object; if it does, not all of the file contents are available for sharing."
+' This makes memory-mapping inconvenient when writing files, as you should know an upper limit of
+' required space in advance - and when you are done with the file, you may need to forcibly set a
+' byte-accurate EOF to replace the "maxPossibleSize" passed here.
 '
-'(This restriction can be worked around the standard way - by flushing all views and closing all open
-' mm-handles, then growing the file as required and allocating new mm-handles... but that eliminates
-' a lot of the potential perf benefits of memory-mapped files, so I haven't implemented it here.)
+'For maps backed by an actual on-disk file, this class can work around the "know max size in advance"
+' restriction by auto-remapping the file if/when it grows.  See EnsureMapAvailable() for details on how
+' we achieve this.
 Friend Function StartNewFile(ByRef dstFile As String, ByVal maxPossibleSize As Long, Optional ByVal optimizeFileAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
     
     'Create the new file and establish its maximum length
     m_WriteAccessRequired = True
-    StartNewFile = m_FSO.FileCreateHandle(dstFile, m_FileHandle, True, True, optimizeFileAccess)
     If (maxPossibleSize <= 0) Then maxPossibleSize = DEFAULT_NEW_FILE_SIZE
-    If StartNewFile Then StartNewFile = m_FSO.FileSetLength(m_FileHandle, maxPossibleSize) Else InternalError "StartNewFile", "couldn't allocate initial file handle", Err.LastDllError
+    
+    'Note that a filename is *not* required; per MSDN, you can pass INVALID_FILE_HANDLE as the
+    ' source file handle, and the system will use the page file as backing (instead of an
+    ' actual file out on disk).
+    If (LenB(dstFile) <> 0) Then
+        StartNewFile = m_FSO.FileCreateHandle(dstFile, m_FileHandle, True, True, optimizeFileAccess)
+        If StartNewFile Then StartNewFile = m_FSO.FileSetLength(m_FileHandle, maxPossibleSize) Else InternalError "StartNewFile", "couldn't allocate initial file handle", Err.LastDllError
+    Else
+        m_FileHandle = 0
+    End If
     
     m_MapLimit = maxPossibleSize
     
@@ -344,7 +366,7 @@ Private Sub InternalError(ByRef functionName As String, ByRef errText As String,
             PDDebug.LogAction "WARNING!  pdFileMM problem: " & errText
         End If
     End If
-        
+    
 End Sub
 
 Private Sub ResetMapTrackers()
