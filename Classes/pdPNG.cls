@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2020 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 05/September/19
-'Last update: start work on exporting APNGs; 32-bpp animations are already working well!
+'Last updated: 24/March/20
+'Last update: clarify difference between compositing color and background color (yes, they can differ!)
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -175,7 +175,7 @@ End Type
 'When exporting the image, we need to cache various export parameters to share between export functions.
 ' (This is required to maintain chunk order, as some chunk data must be written in specific places -
 ' e.g. "after the palette but before the pixel data".)
-Private m_EmbedBkgdColor As Boolean, m_BkgdColor As Long
+Private m_EmbedBkgdColor As Boolean, m_BkgdColor As Long, m_CompositingColor As Long
 Private m_ImgPalette() As RGBQuad, m_ImgColorCount As Long, m_ImgMaxColorCount As Long, m_ImgPaletteSafe As Boolean
 Private m_WriteTrns As Boolean, m_TrnsValueR As Long, m_TrnsValueG As Long, m_TrnsValueB As Long
 
@@ -2747,7 +2747,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             ' represent transparent pixels.
             If (outColorType = png_Truecolor) And m_apngTrnsAvailable Then
                 DIBs.RetrieveTransparencyTable allFrames(i).frameDIB, trnsTable
-                DIBs.ApplyBinaryTransparencyTableColor allFrames(i).frameDIB, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_BkgdColor
+                DIBs.ApplyBinaryTransparencyTableColor allFrames(i).frameDIB, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_CompositingColor
             End If
             
             'Unpremultiply the source DIB
@@ -2865,7 +2865,8 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     
     'Retrieve some miscellaneous data from the param strings; these settings may not be used in all
     ' output modes (e.g. transparent color has limited usage, depending on the output alpha mode).
-    m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+    m_BkgdColor = cParamsDepth.GetLong("pngBackgroundColor", vbWhite)
+    m_CompositingColor = m_BkgdColor
     m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
     
     'A weird user may choose "automatic" mode for color or alpha mode, but not both.  If they've done this,
@@ -2925,12 +2926,18 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     Else
         If Strings.StringsEqual(outputAlphaModel, "full", True) Then
             outputAlphaMode = PDAS_ComplicatedAlpha
+        
+        'For non-standard alpha modes, we also want to use the compositing color specified by the color
+        ' depth parameter string.
         ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
             outputAlphaMode = PDAS_NoAlpha
+            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
         ElseIf Strings.StringsEqual(outputAlphaModel, "bycutoff", True) Then
             outputAlphaMode = PDAS_BinaryAlpha
+            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
         ElseIf Strings.StringsEqual(outputAlphaModel, "bycolor", True) Then
             outputAlphaMode = PDAS_NewAlphaFromColor
+            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
         Else
             outputAlphaMode = PDAS_ComplicatedAlpha
         End If
@@ -3044,7 +3051,7 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
         DIBs.MakeColorTransparent_Ex srcImage, trnsTable, outputAlphaColor
         
         'Next, remap the image, and assign the specified transparency color to any transparent pixels
-        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, outputAlphaColor, m_BkgdColor
+        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, outputAlphaColor, m_CompositingColor
         
         'We must also remember to set a correct tRNS color before exiting, but we set this differently
         ' depending on the output color mode.
@@ -3091,7 +3098,7 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
         outputAlphaColor = RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB)
         
         'Next, remap the image, and assign the specified transparency color to any transparent pixels
-        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, outputAlphaColor, m_BkgdColor
+        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, outputAlphaColor, m_CompositingColor
         
         'We must remember to set a correct tRNS color before exiting, but we set this differently
         ' depending on the output color mode.
@@ -3165,7 +3172,8 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
-    m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+    m_BkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+    m_CompositingColor = m_BkgdColor
     m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
     
     'Some color modes may require us to produce palettes or custom transparency tables.
@@ -3322,7 +3330,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
             ' with the designated color.
             If (outColorType = png_Truecolor) Then
                 DIBs.RetrieveTransparencyTable srcImage, trnsTable
-                DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_BkgdColor
+                DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_CompositingColor
             End If
         
         'Not truecolor, which leaves grayscale and indexed modes
@@ -3411,7 +3419,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
                         
                         'We now have a transparency color we can use.  Apply it now.
                         DIBs.RetrieveTransparencyTable srcImage, trnsTable
-                        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_BkgdColor
+                        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_CompositingColor
                         
                     '8-bit grayscale is simpler.
                     Else
@@ -3440,7 +3448,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
                         
                         'We now have a transparency color we can use.  Apply it now.
                         DIBs.RetrieveTransparencyTable srcImage, trnsTable
-                        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_BkgdColor
+                        DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_CompositingColor
                         
                     End If
                     
@@ -3694,7 +3702,8 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
-    m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+    m_BkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+    m_CompositingColor = m_BkgdColor
     m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
     
     'We now know enough (finally) to construct an output color model and suggested bit-depth.  Whew!
@@ -4407,7 +4416,7 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As
     End If
     
     'Start by "removing" alpha by compositing the image against whatever backcolor the caller requested
-    srcImage.CompositeBackgroundColor Colors.ExtractRed(m_BkgdColor), Colors.ExtractGreen(m_BkgdColor), Colors.ExtractBlue(m_BkgdColor)
+    srcImage.CompositeBackgroundColor Colors.ExtractRed(m_CompositingColor), Colors.ExtractGreen(m_CompositingColor), Colors.ExtractBlue(m_CompositingColor)
     
     '24-bpp path
     If (m_Header.BitDepth = 8) Then
@@ -4497,7 +4506,7 @@ Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As
     End If
     
     'If it isn't already, composite the source image against the specified backcolor
-    srcImage.ConvertTo24bpp m_BkgdColor
+    srcImage.ConvertTo24bpp m_CompositingColor
     
     'Retrieve a grayscale-only copy of the source image's bytes.  (Note that this will forcibly convert the
     ' pixel data to grayscale if it isn't already, so it doesn't really matter whether the data is already gray!)

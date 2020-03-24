@@ -737,6 +737,12 @@ Private Sub cmdUpdateLossyPreview_Click()
     
 End Sub
 
+Private Sub Form_Activate()
+    clrDepth.SyncToIdealSize
+    picContainer(1).SetHeight clrDepth.GetIdealSize
+    ttlStandard(2).SetTop picContainer(1).GetTop + picContainer(1).GetHeight + FixDPI(8)
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
@@ -754,7 +760,7 @@ Private Function GetExportParamString() As String
     
         'Start with the standard PNG settings, which are consistent across all standard PNG types
         If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
-        cParams.AddParam "PNGBackgroundColor", clsBackground.Color
+        cParams.AddParam "pngBackgroundColor", clsBackground.Color
         cParams.AddParam "PNGCreateBkgdChunk", chkEmbedBackground.Value
         cParams.AddParam "PNGFilterStrategy", cboOptimize.ListIndex
         
@@ -776,7 +782,7 @@ Private Function GetExportParamString() As String
         
     End If
     
-    GetExportParamString = cParams.GetParamString
+    GetExportParamString = cParams.GetParamString()
     
 End Function
 
@@ -806,6 +812,9 @@ Private Sub UpdatePreview()
         Set cParams = New pdSerialize
         cParams.SetParamString GetExportParamString()
         
+        Dim bkgdColor As Long
+        bkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+        
         'The color-depth-specific options are embedded as a single option, so extract them into their
         ' own parser.
         Dim cParamsDepth As pdSerialize
@@ -831,8 +840,7 @@ Private Sub UpdatePreview()
             previewAlphaMode = PDAS_ComplicatedAlpha
         End If
         
-        Dim bkgdColor As Long, trnsTable() As Byte
-        bkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+        Dim trnsTable() As Byte
         
         Dim outputAlphaCutoff As Long, outputAlphaColor As Long
         outputAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
@@ -840,13 +848,16 @@ Private Sub UpdatePreview()
     
         'If the caller wants alpha removed, do so now.
         If (previewAlphaMode = PDAS_NoAlpha) Then
+            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             workingDIB.CompositeBackgroundColor Colors.ExtractRed(bkgdColor), Colors.ExtractGreen(bkgdColor), Colors.ExtractBlue(bkgdColor)
             
         ElseIf (previewAlphaMode = PDAS_BinaryAlpha) Then
+            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             DIBs.ApplyAlphaCutoff_Ex workingDIB, trnsTable, outputAlphaCutoff
             DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
         
         ElseIf (previewAlphaMode = PDAS_NewAlphaFromColor) Then
+            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             DIBs.MakeColorTransparent_Ex workingDIB, trnsTable, outputAlphaColor
             DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
         
