@@ -219,7 +219,6 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     FI_DebugMsg "Heuristics show image bit-depth: " & fi_BPP & ", pixel type: " & FI_GetImageTypeAsString(fi_DataType), suppressDebugData
     
     dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
-    FI_LoadBackgroundColor fi_hDIB, dstDIB
     dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
     
     
@@ -745,7 +744,6 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
             fi_DataType = FreeImage_GetImageType(fi_hDIB)
             dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
-            FI_LoadBackgroundColor fi_hDIB, dstDIB
             dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
             
             'Retrieve a matching ICC profile, if any, and add it to the central cache
@@ -894,38 +892,6 @@ Private Function FI_LoadICCProfile(ByVal fi_Bitmap As Long, ByRef dstProfile As 
     Else
         FI_DebugMsg "WARNING!  ICC profile size is invalid (<=0)."
     End If
-    
-End Function
-
-Private Function FI_LoadBackgroundColor(ByVal fi_Bitmap As Long, ByRef dstDIB As pdDIB) As Boolean
-
-    'Check to see if the image has a background color embedded
-    If FreeImage_HasBackgroundColor(fi_Bitmap) Then
-                
-        'FreeImage will pass the background color to an RGBquad type-variable
-        Dim rQuad As RGBQuad
-        If FreeImage_GetBackgroundColor(fi_Bitmap, rQuad) Then
-        
-            'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
-            ' palette index is stored in .rgbReserved.  Check for that, and if it's non-zero, retrieve the palette value instead.
-            If (rQuad.Alpha <> 0) Then
-                Dim fi_Palette() As Long
-                fi_Palette = FreeImage_GetPaletteExLong(fi_Bitmap)
-                dstDIB.SetBackgroundColor fi_Palette(rQuad.Alpha)
-                
-            'Otherwise it's easy - just reassemble the RGB values from the quad
-            Else
-                dstDIB.SetBackgroundColor RGB(rQuad.Red, rQuad.Green, rQuad.Blue)
-            End If
-            
-            FI_LoadBackgroundColor = True
-        
-        End If
-    
-    End If
-    
-    'No background color found; write -1 to notify of this.
-    If (Not FI_LoadBackgroundColor) Then dstDIB.SetBackgroundColor -1
     
 End Function
 

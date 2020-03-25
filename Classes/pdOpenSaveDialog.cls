@@ -252,12 +252,10 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
         GetOpenFileName = True
         
     Else
-        
         Message "Load canceled. "
         GetOpenFileName = False
         FileName = vbNullString
         FileTitle = vbNullString
-        
     End If
     
     Interface.NotifySystemDialogState False

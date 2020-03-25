@@ -1029,14 +1029,10 @@ Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As
     'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),
     ' then continue with the load process.
     If AttemptFreeImageLoad Then
-        
         decoderUsed = id_FreeImage
-        
         dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
         dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
         dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
-        If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
-        
     End If
         
 End Function

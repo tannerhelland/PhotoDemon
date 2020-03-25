@@ -1450,22 +1450,6 @@ Public Declare Function FreeImage_SetTransparentIndex Lib "FreeImage.dll" Alias 
 Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_HasBackgroundColor@4" ( _
            ByVal Bitmap As Long) As Long
            
-Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
-           ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQuad) As Long
-
-Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
-           ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
-
-Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
-           ByVal Bitmap As Long, _
-           ByRef BackColor As RGBQuad) As Long
-           
-Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
-           ByVal Bitmap As Long, _
-           ByRef BackColor As Long) As Long
-
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
            ByVal Bitmap As Long) As Long
            
@@ -2506,79 +2490,6 @@ End Function
 ' Thin wrapper function returning a real VB Boolean value
 Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
     FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(Bitmap) = 1)
-End Function
-
-' Thin wrapper function returning a real VB Boolean value
-Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, ByRef BackColor As RGBQuad) As Boolean
-    FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
-End Function
-
-' This function gets the background color of an image as FreeImage_GetBackgroundColor() does,
-' but provides its result as a Long value.
-Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, ByRef BackColor As Long) As Boolean
-    FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
-End Function
-
-Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
-                                               ByRef Alpha As Byte, _
-                                               ByRef Red As Byte, _
-                                               ByRef Green As Byte, _
-                                               ByRef Blue As Byte) As Boolean
-                                              
-Dim bkcolor As RGBQuad
-
-   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
-   ' provides it's result as four different byte values, one for each color component.
-                                              
-   FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(Bitmap, bkcolor) = 1)
-   With bkcolor
-      Alpha = .Alpha
-      Red = .Red
-      Green = .Green
-      Blue = .Blue
-   End With
-
-End Function
-
-Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQuad) As Boolean
-                                             
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, BackColor) = 1)
-                                             
-End Function
-
-Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByVal BackColor As Long) As Boolean
-                                             
-   ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
-   ' the color value to set must be provided as a Long value.
-
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
-                                             
-End Function
-
-Public Function FreeImage_SetBackgroundColorEx(ByVal Bitmap As Long, _
-                                               ByVal Alpha As Byte, _
-                                               ByVal Red As Byte, _
-                                               ByVal Green As Byte, _
-                                               ByVal Blue As Byte) As Boolean
-                                              
-Dim tColor As RGBQuad
-
-   ' This function sets the color at position (x|y) as FreeImage_SetPixelColor() does but
-   ' the color value to set must be provided four different byte values, one for each
-   ' color component.
-                                             
-   With tColor
-      .Alpha = Alpha
-      .Red = Red
-      .Green = Green
-      .Blue = Blue
-   End With
-   FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(Bitmap, tColor) = 1)
-
 End Function
 
 Public Function FreeImage_FIFSupportsReading(ByVal Format As FREE_IMAGE_FORMAT) As Boolean
@@ -5551,57 +5462,6 @@ Private Sub FreeImage_ErrorHandler(ByVal imgFormat As FREE_IMAGE_FORMAT, ByVal p
         
     End If
     
-End Sub
-
-Public Sub FreeImage_TestRandomExportFeatures(ByRef dstFile As String)
-
-    'Create an easy-to-recognize palette (hue rainbow, from 0.0 to 1.0)
-    Dim tmpPalette() As RGBQuad
-    ReDim tmpPalette(0 To 255) As RGBQuad
-    
-    Dim r As Double, g As Double, b As Double
-    Dim i As Long
-    For i = 0 To 255
-        Colors.fHSVtoRGB CSng(i) / 255#, 1#, 1#, r, g, b
-        tmpPalette(i).Red = Int(r * 255#)
-        tmpPalette(i).Green = Int(g * 255#)
-        tmpPalette(i).Blue = Int(b * 255#)
-        tmpPalette(i).Alpha = 0
-    Next i
-    
-    'Allocate an 8-bpp FreeImage object
-    Dim hImage As Long
-    hImage = FreeImage_AllocateExT(FIT_BITMAP, 256, 256, 8, ByVal 0&, 0&, ByVal VarPtr(tmpPalette(0)))
-    
-    If (hImage <> 0) Then
-    
-        'Fill the image bits in an obvious pattern (each byte = its horizontal position)
-        Dim tmpScanLine() As Byte
-        ReDim tmpScanLine(0 To 255) As Byte
-        For i = 0 To 255
-            tmpScanLine(i) = i
-        Next i
-        
-        'Copy our image bits into FreeImage's buffer
-        Dim dstPtr As Long
-        For i = 0 To 255
-            dstPtr = FreeImage_GetScanline(hImage, i)
-            CopyMemoryStrict dstPtr, VarPtr(tmpScanLine(0)), 256
-        Next i
-        
-        'Create a blank transparency table (this will give us a "dummy" tRNS chunk in the final file)
-        For i = 0 To 255
-            tmpScanLine(i) = 0
-        Next i
-        FreeImage_SetTransparencyTable hImage, VarPtr(tmpScanLine(0)), 256
-        
-        'Export the PNG and free the FreeImage handle
-        FreeImage_SaveEx hImage, dstFile, FIF_PNG, FISO_PNG_Z_DEFAULT_COMPRESSION, FICD_8BPP
-        
-        FreeImage_Unload hImage
-        
-    End If
-
 End Sub
 
 'Metadata functions
