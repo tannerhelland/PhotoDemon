@@ -292,11 +292,19 @@ Friend Function FastDumpStreamToFile(ByRef srcStream As pdStream, ByRef dstFile 
 
 End Function
 
+Friend Function GetMMHandle() As Long
+    GetMMHandle = m_FileHandleMM
+End Function
+
 'Open an existing file for memory-mapped file access.  If you don't need write access, specify as much
 ' because performance will likely improve (as pages don't need to be written out to file when you're
 ' done with them).
 Friend Function OpenExistingFile(ByRef srcFile As String, Optional ByVal writeAccessRequired As Boolean = False, Optional ByVal optimizeFileAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
     
+    'Always start by closing our existing file, if any
+    Me.CloseFile
+    
+    'Ensure the source file exists!
     If Files.FileExists(srcFile) Then
         m_MapLimit = m_FSO.FileLenW(srcFile)
         m_WriteAccessRequired = writeAccessRequired
@@ -327,6 +335,9 @@ End Sub
 ' restriction by auto-remapping the file if/when it grows.  See EnsureMapAvailable() for details on how
 ' we achieve this.
 Friend Function StartNewFile(ByRef dstFile As String, ByVal maxPossibleSize As Long, Optional ByVal optimizeFileAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+    
+    'Always start by closing our existing file, if any
+    Me.CloseFile
     
     'Create the new file and establish its maximum length
     m_WriteAccessRequired = True

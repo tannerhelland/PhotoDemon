@@ -15,19 +15,21 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2020 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 18/April/17
-'Last update: store the original file format in a proper PDIF enum
+'Last updated: 25/March/20
+'Last update: manually create and manage our own memory-mapped file handle for backing pixel bytes
 '
-'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
-' might expect, a number of other capabilities are built into the class.
+'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
+' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
+' may not always correspond to a literal Windows DIB object).
 '
-'Note that anything you can do with an hDC property you can do with this class - simply use the getDIBDC function to
-' return the DIB's hDC, then do with it what you please. All functions are heavily commented and should be self-explanatory.
+'To support legacy behavior - especially in UI elements - this class exposes a number of GDI-style
+' properties.  For example, you can call the .GetDIBDC function to retrieve a GDI-compatible device
+' context for use with functions like BitBlt.  Note, however, that this class may silently release
+' that DC under a wide variety of circumstances, so you *cannot* cache GDI-type properties
+' externally.  Instead, always call .Get-prefixed properties when you need GDI-compatible handles.
 '
-'SPECIAL THANKS
-'In building this class, I utilized a number of other DIB classes for reference and testing. Special thanks to:
-' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
+'For a simpler example of a Windows-DIB-specific class, you might check out Carles PV's work here:
+' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -71,8 +73,8 @@ Private Type BITMAPFILEHEADER
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data).
-' (Inside PhotoDemon, we declare these types elsewhere, as they're used in a whole bunch of functions, but to use this class
-'  as a standalone instance you will need to uncomment these.)
+' (Inside PhotoDemon, we declare these types elsewhere, as they're used in a whole bunch of functions,
+' but to use this class as a standalone instance you will need to uncomment these.)
 'Public Type SAFEARRAYBOUND
 '    cElements As Long
 '    lBound As Long
@@ -96,14 +98,14 @@ Private Const STRETCHBLT_HALFTONE As Long = 4
 
 'DIB API functions
 ' (Note that these are currently declared in EffectPrep as well)
-Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, ByRef lpBits As Long, ByVal hSection As Long, ByVal dwOffset As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
+Private Declare Function GetObjectType Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
@@ -128,13 +130,16 @@ Private m_dibStride As Long
 'The DIB's color depth (should only ever be 24 or 32)
 Private m_dibColorDepth As Long
 
+'DIB pixel data is always backed against a file mapping object
+' (see https://devblogs.microsoft.com/oldnewthing/20100108-00/?p=15343)
+' This class manages its own handles silently, but it can also be configured to back pixel data
+' against a dedicated on-disk file.
+Private m_BackingFile As String, m_FileMM As pdFileMM
+
 'Used when writing/reading DIB data to/from a file
 Private Const DIB_IDENTIFIER As Long = &H726C4450  'The ASCII chars "PDlr"
 Private Const DIB_FILE_VERSION_2015 As Long = &H1001&
 Private Const DIB_FILE_VERSION_2016 As Long = &H1002&
-
-'Remember the original color of the pixels made transparent, then restore it after the "magic magenta" has served its purpose
-Private m_OriginalTransparentColor As Long
 
 'If this DIB was loaded from file, its original file format will be set here.  (By default, this value will be -1).
 Private m_OriginalFIF As PD_IMAGE_FORMAT
@@ -147,10 +152,6 @@ Private m_ColorProfileState As PD_ColorManagementState, m_ColorProfileHash As St
 'DIBs created from loaded image files contain resolution data.  This data isn't important on a per-DIB basis, but the parent
 ' pdImage object will copy the resolution data from its first-loaded child DIB (if it has a resolution)
 Private m_XResolution As Double, m_YResolution As Double, m_dibDPI As Double
-
-'Some image formats (e.g. PNG) will specify a preferred background color.  If available at load-time, that color value
-' will be stored here.
-Private m_OriginalBackgroundColor As Long
 
 'DIBs created from loaded image files will have their original color depth stored here.  Note that PD only works in 24/32 bpp
 ' mode at present, but this value may contain other bit-depths (e.g. 8bpp if the source data was a GIF).
@@ -212,16 +213,6 @@ Friend Sub SetOriginalFreeImageColorDepth(ByVal origFIColorDepth As Long)
     m_OriginalFreeImageColorDepth = origFIColorDepth
 End Sub
 
-'If this DIB was created from an image file, and that file specified a preferred background color, use this
-' function to copy the value into this DIB.
-Friend Sub SetBackgroundColor(ByVal newBackColor As Long)
-    m_OriginalBackgroundColor = newBackColor
-End Sub
-
-Friend Function GetBackgroundColor() As Long
-    GetBackgroundColor = m_OriginalBackgroundColor
-End Function
-
 'Set the DPI of this DIB.  This is only relevant if this DIB has been created directly from an image file.
 Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double)
     
@@ -250,11 +241,6 @@ End Function
 Friend Sub SetOriginalFormat(ByVal origFIF As PD_IMAGE_FORMAT)
     m_OriginalFIF = origFIF
 End Sub
-
-'Return the original transparent color (set as part of the MarkAlpha routine).
-Friend Function GetOriginalTransparentColor() As Long
-    GetOriginalTransparentColor = m_OriginalTransparentColor
-End Function
 
 'Given a pixel coordinate, return an RGBA quad for that coordinate.
 ' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
@@ -297,18 +283,18 @@ End Function
 ' You *must* call the Unwrap function prior to the array falling out of scope, or VB will crash.
 Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray2D)
     PrepInternalSafeArray srcSafeArray
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub WrapArrayAroundDIB_1D(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray1D)
     PrepInternalSafeArray_Scanline srcSafeArray, 0
     srcSafeArray.cElements = m_dibStride * m_dibHeight
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalSafeArray_Scanline srcSafeArray, dstScanLine
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
@@ -317,12 +303,12 @@ End Sub
 
 Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray2D)
     PrepInternalLongSafeArray srcSafeArray
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
@@ -331,12 +317,12 @@ End Sub
 
 Friend Sub WrapRGBQuadArrayAroundDIB(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray2D)
     PrepInternalLongSafeArray srcSafeArray
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub WrapRGBQuadArrayAroundScanline(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
     PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
-    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+    PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
 End Sub
 
 Friend Sub UnwrapRGBQuadArrayFromDIB(ByRef srcArray() As RGBQuad)
@@ -432,15 +418,12 @@ End Function
 'Return this DIB's hDC.  DIBs receive a DC by default, at creation-time.  However, the caller can remove the DIB from its DC by
 ' calling the FreeFromDC() sub.  If you subsequently request a DC for the DIB, one will be auto-created for you.
 Friend Function GetDIBDC() As Long
-    If (m_dibDC <> 0) Then
-        GetDIBDC = m_dibDC
-    Else
+    GetDIBDC = m_dibDC
+    If (GetDIBDC = 0) Then
         If (m_dibHandle <> 0) Then
             m_dibDC = GDI.GetMemoryDC()
             m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
             GetDIBDC = m_dibDC
-        Else
-            GetDIBDC = 0
         End If
     End If
 End Function
@@ -487,7 +470,7 @@ Friend Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY
         Else
         
             'Create a new, blank DIB the same size as the source DIB
-            If CreateBlank(srcWidth, srcHeight, srcColorDepth, 0, 255) Then
+            If Me.CreateBlank(srcWidth, srcHeight, srcColorDepth, 0, 255) Then
                 BitBlt Me.GetDIBDC, 0, 0, srcWidth, srcHeight, srcDC, srcX, srcY, vbSrcCopy
                 If (srcColorDepth = 32) Then m_IsAlphaPremultiplied = isSourcePremultiplied Else m_IsAlphaPremultiplied = False
                 CreateFromDC = True
@@ -852,8 +835,14 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
         
         If (m_dibDC <> 0) Then
             
-            'Create a DIB
-            m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
+            'Create a DIB using the system page file to back it
+            If m_FileMM.StartNewFile(m_BackingFile, m_dibHeader.ImageSize, OptimizeNone) Then
+                m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, m_FileMM.GetMMHandle(), 0)
+            
+            'Alternatively, you can let the system manage your backing setup for you
+            Else
+                m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
+            End If
             
             'If successful, select the newly created dib into our DC
             If (m_dibHandle <> 0) Then
@@ -1025,6 +1014,9 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     'Reset alpha premultiplication
     m_IsAlphaPremultiplied = False
     
+    'Finally, release the memory-mapped file backing the DIB, if one exists
+    m_FileMM.CloseFile
+    
 End Sub
 
 'Maintain the DIB's dimensions, but reset all bytes to some value (typically 0).  FillMemory is used for maximum performance.
@@ -1082,6 +1074,11 @@ Private Sub Class_Initialize()
     'Reset color management data
     m_ColorProfileState = cms_NoManagement
     m_ColorProfileHash = vbNullString
+    
+    'Create a memory-mapped file manager, and explicitly note that the underlying pixel data
+    ' is *not* backed by a file (by default)
+    Set m_FileMM = New pdFileMM
+    m_BackingFile = vbNullString
     
 End Sub
 
@@ -1514,39 +1511,11 @@ Friend Sub WriteToBitmapFile(ByRef dstFilename As String)
         
 End Sub
 
-'As a helper to external functions, this sub can be used to fill a destination array with a copy the image's current data.
-' Note that this is raw image bytes - no header whatsoever - so it's assumed the caller knows how to deal with the data.
-Friend Sub CopyImageBytesIntoStream(ByRef dstArray() As Byte)
-
-    'Retrieve a pointer to the current DIB bits (in VB format).  Technically we could just use the m_dibBits pointer
-    ' and calculate bounds manually, but this provides a foolproof way to do the same thing using existing code.
-    Dim iData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepInternalSafeArray tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    'Using that temporary as our source, convert the image to the supplied 1D array.
-    Dim aSize As Long
-    aSize = (UBound(iData, 1) + 1) * (UBound(iData, 2) + 1) - 1
-    ReDim dstArray(0 To aSize) As Byte
-    CopyMemory dstArray(0), iData(0, 0), aSize
-    
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-
-End Sub
-
-'Shortcut to copyImageBytesIntoStream; this function gives a pointer to DIB byte 0, and the size of the DIB's contents.  This can be used
-' to mimic byte array behavior, without the overhead of actually initializing a VB array and copying the DIB into it.
+'Return a pointer to DIB byte 0, and return the net size of the DIB's pixel contents.  (PD frequently
+' uses this to wrap arbitrary arrays or structs around DIB contents.)
 Friend Sub RetrieveDIBPointerAndSize(ByRef dibPointer As Long, ByRef dibSize As Long)
     dibPointer = m_dibBits
     dibSize = m_dibStride * m_dibHeight
-End Sub
-
-'The counterpart to copyImageBytesIntoStream, above.  This function will blindly copy an array of bytes over the current
-' image's data.  For it to work, the DIB must have been correctly created at the right size and color depth BEFORE CALLING
-' THIS FUNCTION.  Otherwise, you will get errors.
-Friend Sub CopyStreamOverImageArray(ByRef srcArray() As Byte)
-    CopyMemory ByVal m_dibBits, srcArray(0), UBound(srcArray) + 1
 End Sub
 
 'Sometimes this class needs to access its own DIB bits. Here's how.
@@ -1629,8 +1598,7 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     dibPointer = Me.GetDIBPointer
     
     Dim dibPixels() As Byte, dibSA As SafeArray1D
-    PrepInternalSafeArray1D dibSA
-    CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
+    Me.WrapArrayAroundScanline dibPixels, dibSA, 0
     
     Dim x As Long, y As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
@@ -1695,58 +1663,14 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Next y
     
     'With our alpha channel complete, point dibPixels() away from the DIB
-    CopyMemory ByVal VarPtrArray(dibPixels), 0&, 4
-
+    Me.UnwrapArrayFromDIB dibPixels
+    
 End Sub
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Private Function Blend2Colors(ByVal Color1 As Long, ByVal Color2 As Long, ByRef mixRatio As Double) As Byte
     Blend2Colors = mixRatio * (Color1 - Color2) + Color2
 End Function
-
-'Quick and dirty function to reverse scanlines in the DIB
-Friend Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = True)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    Dim finalY As Long
-    finalY = (m_dibHeight - 1)
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
-    ' 1D array, which we reset between scanlines.
-    Dim scanlineSize As Long, dibPointer As Long
-    scanlineSize = Me.GetDIBStride
-    dibPointer = Me.GetDIBPointer
-    
-    Dim tmpScanLine() As Byte
-    ReDim tmpScanLine(0 To scanlineSize - 1) As Byte
-    
-    Dim srcPointer As Long, dstPointer As Long
-    
-    'Loop through the image, converting alpha as we go
-    Dim y As Long
-    For y = 0 To (finalY \ 2)
-        
-        'Copy the source line to a temporary array
-        dstPointer = VarPtr(tmpScanLine(0))
-        srcPointer = dibPointer + scanlineSize * (finalY - y)
-        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
-        
-        'Copy the destination line over the source line
-        dstPointer = srcPointer
-        srcPointer = dibPointer + scanlineSize * y
-        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
-        
-        'Copy the temporary array into the destination line
-        dstPointer = srcPointer
-        srcPointer = VarPtr(tmpScanLine(0))
-        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
-        
-    Next y
-    
-    If updateTopDownTracker Then m_dibHeader.Height = m_dibHeader.Height * -1
-
-End Sub
 
 'Copy the alpha values from another pdDIB object to this one. This is useful when the alpha channel for this DIB must be lost
 ' during a transformation (typically something involving FreeImage or GDI+), and a temporary DIB was made to preserve the alpha
