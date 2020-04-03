@@ -27,8 +27,8 @@ Attribute VB_Exposed = False
 ' http://www.vbforums.com/showthread.php?637335-RESOLVED-Drag-amp-Drop-file-from-compressed-folder&p=3943417&viewfull=1#post3943417
 ' http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1027,12 +1027,6 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean, 
                         
                         'Always count the header size in the offset
                         pixelOffset = .biSize
-                        
-                        Debug.Print "biSize: " & .biSize
-                        Debug.Print "biClrUsed: " & .biClrUsed
-                        Debug.Print "biCompression: " & .biCompression
-                        Debug.Print "biSizeImage: " & .biSizeImage
-                        Debug.Print "biClrImportant: " & .biClrImportant
                         
                         'If a color table is included, add it to the offset
                         If (.biClrUsed > 0) Then
