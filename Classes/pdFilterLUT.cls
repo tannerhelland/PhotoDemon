@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter LUT (Look Up Table) Support Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 15/January/15
-'Last updated: 16/January/15
-'Last update: continue fleshing out features
+'Last updated: 26/March/20
+'Last update: performance improvements
 '
 'Per its name, this class provides support routines for LUT-based image filters.  The goal is to make LUT-based filters
 ' easy to create and chain together, without needing to know the details of how the various filters are implemented.
@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 ' much faster than we can natively achieve in VB.  Unfortunately, the GDI+ effects flat APIs are poorly documented, so it
 ' could be a headache to reverse-engineer this.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -51,14 +51,11 @@ Option Explicit
 
 'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with its corresponding default LUT value.
 Friend Sub FillLUT_Default(ByRef srcArray() As Byte)
-
     ReDim srcArray(0 To 255) As Byte
-    
     Dim i As Long
     For i = 0 To 255
         srcArray(i) = i
     Next i
-
 End Sub
 
 'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding brightness-adjusted LUT value
@@ -72,10 +69,7 @@ Friend Sub FillLUT_Brightness(ByRef srcArray() As Byte, Optional ByVal brightnes
     ReDim srcArray(0 To 255) As Byte
     
     'Apply basic bounds-checking to the input parameter
-    If (brightnessAdjustment < -255) Or (brightnessAdjustment > 255) Then
-        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Brightness().  Fix it!"
-        Exit Sub
-    End If
+    If (brightnessAdjustment < -255) Or (brightnessAdjustment > 255) Then PDDebug.LogAction "WARNING: Invalid adjustment passed to pdFilterLut.FillLUT_Brightness().  Fix it!"
     
     Dim i As Long, newValue As Long
     
@@ -85,12 +79,8 @@ Friend Sub FillLUT_Brightness(ByRef srcArray() As Byte, Optional ByVal brightnes
         newValue = i + brightnessAdjustment
         
         'Clamp to byte range, as necessary
-        If newValue > 255 Then
-            newValue = 255
-        ElseIf newValue < 0 Then
-            newValue = 0
-        End If
-        
+        If (newValue > 255) Then newValue = 255
+        If (newValue < 0) Then newValue = 0
         srcArray(i) = newValue
         
     Next i
@@ -109,10 +99,7 @@ Friend Sub FillLUT_BrightnessMultiplicative(ByRef srcArray() As Byte, Optional B
     ReDim srcArray(0 To 255) As Byte
     
     'Apply basic bounds-checking to the input parameter
-    If (brightnessScale < 0) Then
-        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_BrightnessMultiplicative().  Fix it!"
-        Exit Sub
-    End If
+    If (brightnessScale < 0) Then Exit Sub
     
     Dim i As Long, newValue As Long
     
@@ -122,12 +109,8 @@ Friend Sub FillLUT_BrightnessMultiplicative(ByRef srcArray() As Byte, Optional B
         newValue = i * brightnessScale
         
         'Clamp to byte range, as necessary
-        If newValue > 255 Then
-            newValue = 255
-        ElseIf newValue < 0 Then
-            newValue = 0
-        End If
-        
+        If (newValue > 255) Then newValue = 255
+        If (newValue < 0) Then newValue = 0
         srcArray(i) = newValue
         
     Next i
@@ -145,10 +128,7 @@ Friend Sub FillLUT_Contrast(ByRef srcArray() As Byte, Optional ByVal contrastAdj
     ReDim srcArray(0 To 255) As Byte
     
     'Apply basic bounds-checking to the input parameter
-    If (contrastAdjustment < -100) Or (contrastAdjustment > 100) Then
-        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Contrast().  Fix it!"
-        Exit Sub
-    End If
+    If (contrastAdjustment < -100) Or (contrastAdjustment > 100) Then Exit Sub
     
     Dim i As Long, newValue As Long
     
@@ -159,12 +139,8 @@ Friend Sub FillLUT_Contrast(ByRef srcArray() As Byte, Optional ByVal contrastAdj
         newValue = i + (((i - 127) * contrastAdjustment) \ 100)
         
         'Clamp to byte range, as necessary
-        If newValue > 255 Then
-            newValue = 255
-        ElseIf newValue < 0 Then
-            newValue = 0
-        End If
-        
+        If (newValue > 255) Then newValue = 255
+        If (newValue < 0) Then newValue = 0
         srcArray(i) = newValue
         
     Next i
@@ -183,10 +159,7 @@ Friend Sub FillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustmen
     ReDim srcArray(0 To 255) As Byte
     
     'Apply basic bounds-checking to the input parameter
-    If (gammaAdjustment <= 0) Then
-        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Gamma().  Fix it!"
-        Exit Sub
-    End If
+    If (gammaAdjustment <= 0) Then Exit Sub
     
     Dim i As Long, newValue As Long, tmpGammaCalc As Double
         
@@ -196,17 +169,13 @@ Friend Sub FillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustmen
         'Calculate gamma
         tmpGammaCalc = i / 255#
         tmpGammaCalc = tmpGammaCalc ^ (1# / gammaAdjustment)
-        tmpGammaCalc = tmpGammaCalc * 255
+        tmpGammaCalc = tmpGammaCalc * 255#
         
         newValue = Int(tmpGammaCalc)
         
         'Clamp to byte range, as necessary
-        If newValue > 255 Then
-            newValue = 255
-        ElseIf newValue < 0 Then
-            newValue = 0
-        End If
-        
+        If (newValue > 255) Then newValue = 255
+        If (newValue < 0) Then newValue = 0
         srcArray(i) = newValue
         
     Next i
@@ -343,12 +312,8 @@ Friend Sub FillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputM
         tmpCalc = tmpCalc * outRange + outputMin
         
         'Failsafe range clamping
-        If tmpCalc < 0 Then
-            tmpCalc = 0
-        ElseIf tmpCalc > 255 Then
-            tmpCalc = 255
-        End If
-        
+        If (tmpCalc > 255) Then tmpCalc = 255
+        If (tmpCalc < 0) Then tmpCalc = 0
         srcArray(i) = tmpCalc
         
     Next i
@@ -366,23 +331,21 @@ Friend Sub FillLUT_Threshold(ByRef srcArray() As Byte, Optional ByVal thresholdC
     ReDim srcArray(0 To 255) As Byte
     
     'Note that this function does not require bounds-checking, but if it did, we would apply it here.
-    
     Dim i As Long
     
     'Generate the LUT
     For i = 0 To 255
-        
-        If i < thresholdCutoff Then
+        If (i < thresholdCutoff) Then
             srcArray(i) = 0
         Else
             srcArray(i) = 255
         End If
-        
     Next i
 
 End Sub
 
-'Spline initialization function used by the Curve LUT generator.  Call this function once prior to generating a curve.
+'Spline initialization function used by the Curve LUT generator.
+' Call this function once prior to generating a curve.
 Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As PointFloat, ByRef p() As Double, ByRef u() As Double)
     
     Dim i As Long
@@ -433,8 +396,8 @@ Private Function GetCurvePoint(ByVal i As Long, ByVal v As Double, ByRef srcPoin
 End Function
 
 'Original required spline function:
-Private Function f(ByRef x As Double) As Double
-        f = x * x * x - x
+Private Function f(ByVal x As Double) As Double
+    f = x * x * x - x
 End Function
 
 'Helper function for generating curves to be used as LUT input parameters.  Given a param array of points (in x/y order), this function
@@ -463,19 +426,23 @@ Friend Sub Helper_QuickCreateCurveArray(ByRef curvePoints() As PointFloat, Param
 
 End Sub
 
-'Given two source LUTs and a destination LUT, merge the two sources and place the composite result into the destination.
-' IMPORTANT NOTE: order is crucial when using this function.  Consider the standard case of applying different LUTs to each individual
-'                 RGB channel, then applying a second, luminance-based LUT to all channels equally.  In a situation like this, you'd
-'                 want to specify the channel-specific LUTs as the FIRST LUT, then the uniform luminance LUT as the SECOND LUT.
-'                 (The primary concern is always clamping, so in general terms, try to save the "most prone to cause clamping" LUT
-'                  as the final LUT in the merge.)
+'Given two source LUTs and a destination LUT, merge the two sources and place the composite result
+' into the destination.
 '
-' ANOTHER IMPORTANT NOTE: the destination LUT must NEVER be one of the source LUTs.  Otherwise, you risk source entries being
-'                         overwritten early in the copy phase, which can result in screwed up subsequent values (because they get
-'                         remapped according to look-up values that have already been remapped!).
+'IMPORTANT NOTE: order is crucial when using this function!  Consider the standard case of applying
+' different LUTs to each individual RGB channel, then applying a second, luminance-based LUT to all
+' channels equally.  In a situation like this, you'd want to specify the channel-specific LUTs as
+' the FIRST LUT, then the uniform luminance LUT as the SECOND LUT.  (The primary concern is always
+' clamping, so in general terms, try to save the "most prone to cause clamping" LUT as the final
+' LUT in the merge.)
 '
-'Finally, note that the destination LUT will be automatically sized for you, but the source LUTs must (obviously) be already sized
-' and filled appropriately.
+' ANOTHER IMPORTANT NOTE: the destination LUT must NEVER be one of the source LUTs.  Otherwise, you
+' risk source entries being overwritten early in the copy phase, which can result in screwed up
+' subsequent values (because they get remapped according to look-up values that have already been
+' remapped!).
+'
+'Finally, note that the destination LUT will be automatically sized for you, but the source LUTs
+' must (obviously) be already sized and filled appropriately.
 Friend Sub MergeLUTs(ByRef firstSourceLUT() As Byte, ByRef secondSourceLUT() As Byte, ByRef dstLUT() As Byte)
     
     ReDim dstLUT(0 To 255) As Byte
@@ -487,89 +454,6 @@ Friend Sub MergeLUTs(ByRef firstSourceLUT() As Byte, ByRef secondSourceLUT() As 
     Next i
 
 End Sub
-
-'Given three LUTs - one for each color channel - apply them to a given DIB.
-' IMPORTANT NOTE: alpha LUTs are not currently implemented.  What I might do is create a separate function that takes four LUT inputs.
-'                  That would keep this function speedy, since alpha could be address on an as-needed basis.
-'
-' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
-'
-' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Friend Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-    
-    'Unpremultiply the source DIB's alpha, as necessary
-    Dim srcWasPremultiplied As Boolean
-    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication Then
-        srcWasPremultiplied = True
-        srcDIB.SetAlphaPremultiplication False
-    Else
-        srcWasPremultiplied = False
-    End If
-
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If (Not suppressMessages) Then
-        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
-    Dim r As Long, g As Long, b As Long
-    
-    'Move through the array one pixel at a time
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
-    
-    'Now we can loop through each pixel in the image, converting values as we go
-    For y = initY To finalY
-    For x = initX To finalX Step qvDepth
-        
-        'Get the source pixel color values
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
-        
-        'Assign the look-up table values
-        imageData(x, y) = bLUT(b)
-        imageData(x + 1, y) = gLUT(g)
-        imageData(x + 2, y) = rLUT(r)
-        
-    Next x
-        If Not suppressMessages Then
-            If (y And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal y + modifyProgBarOffset
-            End If
-        End If
-    Next y
-    
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Reset alpha premultiplication, as necessary
-    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
-    
-    If g_cancelCurrentAction Then ApplyLUTsToDIB_Color = 0 Else ApplyLUTsToDIB_Color = 1
-    
-End Function
 
 'Given one LUT, apply it to each pixel in the image, using the pixel's calculated GRAY VALUE as the LUT lookup parameter.
 '
@@ -586,36 +470,29 @@ Friend Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte)
     End If
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim imageData() As Byte, tmpSA As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
     Dim r As Long, g As Long, b As Long, grayVal As Long, grayByte As Byte
         
     'Now we can loop through each pixel in the image, converting values as we go
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     For y = initY To finalY
-    For x = initX To finalX Step qvDepth
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) * 0.001
@@ -623,15 +500,15 @@ Friend Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte)
         grayByte = gLUT(grayVal)
         
         'Assign the look-up table values
-        imageData(x, y) = grayByte
-        imageData(x + 1, y) = grayByte
-        imageData(x + 2, y) = grayByte
+        imageData(x) = grayByte
+        imageData(x + 1) = grayByte
+        imageData(x + 2) = grayByte
         
     Next x
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
@@ -645,7 +522,7 @@ End Function
 ' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Friend Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Friend Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() As Byte) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
@@ -655,65 +532,39 @@ Friend Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     Else
         srcWasPremultiplied = False
     End If
-
+    
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim imageData() As Byte, tmpSA As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
+    initX = 0 * 4
     initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
     Dim r As Long, g As Long, b As Long
     
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Assign the look-up table values
-        imageData(quickVal, y) = cLut(b)
-        imageData(quickVal + 1, y) = cLut(g)
-        imageData(quickVal + 2, y) = cLut(r)
+        imageData(x) = cLUT(b)
+        imageData(x + 1) = cLUT(g)
+        imageData(x + 2) = cLUT(r)
         
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
     Next x
+    Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
