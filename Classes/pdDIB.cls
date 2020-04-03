@@ -255,17 +255,17 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         Dim tmpData() As Byte, tSA As SafeArray2D
         Me.WrapArrayAroundDIB tmpData, tSA
         
-        Dim quickX As Long
-        quickX = x * (m_dibColorDepth \ 8)
+        Dim xStride As Long
+        xStride = x * (m_dibColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((quickX + 2) < m_dibStride) Then
+        If ((xStride + 2) < m_dibStride) Then
         
             With dstQuad
-                .Blue = tmpData(quickX, y)
-                .Green = tmpData(quickX + 1, y)
-                .Red = tmpData(quickX + 2, y)
-                If m_dibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
+                .Blue = tmpData(xStride, y)
+                .Green = tmpData(xStride + 1, y)
+                .Red = tmpData(xStride + 2, y)
+                If m_dibColorDepth = 32 Then .Alpha = tmpData(xStride + 3, y)
             End With
             
         End If
@@ -561,7 +561,8 @@ Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
     
 End Function
 
-'Convert this DIB to 24bpp mode
+'Convert this DIB to 24bpp mode.  At present, PD only uses this under certain export circumstances;
+' internally, all pdDIB objects are treated as 32-bpp to ensure alpha is available if we need it.
 Friend Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
     
     ConvertTo24bpp = False
@@ -607,77 +608,42 @@ Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
     ConvertTo32bpp = False
     
     'Make sure this DIB isn't empty
-    If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-
-        Dim iData() As Byte, tmpSA As SafeArray2D
-        Dim x As Long, y As Long, quickX As Long
+    If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) And (Me.GetDIBColorDepth <> 32) Then
         
-        Dim newTransFloat As Double
-        newTransFloat = newTransparency / 255
+        'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromExistingDIB Me
+        
+        'Now erase our own DIB
+        Me.EraseDIB
 
-        If (Me.GetDIBColorDepth = 32) Then
+        'Create a new DIB that's exactly the same size as the old one
+        If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
             
-            'If we are already 32bpp, with premultiplied alpha, unpremultiply the temporary DIB now
-            If Me.GetAlphaPremultiplication Then Me.SetAlphaPremultiplication False
+            'Copy the image data from the temporary DIB without modification
+            BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
             
             'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
             ' be completely transparent (and we don't want that!)
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            Dim imgPixels() As Byte, tmpSA As SafeArray1D
+            Dim x As Long, y As Long
             
             'Loop through the image, setting the alpha of each pixel to 255 (opaque)
             For y = 0 To m_dibHeight - 1
+                Me.WrapArrayAroundScanline imgPixels, tmpSA, y
             For x = 0 To m_dibWidth - 1
-                quickX = x * 4
-                iData(quickX + 3, y) = iData(quickX + 3, y) * newTransFloat
+                imgPixels(x * 4 + 3) = newTransparency
             Next x
             Next y
-
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
             
-            'Per PD-convention, re-apply premultiplication now
-            Me.SetAlphaPremultiplication True
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            Me.UnwrapArrayFromDIB imgPixels
+            
+            'If the alpha value is not 255, apply premultiplication now
+            If (newTransparency <> 255) Then Me.SetAlphaPremultiplication True Else Me.SetInitialAlphaPremultiplicationState True
             
             ConvertTo32bpp = True
-            
-        Else
-        
-            'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateFromExistingDIB Me
-            
-            'Now erase our own DIB
-            Me.EraseDIB
-    
-            'Create a new DIB that's exactly the same size as the old one
-            If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
-                
-                'Copy the image data from the temporary DIB without modification
-                BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-                
-                'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
-                ' be completely transparent (and we don't want that!)
-                PrepInternalSafeArray tmpSA
-                CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-                
-                'Loop through the image, setting the alpha of each pixel to 255 (opaque)
-                For y = 0 To m_dibHeight - 1
-                For x = 0 To m_dibWidth - 1
-                    iData(x * 4 + 3, y) = newTransparency
-                Next x
-                Next y
-                
-                'With our alpha channel complete, point iData() away from the DIB and deallocate it
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                
-                'If the alpha value is not 255, apply premultiplication now
-                If (newTransparency <> 255) Then Me.SetAlphaPremultiplication True Else Me.SetInitialAlphaPremultiplicationState True
-                
-                ConvertTo32bpp = True
-                
-            End If
             
         End If
         
@@ -1303,8 +1269,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         Dim tmpDIBPointer As Long, tmpDIBLength As Long
         Me.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
         
-        'If the DIB data is compressed, decompress it now.  Note that we decompress directly into the DIB itself, to avoid the
-        ' need for a costly CopyMemory call (and extra DIB-sized allocation).
+        'If the DIB data is compressed, decompress it now.  Note that we decompress directly into the DIB itself.
         If (useDecompressionFormat <> cf_None) Then
             
             'If the data is decompressed successfully, convert it to a 2D array and copy it into this class's DIB memory chunk
@@ -1704,14 +1669,10 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
     srcPointer = srcDIB.GetDIBPointer
     
     Dim dstPixels() As Byte, dstSA As SafeArray1D
-    PrepInternalSafeArray1D dstSA
-    CopyMemory ByVal VarPtrArray(dstPixels()), VarPtr(dstSA), 4
-
+    Me.WrapArrayAroundScanline dstPixels, dstSA, 0
+    
     Dim srcPixels() As Byte, srcSA As SafeArray1D
-    PrepInternalSafeArray1D srcSA
-    srcSA.cElements = srcScanlineSize
-    srcSA.pvData = srcPointer
-    CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundScanline srcPixels, srcSA, 0
     
     Dim x As Long, y As Long
     
@@ -1726,7 +1687,7 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
         If binaryAlphaOnly Then
             
             For x = 0 To finalX Step 4
-                If srcPixels(x + 3) = 255 Then
+                If (srcPixels(x + 3) = 255) Then
                     dstPixels(x + 3) = 255
                 Else
                     dstPixels(x) = 0
@@ -1745,8 +1706,8 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
     Next y
     
     'With our alpha channel complete, point dibPixels() away from the DIB
-    CopyMemory ByVal VarPtrArray(dstPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
+    Me.UnwrapArrayFromDIB dstPixels
+    srcDIB.UnwrapArrayFromDIB srcPixels
     
     If binaryAlphaOnly Then Me.SetInitialAlphaPremultiplicationState True
     
