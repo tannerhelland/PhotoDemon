@@ -22,8 +22,8 @@ Attribute VB_Exposed = False
 '
 'Like any array-based tool, this class will be slow inside the IDE.  Please compile before using.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -39,12 +39,12 @@ Private Const INITIAL_STACK_HEIGHT As Long = 4096
 'Red-eye detection requires two input arrays.  In the first array, we will search already identified red-eye,
 ' eye-highlight, and non-skin pixels to determine potentially valid eye regions.  This array must have already
 ' been filled by the user.
-Private m_HighlightData() As Byte, m_HighlightSA As SafeArray2D
+Private m_HighlightData() As Byte
 
 '...The second input array is of INTEGER type.  It must be dimensioned to the size of the target image, and it will
 ' store unique region IDs for each pixel.  Because there may be more than 255 unique regions, a byte array won't work.
 ' Pixels that do not belong to any regions are marked as 0.
-Private m_RegionIDs() As Integer, m_RegionSA As SafeArray2D
+Private m_RegionIDs() As Integer
 
 'Width and height of the target image.
 Private m_Width As Long, m_Height As Long
@@ -69,8 +69,8 @@ Friend Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight A
     
     'Alias our internal arrays around the ones provided by the caller.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the red-eye detector has been shut down.
-    VBHacks.Alias2DArray_Byte srcHighlights, m_HighlightData, m_HighlightSA
-    VBHacks.Alias2DArray_Integer srcRegions, m_RegionIDs, m_RegionSA
+    VBHacks.Alias2DArray_Byte srcHighlights, m_HighlightData
+    VBHacks.Alias2DArray_Integer srcRegions, m_RegionIDs
     
     'Reset all internal tracking arrays
     m_RegionStackHeight = INITIAL_REGION_STACK_HEIGHT - 1
