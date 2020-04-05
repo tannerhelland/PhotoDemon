@@ -9,8 +9,8 @@ Attribute VB_Name = "UserControls"
 'Many of PD's custom user controls share similar functionality.  Rather than duplicate that functionality across
 ' all controls, I've tried to collect reusable functions here.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -96,10 +96,13 @@ End Type
 Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-'Current list of registered windows and the custom messages they want to receive.  This spares us from having to enumerate
-' all windows, or worse, blast all windows in the system with our internal messages.  (At present, these are naive lists
-' because PD uses so few of them, but in the future, we could look at a hash table.  I've deliberately made the list
-' interactions structure-agnostic to simplify future improvements.)
+'Current list of registered windows and the custom messages they want to receive.
+
+'This spares us from having to enumerate all windows, or worse, blast all windows
+' in the system with our internal messages.  (At present, these are naive lists
+' because PD uses so few of them, but in the future, we could look at a hash table.
+' I've deliberately made the list interactions structure-agnostic to simplify future
+' improvements.)
 Private m_windowList() As Long, m_wMsgList() As Long
 Private m_windowMsgCount As Long
 Private Const INITIAL_WINDOW_MESSAGE_LIST_SIZE As Long = 16&
@@ -418,9 +421,11 @@ Public Sub AddMessageRecipient(ByVal targetHWnd As Long, ByVal wMsg As Long)
     If (m_windowMsgCount = 0) Then
         ReDim m_windowList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
         ReDim m_wMsgList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
-    ElseIf m_windowMsgCount > UBound(m_windowList) Then
-        ReDim m_windowList(0 To (UBound(m_windowList) * 2 + 1)) As Long
-        ReDim m_wMsgList(0 To (UBound(m_wMsgList) * 2 + 1)) As Long
+    End If
+    
+    If (m_windowMsgCount > UBound(m_windowList)) Then
+        ReDim Preserve m_windowList(0 To (UBound(m_windowList) * 2 + 1)) As Long
+        ReDim Preserve m_wMsgList(0 To (UBound(m_wMsgList) * 2 + 1)) As Long
     End If
     
     m_windowList(m_windowMsgCount) = targetHWnd
