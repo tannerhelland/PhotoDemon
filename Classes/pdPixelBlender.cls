@@ -15,21 +15,19 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Blender class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 04/June/17
+'Last updated: 05/April/20
 'Last update: ongoing performance improvements
 '
-'This class exists for a single purpose: blending colors from two DIBs, using any of the blend and/or alpha modes
-' supported by PD.
+'This class exists for a single purpose: blending colors from two DIBs, using any of the
+' blend and/or alpha modes supported by PhotoDemon.
 '
-'Blending was previously handled inside pdCompositor, but as part of broad compositor optimizations in PD 7.0,
-' it was split off into this dedicated class.  This allows us to cover a lot more edge cases with specially
-' optimized code, without cluttering up the compositor (which already deals with way too much).
+'Blending was previously handled inside pdCompositor, but as part of broad compositor
+' optimizations in PD 7.0, it was split off into this dedicated class.  This allows us to
+' cover many more edge cases with specially optimized code, without cluttering up the
+' compositor (which already deals with way too many tasks).
 '
-'Because this class is a WIP, not all blend modes have their own dedicated, specially optimized function.  For these,
-' use the generic function, which is slowly being chopped up into smaller parts.
-'
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -217,7 +215,7 @@ Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
             .Height = topDIB.GetDIBHeight
         End With
     Else
-        CopyMemory ByVal VarPtr(topRect), ByVal ptrToTopRectF, LenB(topRect)
+        CopyMemoryStrict VarPtr(topRect), ptrToTopRectF, LenB(topRect)
     End If
     
     With bottomRect
@@ -285,7 +283,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     'If a rect *is* provided, constrain our loop boundaries accordingly
     Else
         Dim tmpRectF As RectF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToPaintbrushRectF, LenB(tmpRectF)
+        CopyMemoryStrict VarPtr(tmpRectF), ptrToPaintbrushRectF, LenB(tmpRectF)
         initX = Int(tmpRectF.Left) * 4
         initY = Int(tmpRectF.Top)
         finalX = Int(tmpRectF.Left + tmpRectF.Width + 0.9999) - 1
@@ -312,15 +310,9 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = maskDIB.GetDIBStride:  topDIBPointer = maskDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, dstDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, maskDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    dstDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    maskDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long
@@ -366,8 +358,8 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     Next y
     
     'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    dstDIB.UnwrapArrayFromDIB bottomPixels
+    maskDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     dstDIB.SetInitialAlphaPremultiplicationState True
@@ -421,12 +413,9 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             bottomScanlineSize = topDIB.GetDIBStride:  bottomDIBPointer = topDIB.GetDIBPointer
             topScanlineSize = topLayerMask.GetDIBStride:  topDIBPointer = topLayerMask.GetDIBPointer
             
-            PrepInternalSafeArray1D bottomSA, topDIB
-            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+            topDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+            topLayerMask.WrapArrayAroundDIB_1D topPixels, topSA
             
-            PrepInternalSafeArray1D topSA, topLayerMask
-            CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
             For y = tmpInitY To tmpFinalY
                 
                 'Point each 1D pixel array at the proper scanline
@@ -437,7 +426,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
                 'NOTE: this was changed to check color on 09 August 2017.  Exterior and bordered selections
-                ' were not working correctly, and this fixes it; I don't know if it was future repercussions.
+                ' were not working correctly, and this fixes it; I don't know if it has future repercussions.
                 topAInt = topPixels(x)  'topPixels(x + 3)
                 
                 'Ignore opaque mask pixels
@@ -466,8 +455,8 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             Next y
             
             'Clear all temporary array references
-            CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-            CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+            topDIB.UnwrapArrayFromDIB bottomPixels
+            topLayerMask.UnwrapArrayFromDIB topPixels
             
             'All blend mode functions return premultiplied DIBs, by design.
             topDIB.SetInitialAlphaPremultiplicationState True
@@ -482,7 +471,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
             If (ptrToTopLayerAlternateRectF <> 0#) Then
                 Dim tmpRectF As RectF, tmpRectFSrc As RectF
-                CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
+                CopyMemoryStrict VarPtr(tmpRectFSrc), ptrToTopLayerAlternateRectF, LenB(tmpRectF)
                 With tmpRectF
                     .Left = tmpRectFSrc.Left + xOffset
                     .Top = tmpRectFSrc.Top + yOffset
@@ -510,11 +499,8 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
             topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
             
-            PrepInternalSafeArray1D bottomSA, bottomDIB
-            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-            
-            PrepInternalSafeArray1D topSA, topDIB
-            CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+            bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+            topDIB.WrapArrayAroundDIB_1D topPixels, topSA
             
             For y = initY To finalY
                 
@@ -579,8 +565,8 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             Next y
             
             'Clear all temporary array references
-            CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-            CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+            bottomDIB.UnwrapArrayFromDIB bottomPixels
+            topDIB.UnwrapArrayFromDIB topPixels
             
             'All blend mode functions return premultiplied DIBs, by design.
             topDIB.SetInitialAlphaPremultiplicationState True
@@ -601,7 +587,7 @@ Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
         If (ptrToTopLayerAlternateRectF <> 0#) Then
             Dim tmpRectF As RectF, tmpRectFSrc As RectF
-            CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
+            CopyMemoryStrict VarPtr(tmpRectFSrc), ptrToTopLayerAlternateRectF, LenB(tmpRectF)
             With tmpRectF
                 .Left = tmpRectFSrc.Left + xOffset
                 .Top = tmpRectFSrc.Top + yOffset
@@ -644,15 +630,9 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -740,9 +720,9 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -777,15 +757,9 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -888,9 +862,9 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -925,15 +899,9 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1036,9 +1004,9 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1073,15 +1041,9 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1167,9 +1129,9 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1204,15 +1166,9 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1301,9 +1257,9 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1338,15 +1294,9 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1447,9 +1397,9 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1484,15 +1434,9 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1552,9 +1496,9 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1589,15 +1533,9 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1683,9 +1621,9 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1720,15 +1658,9 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1829,9 +1761,9 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -1866,15 +1798,9 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -1975,9 +1901,9 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2012,15 +1938,9 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2106,9 +2026,9 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2143,15 +2063,9 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2237,9 +2151,9 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2274,15 +2188,9 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2369,9 +2277,9 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2406,15 +2314,9 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2500,9 +2402,9 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2537,15 +2439,9 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2634,9 +2530,9 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2671,15 +2567,9 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2768,9 +2658,9 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2805,15 +2695,9 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -2916,9 +2800,9 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -2954,15 +2838,9 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3050,9 +2928,9 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3087,15 +2965,9 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3181,9 +3053,9 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3218,15 +3090,9 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3312,9 +3178,9 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3349,15 +3215,9 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3443,9 +3303,9 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3480,15 +3340,9 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3575,9 +3429,9 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3612,15 +3466,9 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3711,9 +3559,9 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3748,15 +3596,9 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3842,9 +3684,9 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -3879,15 +3721,9 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -3976,9 +3812,9 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
@@ -4013,15 +3849,9 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Dim topScanlineSize As Long, topDIBPointer As Long
     topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
     
-    Dim bottomPixels() As Byte, bottomSA As SafeArray1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-    
-    Dim topPixels() As Byte, topSA As SafeArray1D
-    PrepInternalSafeArray1D topSA, topDIB
-    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -4124,26 +3954,12 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     Next x
     Next y
     
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
     
     'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Given a 1D SafeArray struct and a target DIB, point the 1D array at the first scanline of the DIB, and initialize all relevant
-' SafeArray parameters to match.
-Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SafeArray1D, ByRef srcDIB As pdDIB)
-
-    With dstSafeArray
-        .cbElements = 1
-        .cDims = 1
-        .lBound = 0
-        .cElements = srcDIB.GetDIBStride
-        .pvData = srcDIB.GetDIBPointer
-    End With
     
 End Sub
 

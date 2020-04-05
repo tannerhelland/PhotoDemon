@@ -46,8 +46,8 @@ Attribute VB_Exposed = False
 'To really understand how this control operates, you'll need to examine pdCanvas, as it ultimately deals with the many mouse
 ' and key events we potentially raise.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -349,7 +349,7 @@ End Function
 Public Function GetNextMouseMovePoint(ByVal ptrToDstMMP As Long) As Boolean
     Dim tmpMMP As MOUSEMOVEPOINT
     GetNextMouseMovePoint = ucSupport.GetNextMouseMovePoint(tmpMMP)
-    CopyMemory ByVal ptrToDstMMP, ByVal VarPtr(tmpMMP), LenB(tmpMMP)
+    CopyMemoryStrict ptrToDstMMP, VarPtr(tmpMMP), LenB(tmpMMP)
 End Function
 
 Private Sub ucSupport_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)

@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'Note that this class retains a copy of the ICC profile itself, which is typically a ~1-5k byte array.  When a
 ' pdDIB class is copied, the attached ICC profile (if any) should also be copied.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -117,14 +117,14 @@ Friend Function GetProfileBytes(ByRef dstBytes() As Byte, ByRef dstLength As Lon
     If GetProfileBytes Then
         dstLength = UBound(m_ICCData) + 1
         ReDim dstBytes(0 To UBound(m_ICCData)) As Byte
-        CopyMemory ByVal VarPtr(dstBytes(0)), ByVal VarPtr(m_ICCData(0)), dstLength
+        CopyMemoryStrict VarPtr(dstBytes(0)), VarPtr(m_ICCData(0)), dstLength
     End If
 End Function
 
 Friend Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
     
     ReDim m_ICCData(0 To profileSize - 1) As Byte
-    CopyMemory ByVal VarPtr(m_ICCData(0)), ByVal ptrToProfile, profileSize
+    CopyMemoryStrict VarPtr(m_ICCData(0)), ptrToProfile, profileSize
     
     m_ICCFilename = vbNullString
     m_ICCDataExists = True

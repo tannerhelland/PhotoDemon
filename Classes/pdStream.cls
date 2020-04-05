@@ -46,8 +46,8 @@ Attribute VB_Exposed = False
 ' - A framework is now place for backing a stream by a file or a memory buffer.  File-backed buffers allow you to
 '   stream data directly to a file on persistent media, without requiring a matching in-memory copy.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -267,7 +267,7 @@ Friend Function WrapArrayAroundMemoryStream(ByRef srcArray() As Byte, ByRef srcS
             .pvData = VarPtr(m_MemBuffer(startPosition))
         End With
         
-        CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+        PutMem4 VarPtrArray(srcArray()), VarPtr(srcSafeArray)
         WrapArrayAroundMemoryStream = True
         
     End If
@@ -367,7 +367,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
             End With
             
             Erase m_MemBuffer
-            CopyMemory ByVal VarPtrArray(m_MemBuffer()), VarPtr(m_TemporarySA), 4&
+            PutMem4 VarPtrArray(m_MemBuffer()), VarPtr(m_TemporarySA)
             
             m_Open = True
             

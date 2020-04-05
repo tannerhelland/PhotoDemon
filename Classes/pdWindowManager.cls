@@ -35,8 +35,8 @@ Attribute VB_Exposed = False
 'Also, special thanks to VB coder Merri for a simple trick that enables Unicode window captions
 ' (http://www.vbforums.com/showthread.php?527802-VB6-UniCaption).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -775,7 +775,7 @@ Private Function HandleMinMaxMessage(ByVal hWnd As Long, ByVal wParam As Long, B
     HandleMinMaxMessage = False
     
     'lParam contains a pointer to the window's rect location.  Retrieve it now.
-    If (lParam <> 0) Then CopyMemory ByVal VarPtr(m_tmpMinMax), ByVal lParam, Len(m_tmpMinMax)
+    If (lParam <> 0) Then CopyMemoryStrict VarPtr(m_tmpMinMax), lParam, Len(m_tmpMinMax)
     
     'Iterate through all the windows we're handling min/max data for, and when we find the correct one, supply its min/max
     ' values to the parent handler.
@@ -800,7 +800,7 @@ Private Function HandleMinMaxMessage(ByVal hWnd As Long, ByVal wParam As Long, B
                     
                 End With
                 
-                CopyMemory ByVal lParam, ByVal VarPtr(m_tmpMinMax), Len(m_tmpMinMax)
+                CopyMemoryStrict lParam, VarPtr(m_tmpMinMax), LenB(m_tmpMinMax)
                 HandleMinMaxMessage = True
                 Exit For
                 

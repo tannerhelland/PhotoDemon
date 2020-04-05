@@ -25,8 +25,8 @@ Attribute VB_Exposed = False
 ' UC capabilities into this class.  It then raises a boatload of events for individual UCs to handle as they
 ' see fit.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1449,7 +1449,7 @@ Private Function HandleWM_WindowPosChanging(ByVal hWnd As Long, ByVal uiMsg As L
     initVisibility = m_Visibility
                 
     Dim tmpWindowPos As tagWINDOWPOS
-    CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
+    CopyMemoryStrict VarPtr(tmpWindowPos), lParam, LenB(tmpWindowPos)
     
     If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
     If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then

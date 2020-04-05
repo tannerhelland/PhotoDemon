@@ -52,8 +52,8 @@ Attribute VB_Exposed = False
 'This control is also very similar in construction to the pdListBox object, including its reliance on a
 ' separate pdListSupport class for managing its data.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -373,7 +373,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     
     'Grab the rendering rect
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     'Paint the fill and border
     GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor, 255, GP_CM_SourceCopy

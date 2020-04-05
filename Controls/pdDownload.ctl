@@ -58,8 +58,8 @@ Attribute VB_Exposed = False
 '    aren't particularly useful in PD, as the asynchronicity means we aren't bothering the user with progress updates.
 '    If these ever prove helpful, I'll drop 'em in.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -399,14 +399,11 @@ Public Function CopyDownloadArray(ByVal itemKey As String, ByRef targetBytes() A
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)
         
-            If (.CurrentStatus = PDS_DOWNLOAD_COMPLETE) And (UBound(.DataBytes) >= LBound(.DataBytes)) Then
-                
+            CopyDownloadArray = (.CurrentStatus = PDS_DOWNLOAD_COMPLETE) And (UBound(.DataBytes) >= LBound(.DataBytes))
+            
+            If CopyDownloadArray Then
                 ReDim targetBytes(LBound(.DataBytes) To UBound(.DataBytes)) As Byte
-                CopyMemory ByVal VarPtr(targetBytes(LBound(.DataBytes))), ByVal VarPtr(.DataBytes(LBound(.DataBytes))), (UBound(.DataBytes) - LBound(.DataBytes)) + 1
-                CopyDownloadArray = True
-                
-            Else
-                CopyDownloadArray = False
+                CopyMemoryStrict VarPtr(targetBytes(LBound(.DataBytes))), VarPtr(.DataBytes(LBound(.DataBytes))), (UBound(.DataBytes) - LBound(.DataBytes)) + 1
             End If
         
         End With

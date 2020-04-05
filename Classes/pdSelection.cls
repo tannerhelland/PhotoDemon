@@ -43,8 +43,8 @@ Attribute VB_Exposed = False
 ' you can draw one selection, then draw another and the two will be merged into one - multiple selections are required
 ' for that.)
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2927,7 +2927,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Blue = newB * newA
                     .Alpha = newA * 255
                 End With
-                CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
+                CopyMemoryStrict VarPtr(overlayLookup(i)), VarPtr(tmpRGBA), 4&
             Next i
             
             'Calculate a default fill color and opacity.  (This is the default color we fill the overlay with
@@ -2951,7 +2951,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     .Blue = newB * newA
                     .Alpha = newA * 255
                 End With
-                CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
+                CopyMemoryStrict VarPtr(overlayLookup(i)), VarPtr(tmpRGBA), 4&
             Next i
             
             'Calculate a default fill color and opacity.

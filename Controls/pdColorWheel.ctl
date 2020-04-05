@@ -41,8 +41,8 @@ Attribute VB_Exposed = False
 'I've designed the control as a UC in case I decide to reuse it elsewhere in PD, but for now, it only makes an
 ' appearance on the main canvas.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -709,10 +709,7 @@ Private Sub CreateSVSquare()
     'We now need to fill the square with all possible saturation and value variants, in a pattern where...
     ' - The y-axis position determines value (1 -> 0)
     ' - The x-axis position determines saturation (1 -> 0)
-    Dim svPixels() As Byte
-    Dim svSA As SafeArray2D
-    PrepSafeArray svSA, m_SquareBuffer
-    CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
+    Dim svPixels() As Byte, svSA As SafeArray1D
     
     Dim xPxWidth As Long
     xPxWidth = m_SquareBuffer.GetDIBColorDepth \ 8
@@ -744,6 +741,7 @@ Private Sub CreateSVSquare()
         'Y-values are (obviously) consistent for each y-position
         lineValue = (loopHeight - y) * yMultiplier
         lineValue = Sqr(lineValue)
+        m_SquareBuffer.WrapArrayAroundScanline svPixels, svSA, y
         
     For x = 0 To loopWidth Step xPxWidth
         
@@ -751,15 +749,15 @@ Private Sub CreateSVSquare()
         'The y-axis position determines value (1 -> 0)
         Colors.HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
         
-        svPixels(x, y) = b
-        svPixels(x + 1, y) = g
-        svPixels(x + 2, y) = r
+        svPixels(x) = b
+        svPixels(x + 1) = g
+        svPixels(x + 2) = r
         
     Next x
     Next y
     
     'With our work complete, point the ImageData() array away from the DIBs and deallocate it
-    CopyMemory ByVal VarPtrArray(svPixels), 0&, 4
+    m_SquareBuffer.UnwrapArrayFromDIB svPixels
     
     'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
     ' rendering function.

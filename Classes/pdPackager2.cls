@@ -79,8 +79,8 @@ Attribute VB_Exposed = False
 ' 4) When reading pdPackage files, relevant file bits will only be loaded as-necessary.  As such, you cannot delete the
 '     original file until all interactions are complete.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2116,7 +2116,7 @@ Friend Function GetNodeDataByIndex_String(ByVal targetNodeIndex As Long, ByVal u
     Dim retBytes() As Byte, retSize As Long
     If Me.GetNodeDataByIndex(targetNodeIndex, useHeaderBuffer, retBytes, False, retSize) Then
         dstString = Space$(retSize \ 2)
-        CopyMemory ByVal StrPtr(dstString), ByVal VarPtr(retBytes(0)), retSize
+        CopyMemoryStrict StrPtr(dstString), VarPtr(retBytes(0)), retSize
         GetNodeDataByIndex_String = True
     Else
         GetNodeDataByIndex_String = False

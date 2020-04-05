@@ -1628,7 +1628,8 @@ End Sub
 ' image by surrounding it with transparent pixels), intelligently crop the DIB by removing all fully transparent padding.
 ' When this is done, modify the current layer offsets so that the image stays in effectively the same place, but without
 ' all that blank padding.
-' IMPORTANT NOTE: if you call this function without first null-padding the layer DIB, weird shit may happen.  That is not
+'
+'IMPORTANT NOTE: if you call this function without first null-padding the layer DIB, weird shit may happen.  That is not
 '                 an intended use-case, so don't attempt it!
 '
 'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False occurs if the entire layer is transparent.)
@@ -1639,10 +1640,8 @@ Friend Function CropNullPaddedLayer() As Boolean
     If (layerDIB.GetDIBDC <> 0) And (layerDIB.GetDIBWidth <> 0) And (layerDIB.GetDIBHeight <> 0) And (layerDIB.GetDIBColorDepth = 32) Then
     
         'Point an array at the layer's DIB data
-        Dim srcImageData() As Byte
-        Dim srcSA As SafeArray2D
-        PrepInternalSafeArray srcSA
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        Dim srcImageData() As Byte, srcSA As SafeArray2D
+        layerDIB.WrapArrayAroundDIB srcImageData, srcSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -1660,7 +1659,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         If (srcImageData(3, 0) <> 0) And (srcImageData(finalX * 4 + 3, 0) <> 0) And (srcImageData(3, finalY) <> 0) And (srcImageData(finalX * 4 + 3, finalY) <> 0) Then
             
             'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
-            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            layerDIB.UnwrapArrayFromDIB srcImageData
             Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
             CropNullPaddedLayer = False
             Exit Function
@@ -1684,7 +1683,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         For x = 0 To finalX
             
             'If this pixel is not 100% transparent, we don't want to crop it.  Exit now.
-            If srcImageData(x * 4 + 3, y) <> 0 Then
+            If (srcImageData(x * 4 + 3, y) <> 0) Then
                 pixelFails = True
                 Exit For
             End If
@@ -1699,7 +1698,7 @@ Friend Function CropNullPaddedLayer() As Boolean
     
         'Check for case (1) and exit if it occurred
         If (Not pixelFails) Then
-            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            layerDIB.UnwrapArrayFromDIB srcImageData
             Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
             CropNullPaddedLayer = False
             Exit Function
@@ -1718,7 +1717,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         For y = finalY To initY Step -1
         For x = 0 To finalX - 1
             
-            If srcImageData(x * 4 + 3, y) <> 0 Then
+            If (srcImageData(x * 4 + 3, y) <> 0) Then
                 pixelFails = True
                 Exit For
             End If
@@ -1735,13 +1734,13 @@ Friend Function CropNullPaddedLayer() As Boolean
         'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
         ' the top and bottom border detections arrived (to save processing time).
         pixelFails = False
-        Dim quickVal As Long
+        Dim xStride As Long
         
         For x = 0 To finalX
-            quickVal = x * 4 + 3
+            xStride = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(quickVal, y) <> 0 Then
+            If (srcImageData(xStride, y) <> 0) Then
                 pixelFails = True
                 Exit For
             End If
@@ -1757,10 +1756,10 @@ Friend Function CropNullPaddedLayer() As Boolean
         pixelFails = False
         
         For x = finalX To newLeft Step -1
-            quickVal = x * 4 + 3
+            xStride = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(quickVal, y) <> 0 Then
+            If (srcImageData(xStride, y) <> 0) Then
                 pixelFails = True
                 Exit For
             End If
@@ -1772,7 +1771,7 @@ Friend Function CropNullPaddedLayer() As Boolean
         newRight = x
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        layerDIB.UnwrapArrayFromDIB srcImageData
         
         'If we made it all the way here, our search for null borders completed successfully.
         
@@ -1934,7 +1933,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Else
         
         If (ptrToRectF <> 0) Then
-            CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+            CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
         Else
             With tmpRectF
                 .Left = 0!
@@ -2023,7 +2022,7 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     Else
         
         If (ptrToRectF <> 0) Then
-            CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+            CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
         Else
             With tmpRectF
                 .Left = 0!
@@ -2099,23 +2098,6 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     RequestThumbnail_ImageCoords = True
     
 End Function
-
-
-'This function can be used to populate a valid SAFEARRAY2D structure against the layer's current DIB
-Private Sub PrepInternalSafeArray(ByRef srcSA As SafeArray2D)
-    
-    'Populate a relevant SafeArray variable for the supplied DIB
-    With srcSA
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = layerDIB.GetDIBHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = layerDIB.GetDIBStride
-        .pvData = layerDIB.GetDIBPointer
-    End With
-    
-End Sub
 
 'Whenever the user does something with the mouse - click, move, etc - the primary canvas will poll this function.  This function
 ' will check the passed mouse values (which have already been translated into the IMAGE coordinate space), and return a Long-type
