@@ -17,8 +17,8 @@ Attribute VB_Name = "CanvasManager"
 ' of this code against the program's new window manager (pdWindowManager class).  All calls to g_WindowManager relate
 ' to that class, which instead uses WAPI to return various window measurements.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

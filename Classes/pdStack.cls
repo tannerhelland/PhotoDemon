@@ -23,8 +23,8 @@ Attribute VB_Exposed = False
 'Note that it's not *technically* a stack, by design, as it provides helper functions for retrieving data
 ' from the middle of the stack (rather than enforcing a strict push/pop access system).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

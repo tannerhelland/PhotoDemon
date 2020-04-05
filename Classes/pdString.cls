@@ -36,8 +36,8 @@ Attribute VB_Exposed = False
 ' https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
 ' ...but with the usual modifications to imitate things like function overloading.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '*************************************************************************
 

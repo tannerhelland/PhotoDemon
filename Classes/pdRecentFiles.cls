@@ -27,8 +27,8 @@ Attribute VB_Exposed = False
 ' thumbnails in file, not in memory - so every menu refresh required a full trip out to the HDD, and manually loading
 ' every thumbnail in the menu!) so it really needed to be dealt with before 7.0 releases.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 Option Explicit

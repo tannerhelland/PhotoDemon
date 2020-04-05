@@ -39,8 +39,8 @@ Attribute VB_Exposed = False
 ' it is basically a fully functional listbox object.  If a scroll bar is required, however, you need to use the parent
 ' "ListBoxOD" control, which contains additional UI work for synchronizing against a scroll bar.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

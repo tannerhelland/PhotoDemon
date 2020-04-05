@@ -453,8 +453,8 @@ Attribute VB_Exposed = False
 'This dialog allows the user to create custom convolution filters.  The actual processing of the convolution filter happens in
 ' a separate "ApplyConvolutionFilter" function; this dialog simply serves as a user-facing interface to that.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -85,8 +85,8 @@ Attribute VB_Exposed = False
 ' 3) Click-to-select-coordinate functionality.  This is helpful for giving the user an easy way to select a
 '    location on the image as, say, a center point for a filter (e.g. vignetting works great with this).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

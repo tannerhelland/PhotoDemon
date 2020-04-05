@@ -21,8 +21,8 @@ Attribute VB_Name = "NavKey"
 'Finally, things like command bar "OK" and "Cancel" buttons are automatically flagged, so we can support
 ' "Default" and "Cancel" commands on each dialog.  Individual dialogs don't have to manage any of this.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

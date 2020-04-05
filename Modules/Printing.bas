@@ -10,8 +10,8 @@ Attribute VB_Name = "Printing"
 ' You can download the original, unmodified version of Cassandra's code from this link (good as of 12 Nov 2014):
 ' http://www.tek-tips.com/faqs.cfm?fid=3603
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

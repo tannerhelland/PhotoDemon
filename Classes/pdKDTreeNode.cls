@@ -22,8 +22,8 @@ Attribute VB_Exposed = False
 'A length description of this class (and what it does) can be found in the pdKDTree class.  This class is
 ' not designed to be used as a standalone class; instead, it should be managed by a pdKDTree instance.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

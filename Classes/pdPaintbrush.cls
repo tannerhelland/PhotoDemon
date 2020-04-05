@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 ' 3) Based on brush settings, a matching "list of dabs" will be returned back to the caller
 ' 4) The caller can apply those dabs however they want!
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

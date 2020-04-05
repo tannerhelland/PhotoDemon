@@ -149,8 +149,8 @@ Attribute VB_Exposed = False
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

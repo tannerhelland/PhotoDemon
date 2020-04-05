@@ -11,8 +11,8 @@ Attribute VB_Name = "Tools_Pencil"
 'PD's pencil tool is just a thin wrapper around standard GDI+ brushes.  For the good stuff, visit the
 ' Paintbrush module (which uses our own custom brushes for much more interesting effects).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

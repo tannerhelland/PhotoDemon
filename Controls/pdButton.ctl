@@ -51,8 +51,8 @@ Attribute VB_Exposed = False
 ' 5) This button cannot be used as a checkbox, e.g. it does not set a "Value" property when clicked.  It simply raises
 '     a Click() event.  This is by design.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -115,8 +115,8 @@ Attribute VB_Exposed = False
 'To rotate a layer instead of the entire image, use the Layer menu.  Rotation is also available in the
 ' Effect -> Distort menu, which behaves like a standard distort tool (with extra options related to distorting).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

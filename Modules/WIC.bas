@@ -16,8 +16,8 @@ Attribute VB_Name = "WIC"
 'Thank you to vbforums user Victor Bravo VI for first documenting lightweight WIC usage from VB6:
 ' http://www.vbforums.com/showthread.php?879695-Anyone-familiar-with-Windows-Imaging-Component-or-odd-IDL-pointer-types-in-general&p=5427029&viewfull=1#post5427029
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

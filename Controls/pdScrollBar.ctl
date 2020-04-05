@@ -57,8 +57,8 @@ Attribute VB_Exposed = False
 '     (Although I don't know why it would ever be wise to do this, note that you can technically change orientation
 '      at run-time, without penalty, as a side-effect of this decision.)
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

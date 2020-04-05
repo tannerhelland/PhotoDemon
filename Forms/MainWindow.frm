@@ -1751,8 +1751,8 @@ Attribute VB_Exposed = False
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
 ' parameters to other, more interesting sections of the program.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

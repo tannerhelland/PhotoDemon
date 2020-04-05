@@ -153,8 +153,8 @@ Attribute VB_Exposed = False
 ' are currently the exception to this rule, because they were implemented long before other tools and thus aren't as
 ' well-contained.  I hope to someday remedy this.)
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

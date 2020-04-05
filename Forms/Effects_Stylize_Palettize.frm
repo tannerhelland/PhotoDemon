@@ -254,8 +254,8 @@ Attribute VB_Exposed = False
 ' to allow palettes loaded from file or selected from an internal swatch manager (and in fact, the code is already
 ' set up to handle this) but at present, only optimized palettes are supported.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

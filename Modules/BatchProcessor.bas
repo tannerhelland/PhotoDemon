@@ -26,8 +26,8 @@ Attribute VB_Name = "Macros"
 ' and human-editable, but it also means that old macro files are no longer supported.  Users of old macro
 ' files are automatically warned of this change if they try to load an outdated macro file.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

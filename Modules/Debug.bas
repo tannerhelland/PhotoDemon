@@ -20,8 +20,8 @@ Attribute VB_Name = "PDDebug"
 ' work to change those bits to fit any other project.  Aside from that particular aspect, I've tried to keep the rest
 ' of the class as generic as possible in case this is helpful to others.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -263,8 +263,8 @@ Attribute VB_Exposed = False
 ' - "DawnBringer" from the PixelJoint forums - http://pixeljoint.com/forum/forum_posts.asp?TID=16247 -
 '    for the DB32 palette that provides a great default color selection on first load.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
