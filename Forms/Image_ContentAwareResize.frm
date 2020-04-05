@@ -89,8 +89,8 @@ Attribute VB_Exposed = False
 ' seam finding operations that must be performed.  I am investigating ways to further improve the algorithm's performance,
 ' but I remain worried that this task may prove a bit much for VB6.  We'll see.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -255,7 +255,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     End With
     
     'If the entire image is being resized, some extra preparation is required
-    If (thingToResize = pdat_Image) Then
+    If (thingToResize = pdat_Image) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
         
         'If a selection is active, remove it now
         If PDImages.GetActiveImage.IsSelectionActive Then
@@ -268,12 +268,11 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         Process "Flatten image", , , UNDO_Image
         
     End If
-
+    
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
-    If tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
@@ -284,7 +283,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     'Pass the temporary DIB to the master seam carve function
     If Me.SeamCarveDIB(tmpDIB, imgWidth, imgHeight) Then
         
-        'Premultiply alpha
+        'Ensure premultiplied alpha
         If (Not tmpDIB.GetAlphaPremultiplication) Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
@@ -295,7 +294,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
-        If thingToResize = pdat_Image Then
+        If (thingToResize = pdat_Image) Then
             PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
             PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
             DisplaySize PDImages.GetActiveImage()
@@ -321,25 +320,12 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal imgWidth As Long, ByVa
     
     Message "Initializing content-aware resize engine..."
     
-    'Before starting on seam carving, we must first generate an "energy map" for the image.  This can be done many ways,
-    ' but since PD has a nice artistic contour algorithm already available, let's use that.
-    Dim energyDIB As pdDIB
-    Set energyDIB = New pdDIB
-    energyDIB.CreateFromExistingDIB srcDIB
-    
-    GrayscaleDIB energyDIB, True
-    CreateContourDIB True, srcDIB, energyDIB, True
-    
     'Create a seam carver class, which will handle the technical details of the carve
     Dim seamCarver As pdSeamCarving
     Set seamCarver = New pdSeamCarving
     
-    'Give the seam carving class a copy of our source and energy images
+    'Give the seam carving class a copy of our source image
     seamCarver.SetSourceImage srcDIB
-    seamCarver.SetEnergyImage energyDIB
-    
-    'We no longer need a copy of the energy image, so release it.
-    Set energyDIB = Nothing
     
     Message "Applying content-aware resize..."
     
@@ -350,12 +336,8 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal imgWidth As Long, ByVa
     ReleaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
-    If (Not g_cancelCurrentAction) Then
-        srcDIB.CreateFromExistingDIB seamCarver.GetCarvedImage()
-        SeamCarveDIB = True
-    Else
-        SeamCarveDIB = False
-    End If
+    SeamCarveDIB = (Not g_cancelCurrentAction)
+    If SeamCarveDIB Then srcDIB.CreateFromExistingDIB seamCarver.GetCarvedImage()
     
 End Function
 
