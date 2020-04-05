@@ -53,8 +53,8 @@ Attribute VB_Exposed = False
 'Dependencies:
 '  - Fonts module, which handles some of the messier bits of GDI interaction
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2066,13 +2066,10 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     g = Colors.ExtractGreen(crColor)
     b = Colors.ExtractBlue(crColor)
     
-    'Build RGB lookup tables for premultiplied alpha.  Note that we must also calculate an alpha lookup table, so we can manually implement
-    ' GDI+-specific features like "text clarity".
-    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte, aLookup() As Byte
-    ReDim rLookup(0 To 255) As Byte
-    ReDim gLookup(0 To 255) As Byte
-    ReDim bLookup(0 To 255) As Byte
-    ReDim aLookup(0 To 255) As Byte
+    'Build RGB lookup tables for premultiplied alpha.
+    ' (Note that we must also calculate an alpha lookup table, so we can manually implement
+    '  GDI+-specific features like "text clarity".)
+    Dim clrLookup(0 To 255) As RGBQuad
     
     Dim x As Long, y As Long
     Dim preMultiplicationFactor As Double, textContrastFactor As Double, alphaCalculation As Double
@@ -2130,28 +2127,25 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         
         End Select
         
-        preMultiplicationFactor = a / 255
+        preMultiplicationFactor = a / 255#
         
-        rLookup(x) = r * preMultiplicationFactor
-        gLookup(x) = g * preMultiplicationFactor
-        bLookup(x) = b * preMultiplicationFactor
-        aLookup(x) = a
+        With clrLookup(x)
+            .Red = r * preMultiplicationFactor
+            .Green = g * preMultiplicationFactor
+            .Blue = b * preMultiplicationFactor
+            .Alpha = a
+        End With
         
     Next x
     
     'Lookup tables are now ready.  Time to transfer the bits!
         
     'Create a local array and point it at the pixel data of the target image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As RGBQuad, dstSA As SafeArray1D
     
     'Create a second local array and point it as the pixel data of our temporary image
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, m_tmpGdiDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    m_tmpGdiDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim finalX As Long, finalY As Long
     finalX = m_tmpGdiDIB.GetDIBWidth - 1
@@ -2199,35 +2193,21 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     If (xOffset < 0) Then xOffset = 0
     If (yOffset < 0) Then yOffset = 0
     
-    Dim xStrideSrc As Long, xStrideDst As Long
-    
     'Start transferring pixels
-    For x = 0 To finalX
-        xStrideSrc = x * 3
-        xStrideDst = (x + xOffset) * 4
     For y = 0 To finalY
+        dstDIB.WrapRGBQuadArrayAroundScanline dstImageData, dstSA, y + yOffset
+    For x = 0 To finalX
         
         'Because we know the source DIB is grayscale, we can skip processing of all pixels with value = 0.
-        g = srcImageData(xStrideSrc, y)
+        g = srcImageData(x * 3, y)
+        If (g <> 0) Then dstImageData(x + xOffset) = clrLookup(g)
         
-        If (g > 0) Then
-        
-            'We don't need to retrieve red and green, as they are identical to blue.
-            
-            'Populate the destination pixel at this point with our lookup table values.
-            dstImageData(xStrideDst, y + yOffset) = bLookup(g)
-            dstImageData(xStrideDst + 1, y + yOffset) = gLookup(g)
-            dstImageData(xStrideDst + 2, y + yOffset) = rLookup(g)
-            dstImageData(xStrideDst + 3, y + yOffset) = aLookup(g)
-        
-        End If
-        
-    Next y
     Next x
+    Next y
     
     'Deallocate both arrays and exit
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    dstDIB.UnwrapRGBQuadArrayFromDIB dstImageData
+    m_tmpGdiDIB.UnwrapArrayFromDIB srcImageData
     
 End Function
 
