@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2020 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 13/September/15
-'Last update: convert imgStorage to pdDictionary, so we can drop the run-time scrrun.dll requirement
+'Last updated: 05/April/20
+'Last update: perf improvements to selection processing
 '
 'The pdImage class is used to store information on each image loaded by the user.  One instance of this class
 ' exists for each loaded image.
@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 ' is quite heavy as it must track things like metadata, undo/redo handling, and other items, so avoid using it for
 ' things like temporary image operations.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1106,7 +1106,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         
         Dim tmpRectF As RectF
         If (ptrToRectF <> 0) Then
-            CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+            CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
         Else
             
             With tmpRectF
@@ -1372,20 +1372,9 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    Dim selData() As Byte
-    Dim selSA As SafeArray2D
-    PrepSafeArray selSA, MainSelection.GetMaskDIB
-    CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
-            
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray1D
+    Dim selData() As Byte, selSA As SafeArray1D
+    Dim dstImageData() As Byte, dstSA As SafeArray1D
     
     Dim leftOffset As Long, topOffset As Long
     leftOffset = maskBounds.Left
@@ -1396,72 +1385,60 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long, selQuickX As Long
-    srcDIBCD = srcDIB.GetDIBColorDepth \ 8
+    Dim dstQuickX As Long, srcQuickX As Long, srcQuickY As Long, selQuickX As Long
+    Const BYTE_TO_FLOAT As Single = 1! / 255!
     
-    Dim dstDIBCD As Long, dstQuickX As Long
-    dstDIBCD = dstDIB.GetDIBColorDepth \ 8
-    
-    Dim selDIBCD As Long
-    selDIBCD = MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
-            
-    For x = 0 To dstDIB.GetDIBWidth - 1
-        dstQuickX = x * dstDIBCD
-        srcQuickX = (leftOffset + x) * srcDIBCD
-        selQuickX = (leftOffset + x) * selDIBCD
     For y = 0 To dstDIB.GetDIBHeight - 1
-    
+        
         srcQuickY = topOffset + y
-        thisAlpha = selData(selQuickX, srcQuickY)
+        srcDIB.WrapArrayAroundScanline srcImageData, srcSA, srcQuickY
+        MainSelection.GetMaskDIB.WrapArrayAroundScanline selData, selSA, srcQuickY
+        dstDIB.WrapArrayAroundScanline dstImageData, dstSA, y
+        
+    For x = 0 To dstDIB.GetDIBWidth - 1
+        
+        dstQuickX = x * 4
+        srcQuickX = (leftOffset + x) * 4
+        selQuickX = (leftOffset + x) * 4
+        thisAlpha = selData(selQuickX)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
         If (thisAlpha > 0) Then
+        
+            'Check the image's alpha value.  If it's zero, we have no reason to process it further
+            origAlpha = srcImageData(srcQuickX + 3)
             
-            'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
-            ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
-            If (srcDIBCD = 4) Then
-            
-                'Check the image's alpha value.  If it's zero, we have no reason to process it further
-                origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
+            If (origAlpha > 0) Then
                 
-                If (origAlpha > 0) Then
-                    
-                    'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
-                    ' we premultiply alpha, after all!)
-                    b = srcImageData(srcQuickX, srcQuickY)
-                    g = srcImageData(srcQuickX + 1, srcQuickY)
-                    r = srcImageData(srcQuickX + 2, srcQuickY)
-                    
-                    'Calculate a new multiplier, based on the strength of the selection at this location
-                    blendAlpha = thisAlpha / 255
-                    
-                    'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                    dstImageData(dstQuickX, y) = b * blendAlpha
-                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
-                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                    
-                    'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
-                    ' the original alpha value, and the selection mask value at this location.
-                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
-                    
-                End If
+                'Source pixel data will be premultiplied, which saves us a bunch of processing time.
+                ' (That is why we premultiply alpha, after all!)
+                b = srcImageData(srcQuickX)
+                g = srcImageData(srcQuickX + 1)
+                r = srcImageData(srcQuickX + 2)
                 
-            Else
-                dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
-                dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
-                dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
-                dstImageData(dstQuickX + 3, y) = thisAlpha
+                'Calculate a new multiplier, based on the strength of the selection at this location
+                blendAlpha = thisAlpha * BYTE_TO_FLOAT
+                
+                'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                dstImageData(dstQuickX) = b * blendAlpha
+                dstImageData(dstQuickX + 1) = g * blendAlpha
+                dstImageData(dstQuickX + 2) = r * blendAlpha
+                
+                'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                ' the original alpha value, and the selection mask value at this location.
+                dstImageData(dstQuickX + 3) = origAlpha * blendAlpha
+                
             End If
             
         End If
         
-    Next y
     Next x
+    Next y
     
     'Clear all array references
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(selData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+    dstDIB.UnwrapArrayFromDIB dstImageData
     
     'If the calling function requested un-premultiplied alpha, apply it now
     If (Not preMultipliedAlphaState) Then dstDIB.SetAlphaPremultiplication False
@@ -1486,15 +1463,8 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
     
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
-    Dim selData() As Byte
-    Dim selSA As SafeArray2D
-    PrepSafeArray selSA, MainSelection.GetMaskDIB
-    CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
-            
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim selData() As Byte, selSA As SafeArray1D
+    Dim dstImageData() As Byte, dstSA As SafeArray1D
     
     Dim maskBounds As RectF
     maskBounds = MainSelection.GetBoundaryRect
@@ -1510,73 +1480,57 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim dstDIBCD As Long, selDIBCD As Long, dstQuickX As Long, selQuickX As Long
-    dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
-    selDIBCD = MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
+    Dim dstQuickX As Long, selQuickX As Long
     
     Const BYTE_TO_FLOAT As Single = 1! / 255!
     
-    For x = leftBound To rightBound
-        dstQuickX = x * dstDIBCD
-        selQuickX = x * selDIBCD
     For y = topBound To bottomBound
-        
-        thisAlpha = selData(selQuickX, y)
+        MainSelection.GetMaskDIB.WrapArrayAroundScanline selData, selSA, y
+        imgLayers(targetLayerIndex).layerDIB.WrapArrayAroundScanline dstImageData, dstSA, y
+    For x = leftBound To rightBound
+    
+        selQuickX = x * 4
+        thisAlpha = selData(selQuickX)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
         If (thisAlpha > 0) Then
         
             thisAlpha = 255 - thisAlpha
-            
-            'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
-            ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
-            If (dstDIBCD = 4) Then
-            
-                'Check the image's alpha value.  If it's zero, we have no reason to process it further
-                origAlpha = dstImageData(dstQuickX + 3, y)
+        
+            'Check the image's alpha value.  If it's zero, we have no reason to process it further
+            dstQuickX = x * 4
+            origAlpha = dstImageData(dstQuickX + 3)
+            If (origAlpha > 0) Then
                 
-                If (origAlpha > 0) Then
-                    
-                    'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
-                    ' we premultiply alpha, after all!)
-                    b = dstImageData(dstQuickX, y)
-                    g = dstImageData(dstQuickX + 1, y)
-                    r = dstImageData(dstQuickX + 2, y)
-                    
-                    'Calculate a new multiplier, based on the strength of the selection at this location
-                    blendAlpha = thisAlpha * BYTE_TO_FLOAT
-                    
-                    'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                    dstImageData(dstQuickX, y) = b * blendAlpha
-                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
-                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                    
-                    'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
-                    ' the original alpha value, and the selection mask value at this location.
-                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
-                    
-                End If
+                'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
+                ' we premultiply alpha, after all!)
+                b = dstImageData(dstQuickX)
+                g = dstImageData(dstQuickX + 1)
+                r = dstImageData(dstQuickX + 2)
                 
-            Else
-            
-                'Premultiply alpha
-                blendAlpha = thisAlpha / 255
+                'Calculate a new multiplier, based on the strength of the selection at this location
+                blendAlpha = thisAlpha * BYTE_TO_FLOAT
                 
-                dstImageData(dstQuickX, y) = dstImageData(dstQuickX, y) * blendAlpha
-                dstImageData(dstQuickX + 1, y) = dstImageData(dstQuickX + 1, y) * blendAlpha
-                dstImageData(dstQuickX + 2, y) = dstImageData(dstQuickX + 2, y) * blendAlpha
-                dstImageData(dstQuickX + 3, y) = thisAlpha
+                'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                dstImageData(dstQuickX) = b * blendAlpha
+                dstImageData(dstQuickX + 1) = g * blendAlpha
+                dstImageData(dstQuickX + 2) = r * blendAlpha
+                
+                'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                ' the original alpha value, and the selection mask value at this location.
+                dstImageData(dstQuickX + 3) = origAlpha * blendAlpha
                 
             End If
+                
             
         End If
         
-    Next y
     Next x
+    Next y
     
     'Clear all array references
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(selData), 0&, 4
+    MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+    imgLayers(targetLayerIndex).layerDIB.UnwrapArrayFromDIB dstImageData
     
     'Shrink the layer to its maximum relevant size
     imgLayers(targetLayerIndex).CropNullPaddedLayer
