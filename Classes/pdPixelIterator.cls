@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Iterator class
 'Copyright 2015-2020 by Tanner Helland
 'Created: 04/December/14
-'Last updated: 07/June/17
-'Last update: add support for generic byte-array traversal
+'Last updated: 05/April/20
+'Last update: code clean-up and stability improvements
 '
 'By the time the 7.0 release rolled around, a ridiculous number of PD effects were managing their own pixel iteration
 ' methods.  Most of these were a variant of a "sliding window" implementation, where a running histogram is maintained
@@ -36,15 +36,12 @@ Attribute VB_Exposed = False
 'Please note that this class has several dependencies throughout PD, including pdDIB, and some specialized enums
 ' (located in PD's central Public_Enums_and_Types module).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
 Option Explicit
-
-Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
-Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 
 'Current (x, y) position of the iterator.  Call InitializeIterator() to reset these to (0, 0).
 Private m_X As Long, m_Y As Long
@@ -59,7 +56,7 @@ Private m_XBLeft As Long, m_XBRight As Long, m_XBSize As Long
 Private m_YBTop As Long, m_YBBottom As Long, m_YBSize As Long
 
 'Other relevant DIB properties
-Private m_DibPointer As Long, m_dibHeight As Long, m_dibStride As Long, m_dibColorDepth As Long, m_PixelWidth As Long
+Private m_DibPointer As Long, m_dibHeight As Long, m_dibStride As Long
 
 'Some functions may choose to use a byte array target instead of a DIB.  That's fine!
 Private m_BytesSA2D As SafeArray2D, m_Bytes() As Byte
@@ -86,7 +83,6 @@ Private m_LuminanceMode As PD_LuminanceMode
 
 'Histogram arrays.  Managing these are a bit tricky, because these are simply "trick" wrappers against arrays
 ' provided by the caller.
-Private m_RedSA As SafeArray1D, m_GreenSA As SafeArray1D, m_BlueSA As SafeArray1D, m_AlphaSA As SafeArray1D
 Private m_Red() As Long, m_Green() As Long, m_Blue() As Long, m_Alpha() As Long
 
 'Note that the caller can also use the pixel iterator in luminance mode.  This relies on only a single destination
@@ -154,11 +150,9 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     m_DibPointer = targetDIB.GetDIBPointer
     m_dibHeight = targetDIB.GetDIBHeight
     m_dibStride = targetDIB.GetDIBStride
-    m_dibColorDepth = targetDIB.GetDIBColorDepth
-    m_PixelWidth = m_dibColorDepth \ 8
     
     'Set alpha to a default value, based on the source image's color depth
-    'm_AlphaSupport = (m_dibColorDepth = 32)
+    'm_AlphaSupport = True
     
     InitializeIterator = True
     
@@ -238,15 +232,15 @@ Friend Function LockTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
-    Alias1DArray dstRed, m_Red, m_RedSA
-    Alias1DArray dstGreen, m_Green, m_GreenSA
-    Alias1DArray dstBlue, m_Blue, m_BlueSA
+    VBHacks.Alias1DArray_Long dstRed, m_Red
+    VBHacks.Alias1DArray_Long dstGreen, m_Green
+    VBHacks.Alias1DArray_Long dstBlue, m_Blue
     
     'NOTE: see comments elsewhere on m_AlphaSupport.  It is currently disabled; you'll need to uncomment various bits
     ' to make it work.
     calcAlpha = False
     If calcAlpha And m_AlphaSupport Then
-        Alias1DArray dstAlpha, m_Alpha, m_AlphaSA
+        VBHacks.Alias1DArray_Long dstAlpha, m_Alpha
     Else
         m_AlphaSupport = False
     End If
@@ -261,10 +255,10 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long) As Boolean
 
-    Unalias1DArray dstRed, m_Red
-    Unalias1DArray dstGreen, m_Green
-    Unalias1DArray dstBlue, m_Blue
-    If m_AlphaSupport Then Unalias1DArray dstAlpha, m_Alpha
+    VBHacks.Unalias1DArray_Long dstRed, m_Red
+    VBHacks.Unalias1DArray_Long dstGreen, m_Green
+    VBHacks.Unalias1DArray_Long dstBlue, m_Blue
+    If m_AlphaSupport Then VBHacks.Unalias1DArray_Long dstAlpha, m_Alpha
     
     'While we're here, release our DIB reference, too
     UnaliasPixelArray
@@ -287,7 +281,7 @@ Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long, Optional 
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
-    Alias1DArray dstLum, m_Luminance, m_LuminanceSA
+    VBHacks.Alias1DArray_Long dstLum, m_Luminance
     
     'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
     AliasPixelArray
@@ -299,11 +293,10 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_Luminance(ByRef dstLum() As Long) As Boolean
 
-    Unalias1DArray dstLum, m_Luminance
+    VBHacks.Unalias1DArray_Long dstLum, m_Luminance
     
     'While we're here, release our DIB reference, too
     UnaliasPixelArray
-    
     ReleaseTargetHistograms_Luminance = True
     
 End Function
@@ -321,7 +314,7 @@ Friend Function LockTargetHistograms_ByteArray(ByRef dstHist() As Long) As Long
     
     'Alias our internal histogram array around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target array until the iterator has finished.
-    Alias1DArray dstHist, m_Luminance, m_LuminanceSA
+    VBHacks.Alias1DArray_Long dstHist, m_Luminance
     
     'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
     AliasByteArray
@@ -333,44 +326,13 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_ByteArray(ByRef dstHist() As Long) As Boolean
 
-    Unalias1DArray dstHist, m_Luminance
+    VBHacks.Unalias1DArray_Long dstHist, m_Luminance
     
     'While we're here, release our DIB reference, too
     UnaliasByteArray
-    
     ReleaseTargetHistograms_ByteArray = True
     
 End Function
-
-'Point an internal 1D array at some other 1D array.  Any arrays aliased this way must be freed via Unalias1DArray,
-' or VB will crash.
-Private Sub Alias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long, ByRef newArraySA As SafeArray1D)
-    
-    'Retrieve a copy of the original 1D array's SafeArray struct
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
-    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
-    
-    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
-    CopyMemory ByVal VarPtrArray(new1DArray()), VarPtr(newArraySA), 4&
-    
-    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
-    SafeArrayLock ptrSrc
-    
-End Sub
-
-'Counterpart to Alias1DArray, above.  Do NOT call this function on arrays that were not originally processed by that function.
-Private Sub Unalias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
-    
-    'Wipe the array pointer
-    CopyMemory ByVal VarPtrArray(new1DArray), 0&, 4&
-    
-    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
-    SafeArrayUnlock ptrSrc
-    
-End Sub
 
 'Alias/unalias the target pixel array, specifically.
 Private Sub AliasPixelArray()
@@ -613,8 +575,8 @@ Private Function GenerateInitialWindow_Square() As Long
     Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim xStart As Long, xFinal As Long
-    xStart = m_InitX * m_PixelWidth
-    xFinal = (m_InitX + m_XBRight) * m_PixelWidth
+    xStart = m_InitX * 4
+    xFinal = (m_InitX + m_XBRight) * 4
     
     'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
     ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
@@ -631,7 +593,7 @@ Private Function GenerateInitialWindow_Square() As Long
     
     For y = m_InitY To m_InitY + m_YBBottom
         m_PixelSA1D.pvData = m_DibPointer + y * m_dibStride
-    For x = xStart To xFinal Step m_PixelWidth
+    For x = xStart To xFinal Step 4
         
         b = m_PixelLine(x)
         g = m_PixelLine(x + 1)
@@ -708,8 +670,8 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     Dim x As Long, y As Long
     Dim xStart As Long, xFinal As Long
-    xStart = m_InitX * m_PixelWidth
-    xFinal = (m_InitX + m_XBRight) * m_PixelWidth
+    xStart = m_InitX * 4
+    xFinal = (m_InitX + m_XBRight) * 4
     
     Dim r As Long, g As Long, b As Long, a As Long
     
@@ -728,7 +690,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     For y = m_InitY To m_InitY + m_YBBottom
         m_PixelSA1D.pvData = m_DibPointer + y * m_dibStride
-    For x = xStart To xFinal Step m_PixelWidth
+    For x = xStart To xFinal Step 4
         
         'Only calculate pixels that lie inside the reference map
         If (m_ReferenceMap(((x * 0.25) - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0) Then
@@ -842,7 +804,7 @@ Friend Function MoveXRight() As Long
         xLeft = (m_X - m_XBLeft) - 1
         If (xLeft >= m_InitX) Then
             
-            x = xLeft * m_PixelWidth
+            x = xLeft * 4
             For y = yTop To yBottom
                 
                 b = m_Pixels(x, y)
@@ -876,7 +838,7 @@ Friend Function MoveXRight() As Long
         xRight = m_X + m_XBRight
         If (xRight <= m_FinalX) Then
             
-            x = xRight * m_PixelWidth
+            x = xRight * 4
             For y = yTop To yBottom
                 
                 b = m_Pixels(x, y)
@@ -928,7 +890,7 @@ Friend Function MoveXRight() As Long
                 'If this x-coordinate lies in-bounds, this pixel can be removed from the kernel
                 If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
                 
-                    tmpX = tmpX * m_PixelWidth
+                    tmpX = tmpX * 4
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
@@ -959,7 +921,7 @@ Friend Function MoveXRight() As Long
                 'If this x-coordinate lies in-bounds, this pixel can be added to the kernel
                 If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
                 
-                    tmpX = tmpX * m_PixelWidth
+                    tmpX = tmpX * 4
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
@@ -1111,7 +1073,7 @@ Friend Function MoveYDown() As Long
             
             m_PixelSA1D.pvData = m_DibPointer + yTop * m_dibStride
             
-            For x = xLeft * m_PixelWidth To xRight * m_PixelWidth Step m_PixelWidth
+            For x = xLeft * 4 To xRight * 4 Step 4
                 
                 b = m_PixelLine(x)
                 g = m_PixelLine(x + 1)
@@ -1146,7 +1108,7 @@ Friend Function MoveYDown() As Long
             
             m_PixelSA1D.pvData = m_DibPointer + yBottom * m_dibStride
             
-            For x = xLeft * m_PixelWidth To xRight * m_PixelWidth Step m_PixelWidth
+            For x = xLeft * 4 To xRight * 4 Step 4
                 
                 b = m_PixelLine(x)
                 g = m_PixelLine(x + 1)
@@ -1195,7 +1157,7 @@ Friend Function MoveYDown() As Long
             'If this x-coordinate lies out of bounds, ignore it
             If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
                 
-                tmpX = tmpX * m_PixelWidth
+                tmpX = tmpX * 4
                 
                 'This x-boundary potentially lies in-bounds.  Check the matching y-position.
                 tmpY = m_Y + m_YTop(x + m_XBLeft) - 1
@@ -1401,7 +1363,7 @@ Friend Function MoveYUp() As Long
             
             m_PixelSA1D.pvData = m_DibPointer + yBottom * m_dibStride
             
-            For x = xLeft * m_PixelWidth To xRight * m_PixelWidth Step m_PixelWidth
+            For x = xLeft * 4 To xRight * 4 Step 4
                 
                 b = m_PixelLine(x)
                 g = m_PixelLine(x + 1)
@@ -1436,7 +1398,7 @@ Friend Function MoveYUp() As Long
             
             m_PixelSA1D.pvData = m_DibPointer + yTop * m_dibStride
             
-            For x = xLeft * m_PixelWidth To xRight * m_PixelWidth Step m_PixelWidth
+            For x = xLeft * 4 To xRight * 4 Step 4
                 
                 b = m_PixelLine(x)
                 g = m_PixelLine(x + 1)
@@ -1484,7 +1446,7 @@ Friend Function MoveYUp() As Long
             'If this x-coordinate lies out of bounds, ignore it
             If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
                 
-                tmpX = tmpX * m_PixelWidth
+                tmpX = tmpX * 4
                 
                 'This x-boundary potentially lies in-bounds.  Check the matching y-position.
                 tmpY = m_Y + m_YBottom(x + m_XBLeft) + 1

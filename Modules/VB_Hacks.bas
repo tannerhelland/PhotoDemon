@@ -3,22 +3,24 @@ Attribute VB_Name = "VBHacks"
 'Misc VB6 Hacks
 'Copyright 2016-2020 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 26/January/19
-'Last update: helper function for fast endian swapping (16-bit boundaries); this is used constantly in PSD parsing
+'Last updated: 05/April/20
+'Last update: remove SafeArrayLock/Unlock calls when aliasing arrays; these have complications
+'             when multithreading because lock counts can desynchronize - see MSDN for details:
+'             https://docs.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-safearraylock
 '
-'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations and C-style
-' code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to move it here, so I
-' don't clutter up purposeful modules with obscure, VB-specific hackery.
+'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations
+' and C-style code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to
+' move it here instead of cluttering purposeful modules with obscure, VB-specific hackery.
 '
-'Note that some code here may seem redundant (e.g. identical functions suffixed by data type, instead of declared
-' "As Any") but that's by design - e.g. to improve safety since these techniques are almost always crash-prone if
-' used incorrectly or imprecisely.
+'Note that some code here may seem redundant (e.g. identical functions suffixed by data type, instead of
+' declared "As Any") but that's by design - e.g. to improve safety since these techniques are almost
+' always crash-prone if used incorrectly or imprecisely.
 '
-'A number of the techniques in this module were devised with help from Karl E. Peterson's work at http://vb.mvps.org/
-' Thank you, Karl!
+'A number of the techniques in this module were devised with help from Karl E. Peterson's work at
+' http://vb.mvps.org/ - thank you, Karl!
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -72,8 +74,6 @@ Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Declare Function RtlCompareMemory Lib "ntdll" (ByVal ptrSource1 As Long, ByVal ptrSource2 As Long, ByVal Length As Long) As Long
 
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
-Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
@@ -109,118 +109,54 @@ Private m_PDIKRef As pdInputKeyboard
 
 'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
 ' or it will leak memory.  Any arrays aliased this way must be freed via Unalias1DArray or VB will crash.
-Public Sub Alias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte, ByRef newArraySA As SafeArray1D)
-    
-    'Retrieve a copy of the original 2D array's SafeArray struct
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
-    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
-    
-    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
-    CopyMemory ByVal VarPtrArray(new1DArray()), VarPtr(newArraySA), 4&
-    
-    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
-    SafeArrayLock ptrSrc
-    
+Public Sub Alias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte)
+    GetMem4 VarPtrArray(orig1DArray()), ByVal VarPtrArray(new1DArray())
+End Sub
+
+'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
+' or it will leak memory.  Any arrays aliased this way must be freed via Unalias1DArray or VB will crash.
+Public Sub Alias1DArray_Long(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
+    GetMem4 VarPtrArray(orig1DArray()), ByVal VarPtrArray(new1DArray())
 End Sub
 
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
-Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SafeArray2D)
-    
-    'Retrieve a copy of the original 2D array's SafeArray struct
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
-    
-    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
-    CopyMemory ByVal VarPtrArray(new2DArray()), VarPtr(newArraySA), 4&
-    
-    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
-    SafeArrayLock ptrSrc
-    
+Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte)
+    GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
 End Sub
 
-Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer, ByRef newArraySA As SafeArray2D)
-    
-    'Retrieve a copy of the original 2D array's SafeArray struct
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
-    
-    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
-    CopyMemory ByVal VarPtrArray(new2DArray()), VarPtr(newArraySA), 4&
-    
-    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
-    SafeArrayLock ptrSrc
-    
+Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
+    GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
 End Sub
 
-Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long, ByRef newArraySA As SafeArray2D)
-    
-    'Retrieve a copy of the original 2D array's SafeArray struct
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
-    
-    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
-    CopyMemory ByVal VarPtrArray(new2DArray()), VarPtr(newArraySA), 4&
-    
-    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
-    SafeArrayLock ptrSrc
-    
+Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long)
+    GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
 End Sub
 
 'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally
 ' processed by an Alias21Array_ function.
 Public Sub Unalias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte)
-    
-    'Wipe the array pointer
-    CopyMemory ByVal VarPtrArray(new1DArray), 0&, 4&
-    
-    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
-    SafeArrayUnlock ptrSrc
-    
+    PutMem4 VarPtrArray(new1DArray), 0&
+End Sub
+
+'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally
+' processed by an Alias21Array_ function.
+Public Sub Unalias1DArray_Long(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
+    PutMem4 VarPtrArray(new1DArray), 0&
 End Sub
 
 'Counterparts to Alias2DArray_ functions, above.  Do NOT call this function on arrays that were not originally
 ' processed by an Alias2DArray_ function.
 Public Sub Unalias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte)
-    
-    'Wipe the array pointer
-    CopyMemory ByVal VarPtrArray(new2DArray), 0&, 4&
-    
-    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    SafeArrayUnlock ptrSrc
-    
+    PutMem4 VarPtrArray(new2DArray), 0&
 End Sub
 
 Public Sub Unalias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
-    
-    'Wipe the array pointer
-    CopyMemory ByVal VarPtrArray(new2DArray), 0&, 4&
-    
-    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    SafeArrayUnlock ptrSrc
-    
+    PutMem4 VarPtrArray(new2DArray), 0&
 End Sub
 
 Public Sub Unalias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long)
-    
-    'Wipe the array pointer
-    CopyMemory ByVal VarPtrArray(new2DArray), 0&, 4&
-    
-    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
-    Dim ptrSrc As Long
-    GetMem4 VarPtrArray(orig2DArray()), ptrSrc
-    SafeArrayUnlock ptrSrc
-    
+    PutMem4 VarPtrArray(new2DArray), 0&
 End Sub
 
 'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this
