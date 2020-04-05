@@ -95,8 +95,8 @@ Attribute VB_Exposed = False
 '
 'Module for handling "diffuse"-style filters (also called "displace", e.g. in GIMP).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -179,7 +179,7 @@ Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview 
     yDiffuse = yDiffuseRatio * curDIBValues.Height
     
     'These values will help us access locations in the array more quickly.
-    Dim quickValDiffuseX As Long, quickValDiffuseY As Long
+    Dim xStrideDiffuseX As Long, xStrideDiffuseY As Long
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -208,26 +208,26 @@ Public Sub DiffuseCustom(ByVal effectParams As String, Optional ByVal toPreview 
         diffuseX = cRandom.GetRandomFloat_WH() * xDiffuse - hDX
         diffuseY = cRandom.GetRandomFloat_WH() * yDiffuse - hDY
         
-        quickValDiffuseX = diffuseX + x
-        quickValDiffuseY = diffuseY + y
+        xStrideDiffuseX = diffuseX + x
+        xStrideDiffuseY = diffuseY + y
             
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
         ' "wrapPixels" setting.
         If wrapPixels Then
-            If (quickValDiffuseX < initX) Then quickValDiffuseX = quickValDiffuseX + finalX
-            If (quickValDiffuseY < initY) Then quickValDiffuseY = quickValDiffuseY + finalY
+            If (xStrideDiffuseX < initX) Then xStrideDiffuseX = xStrideDiffuseX + finalX
+            If (xStrideDiffuseY < initY) Then xStrideDiffuseY = xStrideDiffuseY + finalY
             
-            If (quickValDiffuseX > finalX) Then quickValDiffuseX = quickValDiffuseX - finalX
-            If (quickValDiffuseY > finalY) Then quickValDiffuseY = quickValDiffuseY - finalY
+            If (xStrideDiffuseX > finalX) Then xStrideDiffuseX = xStrideDiffuseX - finalX
+            If (xStrideDiffuseY > finalY) Then xStrideDiffuseY = xStrideDiffuseY - finalY
         Else
-            If (quickValDiffuseX < initX) Then quickValDiffuseX = initX
-            If (quickValDiffuseY < initY) Then quickValDiffuseY = initY
+            If (xStrideDiffuseX < initX) Then xStrideDiffuseX = initX
+            If (xStrideDiffuseY < initY) Then xStrideDiffuseY = initY
             
-            If (quickValDiffuseX > finalX) Then quickValDiffuseX = finalX
-            If (quickValDiffuseY > finalY) Then quickValDiffuseY = finalY
+            If (xStrideDiffuseX > finalX) Then xStrideDiffuseX = finalX
+            If (xStrideDiffuseY > finalY) Then xStrideDiffuseY = finalY
         End If
         
-        dstImageData(x, y) = srcImageData(quickValDiffuseX, quickValDiffuseY)
+        dstImageData(x, y) = srcImageData(xStrideDiffuseX, xStrideDiffuseY)
         
     Next x
         If (Not toPreview) Then

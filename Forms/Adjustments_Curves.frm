@@ -169,8 +169,8 @@ Attribute VB_Exposed = False
 ' render function to make it extremely quick, and it is currently comparable to brightness/contrast adjustment in speed
 ' (e.g. VERY FAST!).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -270,11 +270,6 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -333,11 +328,11 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     Next i
         
     'Loop through each pixel in the image, converting values as we go
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     For y = initY To finalY
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
     
         'Get the source pixel color values
         b = bMap(imageData(x, y))

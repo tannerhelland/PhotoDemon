@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'The blue channel alone is used for calculations (for speed purposes - three times faster than checking all three channels!) so results will
 ' be wonky when used on a color image.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -159,11 +159,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     Else
         If mRadius > (finalX - initX) Then mRadius = finalX - initX
     End If
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, quickY As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long, xStrideInner As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -190,10 +187,10 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To initY + mRadius
     
-        If srcImageData(quickVal, y) > 127 Then highValues = highValues + 1
+        If (srcImageData(xStride, y) > 127) Then highValues = highValues + 1
         
         'Increase the pixel tally
         numOfPixels = numOfPixels + 1
@@ -204,7 +201,7 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        quickVal = x * qvDepth
+        xStride = x * 4
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -231,10 +228,10 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         'Remove trailing values from the box if they lie outside the processing radius
         If lbX > 0 Then
         
-            QuickValInner = (lbX - 1) * qvDepth
+            xStrideInner = (lbX - 1) * 4
         
             For j = lbY To ubY
-                If srcImageData(QuickValInner, j) > 127 Then highValues = highValues - 1
+                If srcImageData(xStrideInner, j) > 127 Then highValues = highValues - 1
                 numOfPixels = numOfPixels - 1
             Next j
         
@@ -243,10 +240,10 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         'Add leading values to the box if they lie inside the processing radius
         If Not obuX Then
         
-            QuickValInner = ubX * qvDepth
+            xStrideInner = ubX * 4
             
             For j = lbY To ubY
-                If srcImageData(QuickValInner, j) > 127 Then highValues = highValues + 1
+                If srcImageData(xStrideInner, j) > 127 Then highValues = highValues + 1
                 numOfPixels = numOfPixels + 1
             Next j
             
@@ -257,8 +254,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         If atBottom Then
                 
             For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                If srcImageData(QuickValInner, mRadius) > 127 Then highValues = highValues - 1
+                xStrideInner = i * 4
+                If srcImageData(xStrideInner, mRadius) > 127 Then highValues = highValues - 1
                 numOfPixels = numOfPixels - 1
             Next i
         
@@ -267,8 +264,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
             quickY = finalY - mRadius
         
             For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
+                xStrideInner = i * 4
+                If srcImageData(xStrideInner, quickY) > 127 Then highValues = highValues - 1
                 numOfPixels = numOfPixels - 1
             Next i
         
@@ -311,8 +308,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
                 quickY = lbY - 1
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
+                    xStrideInner = i * 4
+                    If srcImageData(xStrideInner, quickY) > 127 Then highValues = highValues - 1
                     numOfPixels = numOfPixels - 1
                 Next i
                         
@@ -322,8 +319,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
             If Not obuY Then
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, ubY) > 127 Then highValues = highValues + 1
+                    xStrideInner = i * 4
+                    If srcImageData(xStrideInner, ubY) > 127 Then highValues = highValues + 1
                     numOfPixels = numOfPixels + 1
                 Next i
             
@@ -348,8 +345,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
                 quickY = ubY + 1
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, quickY) > 127 Then highValues = highValues - 1
+                    xStrideInner = i * 4
+                    If srcImageData(xStrideInner, quickY) > 127 Then highValues = highValues - 1
                     numOfPixels = numOfPixels - 1
                 Next i
                         
@@ -358,8 +355,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
             If Not oblY Then
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    If srcImageData(QuickValInner, lbY) > 127 Then highValues = highValues + 1
+                    xStrideInner = i * 4
+                    If srcImageData(xStrideInner, lbY) > 127 Then highValues = highValues + 1
                     numOfPixels = numOfPixels + 1
                 Next i
             
@@ -371,9 +368,9 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
         fGray = (highValues / numOfPixels) * 255
         
         'Finally, apply the results to the image.
-        dstImageData(quickVal + 2, y) = fGray
-        dstImageData(quickVal + 1, y) = fGray
-        dstImageData(quickVal, y) = fGray
+        dstImageData(xStride + 2, y) = fGray
+        dstImageData(xStride + 1, y) = fGray
+        dstImageData(xStride, y) = fGray
         
     Next y
         atBottom = Not atBottom

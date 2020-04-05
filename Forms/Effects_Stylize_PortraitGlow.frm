@@ -106,8 +106,8 @@ Attribute VB_Exposed = False
 'Basic portrait glow function.  This effect is easily achieved manually, using a duplicate layer + gaussian blur +
 ' Screen blend mode, but a one-shot menu has been requested by multiple users, so there's probably some merit to it.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -175,12 +175,12 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
         'Now that we have a gaussian DIB created in blurDIB, we can apply any subsequent exposure adjustments.
         If (glowBoost > 0) Then
             
-            Dim cLut As pdFilterLUT
-            Set cLut = New pdFilterLUT
+            Dim cLUT As pdFilterLUT
+            Set cLUT = New pdFilterLUT
             
             Dim exposureLookup() As Byte
-            cLut.FillLUT_BrightnessMultiplicative exposureLookup, glowBoost
-            cLut.ApplyLUTToAllColorChannels blurDIB, exposureLookup, toPreview, progBarMax, progBarOffset
+            cLUT.FillLUT_BrightnessMultiplicative exposureLookup, glowBoost
+            cLUT.ApplyLUTToAllColorChannels blurDIB, exposureLookup
             
         End If
         

@@ -157,8 +157,8 @@ Attribute VB_Exposed = False
 '
 'Comments TODO
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -224,11 +224,8 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -277,12 +274,12 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     ' analysis much more quickly.
     For y = initY To finalY
     For x = initX To finalX
-        quickX = x * qvDepth
+        xStride = x * 4
     
         'Get the source pixel color values
-        b = imageData(quickX, y)
-        g = imageData(quickX + 1, y)
-        r = imageData(quickX + 2, y)
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
         
         'Strip red bytes into a separate tracking array
         redMap(x, y) = r
@@ -528,10 +525,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     If regionIDs(x, y) = regID Then
                         
                         'Generating a running sum the original RGB values of each pixel in the region
-                        quickX = x * qvDepth
-                        bSum = bSum + imageData(quickX, y)
-                        gSum = gSum + imageData(quickX + 1, y)
-                        rSum = rSum + imageData(quickX + 2, y)
+                        xStride = x * 4
+                        bSum = bSum + imageData(xStride, y)
+                        gSum = gSum + imageData(xStride + 1, y)
+                        rSum = rSum + imageData(xStride + 2, y)
                         
                     Else
                         numNotInRegion = numNotInRegion + 1
@@ -573,10 +570,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     If (regionIDs(x, y) <> regID) Then
                         
                         'If this pixel is highly similar to its neighboring region, add it to a running tally
-                        quickX = x * qvDepth
-                        b = imageData(quickX, y)
-                        g = imageData(quickX + 1, y)
-                        r = imageData(quickX + 2, y)
+                        xStride = x * 4
+                        b = imageData(xStride, y)
+                        g = imageData(xStride + 1, y)
+                        r = imageData(xStride + 2, y)
                         rgbSum = b + g + r
                         If rgbSum = 0 Then rgbSum = 1
                         
@@ -712,10 +709,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         'Make sure the pixel actually belongs to this region
                         If (regionIDs(x, y) = regID) Then
                         
-                            quickX = x * qvDepth
-                            b = imageData(quickX, y)
-                            g = imageData(quickX + 1, y)
-                            r = imageData(quickX + 2, y)
+                            xStride = x * 4
+                            b = imageData(xStride, y)
+                            g = imageData(xStride + 1, y)
+                            r = imageData(xStride + 2, y)
                             
                             'Calculate running luminance for the ENTIRE region (including the eye highlight)
                             aveL = aveL + Colors.GetHQLuminance(r, g, b)
@@ -761,10 +758,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         ' best guess of what the area's original color was.
                         If (regionIDs(x, y) = regID) Then
                             
-                            quickX = x * qvDepth
-                            b = imageData(quickX, y)
-                            g = imageData(quickX + 1, y)
-                            r = imageData(quickX + 2, y)
+                            xStride = x * 4
+                            b = imageData(xStride, y)
+                            g = imageData(xStride + 1, y)
+                            r = imageData(xStride + 2, y)
                             
                             r = cRedEye.FixRedEyeColor(r, -correctionFactor, -0.1, aveL)
                             g = cRedEye.FixRedEyeColor(g, correctionFactor / 3, -0.1, aveL)
@@ -791,9 +788,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             For k = innerInitX To innerFinalX
                                 If (k <> j) Then
                                     If (regionIDs(k, j) <> regID) Then
-                                        bSum = bSum + imageData(k * qvDepth, j)
-                                        gSum = gSum + imageData(k * qvDepth + 1, j)
-                                        rSum = rSum + imageData(k * qvDepth + 2, j)
+                                        bSum = bSum + imageData(k * 4, j)
+                                        gSum = gSum + imageData(k * 4 + 1, j)
+                                        rSum = rSum + imageData(k * 4 + 2, j)
                                         numSimilar = numSimilar + 1
                                     End If
                                 End If
@@ -807,9 +804,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                                 b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             End If
                             
-                            imageData(quickX, y) = b
-                            imageData(quickX + 1, y) = g
-                            imageData(quickX + 2, y) = r
+                            imageData(xStride, y) = b
+                            imageData(xStride + 1, y) = g
+                            imageData(xStride + 2, y) = r
                             
                         End If
                         
@@ -823,10 +820,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         
                         If (regionIDs(x, y) <> regID) Then
                             
-                            quickX = x * qvDepth
-                            b = imageData(quickX, y)
-                            g = imageData(quickX + 1, y)
-                            r = imageData(quickX + 2, y)
+                            xStride = x * 4
+                            b = imageData(xStride, y)
+                            g = imageData(xStride + 1, y)
+                            r = imageData(xStride + 2, y)
                             
                             'We now want to alias this result against neighboring pixels, to try and reduce any harsh
                             ' edges between this pixel and the result.
@@ -849,9 +846,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             For k = innerInitX To innerFinalX
                                 If k <> j Then
                                     If regionIDs(k, j) = regID Then
-                                        bSum = bSum + imageData(k * qvDepth, j)
-                                        gSum = gSum + imageData(k * qvDepth + 1, j)
-                                        rSum = rSum + imageData(k * qvDepth + 2, j)
+                                        bSum = bSum + imageData(k * 4, j)
+                                        gSum = gSum + imageData(k * 4 + 1, j)
+                                        rSum = rSum + imageData(k * 4 + 2, j)
                                         numSimilar = numSimilar + 1
                                     End If
                                 End If
@@ -864,9 +861,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                                 g = Colors.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
                                 b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             
-                                imageData(quickX, y) = b
-                                imageData(quickX + 1, y) = g
-                                imageData(quickX + 2, y) = r
+                                imageData(xStride, y) = b
+                                imageData(xStride + 1, y) = g
+                                imageData(xStride + 2, y) = r
                             End If
                             
                         End If
@@ -901,19 +898,19 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         
         For y = initY To finalY
         For x = initX To finalX
-            quickX = x * qvDepth
-            b = imageData(quickX, y)
-            g = imageData(quickX + 1, y)
-            r = imageData(quickX + 2, y)
+            xStride = x * 4
+            b = imageData(xStride, y)
+            g = imageData(xStride + 1, y)
+            r = imageData(xStride + 2, y)
             
             If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
-                imageData(quickX, y) = 0
-                imageData(quickX + 1, y) = 0
-                imageData(quickX + 2, y) = 255
+                imageData(xStride, y) = 0
+                imageData(xStride + 1, y) = 0
+                imageData(xStride + 2, y) = 255
             ElseIf redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
-                imageData(quickX, y) = 0
-                imageData(quickX + 1, y) = 255
-                imageData(quickX + 2, y) = 0
+                imageData(xStride, y) = 0
+                imageData(xStride + 1, y) = 255
+                imageData(xStride + 2, y) = 0
             End If
             
         Next x

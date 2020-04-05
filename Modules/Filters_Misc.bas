@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Miscellaneous"
 '
 'The general image filter module; contains unorganized routines at present.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -32,11 +32,8 @@ Public Sub MenuSepia()
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -49,12 +46,12 @@ Public Sub MenuSepia()
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
                 
         newR = CSng(r) * 0.393 + CSng(g) * 0.769 + CSng(b) * 0.189
         newG = CSng(r) * 0.349 + CSng(g) * 0.686 + CSng(b) * 0.168
@@ -68,9 +65,9 @@ Public Sub MenuSepia()
         If g > 255 Then g = 255
         If b > 255 Then b = 255
         
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(xStride + 2, y) = r
+        imageData(xStride + 1, y) = g
+        imageData(xStride, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -100,11 +97,6 @@ Public Sub MenuCountColors()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray1D
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = tmpImageComposite.GetDIBColorDepth \ 8
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -132,7 +124,7 @@ Public Sub MenuCountColors()
     'Iterate through all pixels, counting unique values as we go.
     For y = initY To finalY
         tmpImageComposite.WrapArrayAroundScanline imageData, tmpSA, y
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
     
         b = imageData(x)
         g = imageData(x + 1)

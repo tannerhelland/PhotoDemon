@@ -107,8 +107,8 @@ Attribute VB_Exposed = False
 ' determining the contour (e.g. some base color), or a more sophisticated interpretation that also handles
 ' interior holes (which are ignored at present).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -198,13 +198,13 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
         Dim rgbDistance As Long, rgbMaxDistance As Double
         rgbMaxDistance = 1# / (255# * 3#)
         
-        Dim quickX As Long
+        Dim xStride As Long
         For y = initY To finalY
         For x = initX To finalX
-            quickX = x * 4
-            b = srcImageData(quickX, y)
-            g = srcImageData(quickX + 1, y)
-            r = srcImageData(quickX + 2, y)
+            xStride = x * 4
+            b = srcImageData(xStride, y)
+            g = srcImageData(xStride + 1, y)
+            r = srcImageData(xStride + 2, y)
             
             'Perform a very "quick and dirty" color comparison
             rgbDistance = Abs(r - targetR) + Abs(g - targetG) + Abs(b - targetB)

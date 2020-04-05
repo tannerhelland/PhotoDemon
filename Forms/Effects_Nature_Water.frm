@@ -115,8 +115,8 @@ Attribute VB_Exposed = False
 'PhotoDemon has always provided some sort of silly "underwater" effect.  In 7.0, the filter was finally expanded
 ' to provide a full UI and user-controllable parameters.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -186,10 +186,7 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     xLimit = finalX - 1
     yLimit = finalY - 1
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -226,7 +223,7 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
         yResult = Sin(y * xWavelength) * xAmplitude
     For x = initX To finalX
     
-        quickVal = x * qvDepth
+        xStride = x * 4
         
         'Calculate new source pixel locations.  Note that we deliberately do not modify y by any
         ' trigonemetric functions - is stable, save for the "turbulence" parameter.
@@ -261,10 +258,10 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
         End If
         
         'Interpolate the source pixel for better results
-        srcB = GetInterpolatedVal(srcX, srcY, srcImageData, 0, qvDepth)
-        srcG = GetInterpolatedVal(srcX, srcY, srcImageData, 1, qvDepth)
-        srcR = GetInterpolatedVal(srcX, srcY, srcImageData, 2, qvDepth)
-        srcA = GetInterpolatedVal(srcX, srcY, srcImageData, 3, qvDepth)
+        srcB = GetInterpolatedVal(srcX, srcY, srcImageData, 0, 4)
+        srcG = GetInterpolatedVal(srcX, srcY, srcImageData, 1, 4)
+        srcR = GetInterpolatedVal(srcX, srcY, srcImageData, 2, 4)
+        srcA = GetInterpolatedVal(srcX, srcY, srcImageData, 3, 4)
             
         'Now, modify the colors to give a bluish-green tint to the image
         grayVal = gLookup(srcR + srcG + srcB)
@@ -283,10 +280,10 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
         b = Colors.BlendColors(srcB, b, fxColor)
         
         'Write the colors (and alpha, if necessary) out to the destination image's data
-        dstImageData(quickVal, y) = b
-        dstImageData(quickVal + 1, y) = g
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 3, y) = srcA
+        dstImageData(xStride, y) = b
+        dstImageData(xStride + 1, y) = g
+        dstImageData(xStride + 2, y) = r
+        dstImageData(xStride + 3, y) = srcA
             
     Next x
         If (Not toPreview) Then

@@ -207,8 +207,8 @@ Attribute VB_Exposed = False
 'For a detailed explanation of how I reverse-engineered the math, please see this article:
 ' https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -253,11 +253,8 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -301,13 +298,13 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
         originalLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
@@ -332,9 +329,9 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         End If
         
         'Assign the new values to each color channel
-        imageData(quickVal, y) = b
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal + 2, y) = r
+        imageData(xStride, y) = b
+        imageData(xStride + 1, y) = g
+        imageData(xStride + 2, y) = r
         
     Next y
         If (Not toPreview) Then

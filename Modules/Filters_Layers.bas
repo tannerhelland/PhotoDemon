@@ -15,8 +15,8 @@ Attribute VB_Name = "Filters_Layers"
 ' filters to create more complex effects.  It also cuts down on code maintenance because I need only perfect a
 ' formula once, then reference it externally.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -159,18 +159,18 @@ Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
     PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, xStride As Long
     finalX = dstDIB.GetDIBWidth - 1
     finalY = dstDIB.GetDIBHeight - 1
     
     'Loop through all pixels in the destination image and set them to black.  Easy as pie!
     For x = 0 To finalX
-        quickX = x * 4
+        xStride = x * 4
     For y = 0 To finalY
     
-        dstImageData(quickX + 2, y) = 0
-        dstImageData(quickX + 1, y) = 0
-        dstImageData(quickX, y) = 0
+        dstImageData(xStride + 2, y) = 0
+        dstImageData(xStride + 1, y) = 0
+        dstImageData(xStride, y) = 0
         
     Next y
     Next x
@@ -210,16 +210,11 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         
     mPercent = mPercent * 0.01
     If (mPercent < 0.01) Then mPercent = 0.01
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
     ' processing time in the inner loop.
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -260,7 +255,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX Step qvDepth
+        For x = initX To finalX Step 4
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then
@@ -364,11 +359,8 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -404,11 +396,11 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Build the image histogram
     Dim startX As Long, stopX As Long
-    startX = initX * qvDepth
-    stopX = finalX * qvDepth
+    startX = initX * 4
+    stopX = finalX * 4
     
     For y = initY To finalY
-    For x = startX To stopX Step qvDepth
+    For x = startX To stopX Step 4
         b = imageData(x, y)
         g = imageData(x + 1, y)
         r = imageData(x + 2, y)
@@ -536,13 +528,13 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(quickVal, y) = bFinal(imageData(quickVal, y))
-        imageData(quickVal + 1, y) = gFinal(imageData(quickVal + 1, y))
-        imageData(quickVal + 2, y) = rFinal(imageData(quickVal + 2, y))
+        imageData(xStride, y) = bFinal(imageData(xStride, y))
+        imageData(xStride + 1, y) = gFinal(imageData(xStride + 1, y))
+        imageData(xStride + 2, y) = rFinal(imageData(xStride + 2, y))
         
     Next y
         If Not suppressMessages Then
@@ -577,11 +569,8 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -614,12 +603,12 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     
     'Build the image histogram
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) * 0.001
@@ -692,13 +681,13 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(quickVal, y) = lFinal(imageData(quickVal, y))
-        imageData(quickVal + 1, y) = lFinal(imageData(quickVal + 1, y))
-        imageData(quickVal + 2, y) = lFinal(imageData(quickVal + 2, y))
+        imageData(xStride, y) = lFinal(imageData(xStride, y))
+        imageData(xStride + 1, y) = lFinal(imageData(xStride + 1, y))
+        imageData(xStride + 2, y) = lFinal(imageData(xStride + 2, y))
         
     Next y
         If Not suppressMessages Then
@@ -739,10 +728,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     finalX = srcDIB.GetDIBWidth - 2
     finalY = srcDIB.GetDIBHeight - 2
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xOffset As Long, xOffsetRight As Long, xOffsetLeft As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    Dim xOffset As Long, xOffsetRight As Long, xOffsetLeft As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -792,9 +778,9 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        xOffset = x * qvDepth
-        xOffsetRight = (x + 1) * qvDepth
-        xOffsetLeft = (x - 1) * qvDepth
+        xOffset = x * 4
+        xOffsetRight = (x + 1) * 4
+        xOffsetLeft = (x - 1) * 4
     For y = initY To finalY
         
         'Find the smallest RGB values in the local vicinity of this pixel
@@ -899,7 +885,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     
     'Top row
     For x = initX To finalX
-        xOffset = x * qvDepth
+        xOffset = x * 4
         dstImageData(xOffset, 0) = dstImageData(xOffset, 1)
         dstImageData(xOffset + 1, 0) = dstImageData(xOffset + 1, 1)
         dstImageData(xOffset + 2, 0) = dstImageData(xOffset + 2, 1)
@@ -908,7 +894,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     'Bottom row
     y = finalY + 1
     For x = initX To finalX
-        xOffset = x * qvDepth
+        xOffset = x * 4
         dstImageData(xOffset, y) = dstImageData(xOffset, finalY)
         dstImageData(xOffset + 1, y) = dstImageData(xOffset + 1, finalY)
         dstImageData(xOffset + 2, y) = dstImageData(xOffset + 2, finalY)
@@ -916,14 +902,14 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     
     'Left row
     For y = initY To finalY
-        dstImageData(0, y) = dstImageData(qvDepth, y)
-        dstImageData(1, y) = dstImageData(qvDepth + 1, y)
-        dstImageData(2, y) = dstImageData(qvDepth + 2, y)
+        dstImageData(0, y) = dstImageData(4, y)
+        dstImageData(1, y) = dstImageData(4 + 1, y)
+        dstImageData(2, y) = dstImageData(4 + 2, y)
     Next y
     
     'Right row
-    xOffset = finalX * qvDepth
-    xOffsetRight = (finalX + 1) * qvDepth
+    xOffset = finalX * 4
+    xOffsetRight = (finalX + 1) * 4
     For y = initY To finalY
         dstImageData(xOffsetRight, y) = dstImageData(xOffset, y)
         dstImageData(xOffsetRight + 1, y) = dstImageData(xOffset + 1, y)
@@ -1067,11 +1053,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want
-    ' to handle both cases.)
-    Dim xStride As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'Prep color retrieval variables (Long-type, because intermediate calculates may exceed byte range)
     Dim rSrc As Double, gSrc As Double, bSrc As Double
@@ -1089,7 +1072,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             blurDIB.WrapArrayAroundScanline blurImageData, blurSA, y
         For x = initX To finalX
             
-            xStride = x * qvDepth
+            xStride = x * 4
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance
             ' detection, to improve transitions between light and dark regions in the image.)
@@ -1187,7 +1170,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             blurDIB.WrapArrayAroundScanline blurImageData, blurSA, y
         For x = initX To finalX
             
-            xStride = x * qvDepth
+            xStride = x * 4
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
             ' transitions between light and dark regions in the image.)
@@ -1273,7 +1256,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             srcDIB.WrapArrayAroundScanline srcImageData, srcSA, y
         For x = initX To finalX
         
-            xStride = x * qvDepth
+            xStride = x * 4
             
             'Calculate luminance for this pixel in the *source* image.
             bSrc = srcImageData(xStride)
@@ -2121,7 +2104,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    ' (4 is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim xStride As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -2422,7 +2405,7 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     yLimit = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    ' (4 is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim xStride As Long, quickY As Long
     
     Dim yRadius As Long
@@ -2749,11 +2732,8 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2772,22 +2752,22 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
         If grayVal > 255 Then grayVal = 255
         
         'Assign that gray value to each color channel
-        imageData(quickVal, y) = grayVal
-        imageData(quickVal + 1, y) = grayVal
-        imageData(quickVal + 2, y) = grayVal
+        imageData(xStride, y) = grayVal
+        imageData(xStride + 1, y) = grayVal
+        imageData(xStride + 2, y) = grayVal
         
     Next y
         If Not suppressMessages Then
@@ -2823,11 +2803,8 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2857,18 +2834,18 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
         
         'Assign the look-up table values
-        imageData(quickVal + 2, y) = scaleLookup(r)
-        imageData(quickVal + 1, y) = scaleLookup(g)
-        imageData(quickVal, y) = scaleLookup(b)
+        imageData(xStride + 2, y) = scaleLookup(r)
+        imageData(xStride + 1, y) = scaleLookup(g)
+        imageData(xStride, y) = scaleLookup(b)
                 
     Next y
         If Not suppressMessages Then
@@ -2903,11 +2880,8 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'Color values
     Dim r As Long, g As Long, b As Long, grayVal As Long
@@ -2919,13 +2893,13 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     
     'Calculate max/min values for each channel
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000

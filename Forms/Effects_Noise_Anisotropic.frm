@@ -129,8 +129,8 @@ Attribute VB_Exposed = False
 ' ranges (and the corresponding names presented to the user) to try and make the filter a bit more accessible to
 ' beginners, but suggestions for further improvement are obviously welcome.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -223,11 +223,8 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     initY = curDIBValues.Top + 1
     finalX = curDIBValues.Right - 1
     finalY = curDIBValues.Bottom - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, quickXInner As Long, quickY As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long, xStrideInner As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -253,14 +250,14 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         
         'Loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickX = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
         
             'Grab a copy of the original pixel values; these form the basis of all subsequent comparisons
-            bDst = dstImageData(quickX, y)
-            gDst = dstImageData(quickX + 1, y)
-            rDst = dstImageData(quickX + 2, y)
-            If qvDepth = 4 Then aDst = dstImageData(quickX + 3, y)
+            bDst = dstImageData(xStride, y)
+            gDst = dstImageData(xStride + 1, y)
+            rDst = dstImageData(xStride + 2, y)
+            aDst = dstImageData(xStride + 3, y)
             
             'Reset all comparison values
             rSum = 0
@@ -273,10 +270,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 
                 'North
                 quickY = y - 1
-                bSrc = srcImageData(quickX, quickY)
-                gSrc = srcImageData(quickX + 1, quickY)
-                rSrc = srcImageData(quickX + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, quickY)
+                bSrc = srcImageData(xStride, quickY)
+                gSrc = srcImageData(xStride + 1, quickY)
+                rSrc = srcImageData(xStride + 2, quickY)
+                aSrc = srcImageData(xStride + 3, quickY)
                 
                 'Calculate nabla (gradient) and conduction, and add them to the running total
                 rNabla = (rSrc - rDst)
@@ -285,17 +282,15 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
                 
                 'South
                 quickY = y + 1
-                bSrc = srcImageData(quickX, quickY)
-                gSrc = srcImageData(quickX + 1, quickY)
-                rSrc = srcImageData(quickX + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, quickY)
+                bSrc = srcImageData(xStride, quickY)
+                gSrc = srcImageData(xStride + 1, quickY)
+                rSrc = srcImageData(xStride + 2, quickY)
+                aSrc = srcImageData(xStride + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -303,17 +298,15 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
                 
                 'West
-                quickXInner = quickX - qvDepth
-                bSrc = srcImageData(quickXInner, y)
-                gSrc = srcImageData(quickXInner + 1, y)
-                rSrc = srcImageData(quickXInner + 2, y)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, y)
+                xStrideInner = xStride - 4
+                bSrc = srcImageData(xStrideInner, y)
+                gSrc = srcImageData(xStrideInner + 1, y)
+                rSrc = srcImageData(xStrideInner + 2, y)
+                aSrc = srcImageData(xStrideInner + 3, y)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -321,17 +314,15 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
                 
                 'East
-                quickXInner = quickX + qvDepth
-                bSrc = srcImageData(quickXInner, y)
-                gSrc = srcImageData(quickXInner + 1, y)
-                rSrc = srcImageData(quickXInner + 2, y)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, y)
+                xStrideInner = xStride + 4
+                bSrc = srcImageData(xStrideInner, y)
+                gSrc = srcImageData(xStrideInner + 1, y)
+                rSrc = srcImageData(xStrideInner + 2, y)
+                aSrc = srcImageData(xStrideInner + 3, y)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -339,23 +330,21 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
-            
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
+                
             End If
             
             'If ordinal directionality is requested, calculate the minimum out of NW/NE/SW/SE distances now
             If adOrdinal Then
 
                 'North-west
-                quickXInner = quickX - qvDepth
+                xStrideInner = xStride - 4
                 quickY = y - 1
-                bSrc = srcImageData(quickXInner, quickY)
-                gSrc = srcImageData(quickXInner + 1, quickY)
-                rSrc = srcImageData(quickXInner + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
+                bSrc = srcImageData(xStrideInner, quickY)
+                gSrc = srcImageData(xStrideInner + 1, quickY)
+                rSrc = srcImageData(xStrideInner + 2, quickY)
+                aSrc = srcImageData(xStrideInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -363,18 +352,16 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
-
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
+                
                 'North-east
-                quickXInner = quickX + qvDepth
+                xStrideInner = xStride + 4
                 quickY = y - 1
-                bSrc = srcImageData(quickXInner, quickY)
-                gSrc = srcImageData(quickXInner + 1, quickY)
-                rSrc = srcImageData(quickXInner + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
+                bSrc = srcImageData(xStrideInner, quickY)
+                gSrc = srcImageData(xStrideInner + 1, quickY)
+                rSrc = srcImageData(xStrideInner + 2, quickY)
+                aSrc = srcImageData(xStrideInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -382,18 +369,16 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
-
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
+                
                 'South-west
-                quickXInner = quickX - qvDepth
+                xStrideInner = xStride - 4
                 quickY = y + 1
-                bSrc = srcImageData(quickXInner, quickY)
-                gSrc = srcImageData(quickXInner + 1, quickY)
-                rSrc = srcImageData(quickXInner + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
+                bSrc = srcImageData(xStrideInner, quickY)
+                gSrc = srcImageData(xStrideInner + 1, quickY)
+                rSrc = srcImageData(xStrideInner + 2, quickY)
+                aSrc = srcImageData(xStrideInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -401,18 +386,16 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
-
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
+                
                 'South-east
-                quickXInner = quickX + qvDepth
+                xStrideInner = xStride + 4
                 quickY = y + 1
-                bSrc = srcImageData(quickXInner, quickY)
-                gSrc = srcImageData(quickXInner + 1, quickY)
-                rSrc = srcImageData(quickXInner + 2, quickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
+                bSrc = srcImageData(xStrideInner, quickY)
+                gSrc = srcImageData(xStrideInner + 1, quickY)
+                rSrc = srcImageData(xStrideInner + 2, quickY)
+                aSrc = srcImageData(xStrideInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -420,11 +403,9 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 gSum = gSum + gNabla * conduction(gNabla)
                 bNabla = (bSrc - bDst)
                 bSum = bSum + bNabla * conduction(bNabla)
-                If qvDepth = 4 Then
-                    aNabla = (aSrc - aDst)
-                    aSum = aSum + aNabla * conduction(aNabla)
-                End If
-
+                aNabla = (aSrc - aDst)
+                aSum = aSum + aNabla * conduction(aNabla)
+                
             End If
             
             'We have now calculated full anistropic sums for each color channel.  Take the average of each channel,
@@ -445,10 +426,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             If aNew > 255 Then aNew = 255
                 
             'Store the new values
-            dstImageData(quickX, y) = bNew
-            dstImageData(quickX + 1, y) = gNew
-            dstImageData(quickX + 2, y) = rNew
-            If qvDepth = 4 Then dstImageData(quickX + 3, y) = aNew
+            dstImageData(xStride, y) = bNew
+            dstImageData(xStride + 1, y) = gNew
+            dstImageData(xStride + 2, y) = rNew
+            dstImageData(xStride + 3, y) = aNew
             
         Next y
             If (Not toPreview) Then
@@ -460,7 +441,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         Next x
         
         'On each iteration, we must copy over the new bits to the source image
-        If (i < adIterations) Then CopyMemoryStrict VarPtr(srcImageData(0, 0)), VarPtr(dstImageData(0, 0)), (finalX - initX + 1) * (finalY - initY + 1) * qvDepth
+        If (i < adIterations) Then CopyMemoryStrict VarPtr(srcImageData(0, 0)), VarPtr(dstImageData(0, 0)), (finalX - initX + 1) * (finalY - initY + 1) * 4
         If (Not toPreview) Then progBarOffset = finalX * i
         
     Next i

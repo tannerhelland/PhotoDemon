@@ -106,8 +106,8 @@ Attribute VB_Exposed = False
 ' partial histogram problem.  C'est la vie.  Applying a median or noise-reduction filter in advance might help to
 ' improve the output.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -182,10 +182,7 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
         Dim dstImageData() As Byte, dstSA1D As SafeArray1D
         Dim srcImageData() As Byte, srcSA1D As SafeArray1D
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim xStride As Long, qvDepth As Long
-        qvDepth = curDIBValues.BytesPerPixel
+        Dim xStride As Long
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
@@ -214,7 +211,7 @@ Public Sub ApplyImitationHDR(ByVal effectParams As String, Optional ByVal toPrev
             workingDIB.WrapArrayAroundScanline dstImageData, dstSA1D, y
         For x = initX To finalX
         
-            xStride = x * qvDepth
+            xStride = x * 4
             
             'Retrieve the original image's pixels
             b = dstImageData(xStride)

@@ -79,8 +79,8 @@ Attribute VB_Exposed = False
 ' This provides reasonably good control, while limiting the amount of change applied at the high and
 ' low ends of the scale.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -109,11 +109,6 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -145,14 +140,14 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     sCurve(1).y = 127 + midCurveAdj * 0.5
     
     'Use those curve coordinates to construct a full lookup table of converted values
-    Dim cLut As pdFilterLUT
-    Set cLut = New pdFilterLUT
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
     Dim sValues() As Byte
-    cLut.FillLUT_Curve sValues, sCurve
+    cLUT.FillLUT_Curve sValues, sCurve
     
     'Loop through each pixel in the image, converting values as we go
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     Dim dibPointer As Long, dibStride As Long
     workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, 0
@@ -161,7 +156,7 @@ Public Sub Vibrance(ByVal effectParams As String, Optional ByVal toPreview As Bo
     
     For y = initY To finalY
         tmpSA1D.pvData = dibPointer + y * dibStride
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
         bFloat = imageData(x)

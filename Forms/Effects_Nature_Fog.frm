@@ -137,8 +137,8 @@ Attribute VB_Exposed = False
 ' of RGB values involved), but maybe someone out there has sharper eyes than me, and can detect RGB differences
 ' of 1 or less... ;)
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -184,10 +184,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xOffset As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xOffset As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -289,7 +286,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     For x = initX To finalX
     
         pDisplace = fogArray(x, y)
-        xOffset = x * qvDepth
+        xOffset = x * 4
         dstImageData(xOffset, y) = pDisplace
         dstImageData(xOffset + 1, y) = pDisplace
         dstImageData(xOffset + 2, y) = pDisplace

@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 ' Separate sliders are provided for both a replacement threshold, and a blend threshold, to help the user minimize
 ' harsh edges between the color and its surroundings.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -174,9 +174,6 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    
-    'Before doing anything else, convert this DIB to 32bpp.  (This simplifies the inner loop.)
-    If (workingDIB.GetDIBColorDepth <> 32) Then workingDIB.ConvertTo32bpp
     
     'Create a local array and point it at the pixel data we want to operate on
     PrepSafeArray tmpSA, workingDIB

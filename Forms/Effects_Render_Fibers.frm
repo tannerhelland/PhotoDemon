@@ -198,8 +198,8 @@ Attribute VB_Exposed = False
 'Render clouds has been available in Photoshop since... CS1, I think?  This is a rough analog, with some verbiage
 ' changes to better match similar options in other PD tools.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -311,10 +311,10 @@ Public Sub FxRenderFibers(ByVal effectParams As String, Optional ByVal toPreview
         
         'Use the calculated mean to complete the look-up table
         Dim conTable() As Byte
-        Dim cLut As pdFilterLUT
-        Set cLut = New pdFilterLUT
-        cLut.FillLUT_Contrast conTable, fxContrast
-        cLut.ApplyLUTToAllColorChannels m_tmpMergeDIB, conTable, True
+        Dim cLUT As pdFilterLUT
+        Set cLUT = New pdFilterLUT
+        cLUT.FillLUT_Contrast conTable, fxContrast
+        cLUT.ApplyLUTToAllColorChannels m_tmpMergeDIB, conTable
         
     End If
     

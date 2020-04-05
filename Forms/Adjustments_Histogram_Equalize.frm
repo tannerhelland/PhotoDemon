@@ -104,8 +104,8 @@ Attribute VB_Exposed = False
 'Module for handling histogram equalization.  As of Dec '15, both global and local modes are supported, and a variety
 ' of histograms can be generated and analyzed.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -145,19 +145,14 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         If (ehRadius < 1) Then ehRadius = 1
     End If
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, initXStride As Long, finalXStride As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
-    initXStride = initX * qvDepth
+    initXStride = initX * 4
     
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-    finalXStride = finalX * qvDepth
+    finalXStride = finalX * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -221,7 +216,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         
         'Start by generating the initial histogram(s)
         For y = initY To finalY
-        For x = initXStride To finalXStride Step qvDepth
+        For x = initXStride To finalXStride Step 4
             
             'Get the source pixel color values
             b = imageData(x, y)
@@ -291,7 +286,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         If (Not toPreview) Then Message "Equalizing image..."
         
         For y = initY To finalY
-        For x = initXStride To finalXStride Step qvDepth
+        For x = initXStride To finalXStride Step 4
         
             'Get the source RGB values
             b = imageData(x, y)
@@ -347,7 +342,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             End If
             
             'Loop through each pixel in the image, applying the filter as we go
-            For x = initXStride To finalXStride Step qvDepth
+            For x = initXStride To finalXStride Step 4
                 
                 'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
                 If directionDown Then

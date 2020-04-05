@@ -11,8 +11,8 @@ Attribute VB_Name = "Histograms"
 '
 'Note that some UI code pops up here as well, as various PD tools provide a histogram overlay.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -266,11 +266,8 @@ Public Sub StretchHistogram()
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -289,13 +286,13 @@ Public Sub StretchHistogram()
         
     'Loop through each pixel in the image, checking max/min values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
         
         If r < rMin Then rMin = r
         If r > rMax Then rMax = r
@@ -346,17 +343,17 @@ Public Sub StretchHistogram()
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
                 
-        imageData(quickVal + 2, y) = rLookup(r)
-        imageData(quickVal + 1, y) = gLookup(g)
-        imageData(quickVal, y) = bLookup(b)
+        imageData(xStride + 2, y) = rLookup(r)
+        imageData(xStride + 1, y) = gLookup(g)
+        imageData(xStride, y) = bLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x

@@ -150,8 +150,8 @@ Attribute VB_Exposed = False
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -256,10 +256,7 @@ Private Function CalculateOptimalThreshold() As Long
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xStride As Long
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -271,14 +268,14 @@ Private Function CalculateOptimalThreshold() As Long
     
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-                
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
+        
         pLuminance = GetLuminance(r, g, b)
         
         'Store this value in the histogram
@@ -362,11 +359,8 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xStride As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -404,7 +398,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
             For x = initX To finalX
                 
-                xStride = x * qvDepth
+                xStride = x * 4
                 
                 'Get the source pixel color values
                 b = imageData(xStride, y)
@@ -446,7 +440,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
             For x = initX To finalX
             
-                xStride = x * qvDepth
+                xStride = x * 4
                 
                 'Get the source pixel color values
                 b = imageData(xStride, y)
@@ -488,7 +482,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             For y = initY To finalY
             For x = initX To finalX
                 
-                xStride = x * qvDepth
+                xStride = x * 4
                 
                 'Get the source pixel color values
                 b = imageData(xStride, y)
@@ -582,7 +576,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         For y = initY To finalY
         For x = initX To finalX
             
-            xQuick = x * qvDepth
+            xQuick = x * 4
             
             'Get the source pixel color values
             b = imageData(xQuick, y)

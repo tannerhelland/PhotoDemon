@@ -131,8 +131,8 @@ Attribute VB_Exposed = False
 ' of 40's noir (The Maltese Falcon, Double Indemnity, etc.), and the entire effect operates in HDR space to try
 ' and minimize contrast loss.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -185,11 +185,8 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -202,13 +199,13 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        r = imageData(xStride + 2, y)
+        g = imageData(xStride + 1, y)
+        b = imageData(xStride, y)
         
         'Starting by convert the pixel to its grayscale equivalent
         grayVal = (213 * r + 715 * g + 72 * b) / 1000
@@ -237,9 +234,9 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         If grayByte > 255 Then grayByte = 255
         
         'Assign that gray value to each color channel
-        imageData(quickVal, y) = grayByte
-        imageData(quickVal + 1, y) = grayByte
-        imageData(quickVal + 2, y) = grayByte
+        imageData(xStride, y) = grayByte
+        imageData(xStride + 1, y) = grayByte
+        imageData(xStride + 2, y) = grayByte
         
     Next y
         If (Not toPreview) Then

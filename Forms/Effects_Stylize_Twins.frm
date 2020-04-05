@@ -69,8 +69,8 @@ Attribute VB_Exposed = False
 '
 'Unoptimized "twin" generator.  Simple 50% alpha blending combined with a flip.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -113,15 +113,12 @@ Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview 
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'Pre-calculate the largest possible processed x-value
     Dim maxX As Long
-    maxX = finalX * qvDepth
+    maxX = finalX * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -141,33 +138,33 @@ Public Sub GenerateTwins(ByVal effectParams As String, Optional ByVal toPreview 
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Grab the current pixel values
-        b = srcImageData(quickVal, y)
-        g = srcImageData(quickVal + 1, y)
-        r = srcImageData(quickVal + 2, y)
-        a = srcImageData(quickVal + 3, y)
+        b = srcImageData(xStride, y)
+        g = srcImageData(xStride + 1, y)
+        r = srcImageData(xStride + 2, y)
+        a = srcImageData(xStride + 3, y)
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If (tType = 0) Then
-            b2 = srcImageData(maxX - quickVal, y)
-            g2 = srcImageData(maxX - quickVal + 1, y)
-            r2 = srcImageData(maxX - quickVal + 2, y)
-            a2 = srcImageData(maxX - quickVal + 3, y)
+            b2 = srcImageData(maxX - xStride, y)
+            g2 = srcImageData(maxX - xStride + 1, y)
+            r2 = srcImageData(maxX - xStride + 2, y)
+            a2 = srcImageData(maxX - xStride + 3, y)
         Else
-            b2 = srcImageData(quickVal, finalY - y)
-            g2 = srcImageData(quickVal + 1, finalY - y)
-            r2 = srcImageData(quickVal + 2, finalY - y)
-            a2 = srcImageData(quickVal + 3, finalY - y)
+            b2 = srcImageData(xStride, finalY - y)
+            g2 = srcImageData(xStride + 1, finalY - y)
+            r2 = srcImageData(xStride + 2, finalY - y)
+            a2 = srcImageData(xStride + 3, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
-        dstImageData(quickVal, y) = hLookup(b + b2)
-        dstImageData(quickVal + 1, y) = hLookup(g + g2)
-        dstImageData(quickVal + 2, y) = hLookup(r + r2)
-        dstImageData(quickVal + 3, y) = hLookup(a + a2)
+        dstImageData(xStride, y) = hLookup(b + b2)
+        dstImageData(xStride + 1, y) = hLookup(g + g2)
+        dstImageData(xStride + 2, y) = hLookup(r + r2)
+        dstImageData(xStride + 3, y) = hLookup(a + a2)
         
     Next y
         If (Not toPreview) Then

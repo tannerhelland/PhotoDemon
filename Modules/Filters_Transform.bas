@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Transform"
 '
 'Functions for generic 2D transformations, including rotate, flip, mirror and crop.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -51,11 +51,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     finalX = PDImages.GetActiveImage.Width - 1
     finalY = PDImages.GetActiveImage.Height - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    'qvDepth = PDImages.GetActiveImage.mainDIB.getDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -84,8 +81,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Scan the image, starting at the top-left and moving right
     For y = 0 To finalY
     For x = 0 To finalX
-        quickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        xStride = x * 4
+        curColor = gLookup(CLng(srcImageData(xStride, y)) + CLng(srcImageData(xStride + 1, y)) + CLng(srcImageData(xStride + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -127,10 +124,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(xStride, y)) + CLng(srcImageData(xStride + 1, y)) + CLng(srcImageData(xStride + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -149,15 +146,15 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     PDDebug.LogAction "Analyzing right edge of image..."
-    quickVal = finalX * qvDepth
-    initColor = gLookup(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
+    xStride = finalX * 4
+    initColor = gLookup(CLng(srcImageData(xStride, initY)) + CLng(srcImageData(xStride + 1, 0)) + CLng(srcImageData(xStride + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(xStride, y)) + CLng(srcImageData(xStride + 1, y)) + CLng(srcImageData(xStride + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -176,16 +173,16 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     initX = newLeft
     finalX = newRight
-    quickVal = initX * qvDepth
-    initColor = gLookup(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
+    xStride = initX * 4
+    initColor = gLookup(CLng(srcImageData(xStride, finalY)) + CLng(srcImageData(xStride + 1, finalY)) + CLng(srcImageData(xStride + 2, finalY)))
     
     PDDebug.LogAction "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
     For x = initX To finalX
-        quickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        xStride = x * 4
+        curColor = gLookup(CLng(srcImageData(xStride, y)) + CLng(srcImageData(xStride + 1, y)) + CLng(srcImageData(xStride + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -1087,7 +1084,7 @@ Public Sub TrimImage()
     finalY = PDImages.GetActiveImage.Height - 1
             
     'These values will help us access locations in the array more quickly.
-    Dim quickVal As Long
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1144,10 +1141,10 @@ Public Sub TrimImage()
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * 4
+        xStride = x * 4
     For y = initY To finalY
     
-        If (srcImageData(quickVal + 3, y) <> 0) Then
+        If (srcImageData(xStride + 3, y) <> 0) Then
             colorFails = True
             Exit For
         End If
@@ -1166,10 +1163,10 @@ Public Sub TrimImage()
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * 4
+        xStride = x * 4
     For y = initY To finalY
     
-        If (srcImageData(quickVal + 3, y) <> 0) Then
+        If (srcImageData(xStride + 3, y) <> 0) Then
             colorFails = True
             Exit For
         End If

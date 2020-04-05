@@ -103,8 +103,8 @@ Attribute VB_Exposed = False
 'Basic brightness/contrast handler.  A legacy LUT-based method is provided, but the modern L*a*b* implementation
 ' (via LittleCMS) is preferred.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -156,15 +156,10 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim pxSize As Long
-    pxSize = curDIBValues.BytesPerPixel
     
     Dim xStart As Long, xStop As Long
-    xStart = initX * pxSize
-    xStop = finalX * pxSize
+    xStart = initX * 4
+    xStop = finalX * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -261,7 +256,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                     numOfPixels = 0
                     
                     For y = initY To finalY
-                    For x = xStart To xStop Step pxSize
+                    For x = xStart To xStop Step 4
                         bTotal = bTotal + srcImageData(x, y)
                         gTotal = gTotal + srcImageData(x + 1, y)
                         rTotal = rTotal + srcImageData(x + 2, y)
@@ -302,7 +297,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         
         'Apply the LUT to the image!
         For y = initY To finalY
-        For x = xStart To xStop Step pxSize
+        For x = xStart To xStop Step 4
             srcImageData(x, y) = newBCTable(srcImageData(x, y))
             srcImageData(x + 1, y) = newBCTable(srcImageData(x + 1, y))
             srcImageData(x + 2, y) = newBCTable(srcImageData(x + 2, y))

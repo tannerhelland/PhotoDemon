@@ -146,8 +146,8 @@ Attribute VB_Exposed = False
 ' settings bear some similarity to the "Metal" and "Emboss" effects.  I particularly like the lighting
 ' controls in our implementation, which are a IMO nice improvement over the Photoshop version.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -231,9 +231,9 @@ Public Sub ApplyPlasticWrap(ByVal effectParams As String, Optional ByVal toPrevi
     'Convert our point array into an actual curve
     Dim gLookup() As Byte
     
-    Dim cLut As pdFilterLUT
-    Set cLut = New pdFilterLUT
-    cLut.FillLUT_Curve gLookup, gCurve
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
+    cLUT.FillLUT_Curve gLookup, gCurve
     If (Not toPreview) Then ProgressBars.SetProgBarVal 3
     
     'Next, we will apply the curve to the grayscale map.

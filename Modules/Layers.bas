@@ -9,8 +9,8 @@ Attribute VB_Name = "Layers"
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -299,7 +299,8 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         'Load the file in question
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
-            'Forcibly convert the new layer to 32bpp
+            'Forcibly convert the new layer to 32bpp (failsafe only; it should already be in
+            ' 32-bpp mode)
             If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
             
             'Ask the current image to prepare a blank layer for us
@@ -1641,17 +1642,17 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
         PrepSafeArray tSA, tmpLayerRef.layerDIB
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
-        Dim quickX As Long
-        quickX = layerX * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
+        Dim xStride As Long
+        xStride = layerX * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
+        If ((xStride + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
         
             With dstQuad
-                .Blue = tmpData(quickX, layerY)
-                .Green = tmpData(quickX + 1, layerY)
-                .Red = tmpData(quickX + 2, layerY)
-                If (tmpLayerRef.layerDIB.GetDIBColorDepth = 32) Then .Alpha = tmpData(quickX + 3, layerY)
+                .Blue = tmpData(xStride, layerY)
+                .Green = tmpData(xStride + 1, layerY)
+                .Red = tmpData(xStride + 2, layerY)
+                If (tmpLayerRef.layerDIB.GetDIBColorDepth = 32) Then .Alpha = tmpData(xStride + 3, layerY)
             End With
             
         End If

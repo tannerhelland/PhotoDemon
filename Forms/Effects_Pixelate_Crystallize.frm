@@ -115,8 +115,8 @@ Attribute VB_Exposed = False
 ' project has a faster and simpler version of this routine worth checking out if PD's methods seem like overkill!
 ' Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -160,10 +160,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xStride As Long
     
     'Because this is a two-pass filter, we have to manually change the progress bar maximum to 2 * width
     If (Not toPreview) Then
@@ -226,7 +223,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     
     'Loop through each pixel in the image, calculating nearest Voronoi points as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
         'Use the Voronoi class to find the nearest point to this pixel
@@ -241,10 +238,10 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         If (colorSamplingMethod = 1) Then
         
             'Retrieve RGBA values for this pixel
-            b = dstImageData(quickVal, y)
-            g = dstImageData(quickVal + 1, y)
-            r = dstImageData(quickVal + 2, y)
-            a = dstImageData(quickVal + 3, y)
+            b = dstImageData(xStride, y)
+            g = dstImageData(xStride + 1, y)
+            r = dstImageData(xStride + 2, y)
+            a = dstImageData(xStride + 3, y)
             
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
@@ -288,11 +285,11 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
             If (thisPoint.y > finalY) Then thisPoint.y = finalY
             
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
-            quickVal = thisPoint.x * qvDepth
-            bLookup(x) = dstImageData(quickVal, thisPoint.y)
-            gLookup(x) = dstImageData(quickVal + 1, thisPoint.y)
-            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
-            aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
+            xStride = thisPoint.x * 4
+            bLookup(x) = dstImageData(xStride, thisPoint.y)
+            gLookup(x) = dstImageData(xStride + 1, thisPoint.y)
+            rLookup(x) = dstImageData(xStride + 2, thisPoint.y)
+            aLookup(x) = dstImageData(xStride + 3, thisPoint.y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
@@ -317,7 +314,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
                 
     'Loop through the image, changing colors to match our calculated Voronoi values
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
         'Use the lookup table from step 1 to find the nearest Voronoi point index for this pixel.
@@ -326,10 +323,10 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         nearestPoint = vLookup(x, y)
                 
         'Retrieve the RGB values from the relevant Voronoi cell bin
-        dstImageData(quickVal, y) = bLookup(nearestPoint)
-        dstImageData(quickVal + 1, y) = gLookup(nearestPoint)
-        dstImageData(quickVal + 2, y) = rLookup(nearestPoint)
-        dstImageData(quickVal + 3, y) = aLookup(nearestPoint)
+        dstImageData(xStride, y) = bLookup(nearestPoint)
+        dstImageData(xStride + 1, y) = gLookup(nearestPoint)
+        dstImageData(xStride + 2, y) = rLookup(nearestPoint)
+        dstImageData(xStride + 3, y) = aLookup(nearestPoint)
         
     Next y
         If (Not toPreview) Then

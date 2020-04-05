@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Adjustments"
 '
 'Runs all color-related filters (invert, negative, shifting, etc.).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -124,11 +124,8 @@ Public Sub MenuCShift(ByVal sType As Byte)
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -140,20 +137,20 @@ Public Sub MenuCShift(ByVal sType As Byte)
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         If sType = 0 Then
-            r = imageData(quickVal, y)
-            g = imageData(quickVal + 2, y)
-            b = imageData(quickVal + 1, y)
+            r = imageData(xStride, y)
+            g = imageData(xStride + 2, y)
+            b = imageData(xStride + 1, y)
         Else
-            r = imageData(quickVal + 1, y)
-            g = imageData(quickVal, y)
-            b = imageData(quickVal + 2, y)
+            r = imageData(xStride + 1, y)
+            g = imageData(xStride, y)
+            b = imageData(xStride + 2, y)
         End If
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(xStride + 2, y) = r
+        imageData(xStride + 1, y) = g
+        imageData(xStride, y) = b
     Next y
         If (x And progBarCheck) = 0 Then
             If Interface.UserPressedESC() Then Exit For
@@ -184,11 +181,6 @@ Public Sub MenuNegative()
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -201,10 +193,10 @@ Public Sub MenuNegative()
     Dim h As Double, s As Double, v As Double
     
     'Apply the filter
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     For y = initY To finalY
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         'Get red, green, and blue values from the array
         b = imageData(x, y)
@@ -252,11 +244,6 @@ Public Sub MenuInvertHue()
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -269,10 +256,10 @@ Public Sub MenuInvertHue()
     Dim h As Double, s As Double, l As Double
     
     'Apply the filter
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     For y = initY To finalY
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         'Get red, green, and blue values from the array
         b = imageData(x, y)
@@ -328,11 +315,6 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     initY = curDIBValues.Top
     finalX = curDIBValues.Right * curDIBValues.BytesPerPixel
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -345,7 +327,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
         
     'Apply the filter
     For y = initY To finalY
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         b = imageData(x, y)
         g = imageData(x + 1, y)
@@ -471,31 +453,28 @@ Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQuad, By
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
-        a = imageData(quickVal + 3, y)
+        b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
+        a = imageData(xStride + 3, y)
         
         If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.Alpha) Then
         
-            imageData(quickVal + 3, y) = newQuad.Alpha
-            imageData(quickVal + 2, y) = newQuad.Red
-            imageData(quickVal + 1, y) = newQuad.Green
-            imageData(quickVal, y) = newQuad.Blue
+            imageData(xStride + 3, y) = newQuad.Alpha
+            imageData(xStride + 2, y) = newQuad.Red
+            imageData(xStride + 1, y) = newQuad.Green
+            imageData(xStride, y) = newQuad.Blue
             
         End If
         

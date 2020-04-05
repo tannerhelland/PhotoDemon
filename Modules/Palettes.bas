@@ -12,8 +12,8 @@ Attribute VB_Name = "Palettes"
 'Please note that this module has quite a few dependencies.  In particular, it performs no quantization
 ' (and relatively little palette-matching) on its own.  This is primarily delegated to helper classes.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -82,11 +82,6 @@ Public Function GetDIBColorCount(ByRef srcDIB As pdDIB, Optional ByVal includeAl
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray1D
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -103,7 +98,7 @@ Public Function GetDIBColorCount(ByRef srcDIB As pdDIB, Optional ByVal includeAl
     'Iterate through all pixels, counting unique values as we go.
     For y = initY To finalY
         srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
     
         b = imageData(x)
         g = imageData(x + 1)

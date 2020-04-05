@@ -98,8 +98,8 @@ Attribute VB_Exposed = False
 ' for pencil style, tip thickness, and stroke pressure.  This yields much more flexible results, and the use of PD's
 ' central compositor for overlaying various image copies keeps things nice and fast.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -194,10 +194,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         PrepSafeArray srcSA, m_blurDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
-        qvDepth = curDIBValues.BytesPerPixel
+        Dim xStride As Long
                 
         'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
         Dim grayLookUp() As Byte
@@ -209,25 +206,25 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
                 
         'Invert the source DIB, and optionally, apply grayscale as well
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
             
-            b = srcImageData(quickVal, y)
-            g = srcImageData(quickVal + 1, y)
-            r = srcImageData(quickVal + 2, y)
+            b = srcImageData(xStride, y)
+            g = srcImageData(xStride + 1, y)
+            r = srcImageData(xStride + 2, y)
             
             'Normally, we invert the raw pixel data only...
             If (pencilStyle <> 1) Then
-                srcImageData(quickVal, y) = 255 - b
-                srcImageData(quickVal + 1, y) = 255 - g
-                srcImageData(quickVal + 2, y) = 255 - r
+                srcImageData(xStride, y) = 255 - b
+                srcImageData(xStride + 1, y) = 255 - g
+                srcImageData(xStride + 2, y) = 255 - r
                 
             '...but for the "luminous" color mode, we also convert the image to grayscale
             Else
                 g = 255 - grayLookUp(r + g + b)
-                srcImageData(quickVal, y) = g
-                srcImageData(quickVal + 1, y) = g
-                srcImageData(quickVal + 2, y) = g
+                srcImageData(xStride, y) = g
+                srcImageData(xStride + 1, y) = g
+                srcImageData(xStride + 2, y) = g
             End If
             
         Next y
@@ -294,12 +291,12 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         
         'Adjust vibrance
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
             
-            b = srcImageData(quickVal, y)
-            g = srcImageData(quickVal + 1, y)
-            r = srcImageData(quickVal + 2, y)
+            b = srcImageData(xStride, y)
+            g = srcImageData(xStride + 1, y)
+            r = srcImageData(xStride + 2, y)
                 
             'Calculate the gray value using different methods for each pencil style
             If (pencilStyle = 0) Or (pencilStyle = 1) Then
@@ -341,9 +338,9 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
                 b = r
             End If
             
-            srcImageData(quickVal, y) = b
-            srcImageData(quickVal + 1, y) = g
-            srcImageData(quickVal + 2, y) = r
+            srcImageData(xStride, y) = b
+            srcImageData(xStride + 1, y) = g
+            srcImageData(xStride + 2, y) = r
             
         Next y
             If (Not toPreview) Then

@@ -9,8 +9,8 @@ Attribute VB_Name = "Filters_Area"
 'Holder module for generalized area filters, including some experimental implementations
 ' (which may not be exposed directly to users; see individual function notes for details).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -123,11 +123,8 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
     checkXMax = finalX
     checkYMin = initY
     checkYMax = finalY
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -173,7 +170,7 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
@@ -184,7 +181,7 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
         
         'Run a sub-loop around the current pixel
         For x2 = x - 2 To x + 2
-            xOffset = x2 * qvDepth
+            xOffset = x2 * 4
         For y2 = y - 2 To y + 2
         
             calcX = x2 - x
@@ -262,9 +259,9 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
         End If
         
         'Copy the calculated value into the destination array
-        dstImageData(quickVal, y) = Int(b)
-        dstImageData(quickVal + 1, y) = Int(g)
-        dstImageData(quickVal + 2, y) = Int(r)
+        dstImageData(xStride, y) = Int(b)
+        dstImageData(xStride + 1, y) = Int(g)
+        dstImageData(xStride + 2, y) = Int(r)
         
     Next y
         If Not suppressMessages Then
@@ -306,11 +303,8 @@ Public Sub FilterGridBlur()
             
     Dim numOfPixels As Long
     numOfPixels = iWidth + iHeight
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -329,11 +323,11 @@ Public Sub FilterGridBlur()
         r = 0
         g = 0
         b = 0
-        quickVal = x * qvDepth
+        xStride = x * 4
         For y = initY To finalY
-            r = r + imageData(quickVal + 2, y)
-            g = g + imageData(quickVal + 1, y)
-            b = b + imageData(quickVal, y)
+            r = r + imageData(xStride + 2, y)
+            g = g + imageData(xStride + 1, y)
+            b = b + imageData(xStride, y)
         Next y
         rax(x) = r
         gax(x) = g
@@ -346,10 +340,10 @@ Public Sub FilterGridBlur()
         g = 0
         b = 0
         For x = initX To finalX
-            quickVal = x * qvDepth
-            r = r + imageData(quickVal + 2, y)
-            g = g + imageData(quickVal + 1, y)
-            b = b + imageData(quickVal, y)
+            xStride = x * 4
+            r = r + imageData(xStride + 2, y)
+            g = g + imageData(xStride + 1, y)
+            b = b + imageData(xStride, y)
         Next x
         ray(y) = r
         gay(y) = g
@@ -360,7 +354,7 @@ Public Sub FilterGridBlur()
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
@@ -374,9 +368,9 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(xStride + 2, y) = r
+        imageData(xStride + 1, y) = g
+        imageData(xStride, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -796,14 +790,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     iWidth = srcDIB.GetDIBWidth
     iHeight = srcDIB.GetDIBHeight
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, quickX2 As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
-    'Determine if alpha handling is necessary for this image
-    Dim imgHasAlpha As Boolean
-    imgHasAlpha = (qvDepth = 4)
+    Dim xStride As Long, xStride2 As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -861,7 +848,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     ReDim rFloat(0 To finalX) As Single
     ReDim gFloat(0 To finalX) As Single
     ReDim bFloat(0 To finalX) As Single
-    If imgHasAlpha Then ReDim aFloat(0 To finalX) As Single
+    ReDim aFloat(0 To finalX) As Single
     
     '/* Filter horizontally along each row */
     For y = 0 To finalY
@@ -871,11 +858,11 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         
         'Populate the float arrays
         For x = 0 To finalX
-            quickX = x * qvDepth
-            bFloat(x) = imageData(quickX)
-            gFloat(x) = imageData(quickX + 1)
-            rFloat(x) = imageData(quickX + 2)
-            If imgHasAlpha Then aFloat(x) = imageData(quickX + 3)
+            xStride = x * 4
+            bFloat(x) = imageData(xStride)
+            gFloat(x) = imageData(xStride + 1)
+            rFloat(x) = imageData(xStride + 2)
+            aFloat(x) = imageData(xStride + 3)
         Next x
         
         'Apply the blur
@@ -885,13 +872,15 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             rFloat(0) = rFloat(0) * boundaryScale
             gFloat(0) = gFloat(0) * boundaryScale
             bFloat(0) = bFloat(0) * boundaryScale
+            aFloat(0) = aFloat(0) * boundaryScale
             
             'Filter right
             For x = 1 To finalX
-                quickX2 = (x - 1)
-                rFloat(x) = rFloat(x) + nu * rFloat(quickX2)
-                gFloat(x) = gFloat(x) + nu * gFloat(quickX2)
-                bFloat(x) = bFloat(x) + nu * bFloat(quickX2)
+                xStride2 = (x - 1)
+                rFloat(x) = rFloat(x) + nu * rFloat(xStride2)
+                gFloat(x) = gFloat(x) + nu * gFloat(xStride2)
+                bFloat(x) = bFloat(x) + nu * bFloat(xStride2)
+                aFloat(x) = aFloat(x) + nu * aFloat(xStride2)
             Next x
             
             'Filter left only if symmetric
@@ -901,33 +890,16 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
                 rFloat(finalX) = rFloat(finalX) * boundaryScale
                 gFloat(finalX) = gFloat(finalX) * boundaryScale
                 bFloat(finalX) = bFloat(finalX) * boundaryScale
+                aFloat(finalX) = aFloat(finalX) * boundaryScale
                 
                 For x = finalX To 1 Step -1
-                    quickX = (x - 1)
-                    rFloat(quickX) = rFloat(quickX) + nu * rFloat(x)
-                    gFloat(quickX) = gFloat(quickX) + nu * gFloat(x)
-                    bFloat(quickX) = bFloat(quickX) + nu * bFloat(x)
+                    xStride = (x - 1)
+                    rFloat(xStride) = rFloat(xStride) + nu * rFloat(x)
+                    gFloat(xStride) = gFloat(xStride) + nu * gFloat(x)
+                    bFloat(xStride) = bFloat(xStride) + nu * bFloat(x)
+                    aFloat(xStride) = aFloat(xStride) + nu * aFloat(x)
                 Next x
                 
-            End If
-            
-            'Apply alpha separately
-            If imgHasAlpha Then
-                
-                aFloat(0) = aFloat(0) * boundaryScale
-                
-                For x = 1 To finalX
-                    aFloat(x) = aFloat(x) + nu * aFloat(x - 1)
-                Next x
-                
-                If blurSymmetric Then
-                    aFloat(finalX) = aFloat(finalX) * boundaryScale
-                    For x = finalX To 1 Step -1
-                        quickX = (x - 1)
-                        aFloat(quickX) = aFloat(quickX) + nu * aFloat(x)
-                    Next x
-                End If
-            
             End If
             
         Next step
@@ -938,24 +910,20 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             r = rFloat(x) * postScale
             g = gFloat(x) * postScale
             b = bFloat(x) * postScale
+            a = aFloat(x) * postScale
             
             'Perform failsafe clipping
             If (r > 255) Then r = 255
             If (g > 255) Then g = 255
             If (b > 255) Then b = 255
+            If (a > 255) Then a = 255
             
-            quickX = x * qvDepth
-            imageData(quickX) = b
-            imageData(quickX + 1) = g
-            imageData(quickX + 2) = r
+            xStride = x * 4
+            imageData(xStride) = b
+            imageData(xStride + 1) = g
+            imageData(xStride + 2) = r
+            imageData(xStride + 3) = a
             
-            'Handle alpha separately
-            If imgHasAlpha Then
-                a = aFloat(x) * postScale
-                If (a > 255) Then a = 255
-                imageData(quickX + 3) = a
-            End If
-        
         Next x
         
         If Not suppressMessages Then

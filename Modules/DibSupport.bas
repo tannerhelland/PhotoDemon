@@ -10,8 +10,8 @@ Attribute VB_Name = "DIBs"
 ' but there's no sense cluttering up that class with functions that are only used on rare occasions.  As such, I'm moving
 ' as many of those functions as I can to this module.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -276,11 +276,6 @@ Public Function GetDIBColorCountObject(ByRef srcDIB As pdDIB, ByRef dstColorCoun
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray1D
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
@@ -295,7 +290,7 @@ Public Function GetDIBColorCountObject(ByRef srcDIB As pdDIB, ByRef dstColorCoun
     'Iterate through all pixels, counting unique values as we go.
     For y = initY To finalY
         srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         b = imageData(x)
         g = imageData(x + 1)
         r = imageData(x + 2)
@@ -334,10 +329,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         'Prep the destination array
         ReDim dstGrayArray(initX To finalX, initY To finalY) As Byte
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim xStride As Long, qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
+        Dim xStride As Long
         
         Dim r As Long, g As Long, b As Long, grayVal As Long
         Dim minVal As Long, maxVal As Long
@@ -350,7 +342,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         For x = initX To finalX
             
             'Get the source pixel color values
-            xStride = x * qvDepth
+            xStride = x * 4
             b = imageData(xStride)
             g = imageData(xStride + 1)
             r = imageData(xStride + 2)
@@ -442,11 +434,7 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
         'Prep the destination array
         ReDim dstGrayArray(initX To finalX, initY To finalY) As Byte
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
-        
+        Dim xStride As Long
         Dim r As Long, g As Long, b As Long, grayVal As Long
             
         'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
@@ -466,13 +454,13 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
             
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
                 
             'Get the source pixel color values
-            b = imageData(quickVal, y)
-            g = imageData(quickVal + 1, y)
-            r = imageData(quickVal + 2, y)
+            b = imageData(xStride, y)
+            g = imageData(xStride + 1, y)
+            r = imageData(xStride + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (213 * r + 715 * g + 72 * b) * 0.001
@@ -521,10 +509,7 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
         'Prep the destination array
         ReDim dstGrayAlphaArray(initX To finalX * 2 + 1, initY To finalY) As Byte
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
+        Dim xStride As Long
         
         Dim r As Long, g As Long, b As Long, grayVal As Long
         Dim minVal As Long, maxVal As Long
@@ -533,13 +518,13 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
             
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
                 
             'Get the source pixel color values
-            b = imageData(quickVal, y)
-            g = imageData(quickVal + 1, y)
-            r = imageData(quickVal + 2, y)
+            b = imageData(xStride, y)
+            g = imageData(xStride + 1, y)
+            r = imageData(xStride + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (213 * r + 715 * g + 72 * b) * 0.001
@@ -547,7 +532,7 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
             
             'Cache the value
             dstGrayAlphaArray(x * 2, y) = grayVal
-            dstGrayAlphaArray(x * 2 + 1, y) = imageData(quickVal + 3, y)
+            dstGrayAlphaArray(x * 2 + 1, y) = imageData(xStride + 3, y)
             
         Next y
         Next x
@@ -628,10 +613,7 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         finalX = dstDIB.GetDIBWidth - 1
         finalY = dstDIB.GetDIBHeight - 1
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long, gValue As Byte, aValue As Byte
-        qvDepth = dstDIB.GetDIBColorDepth \ 8
+        Dim xStride As Long, gValue As Byte, aValue As Byte
         
         'Create a lookup table of possible grayscale values
         Dim gLookup() As Byte
@@ -642,14 +624,14 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
             aValue = srcGrayArray(x, y)
             gValue = gLookup(aValue)
-            dstImageData(quickVal, y) = gValue
-            dstImageData(quickVal + 1, y) = gValue
-            dstImageData(quickVal + 2, y) = gValue
-            dstImageData(quickVal + 3, y) = aValue
+            dstImageData(xStride, y) = gValue
+            dstImageData(xStride + 1, y) = gValue
+            dstImageData(xStride + 2, y) = gValue
+            dstImageData(xStride + 3, y) = aValue
         Next y
         Next x
         
@@ -679,15 +661,10 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
-        
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = (srcDIB.GetDIBWidth - 1) * qvDepth
+        finalX = (srcDIB.GetDIBWidth - 1) * 4
         finalY = (srcDIB.GetDIBHeight - 1)
         
         Dim r As Long, g As Long, b As Long, a As Long, grayVal As Long
@@ -719,7 +696,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             
         'Now we can loop through each pixel in the image, converting values as we go
         For y = initY To finalY
-        For x = initX To finalX Step qvDepth
+        For x = initX To finalX Step 4
                 
             'Get the source pixel color values
             b = imageData(x, y)

@@ -101,8 +101,8 @@ Attribute VB_Exposed = False
 '
 'As with all area-based filters, this function will be slow inside the IDE.  I STRONGLY recommend compiling before using.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -151,16 +151,11 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Else
         If mRadius > (finalX - initX) Then mRadius = finalX - initX
     End If
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
     ' processing time in the inner loop.
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -197,7 +192,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX Step qvDepth
+        For x = initX To finalX Step 4
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then

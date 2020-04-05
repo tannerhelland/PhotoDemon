@@ -90,8 +90,8 @@ Attribute VB_Exposed = False
 'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before applying this
 ' effect at a large radius (> 10).
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -150,11 +150,8 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Else
         If mRadius > (finalX - initX) Then mRadius = finalX - initX
     End If
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, quickY As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long, xStrideInner As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -197,12 +194,12 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To initY + mRadius
     
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
-        b = srcImageData(quickVal, y)
+        r = srcImageData(xStride + 2, y)
+        g = srcImageData(xStride + 1, y)
+        b = srcImageData(xStride, y)
         l = lLookup(r + g + b)
         rValues(l) = rValues(l) + r
         gValues(l) = gValues(l) + g
@@ -215,7 +212,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        quickVal = x * qvDepth
+        xStride = x * 4
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -242,12 +239,12 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         'Remove trailing values from the median box if they lie outside the processing radius
         If lbX > 0 Then
         
-            QuickValInner = (lbX - 1) * qvDepth
+            xStrideInner = (lbX - 1) * 4
         
             For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
+                r = srcImageData(xStrideInner + 2, j)
+                g = srcImageData(xStrideInner + 1, j)
+                b = srcImageData(xStrideInner, j)
                 l = lLookup(r + g + b)
                 rValues(l) = rValues(l) - r
                 gValues(l) = gValues(l) - g
@@ -260,12 +257,12 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         'Add leading values to the median box if they lie inside the processing radius
         If Not obuX Then
         
-            QuickValInner = ubX * qvDepth
+            xStrideInner = ubX * 4
             
             For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
+                r = srcImageData(xStrideInner + 2, j)
+                g = srcImageData(xStrideInner + 1, j)
+                b = srcImageData(xStrideInner, j)
                 l = lLookup(r + g + b)
                 rValues(l) = rValues(l) + r
                 gValues(l) = gValues(l) + g
@@ -280,10 +277,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         If atBottom Then
         
             For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, mRadius)
-                g = srcImageData(QuickValInner + 1, mRadius)
-                b = srcImageData(QuickValInner, mRadius)
+                xStrideInner = i * 4
+                r = srcImageData(xStrideInner + 2, mRadius)
+                g = srcImageData(xStrideInner + 1, mRadius)
+                b = srcImageData(xStrideInner, mRadius)
                 l = lLookup(r + g + b)
                 rValues(l) = rValues(l) - r
                 gValues(l) = gValues(l) - g
@@ -296,10 +293,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
             quickY = finalY - mRadius
        
             For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, quickY)
-                g = srcImageData(QuickValInner + 1, quickY)
-                b = srcImageData(QuickValInner, quickY)
+                xStrideInner = i * 4
+                r = srcImageData(xStrideInner + 2, quickY)
+                g = srcImageData(xStrideInner + 1, quickY)
+                b = srcImageData(xStrideInner, quickY)
                 l = lLookup(r + g + b)
                 rValues(l) = rValues(l) - r
                 gValues(l) = gValues(l) - g
@@ -346,10 +343,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
                 quickY = lbY - 1
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, quickY)
-                    g = srcImageData(QuickValInner + 1, quickY)
-                    b = srcImageData(QuickValInner, quickY)
+                    xStrideInner = i * 4
+                    r = srcImageData(xStrideInner + 2, quickY)
+                    g = srcImageData(xStrideInner + 1, quickY)
+                    b = srcImageData(xStrideInner, quickY)
                     l = lLookup(r + g + b)
                     rValues(l) = rValues(l) - r
                     gValues(l) = gValues(l) - g
@@ -363,10 +360,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
             If Not obuY Then
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, ubY)
-                    g = srcImageData(QuickValInner + 1, ubY)
-                    b = srcImageData(QuickValInner, ubY)
+                    xStrideInner = i * 4
+                    r = srcImageData(xStrideInner + 2, ubY)
+                    g = srcImageData(xStrideInner + 1, ubY)
+                    b = srcImageData(xStrideInner, ubY)
                     l = lLookup(r + g + b)
                     rValues(l) = rValues(l) + r
                     gValues(l) = gValues(l) + g
@@ -395,10 +392,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
                 quickY = ubY + 1
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, quickY)
-                    g = srcImageData(QuickValInner + 1, quickY)
-                    b = srcImageData(QuickValInner, quickY)
+                    xStrideInner = i * 4
+                    r = srcImageData(xStrideInner + 2, quickY)
+                    g = srcImageData(xStrideInner + 1, quickY)
+                    b = srcImageData(xStrideInner, quickY)
                     l = lLookup(r + g + b)
                     rValues(l) = rValues(l) - r
                     gValues(l) = gValues(l) - g
@@ -411,10 +408,10 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
             If Not oblY Then
             
                 For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, lbY)
-                    g = srcImageData(QuickValInner + 1, lbY)
-                    b = srcImageData(QuickValInner, lbY)
+                    xStrideInner = i * 4
+                    r = srcImageData(xStrideInner + 2, lbY)
+                    g = srcImageData(xStrideInner + 1, lbY)
+                    b = srcImageData(xStrideInner, lbY)
                     l = lLookup(r + g + b)
                     rValues(l) = rValues(l) + r
                     gValues(l) = gValues(l) + g
@@ -444,9 +441,9 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         If b > 255 Then b = 255
                 
         'Finally, apply the results to the image.
-        dstImageData(quickVal + 2, y) = r
-        dstImageData(quickVal + 1, y) = g
-        dstImageData(quickVal, y) = b
+        dstImageData(xStride + 2, y) = r
+        dstImageData(xStride + 1, y) = g
+        dstImageData(xStride, y) = b
         
     Next y
         atBottom = Not atBottom

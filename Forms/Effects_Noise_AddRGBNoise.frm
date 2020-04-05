@@ -96,8 +96,8 @@ Attribute VB_Exposed = False
 ' THe pdRandomize class does most the heavy lifting, and this dialog could easily be overhauled to expose a seed
 ' value to the user.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -123,15 +123,10 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right * qvDepth
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
     
     Dim dibPtr As Long, dibStride As Long
@@ -172,7 +167,7 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
         tmpSA1D.pvData = dibPtr + y * dibStride
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
         b = imageData(x)

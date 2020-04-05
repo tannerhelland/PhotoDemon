@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Stylize"
 '
 'Container module for PD's stylize filter collection.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -46,11 +46,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -154,7 +151,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                 
         'With all lookup values cached, start mapping
         For x = initX To finalX
-            quickVal = x * qvDepth
+            xStride = x * 4
         For y = initY To finalY
             
             'Calculate a source position for this pixel, considering the user-supplied angle
@@ -200,7 +197,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             End If
             
             'Retrieve the relevant channel color at this position
-            target = srcImageData(clampX * qvDepth + curChannel, clampY)
+            target = srcImageData(clampX * 4 + curChannel, clampY)
                         
             'Calculate a dot size, relative to the underlying grid control point
             dx = x - dstX
@@ -247,7 +244,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     End If
                     
                     'Calculate an intensity and radius for this overlapped point
-                    newTarget = srcImageData(clampX * qvDepth + curChannel, clampY)
+                    newTarget = srcImageData(clampX * 4 + curChannel, clampY)
                     dx = x - dstX
                     dy = y - dstY
                     tmpRadius = Sqr(dx * dx + dy * dy)
@@ -266,7 +263,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Convert the final calculated intensity back to byte range, and set the corresponding color in the
             ' destination array.
-            dstImageData(quickVal + curChannel, y) = Int(255# * f2)
+            dstImageData(xStride + curChannel, y) = Int(255# * f2)
             
         Next y
             If Not suppressMessages Then

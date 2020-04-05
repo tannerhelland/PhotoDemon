@@ -97,8 +97,8 @@ Attribute VB_Exposed = False
 '
 'That said, I think it's a good addition to PD's overall image analysis toolbox.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -147,12 +147,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     initY = curDIBValues.Top + 1
     finalX = curDIBValues.Right - 1
     finalY = curDIBValues.Bottom - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    
     Dim xOffset As Long, xOffsetInner1 As Long, xOffsetInner2 As Long
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -183,7 +179,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     For y = initY To finalY
     For x = initX To finalX
         
-        xOffset = x * qvDepth
+        xOffset = x * 4
         
         'Grab a copy of the original pixel values; these form the basis of all subsequent comparisons
         bDst = dstImageData(xOffset, y)
@@ -224,7 +220,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         ' PD takes the pair approach.
         
         'First, we apply a custom set of tests along the x-axis.  This simplifies our next loop a bit.
-        For xInner = xOffset + qvDepth To xInnerFinal * qvDepth Step qvDepth
+        For xInner = xOffset + 4 To xInnerFinal * 4 Step 4
             
             'Grab symmetric source pixels
             bSrc1 = srcImageData(xInner, y)
@@ -268,8 +264,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
             xInnerSym = x - (xInner - x)
             yInnerSym = y - (yInner - y)
             
-            xOffsetInner1 = xInner * qvDepth
-            xOffsetInner2 = xInnerSym * qvDepth
+            xOffsetInner1 = xInner * 4
+            xOffsetInner2 = xInnerSym * 4
             
             'Grab RGBA values
             bSrc1 = srcImageData(xOffsetInner1, yInner)

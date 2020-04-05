@@ -275,8 +275,8 @@ Attribute VB_Exposed = False
 '
 'As of June '14, per-channel levels, set-by-color options, and Auto Levels are now supported.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -386,11 +386,8 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     initY = 0
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim xStride As Long
     
     'Color values
     Dim r As Long, g As Long, b As Long, l As Long
@@ -419,15 +416,15 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Dim numOfPixels As Long
     
     For x = initX To finalX
-        quickX = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Ignore transparent pixels, as they don't provide meaningful RGB data
-        If (imageData(quickX + 3, y) <> 0) Then
+        If (imageData(xStride + 3, y) <> 0) Then
             
-            b = imageData(quickX, y)
-            g = imageData(quickX + 1, y)
-            r = imageData(quickX + 2, y)
+            b = imageData(xStride, y)
+            g = imageData(xStride + 1, y)
+            r = imageData(xStride + 2, y)
             
             bCount(b) = bCount(b) + 1
             gCount(g) = gCount(g) + 1
@@ -1193,11 +1190,8 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1301,18 +1295,18 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     'Now we can finally loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         'Get the source pixel color values
-        b = newLevels(2, imageData(quickVal, y))
-        g = newLevels(1, imageData(quickVal + 1, y))
-        r = newLevels(0, imageData(quickVal + 2, y))
+        b = newLevels(2, imageData(xStride, y))
+        g = newLevels(1, imageData(xStride + 1, y))
+        r = newLevels(0, imageData(xStride + 2, y))
         
         'Assign new values looking the lookup table
-        imageData(quickVal, y) = newLevels(3, b)
-        imageData(quickVal + 1, y) = newLevels(3, g)
-        imageData(quickVal + 2, y) = newLevels(3, r)
+        imageData(xStride, y) = newLevels(3, b)
+        imageData(xStride + 1, y) = newLevels(3, g)
+        imageData(xStride + 2, y) = newLevels(3, r)
         
     Next y
         If (Not toPreview) Then

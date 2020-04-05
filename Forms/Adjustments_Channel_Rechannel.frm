@@ -113,8 +113,8 @@ Attribute VB_Exposed = False
 'Rechannel (or "channel isolation") tool.  This allows the user to isolate a single color channel from
 ' the RGB and CMY/CMYK color spaces.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -219,11 +219,8 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -234,7 +231,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
     
         Select Case dstColorSpace
@@ -246,16 +243,16 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel red
                     Case 0
-                        imageData(quickVal, y) = 0
-                        imageData(quickVal + 1, y) = 0
+                        imageData(xStride, y) = 0
+                        imageData(xStride + 1, y) = 0
                     'Rechannel green
                     Case 1
-                        imageData(quickVal, y) = 0
-                        imageData(quickVal + 2, y) = 0
+                        imageData(xStride, y) = 0
+                        imageData(xStride + 2, y) = 0
                     'Rechannel blue
                     Case 2
-                        imageData(quickVal + 1, y) = 0
-                        imageData(quickVal + 2, y) = 0
+                        imageData(xStride + 1, y) = 0
+                        imageData(xStride + 2, y) = 0
                         
                 End Select
                 
@@ -266,25 +263,25 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel cyan
                     Case 0
-                        imageData(quickVal, y) = 255
-                        imageData(quickVal + 1, y) = 255
+                        imageData(xStride, y) = 255
+                        imageData(xStride + 1, y) = 255
                     'Rechannel magenta
                     Case 1
-                        imageData(quickVal, y) = 255
-                        imageData(quickVal + 2, y) = 255
+                        imageData(xStride, y) = 255
+                        imageData(xStride + 2, y) = 255
                     'Rechannel yellow
                     Case 2
-                        imageData(quickVal + 1, y) = 255
-                        imageData(quickVal + 2, y) = 255
+                        imageData(xStride + 1, y) = 255
+                        imageData(xStride + 2, y) = 255
                         
                 End Select
             
             'Rechannel CMYK
             Case Else
             
-                cK = 255 - imageData(quickVal + 2, y)
-                mK = 255 - imageData(quickVal + 1, y)
-                yK = 255 - imageData(quickVal, y)
+                cK = 255 - imageData(xStride + 2, y)
+                mK = 255 - imageData(xStride + 1, y)
+                yK = 255 - imageData(xStride, y)
                 
                 cK = cK / 255
                 mK = mK / 255
@@ -298,29 +295,29 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 'cyan
                 If (dstChannel = 0) Then
                     cK = ((cK - bK) / invBK) * 255#
-                    imageData(quickVal + 2, y) = 255 - cK
-                    imageData(quickVal + 1, y) = 255
-                    imageData(quickVal, y) = 255
+                    imageData(xStride + 2, y) = 255 - cK
+                    imageData(xStride + 1, y) = 255
+                    imageData(xStride, y) = 255
                 
                 'magenta
                 ElseIf (dstChannel = 1) Then
                     mK = ((mK - bK) / invBK) * 255#
-                    imageData(quickVal + 2, y) = 255
-                    imageData(quickVal + 1, y) = 255 - mK
-                    imageData(quickVal, y) = 255
+                    imageData(xStride + 2, y) = 255
+                    imageData(xStride + 1, y) = 255 - mK
+                    imageData(xStride, y) = 255
                 
                 'yellow
                 ElseIf (dstChannel = 2) Then
                     yK = ((yK - bK) / invBK) * 255#
-                    imageData(quickVal + 2, y) = 255
-                    imageData(quickVal + 1, y) = 255
-                    imageData(quickVal, y) = 255 - yK
+                    imageData(xStride + 2, y) = 255
+                    imageData(xStride + 1, y) = 255
+                    imageData(xStride, y) = 255 - yK
                 
                 'key
                 Else
-                    imageData(quickVal + 2, y) = invBK * 255
-                    imageData(quickVal + 1, y) = invBK * 255
-                    imageData(quickVal, y) = invBK * 255
+                    imageData(xStride + 2, y) = invBK * 255
+                    imageData(xStride + 1, y) = invBK * 255
+                    imageData(xStride, y) = invBK * 255
                 End If
                 
         End Select

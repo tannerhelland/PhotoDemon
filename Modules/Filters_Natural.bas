@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Natural"
 '
 'Runs all nature-type filters.  Includes water, steel, burn, rainbow, etc.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -83,11 +83,11 @@ Public Function GetChromeDIB(ByRef srcDIB As pdDIB, ByVal steelDetail As Long, B
     'Convert our point array into color curves
     Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
     
-    Dim cLut As pdFilterLUT
-    Set cLut = New pdFilterLUT
-    cLut.FillLUT_Curve rLookup, rCurve
-    cLut.FillLUT_Curve gLookup, gCurve
-    cLut.FillLUT_Curve bLookup, bCurve
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
+    cLUT.FillLUT_Curve rLookup, rCurve
+    cLUT.FillLUT_Curve gLookup, gCurve
+    cLUT.FillLUT_Curve bLookup, bCurve
         
     'We are now ready to apply the final curve to the image!
     
@@ -100,11 +100,8 @@ Public Function GetChromeDIB(ByRef srcDIB As pdDIB, ByVal steelDetail As Long, B
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -118,14 +115,14 @@ Public Function GetChromeDIB(ByRef srcDIB As pdDIB, ByVal steelDetail As Long, B
     
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
         
         grayVal = grayMap(x, y)
         
-        dstImageData(quickVal, y) = bLookup(grayVal)
-        dstImageData(quickVal + 1, y) = gLookup(grayVal)
-        dstImageData(quickVal + 2, y) = rLookup(grayVal)
+        dstImageData(xStride, y) = bLookup(grayVal)
+        dstImageData(xStride + 1, y) = gLookup(grayVal)
+        dstImageData(xStride + 2, y) = rLookup(grayVal)
         
     Next y
         If (Not suppressMessages) Then

@@ -118,8 +118,8 @@ Attribute VB_Exposed = False
 'Despite this, it's still quite slow in the IDE.  I STRONGLY recommend compiling the project before
 ' applying any action at a large radius.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -205,11 +205,6 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
         Dim dstImageData() As Byte, dstSA1D As SafeArray1D
         Dim srcImageData() As Byte, srcSA1D As SafeArray1D
         
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim qvDepth As Long
-        qvDepth = curDIBValues.BytesPerPixel
-        
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
@@ -243,14 +238,14 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
         srcDibPointer = srcSA1D.pvData
         srcDibStride = srcSA1D.cElements
         
-        initX = initX * qvDepth
-        finalX = finalX * qvDepth
+        initX = initX * 4
+        finalX = finalX * 4
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For y = initY To finalY
             dstSA1D.pvData = dstDibPointer + dstDibStride * y
             srcSA1D.pvData = srcDibPointer + srcDibStride * y
-        For x = initX To finalX Step qvDepth
+        For x = initX To finalX Step 4
             
             'Retrieve the original image's pixels
             b = dstImageData(x)

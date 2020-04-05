@@ -8,8 +8,8 @@ Attribute VB_Name = "Filters_Render"
 '
 'Container module for PD's render filter collection.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -230,7 +230,7 @@ End Function
 
 'Render a "fiber" effect to an arbitrary DIB.  An arbitrary lookup-table system is used.
 ' The DIB must also already exist and be sized to whatever dimensions the caller requires.
-Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLut() As Long, ByVal fxStrength As Double, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLUT() As Long, ByVal fxStrength As Double, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Long, dstSA As SafeArray2D
@@ -257,14 +257,14 @@ Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLut() As Long, By
     
     'Set the initial color randomly
     Dim lastColor As Long, lutLimit As Long
-    lutLimit = UBound(cLut)
-    lastColor = cLut(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
+    lutLimit = UBound(cLUT)
+    lastColor = cLUT(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
     For y = initY To finalY
         
-        If (cRandom.GetRandomFloat_WH() < fxStrength) Then lastColor = cLut(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
+        If (cRandom.GetRandomFloat_WH() < fxStrength) Then lastColor = cLUT(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
         
         'Write all RGBA bytes at once
         dstImageData(x, y) = lastColor

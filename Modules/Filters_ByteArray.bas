@@ -15,8 +15,8 @@ Attribute VB_Name = "Filters_ByteArray"
 ' the functions in this module cannot directly operate on images.  Also, they do not generally support progress
 ' bar reports (by design) as their emphasis is on raw performance.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -685,7 +685,7 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     Dim i As Long, j As Long
     Dim g As Long, newG As Long
-    Dim quickX As Long, quickY As Long
+    Dim xStride As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -717,16 +717,16 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
                 'Second, ignore pixels that have a zero in the dither table
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
-                quickX = x + i
+                xStride = x + i
                 quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
-                If quickX < initX Then GoTo NextDitheredPixel
-                If quickX > finalX Then GoTo NextDitheredPixel
+                If xStride < initX Then GoTo NextDitheredPixel
+                If xStride > finalX Then GoTo NextDitheredPixel
                 If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(xStride, quickY) = dErrors(xStride, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
@@ -794,7 +794,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     ReDim dErrors(initX To finalX, initY To finalY) As Single
     
     Dim i As Long, j As Long
-    Dim quickX As Long, quickY As Long
+    Dim xStride As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -832,16 +832,16 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 'Second, ignore pixels that have a zero in the dither table
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
-                quickX = x + i
+                xStride = x + i
                 quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
-                If quickX < initX Then GoTo NextDitheredPixel
-                If quickX > finalX Then GoTo NextDitheredPixel
+                If xStride < initX Then GoTo NextDitheredPixel
+                If xStride > finalX Then GoTo NextDitheredPixel
                 If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(xStride, quickY) = dErrors(xStride, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j

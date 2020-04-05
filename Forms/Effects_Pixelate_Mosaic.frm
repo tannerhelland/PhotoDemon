@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 '
 'Form for handling all the pixellation image transform code.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -193,10 +193,7 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
         If (blockSizeY < 1) Then blockSizeY = 1
     End If
     
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xStride As Long
     
     'Calculate how many mosaic tiles will fit on the current image's size
     Dim xLoop As Long, yLoop As Long
@@ -224,7 +221,7 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
@@ -234,7 +231,7 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
         dstYLoop = (y + 1) * blockSizeY - 1
         
         For i = initXLoop To dstXLoop
-            quickVal = i * qvDepth
+            xStride = i * 4
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
@@ -242,10 +239,10 @@ Public Sub MosaicFilter(ByVal effectParams As String, Optional ByVal toPreview A
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            b = b + srcImageData(quickVal, j)
-            g = g + srcImageData(quickVal + 1, j)
-            r = r + srcImageData(quickVal + 2, j)
-            a = a + srcImageData(quickVal + 3, j)
+            b = b + srcImageData(xStride, j)
+            g = g + srcImageData(xStride + 1, j)
+            r = r + srcImageData(xStride + 2, j)
+            a = a + srcImageData(xStride + 3, j)
             
             'Count this as a valid pixel
             numOfPixels = numOfPixels + 1
@@ -268,17 +265,17 @@ NextPixelatePixel1:
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
         For i = initXLoop To dstXLoop
-            quickVal = i * qvDepth
+            xStride = i * 4
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
             If (i > finalX) Or (j > finalY) Then GoTo NextPixelatePixel2
             
             'Set the pixel
-            dstImageData(quickVal, j) = b
-            dstImageData(quickVal + 1, j) = g
-            dstImageData(quickVal + 2, j) = r
-            dstImageData(quickVal + 3, j) = a
+            dstImageData(xStride, j) = b
+            dstImageData(xStride + 1, j) = g
+            dstImageData(xStride + 2, j) = r
+            dstImageData(xStride + 3, j) = a
             
 NextPixelatePixel2:
 

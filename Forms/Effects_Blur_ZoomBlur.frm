@@ -168,7 +168,6 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim xStride As Long, xStrideInner As Long, yInner As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

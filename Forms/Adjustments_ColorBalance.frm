@@ -186,8 +186,8 @@ Attribute VB_Exposed = False
 'Color balance Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Photoshop.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -241,11 +241,6 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -281,12 +276,12 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     Const ONE_DIV_255 As Double = 1# / 255#
     
     'Loop through each pixel in the image, converting values as we go
-    initX = initX * qvDepth
-    finalX = finalX * qvDepth
+    initX = initX * 4
+    finalX = finalX * 4
     
     For y = initY To finalY
         workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
-    For x = initX To finalX Step qvDepth
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
         b = imageData(x)
