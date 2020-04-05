@@ -14,8 +14,8 @@ Attribute VB_Name = "Plugin_FreeImage"
 ' as Outside_FreeImageV3; see that file for license details).  Thank you to Carsten for his work on simplifying
 ' FreeImage usage from classic VB.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2025,8 +2025,8 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     iHeight = FreeImage_GetHeight(fi_Handle) - 1
     iScanWidth = FreeImage_GetPitch(fi_Handle)
     
-    Dim qvDepth As Long
-    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
+    Dim pxSize As Long
+    If (fi_DataType = FIT_RGBF) Then pxSize = 3 Else pxSize = 4
     
     'Prep any other post-processing adjustments
     Dim gammaCorrection As Double
@@ -2042,7 +2042,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
     Dim aDstF As Double, aDstL As Long
     
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, xStride As Long
     
     'Point a 1D VB array at the first scanline
     With srcSA
@@ -2068,11 +2068,11 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             'Retrieve the source values.  This includes an implicit cast to Double, which I've done because some formats support
             ' IEEE constants like NaN or Infinity.  VB doesn't deal with these gracefully, and an implicit cast to Double seems
             ' to reduce unpredictable errors, possibly by giving any range-check code some breathing room.
-            quickX = x * qvDepth
-            rSrcF = CDbl(srcImageData(quickX))
-            gSrcF = CDbl(srcImageData(quickX + 1))
-            bSrcF = CDbl(srcImageData(quickX + 2))
-            If (qvDepth = 4) Then aDstF = CDbl(srcImageData(quickX + 3))
+            xStride = x * pxSize
+            rSrcF = CDbl(srcImageData(xStride))
+            gSrcF = CDbl(srcImageData(xStride + 1))
+            bSrcF = CDbl(srcImageData(xStride + 2))
+            If (pxSize = 4) Then aDstF = CDbl(srcImageData(xStride + 3))
             
             'If normalization is required, apply it now
             If mustNormalize Then
@@ -2117,26 +2117,17 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             'In the future, additional corrections could be applied here.
             
             'Apply failsafe range checks now
-            If (rDstF < 0#) Then
-                rDstF = 0#
-            ElseIf (rDstF > 1#) Then
-                rDstF = 1#
-            End If
+            If (rDstF < 0#) Then rDstF = 0#
+            If (rDstF > 1#) Then rDstF = 1#
                 
-            If (gDstF < 0#) Then
-                gDstF = 0#
-            ElseIf (gDstF > 1#) Then
-                gDstF = 1#
-            End If
+            If (gDstF < 0#) Then gDstF = 0#
+            If (gDstF > 1#) Then gDstF = 1#
                 
-            If (bDstF < 0#) Then
-                bDstF = 0#
-            ElseIf (bDstF > 1#) Then
-                bDstF = 1#
-            End If
+            If (bDstF < 0#) Then bDstF = 0#
+            If (bDstF > 1#) Then bDstF = 1#
             
             'Handle alpha, if necessary
-            If (qvDepth = 4) Then
+            If (pxSize = 4) Then
                 If (aDstF > 1#) Then aDstF = 1#
                 If (aDstF < 0#) Then aDstF = 0#
                 aDstL = aDstF * 255
@@ -2148,10 +2139,10 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             bDstL = Int(bDstF * 255#)
                         
             'Copy the final, safe values into the destination
-            dstImageData(quickX, iHeightInv) = bDstL
-            dstImageData(quickX + 1, iHeightInv) = gDstL
-            dstImageData(quickX + 2, iHeightInv) = rDstL
-            If (qvDepth = 4) Then dstImageData(quickX + 3, iHeightInv) = aDstL
+            dstImageData(xStride, iHeightInv) = bDstL
+            dstImageData(xStride + 1, iHeightInv) = gDstL
+            dstImageData(xStride + 2, iHeightInv) = rDstL
+            If (pxSize = 4) Then dstImageData(xStride + 3, iHeightInv) = aDstL
             
         Next x
         
@@ -2222,8 +2213,8 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     iHeight = FreeImage_GetHeight(fi_Handle) - 1
     iScanWidth = FreeImage_GetPitch(fi_Handle)
     
-    Dim qvDepth As Long
-    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
+    Dim pxSize As Long
+    If (fi_DataType = FIT_RGBF) Then pxSize = 3 Else pxSize = 4
     
     'Shift the parameter values into module-level variables; this is necessary because the actual filmic tone-map function
     ' is standalone, and we don't want to be passing a crapload of Double-type variables to it for every channel of
@@ -2256,7 +2247,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
     Dim aDstF As Double, aDstL As Long
     
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, xStride As Long
     
     'Point a 1D VB array at the first scanline
     With srcSA
@@ -2280,11 +2271,11 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
         For x = 0 To iWidth
             
             'Retrieve the source values.
-            quickX = x * qvDepth
-            rSrcF = srcImageData(quickX)
-            gSrcF = srcImageData(quickX + 1)
-            bSrcF = srcImageData(quickX + 2)
-            If (qvDepth = 4) Then aDstF = srcImageData(quickX + 3)
+            xStride = x * pxSize
+            rSrcF = srcImageData(xStride)
+            gSrcF = srcImageData(xStride + 1)
+            bSrcF = srcImageData(xStride + 2)
+            If (pxSize = 4) Then aDstF = srcImageData(xStride + 3)
             
             'Apply filmic tone-mapping.  See http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
             rDstF = fFilmicTonemap(exposureCompensation * rSrcF) * fWhitePoint
@@ -2300,26 +2291,17 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
             End If
             
             'Apply failsafe range checks
-            If (rDstF < 0#) Then
-                rDstF = 0#
-            ElseIf (rDstF > 1#) Then
-                rDstF = 1#
-            End If
+            If (rDstF < 0#) Then rDstF = 0#
+            If (rDstF > 1#) Then rDstF = 1#
                 
-            If (gDstF < 0#) Then
-                gDstF = 0#
-            ElseIf (gDstF > 1#) Then
-                gDstF = 1#
-            End If
+            If (gDstF < 0#) Then gDstF = 0#
+            If (gDstF > 1#) Then gDstF = 1#
                 
-            If (bDstF < 0#) Then
-                bDstF = 0#
-            ElseIf (bDstF > 1#) Then
-                bDstF = 1#
-            End If
+            If (bDstF < 0#) Then bDstF = 0#
+            If (bDstF > 1#) Then bDstF = 1#
             
             'Handle alpha, if necessary
-            If (qvDepth = 4) Then
+            If (pxSize = 4) Then
                 If (aDstF > 1#) Then aDstF = 1#
                 If (aDstF < 0#) Then aDstF = 0#
                 aDstL = aDstF * 255
@@ -2331,10 +2313,10 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
             bDstL = Int(bDstF * 255#)
                         
             'Copy the final, safe values into the destination
-            dstImageData(quickX, iHeightInv) = bDstL
-            dstImageData(quickX + 1, iHeightInv) = gDstL
-            dstImageData(quickX + 2, iHeightInv) = rDstL
-            If (qvDepth = 4) Then dstImageData(quickX + 3, iHeightInv) = aDstL
+            dstImageData(xStride, iHeightInv) = bDstL
+            dstImageData(xStride + 1, iHeightInv) = gDstL
+            dstImageData(xStride + 2, iHeightInv) = rDstL
+            If (pxSize = 4) Then dstImageData(xStride + 3, iHeightInv) = aDstL
             
         Next x
         
@@ -2399,11 +2381,11 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     iHeight = FreeImage_GetHeight(fi_Handle) - 1
     iScanWidth = FreeImage_GetPitch(fi_Handle)
     
-    Dim qvDepth As Long
-    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
+    Dim pxSize As Long
+    If (fi_DataType = FIT_RGBF) Then pxSize = 3 Else pxSize = 4
     
     Dim srcR As Single, srcG As Single, srcB As Single
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, xStride As Long
     
     'Point a 1D VB array at this scanline
     With srcSA
@@ -2423,30 +2405,21 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
         'Iterate through this line, checking values as we go
         For x = 0 To iWidth
             
-            quickX = x * qvDepth
+            xStride = x * pxSize
             
-            srcR = srcImageData(quickX)
-            srcG = srcImageData(quickX + 1)
-            srcB = srcImageData(quickX + 2)
+            srcR = srcImageData(xStride)
+            srcG = srcImageData(xStride + 1)
+            srcB = srcImageData(xStride + 2)
             
             'Check max/min values independently for each channel
-            If (srcR < minR) Then
-                minR = srcR
-            ElseIf (srcR > maxR) Then
-                maxR = srcR
-            End If
+            If (srcR < minR) Then minR = srcR
+            If (srcR > maxR) Then maxR = srcR
             
-            If (srcG < minG) Then
-                minG = srcG
-            ElseIf (srcG > maxG) Then
-                maxG = srcG
-            End If
+            If (srcG < minG) Then minG = srcG
+            If (srcG > maxG) Then maxG = srcG
             
-            If (srcB < minB) Then
-                minB = srcB
-            ElseIf (srcB > maxB) Then
-                maxB = srcB
-            End If
+            If (srcB < minB) Then minB = srcB
+            If (srcB > maxB) Then maxB = srcB
             
         Next x
         
