@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright 2014-2020 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 09/April/18
-'Last update: performance improvements to "global" fill mode
+'Last updated: 05/April/20
+'Last update: minor performance improvements
 '
 'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
 ' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
@@ -39,8 +39,8 @@ Attribute VB_Exposed = False
 '
 'Like any array-based tool, this class will be slow inside the IDE.  Please use only when compiled.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -216,7 +216,7 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Finally, render our floodfill results onto the destination DIB, if one was provided
     If (Not dstDIB Is Nothing) Then
-    
+        
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
         
@@ -248,15 +248,15 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
         m_OutlineBoundsX = xBound
         m_OutlineBoundsY = yBound
     
-    'Normally, we would wipe the outline array prior to working with it, but because we're just gonna be filling the bytes
-    ' anyway with a manual CopyMemory loop, we can safely ignore a prior fill command.  (The outer borders will always be
-    ' left blank, by design.)
+    'Normally, we would wipe the outline array prior to working with it, but because we're just gonna
+    ' fill the bytes with a manual CopyMemory loop, we can safely ignore a prior fill command.
+    ' (The outer borders will always be left blank, by design.)
     'Else
         'FillMemory VarPtr(m_OutlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
     End If
 
-    'We need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
-    ' This guarantees a boundary of zeroes around the target image.
+    'We need to copy all lines from the boundary check array to our outline array, offsetting them by
+    ' (1) in each direction.  This guarantees a boundary of zeroes around the target image.
 
     'Because VB arrays are row-major, we're going to copy contiguous rows.
     Dim copySize As Long
@@ -296,12 +296,11 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     'Populate the initial stack point
     PushOntoStack m_InitPoint.x, m_InitPoint.y
     
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, xStride As Long
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     'A number of local variables are used to help optimize the flood function
     Dim isWithinTolerance As Boolean
@@ -313,32 +312,31 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     
     Dim thisValue As Long
     
-    quickX = m_InitPoint.x * 4
+    xStride = m_InitPoint.x * 4
     y = m_InitPoint.y
     
-    refB = srcImageData(quickX, y)
-    refG = srcImageData(quickX + 1, y)
-    refR = srcImageData(quickX + 2, y)
-    refA = srcImageData(quickX + 3, y)
+    refB = srcImageData(xStride, y)
+    refG = srcImageData(xStride + 1, y)
+    refR = srcImageData(xStride + 2, y)
+    refA = srcImageData(xStride + 3, y)
     
     refL = 213 * refR + 715 * refG + 72 * refB
     
     'Calculate a reference tolerance value, which serves as the base for the flood fill
     Select Case m_CompareMode
     
-        Case pdfc_Composite
-            'Composite results do not require a base value, as they are independently processed against the reference
-            ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
-            ' by 4, to avoid the need for a divide function in the inner loop
-            modifiedTolerance = m_Tolerance * 4
-            
         Case pdfc_Color
             modifiedTolerance = m_Tolerance * 3
         
+        'Composite results do not require a base value.  They are independently processed against the reference
+        ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
+        ' by 4, to avoid the need for a divide function in the inner loop
+        Case pdfc_Composite
+            modifiedTolerance = m_Tolerance * 4
+            
+        'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
+        ' tolerance range to [0, 1000] instead of [0, 255.0]
         Case pdfc_Luminance
-        
-            'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
-            ' tolerance range to [0, 1000] instead of [0, 255.0]
             modifiedTolerance = m_Tolerance * 1000
             
         Case pdfc_Red
@@ -433,31 +431,32 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         
         'Retrieve RGB/A values for this point
         tmpImageSA.pvData = srcImageBasePointer + (y * srcImageStride)
-        quickX = x * 4
-        b = tmpImageLine(quickX)
-        g = tmpImageLine(quickX + 1)
-        r = tmpImageLine(quickX + 2)
-        a = tmpImageLine(quickX + 3)
-    
+        xStride = x * 4
+        b = tmpImageLine(xStride)
+        g = tmpImageLine(xStride + 1)
+        r = tmpImageLine(xStride + 2)
+        a = tmpImageLine(xStride + 3)
+        
         'Compare this pixel against the reference
-        If (m_CompareMode = pdfc_Composite) Then
-            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
-            isWithinTolerance = (thisValue <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Color) Then
-            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-            isWithinTolerance = (thisValue <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Luminance) Then
-            l = 213 * r + 715 * g + 72 * b
-            isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Red) Then
-            isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Green) Then
-            isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Blue) Then
-            isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-        ElseIf (m_CompareMode = pdfc_Alpha) Then
-            isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-        End If
+        Select Case m_CompareMode
+            Case pdfc_Color
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                isWithinTolerance = (thisValue <= modifiedTolerance)
+            Case pdfc_Composite
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                isWithinTolerance = (thisValue <= modifiedTolerance)
+            Case pdfc_Luminance
+                l = 213 * r + 715 * g + 72 * b
+                isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+            Case pdfc_Red
+                isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+            Case pdfc_Green
+                isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+            Case pdfc_Blue
+                isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+            Case pdfc_Alpha
+                isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+        End Select
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
@@ -477,31 +476,32 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                 If (tmpTrackingLine(leftBound) = 0) Then
                     
                     'Retrieve RGB/A values for this point
-                    quickX = leftBound * 4
-                    b = tmpImageLine(quickX)
-                    g = tmpImageLine(quickX + 1)
-                    r = tmpImageLine(quickX + 2)
-                    a = tmpImageLine(quickX + 3)
+                    xStride = leftBound * 4
+                    b = tmpImageLine(xStride)
+                    g = tmpImageLine(xStride + 1)
+                    r = tmpImageLine(xStride + 2)
+                    a = tmpImageLine(xStride + 3)
                 
                     'Compare this pixel against the reference
-                    If (m_CompareMode = pdfc_Composite) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Color) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Luminance) Then
-                        l = 213 * r + 715 * g + 72 * b
-                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Red) Then
-                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Green) Then
-                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Blue) Then
-                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Alpha) Then
-                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-                    End If
+                    Select Case m_CompareMode
+                        Case pdfc_Color
+                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                            isWithinTolerance = (thisValue <= modifiedTolerance)
+                        Case pdfc_Composite
+                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                            isWithinTolerance = (thisValue <= modifiedTolerance)
+                        Case pdfc_Luminance
+                            l = 213 * r + 715 * g + 72 * b
+                            isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+                        Case pdfc_Red
+                            isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+                        Case pdfc_Green
+                            isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                        Case pdfc_Blue
+                            isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                        Case pdfc_Alpha
+                            isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+                    End Select
                     
                     'If this value is within the requested tolerance, mark it on the destination map
                     If isWithinTolerance Then
@@ -527,31 +527,32 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                 If (tmpTrackingLine(rightBound) = 0) Then
                     
                     'Retrieve RGB/A values for this point
-                    quickX = rightBound * 4
-                    b = tmpImageLine(quickX)
-                    g = tmpImageLine(quickX + 1)
-                    r = tmpImageLine(quickX + 2)
-                    a = tmpImageLine(quickX + 3)
+                    xStride = rightBound * 4
+                    b = tmpImageLine(xStride)
+                    g = tmpImageLine(xStride + 1)
+                    r = tmpImageLine(xStride + 2)
+                    a = tmpImageLine(xStride + 3)
                 
                     'Compare this pixel against the reference
-                    If (m_CompareMode = pdfc_Composite) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Color) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Luminance) Then
-                        l = 213 * r + 715 * g + 72 * b
-                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Red) Then
-                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Green) Then
-                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Blue) Then
-                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                    ElseIf (m_CompareMode = pdfc_Alpha) Then
-                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-                    End If
+                    Select Case m_CompareMode
+                        Case pdfc_Color
+                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                            isWithinTolerance = (thisValue <= modifiedTolerance)
+                        Case pdfc_Composite
+                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                            isWithinTolerance = (thisValue <= modifiedTolerance)
+                        Case pdfc_Luminance
+                            l = 213 * r + 715 * g + 72 * b
+                            isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+                        Case pdfc_Red
+                            isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+                        Case pdfc_Green
+                            isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                        Case pdfc_Blue
+                            isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                        Case pdfc_Alpha
+                            isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+                    End Select
                     
                     'If this value is within the requested tolerance, mark it on the destination map
                     If isWithinTolerance Then
@@ -616,7 +617,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     Loop While (m_StackPosition >= 0)
     
     'Release our array references
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
     PutMem4 VarPtrArray(tmpImageLine()), 0&
     PutMem4 VarPtrArray(tmpTrackingLine()), 0&
     PutMem4 VarPtrArray(tmpFillLine()), 0&
@@ -637,7 +638,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     yBound = srcDIB.GetDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, xInner As Long
+    Dim x As Long, y As Long, xStride As Long
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, srcSA As SafeArray1D
@@ -657,7 +658,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     
     x = m_InitPoint.x * 4
     y = m_InitPoint.y
-    srcSA.pvData = dibPtr + x + (y * dibStride)
+    srcSA.pvData = dibPtr + (y * dibStride)
     
     refB = srcImageData(x)
     refG = srcImageData(x + 1)
@@ -704,38 +705,40 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
         isWithinTolerance = False
         
         'Retrieve RGB/A values for this point
-        xInner = x * 4
-        b = srcImageData(xInner)
-        g = srcImageData(xInner + 1)
-        r = srcImageData(xInner + 2)
-        a = srcImageData(xInner + 3)
+        xStride = x * 4
+        b = srcImageData(xStride)
+        g = srcImageData(xStride + 1)
+        r = srcImageData(xStride + 2)
+        a = srcImageData(xStride + 3)
     
         'Compare this pixel against the reference
-        If (m_CompareMode = pdfc_Composite) Then
+        Select Case m_CompareMode
+        
+            Case pdfc_Color
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                isWithinTolerance = (thisValue <= modifiedTolerance)
+                
+            Case pdfc_Composite
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = pdfc_Color) Then
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                isWithinTolerance = (thisValue <= modifiedTolerance)
-            
-        ElseIf (m_CompareMode = pdfc_Luminance) Then
+            Case pdfc_Luminance
                 l = 213 * r + 715 * g + 72 * b
                 isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = pdfc_Red) Then
+            Case pdfc_Red
                 isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
             
-        ElseIf (m_CompareMode = pdfc_Green) Then
+            Case pdfc_Green
                 isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
                 
-        ElseIf (m_CompareMode = pdfc_Blue) Then
+            Case pdfc_Blue
                 isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                
-        ElseIf (m_CompareMode = pdfc_Alpha) Then
+            
+            Case pdfc_Alpha
                 isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
         
-        End If
+        End Select
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then m_FillResults(x, y) = 255
