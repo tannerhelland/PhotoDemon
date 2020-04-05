@@ -26,29 +26,35 @@ Begin VB.Form FormPrintNew
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdButton cmdNext 
-      Caption         =   "&Next"
       Height          =   615
       Left            =   6480
       TabIndex        =   9
       Top             =   7875
       Width           =   1725
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "&Next"
    End
    Begin PhotoDemon.pdButton cmdCancel 
-      Caption         =   "&Cancel"
       Height          =   615
       Left            =   8460
       TabIndex        =   8
       Top             =   7875
       Width           =   1365
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "&Cancel"
    End
    Begin PhotoDemon.pdButton cmdPrevious 
-      Caption         =   "&Previous"
-      Enabled         =   0   'False
       Height          =   615
       Left            =   4680
       TabIndex        =   7
       Top             =   7875
       Width           =   1725
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "&Previous"
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picPage 
       Appearance      =   0  'Flat
@@ -85,7 +91,7 @@ Begin VB.Form FormPrintNew
          ScaleHeight     =   170
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   362
-         TabIndex        =   19
+         TabIndex        =   0
          Top             =   4080
          Width           =   5430
       End
@@ -93,7 +99,7 @@ Begin VB.Form FormPrintNew
          Height          =   375
          Index           =   0
          Left            =   480
-         TabIndex        =   16
+         TabIndex        =   1
          Top             =   2520
          Width           =   9120
          _ExtentX        =   16087
@@ -104,7 +110,7 @@ Begin VB.Form FormPrintNew
       Begin PhotoDemon.pdSpinner tudCopies 
          Height          =   345
          Left            =   5280
-         TabIndex        =   14
+         TabIndex        =   4
          Top             =   1440
          Width           =   1815
          _ExtentX        =   3201
@@ -114,32 +120,38 @@ Begin VB.Form FormPrintNew
          Max             =   256
          Value           =   1
       End
-      Begin PhotoDemon.pdDropdown cmbQuality 
+      Begin PhotoDemon.pdDropDown cmbQuality 
          Height          =   360
          Left            =   480
          TabIndex        =   11
          Top             =   1455
          Width           =   4335
+         _ExtentX        =   0
+         _ExtentY        =   0
       End
-      Begin PhotoDemon.pdDropdown cmbPaperSize 
+      Begin PhotoDemon.pdDropDown cmbPaperSize 
          Height          =   360
          Left            =   5280
          TabIndex        =   5
          Top             =   480
          Width           =   4335
+         _ExtentX        =   0
+         _ExtentY        =   0
       End
-      Begin PhotoDemon.pdDropdown cmbPrinter 
+      Begin PhotoDemon.pdDropDown cmbPrinter 
          Height          =   360
          Left            =   480
          TabIndex        =   3
          Top             =   480
          Width           =   4335
+         _ExtentX        =   0
+         _ExtentY        =   0
       End
       Begin PhotoDemon.pdRadioButton optPrintJob 
          Height          =   375
          Index           =   1
          Left            =   480
-         TabIndex        =   17
+         TabIndex        =   6
          Top             =   3000
          Width           =   9120
          _ExtentX        =   16087
@@ -150,7 +162,7 @@ Begin VB.Form FormPrintNew
          Height          =   375
          Index           =   2
          Left            =   480
-         TabIndex        =   18
+         TabIndex        =   10
          Top             =   3480
          Width           =   9120
          _ExtentX        =   16087
@@ -158,66 +170,73 @@ Begin VB.Form FormPrintNew
          Caption         =   "one image spread across multiple pages (poster print)"
       End
       Begin PhotoDemon.pdLabel lblTitle 
-         Caption         =   "type of print job"
          Height          =   285
          Index           =   4
          Left            =   240
-         TabIndex        =   15
          Top             =   2040
          Width           =   1725
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "type of print job"
       End
       Begin PhotoDemon.pdLabel lblTitle 
-         Caption         =   "# of copies"
          Height          =   285
          Index           =   3
          Left            =   5040
-         TabIndex        =   13
          Top             =   1080
          Width           =   1200
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "# of copies"
       End
       Begin PhotoDemon.pdLabel lblTitle 
-         Caption         =   "print quality"
          Height          =   285
          Index           =   2
          Left            =   240
-         TabIndex        =   12
          Top             =   1080
          Width           =   1275
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "print quality"
       End
       Begin PhotoDemon.pdLabel lblTitle 
-         Caption         =   "paper size"
          Height          =   285
          Index           =   1
          Left            =   5040
-         TabIndex        =   6
          Top             =   120
          Width           =   1065
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "paper size"
       End
       Begin PhotoDemon.pdLabel lblTitle 
-         Caption         =   "printer"
          Height          =   285
          Index           =   0
          Left            =   240
-         TabIndex        =   4
          Top             =   120
          Width           =   705
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "printer"
       End
    End
    Begin PhotoDemon.pdLabel lblDescription 
-      Caption         =   "In the next step, you can specify detailed layout information (margins, positioning, etc)"
       Height          =   285
       Left            =   240
-      TabIndex        =   1
       Top             =   480
       Width           =   9240
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "In the next step, you can specify detailed layout information (margins, positioning, etc)"
    End
    Begin PhotoDemon.pdLabel lblWizardTitle 
-      Caption         =   "Step 1 of 2: basic print settings"
       Height          =   285
       Left            =   120
-      TabIndex        =   0
       Top             =   120
       Width           =   3810
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Step 1 of 2: basic print settings"
    End
 End
 Attribute VB_Name = "FormPrintNew"
@@ -246,8 +265,8 @@ Attribute VB_Exposed = False
 'In the second step, the user is given additional layout options relevant to their selected print situation.
 ' I find this preferable to trying to shoehorn all layout varieties into a single form.
 '
-'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
