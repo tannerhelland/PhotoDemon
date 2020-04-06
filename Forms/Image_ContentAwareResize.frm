@@ -247,8 +247,8 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     Dim thingToResize As PD_ActionTarget
     
     With cParams
-        imgWidth = .GetDouble("width")
-        imgHeight = .GetDouble("height")
+        imgWidth = .GetLong("width")
+        imgHeight = .GetLong("height")
         imgResizeUnit = .GetLong("unit", mu_Pixels)
         imgDPI = .GetDouble("ppi", 96)
         thingToResize = .GetLong("target", pdat_Image)
@@ -267,6 +267,8 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         ' is created.  (This is especially important if the user presses ESC to cancel the seam-carving step.)
         Process "Flatten image", , , UNDO_Image
         
+    Else
+        PDImages.GetActiveImage.GetActiveLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
     End If
     
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
