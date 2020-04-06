@@ -1200,6 +1200,10 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
     End If
     
+    'If the drag was successful, and the result is a new layer, switch to the move/size tool
+    ' (as the user probably needs to position the new layer)
+    If intendedTargetIsLayer Then toolbar_Toolbox.SelectNewTool NAV_MOVE
+    
     'If any of the supported formats worked, treat the drag/drop operation as successful
     LoadImageFromDragDrop = dragWasSuccessful
     
