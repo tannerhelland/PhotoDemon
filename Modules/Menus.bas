@@ -287,7 +287,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Crop", "layer_crop", 3, 8
         AddMenuItem "Crop to selection", "layer_cropselection", 3, 8, 0, "image_crop"
         AddMenuItem "-", "-", 3, 8, 1
-        AddMenuItem "Pad to image size", "layer_pad", 3, 8, 2
+        AddMenuItem "Fit to canvas", "layer_pad", 3, 8, 2
         AddMenuItem "Trim empty borders", "layer_trim", 3, 8, 3
     AddMenuItem "Orientation", "layer_orientation", 3, 9
         AddMenuItem "Straighten...", "layer_straighten", 3, 9, 0

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.469</langversion>
+<langversion>6.7.470</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6085,7 +6085,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Pad to image size</original>
+<original>Fit to canvas</original>
 <translation></translation>
 </phrase>
 
@@ -16030,6 +16030,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- As of this build, PhotoDemon contains 5001 phrases. -->
 <!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12282 total words. -->
+<!-- These 2658 phrases contain approximately 12281 total words. -->
 
 </pdData>

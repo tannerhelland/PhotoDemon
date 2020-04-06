@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.265</langversion>
+<langversion>1.0.266</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -6084,7 +6084,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Pad to image size</original>
+<original>Fit to canvas</original>
 <translation></translation>
 </phrase>
 
@@ -16029,6 +16029,6 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- As of this build, PhotoDemon contains 5001 phrases. -->
 <!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12282 total words. -->
+<!-- These 2658 phrases contain approximately 12281 total words. -->
 
 </pdData>

@@ -565,7 +565,7 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuLayerCrop 
-            Caption         =   "Pad to image size"
+            Caption         =   "Fit to canvas"
             Index           =   2
          End
          Begin VB.Menu MnuLayerCrop 

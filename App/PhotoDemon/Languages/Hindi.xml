@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.172</langversion>
+<langversion>1.0.173</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6082,7 +6082,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Pad to image size</original>
+<original>Fit to canvas</original>
 <translation></translation>
 </phrase>
 
@@ -16026,6 +16026,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- As of this build, PhotoDemon contains 5001 phrases. -->
 <!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12282 total words. -->
+<!-- These 2658 phrases contain approximately 12281 total words. -->
 
 </pdData>

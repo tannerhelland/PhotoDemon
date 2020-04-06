@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1522</langversion>
+<langversion>7.2.1523</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -6081,8 +6081,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Pad to image size</original>
-<translation>按图像大小填充</translation>
+<original>Fit to canvas</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -16020,6 +16020,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5001 phrases. -->
 <!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12282 total words. -->
+<!-- These 2658 phrases contain approximately 12281 total words. -->
 
 </pdData>
