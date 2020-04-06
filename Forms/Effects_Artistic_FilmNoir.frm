@@ -203,12 +203,12 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(xStride + 2, y)
-        g = imageData(xStride + 1, y)
         b = imageData(xStride, y)
+        g = imageData(xStride + 1, y)
+        r = imageData(xStride + 2, y)
         
         'Starting by convert the pixel to its grayscale equivalent
-        grayVal = (213 * r + 715 * g + 72 * b) / 1000
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
         
         'Gray is now a floating-point value on the scale 0-255.  We leave it as a floating-point, because we're about to
         ' do a bunch of detailed contrast work, and we don't want to lost resolution.

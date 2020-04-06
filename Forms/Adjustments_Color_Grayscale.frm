@@ -714,7 +714,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
         r = imageData(xStride + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
         If (grayVal > 255) Then grayVal = 255
         
         'Assign that gray value to each color channel

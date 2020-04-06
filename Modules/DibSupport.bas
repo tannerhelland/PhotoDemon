@@ -422,8 +422,7 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+        srcDIB.WrapArrayAroundDIB imageData, tmpSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -453,27 +452,27 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
         Next x
             
         'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            xStride = x * 4
         For y = initY To finalY
+        For x = initX To finalX
                 
             'Get the source pixel color values
+            xStride = x * 4
             b = imageData(xStride, y)
             g = imageData(xStride + 1, y)
             r = imageData(xStride + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-            grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+            grayVal = (218 * r + 732 * g + 74 * b) \ 1024
             If (grayVal > 255) Then grayVal = 255
             
             'Cache the value
             dstGrayArray(x, y) = gLookup(grayVal)
             
-        Next y
         Next x
+        Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB imageData
         
         GetDIBGrayscaleMapEx = True
         
@@ -527,7 +526,7 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
             r = imageData(xStride + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-            grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+            grayVal = (218 * r + 732 * g + 74 * b) \ 1024
             If (grayVal > 255) Then grayVal = 255
             
             'Cache the value
@@ -715,7 +714,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             End If
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-            grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+            grayVal = (218 * r + 732 * g + 74 * b) \ 1024
             If grayVal > 255 Then grayVal = 255
             
             'If less than 256 shades are in play, calculate that now as well

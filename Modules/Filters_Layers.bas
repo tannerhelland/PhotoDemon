@@ -611,8 +611,8 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
         r = imageData(xStride + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) * 0.001
-        If grayVal > 255 Then grayVal = 255
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
+        If (grayVal > 255) Then grayVal = 255
         
         'Increment the histogram at this position
         lCount(grayVal) = lCount(grayVal) + 1
@@ -1080,7 +1080,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             gBlur = blurImageData(xStride + 1)
             rBlur = blurImageData(xStride + 2)
             
-            grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
+            grayBlur = (218 * rBlur + 732 * gBlur + 74 * bBlur) \ 1024
             If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the shadow range, continue processing; otherwise, ignore it and
@@ -1178,7 +1178,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             gBlur = blurImageData(xStride + 1)
             rBlur = blurImageData(xStride + 2)
             
-            grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
+            grayBlur = (218 * rBlur + 732 * gBlur + 74 * bBlur) \ 1024
             If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
@@ -1263,7 +1263,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             gSrc = srcImageData(xStride + 1)
             rSrc = srcImageData(xStride + 2)
             
-            srcBlur = (213 * rSrc + 715 * gSrc + 72 * bSrc) \ 1000
+            srcBlur = (218 * rSrc + 732 * gSrc + 74 * bSrc) \ 1024
             If (srcBlur > 255) Then srcBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
@@ -2761,8 +2761,8 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
         r = imageData(xStride + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
-        If grayVal > 255 Then grayVal = 255
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
+        If (grayVal > 255) Then grayVal = 255
         
         'Assign that gray value to each color channel
         imageData(xStride, y) = grayVal
@@ -2902,12 +2902,12 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
         b = imageData(xStride, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
         
         'Check max/min
-        If grayVal > lMax Then
+        If (grayVal > lMax) Then
             lMax = grayVal
-        ElseIf grayVal < lMin Then
+        ElseIf (grayVal < lMin) Then
             lMin = grayVal
         End If
         

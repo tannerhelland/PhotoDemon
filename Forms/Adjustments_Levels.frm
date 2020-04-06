@@ -430,7 +430,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             gCount(g) = gCount(g) + 1
             rCount(r) = rCount(r) + 1
             
-            l = (213 * r + 715 * g + 72 * b) \ 1000
+            l = (218 * r + 732 * g + 74 * b) \ 1024
             lCount(l) = lCount(l) + 1
             
             numOfPixels = numOfPixels + 1

@@ -495,7 +495,7 @@ Friend Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte)
         r = imageData(x + 2)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
         If (grayVal > 255) Then grayVal = 255
         grayByte = gLUT(grayVal)
         

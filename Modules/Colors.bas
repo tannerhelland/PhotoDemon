@@ -156,7 +156,7 @@ End Function
 'This function will return a well-calculated luminance value of an RGB triplet.  Note that the value will be in
 ' the [0,255] range instead of the usual [0,1.0] one.
 Public Function GetHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
-    GetHQLuminance = (0.213 * r + 0.715 * g + 0.072 * b)
+    GetHQLuminance = (218 * r + 732 * g + 74 * b) \ 1024
 End Function
 
 Public Function GetRGBAFromRGBAndA(ByVal rgbLong As Long, ByVal a As Long) As Long
