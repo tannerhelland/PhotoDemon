@@ -620,7 +620,7 @@ Private Function GetLocalParamString() As String
     With cParams
     
         'In July 2018, the parameters for this tool were modified
-        .SetParamVersion "2.0"
+        .SetParamVersion 2#
         .AddParam "width", ucResize.ResizeWidth
         .AddParam "height", ucResize.ResizeHeight
         .AddParam "unit", ucResize.UnitOfMeasurement
