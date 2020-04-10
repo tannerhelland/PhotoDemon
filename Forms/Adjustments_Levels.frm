@@ -266,14 +266,15 @@ Attribute VB_Exposed = False
 'Last updated: 19/July/17
 'Last update: rewrite against XML param strings
 '
-'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
-' values entered into both programs should yield an identical image.
+'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool,
+' and identical values entered into both programs should yield a roughly identical image.
 '
-'Unfortunately, to perfectly mimic Photoshop's behavior, some fairly involved (i.e. incomprehensible) math is required.
-' To mitigate the speed implications of such convoluted math, a number of look-up tables are used.  This makes the
-' function quite fast, but at a hit to readability.  My apologies to anyone trying to understand how the function works.
+'Unfortunately, to perfectly mimic Photoshop's behavior, some fairly involved (i.e. incomprehensible)
+' math is required.  To mitigate the speed implications of such convoluted math, a lot of look-up
+' tables are used.  This makes the function fast but somewhat unreadable.  My apologies to anyone
+' who needs to understand how the function works... you may have your work cut out for you.
 '
-'As of June '14, per-channel levels, set-by-color options, and Auto Levels are now supported.
+'As of June '14, per-channel levels, set-by-color options, and "Auto Levels" are now supported.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -294,9 +295,9 @@ Private Const LEVEL_NODE_HEIGHT As Single = 14#
 'An image of the current image histogram is generated for each channel, then displayed as requested
 Private m_hDIB() As pdDIB
 
-'For convenience, the dimensions and offsets of the UI arrows are stored in these variables.  Note that there are
-' a total of five offsets, matching the five sliders: three for input levels (including midtones), two for
-' output levels.
+'For convenience, the dimensions and offsets of the UI arrows are stored in these variables.
+' Note that there are a total of five offsets, matching the five sliders: three for input levels
+' (including midtones), two for output levels.
 Private m_ArrowOffsets(0 To 4) As Single
 Private m_ArrowWidth As Single, m_ArrowHalfWidth As Single
 Private m_DstArrowBoxWidth As Single, m_DstArrowBoxOffset As Single
@@ -304,10 +305,11 @@ Private m_DstArrowBoxWidth As Single, m_DstArrowBoxOffset As Single
 'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
 Private m_curChannel As Long
 
-'Because the user can change levels independently for each of Red, Green, Blue, and Luminance, we must store all
-' level values internally (rather than relying on the text up/down controls to do it for us).  Also, because the
-' midtone values are floating-point, we declare the whole tracking array as Double-type (even though shadow, highlight,
-' and output levels are integers).  The layout of this array is [channel R/G/B/L, level adjustment].
+'Because the user can change levels independently for each of Red, Green, Blue, and Luminance,
+' we must store all level values internally (rather than relying on the text up/down controls
+' to do it for us).  Also, because the midtone values are floating-point, we declare the whole
+' tracking array as Double-type (even though shadow, highlight, and output levels are integers).
+' The layout of this array is [channel R/G/B/L, level adjustment].
 Private m_LevelValues(0 To 3, 0 To 4) As Double
 
 'Two special input classes are required; one each for the input and output arrow boxes
@@ -316,19 +318,21 @@ Attribute m_MouseEventsIn.VB_VarHelpID = -1
 Private WithEvents m_MouseEventsOut As pdInputMouse
 Attribute m_MouseEventsOut.VB_VarHelpID = -1
 
-'When the user is interacting with input or output level nodes, these values are updated to match.  (Note that the same
-' [0, 4] indices are used to identify these nodes; also, these are set to -1 when no node is active/hovered.)
+'When the user is interacting with input or output level nodes, these values are updated to match.
+' (Note that the same [0, 4] indices are used to identify these nodes; also, these are set to -1
+' when no node is active/hovered.)
 Private m_ActiveArrow As Long, m_HoverArrow As Long
 
 'Node UI render helpers
 Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 
-'To prevent complicated interactions related to the max/min codependence of input shadow and highlight values, m_DisableMaxMinLimits
-' can be used to disable automatic bounds-checking of input/output values.  Set this to TRUE when overwriting all on-screen level
-' values with the ones stored in memory (e.g. when the user is changing the active channel, so the whole screen gets refreshed).
-' When the new values have all been set, restore this to FALSE, then make a single call to FixScrollBars() to establish the new
-' max/min bounds.
+'To prevent complicated interactions related to the max/min codependence of input shadow and
+' highlight values, m_DisableMaxMinLimits can be used to disable automatic bounds-checking of
+' input/output values.  Set this to TRUE when overwriting all on-screen level values with the
+' ones stored in memory (e.g. when the user is changing the active channel, so the whole screen
+' gets refreshed). When the new values have all been set, restore this to FALSE, then make a
+' single call to FixScrollBars() to establish the new max/min bounds.
 Private m_DisableMaxMinLimits As Boolean
 
 'When a new channel is selected, refresh all text box values to match the new channel's stored values
@@ -576,7 +580,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     lMax = lMax + ((255 - lMax) \ 2)
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Convert the calculated values to a valid paramstring equivalent
     Dim cParams As pdSerialize
@@ -662,7 +666,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     tmpString = cmdBar.RetrievePresetData("MultichannelLevelData")
     
     'Valid preset data was found
-    If (Len(tmpString) <> 0) Then
+    If (LenB(tmpString) <> 0) Then
     
         'Level value parsing will be handled via PD's standard param string parser class
         FillLevelsFromParamString tmpString, m_LevelValues
@@ -757,6 +761,11 @@ Private Sub cmdColorSelect_Click(Index As Integer)
     
     End If
 
+End Sub
+
+Private Sub Form_Activate()
+    m_DisableMaxMinLimits = False
+    FixScrollBars
 End Sub
 
 Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -1083,6 +1092,7 @@ Private Sub Form_Load()
 
     'Prevent automatic preview refreshes until we have finished initializing the dialog
     cmdBar.SetPreviewStatus False
+    m_DisableMaxMinLimits = True
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -1091,8 +1101,8 @@ Private Sub Form_Load()
     btsChannel.AddItem "RGB", 3
     
     Dim btnImageSize As Long, btnImageSizeGroup As Long
-    btnImageSize = FixDPI(16)
-    btnImageSizeGroup = FixDPI(24)
+    btnImageSize = Interface.FixDPI(16)
+    btnImageSizeGroup = Interface.FixDPI(24)
     btsChannel.AssignImageToItem 0, , Interface.GetRuntimeUIDIB(pdri_ChannelRed, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(pdri_ChannelGreen, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(pdri_ChannelBlue, btnImageSize, 2), btnImageSize, btnImageSize
@@ -1131,8 +1141,6 @@ Private Sub Form_Load()
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
     m_curChannel = 3
     btsChannel.ListIndex = m_curChannel
-    
-    m_DisableMaxMinLimits = False
     
     'Draw the default histogram onto the histogram box
     picHistogram.Picture = LoadPicture(vbNullString)
@@ -1318,7 +1326,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
@@ -1326,14 +1334,10 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
 End Sub
 
 'Used to convert Long-type variables to bytes (with proper [0,255] range)
-Private Function ByteMe(ByVal bVal As Long) As Byte
-    If (bVal > 255) Then
-        ByteMe = 255
-    ElseIf (bVal < 0) Then
-        ByteMe = 0
-    Else
-        ByteMe = bVal
-    End If
+Private Function ByteMe(ByVal bVal As Long) As Long
+    ByteMe = bVal
+    If (bVal > 255) Then ByteMe = 255
+    If (bVal < 0) Then ByteMe = 0
 End Function
 
 'Used to make sure the scroll bars have appropriate limits

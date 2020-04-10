@@ -83,19 +83,6 @@ End Enum
     Private Const P2_BrushGradientWrapMode = 11, P2_BrushGradientNodes = 12, P2_BrushTextureWrapMode = 13, P2_NumOfBrushSettings = 14
 #End If
 
-'Gradients work a little differently; they expose *some* properties that you can change directly, but things like
-' individual gradient points must be operated on through dedicated functions.
-Public Enum PD_2D_GRADIENT_SETTINGS
-    P2_GradientShape = 0
-    P2_GradientAngle = 1
-    P2_GradientWrapMode = 2
-    P2_GradientNodes = 3
-End Enum
-
-#If False Then
-    Private Const P2_GradientShape = 0, P2_GradientAngle = 1, P2_GradientWrapMode = 2, P2_GradientNodes = 3
-#End If
-
 'When wrapping a DC, a surface needs to know the size of the object being painted on.  If an hWnd is supplied alongside
 ' the DC, we'll use that to auto-detect dimensions; otherwise, the caller needs to provide them.  (If the size is
 ' unknown, we'll use the size of the bitmap currently selected into the DC, but that's *not* reliable - so don't use it
@@ -338,15 +325,6 @@ End Enum
     Private Const P2_PS_Horizontal = 0, P2_PS_Vertical = 1, P2_PS_ForwardDiagonal = 2, P2_PS_BackwardDiagonal = 3, P2_PS_Cross = 4, P2_PS_DiagonalCross = 5, P2_PS_05Percent = 6, P2_PS_10Percent = 7, P2_PS_20Percent = 8, P2_PS_25Percent = 9, P2_PS_30Percent = 10, P2_PS_40Percent = 11, P2_PS_50Percent = 12, P2_PS_60Percent = 13, P2_PS_70Percent = 14, P2_PS_75Percent = 15, P2_PS_80Percent = 16, P2_PS_90Percent = 17, P2_PS_LightDownwardDiagonal = 18, P2_PS_LightUpwardDiagonal = 19, P2_PS_DarkDownwardDiagonal = 20, P2_PS_DarkUpwardDiagonal = 21, P2_PS_WideDownwardDiagonal = 22, P2_PS_WideUpwardDiagonal = 23, P2_PS_LightVertical = 24, P2_PS_LightHorizontal = 25
     Private Const P2_PS_NarrowVertical = 26, P2_PS_NarrowHorizontal = 27, P2_PS_DarkVertical = 28, P2_PS_DarkHorizontal = 29, P2_PS_DashedDownwardDiagonal = 30, P2_PS_DashedUpwardDiagonal = 31, P2_PS_DashedHorizontal = 32, P2_PS_DashedVertical = 33, P2_PS_SmallConfetti = 34, P2_PS_LargeConfetti = 35, P2_PS_ZigZag = 36, P2_PS_Wave = 37, P2_PS_DiagonalBrick = 38, P2_PS_HorizontalBrick = 39, P2_PS_Weave = 40, P2_PS_Plaid = 41, P2_PS_Divot = 42, P2_PS_DottedGrid = 43, P2_PS_DottedDiamond = 44, P2_PS_Shingle = 45, P2_PS_Trellis = 46, P2_PS_Sphere = 47, P2_PS_SmallGrid = 48, P2_PS_SmallCheckerBoard = 49, P2_PS_LargeCheckerBoard = 50
     Private Const P2_PS_OutlinedDiamond = 51, P2_PS_SolidDiamond = 52
-#End If
-
-Public Enum PD_2D_PenAlignment
-    P2_PA_Center = 0&
-    P2_PA_Inset = 1&
-End Enum
-
-#If False Then
-    Private Const P2_PA_Center = 0&, P2_PA_Inset = 1&
 #End If
 
 Public Enum PD_2D_PixelOffset

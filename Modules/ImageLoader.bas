@@ -97,7 +97,7 @@ Public Function LoadPDI_Normal(ByRef pdiPath As String, ByRef dstDIB As pdDIB, B
     End If
     
     'Retrieve the image header and initialize a pdImage object against it
-    Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
+    Dim chunkName As String, chunkLength As Long, chunkData As pdStream
     If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
     
         If (Not dstImage.SetHeaderFromXML(chunkData.ReadString_UTF8(chunkLength), sourceIsUndoFile)) Then
@@ -277,7 +277,7 @@ Public Function LoadPDI_HeadersOnly(ByRef pdiPath As String, ByRef dstImage As p
     'Retrieve the image header and NON-DESTRUCTIVELY initialize a pdImage object against it.
     ' (Non-destructively means no layers are destroyed in the process - we need them around because
     ' we're gonna be reusing them!)
-    Dim chunkName As String, chunkLength As Long, chunkData As pdStream, chunkLoaded As Boolean
+    Dim chunkName As String, chunkLength As Long, chunkData As pdStream
     If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
     
         If (Not dstImage.SetHeaderFromXML(chunkData.ReadString_UTF8(chunkLength), True, True)) Then

@@ -291,19 +291,6 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 Private m_suspendTextResync As Boolean, m_suspendHexInput As Boolean
 Private m_suspendParentNotifications As Boolean
 
-Private Enum PD_COLOR_CHANGE
-    ccRed = 0
-    ccGreen = 1
-    ccBlue = 2
-    ccHue = 3
-    ccSaturation = 4
-    ccValue = 5
-End Enum
-
-#If False Then
-    Private Const ccRed = 0, ccGreen = 1, ccBlue = 2, ccHue = 3, ccSaturation = 4, ccValue = 5
-#End If
-
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send color updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private m_ParentColorSelector As pdColorSelector

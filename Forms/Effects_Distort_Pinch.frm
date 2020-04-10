@@ -325,7 +325,7 @@ Public Sub PinchImage(ByVal effectParams As String, Optional ByVal toPreview As 
     tHeight = curDIBValues.Height
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2#
     
-    Dim invRadius As Double, avgSamples As Double
+    Dim invRadius As Double
     invRadius = 1# / sRadius
     
     sRadius = sRadius * (effectRadius / 100#)

@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.161</langversion>
+<langversion>1.0.162</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -332,13 +332,8 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>右にRGB値をシフトする</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>RGB値を左にシフト</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -366,7 +361,7 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1022,11 +1017,6 @@ Toこの画像フォーマットのサポートを有効にするには、FreeIm
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>この操作により、テキストレイヤー、ベクタレイヤーをイメージ（ラスター）レイヤーに変換します。これにより、テキスト、フォント、色、またはシェイプなどのレイヤー固有の設定を変更することはできません。</translation>
 </phrase>
@@ -1091,7 +1081,7 @@ Toこの画像フォーマットのサポートを有効にするには、FreeIm
 <translation>ページ1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16020,10 +16010,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

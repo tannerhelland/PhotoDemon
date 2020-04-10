@@ -379,7 +379,7 @@ Public Sub RippleImage(ByVal effectParams As String, Optional ByVal toPreview As
     sRadius = sRadius * (rippleRadius / 100#)
     sRadius2 = sRadius * sRadius
     
-    Dim invRadius As Double, avgSamples As Double
+    Dim invRadius As Double
     invRadius = 1# / sRadius
     
     Dim tmpQuad As RGBQuad

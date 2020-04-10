@@ -288,7 +288,7 @@ Private Function CalculateOptimalThreshold() As Long
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     workingDIB.EraseDIB
     Set workingDIB = Nothing
@@ -647,7 +647,7 @@ NextDitheredPixel:     Next j
     End If
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied

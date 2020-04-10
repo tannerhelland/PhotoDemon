@@ -89,7 +89,6 @@ End Enum
 Private m_GradientOpacity As Single
 Private m_GradientBlendmode As PD_BlendMode
 Private m_GradientAlphamode As PD_AlphaMode
-Private m_GradientAntialiasing As PD_2D_Antialiasing
 Private m_GradientRepeat As PD_GradientRepeat
 Private m_GradientShape As PD_GradientShape
 
@@ -111,7 +110,6 @@ Private m_Points() As PointFloat
 Private m_GradientGdip As pd2DGradient
 
 'Other gradient parameters, as relevant
-Private m_Angle As Single
 Private m_RadialOffset As Single
 
 'To avoid the case where the user releases a shift/ctrl/alt modifier near the same time as
@@ -148,10 +146,6 @@ Public Function GetGradientAlphaMode() As PD_AlphaMode
     GetGradientAlphaMode = m_GradientAlphamode
 End Function
 
-Public Function GetGradientAntialiasing() As PD_2D_Antialiasing
-    GetGradientAntialiasing = m_GradientAntialiasing
-End Function
-
 Public Function GetGradientBlendMode() As PD_BlendMode
     GetGradientBlendMode = m_GradientBlendmode
 End Function
@@ -176,10 +170,6 @@ End Function
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
 Public Sub SetGradientAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
     If (newAlphaMode <> m_GradientAlphamode) Then m_GradientAlphamode = newAlphaMode
-End Sub
-
-Public Sub SetGradientAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialiasing = P2_AA_HighQuality)
-    If (newAntialiasing <> m_GradientAntialiasing) Then m_GradientAntialiasing = newAntialiasing
 End Sub
 
 Public Sub SetGradientBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_Normal)
@@ -207,8 +197,6 @@ Public Function GetGradientProperty(ByVal bProperty As PD_GradientAttributes) As
     Select Case bProperty
         Case GA_AlphaMode
             GetGradientProperty = GetGradientAlphaMode()
-        Case GA_Antialiasing
-            GetGradientProperty = GetGradientAntialiasing()
         Case GA_BlendMode
             GetGradientProperty = GetGradientBlendMode()
         Case GA_Opacity
@@ -695,7 +683,7 @@ Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondP
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curAngle As Double, newAngle As Double, curColor As Long, luIndex As Long
+    Dim curAngle As Double, curColor As Long, luIndex As Long
     
     For y = 0 To yBound
         dstSA.pvData = dstPtr + dstStride * y
@@ -1103,7 +1091,7 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Double, curAngle As Double, newAngle As Double, curColor As Long, luIndex As Long
+    Dim curDistance As Double, curAngle As Double, curColor As Long, luIndex As Long
     Dim yFast As Long, ySquared As Long
     
     For y = 0 To yBound

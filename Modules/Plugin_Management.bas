@@ -144,7 +144,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             ' (This step is optional; plugins do not need to support it.)
             FinalizePluginInitialization i, m_PluginInitialized(i)
             
-            PDDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
+            PDDebug.LogAction GetPluginName(i) & " initialized in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000#, "#####0") & " ms"
             
         End If
         

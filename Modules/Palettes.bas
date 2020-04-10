@@ -2205,9 +2205,7 @@ End Function
 'Bit RGB color reduction (no error diffusion)
 Public Sub Palettize_BitRGB(ByRef dstDIB As pdDIB, ByVal rNumShades As Byte, ByVal gNumShades As Byte, ByVal bNumShades As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal suppressMessages As Boolean = False)
     
-    Dim srcPixels1D() As Byte, tmpSA1D As SafeArray1D, srcPtr As Long, srcStride As Long
-    
-    Dim pxSize As Long, imageData() As Byte
+    Dim pxSize As Long, imageData() As Byte, tmpSA1D As SafeArray1D
     pxSize = dstDIB.GetDIBColorDepth \ 8
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -2353,7 +2351,7 @@ Public Sub Palettize_BitRGB(ByRef dstDIB As pdDIB, ByVal rNumShades As Byte, ByV
     End If
     
     'Safely deallocate imageData()
-    workingDIB.UnwrapArrayFromDIB imageData
+    dstDIB.UnwrapArrayFromDIB imageData
     
 End Sub
 

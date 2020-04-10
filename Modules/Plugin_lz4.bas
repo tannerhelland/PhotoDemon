@@ -299,7 +299,7 @@ End Function
 ' for a link to his original, unmodified version
 Private Function CallCDeclW(ByVal lProc As LZ4_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
 
-    Dim i As Long, pFunc As Long, vTemp() As Variant, hResult As Long
+    Dim i As Long, vTemp() As Variant, hResult As Long
     
     Dim numParams As Long
     If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1

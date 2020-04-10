@@ -653,7 +653,7 @@ Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRe
     Set tmpProfile = New pdLCMSProfile
     tmpProfile.CreateSRGBProfile (Not useMaxCompatibility)
     
-    Dim profBytes() As Byte, profSize As Long
+    Dim profBytes() As Byte
     blockSize = tmpProfile.GetRawProfileBytes(profBytes)
     WriteImageResourceHeader cStream, &H40F, blockSize
     cStream.WriteByteArray profBytes, blockSize

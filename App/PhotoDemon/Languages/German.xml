@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1842</langversion>
+<langversion>7.2.1843</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -333,13 +333,8 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>Verlagerung der RGB-Werte nach rechts</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>Verlagerung der RGB-Werte nach links</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -367,7 +362,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 <translation>Farbe und Beleuchtung werden autom. verbessert</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1025,11 +1020,6 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation>Layer wird zugeschnitten</translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>Diese Aktion wird Text- und Vektor-Layer in Bild- (Raster) Layer konvertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
 </phrase>
@@ -1094,7 +1084,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Seite %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16029,10 +16019,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

@@ -288,8 +288,8 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     Const labAMax As Double = 93.544746398926
     Const labBMin As Double = -112.031127929688
     Const labBMax As Double = 93.392997741699
-    Const labAScale As Double = 93.544746398926 + 79.276268
-    Const labBScale As Double = 93.392997741699 + 112.031127929688
+    Const labAScale As Double = 93.544746398926 + 79.276268 'labAMax + Abs(labAMin)
+    Const labBScale As Double = 93.392997741699 + 112.031127929688 'labBMax + Abs(labBMin)
     
     Dim labARatio As Double, labBRatio As Double
     labARatio = 100# / labAScale
@@ -408,7 +408,7 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     
     'Use infinity char if available
     If OS.IsWin7OrLater() Then
-        undefText = ChrW(&H221E)
+        undefText = ChrW$(&H221E)
     Else
         undefText = g_Language.TranslateMessage("infinite")
     End If

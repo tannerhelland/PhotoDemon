@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3453</langversion>
+<langversion>6.8.3454</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -332,13 +332,8 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>Eltolása RGB értékek jobb</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>Eltolása RGB-értékek balra</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -366,7 +361,7 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1022,11 +1017,6 @@ To támogatásának engedélyezéséhez Ez a képformátum másolja a FreeImage.
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>Ez a művelet megtérít szöveg és vektoros rétegeket kép (raszter) réteg, ami azt jelenti, már nem módosíthatják réteg-specifikus beállítások, mint a szöveg, betűtípus, szín vagy a forma.</translation>
 </phrase>
@@ -1091,7 +1081,7 @@ To támogatásának engedélyezéséhez Ez a képformátum másolja a FreeImage.
 <translation>%1 oldal</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16002,10 +15992,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

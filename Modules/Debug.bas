@@ -215,12 +215,6 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 m_LogString.Append " | ICON: "
                 m_LogString.Append Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
                 
-                Dim hooksNet As Long, hooksCreated As Long, hooksDestroyed As Long
-                hooksNet = UserControls.GetHookCount(hooksCreated, hooksDestroyed)
-                m_LogString.AppendLineBreak
-                m_LogString.Append Space$(22) & "HOOK: "
-                m_LogString.Append Format$(hooksNet, "###,##0") & " (" & Format$(hooksCreated, "###,##0") & ":" & Format$(hooksDestroyed, "###,##0") & ")"
-                
                 Dim timersNet As Long, timersCreated As Long, timersDestroyed As Long
                 timersNet = UserControls.GetTimerCount(timersCreated, timersDestroyed)
                 m_LogString.Append " | TIMER: "

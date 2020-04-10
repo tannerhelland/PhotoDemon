@@ -2239,7 +2239,7 @@ End Sub
 
 'If something unexpected occurs, and the user needs to know about it (e.g. it's not just debugging data), pdPackage will raise a message
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
-Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
+'Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
         
     'Upon being deprecated (in favor of the new pdPackageChunky class), I've commented out all
     ' debug calls from this class.  This is intentional, as I do not intend to debug this class
@@ -2250,4 +2250,4 @@ Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() A
     '    PDDebug.LogAction msgString
     'End If
     
-End Sub
+'End Sub

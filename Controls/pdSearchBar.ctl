@@ -175,7 +175,7 @@ Private Const LIST_PADDING_HORIZONTAL As Single = 4!
 Private Const LIST_PADDING_VERTICAL As Single = 2!
 
 'The rectangle where the combo portion of the control is actually rendered
-Private m_ComboRect As RectF, m_MouseInComboRect As Boolean
+Private m_ComboRect As RectF
 
 'When the popup listbox is visible, this is set to TRUE.  (Also, as a failsafe the list box hWnd is cached.)
 Private m_PopUpVisible As Boolean, m_PopUpHwnd As Long

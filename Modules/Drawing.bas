@@ -42,64 +42,6 @@ Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, B
 Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
 
-'Given a target picture box, draw a hue preview across the horizontal axis.  This is helpful for tools that provide
-' a hue slider, so that the user can easily find a color of their choosing.  Optionally, saturation and luminance
-' can be provided, though it's generally assumed that those values will both be 1.0.
-Public Sub DrawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturation As Double = 1, Optional ByVal dstLuminance As Double = 1)
-
-    'Retrieve the picture box's dimensions
-    Dim picWidth As Long, picHeight As Long
-    picWidth = dstPic.ScaleWidth
-    picHeight = dstPic.ScaleHeight
-    
-    'Use a DIB to hold the hue box before we render it on-screen.  Why?  So we can color-manage it, of course!
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank picWidth, picHeight, 24, 0
-    
-    Dim tmpR As Double, tmpG As Double, tmpB As Double
-    
-    'From left-to-right, draw a full hue range onto the DIB
-    Dim x As Long
-    For x = 0 To tmpDIB.GetDIBWidth - 1
-        fHSVtoRGB x / tmpDIB.GetDIBWidth, dstSaturation, dstLuminance, tmpR, tmpG, tmpB
-        GDI.DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
-    Next x
-    
-    'With the hue box complete, render it onto the destination picture box, with color management applied
-    tmpDIB.RenderToPictureBox dstPic
-
-End Sub
-
-'Given a target picture box, draw a saturation preview across the horizontal axis.  This is helpful for tools that provide
-' a saturation slider, so that the user can easily find a color of their choosing.  Optionally, hue and luminance can be
-' provided - hue is STRONGLY recommended, but luminance can safely be assumed to be 1.0 (in most cases).
-Public Sub DrawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstHue As Double = 1, Optional ByVal dstLuminance As Double = 1)
-
-    'Retrieve the picture box's dimensions
-    Dim picWidth As Long, picHeight As Long
-    picWidth = dstPic.ScaleWidth
-    picHeight = dstPic.ScaleHeight
-    
-    'Use a DIB to hold the hue box before we render it on-screen.  Why?  So we can color-manage it, of course!
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank picWidth, picHeight, 24, 0
-    
-    Dim tmpR As Double, tmpG As Double, tmpB As Double
-    
-    'From left-to-right, draw a full hue range onto the DIB
-    Dim x As Long
-    For x = 0 To tmpDIB.GetDIBWidth - 1
-        fHSVtoRGB dstHue, x / tmpDIB.GetDIBWidth, dstLuminance, tmpR, tmpG, tmpB
-        GDI.DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
-    Next x
-    
-    'With the hue box complete, render it onto the destination picture box, with color management applied
-    tmpDIB.RenderToPictureBox dstPic
-
-End Sub
-
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
 Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
@@ -536,51 +478,6 @@ Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, By
     'Translate according to the current viewport setting, plus the original coordinates, if any
     dstTransform.ApplyTranslation (srcX * zoomVal) + translatedImageRect.Left, (srcY * zoomVal) + translatedImageRect.Top
     
-End Sub
-
-'Given a specific layer, return a RECT filled with that layer's corner coordinates -
-' IN THE CANVAS COORDINATE SPACE (hence the function name).
-Public Sub GetCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
-
-    Dim tmpX As Double, tmpY As Double
-    
-    With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
-        
-        'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
-        dstRect.Left = tmpX
-        dstRect.Top = tmpY
-        
-        'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
-        
-        'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
-        dstRect.Right = Int(tmpX + 0.99)
-        dstRect.Bottom = Int(tmpY + 0.99)
-        
-    End With
-
-End Sub
-
-'Same as above, but using floating-point values
-Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RectF, Optional ByVal useCanvasModifiers As Boolean = False)
-
-    Dim tmpX As Double, tmpY As Double
-    
-    With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
-        
-        'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
-        dstRect.Left = tmpX
-        dstRect.Top = tmpY
-        
-        'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
-        dstRect.Width = tmpX - dstRect.Left
-        dstRect.Height = tmpY - dstRect.Top
-        
-    End With
-
 End Sub
 
 'On the current viewport, render lines around the active layer

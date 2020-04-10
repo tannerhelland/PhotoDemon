@@ -159,7 +159,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

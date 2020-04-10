@@ -1224,7 +1224,6 @@ Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal hEffect As
 
 'Non-GDI+ helper functions:
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal ptrToGuidString As Long, ByVal ptrToByteArray As Long) As Long
-Private Declare Function CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByVal ptrToDstStream As Long) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal srcIStream As Long, ByRef dstHGlobal As Long) As Long
@@ -1328,7 +1327,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
     
 End Function
 
@@ -1464,15 +1463,6 @@ Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As Rec
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor), cTransparency, 3#, True, GP_LJ_Miter
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor), 220, 1.6, True, GP_LJ_Miter
 End Function
-
-'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
-' the associated objects.
-Public Sub GDIPlusDrawLine_Fast(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
-
-    'This function is just a thin wrapper to the GdipDrawLine function!
-    GdipDrawLine dstGraphics, srcPen, x1, y1, x2, y2
-
-End Sub
 
 'Use GDI+ to render a line, with optional color, opacity, and antialiasing
 Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal hqOffsets As Boolean = False) As Boolean
@@ -3310,7 +3300,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
         
         'Report resize time here
-        'Debug.Print "GDI+ resize time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "GDI+ resize time: " & Format$(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000, "0000.00") & " ms"
         
         'Release our image attributes object
         GdipDisposeImageAttributes imgAttributesHandle

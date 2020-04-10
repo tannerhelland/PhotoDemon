@@ -298,7 +298,7 @@ Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray 
 End Sub
 
 Friend Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
-    PutMem4 VarPtrArray(srcArray), 0
+    PutMem4 VarPtrArray(srcArray), 0&
 End Sub
 
 Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray2D)
@@ -326,7 +326,7 @@ Friend Sub WrapRGBQuadArrayAroundScanline(ByRef srcArray() As RGBQuad, ByRef src
 End Sub
 
 Friend Sub UnwrapRGBQuadArrayFromDIB(ByRef srcArray() As RGBQuad)
-    PutMem4 VarPtrArray(srcArray), 0
+    PutMem4 VarPtrArray(srcArray), 0&
 End Sub
 
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
@@ -1529,18 +1529,6 @@ Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D
         .lBound = 0
         .cElements = m_dibWidth
         .pvData = m_dibBits + (dstLine * m_dibStride)
-    End With
-End Sub
-
-'2D array access is slow, so PD tries to use 1D arrays when possible.  This function initializes a base SafeArray, but the caller
-' will need to manually update it to point at a desired line.
-Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SafeArray1D)
-    With dstSafeArray
-        .cbElements = 1
-        .cDims = 1
-        .lBound = 0
-        .cElements = m_dibStride
-        .pvData = m_dibBits
     End With
 End Sub
 

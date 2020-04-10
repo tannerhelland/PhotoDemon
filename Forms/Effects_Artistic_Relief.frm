@@ -188,11 +188,11 @@ Public Sub ApplyReliefEffect(ByVal effectParams As String, Optional ByVal toPrev
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, tA As Long
+    Dim tR As Long, tG As Long, tB As Long
     Dim reliefOffset As Double
     
     'Convert the rotation angle to radians
-    eAngle = eAngle * (PI / 180)
+    eAngle = eAngle * (PI / 180#)
     
     'X and Y offsets are hard-coded per the current angle
     Dim xOffset As Double, yOffset As Double

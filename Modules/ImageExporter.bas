@@ -514,8 +514,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         
         'Finally, a bunch of variables used in color calculation
         Dim r As Long, g As Long, b As Long, a As Long
-        Dim colorFound As Boolean
-
+        
         'Look for unique colors
         For y = 0 To finalY
         For x = 0 To finalX Step 4
@@ -893,7 +892,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
         fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, True, False, True)
         If (fi_MasterHandle <> 0) Then
             
-            Dim imgBytes() As Byte, imgPalette() As RGBQuad, palSize As Long
+            Dim imgPalette() As RGBQuad, palSize As Long
             Dim tmpLayer As pdLayer, tmpDIB As pdDIB
             Dim tmpTag As FREE_IMAGE_TAG
             

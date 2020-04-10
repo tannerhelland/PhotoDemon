@@ -436,14 +436,14 @@ Public Sub AssignImage(Optional ByRef resName As String = vbNullString, Optional
         tmpDIB.CreateFromExistingDIB srcDIB
         
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
-        ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
+        ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS
         
         'Copy this DIB into position #2, beneath the base DIB
         GDI.BitBltWrapper m_Images.GetDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
         tmpDIB.CreateFromExistingDIB srcDIB
-        GrayscaleDIB tmpDIB, True
+        Filters_Layers.GrayscaleDIB tmpDIB
         
         'Place it into position #3, beneath the previous two DIBs
         GDI.BitBltWrapper m_Images.GetDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy

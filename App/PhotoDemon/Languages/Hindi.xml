@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.173</langversion>
+<langversion>1.0.174</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -333,13 +333,8 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>आरजीबी मूल्यों को सही स्थानांतरित करना</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>आरजीबी मूल्यों को स्थानांतरित करना छोड़ दिया</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -367,7 +362,7 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1023,11 +1018,6 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>यह क्रिया पाठ और वेक्टर परतों को छवि (रेखापुंज) परतों में बदल देती है, जिसका अर्थ है कि आप परत-विशिष्ट सेटिंग्स जैसे पाठ, फ़ॉन्ट, रंग या आकार को संशोधित नहीं कर सकते।</translation>
 </phrase>
@@ -1092,7 +1082,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>पृष्ठ 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16022,10 +16012,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

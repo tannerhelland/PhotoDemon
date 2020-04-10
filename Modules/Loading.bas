@@ -285,8 +285,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True
         PDDebug.LogAction vbTab & "Detected format: " & ImageFormats.GetInputFormatDescription(ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
-        PDDebug.LogAction vbTab & "Image size (original file): " & Format$(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
-        PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format$(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
+        PDDebug.LogAction vbTab & "Image size (original file): " & Format$(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize"), "###,###,###,###") & " Bytes", , True
+        PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format$(targetImage.EstimateRAMUsage, "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
         PDDebug.LogAction vbTab & "ICC profile embedded: " & (LenB(targetImage.GetColorProfile_Original) <> 0), , True
         PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages) & " (" & numOfPages & ")", , True
@@ -475,7 +475,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
         ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
-        PDDebug.LogAction "(FYI, expected delta was approximately " & Format$(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
+        PDDebug.LogAction "(FYI, expected delta was approximately " & Format$(targetImage.EstimateRAMUsage \ 1000, "###,###,###,###") & " K)"
         
     'This ELSE block is hit when the image fails post-load verification checks.  Treat the load as unsuccessful.
     Else

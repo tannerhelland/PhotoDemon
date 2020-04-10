@@ -225,7 +225,7 @@ Public Sub LuminanceToAlpha(ByVal processParameters As String, Optional ByVal to
     Next x
     
     'Color variables
-    Dim r As Long, g As Long, b As Long, a As Long
+    Dim r As Long, g As Long, b As Long
     
     'To improve performance of our horizontal loop, we'll move through bytes an entire pixel at a time
     Dim xStart As Long, xStop As Long

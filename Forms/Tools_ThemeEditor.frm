@@ -465,10 +465,9 @@ Private Sub cmdExport_Click()
         ' to be treated at load-time.  (Generally speaking, we apply specific post-processing based on the
         ' current theme and/or request information from the caller.)  Some icons come pre-colored, and as such,
         ' they obey different rules.  This must all be stored in the resource file.
-        Dim i As Long, nodeIndex As Long
+        Dim i As Long
         Dim cXML As pdSerialize: Set cXML = New pdSerialize
         Dim tmpDIB As pdDIB, tmpDIBSize As Long, tmpDIBPointer As Long
-        Const PD_RES_NODE_ID_IMG As String = "PDRSI"
         
         For i = 0 To m_NumOfResources - 1
             
@@ -523,7 +522,7 @@ Private Sub cmdExport_Click()
                     
                     'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
                     'cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
-                    Dim tmpXmlCopy As String, tmpXmlBytes() As Byte, lenXmlBytes As Long
+                    Dim tmpXmlBytes() As Byte, lenXmlBytes As Long
                     Strings.UTF8FromString cXML.GetParamString(), tmpXmlBytes, lenXmlBytes, , True
                     cImageHeaders.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(tmpXmlBytes(0)), lenXmlBytes, cf_None
                     

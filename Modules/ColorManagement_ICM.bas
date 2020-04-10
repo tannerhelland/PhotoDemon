@@ -79,15 +79,16 @@ End Enum
     Private Const cms_NoManagement = 0, cms_ProfileTagged = 1, cms_ProfileConverted = 2
 #End If
 
-'If loaded successfully, the current system profile will be found at this index into the profile cache.  Note that
-' this value *does not* support multiple monitors, due to flaws in the way Windows exposes the system profile
-' (you can only easily retrieve the default monitor profile).  As such, if the user has custom-configured a
-' monitor profile in the Tools > Options dialog, you shouldn't be using this value at all.
+'If loaded successfully, the current system profile will be found at this index into the
+' profile cache.  Note that this value *does not* support multiple monitors, due to flaws
+' in the way Windows exposes the system profile (you can only easily retrieve the default
+' monitor profile).  As such, if the user has custom-configured a monitor profile in the
+' Tools > Options dialog, you shouldn't be using this value at all.
 Private m_SystemProfileIndex As Long, m_SystemProfileHash As String
 
-'Current display index.  This value is automatically refreshed by calls to CheckParentMonitor, below, and is used
-' to support multimonitor systems.  On some configurations, it may be identical to m_SystemProfileIndex, above, or
-' m_sRGBIndex, below.
+'Current display index.  This value is automatically refreshed by calls to CheckParentMonitor,
+' below, and is used to support multimonitor systems.  On some configurations, it may be identical
+' to m_SystemProfileIndex, above, or m_sRGBIndex, below.
 Private m_CurrentDisplayIndex As Long, m_CurrentDisplayHash As String
 
 'sRGB profile index and hash value.  One valid sRGB profile is always loaded into memory, and it is used as a

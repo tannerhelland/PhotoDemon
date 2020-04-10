@@ -62,7 +62,7 @@ Friend Sub NodeInitialize(ByVal nodeDepth As Long, ByRef masterColorList() As RG
     'Caching the full color list in each node requires little memory, and it potentially accelerates
     ' a number of search-related functions.
     ReDim m_ColorList(0 To UBound(masterColorList)) As RGBQuad
-    CopyMemory ByVal VarPtr(m_ColorList(0)), ByVal VarPtr(masterColorList(0)), UBound(masterColorList) * 4 + 4
+    CopyMemoryStrict VarPtr(m_ColorList(0)), VarPtr(masterColorList(0)), UBound(masterColorList) * 4 + 4
 
 End Sub
 

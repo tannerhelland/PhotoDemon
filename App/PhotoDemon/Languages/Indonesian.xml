@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.412</langversion>
+<langversion>6.6.413</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -333,13 +333,8 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>Nilai-nilai RGB Peralihan hak</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>Nilai-nilai RGB beralih meninggalkan</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -367,7 +362,7 @@ Jika masalah berterusan, sila laporkan kepada Pengembang PhotoDemon melalui phot
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1023,11 +1018,6 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>Tindakan ini akan mengubah lapisan teks dan vektor menjadi lapisan gambar (raster), artinya Anda tidak dapat lagi memodifikasi pengaturan khusus lapisan seperti teks, font, warna atau bentuk.</translation>
 </phrase>
@@ -1092,7 +1082,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Halaman 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16031,10 +16021,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

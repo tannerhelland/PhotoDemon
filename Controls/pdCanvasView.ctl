@@ -124,13 +124,13 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
 End Property
 
-Public Property Get hWnd()
+Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
 'This is one of the few controls in PD that manages a persistent DC.  This is a deliberate decision, so we can maintain expensive
 ' per-DC settings like color management.
-Public Property Get hDC()
+Public Property Get hDC() As Long
     hDC = ucSupport.GetBackBufferDC
 End Property
 

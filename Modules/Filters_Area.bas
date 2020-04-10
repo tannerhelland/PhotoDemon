@@ -100,16 +100,13 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
     cParams.SetParamString effectParams
     
     'Create a local array and point it at the destination pixel data
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain the a copy of the current image,
     ' and we will use it as our source reference.
     Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, x2 As Long, y2 As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -129,8 +126,8 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then
             SetProgBarMax finalX
         Else
             SetProgBarMax modifyProgBarMax
@@ -273,8 +270,8 @@ Public Function ConvolveDIB_XML(ByVal effectParams As String, ByRef srcDIB As pd
     Next x
     
     'Safely deallocate all intermediary array
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    dstDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
         
     'Return success/failure
     If g_cancelCurrentAction Then ConvolveDIB_XML = 0 Else ConvolveDIB_XML = 1
@@ -289,7 +286,7 @@ Public Sub FilterGridBlur()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -380,7 +377,7 @@ Public Sub FilterGridBlur()
     Next x
         
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
@@ -652,7 +649,6 @@ Public Function GaussianBlur_AM(ByRef srcDIB As pdDIB, ByVal radius As Double, B
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
     If (modifyProgBarMax = -1) Then modifyProgBarMax = 4 * pxSizeBytes
     If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     
@@ -968,7 +964,6 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
     If (modifyProgBarMax = -1) Then modifyProgBarMax = 4 * pxSizeBytes
     If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     

@@ -156,7 +156,6 @@ Private m_APIWindowsCreated As Long, m_APIWindowsDestroyed As Long
 
 'Same goes for timers and certain other object types
 Private m_TimersCreated As Long, m_TimersDestroyed As Long
-Private m_HooksCreated As Long, m_HooksDestroyed As Long
 
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
@@ -474,20 +473,6 @@ Public Function GetTimerCount(Optional ByRef timersCreated As Long, Optional ByR
     timersCreated = m_TimersCreated
     timersDestroyed = m_TimersDestroyed
     GetTimerCount = (timersCreated - timersDestroyed)
-End Function
-
-Public Sub NotifyHookCreated()
-    m_HooksCreated = m_HooksCreated + 1
-End Sub
-
-Public Sub NotifyHookDestroyed()
-    m_HooksDestroyed = m_HooksDestroyed + 1
-End Sub
-
-Public Function GetHookCount(Optional ByRef hooksCreated As Long, Optional ByRef hooksDestroyed As Long) As Long
-    hooksCreated = m_HooksCreated
-    hooksDestroyed = m_HooksDestroyed
-    GetHookCount = (hooksCreated - hooksDestroyed)
 End Function
 
 'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function instead

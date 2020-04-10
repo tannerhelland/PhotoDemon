@@ -49,7 +49,6 @@ Private m_DstX As Double, m_DstY As Double
 'Anyway - not all filters use these faster, less-safe wrappers yet, but I hope to migrate
 ' the whole program to them in the coming days.
 Private m_PixelSA2D As SafeArray2D, m_Pixels() As RGBQuad
-Private m_ByteArrayPtr As Long, m_ArrayWidth As Long, m_ArrayHeight As Long
 
 'New, unsafe mechanism for persistently aliasing a target DIB.
 ' YOU MUST MANUALLY UNALIAS BEFORE RELEASE THIS CLASS.

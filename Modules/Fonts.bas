@@ -325,10 +325,6 @@ Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
 Private m_LastFontAdded As String
 
-'Some external functions retrieve specific data from a TextMetrics struct.  We cache our own struct so we can use it
-' on such function calls.
-Private m_TmpTextMetric As TEXTMETRIC
-
 'This function provides some helper wrappers for selecting fonts into a DC.  Rather than track the previously selected object
 ' (which will only ever be a stock object), we simply re-select a stock font into the DC prior to deleting the temporary font.
 Private Const SYSTEM_FONT As Long = 13
@@ -349,8 +345,6 @@ Public Type PD_FONT_PROPERTY
     'SupportedScripts() As Long
     
 End Type
-
-Public g_PDFontProperties() As PD_FONT_PROPERTY
 
 'PD paints pretty much all of its own text.  Rather than burden each individual control with maintaining their own font object,
 ' we maintain a cache of the interface font at all requested sizes.  If an object needs to draw interface text, they can query
@@ -606,43 +600,6 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     EnumFontFamExProc = 1
     
 End Function
-
-'After the font cache has been successfully assembled, you can use this function to assemble a list of properties for each font.
-Public Sub BuildFontCacheProperties()
-    
-    'Make sure the font cache exists
-    If (m_PDFontCache.GetNumOfStrings > 0) Then
-        
-        'Sync the font property cache size to the font cache size
-        ReDim g_PDFontProperties(0 To m_PDFontCache.GetNumOfStrings - 1) As PD_FONT_PROPERTY
-        
-        'Font properties can only be gathered on Vista or later
-        If OS.IsVistaOrLater Then
-        
-            'Iterate each font, gathering properties as we go
-            'For i = 0 To UBound(g_PDFontProperties)
-                
-                'I'm temporarily disabling this while I investigate some performance issues on slow PCs
-                'Uniscribe.GetScriptsSupportedByFont m_PDFontCache.GetString(i), g_PDFontProperties(i)
-                
-                'Debug only: list fonts that support CJK forms
-                'If g_PDFontProperties(i).Supports_CJK Then Debug.Print "Supports CJK: " & m_PDFontCache.GetString(i)
-                
-            'Next i
-            
-        'On XP, all scripts are marked as "unknown"
-        Else
-            
-            'Temporarily disabled for the reasons explained above.
-            'For i = 0 To UBound(g_PDFontProperties)
-            '    g_PDFontProperties(i).ScriptsKnown = False
-            'Next i
-            
-        End If
-        
-    End If
-    
-End Sub
 
 'Given some standard font characteristics (font face, style, etc), fill a corresponding LOGFONTW struct with matching values.
 ' This is helpful as PD stores characteristics in VB-friendly formats (e.g. booleans for styles), while LOGFONTW uses custom

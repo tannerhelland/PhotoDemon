@@ -17,14 +17,6 @@ Option Explicit
 ' for image rendering.  This provides a meaningful performance improvement over GDI+ draw calls.
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
 
-'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
-Private m_DebugMode As Boolean
-
-'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Public Sub SetDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 'Copy functions.  Copying one surface onto another surface does *not* perform any blending.  It performs a wholesale
 ' replacement of the destination bytes with the source bytes.
 Public Function CopySurfaceI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface) As Boolean
@@ -491,8 +483,3 @@ End Function
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "PD2D module"
 End Sub
-
-Private Sub Class_Initialize()
-    m_DebugMode = Drawing2D.GetLibraryDebugMode()
-End Sub
-

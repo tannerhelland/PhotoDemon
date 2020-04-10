@@ -149,35 +149,28 @@ Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
         CreateShadowDIB = False
         Exit Function
     End If
-
+    
     'Start by copying the source DIB into the destination
     dstDIB.CreateFromExistingDIB srcDIB
     
     'Create a local array and point it at the pixel data of the destination image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Long, dstSA As SafeArray1D
     
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, xStride As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = dstDIB.GetDIBWidth - 1
     finalY = dstDIB.GetDIBHeight - 1
     
-    'Loop through all pixels in the destination image and set them to black.  Easy as pie!
-    For x = 0 To finalX
-        xStride = x * 4
+    'Loop through all pixels in the destination image and set RGB values to black,
+    ' while leaving alpha untouched.
     For y = 0 To finalY
-    
-        dstImageData(xStride + 2, y) = 0
-        dstImageData(xStride + 1, y) = 0
-        dstImageData(xStride, y) = 0
-        
-    Next y
+        dstDIB.WrapLongArrayAroundScanline dstImageData, dstSA, y
+    For x = 0 To finalX
+        dstImageData(x) = dstImageData(x) And &HFF000000
     Next x
+    Next y
     
     'Release our array reference and exit
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    dstDIB.UnwrapLongArrayFromDIB dstImageData
     
     CreateShadowDIB = True
 
@@ -188,10 +181,8 @@ End Function
 Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PixelRegionShape, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -334,7 +325,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapArrayFromDIB dstImageData
             
         If g_cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
     
@@ -347,30 +338,16 @@ End Function
 'White balance a given DIB.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If (modifyProgBarMax = -1) Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
@@ -395,15 +372,17 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next x
     
     'Build the image histogram
-    Dim startX As Long, stopX As Long
-    startX = initX * 4
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    Dim stopX As Long
     stopX = finalX * 4
     
-    For y = initY To finalY
-    For x = startX To stopX Step 4
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = 0 To stopX Step 4
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         rCount(r) = rCount(r) + 1
         gCount(g) = gCount(g) + 1
         bCount(b) = bCount(b) + 1
@@ -527,181 +506,28 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next x
     
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-            
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = 0 To stopX Step 4
+    
         'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(xStride, y) = bFinal(imageData(xStride, y))
-        imageData(xStride + 1, y) = gFinal(imageData(xStride + 1, y))
-        imageData(xStride + 2, y) = rFinal(imageData(xStride + 2, y))
+        imageData(x) = bFinal(imageData(x))
+        imageData(x + 1) = gFinal(imageData(x + 1))
+        imageData(x + 2) = rFinal(imageData(x + 2))
         
-    Next y
+    Next x
         If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
-    
-End Function
-
-'Contrast-correct a given DIB.  This function is similar to white-balance, except that it operates *only on luminance*, meaning individual
-' color channel ratios are not changed - just luminance.  It's helpful for auto-spreading luminance across the full spectrum range, without
-' changing color balance at all.
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color values
-    Dim r As Long, g As Long, b As Long, grayVal As Long
-    
-    'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim lMax As Byte, lMin As Byte
-    lMax = 0
-    lMin = 255
-    
-    'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
-    percentIgnore = percentIgnore / 100
-    
-    'Prepare a histogram array
-    Dim lCount(0 To 255) As Long
-    For x = 0 To 255
-        lCount(x) = 0
-    Next x
-    
-    'Build the image histogram
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-    
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        
-        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-        If (grayVal > 255) Then grayVal = 255
-        
-        'Increment the histogram at this position
-        lCount(grayVal) = lCount(grayVal) + 1
-        
-    Next y
-    Next x
-    
-     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
-    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
-    Dim foundYet As Boolean
-    foundYet = False
-    
-    Dim numOfPixels As Long
-    numOfPixels = (finalX + 1) * (finalY + 1)
-    
-    Dim wbThreshold As Long
-    wbThreshold = numOfPixels * percentIgnore
-    
-    grayVal = 0
-    
-    Dim lTally As Long
-    lTally = 0
-    
-    'Find minimum and maximum luminance values in the current image
-    Do
-        If lCount(grayVal) + lTally < wbThreshold Then
-            grayVal = grayVal + 1
-            lTally = lTally + lCount(grayVal)
-        Else
-            lMin = grayVal
-            foundYet = True
-        End If
-    Loop While foundYet = False
-        
-    foundYet = False
-    
-    grayVal = 255
-    lTally = 0
-    
-    Do
-        If lCount(grayVal) + lTally < wbThreshold Then
-            grayVal = grayVal - 1
-            lTally = lTally + lCount(grayVal)
-        Else
-            lMax = grayVal
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    'Calculate the difference between max and min
-    Dim lDif As Long
-    lDif = CLng(lMax) - CLng(lMin)
-    
-    'Build a final set of look-up tables that contain the results of the requisite luminance transformation
-    Dim lFinal(0 To 255) As Byte
-    
-    For x = 0 To 255
-        If lDif <> 0 Then grayVal = 255 * ((x - lMin) / lDif) Else grayVal = x
-        
-        If grayVal > 255 Then grayVal = 255
-        If grayVal < 0 Then grayVal = 0
-        
-        lFinal(x) = grayVal
-        
-    Next x
-    
-    'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-            
-        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        imageData(xStride, y) = lFinal(imageData(xStride, y))
-        imageData(xStride + 1, y) = lFinal(imageData(xStride + 1, y))
-        imageData(xStride + 2, y) = lFinal(imageData(xStride + 2, y))
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    If g_cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
     
 End Function
 
@@ -710,17 +536,11 @@ End Function
 Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
  
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D, dstSA1D As SafeArray1D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA2D As SafeArray2D, dstSA1D As SafeArray1D
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already embossed pixels from screwing up our results for later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D, srcSA1D As SafeArray1D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA1D As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 1
@@ -750,31 +570,13 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Dim srcBits As Long, srcStride As Long
     srcBits = srcDIB.GetDIBPointer
     srcStride = srcDIB.GetDIBStride
-    
-    With srcSA1D
-        .cbElements = 1
-        .cDims = 1
-        .cLocks = 1
-        .lBound = 0
-        .cElements = srcDIB.GetDIBStride
-    End With
-    
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA1D), 4&
+    srcDIB.WrapArrayAroundScanline srcImageData, srcSA1D, 0
     
     '...and another one for the destination image
     Dim dstBits As Long, dstStride As Long
     dstBits = dstDIB.GetDIBPointer
     dstStride = dstDIB.GetDIBStride
-    
-    With dstSA1D
-        .cbElements = 1
-        .cDims = 1
-        .cLocks = 1
-        .lBound = 0
-        .cElements = dstDIB.GetDIBStride
-    End With
-    
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA1D), 4&
+    dstDIB.WrapArrayAroundScanline dstImageData, dstSA1D, 0
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -881,7 +683,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Next x
     
     'The edges of the image will always be missed, so manually apply their values now
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA2D
     
     'Top row
     For x = initX To finalX
@@ -917,8 +719,8 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    dstDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
     
     If g_cancelCurrentAction Then CreateContourDIB = 0 Else CreateContourDIB = 1
     
@@ -1081,7 +883,6 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rBlur = blurImageData(xStride + 2)
             
             grayBlur = (218 * rBlur + 732 * gBlur + 74 * bBlur) \ 1024
-            If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the shadow range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
@@ -1179,7 +980,6 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rBlur = blurImageData(xStride + 2)
             
             grayBlur = (218 * rBlur + 732 * gBlur + 74 * bBlur) \ 1024
-            If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
@@ -1264,7 +1064,6 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rSrc = srcImageData(xStride + 2)
             
             srcBlur = (218 * rSrc + 732 * gSrc + 74 * bSrc) \ 1024
-            If (srcBlur > 255) Then srcBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
@@ -1535,7 +1334,6 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         finalYModifier = sRadius / finalY
     End If
     
-    Dim tmpQuad As RGBQuad
     fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go
@@ -1749,7 +1547,6 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         Exit Function
     End If
     
-    Dim tmpQuad As RGBQuad
     fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go
@@ -2227,8 +2024,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     Next y
         
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    dstDIB.UnwrapArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
     
@@ -2248,17 +2045,13 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     End If
     
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
-    PrepSafeArray dstSA, dstDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second local array.  This will contain a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = PDMath.Max2Int(Int(blurBounds.Left), 0)
@@ -2360,8 +2153,8 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     Next x
         
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    dstDIB.UnwrapArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then HorizontalBlur_SubRegion = 0 Else HorizontalBlur_SubRegion = 1
     
@@ -2511,8 +2304,8 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     Next y
         
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
+    dstDIB.UnwrapArrayFromDIB dstImageData
     
     If g_cancelCurrentAction Then VerticalBlur_SubRegion = 0 Else VerticalBlur_SubRegion = 1
     
@@ -2584,7 +2377,6 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
-    Dim tmpQuad As RGBQuad
     fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go
@@ -2717,171 +2509,92 @@ Public Function PadDIBClampedPixelsEx(ByVal newWidth As Long, ByVal newHeight As
     
 End Function
 
-'Quickly grayscale a given DIB.
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+'Quickly grayscale a pdDIB object.  PD uses this internally for disabled UI elements.
+Public Sub GrayscaleDIB(ByRef srcDIB As pdDIB)
     
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
+    Dim i As Long, numBytes As Long
+    numBytes = (srcDIB.GetDIBWidth * srcDIB.GetDIBHeight - 1) * 4
     
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color values
     Dim r As Long, g As Long, b As Long, grayVal As Long
     
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-            
+    Dim pxData() As Byte, pxSA As SafeArray1D
+    srcDIB.WrapArrayAroundDIB_1D pxData, pxSA
+    
+    For i = 0 To numBytes Step 4
+        
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = pxData(i)
+        g = pxData(i + 1)
+        r = pxData(i + 2)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-        If (grayVal > 255) Then grayVal = 255
         
         'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
+        pxData(i) = grayVal
+        pxData(i + 1) = grayVal
+        pxData(i + 2) = grayVal
         
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
+    Next i
     
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB pxData
     
-    If g_cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
-    
-End Function
+End Sub
 
-'Quickly modify RGB values by some constant factor.
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+'Quickly modify RGB values by some constant factor.  PD uses this internally for
+' modifying "highlight" hovered UI elements
+Public Sub ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0&)
 
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+    Dim needToPremultiply As Boolean
+    needToPremultiply = (srcDIB.GetDIBColorDepth = 32)
+    If needToPremultiply And srcDIB.GetAlphaPremultiplication() Then srcDIB.SetAlphaPremultiplication False
     
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
+    Dim i As Long, numBytes As Long
+    numBytes = (srcDIB.GetDIBWidth * srcDIB.GetDIBHeight - 1) * 4
     
     'Color values
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long
     
     'Look-up tables are the easiest way to handle this type of conversion
-    Dim scaleLookup() As Byte
-    ReDim scaleLookup(0 To 255) As Byte
+    Dim scaleLookup(0 To 255) As Byte
     
-    For x = 0 To 255
-        r = x + scaleAmount
-        If r < 0 Then r = 0
-        If r > 255 Then r = 255
-        scaleLookup(x) = r
-    Next x
+    For i = 0 To 255
+        r = i + scaleAmount
+        If (r < 0) Then r = 0
+        If (r > 255) Then r = 255
+        scaleLookup(i) = r
+    Next i
     
     'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-            
-        'Get the source pixel color values
-        r = imageData(xStride + 2, y)
-        g = imageData(xStride + 1, y)
-        b = imageData(xStride, y)
-        
-        'Assign the look-up table values
-        imageData(xStride + 2, y) = scaleLookup(r)
-        imageData(xStride + 1, y) = scaleLookup(g)
-        imageData(xStride, y) = scaleLookup(b)
-                
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
+    Dim pxData() As Byte, pxSA As SafeArray1D
+    srcDIB.WrapArrayAroundDIB_1D pxData, pxSA
+    
+    For i = 0 To numBytes Step 4
+        pxData(i) = scaleLookup(pxData(i))
+        pxData(i + 1) = scaleLookup(pxData(i + 1))
+        pxData(i + 2) = scaleLookup(pxData(i + 2))
+    Next i
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB pxData
     
     'Premultiply the source DIB, as necessary
-    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication True
+    If needToPremultiply Then srcDIB.SetAlphaPremultiplication True
     
-    If g_cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
-    
-End Function
+End Sub
 
 'Given a DIB, scan it and find the max/min luminance values.  This function makes no changes to the DIB itself.
 Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long, ByRef dibLumMax As Long)
 
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim imageData() As Byte, tmpSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB imageData, tmpSA
     
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
     
     'Color values
     Dim r As Long, g As Long, b As Long, grayVal As Long
@@ -2892,30 +2605,26 @@ Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     lMax = 0
     
     'Calculate max/min values for each channel
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
+    For y = 0 To finalY
+    For x = 0 To finalX Step 4
             
         'Get the source pixel color values
-        r = imageData(xStride + 2, y)
-        g = imageData(xStride + 1, y)
-        b = imageData(xStride, y)
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (218 * r + 732 * g + 74 * b) \ 1024
         
         'Check max/min
-        If (grayVal > lMax) Then
-            lMax = grayVal
-        ElseIf (grayVal < lMin) Then
-            lMin = grayVal
-        End If
+        If (grayVal > lMax) Then lMax = grayVal
+        If (grayVal < lMin) Then lMin = grayVal
         
-    Next y
     Next x
+    Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Return the max/min values we calculated
     dibLumMin = lMin
@@ -3029,7 +2738,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     Dim denomR As Double, denomG As Double, denomB As Double
     Dim numR As Double, numG As Double, numB As Double
     Dim rFactor As Double, gFactor As Double, bFactor As Double
-    Dim xOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
+    Dim xMax As Long, xMin As Long
     Dim spacialFuncCache As Double
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.

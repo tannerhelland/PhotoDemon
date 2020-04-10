@@ -1673,8 +1673,8 @@ Private Sub LoadAllPreferences()
         If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
         
         'Display what we know about PD's memory usage
-        lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(Str$(OS.AppMemoryUsage()), "###,###,###,###") & " K"
-        lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(Str$(OS.AppMemoryUsage(True)), "###,###,###,###") & " K"
+        lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsage(), "###,###,###,###") & " K"
+        lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsage(True), "###,###,###,###") & " K"
         If (Not OS.IsProgramCompiled) Then
             lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
             lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"

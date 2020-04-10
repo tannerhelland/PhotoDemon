@@ -1048,7 +1048,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     HandleMeasureItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Dim MIS As MEASUREITEMSTRUCT
-    CopyMemory MIS, ByVal lParam, Len(MIS)
+    CopyMemoryStrict VarPtr(MIS), lParam, Len(MIS)
 
     If (MIS.ctlType = ODT_MENU) Then
 
@@ -1060,7 +1060,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&
         End If
         
-        CopyMemory ByVal lParam, MIS, Len(MIS)
+        CopyMemoryStrict lParam, VarPtr(MIS), Len(MIS)
         HandleMeasureItem = 1
         
     End If
@@ -1071,8 +1071,8 @@ End Function
 
 Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
-    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
-    ' I don't care enough to test it.
+    'This was in the original code; I have no idea if it's actually necessary,
+    ' but since PD is soon moving to its own menu solution, I don't care enough to test it.
     On Error Resume Next
     
     'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
@@ -1084,7 +1084,7 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     Dim lLeft As Long
     Dim MI As MENUINFO
     
-    CopyMemory DIS, ByVal lParam, Len(DIS)
+    CopyMemoryStrict VarPtr(DIS), lParam, Len(DIS)
 
     If (DIS.ctlType = ODT_MENU) Then
     
@@ -1109,8 +1109,8 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
             Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, isDisabled)
         End If
         
-        'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
-        ' for users of the "classic theme"
+        'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled
+        ' and non-hovered menu entries for users of the "classic theme"
         If Not (m_ClassicThemeWorkaround And isDisabled) Then
             DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), isDisabled
         End If

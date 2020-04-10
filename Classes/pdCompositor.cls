@@ -297,7 +297,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     If (ptrToPaintbrushRectF = 0) Then
         Layers.FillRectForLayerF paintLayer, topRect, True, True
     Else
-        CopyMemory ByVal VarPtr(topRect), ByVal ptrToPaintbrushRectF, LenB(topRect)
+        CopyMemoryStrict VarPtr(topRect), ptrToPaintbrushRectF, LenB(topRect)
     End If
     
     PDMath.UnionRectF finalRect, topRect, bottomRect

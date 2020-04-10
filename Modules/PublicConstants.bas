@@ -19,22 +19,15 @@ Public Const PD_BUILD_QUALITY As Long = PD_ALPHA
 
 'Identifier for various PD-specific file types
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
-Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450   'pdLayer data (ASCII characters "PDIL", as hex, little-endian)
-Public Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
 Public Const PD_PATCH_IDENTIFIER As Long = &H50554450   'PD update patch data (ASCII characters "PDUP", as hex, little-endian)
-Public Const PD_RES_IDENTIFIER As Long = &H53524450     'PD resource file (ASCII characters "PDRS", as hex, little-endian)
 
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
-Public Const FILTER_EXT As String * 3 = "pde"
 Public Const MACRO_EXT As String * 3 = "pdm"
 Public Const SELECTION_EXT As String * 3 = "pds"
-
-'Constant for testing JP2/J2K support.  These may or may not become permanent pending the outcome of some rigorous testing.
-Public Const JP2_ENABLED As Boolean = True
 
 'Mathematic constants
 Public Const EULER As Double = 2.71828182845905
@@ -45,11 +38,8 @@ Public Const DOUBLE_MAX As Double = 1.79769313486231E+308
 Public Const SINGLE_MIN As Single = 1.175494E-38
 Public Const SINGLE_MAX As Single = 3.402823E+38
 
-'Maximum width (in pixels) for custom-built tooltips
-Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
-
 'Standard API constants
-Public Const MAX_PATH_LEN = 260
+Public Const MAX_PATH_LEN As Long = 260
 
 'When a UC with an image is hovered, we typically reflect this via some kind of "glow" state.  This constant controls
 ' the amount of brightness added to the image during a hover state.

@@ -24,11 +24,6 @@ Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As PointAPI) A
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
-'These constants are used to toggle visibility of display elements.
-Public Const VISIBILITY_TOGGLE As Long = 0
-Public Const VISIBILITY_FORCEDISPLAY As Long = 1
-Public Const VISIBILITY_FORCEHIDE As Long = 2
-
 'System keyboard repeat settings are mimicked by internal PD controls
 Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoW" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
 Private Const SPI_GETKEYBOARDDELAY As Long = &H16

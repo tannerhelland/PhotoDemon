@@ -99,7 +99,7 @@ Friend Sub GetVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
     Next y
     
     'Now we can start traversing the energy array.
-    Dim leftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long, xStride As Long
+    Dim leftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long
     
     'At each point, generate a new energy for the pixel using the smallest energy value above said pixel
     For x = 1 To finalX
@@ -358,7 +358,7 @@ Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Lon
     Dim newEnergyMap() As Byte
     ReDim newEnergyMap(0 To finalX, 0 To finalY + numOfAddedSeams) As Byte
         
-    Dim xStride As Long, quickY As Long, yOffset As Long
+    Dim quickY As Long, yOffset As Long
     
     For x = 0 To finalX
     

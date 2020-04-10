@@ -30,7 +30,6 @@ Private m_BrushSize As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As PD_BlendMode
 Private m_BrushAlphamode As PD_AlphaMode
-Private m_BrushAntialiasing As PD_2D_Antialiasing
 Private m_BrushHardness As Single
 Private m_BrushSpacing As Single
 Private m_BrushFlow As Single
@@ -98,10 +97,6 @@ Public Function GetBrushAlphaMode() As PD_AlphaMode
     GetBrushAlphaMode = m_BrushAlphamode
 End Function
 
-Public Function GetBrushAntialiasing() As PD_2D_Antialiasing
-    GetBrushAntialiasing = m_BrushAntialiasing
-End Function
-
 Public Function GetBrushBlendMode() As PD_BlendMode
     GetBrushBlendMode = m_BrushBlendmode
 End Function
@@ -142,13 +137,6 @@ End Sub
 Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
     If (newAlphaMode <> m_BrushAlphamode) Then
         m_BrushAlphamode = newAlphaMode
-        m_BrushIsReady = False
-    End If
-End Sub
-
-Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialiasing = P2_AA_HighQuality)
-    If (newAntialiasing <> m_BrushAntialiasing) Then
-        m_BrushAntialiasing = newAntialiasing
         m_BrushIsReady = False
     End If
 End Sub
@@ -401,7 +389,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         End If
         
         'Initialize any relevant GDI+ objects for the current brush
-        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
+        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC
         
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
@@ -509,7 +497,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         PDImages.GetActiveImage.ScratchLayer.NotifyOfDestructiveChanges
         
         'Report paint tool render times, as relevant
-        'Debug.Print "Paint tool render timing: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "Paint tool render timing: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0000.00") & " ms"
     
     'The previous x/y coordinate trackers are updated automatically when the mouse is DOWN.  When the mouse is UP, we must manually
     ' modify those values.
@@ -642,8 +630,8 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             m_SampleUntouched.CreateFromExistingDIB m_Sample
             
             'Mask the outline of the current brush over the source image.
-            Dim pxMask() As Byte, pxSample() As Byte, pxDst() As Byte
-            Dim maskSA As SafeArray1D, sampleSA As SafeArray1D, dstSA As SafeArray1D
+            Dim pxSample() As Byte
+            Dim sampleSA As SafeArray1D, dstSA As SafeArray1D
             
             Dim x As Long, y As Long, xStride As Long, tmpFloat As Single
             Dim fLookup() As Single
@@ -659,7 +647,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             yStart = dstRectL.Top
             yEnd = dstRectL.Top + dstRectL.Height - 1
             
-            Dim dstPtr As Long, dstStride As Long, srcPtr As Long, srcStride As Long
+            Dim dstPtr As Long, dstStride As Long
             m_Sample.WrapArrayAroundScanline pxSample, sampleSA, 0
             dstPtr = m_Sample.GetDIBPointer
             dstStride = m_Sample.GetDIBStride
@@ -1197,9 +1185,6 @@ Public Sub InitializeBrushEngine()
     
     'Initialize the underlying brush class
     Set m_Paintbrush = New pdPaintbrush
-    
-    'Reset UI-centric features
-    m_BrushAntialiasing = P2_AA_HighQuality
     
     'Reset all coordinates
     m_MouseX = MOUSE_OOB

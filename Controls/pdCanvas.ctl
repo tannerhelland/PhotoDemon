@@ -513,7 +513,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
 End Property
 
-Public Property Get hWnd()
+Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
@@ -523,7 +523,7 @@ End Property
 
 'Note that this control does *not* return its own DC.  Instead, it returns the DC of the underlying CanvasView object.
 ' This is by design.
-Public Property Get hDC()
+Public Property Get hDC() As Long
     hDC = CanvasView.hDC
 End Property
 

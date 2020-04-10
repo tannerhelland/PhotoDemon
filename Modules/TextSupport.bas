@@ -107,7 +107,7 @@ End Function
 
 'Because VB6's built-in Format$() function uses locale-specific decimal signs, and it exhibits stupid
 ' behavior with things like a trailing decimal point, this shorthand function can be used to produce
-' nicely formatted strings for floating-point values, in a locale-independent manner.  Note that it
+' nicely formatted strings for floating-point values in a locale-independent manner.  Note that it
 ' does *not* handle thousands separators, by design.
 Public Function FormatInvariant(ByVal srcValue As Variant, ByVal newFormat As String) As String
     FormatInvariant = Format$(srcValue, newFormat)

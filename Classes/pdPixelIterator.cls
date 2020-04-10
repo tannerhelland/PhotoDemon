@@ -87,7 +87,6 @@ Private m_Red() As Long, m_Green() As Long, m_Blue() As Long, m_Alpha() As Long
 
 'Note that the caller can also use the pixel iterator in luminance mode.  This relies on only a single destination
 ' luminance array, and dedicated movement/calculation functions are used.
-Private m_LuminanceSA As SafeArray1D
 Private m_Luminance() As Long
 
 'Number of pixels in the histogram.  This is required for things like median calculations.
@@ -346,11 +345,11 @@ Private Sub AliasPixelArray()
         .Bounds(1).cElements = m_dibStride
         .pvData = m_DibPointer
     End With
-    CopyMemory ByVal VarPtrArray(m_Pixels()), VarPtr(m_PixelSA2D), 4&
+    PutMem4 VarPtrArray(m_Pixels()), VarPtr(m_PixelSA2D)
 End Sub
 
 Private Sub UnaliasPixelArray()
-    CopyMemory ByVal VarPtrArray(m_Pixels()), 0&, 4&
+    PutMem4 VarPtrArray(m_Pixels()), 0&
 End Sub
 
 Private Sub AliasByteArray()
@@ -364,11 +363,11 @@ Private Sub AliasByteArray()
         .Bounds(1).cElements = m_ArrayWidth
         .pvData = m_ByteArrayPtr
     End With
-    CopyMemory ByVal VarPtrArray(m_Bytes()), VarPtr(m_BytesSA2D), 4&
+    PutMem4 VarPtrArray(m_Bytes()), VarPtr(m_BytesSA2D)
 End Sub
 
 Private Sub UnaliasByteArray()
-    CopyMemory ByVal VarPtrArray(m_Bytes()), 0&, 4&
+    PutMem4 VarPtrArray(m_Bytes()), 0&
 End Sub
 
 'Generating the initial histogram window has variable complexity, depending on the shape being used.  This function

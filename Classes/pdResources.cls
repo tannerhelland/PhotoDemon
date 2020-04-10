@@ -157,7 +157,7 @@ Friend Function ExtractDefaultAssets() As Boolean
     Dim cPackage As pdPackageChunky
     Set cPackage = New pdPackageChunky
     
-    Dim i As Long, dstFilename As String
+    Dim dstFilename As String
     
     'Extract the default gradient collection (but only if it's never been extracted before).
     If (Not UserPrefs.GetPref_Boolean("Assets", "ExtractedGradients", False)) Then
@@ -171,7 +171,7 @@ Friend Function ExtractDefaultAssets() As Boolean
             If cPackage.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
                 
                 'Gradient chunks are stored as name-value pairs
-                Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long, tmpFilename As String
+                Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
                 Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
                 
                     'Ensure the chunk name is actually a "NAME" chunk

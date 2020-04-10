@@ -301,7 +301,6 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     
     sRadius = sRadius * (effectRadius / 100#)
     
-    Dim tmpQuad As RGBQuad
     fSupport.AliasTargetDIB srcDIB
     
     'Loop through each pixel in the image, converting values as we go

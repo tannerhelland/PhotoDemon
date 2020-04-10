@@ -424,9 +424,6 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     '     to do their own font management; instead, they can simply request a matching object from the Fonts module.
     Fonts.BuildFontCaches
     
-    'Next, build a list of font properties, like supported scripts
-    Fonts.BuildFontCacheProperties
-    
     
     '*************************************************************************************************************************************
     ' Initialize PD's central clipboard manager

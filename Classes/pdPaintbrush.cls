@@ -39,7 +39,6 @@ Option Explicit
 'Current mouse/pen input values.  These are blindly relayed to us by the canvas, and it's up to us
 ' to perform any special tracking calculations.
 Private m_MouseDown As Boolean
-Private m_MouseLastUserX As Single, m_MouseLastUserY As Single
 Private Const MOUSE_OOB As Single = -9.99999E+14!
 
 'Current dab dynamics, if any.  (These are not currently calculated.)

@@ -354,7 +354,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then fGrayscaleCustom = 0 Else fGrayscaleCustom = 1
     
@@ -665,7 +665,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then MenuGrayscaleAverage = 0 Else MenuGrayscaleAverage = 1
     
@@ -715,7 +715,6 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-        If (grayVal > 255) Then grayVal = 255
         
         'Assign that gray value to each color channel
         imageData(xStride, y) = grayVal
@@ -732,7 +731,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then MenuGrayscale = 0 Else MenuGrayscale = 1
     
@@ -798,7 +797,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then MenuDesaturate = 0 Else MenuDesaturate = 1
     
@@ -864,7 +863,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then MenuDecompose = 0 Else MenuDecompose = 1
     
@@ -937,7 +936,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
     Next x
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     If g_cancelCurrentAction Then MenuGrayscaleSingleChannel = 0 Else MenuGrayscaleSingleChannel = 1
         

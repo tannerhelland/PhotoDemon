@@ -208,7 +208,7 @@ Public Sub ApplyEmbossEffect(ByVal effectParams As String, Optional ByVal toPrev
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim tR As Long, tG As Long, tB As Long, tA As Long
+    Dim tR As Long, tG As Long, tB As Long
     Dim rBase As Long, gBase As Long, bBase As Long
 
     'Extract the red, green, and blue values from the color we've been passed

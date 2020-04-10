@@ -79,7 +79,7 @@ Public Function GaussianBlur_AM_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     boundaryScale = (1# / (1# - dnu))
     postScale = ((dnu / lambda) ^ (2# * numSteps))
     
-    Dim step As Long, g As Long
+    Dim step As Long
     
     Dim numPixels As Long
     numPixels = arrayWidth * arrayHeight
@@ -448,7 +448,7 @@ Public Sub PadByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVa
     Dim yBound As Long
     yBound = arrayHeight - 1
     
-    Dim x As Long, y As Long
+    Dim y As Long
     For y = 0 To newHeight - 1
         If (y <= padVertical) Then
             CopyMemoryStrict VarPtr(dstArray(padHorizontal, y)), VarPtr(srcArray(0, 0)), arrayWidth

@@ -482,7 +482,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     End If
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

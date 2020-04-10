@@ -355,6 +355,7 @@ Private Sub Form_Load()
     GenerateContributor "Hidayat Suriapermana"
     GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateContributor "Jason Peter Brown", "https://github.com/jpbro"
+    GenerateContributor "Jean Jacques Piedfort"
     GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
     GenerateContributor "Jian Ma", "https://www.cnblogs.com/stronghorse/"
     GenerateContributor "Johannes Nendel"

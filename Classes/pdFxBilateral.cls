@@ -558,15 +558,14 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     CopyMemoryStrict VarPtr(img_out_f(0)), VarPtr(img_temp(0)), width_channel * 4
     'memcpy(img_out_f, img_temp, sizeof(float)* width_channel);
     
-    Dim in_factor As Long
+    '(Manually replaced with VarPtr() instances below)
+    'Dim in_factor As Long
     'float * in_factor = map_factor_a;
     
     Dim ycf As Long, ypf As Long, xcf As Long
     
     CopyMemoryStrict VarPtr(map_factor_b(0)), VarPtr(map_factor_a(0)), 4 * imgWidth
     'memcpy(map_factor_b, in_factor, sizeof(float) * width);
-    
-    Dim c As Long
     
     For y = 1 To imgHeight - 1
     

@@ -3494,7 +3494,7 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
     ' We do this because it makes the analysis a hell of a lot faster (and less memory-intensive).
     Dim outputAlphaMode As PD_ALPHA_STATUS, frameAlphaStatus As PD_ALPHA_STATUS
     Dim frameIsGrayscale As Boolean, allFramesAreGrayscale As Boolean
-    Dim mergedPalette() As RGBQuad, localPalette() As RGBQuad
+    Dim localPalette() As RGBQuad
     Dim frameColorCount As Long
     
     allFramesAreGrayscale = True
@@ -3919,7 +3919,6 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim colorFound As Boolean
     
     Dim srcPtr As Long, srcStride As Long
     srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
@@ -4394,8 +4393,8 @@ End Function
 Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'TrueColor mode supports 24/48-bpp output
-    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
-    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, curOffset As Long
+    Dim srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim xLimit As Long, yDstOffset As Long, curOffset As Long
     Dim x As Long, y As Long
     
     'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the

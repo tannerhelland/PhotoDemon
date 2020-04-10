@@ -286,7 +286,7 @@ Public Sub fxBurn(ByVal effectParams As String, Optional ByVal toPreview As Bool
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Apply premultiplication prior to compositing
     m_edgeDIB.SetAlphaPremultiplication True

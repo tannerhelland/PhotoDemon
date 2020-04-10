@@ -1734,36 +1734,6 @@ Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long
     
 End Function
 
-'Convert a 32- or 24-bpp pdDIB object to its 8-bpp equivalent, but paint the 8-bpp results into some other pdDIB suitable for screen display.
-Public Sub ConvertPDDibToIndexedColor(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT)
-
-    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.ConvertTo24bpp
-    
-    Dim fi_DIB As Long
-    fi_DIB = GetFIHandleFromPDDib_NoCopy(srcDIB, False)
-    
-    Dim fi_DIB8 As Long
-    fi_DIB8 = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, True, numOfColors)
-    If (fi_DIB8 <> 0) Then
-        
-        fi_DIB = FreeImage_ConvertTo32Bits(fi_DIB8)
-        FreeImage_Unload fi_DIB8
-        
-        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        If (dstDIB.GetDIBWidth = srcDIB.GetDIBWidth) And (dstDIB.GetDIBHeight = srcDIB.GetDIBHeight) Then
-            dstDIB.ResetDIB 255
-        Else
-            dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, vbWhite, 255
-        End If
-        
-        Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
-        
-        FreeImage_Unload fi_DIB
-        
-    End If
-    
-End Sub
-
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
 ' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
 ' (This silent behavior can also be enforced by setting the noUIMode parameter to TRUE.)
@@ -2502,7 +2472,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
     End If
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
     
 End Function
 
@@ -2557,7 +2527,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
     dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
     
 End Function
 
@@ -2641,7 +2611,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$((Timer - profileTime) * 1000, "0000.00")
     
 End Function
 

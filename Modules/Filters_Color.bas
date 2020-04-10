@@ -106,18 +106,14 @@ Public Sub MenuInvert()
 End Sub
 
 'Shift colors (right or left)
-Public Sub MenuCShift(ByVal sType As Byte)
+Public Sub MenuCShift(Optional ByVal shiftLeft As Boolean = False)
     
-    If sType = 0 Then
-        Message "Shifting RGB values right..."
-    Else
-        Message "Shifting RGB values left..."
-    End If
+    Message "Shifting RGB values..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -139,18 +135,21 @@ Public Sub MenuCShift(ByVal sType As Byte)
     For x = initX To finalX
         xStride = x * 4
     For y = initY To finalY
-        If sType = 0 Then
-            r = imageData(xStride, y)
-            g = imageData(xStride + 2, y)
-            b = imageData(xStride + 1, y)
-        Else
-            r = imageData(xStride + 1, y)
+        
+        If shiftLeft Then
             g = imageData(xStride, y)
+            r = imageData(xStride + 1, y)
             b = imageData(xStride + 2, y)
+        Else
+            r = imageData(xStride, y)
+            b = imageData(xStride + 1, y)
+            g = imageData(xStride + 2, y)
         End If
-        imageData(xStride + 2, y) = r
-        imageData(xStride + 1, y) = g
+        
         imageData(xStride, y) = b
+        imageData(xStride + 1, y) = g
+        imageData(xStride + 2, y) = r
+        
     Next y
         If (x And progBarCheck) = 0 Then
             If Interface.UserPressedESC() Then Exit For
@@ -159,7 +158,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
     Next x
         
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
@@ -174,7 +173,7 @@ Public Sub MenuNegative()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -222,7 +221,7 @@ Public Sub MenuNegative()
     Next y
         
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
@@ -237,7 +236,7 @@ Public Sub MenuInvertHue()
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -289,7 +288,7 @@ Public Sub MenuInvertHue()
     Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
@@ -308,7 +307,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left * curDIBValues.BytesPerPixel
@@ -357,7 +356,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     Next y
         
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
@@ -438,50 +437,4 @@ Public Sub fxAutoEnhance()
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
 
-End Sub
-
-'Given an RGBQuad, replace all instances with a different RGBQuad
-Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQuad, ByRef newQuad As RGBQuad)
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long, a As Long
-        
-    'Apply the filter
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-        
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        a = imageData(xStride + 3, y)
-        
-        If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.Alpha) Then
-        
-            imageData(xStride + 3, y) = newQuad.Alpha
-            imageData(xStride + 2, y) = newQuad.Red
-            imageData(xStride + 1, y) = newQuad.Green
-            imageData(xStride, y) = newQuad.Blue
-            
-        End If
-        
-    Next y
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
 End Sub

@@ -908,8 +908,6 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
     Dim listOfImages() As LayerConvertCache
     ReDim listOfImages(0 To openImageIDs.GetNumOfInts - 1) As LayerConvertCache
     
-    Dim localizedTag As String
-    
     Dim maxWidth As Long, maxHeight As Long
     
     For i = 0 To UBound(listOfImages)
@@ -1410,43 +1408,6 @@ Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
 
 End Sub
 
-'If a layer has been rotated using the on-canvas tools, this will reset it to its default orientation.
-Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
-
-    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerAngle 0
-    
-    'Notify the parent image of the change
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
-    
-    'Re-sync the interface
-    Interface.SyncInterfaceToCurrentImage
-    
-    'Redraw the viewport
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-
-End Sub
-
-'If a layer has been sheared using the on-canvas tools, this will reset it to shear = 0 for the specified direction.
-Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDirectionHorizontal As Boolean = True)
-
-    'Reset the shear value we were passed
-    If shearDirectionHorizontal Then
-        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerShearX 0
-    Else
-        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerShearY 0
-    End If
-    
-    'Notify the parent image of the change
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
-    
-    'Re-sync the interface
-    Interface.SyncInterfaceToCurrentImage
-    
-    'Redraw the viewport
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-
-End Sub
-
 'Resize a layer non-destructively, e.g. by only changing its position and on-canvas x/y modifiers
 Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
@@ -1521,18 +1482,6 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByRef resizeParams As 
     'Redraw the viewport
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
-End Sub
-
-'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
-Public Sub FillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
-    
-    With srcLayer
-        dstRect.Left = .GetLayerOffsetX
-        dstRect.Right = .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers)
-        dstRect.Top = .GetLayerOffsetY
-        dstRect.Bottom = .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers)
-    End With
-    
 End Sub
 
 'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always).
@@ -1737,25 +1686,6 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     GetLayerUnderMouse = -1
 
 End Function
-
-'Crop a given layer to the current selection.
-Public Sub CropLayerToSelection(ByVal layerIndex As Long)
-    
-    'First, make sure there is an active selection
-    If (Not PDImages.GetActiveImage.IsSelectionActive) Then
-        Message "No active selection found.  Crop abandoned."
-        Exit Sub
-    End If
-    
-    Message "Cropping layer..."
-    
-    'Because PD is awesome, we already have a function capable of doing this!
-    If PDImages.IsImageActive() Then PDImages.GetActiveImage.EraseProcessedSelection layerIndex
-    
-    'Update the viewport
-    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
-End Sub
 
 'If a function must rasterize a vector or text layer, it needs to call this function first.  This function will display a dialog
 ' asking the user for permission to rasterize the layer(s) in question.  Note that CANCEL is a valid return, so any callers need

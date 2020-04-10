@@ -49,12 +49,6 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 'A single library handle is maintained for the life of a class instance; see Initialize and Release functions, below.
 Private m_libDeflateHandle As Long
 
-'To simplify interactions, we create temporary libdeflate compressor and decompressor instances
-' "as we go".  Compressors in libdeflate are unique in-that they are specific to a given compression level
-' (e.g. "compress level 1" compressor != "compress level 6" compressor) which makes interactions
-' a little wonky as far as this class is concerned; for best results, you should only
-Private m_hCompressor As Long, m_hDecompressor As Long
-
 'At load-time, we cache a number of proc addresses (required for passing through DispCallFunc).
 ' This saves us a little time vs calling GetProcAddress on each call.
 Private Enum LD_ProcAddress
@@ -399,7 +393,7 @@ End Sub
 ' for a link to his original, unmodified version
 Private Function CallCDeclW(ByVal lProc As LD_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
 
-    Dim i As Long, pFunc As Long, vTemp() As Variant, hResult As Long
+    Dim i As Long, vTemp() As Variant, hResult As Long
     
     Dim numParams As Long
     If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1

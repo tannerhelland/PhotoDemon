@@ -463,7 +463,6 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-            If (grayVal > 255) Then grayVal = 255
             
             'Cache the value
             dstGrayArray(x, y) = gLookup(grayVal)
@@ -496,8 +495,7 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+        srcDIB.WrapArrayAroundDIB imageData, tmpSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -516,28 +514,27 @@ Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayA
         maxVal = 0
             
         'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            xStride = x * 4
         For y = initY To finalY
+        For x = initX To finalX
                 
             'Get the source pixel color values
+            xStride = x * 4
             b = imageData(xStride, y)
             g = imageData(xStride + 1, y)
             r = imageData(xStride + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-            If (grayVal > 255) Then grayVal = 255
             
             'Cache the value
             dstGrayAlphaArray(x * 2, y) = grayVal
             dstGrayAlphaArray(x * 2 + 1, y) = imageData(xStride + 3, y)
             
-        Next y
         Next x
+        Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB imageData
                 
         GetDIBGrayscaleAndAlphaMap = True
         
@@ -603,8 +600,7 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         
         'Point a local array at the DIB
         Dim dstImageData() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, dstDIB
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        dstDIB.WrapArrayAroundDIB dstImageData, tmpSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -622,20 +618,23 @@ Public Function CreateDIBFromGrayscaleMap_Alpha(ByRef dstDIB As pdDIB, ByRef src
         Next x
         
         'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            xStride = x * 4
         For y = initY To finalY
+        For x = initX To finalX
+            
             aValue = srcGrayArray(x, y)
             gValue = gLookup(aValue)
+            
+            xStride = x * 4
             dstImageData(xStride, y) = gValue
             dstImageData(xStride + 1, y) = gValue
             dstImageData(xStride + 2, y) = gValue
             dstImageData(xStride + 3, y) = aValue
-        Next y
+            
         Next x
+        Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapArrayFromDIB dstImageData
         dstDIB.SetInitialAlphaPremultiplicationState True
         CreateDIBFromGrayscaleMap_Alpha = True
         
@@ -657,8 +656,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+        srcDIB.WrapArrayAroundDIB imageData, tmpSA
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -715,7 +713,6 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-            If grayVal > 255 Then grayVal = 255
             
             'If less than 256 shades are in play, calculate that now as well
             grayVal = gLookup(grayVal)
@@ -743,7 +740,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         Next x
         Next y
         
-        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        srcDIB.UnwrapArrayFromDIB imageData
         MakeDIBGrayscale = True
         
     Else
@@ -1754,7 +1751,7 @@ Public Function GetDIBAs8bpp_RGBA_SrcPalette(ByRef srcDIB As pdDIB, ByRef srcPal
         Set cTree = New pdKDTree
         cTree.BuildTreeIncAlpha srcPalette, UBound(srcPalette) + 1
         
-        Dim r As Long, g As Long, b As Long, a As Long, i As Long
+        Dim r As Long, g As Long, b As Long, a As Long
         Dim tmpQuad As RGBQuad, newIndex As Long, lastIndex As Long
         Dim lastColor As Long: lastColor = -1
         Dim lastAlpha As Long: lastAlpha = -1
@@ -1934,7 +1931,7 @@ Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap
                 tmpQuad.Red = tmpA
                 tmpQuad.Green = tmpA
                 tmpQuad.Blue = tmpA
-                CopyMemory ByVal VarPtr(lTable(x)), ByVal VarPtr(tmpQuad), LenB(tmpQuad)
+                CopyMemoryStrict VarPtr(lTable(x)), VarPtr(tmpQuad), LenB(tmpQuad)
             Next x
             
             Dim imgData() As Long, tmpSA As SafeArray1D
@@ -2124,7 +2121,7 @@ Public Function GetRectOfInterest_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB
     Dim topImageData() As Long, topSA As SafeArray2D
     topDIB.WrapLongArrayAroundDIB topImageData, topSA
     
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, xStride As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = topDIB.GetDIBWidth - 1

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.138</langversion>
+<langversion>1.0.139</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -332,13 +332,8 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>오른쪽으로 RGB 값 이동</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>왼쪽으로 시프트하는 RGB 값</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -366,7 +361,7 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1021,11 +1016,6 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>이 작업은 텍스트 및 벡터 레이어를 이미지 (래스터) 레이어로 변환하므로 더 이상 텍스트, 글꼴, 색상 또는 모양과 같은 레이어 별 설정을 수정할 수 없습니다.</translation>
 </phrase>
@@ -1090,7 +1080,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>페이지 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16019,10 +16009,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

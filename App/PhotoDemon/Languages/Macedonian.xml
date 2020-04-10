@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.266</langversion>
+<langversion>1.0.267</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -332,13 +332,8 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>Менувањето на RGB вредности право</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>остави менувањето вредности RGB</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -366,7 +361,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1022,11 +1017,6 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>Оваа акција ќе се претвори во текст и векторски слоеви на сликата (растерска) слоеви, што значи дека повеќе не може да ги измените прилагодувањата слој специфични како текст, фонт, боја или облик.</translation>
 </phrase>
@@ -1091,7 +1081,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Страница %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -16025,10 +16015,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2656</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 4998 phrases. -->
+<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
+<!-- These 2656 phrases contain approximately 12274 total words. -->
 
 </pdData>

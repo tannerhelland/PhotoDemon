@@ -400,7 +400,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         If CopyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
-            'Debug.Print "Node data compressed successfully; compressed data is " & Format$(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
+            'Debug.Print "Node data compressed successfully; compressed data is " & Format$(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
             
         Else
             

@@ -111,7 +111,7 @@ Private m_ResetRect As RectF, m_UpRect As RectF, m_DownRect As RectF, m_EditBoxR
 'Mouse state for the various button areas
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean, m_MouseOverResetButton As Boolean
-Private m_MouseDownResetButton As Boolean, m_MouseUpResetButton As Boolean
+Private m_MouseDownResetButton As Boolean
 
 '99+% of spinner instances show a "reset" button to make life easier for the user, but in some instances,
 ' a reset button doesn't make sense (e.g. selection width/height - what would default values even be??)
@@ -1190,7 +1190,7 @@ Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
         formatString = "#0." & String$(m_SigDigits, "0")
     End If
     
-    GetFormattedStringValue = Format$(CStr(srcValue), formatString)
+    GetFormattedStringValue = Format$(srcValue, formatString)
         
     'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
     If (Not Me.Enabled) Then GetFormattedStringValue = vbNullString

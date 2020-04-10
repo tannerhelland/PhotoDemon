@@ -137,7 +137,7 @@ Public Sub KuwaharaFilter(ByVal effectParams As String, Optional ByVal toPreview
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
-    Dim xOffset As Long, yOffset As Long
+    Dim xOffset As Long
     Dim xMin As Long, xMax As Long, yMin As Long, yMax As Long
     Dim tstVariance As Double, vMin As Double
     

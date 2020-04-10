@@ -457,7 +457,7 @@ Public Sub WrapArrayAroundPtr_Float(ByRef dstFloats() As Single, ByRef dstSA1D A
         .cElements = srcLenInBytes \ 4
         .pvData = srcPtr
     End With
-    CopyMemory ByVal VarPtrArray(dstFloats()), VarPtr(dstSA1D), 4&
+    PutMem4 VarPtrArray(dstFloats()), VarPtr(dstSA1D)
 End Sub
 
 Public Sub UnwrapArrayFromPtr_Float(ByRef dstFloats() As Single)
@@ -473,7 +473,7 @@ Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As S
         .cElements = srcLenInBytes \ 2
         .pvData = srcPtr
     End With
-    CopyMemory ByVal VarPtrArray(dstInts()), VarPtr(dstSA1D), 4&
+    PutMem4 VarPtrArray(dstInts()), VarPtr(dstSA1D)
 End Sub
 
 Public Sub UnwrapArrayFromPtr_Int(ByRef dstInts() As Integer)

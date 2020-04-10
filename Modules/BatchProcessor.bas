@@ -76,7 +76,7 @@ Public Sub StartMacro()
     ReDim m_Processes(0 To m_ProcessCount) As PD_ProcessCall
     
     'Update any related macro UI elements
-    Macros.UpdateMacroUI True
+    UpdateMacroUI True
     
 End Sub
 
@@ -104,7 +104,7 @@ Public Sub StopMacro()
         If (msgReturn = vbYes) Then
             
             'Update any related macro UI elements
-            Macros.UpdateMacroUI False
+            UpdateMacroUI False
             
             'Reset the macro engine and exit
             Macros.SetMacroStatus MacroSTOP
@@ -122,7 +122,7 @@ Public Sub StopMacro()
     Macros.SetMacroStatus MacroSTOP
     
     'Update any related macro UI elements
-    Macros.UpdateMacroUI False
+    UpdateMacroUI False
     
     'If the user cancels the save dialog, we'll raise a warning to tell them that the macro will be lost for good.
     ' That dialog gives them an option to return to the save dialog, which will bring us back to this line of code.

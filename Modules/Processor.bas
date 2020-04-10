@@ -457,11 +457,6 @@ Public Sub InitializeProcessor()
     
 End Sub
 
-'At present, resetting the processor is identical to initializing it
-Public Sub ResetProcessor()
-    InitializeProcessor
-End Sub
-
 'Internal reporting method for Processor timer updates.  Pass the start time, and this function will automatically report elapsed time.
 Private Sub ReportProcessorTimeTaken(ByVal srcStartTime As Currency)
 
@@ -1984,11 +1979,11 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Shift colors (left)", True) Then
-        MenuCShift 1
+        MenuCShift True
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Shift colors (right)", True) Then
-        MenuCShift 0
+        MenuCShift False
         Process_AdjustmentsMenu = True
                 
     ElseIf Strings.StringsEqual(processID, "Maximum channel", True) Then
@@ -2272,7 +2267,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     'Reverse layer order
     ElseIf Strings.StringsEqual(processID, "Reverse layer order", True) Then
-        PDImages.GetActiveImage.ReverseLayerOrder
+        Layers.ReverseLayerOrder
         Process_LayerMenu = True
     
     'Toggle active layer visibility
