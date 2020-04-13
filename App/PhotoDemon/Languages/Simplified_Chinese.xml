@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.1524</langversion>
+<langversion>8.0.1880</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -332,8 +332,13 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Shifting RGB values</original>
-<translation></translation>
+<original>Shifting RGB values right</original>
+<translation>RGB 右移</translation>
+</phrase>
+
+<phrase>
+<original>Shifting RGB values left</original>
+<translation>RGB 左移</translation>
 </phrase>
 
 <phrase>
@@ -361,7 +366,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>自动增强色彩和照明</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -465,7 +470,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Analyzing image</original>
-<translation></translation>
+<translation>分析图像</translation>
 </phrase>
 
 <phrase>
@@ -480,7 +485,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Cropping image</original>
-<translation></translation>
+<translation>裁剪图像</translation>
 </phrase>
 
 <phrase>
@@ -525,7 +530,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Trimming image</original>
-<translation></translation>
+<translation>修整图像</translation>
 </phrase>
 
 <!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -728,12 +733,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>erase</original>
-<translation></translation>
+<translation>擦除</translation>
 </phrase>
 
 <phrase>
 <original>ignore</original>
-<translation></translation>
+<translation>忽略</translation>
 </phrase>
 
 <phrase>
@@ -953,7 +958,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Cancel action</original>
-<translation></translation>
+<translation>取消操作</translation>
 </phrase>
 
 <phrase>
@@ -1015,6 +1020,11 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <phrase>
 <original>Merged layers</original>
 <translation>合并后的图层</translation>
+</phrase>
+
+<phrase>
+<original>Cropping layer</original>
+<translation>裁剪层</translation>
 </phrase>
 
 <phrase>
@@ -1082,7 +1092,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>%1 页</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1562,7 +1572,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Compare images</original>
-<translation></translation>
+<translation>比较图像</translation>
 </phrase>
 
 <phrase>
@@ -1752,7 +1762,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Fit layer to image</original>
-<translation></translation>
+<translation>图层适合图像</translation>
 </phrase>
 
 <phrase>
@@ -1762,7 +1772,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Luminance to alpha</original>
-<translation></translation>
+<translation>设置亮度到alpha</translation>
 </phrase>
 
 <phrase>
@@ -2327,7 +2337,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Pointillize</original>
-<translation></translation>
+<translation>点状化</translation>
 </phrase>
 
 <phrase>
@@ -2397,7 +2407,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Offset and zoom</original>
-<translation></translation>
+<translation>偏移和缩放</translation>
 </phrase>
 
 <phrase>
@@ -2661,7 +2671,7 @@ Please make sure the device is turned on and ready for use.</original>
 
 <phrase>
 <original>Scanner error</original>
-<translation></translation>
+<translation>扫描仪错误</translation>
 </phrase>
 
 <phrase>
@@ -3545,7 +3555,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
-<translation></translation>
+<translation>按住Ctrl键并单击可将活动层移到此处</translation>
 </phrase>
 
 <phrase>
@@ -4853,7 +4863,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Action canceled: target layer isn't visible.</original>
-<translation></translation>
+<translation>动作已取消：目标图层不可见。</translation>
 </phrase>
 
 <phrase>
@@ -5957,7 +5967,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Compare</original>
-<translation></translation>
+<translation>比较</translation>
 </phrase>
 
 <phrase>
@@ -6072,7 +6082,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Fit to canvas</original>
-<translation></translation>
+<translation>适合大小到画布</translation>
 </phrase>
 
 <phrase>
@@ -6112,7 +6122,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Fit to image</original>
-<translation></translation>
+<translation>适合图像</translation>
 </phrase>
 
 <phrase>
@@ -6122,12 +6132,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From color (chroma key)</original>
-<translation></translation>
+<translation>从颜色（色度键）</translation>
 </phrase>
 
 <phrase>
 <original>From luminance</original>
-<translation></translation>
+<translation>从亮度</translation>
 </phrase>
 
 <phrase>
@@ -6689,7 +6699,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Importing metadata</original>
-<translation></translation>
+<translation>导入元数据</translation>
 </phrase>
 
 <phrase>
@@ -7012,7 +7022,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Adjust HSL</original>
-<translation></translation>
+<translation>调整HSL</translation>
 </phrase>
 
 <phrase>
@@ -8798,7 +8808,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Unsaved changes</original>
-<translation></translation>
+<translation>未保存的更改</translation>
 </phrase>
 
 <phrase>
@@ -9451,7 +9461,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>algorithms</original>
-<translation></translation>
+<translation>算法</translation>
 </phrase>
 
 <phrase>
@@ -9461,12 +9471,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>radius (Photoshop equivalent)</original>
-<translation></translation>
+<translation>半径（等效于Photoshop）</translation>
 </phrase>
 
 <phrase>
 <original>standard deviation (%1)</original>
-<translation></translation>
+<translation>标准偏差(%1)</translation>
 </phrase>
 
 <phrase>
@@ -9481,17 +9491,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>iterative box blur</original>
-<translation></translation>
+<translation>迭代框模糊</translation>
 </phrase>
 
 <phrase>
 <original>anisotropic diffusion (Alvarez-Mazorra)</original>
-<translation></translation>
+<translation>各向异性扩散（Alvarez Mazorra）</translation>
 </phrase>
 
 <phrase>
 <original>IIR (Deriche)</original>
-<translation></translation>
+<translation>IIR (Deriche)</translation>
 </phrase>
 
 <!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -9502,7 +9512,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying Kuwahara filter</original>
-<translation></translation>
+<translation>应用Kuwahara过滤器</translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9691,7 +9701,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Miscellaneous distorts</original>
-<translation></translation>
+<translation>杂项失真</translation>
 </phrase>
 
 <phrase>
@@ -10506,17 +10516,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>background color and opacity</original>
-<translation></translation>
+<translation>背景色和透明度</translation>
 </phrase>
 
 <phrase>
 <original>color variation</original>
-<translation></translation>
+<translation>颜色变化</translation>
 </phrase>
 
 <phrase>
 <original>Splattering canvas with paint</original>
-<translation></translation>
+<translation>用油漆喷满画布</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11796,7 +11806,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Download image</original>
-<translation></translation>
+<translation>下载图像</translation>
 </phrase>
 
 <phrase>
@@ -12907,82 +12917,82 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>resize images as necessary</original>
-<translation></translation>
+<translation>根据需要调整图像大小</translation>
 </phrase>
 
 <phrase>
 <original>base image and layer</original>
-<translation></translation>
+<translation>基础图像和层</translation>
 </phrase>
 
 <phrase>
 <original>comparison image and layer</original>
-<translation></translation>
+<translation>比较图像和图层</translation>
 </phrase>
 
 <phrase>
 <original>compare using Lab color space</original>
-<translation></translation>
+<translation>使用Lab颜色空间进行比较</translation>
 </phrase>
 
 <phrase>
 <original>generate difference map as a new layer</original>
-<translation></translation>
+<translation>生成差异图作为新图层</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing images</original>
-<translation></translation>
+<translation>分析图像</translation>
 </phrase>
 
 <phrase>
 <original>difference between %1 and %2</original>
-<translation></translation>
+<translation>%1 和 %2 之间的差异</translation>
 </phrase>
 
 <phrase>
 <original>infinite</original>
-<translation></translation>
+<translation>无限</translation>
 </phrase>
 
 <phrase>
 <original>Lab</original>
-<translation></translation>
+<translation>Lab</translation>
 </phrase>
 
 <phrase>
 <original>Peak signal-to-noise ratio (PSNR) between these images</original>
-<translation></translation>
+<translation>这些图像之间的峰值信噪比（PSNR）</translation>
 </phrase>
 
 <phrase>
 <original>L*</original>
-<translation></translation>
+<translation>L*</translation>
 </phrase>
 
 <phrase>
 <original>a*</original>
-<translation></translation>
+<translation>a*</translation>
 </phrase>
 
 <phrase>
 <original>b*</original>
-<translation></translation>
+<translation>b*</translation>
 </phrase>
 
 <phrase>
 <original>These images are identical.</original>
-<translation></translation>
+<translation>这些图像是相同的。</translation>
 </phrase>
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation></translation>
+<translation>据估算，这些图像相似度为 %1% </translation>
 </phrase>
 
 <phrase>
 <original>Image comparison</original>
-<translation></translation>
+<translation>图像比较</translation>
 </phrase>
 
 <!-- Image_Compare.frm contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -13597,22 +13607,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Generate mask from luminance</original>
-<translation></translation>
+<translation>从亮度生成遮罩</translation>
 </phrase>
 
 <phrase>
 <original>black is transparent</original>
-<translation></translation>
+<translation>黑色是透明的</translation>
 </phrase>
 
 <phrase>
 <original>white is transparent</original>
-<translation></translation>
+<translation>白色是透明的</translation>
 </phrase>
 
 <phrase>
 <original>gray is transparent</original>
-<translation></translation>
+<translation>灰色是透明的</translation>
 </phrase>
 
 <!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -16006,10 +16016,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2658</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5001 phrases. -->
+<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
+<!-- These 2658 phrases contain approximately 12281 total words. -->
 
 </pdData>
