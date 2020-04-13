@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1843</langversion>
+<langversion>8.0.1892</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -334,7 +334,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Shifting RGB values</original>
-<translation></translation>
+<translation>RGB-Werte werden verschoben</translation>
 </phrase>
 
 <phrase>
@@ -6081,7 +6081,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit to canvas</original>
-<translation></translation>
+<translation>An Leinwand anpassen</translation>
 </phrase>
 
 <phrase>
