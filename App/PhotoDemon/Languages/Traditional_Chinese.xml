@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.141</langversion>
+<langversion>7.0.143</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -6901,13 +6901,13 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation></translation>
+<original>saturation</original>
+<translation>飽和度</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>要套用的色彩</translation>
+<original>new color</original>
+<translation>新色彩</translation>
 </phrase>
 
 <phrase>
@@ -6915,7 +6915,17 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>正在進行影像著色</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>自訂</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -6988,11 +6998,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>飽和度</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>亮度</translation>
 </phrase>
@@ -7002,7 +7007,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>調整色調、飽和度與亮度值</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7024,16 +7029,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>新色彩</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>取代色彩</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9439,11 +9439,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>自訂</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9458,7 +9453,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13333,11 +13328,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>保持目前</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation></translation>
 </phrase>
@@ -13372,7 +13362,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>旋轉圖層</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -15960,10 +15950,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

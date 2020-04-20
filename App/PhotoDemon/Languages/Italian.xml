@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.471</langversion>
+<langversion>6.7.473</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -6938,13 +6938,13 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>mantieni la saturazione esistente</translation>
+<original>saturation</original>
+<translation>saturazione</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>colore da applicare</translation>
+<original>new color</original>
+<translation>nuovo colore</translation>
 </phrase>
 
 <phrase>
@@ -6952,7 +6952,17 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Colorizzazione dell'immagine</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>personalizzato</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7025,11 +7035,6 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>saturazione</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>luminosità</translation>
 </phrase>
@@ -7039,7 +7044,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Regolazione valori della tinta, saturazione e luminosità</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7061,16 +7066,11 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>nuovo colore</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>Sostituzione colore</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9478,11 +9478,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>personalizzato</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9497,7 +9492,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13379,11 +13374,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>tieniti aggiornato</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>ingrandire per adattarsi</translation>
 </phrase>
@@ -13418,7 +13408,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Ruota il livello</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16013,10 +16003,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

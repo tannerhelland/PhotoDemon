@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3454</langversion>
+<langversion>6.8.3456</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6932,13 +6932,13 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>säilyttää nykyiset kyllästyminen</translation>
+<original>saturation</original>
+<translation>kyllästys</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>väri soveltaa</translation>
+<original>new color</original>
+<translation>uusi väri</translation>
 </phrase>
 
 <phrase>
@@ -6946,7 +6946,17 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>colorizing kuva</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>asiakassuhde</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7019,11 +7029,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>kyllästys</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>kepeys</translation>
 </phrase>
@@ -7033,7 +7038,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Säätäminen sävyn, kylläisyyden ja valoisuuden arvot</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7055,16 +7060,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>uusi väri</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>vaihtaminen väri</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9472,11 +9472,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>asiakassuhde</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9491,7 +9486,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13374,11 +13369,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>pitää nykyisen</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>suurentaa sopivaksi</translation>
 </phrase>
@@ -13413,7 +13403,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Kierrä kerros</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16009,10 +15999,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

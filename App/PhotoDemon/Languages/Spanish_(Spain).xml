@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.317</langversion>
+<langversion>6.7.319</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -6944,13 +6944,13 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>Preservar la saturación existente</translation>
+<original>saturation</original>
+<translation>Saturación</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>Color a aplicar</translation>
+<original>new color</original>
+<translation>Nuevo color</translation>
 </phrase>
 
 <phrase>
@@ -6958,7 +6958,17 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Coloreando la imagen</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>Personalizado</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7031,11 +7041,6 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>Saturación</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>Brillo</translation>
 </phrase>
@@ -7045,7 +7050,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Ajustando los valores de tono, saturación y luminancia</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7067,16 +7072,11 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>Nuevo color</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>Sustituyendo color</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9484,11 +9484,6 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>Personalizado</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9503,7 +9498,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13386,11 +13381,6 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>Mantener actual</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>Agrandar hasta ajustar</translation>
 </phrase>
@@ -13425,7 +13415,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>Girar capa</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16021,10 +16011,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.471</langversion>
+<langversion>6.7.473</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6939,13 +6939,13 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>behouden van bestaande verzadiging</translation>
+<original>saturation</original>
+<translation>verzadiging</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>kleur om toe te passen</translation>
+<original>new color</original>
+<translation>nieuwe kleur</translation>
 </phrase>
 
 <phrase>
@@ -6953,7 +6953,17 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Inkleuren afbeelding</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>aangepaste</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7026,11 +7036,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>verzadiging</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>helderheid</translation>
 </phrase>
@@ -7040,7 +7045,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Instellen waarden van kleurtoon, verzadiging en helderheid</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7062,16 +7067,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>nieuwe kleur</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>Vervangen kleur</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9479,11 +9479,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>aangepaste</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9498,7 +9493,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13381,11 +13376,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>huidige behouden</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>vergroot om te passen</translation>
 </phrase>
@@ -13420,7 +13410,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Draai laag</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16016,10 +16006,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

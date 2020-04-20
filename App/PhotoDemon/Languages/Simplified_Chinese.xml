@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.1880</langversion>
+<langversion>8.0.1883</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -332,13 +332,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Shifting RGB values right</original>
-<translation>RGB 右移</translation>
-</phrase>
-
-<phrase>
-<original>Shifting RGB values left</original>
-<translation>RGB 左移</translation>
+<original>Shifting RGB values</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -366,7 +361,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>自动增强色彩和照明</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1023,11 +1018,6 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>Cropping layer</original>
-<translation>裁剪层</translation>
-</phrase>
-
-<phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation>这个动作将文本和矢量图层转换成图像（栅格）图层，这意味着你可以不再修改图层的特定设置，比如文字，字体，颜色或者形状。</translation>
 </phrase>
@@ -1092,7 +1082,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>%1 页</translation>
 </phrase>
 
-<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -6944,13 +6934,13 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>保留现有的饱和度</translation>
+<original>saturation</original>
+<translation>饱和度</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>应用颜色</translation>
+<original>new color</original>
+<translation>新的颜色</translation>
 </phrase>
 
 <phrase>
@@ -6958,7 +6948,17 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>彩色图像</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>自定义</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7031,11 +7031,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>饱和度</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>亮度</translation>
 </phrase>
@@ -7045,7 +7040,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>调节色调，饱和度和亮度值</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7067,16 +7062,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>新的颜色</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>更换颜色</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9485,11 +9475,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>自定义</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation>迭代框模糊</translation>
 </phrase>
@@ -9504,7 +9489,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>IIR (Deriche)</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13385,11 +13370,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>保存当前</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>扩大适应</translation>
 </phrase>
@@ -13424,7 +13404,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>旋转层</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16016,10 +15996,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2658</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5001 phrases. -->
-<!-- 2343 are duplicates, so only 2658 unique phrases have been written to file. -->
-<!-- These 2658 phrases contain approximately 12281 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

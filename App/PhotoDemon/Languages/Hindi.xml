@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.174</langversion>
+<langversion>1.0.176</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6936,13 +6936,13 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>मौजूदा संतृप्ति को संरक्षित करें</translation>
+<original>saturation</original>
+<translation>परिपूर्णता</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>लागू करने के लिए रंग</translation>
+<original>new color</original>
+<translation>नया रंग</translation>
 </phrase>
 
 <phrase>
@@ -6950,7 +6950,17 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>छवि रंगाई करना</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>रिवाज</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7023,11 +7033,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>परिपूर्णता</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>लपट</translation>
 </phrase>
@@ -7037,7 +7042,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>रंग, संतृप्ति, और चमक के मूल्यों को समायोजित करना</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7059,16 +7064,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>नया रंग</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>रंग बदलना</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9476,11 +9476,6 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>रिवाज</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9495,7 +9490,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13378,11 +13373,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>अद्यतन बनाए रखें</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>फिट करने के लिए विस्तार</translation>
 </phrase>
@@ -13417,7 +13407,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परत घुमाएं</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16012,10 +16002,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

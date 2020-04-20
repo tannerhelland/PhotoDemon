@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.162</langversion>
+<langversion>1.0.164</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6934,13 +6934,13 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>既存の飽和を保持する</translation>
+<original>saturation</original>
+<translation>飽和</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>適用する色</translation>
+<original>new color</original>
+<translation>新しい色</translation>
 </phrase>
 
 <phrase>
@@ -6948,7 +6948,17 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>カラー化画像</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>カスタム</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7021,11 +7031,6 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>飽和</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>明度</translation>
 </phrase>
@@ -7035,7 +7040,7 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>色相、彩度、輝度の値を調整する</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7057,16 +7062,11 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>新しい色</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>色を置き換える</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9474,11 +9474,6 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>カスタム</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation></translation>
 </phrase>
@@ -9493,7 +9488,7 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13376,11 +13371,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>最新の状態に保ちます</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>フィットするように拡大する</translation>
 </phrase>
@@ -13415,7 +13405,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>レイヤーを回転する</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16010,10 +16000,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

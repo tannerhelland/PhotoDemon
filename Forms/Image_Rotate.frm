@@ -372,7 +372,7 @@ Private Sub Form_Load()
     'Disable previewing until the dialog is fully initialized
     cmdBar.SetPreviewStatus False
     
-    btsResize.AddItem "keep current", 0
+    btsResize.AddItem "preserve", 0
     btsResize.AddItem "enlarge to fit", 1
     btsResize.ListIndex = 1
     

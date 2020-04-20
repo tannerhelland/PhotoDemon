@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1892</langversion>
+<langversion>8.0.1894</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6944,13 +6944,13 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <!-- BEGIN text for Adjustments_Color_Colorize.frm (FormColorize) -->
 
 <phrase>
-<original>preserve existing saturation</original>
-<translation>Vorhandene Sättigung beibehalten</translation>
+<original>saturation</original>
+<translation>Sättigung</translation>
 </phrase>
 
 <phrase>
-<original>color to apply</original>
-<translation>Anzuwendende Farbe</translation>
+<original>new color</original>
+<translation>Neue Farbe</translation>
 </phrase>
 
 <phrase>
@@ -6958,7 +6958,17 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Bild wird eingefärbt</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>preserve</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom</original>
+<translation>Benutzerdefiniert</translation>
+</phrase>
+
+<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Colorize.frm-->
 
@@ -7031,11 +7041,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>Sättigung</translation>
-</phrase>
-
-<phrase>
 <original>lightness</original>
 <translation>Helligkeit</translation>
 </phrase>
@@ -7045,7 +7050,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Farbton-, Sättigungs- und Luminanzwerte werden angepasst</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_HSL.frm-->
 
@@ -7067,16 +7072,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>Neue Farbe</translation>
-</phrase>
-
-<phrase>
 <original>Replacing color</original>
 <translation>Farbe wird ersetzt</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
@@ -9484,11 +9484,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>custom</original>
-<translation>Benutzerdefiniert</translation>
-</phrase>
-
-<phrase>
 <original>iterative box blur</original>
 <translation>Iterative Boxunschärfe</translation>
 </phrase>
@@ -9503,7 +9498,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>IIR (Deriche)</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -13384,11 +13379,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>keep current</original>
-<translation>Aktuelles behalten</translation>
-</phrase>
-
-<phrase>
 <original>enlarge to fit</original>
 <translation>Vergrößern zum Anpassen</translation>
 </phrase>
@@ -13423,7 +13413,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Layer drehen</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -16019,10 +16009,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2656</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4998 phrases. -->
-<!-- 2342 are duplicates, so only 2656 unique phrases have been written to file. -->
-<!-- These 2656 phrases contain approximately 12274 total words. -->
+<!-- As of this build, PhotoDemon contains 5003 phrases. -->
+<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12267 total words. -->
 
 </pdData>

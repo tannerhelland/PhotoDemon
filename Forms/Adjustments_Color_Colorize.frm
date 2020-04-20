@@ -23,6 +23,16 @@ Begin VB.Form FormColorize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   823
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsSaturation 
+      Height          =   1095
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   1485
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1931
+      Caption         =   "saturation"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -33,16 +43,6 @@ Begin VB.Form FormColorize
       _ExtentX        =   21775
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdCheckBox chkSaturation 
-      Height          =   330
-      Left            =   6240
-      TabIndex        =   2
-      Top             =   2760
-      Width           =   5790
-      _ExtentX        =   10213
-      _ExtentY        =   582
-      Caption         =   "preserve existing saturation"
-   End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
@@ -52,20 +52,61 @@ Begin VB.Form FormColorize
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.pdSlider sltHue 
+   Begin PhotoDemon.pdSlider sldHSL 
       Height          =   705
+      Index           =   0
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1800
+      TabIndex        =   2
+      Top             =   600
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   1270
-      Caption         =   "color to apply"
+      Caption         =   "new color"
       Max             =   359
       SliderTrackStyle=   4
       Value           =   180
       NotchPosition   =   1
       DefaultValue    =   180
+   End
+   Begin PhotoDemon.pdSlider sldHSL 
+      Height          =   705
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2685
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1270
+      Max             =   100
+      SliderTrackStyle=   2
+      Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
+   End
+   Begin PhotoDemon.pdButtonStrip btsLuminance 
+      Height          =   1095
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3480
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1931
+      Caption         =   "luminance"
+   End
+   Begin PhotoDemon.pdSlider sldHSL 
+      Height          =   705
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   4680
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1270
+      Max             =   100
+      SliderTrackStyle=   2
+      Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -77,8 +118,8 @@ Attribute VB_Exposed = False
 'Colorize Form
 'Copyright 2006-2020 by Tanner Helland
 'Created: 12/January/07
-'Last updated: 22/June/14
-'Last update: replace old scroll bar with slider/text combo
+'Last updated: 19/April/20
+'Last update: perf improvements; allow user to control saturation and luminance, if not preserving
 '
 'Fairly simple and standard routine - look in the Miscellaneous Filters module
 ' for the HSL transformation code
@@ -90,16 +131,21 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Sub btsLuminance_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+    ReflowInterface
+End Sub
+
+Private Sub btsSaturation_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+    ReflowInterface
+End Sub
+
 Private Sub cmdBar_OKClick()
     Process "Colorize", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    UpdatePreview
-End Sub
-
-'When the "maintain saturation" check box is clicked, redraw the image
-Private Sub chkSaturation_Click()
     UpdatePreview
 End Sub
 
@@ -113,68 +159,93 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
-    Dim hToUse As Double, maintainSaturation As Boolean
-    hToUse = cParams.GetDouble("hue", sltHue.Value)
-    maintainSaturation = cParams.GetBool("preservesaturation", True)
+    Dim hToUse As Double
+    hToUse = cParams.GetDouble("hue", sldHSL(0).Value, True)
     
-    'Convert the incoming hue from [0, 360] to [-1, 5] range
-    hToUse = hToUse / 60
+    Dim sToUse As Double, maintainSaturation As Boolean
+    Dim lToUse As Double, maintainLuminance As Boolean
+    
+    'Old param strings used slightly different IDs
+    If cParams.DoesParamExist("preservesaturation", True) Then
+        maintainSaturation = cParams.GetBool("preservesaturation", True, True)
+        sToUse = 0.5
+    Else
+        maintainSaturation = cParams.GetBool("preserve-saturation", True)
+        sToUse = cParams.GetDouble("saturation", 0.5, True) / 100#
+    End If
+    
+    maintainLuminance = cParams.GetBool("preserve-luminance", True, True)
+    lToUse = cParams.GetDouble("luminance", 0.5, True) / 100#
+    
+    'Convert HSL values to safe ranges
+    hToUse = hToUse / 360#
+    If (hToUse < 0#) Then hToUse = 0#
+    If (hToUse > 1#) Then hToUse = 1#
+    
+    If (sToUse < 0#) Then sToUse = 0#
+    If (sToUse > 1#) Then sToUse = 1#
+    
+    If (lToUse < 0#) Then lToUse = 0#
+    If (lToUse > 1#) Then lToUse = 1#
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, l As Double
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
     
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
+        
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
+        
+        bFloat = b * ONE_DIV_255
+        gFloat = g * ONE_DIV_255
+        rFloat = r * ONE_DIV_255
         
         'Get the hue and saturation
-        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
+        Colors.PreciseRGBtoHSL rFloat, gFloat, bFloat, h, s, l
         
         'Convert back to RGB using our artificial hue value
-        If maintainSaturation Then
-            Colors.ImpreciseHSLtoRGB hToUse, s, l, r, g, b
-        Else
-            Colors.ImpreciseHSLtoRGB hToUse, 0.5, l, r, g, b
-        End If
+        If (Not maintainSaturation) Then s = sToUse
+        If (Not maintainLuminance) Then l = lToUse
+        Colors.PreciseHSLtoRGB hToUse, s, l, rFloat, gFloat, bFloat
         
         'Assign the new values to each color channel
-        imageData(xStride, y) = b
-        imageData(xStride + 1, y) = g
-        imageData(xStride + 2, y) = r
+        imageData(x) = bFloat * 255#
+        imageData(x + 1) = gFloat * 255#
+        imageData(x + 2) = rFloat * 255#
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData
@@ -186,14 +257,27 @@ End Sub
 
 'Reset the hue bar to the center position
 Private Sub cmdBar_ResetClick()
-    sltHue.Value = 180#
+    sldHSL(0).Value = 180#
 End Sub
 
 Private Sub Form_Load()
+
     cmdBar.SetPreviewStatus False
+    
+    btsSaturation.AddItem "preserve", 0
+    btsSaturation.AddItem "custom", 1
+    btsSaturation.ListIndex = 0
+    
+    btsLuminance.AddItem "preserve", 0
+    btsLuminance.AddItem "custom", 1
+    btsLuminance.ListIndex = 0
+    
+    ReflowInterface
     ApplyThemeAndTranslations Me
+    
     cmdBar.SetPreviewStatus True
     UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -209,8 +293,37 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub sltHue_Change()
-    UpdatePreview
+Private Sub RedrawSaturationSlider()
+
+    'Update the Saturation background dynamically, to match the hue background!
+    Dim r As Double, g As Double, b As Double
+    
+    Colors.PreciseHSLtoRGB sldHSL(0).Value / 360#, 0#, 0.5, r, g, b
+    sldHSL(1).GradientColorLeft = RGB(r, g, b)
+    
+    Colors.PreciseHSLtoRGB sldHSL(0).Value / 360#, 1#, 0.5, r, g, b
+    sldHSL(1).GradientColorRight = RGB(r, g, b)
+
+End Sub
+
+Private Sub ReflowInterface()
+
+    Dim yOffset As Long
+    yOffset = btsSaturation.GetTop + btsSaturation.GetHeight + Interface.FixDPI(8)
+    
+    If (btsSaturation.ListIndex = 1) Then
+        sldHSL(1).SetTop yOffset
+        yOffset = yOffset + sldHSL(1).GetHeight + Interface.FixDPI(8)
+    End If
+    sldHSL(1).Visible = (btsSaturation.ListIndex = 1)
+    If sldHSL(1).Visible Then RedrawSaturationSlider
+    
+    yOffset = yOffset + Interface.FixDPI(4)
+    btsLuminance.SetTop yOffset
+    yOffset = yOffset + btsLuminance.GetHeight + Interface.FixDPI(8)
+    sldHSL(2).SetTop yOffset
+    sldHSL(2).Visible = (btsLuminance.ListIndex = 1)
+    
 End Sub
 
 Private Function GetLocalParamString() As String
@@ -219,10 +332,17 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
-        .AddParam "hue", sltHue.Value
-        .AddParam "preservesaturation", chkSaturation.Value
+        .AddParam "hue", sldHSL(0).Value
+        .AddParam "preserve-saturation", (btsSaturation.ListIndex = 0)
+        .AddParam "saturation", sldHSL(1).Value
+        .AddParam "preserve-luminance", (btsLuminance.ListIndex = 0)
+        .AddParam "luminance", sldHSL(2).Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
 End Function
+
+Private Sub sldHSL_Change(Index As Integer)
+    UpdatePreview
+End Sub
