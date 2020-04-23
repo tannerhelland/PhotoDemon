@@ -119,10 +119,11 @@ Attribute VB_Exposed = False
 'Copyright 2006-2020 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 19/April/20
-'Last update: perf improvements; allow user to control saturation and luminance, if not preserving
+'Last update: perf improvements; allow user to control saturation and luminance (if not preserving)
 '
-'Fairly simple and standard routine - look in the Miscellaneous Filters module
-' for the HSL transformation code
+'This dialog has slowly morphed over the years, and now it bears a lot of similarity to
+' the HSL adjustment dialog.  The difference here is that values can be forced to a specific
+' constant value, instead of merely scaling them proportionally.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

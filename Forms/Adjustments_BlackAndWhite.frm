@@ -246,17 +246,14 @@ End Sub
 Private Function CalculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, True, pdFxPreview
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -267,35 +264,31 @@ Private Function CalculateOptimalThreshold() As Long
     Dim numOfPixels As Long
     
     'Loop through each pixel in the image, tallying values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
             
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
-        pLuminance = GetLuminance(r, g, b)
+        pLuminance = Colors.GetHQLuminance(r, g, b)
         
-        'Store this value in the histogram
+        'Store this value in the histogram and increment total pixel count
         lLookup(pLuminance) = lLookup(pLuminance) + 1
-        
-        'Increment the pixel count
         numOfPixels = numOfPixels + 1
         
-    Next y
     Next x
+    Next y
     
-    'Safely deallocate imageData()
+    'Safely deallocate imageData() and free the target DIB (as it's no longer needed)
     workingDIB.UnwrapArrayFromDIB imageData
-    
-    workingDIB.EraseDIB
     Set workingDIB = Nothing
             
-    'Divide the number of pixels by two
+    'We want to find the midpoint of the current histogram; divide the number of pixels by two
     numOfPixels = numOfPixels \ 2
-                       
+    
     Dim pixelCount As Long
     pixelCount = 0
     x = 0
@@ -306,7 +299,8 @@ Private Function CalculateOptimalThreshold() As Long
         x = x + 1
     Loop While pixelCount < numOfPixels
     
-    'Make sure our suggestion doesn't exceed the limits allowed by the tool
+    'Make sure our suggestion doesn't go too high; 220 is an arbitrarily selected value that's
+    ' near-white but not actually white
     If (x > 254) Then x = 220
     
     CalculateOptimalThreshold = x
@@ -338,8 +332,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     If (ditherAmount > 1!) Then ditherAmount = 1!
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     
     'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
     Dim alphaAlreadyPremultiplied As Boolean: alphaAlreadyPremultiplied = False
@@ -351,7 +344,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     End If
     
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     Dim x As Long, y As Long, i As Long, j As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -365,7 +358,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If (Not toPreview) Then ProgressBars.SetProgBarMax finalX
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Low and high color values

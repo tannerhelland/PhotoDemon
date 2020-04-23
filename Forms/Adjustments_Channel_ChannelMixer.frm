@@ -161,19 +161,22 @@ Attribute VB_Exposed = False
 'Channel Mixer Form
 'Copyright 2014-2020 by Tanner Helland
 'Created: 08/June/13
-'Last updated: 23/September/14
-'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
+'Last updated: 17/April/20
+'Last update: minor perf improvements
 '
-'Standard channel mixer dialog.  Layout and feature set derived from comparable tools in Photoshop and GIMP.
-' Per convention, all channels can be modified simultaneously.  For convenience, a "constant" slider is also
-' provided, allowing for simple uniform adjustments.
+'Standard channel mixer dialog.  Layout and feature set derived from comparable tools
+' in Photoshop and GIMP.
 '
-'A "monochrome" option is provided for outputting a grayscale image.  Monochrome values are stored separately, so
-' any changes made while in monochrome mode will not overwrite existing color channel values.
+'Per convention, all channels can be modified simultaneously.  For convenience,
+' a "constant" slider is also provided, allowing for uniform adjustments.
 '
-'A "preserve luminance" option is provided for applying color changes without changing the overall composition
-' of the photo.  This is disabled when "monochrome" is active (obviously, as otherwise the gray values would
-' never change!)
+'A "monochrome" option is provided for outputting a grayscale image.  Monochrome values
+' are stored separately, so any changes made while in monochrome mode do *not* overwrite
+' separate color channel modifications.
+'
+'A "preserve luminance" option is provided for applying color changes without changing
+' the overall composition of the photo.  This is disabled when "monochrome" is active
+' (obviously, because otherwise the gray values wouldn't change!)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -311,21 +314,19 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
@@ -339,29 +340,26 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     'Apply the filter
     Dim x As Long, y As Long
     
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
         
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
         
             newGray = r * channelModifiers(3, 0) + g * channelModifiers(3, 1) + b * channelModifiers(3, 2) + channelModifiers(3, 3)
             
-            If (newGray > 255) Then
-                newGray = 255
-            ElseIf (newGray < 0) Then
-                newGray = 0
-            End If
+            If (newGray > 255) Then newGray = 255
+            If (newGray < 0) Then newGray = 0
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
-            imageData(xStride, y) = newGray
-            imageData(xStride + 1, y) = newGray
-            imageData(xStride + 2, y) = newGray
+            imageData(x) = newGray
+            imageData(x + 1) = newGray
+            imageData(x + 2) = newGray
             
         Else
         
@@ -373,23 +371,12 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             newB = r * channelModifiers(2, 0) + g * channelModifiers(2, 1) + b * channelModifiers(2, 2) + channelModifiers(2, 3)
             
             'Fit everything in the [0, 255] range
-            If (newR > 255) Then
-                newR = 255
-            ElseIf (newR < 0) Then
-                newR = 0
-            End If
-            
-            If (newG > 255) Then
-                newG = 255
-            ElseIf (newG < 0) Then
-                newG = 0
-            End If
-            
-            If (newB > 255) Then
-                newB = 255
-            ElseIf (newB < 0) Then
-                newB = 0
-            End If
+            If (newR > 255) Then newR = 255
+            If (newR < 0) Then newR = 0
+            If (newG > 255) Then newG = 255
+            If (newG < 0) Then newG = 0
+            If (newB > 255) Then newB = 255
+            If (newB < 0) Then newB = 0
             
             'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
             ' value with the original
@@ -398,27 +385,27 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
                 Colors.PreciseRGBtoHSL CDbl(newR) * ONE_DIV_255, CDbl(newG) * ONE_DIV_255, CDbl(newB) * ONE_DIV_255, h, s, l
                 Colors.PreciseHSLtoRGB h, s, originalLuminance, rFloat, gFloat, bFloat
                 
-                imageData(xStride, y) = bFloat * 255
-                imageData(xStride + 1, y) = gFloat * 255
-                imageData(xStride + 2, y) = rFloat * 255
+                imageData(x) = bFloat * 255
+                imageData(x + 1) = gFloat * 255
+                imageData(x + 2) = rFloat * 255
                 
             Else
-                imageData(xStride, y) = newB
-                imageData(xStride + 1, y) = newG
-                imageData(xStride + 2, y) = newR
+                imageData(x) = newB
+                imageData(x + 1) = newG
+                imageData(x + 2) = newR
             End If
             
             
         End If
-                
-    Next y
-        If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
-            End If
-        End If
+        
     Next x
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y
+            End If
+        End If
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

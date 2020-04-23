@@ -398,9 +398,13 @@ Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Lon
     
 End Sub
 
-'Generate a horizontal seam map for the current energy image.  Because those images may have been shrunk in one (or more)
-' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
-' re-scanned while ignoring irrelevant pixels.
+'Generate a horizontal seam map for the current energy image.  Because the image may have already been
+' shrunk in one (or more) directions by previous seam map operations, a final X and Y value are also
+' explicitly supplied; we use these values instead of the bounds of the seamMap() array (which generally
+' *won't* be resized since large allocations are expensive).
+'
+'This function returns several things via ByRef parameters:
+' - maxVal:
 Private Sub GetHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long, Optional ByVal scanDirectionNormal As Boolean = True)
     
     Dim x As Long, y As Long, yCheck As Long

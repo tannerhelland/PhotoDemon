@@ -210,30 +210,29 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     If (Not toPreview) Then Message "Isolating the %1 channel...", cName
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim cK As Double, mK As Double, yK As Double, bK As Double, invBK As Double
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
+        
         Select Case dstColorSpace
         
             'RGB
@@ -243,16 +242,16 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel red
                     Case 0
-                        imageData(xStride, y) = 0
-                        imageData(xStride + 1, y) = 0
+                        imageData(x) = 0
+                        imageData(x + 1) = 0
                     'Rechannel green
                     Case 1
-                        imageData(xStride, y) = 0
-                        imageData(xStride + 2, y) = 0
+                        imageData(x) = 0
+                        imageData(x + 2) = 0
                     'Rechannel blue
                     Case 2
-                        imageData(xStride + 1, y) = 0
-                        imageData(xStride + 2, y) = 0
+                        imageData(x + 1) = 0
+                        imageData(x + 2) = 0
                         
                 End Select
                 
@@ -263,72 +262,77 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel cyan
                     Case 0
-                        imageData(xStride, y) = 255
-                        imageData(xStride + 1, y) = 255
+                        imageData(x) = 255
+                        imageData(x + 1) = 255
                     'Rechannel magenta
                     Case 1
-                        imageData(xStride, y) = 255
-                        imageData(xStride + 2, y) = 255
+                        imageData(x) = 255
+                        imageData(x + 2) = 255
                     'Rechannel yellow
                     Case 2
-                        imageData(xStride + 1, y) = 255
-                        imageData(xStride + 2, y) = 255
+                        imageData(x + 1) = 255
+                        imageData(x + 2) = 255
                         
                 End Select
             
             'Rechannel CMYK
             Case Else
             
-                cK = 255 - imageData(xStride + 2, y)
-                mK = 255 - imageData(xStride + 1, y)
-                yK = 255 - imageData(xStride, y)
+                yK = 255 - imageData(x)
+                mK = 255 - imageData(x + 1)
+                cK = 255 - imageData(x + 2)
                 
-                cK = cK / 255
-                mK = mK / 255
-                yK = yK / 255
+                cK = cK * ONE_DIV_255
+                mK = mK * ONE_DIV_255
+                yK = yK * ONE_DIV_255
                 
-                bK = Min3Float(cK, mK, yK)
-    
+                bK = PDMath.Min3Float(cK, mK, yK)
+                
                 invBK = 1# - bK
                 If (invBK = 0#) Then invBK = 0.000001
+                If (dstChannel < 3) Then invBK = 255# / invBK Else invBK = invBK * 255
                 
-                'cyan
-                If (dstChannel = 0) Then
-                    cK = ((cK - bK) / invBK) * 255#
-                    imageData(xStride + 2, y) = 255 - cK
-                    imageData(xStride + 1, y) = 255
-                    imageData(xStride, y) = 255
+                Select Case dstChannel
+                    
+                    'cyan
+                    Case 0
+                        imageData(x) = 255
+                        imageData(x + 1) = 255
+                        cK = (cK - bK) * invBK
+                        imageData(x + 2) = 255 - cK
+                    
+                    'magenta
+                    Case 1
+                        imageData(x) = 255
+                        mK = (mK - bK) * invBK
+                        imageData(x + 1) = 255 - mK
+                        imageData(x + 2) = 255
                 
-                'magenta
-                ElseIf (dstChannel = 1) Then
-                    mK = ((mK - bK) / invBK) * 255#
-                    imageData(xStride + 2, y) = 255
-                    imageData(xStride + 1, y) = 255 - mK
-                    imageData(xStride, y) = 255
+                    'yellow
+                    Case 2
+                        yK = (yK - bK) * invBK
+                        imageData(x) = 255 - yK
+                        imageData(x + 1) = 255
+                        imageData(x + 2) = 255
+                    
+                    'key
+                    Case Else
+                        imageData(x) = invBK
+                        imageData(x + 1) = invBK
+                        imageData(x + 2) = invBK
                 
-                'yellow
-                ElseIf (dstChannel = 2) Then
-                    yK = ((yK - bK) / invBK) * 255#
-                    imageData(xStride + 2, y) = 255
-                    imageData(xStride + 1, y) = 255
-                    imageData(xStride, y) = 255 - yK
-                
-                'key
-                Else
-                    imageData(xStride + 2, y) = invBK * 255
-                    imageData(xStride + 1, y) = invBK * 255
-                    imageData(xStride, y) = invBK * 255
-                End If
+                End Select
                 
         End Select
-    Next y
+        
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
         
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

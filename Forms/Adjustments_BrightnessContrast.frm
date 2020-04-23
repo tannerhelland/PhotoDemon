@@ -216,7 +216,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     'If the legacy mode is required (either by user choice or failure of LittleCMS), apply it now
     If (useLegacyModel Or modernAlgorithmFailed) And (Not g_cancelCurrentAction) Then
         
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4
+        Dim tmpSA1D As SafeArray1D
         
         Dim newBCTable(0 To 255) As Byte
         Dim btCalc As Long
@@ -227,7 +227,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
             btCalc = x + newBrightness
             If (btCalc > 255) Then btCalc = 255
             If (btCalc < 0) Then btCalc = 0
-            newBCTable(x) = CByte(btCalc)
+            newBCTable(x) = btCalc
         Next x
         
         If (newContrast <> 0) Then
@@ -256,10 +256,11 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                     numOfPixels = 0
                     
                     For y = initY To finalY
+                        workingDIB.WrapArrayAroundScanline srcImageData, tmpSA1D, y
                     For x = xStart To xStop Step 4
-                        bTotal = bTotal + srcImageData(x, y)
-                        gTotal = gTotal + srcImageData(x + 1, y)
-                        rTotal = rTotal + srcImageData(x + 2, y)
+                        bTotal = bTotal + srcImageData(x)
+                        gTotal = gTotal + srcImageData(x + 1)
+                        rTotal = rTotal + srcImageData(x + 2)
                         numOfPixels = numOfPixels + 1
                     Next x
                     Next y
@@ -297,10 +298,11 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         
         'Apply the LUT to the image!
         For y = initY To finalY
+            workingDIB.WrapArrayAroundScanline srcImageData, tmpSA1D, y
         For x = xStart To xStop Step 4
-            srcImageData(x, y) = newBCTable(srcImageData(x, y))
-            srcImageData(x + 1, y) = newBCTable(srcImageData(x + 1, y))
-            srcImageData(x + 2, y) = newBCTable(srcImageData(x + 2, y))
+            srcImageData(x) = newBCTable(srcImageData(x))
+            srcImageData(x + 1) = newBCTable(srcImageData(x + 1))
+            srcImageData(x + 2) = newBCTable(srcImageData(x + 2))
         Next x
             If (Not toPreview) Then
                 If (y And progBarCheck) = 0 Then
@@ -311,8 +313,8 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         Next y
         
         'With our work complete, point the local array away from the DIB
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        
+        workingDIB.UnwrapArrayFromDIB srcImageData
+    
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
