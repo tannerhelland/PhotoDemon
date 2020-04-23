@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.141</langversion>
+<langversion>1.0.142</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11601,11 +11601,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Auto correct lighting</original>
-<translation>자동으로 올바른 조명</translation>
-</phrase>
-
-<phrase>
 <original>Exit</original>
 <translation>출구</translation>
 </phrase>
@@ -11630,7 +11625,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>예상 남은 시간</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -15999,10 +15994,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2653</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12267 total words. -->
+<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>

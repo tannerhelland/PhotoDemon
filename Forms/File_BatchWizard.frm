@@ -1724,7 +1724,7 @@ Private Sub PrepareForBatchConversion()
                 If (btsPhotoOps.ListIndex = 1) Then
                 
                     'If the user has requested automatic lighting fixes, apply it now
-                    If chkActions(0).Value Then Process "Auto correct lighting", , , UNDO_Layer
+                    If chkActions(0).Value Then Process "Auto correct", , , UNDO_Layer
                     
                     'If the user has requested an image resize, apply it now
                     If chkActions(1).Value Then

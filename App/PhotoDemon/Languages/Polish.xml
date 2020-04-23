@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.151</langversion>
+<langversion>7.0.152</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11586,11 +11586,6 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 </phrase>
 
 <phrase>
-<original>Auto correct lighting</original>
-<translation>Auto korekta jasności</translation>
-</phrase>
-
-<phrase>
 <original>Exit</original>
 <translation>Wyjście</translation>
 </phrase>
@@ -11615,7 +11610,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>Szacowany pozostały czas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -15981,10 +15976,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2653</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12267 total words. -->
+<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>

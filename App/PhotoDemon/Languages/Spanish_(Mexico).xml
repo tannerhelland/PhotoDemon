@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.476</langversion>
+<langversion>6.7.477</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -11605,11 +11605,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Auto correct lighting</original>
-<translation>Auto iluminación correcta</translation>
-</phrase>
-
-<phrase>
 <original>Exit</original>
 <translation>salida</translation>
 </phrase>
@@ -11634,7 +11629,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -16003,10 +15998,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2653</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12267 total words. -->
+<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.1883</langversion>
+<langversion>8.0.1884</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -11601,11 +11601,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Auto correct lighting</original>
-<translation>自动正确的亮度</translation>
-</phrase>
-
-<phrase>
 <original>Exit</original>
 <translation>退出</translation>
 </phrase>
@@ -11630,7 +11625,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -15996,10 +15991,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2653</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2349 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12267 total words. -->
+<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>
