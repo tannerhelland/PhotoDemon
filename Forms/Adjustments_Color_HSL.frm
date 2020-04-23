@@ -91,8 +91,8 @@ Attribute VB_Exposed = False
 'HSL Adjustment Form
 'Copyright 2012-2020 by Tanner Helland
 'Created: 05/October/12
-'Last updated: 20/July/17
-'Last update: migrate to XML params, minor performance improvements
+'Last updated: 23/April/20
+'Last update: perf improvements; switch to higher-quality HSL transform
 '
 'Fairly simple and standard HSL adjustment form.  Layout and feature set derived from comparable tools
 ' in GIMP and Paint.NET.
@@ -123,14 +123,13 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
     End With
     
     'Convert the modifiers to be on the same scale as the HSL translation routine
-    hModifier = hModifier / 60#
+    hModifier = hModifier / 360#
     sModifier = (sModifier + 100#) / 100#
     lModifier = lModifier / 100#
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -145,28 +144,31 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim r As Double, g As Double, b As Double
     Dim h As Double, s As Double, l As Double
         
     initX = initX * 4
     finalX = finalX * 4
     
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Get the hue and saturation
-        Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
+        Colors.PreciseRGBtoHSL r * ONE_DIV_255, g * ONE_DIV_255, b * ONE_DIV_255, h, s, l
         
-        'Apply the modifiers
+        'Apply modifiers
         h = h + hModifier
-        If (h > 5#) Then h = h - 6#
-        If (h < -1#) Then h = h + 6#
+        If (h > 1#) Then h = h - 1#
+        If (h < 0#) Then h = h + 1#
         
         s = s * sModifier
         If (s < 0#) Then s = 0#
@@ -177,12 +179,12 @@ Public Sub AdjustImageHSL(ByVal effectParams As String, Optional ByVal toPreview
         If (l > 1#) Then l = 1#
         
         'Convert back to RGB using our artificial hue value
-        Colors.ImpreciseHSLtoRGB h, s, l, r, g, b
+        Colors.PreciseHSLtoRGB h, s, l, r, g, b
         
         'Assign the new values to each color channel
-        imageData(x, y) = b
-        imageData(x + 1, y) = g
-        imageData(x + 2, y) = r
+        imageData(x) = Int(b * 255 + 0.5)
+        imageData(x + 1) = Int(g * 255 + 0.5)
+        imageData(x + 2) = Int(r * 255 + 0.5)
         
     Next x
         If (Not toPreview) Then
