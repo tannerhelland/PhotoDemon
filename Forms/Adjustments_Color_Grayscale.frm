@@ -37,16 +37,6 @@ Begin VB.Form FormGrayscale
       Value           =   100
       DefaultValue    =   100
    End
-   Begin PhotoDemon.pdButtonStrip btsDecompose 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   1260
-      Visible         =   0   'False
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   873
-   End
    Begin PhotoDemon.pdDropDown cboDithering 
       Height          =   735
       Left            =   6000
@@ -72,9 +62,9 @@ Begin VB.Form FormGrayscale
       Left            =   6000
       TabIndex        =   3
       Top             =   2040
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1270
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1244
       Caption         =   "number of gray shades"
       Min             =   2
       Max             =   256
@@ -102,14 +92,24 @@ Begin VB.Form FormGrayscale
       Caption         =   "style"
    End
    Begin PhotoDemon.pdButtonStrip btsChannel 
-      Height          =   495
+      Height          =   630
       Left            =   6120
       TabIndex        =   6
-      Top             =   1260
+      Top             =   1200
       Visible         =   0   'False
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   873
+      _ExtentY        =   1111
+   End
+   Begin PhotoDemon.pdButtonStrip btsDecompose 
+      Height          =   630
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1111
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -121,12 +121,15 @@ Attribute VB_Exposed = False
 'Grayscale Conversion Handler
 'Copyright 2002-2020 by Tanner Helland
 'Created: 1/12/02
-'Last updated: 02/April/18
-'Last update: add "single neighbor" as a dithering option
+'Last updated: 20/April/20
+'Last update: condense conversions into a single function; perf optimize that function;
+'             improve UI reflow when options are toggled
 '
-'Updated version of the grayscale handler; utilizes five different methods (average, ISU, desaturate, max/min decomposition,
-' single color channel) with the option for variable # of gray shades with/without dithering for all available methods. A
-' comprehensive dithering list is also available for all methods, should the user desire it.
+'Updated version of the grayscale handler; utilizes five different methods (average, ITU,
+' desaturate, max/min decomposition, single color channel) with the option for variable
+' # of gray shades with/without dithering for all available methods. A comprehensive dithering
+' list is also available for all methods, should the user desire it, including adjustable
+' strength.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -172,10 +175,47 @@ End Sub
 
 'Certain algorithms require additional user input.  This routine enables/disables the controls associated with a given algorithm.
 Private Sub UpdateVisibleControls()
-    btsDecompose.Visible = (cboMethod.ListIndex = GT_Decompose)
-    btsChannel.Visible = (cboMethod.ListIndex = GT_Channel)
-    cboDithering.Visible = (sltShades.Value <> 256)
-    sldDitherAmount.Visible = (sltShades.Value <> 256) And (cboDithering.ListIndex <> 0)
+
+    Dim yOffset As Long
+    yOffset = cboMethod.GetTop + cboMethod.GetHeight + Interface.FixDPI(8)
+    
+    If (cboMethod.ListIndex = GT_Decompose) Then
+        btsDecompose.SetTop yOffset
+        yOffset = yOffset + btsDecompose.GetHeight + Interface.FixDPI(8)
+        btsDecompose.Visible = True
+    Else
+        btsDecompose.Visible = False
+    End If
+    
+    If (cboMethod.ListIndex = GT_Channel) Then
+        btsChannel.SetTop yOffset
+        yOffset = yOffset + btsChannel.GetHeight + Interface.FixDPI(8)
+        btsChannel.Visible = True
+    Else
+        btsChannel.Visible = False
+    End If
+    
+    yOffset = yOffset + Interface.FixDPI(4)
+    sltShades.SetTop yOffset
+    yOffset = yOffset + sltShades.GetHeight + Interface.FixDPI(8)
+    
+    If (sltShades.Value <> 256) Then
+        cboDithering.SetTop yOffset
+        yOffset = yOffset + cboDithering.GetHeight + Interface.FixDPI(12)
+        cboDithering.Visible = True
+        
+        If (cboDithering.ListIndex <> 0) Then
+            sldDitherAmount.SetTop yOffset
+            sldDitherAmount.Visible = True
+        Else
+            sldDitherAmount.Visible = False
+        End If
+        
+    Else
+        cboDithering.Visible = False
+        sldDitherAmount.Visible = False
+    End If
+    
 End Sub
 
 'OK button
@@ -209,13 +249,10 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
     cParams.SetParamString effectParams
     
     With cParams
-        
-        'Three parameters are always relevant, regardless of the current grayscale algorithm
         grayscaleMethod = .GetLong("method", GT_ITU)
         numOfShades = .GetLong("shades", 256)
         ditheringOptions = .GetLong("dithering", 0)
         ditherAmount = .GetDouble("ditheramount", 100!) * 0.01!
-        
     End With
     
     If (ditherAmount < 0!) Then ditherAmount = 0!
@@ -227,35 +264,19 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
     
     'Based on the options the user has provided, figure out a maximum progress bar value.  This changes depending on:
     ' - If the user wants shade reduction (as this requires another pass over the image)
-    ' - If the user wants dithering (as the second pass will be done horizontally instead of vertically)
+    ' - If the user wants dithering (also requires a second pass)
     Dim progBarMax As Long
-    If (numOfShades < 256) Then
-        progBarMax = workingDIB.GetDIBWidth + workingDIB.GetDIBHeight
-    Else
-        progBarMax = workingDIB.GetDIBWidth
-    End If
+    progBarMax = workingDIB.GetDIBHeight
+    If (numOfShades < 256) Then progBarMax = progBarMax + workingDIB.GetDIBHeight
     
+    'Some conversion methods support extra parameters; retrieve those now
+    Dim bonusParams As Long
+    If (grayscaleMethod = GT_Decompose) Then bonusParams = cParams.GetLong("decomposemode", 0)
+    If (grayscaleMethod = GT_Channel) Then bonusParams = cParams.GetLong("channelmode", 1)
+    
+    'Convert to grayscale
     Dim userCanceled As Long
-    
-    'Different grayscale conversion methods call different individual subs
-    Select Case grayscaleMethod
-        
-        Case GT_Fast
-            userCanceled = MenuGrayscaleAverage(workingDIB, toPreview, progBarMax)
-            
-        Case GT_ITU
-            userCanceled = MenuGrayscale(workingDIB, toPreview, progBarMax)
-            
-        Case GT_Desaturate
-            userCanceled = MenuDesaturate(workingDIB, toPreview, progBarMax)
-            
-        Case GT_Decompose
-            userCanceled = MenuDecompose(cParams.GetLong("decomposemode", 0), workingDIB, toPreview, progBarMax)
-            
-        Case GT_Channel
-            userCanceled = MenuGrayscaleSingleChannel(cParams.GetLong("channelmode", 1), workingDIB, toPreview, progBarMax)
-            
-    End Select
+    userCanceled = ConvertToGrayscale(grayscaleMethod, bonusParams, workingDIB, toPreview, progBarMax)
     
     'We now apply the user's choice of shade reduction and/or dithering.
     If (numOfShades < 256) And (userCanceled <> 0) Then
@@ -263,12 +284,12 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
         Select Case ditheringOptions
         
             Case PDDM_None
-                fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
+                fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.GetDIBHeight
             
             'If dithering is active, we can simply build a grayscale palette, then ask the central Palette engine to
             ' do the work for us.
             Case Else
-                fGrayscaleCustomDither numOfShades, ditheringOptions, ditherAmount, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
+                fGrayscaleCustomDither numOfShades, ditheringOptions, ditherAmount, workingDIB, toPreview, progBarMax, workingDIB.GetDIBHeight
             
         End Select
         
@@ -280,17 +301,15 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
 End Sub
 
 'Reduce to X # gray shades
-Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Private Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
+    Dim imageData() As Byte, srcSA As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
     
     Dim xStride As Long
@@ -324,28 +343,26 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     For x = 0 To 765
         grayLookUp(x) = x \ 3
     Next x
-        
+    
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
-    For x = initX To finalX
-        
-        xStride = x * 4
+        srcDIB.WrapArrayAroundScanline imageData, srcSA, y
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
-        grayVal = grayLookUp(r + g + b)
+        grayVal = gLookup(grayLookUp(r + g + b))
         
         'Assign all color channels the new gray value
-        grayVal = gLookup(grayVal)
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
+        imageData(x) = grayVal
+        imageData(x + 1) = grayVal
+        imageData(x + 2) = grayVal
         
     Next x
-        If Not suppressMessages Then
+        If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
@@ -361,7 +378,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 End Function
 
 'Reduce to X # gray shades (dithered)
-Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByVal ditherAmount As Single, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Private Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByVal ditherAmount As Single, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
@@ -548,7 +565,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
                         If (xQuickInner < xWidth) Then
                         
                             'If we've made it all the way here, we are able to actually spread the error to this location
-                            errorMult = CSng(ditherTableI(i, j)) * ditherDivisor
+                            errorMult = ditherTableI(i, j) * ditherDivisor
                             gErrors(xQuickInner, j) = gErrors(xQuickInner, j) + (gError * errorMult)
                             
                         End If
@@ -566,12 +583,12 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(gErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
                 End If
                 
@@ -599,347 +616,99 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
     
 End Function
 
-'Reduce to gray via (r+g+b)/3
-Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-    
-    'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Byte
-    
-    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        grayLookUp(x) = x \ 3
-    Next x
-    
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-    
-        'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        
-        'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(r + g + b)
-        
-        'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
-    
-    If g_cancelCurrentAction Then MenuGrayscaleAverage = 0 Else MenuGrayscaleAverage = 1
-    
-End Function
-
 'Reduce to gray in a more human-eye friendly manner
-Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Private Function ConvertToGrayscale(ByVal grayscaleMethod As PD_GrayscaleTechnique, ByVal bonusParams As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
+    Dim imageData() As Byte, srcSA As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
     Dim grayVal As Long
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
     
-        'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        
-        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
-        grayVal = (218 * r + 732 * g + 74 * b) \ 1024
-        
-        'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
-    
-    If g_cancelCurrentAction Then MenuGrayscale = 0 Else MenuGrayscale = 1
-    
-End Function
-
-'Reduce to gray via HSL -> convert S to 0
-Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-        
-    'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
+    'Some conversion techniques work well with prebuilt LUTs
+    Dim grayLookUp(0 To 765) As Byte
+    If (grayscaleMethod = GT_Fast) Then
+        For x = 0 To 765
+            grayLookUp(x) = x \ 3
+        Next x
     End If
     
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Byte
-       
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-    
-        'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        
-        'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
-        grayVal = CByte(GetLuminance(r, g, b))
-        
-        'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
-    
-    If g_cancelCurrentAction Then MenuDesaturate = 0 Else MenuDesaturate = 1
-    
-End Function
-
-'Reduce to gray by selecting the minimum (maxOrMin = 0) or maximum (maxOrMin = 1) color in each pixel
-Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Byte
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        srcDIB.WrapArrayAroundScanline imageData, srcSA, y
+    For x = initX To finalX Step 4
+        
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
-        'Find the highest or lowest of the RGB values
-        If maxOrMin = 0 Then grayVal = CByte(Min3Int(r, g, b)) Else grayVal = CByte(Max3Int(r, g, b))
-        
-        'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
-    
-    If g_cancelCurrentAction Then MenuDecompose = 0 Else MenuDecompose = 1
-    
-End Function
-
-'Reduce to gray by selecting a single color channel (represeted by cChannel: 0 = Red, 1 = Green, 2 = Blue)
-Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Point an array at the source DIB's image data
-    Dim imageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(srcSA), 4
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
-    
-    'Color and grayscale variables
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Byte
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
-    
-        'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
-        
-        'Assign the gray value to a single color channel based on the value of cChannel
-        Select Case cChannel
-            Case 0
-                grayVal = r
-            Case 1
-                grayVal = g
-            Case 2
-                grayVal = b
+        Select Case grayscaleMethod
+            
+            '(r + g + b) / 3
+            Case GT_Fast
+                grayVal = grayLookUp(r + g + b)
+            
+            'original ITU-R recommended formula (BT.709, specifically)
+            Case GT_ITU
+                grayVal = (218 * r + 732 * g + 74 * b) \ 1024
+            
+            '(max + min) / 2 - this is HSL with saturation forced to zero
+            Case GT_Desaturate
+                grayVal = Colors.GetLuminance(r, g, b)
+            
+            'Max(r, g, b) or Min(r, g, b)
+            Case GT_Decompose
+                If (bonusParams = 0) Then grayVal = Min3Int(r, g, b) Else grayVal = Max3Int(r, g, b)
+            
+            'Just use r, g, or b as-is
+            Case GT_Channel
+                Select Case bonusParams
+                    Case 0
+                        grayVal = r
+                    Case 1
+                        grayVal = g
+                    Case 2
+                        grayVal = b
+                End Select
+            
         End Select
         
-        'Assign that gray value to each color channel
-        imageData(xStride, y) = grayVal
-        imageData(xStride + 1, y) = grayVal
-        imageData(xStride + 2, y) = grayVal
+        'Assign the calculated gray value to each color channel
+        imageData(x) = grayVal
+        imageData(x + 1) = grayVal
+        imageData(x + 2) = grayVal
         
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
+    Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+                SetProgBarVal y + modifyProgBarOffset
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     srcDIB.UnwrapArrayFromDIB imageData
     
-    If g_cancelCurrentAction Then MenuGrayscaleSingleChannel = 0 Else MenuGrayscaleSingleChannel = 1
-        
+    If g_cancelCurrentAction Then ConvertToGrayscale = 0 Else ConvertToGrayscale = 1
+    
 End Function
 
 Private Sub Form_Load()
