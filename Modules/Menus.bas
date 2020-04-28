@@ -378,6 +378,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
         AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 10
         AddMenuItem "Sepia...", "adj_sepia", 5, 13, 11
+        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 12
     AddMenuItem "Histogram", "adj_histogram", 5, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
         AddMenuItem "-", "-", 5, 14, 1
@@ -390,19 +391,18 @@ Public Sub InitializeMenus()
     AddMenuItem "Lighting", "adj_lighting", 5, 16
         AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 16, 0
         AddMenuItem "Curves...", "adj_curves", 5, 16, 1
-        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 2
-        AddMenuItem "Levels...", "adj_levels", 5, 16, 3
-        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 4
+        AddMenuItem "Exposure...", "adj_exposure", 5, 18, 2
+        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 3
+        AddMenuItem "HDR...", "adj_hdr", 5, 18, 4
+        AddMenuItem "Levels...", "adj_levels", 5, 16, 5
+        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 6
     AddMenuItem "Monochrome", "adj_monochrome", 5, 17
         AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 17, 0
         AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 17, 1
     AddMenuItem "Photography", "adj_photo", 5, 18
-        AddMenuItem "Exposure...", "adj_exposure", 5, 18, 0
-        AddMenuItem "HDR...", "adj_hdr", 5, 18, 1
-        AddMenuItem "Photo filters...", "adj_photofilters", 5, 18, 2
-        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 5, 18, 3
-        AddMenuItem "Split toning...", "adj_splittone", 5, 18, 4
-    
+        AddMenuItem "Photo filters...", "adj_photofilters", 5, 18, 0
+        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 5, 18, 1
+        
     'Effects (Filters) Menu
     AddMenuItem "Effe&cts", "effects_top", 6
     AddMenuItem "Artistic", "effects_artistic", 6, 0
@@ -2061,6 +2061,9 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 
             Case "adj_sepia"
                 Process "Sepia", True
+            
+            Case "adj_splittone"
+                Process "Split toning", True
                 
         Case "adj_histogram"
             Case "adj_histogramdisplay"
@@ -2087,8 +2090,14 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             
             'Case "adj_curves"  'Covered by parent menu
             
+            Case "adj_exposure"
+                Process "Exposure", True
+            
             Case "adj_gamma"
                 Process "Gamma", True
+                
+            Case "adj_hdr"
+                Process "HDR", True
                 
             'Case "adj_levels"  'Covered by parent menu
             
@@ -2102,20 +2111,11 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 Process "Monochrome to gray", True
                 
         Case "adj_photo"
-            Case "adj_exposure"
-                Process "Exposure", True
-                
-            Case "adj_hdr"
-                Process "HDR", True
-                
             Case "adj_photofilters"
                 Process "Photo filter", True
                 
             Case "adj_redeyeremoval"
                 Process "Red-eye removal", True
-                
-            Case "adj_splittone"
-                Process "Split toning", True
                 
         Case Else
             cmdFound = False

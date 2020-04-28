@@ -910,6 +910,10 @@ Begin VB.Form FormMain
             Caption         =   "Sepia..."
             Index           =   11
          End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Split toning..."
+            Index           =   12
+         End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Histogram"
@@ -959,16 +963,24 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Gamma..."
+            Caption         =   "Exposure..."
             Index           =   2
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Levels..."
+            Caption         =   "Gamma..."
             Index           =   3
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Shadows and highlights..."
+            Caption         =   "HDR..."
             Index           =   4
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Levels..."
+            Index           =   5
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Shadows and highlights..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -987,24 +999,12 @@ Begin VB.Form FormMain
          Caption         =   "Photography"
          Index           =   18
          Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Exposure..."
+            Caption         =   "Photo filters..."
             Index           =   0
          End
          Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "HDR..."
-            Index           =   1
-         End
-         Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Photo filters..."
-            Index           =   2
-         End
-         Begin VB.Menu MnuAdjustmentsPhoto 
             Caption         =   "Red-eye removal..."
-            Index           =   3
-         End
-         Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Split toning..."
-            Index           =   4
+            Index           =   1
          End
       End
    End
@@ -2213,15 +2213,9 @@ End Sub
 Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
     Select Case Index
         Case 0
-            Menus.ProcessDefaultAction_ByName "adj_exposure"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_hdr"
-        Case 2
             Menus.ProcessDefaultAction_ByName "adj_photofilters"
-        Case 3
+        Case 1
             Menus.ProcessDefaultAction_ByName "adj_redeyeremoval"
-        Case 4
-            Menus.ProcessDefaultAction_ByName "adj_splittone"
     End Select
 End Sub
 
@@ -3113,7 +3107,34 @@ End Sub
 
 'All Color sub-menu entries are handled here.
 Private Sub MnuColor_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuColor(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_colorbalance"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_whitebalance"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "adj_hsl"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "adj_temperature"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "adj_tint"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "adj_vibrance"
+        Case 7
+            'separator
+        Case 8
+            Menus.ProcessDefaultAction_ByName "adj_blackandwhite"
+        Case 9
+            Menus.ProcessDefaultAction_ByName "adj_colorize"
+        Case 10
+            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
+        Case 11
+            Menus.ProcessDefaultAction_ByName "adj_sepia"
+        Case 12
+            Menus.ProcessDefaultAction_ByName "adj_splittone"
+    End Select
 End Sub
 
 'All entries in the Color -> Components sub-menu are handled here
@@ -3387,7 +3408,22 @@ Private Sub mnuLanguages_Click(Index As Integer)
 End Sub
 
 Private Sub MnuLighting_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuLighting(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_bandc"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_curves"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "adj_exposure"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "adj_gamma"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "adj_hdr"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "adj_levels"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "adj_sandh"
+    End Select
 End Sub
 
 'Load all images in the current "Recent Files" menu
