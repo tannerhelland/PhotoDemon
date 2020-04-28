@@ -101,8 +101,8 @@ Attribute VB_Exposed = False
 'Replace color dialog
 'Copyright 2013-2020 by Tanner Helland
 'Created: 29/October/13
-'Last updated: 11/June/16
-'Last update: add a LittleCMS path for the algorithm; this improves performance by ~30%
+'Last updated: 27/April/20
+'Last update: perf improvements; tool is 2x faster now!
 '
 'This function uses an algorithm very similar to PhotoDemon's green screen (FormTransparency_FromColor) algorithm.
 ' Separate sliders are provided for both a replacement threshold, and a blend threshold, to help the user minimize
@@ -172,12 +172,8 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     End With
     
     'Call prepImageData, which will prepare a temporary copy of the image
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    PrepSafeArray tmpSA, workingDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -243,7 +239,7 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
         labB2f = labBytes(2)
         
     Else
-        RGBtoLAB oldR, oldG, oldB, labL2, labA2, labB2
+        Colors.RGBtoLAB oldR, oldG, oldB, labL2, labA2, labB2
         labL2f = labL2
         labA2f = labA2
         labB2f = labB2
@@ -254,8 +250,9 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
     Dim difThreshold As Double
     blendThreshold = eraseThreshold + blendThreshold
     difThreshold = blendThreshold - eraseThreshold
+    If (difThreshold <> 0#) Then difThreshold = 1# / difThreshold
     
-    Dim cDistance As Double
+    Dim cDistance As Double, invCDistance As Double
     
     'To improve performance of our horizontal loop, we'll move through bytes an entire pixel at a time
     Dim xStart As Long, xStop As Long
@@ -264,16 +261,18 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
      
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
-    
+        
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+        
         'Start by pre-calculating all L*a*b* values for this row
         If useLCMS Then
-            labTransform.ApplyTransformToScanline VarPtr(imageData(0, y)), VarPtr(labValues(0)), finalX + 1
+            labTransform.ApplyTransformToScanline VarPtr(imageData(0)), VarPtr(labValues(0)), finalX + 1
         Else
             For x = xStart To xStop Step pxWidth
-                b = imageData(x, y)
-                g = imageData(x + 1, y)
-                r = imageData(x + 2, y)
-                RGBtoLAB r, g, b, labL, labA, labB
+                b = imageData(x)
+                g = imageData(x + 1)
+                r = imageData(x + 2)
+                Colors.RGBtoLAB r, g, b, labL, labA, labB
                 labValues(x) = labL
                 labValues(x + 1) = labA
                 labValues(x + 2) = labB
@@ -284,9 +283,9 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
         For x = xStart To xStop Step pxWidth
         
             'Get the source pixel color values
-            b = imageData(x, y)
-            g = imageData(x + 1, y)
-            r = imageData(x + 2, y)
+            b = imageData(x)
+            g = imageData(x + 1)
+            r = imageData(x + 2)
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see https://en.wikipedia.org/wiki/Color_difference for a full report)
@@ -298,25 +297,26 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
             
             'If the distance is below the erasure threshold, replace it completely
             If (cDistance < eraseThreshold) Then
-                imageData(x, y) = newB
-                imageData(x + 1, y) = newG
-                imageData(x + 2, y) = newR
+                imageData(x) = newB
+                imageData(x + 1) = newG
+                imageData(x + 2) = newR
                 
             'If the color is between the replace and blend threshold, feather it against the new color and
             ' color-correct it to remove any "color fringing" from the replaced color.
             ElseIf (cDistance < blendThreshold) Then
                 
                 'Use a ^2 curve to improve blending response
-                cDistance = ((blendThreshold - cDistance) / difThreshold)
+                cDistance = (blendThreshold - cDistance) * difThreshold
                 
                 'Feathering the pixel often isn't enough to fully remove the color fringing caused by the replaced
                 ' color, which will have "infected" the core RGB values.  Attempt to correct this by subtracting the
                 ' target color from the original color, using the calculated threshold value; this is the only way I
                 ' know to approximate the "feathering" caused by light bleeding over object edges.
-                If cDistance = 1# Then cDistance = 0.999999
-                r = (r - (oldR * cDistance)) / (1# - cDistance)
-                g = (g - (oldG * cDistance)) / (1# - cDistance)
-                b = (b - (oldB * cDistance)) / (1# - cDistance)
+                If (cDistance >= 1#) Then cDistance = 0.999999
+                invCDistance = 1# / (1# - cDistance)
+                r = (r - (oldR * cDistance)) * invCDistance
+                g = (g - (oldG * cDistance)) * invCDistance
+                b = (b - (oldB * cDistance)) * invCDistance
                 
                 If (r > 255) Then r = 255
                 If (g > 255) Then g = 255
@@ -326,9 +326,9 @@ Public Sub ReplaceSelectedColor(ByVal effectParams As String, Optional ByVal toP
                 If (b < 0) Then b = 0
                 
                 'Assign the new color and alpha values
-                imageData(x, y) = BlendColors(b, newB, cDistance)
-                imageData(x + 1, y) = BlendColors(g, newG, cDistance)
-                imageData(x + 2, y) = BlendColors(r, newR, cDistance)
+                imageData(x) = Colors.BlendColors(b, newB, cDistance)
+                imageData(x + 1) = Colors.BlendColors(g, newG, cDistance)
+                imageData(x + 2) = Colors.BlendColors(r, newR, cDistance)
                 
             End If
             
