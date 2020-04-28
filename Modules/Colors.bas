@@ -140,8 +140,8 @@ Public Function ExtractBlue(ByVal currentColor As Long) As Long
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Public Function BlendColors(ByVal Color1 As Long, ByVal Color2 As Long, ByVal mixRatio As Single) As Byte
-    BlendColors = Int((1! - mixRatio) * CSng(Color1) + 0.5!) + Int(mixRatio * CSng(Color2))
+Public Function BlendColors(ByVal firstColor As Long, ByVal secondColor As Long, ByVal mixRatio As Single) As Byte
+    BlendColors = Int((1! - mixRatio) * firstColor + 0.5!) + Int(mixRatio * secondColor)
 End Function
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead

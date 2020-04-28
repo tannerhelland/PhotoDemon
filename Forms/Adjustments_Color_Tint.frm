@@ -102,21 +102,19 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
     tintAdjustment = cParams.GetDouble("tint", 0#)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color and grayscale variables
@@ -134,17 +132,17 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
     Next x
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Calculate luminance
-        origV = GetLuminance(r, g, b) / 255#
+        origV = Colors.GetLuminance(r, g, b) / 255#
         
         'Convert the re-tinted colors to HSL
         Colors.ImpreciseRGBtoHSL r, gLookup(g), b, h, s, v
@@ -153,18 +151,18 @@ Public Sub AdjustTint(ByVal effectParams As String, Optional ByVal toPreview As 
         Colors.ImpreciseHSLtoRGB h, s, origV, r, g, b
         
         'Assign new values
-        imageData(xStride, y) = b
-        imageData(xStride + 1, y) = g
-        imageData(xStride + 2, y) = r
+        imageData(x) = b
+        imageData(x + 1) = g
+        imageData(x + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

@@ -149,8 +149,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright 2008-2020 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 17/May/19
-'Last update: simplify display options (histogram is now an on/off toggle)
+'Last updated: 27/April/20
+'Last update: minor perf improvements
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -261,9 +261,8 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     If (Not toPreview) Then Message "Applying new curve to image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -332,17 +331,18 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     finalX = finalX * 4
     
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
     
         'Get the source pixel color values
-        b = bMap(imageData(x, y))
-        g = gMap(imageData(x + 1, y))
-        r = rMap(imageData(x + 2, y))
+        b = bMap(imageData(x))
+        g = gMap(imageData(x + 1))
+        r = rMap(imageData(x + 2))
         
         'Assign the new values to each color channel
-        imageData(x, y) = rgbMap(b)
-        imageData(x + 1, y) = rgbMap(g)
-        imageData(x + 2, y) = rgbMap(r)
+        imageData(x) = rgbMap(b)
+        imageData(x + 1) = rgbMap(g)
+        imageData(x + 2) = rgbMap(r)
         
     Next x
         If (Not toPreview) Then

@@ -183,9 +183,8 @@ Attribute VB_Exposed = False
 'Color Temperature Adjustment Form
 'Copyright 2012-2020 by Tanner Helland
 'Created: 16/September/12
-'Last updated: 10/September/16
-'Last update: total overhaul.  Among other things, a new "basic" temperature adjustment method is available, and the "advanced"
-'             adjustment method has been rewritten to use improved coefficients, courtesy of http://www.zombieprototypes.com/?p=210
+'Last updated: 27/April/20
+'Last update: minor perf improvements
 '
 'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
 ' https://en.wikipedia.org/wiki/Color_temperature
@@ -244,21 +243,19 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     If (Not toPreview) Then Message "Applying new temperature to image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
@@ -297,14 +294,14 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     Const ONE_DIV_255 As Double = 1# / 255#
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
+        
         'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'If luminance is being preserved, we need to determine the initial luminance value
         originalLuminance = Colors.GetLuminance(r, g, b) * ONE_DIV_255
@@ -315,9 +312,9 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         Else
             
             'Blend the original and new RGB values using the specified strength
-            r = BlendColors(r, tmpR, tempStrength)
-            g = BlendColors(g, tmpG, tempStrength)
-            b = BlendColors(b, tmpB, tempStrength)
+            r = Colors.BlendColors(r, tmpR, tempStrength)
+            g = Colors.BlendColors(g, tmpG, tempStrength)
+            b = Colors.BlendColors(b, tmpB, tempStrength)
             
             'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
             ' value with the original
@@ -329,18 +326,18 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         End If
         
         'Assign the new values to each color channel
-        imageData(xStride, y) = b
-        imageData(xStride + 1, y) = g
-        imageData(xStride + 2, y) = r
+        imageData(x) = b
+        imageData(x + 1) = g
+        imageData(x + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData

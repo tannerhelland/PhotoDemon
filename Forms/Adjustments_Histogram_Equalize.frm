@@ -127,10 +127,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    workingDIB.WrapArrayAroundDIB imageData, tmpSA
     
     'Local histogram equalizing requires a second copy of the source image
     Dim srcDIB As pdDIB

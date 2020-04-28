@@ -263,8 +263,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright 2006-2020 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 19/July/17
-'Last update: rewrite against XML param strings
+'Last updated: 27/April/20
+'Last update: minor perf improvements
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool,
 ' and identical values entered into both programs should yield a roughly identical image.
@@ -381,17 +381,13 @@ End Sub
 Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
 
     'Create a local array and point it at the source DIB's pixel data
-    Dim imageData() As Byte, tmpSA As SafeArray2D
-    PrepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    Dim imageData() As Byte, tmpSA As SafeArray1D
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.GetDIBWidth - 1
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim xStride As Long
     
     'Color values
     Dim r As Long, g As Long, b As Long, l As Long
@@ -419,16 +415,16 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     'Build an image histogram
     Dim numOfPixels As Long
     
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step 4
+        
         'Ignore transparent pixels, as they don't provide meaningful RGB data
-        If (imageData(xStride + 3, y) <> 0) Then
+        If (imageData(x + 3) <> 0) Then
             
-            b = imageData(xStride, y)
-            g = imageData(xStride + 1, y)
-            r = imageData(xStride + 2, y)
+            b = imageData(x)
+            g = imageData(x + 1)
+            r = imageData(x + 2)
             
             bCount(b) = bCount(b) + 1
             gCount(g) = gCount(g) + 1
@@ -441,8 +437,11 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             
         End If
         
-    Next y
     Next x
+    Next y
+    
+    'Safely deallocate imageData()
+    srcDIB.UnwrapArrayFromDIB imageData
     
      'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
     ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
@@ -559,16 +558,21 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     'We now have an idealized max/min for each of red, green, blue, and luminance.
     
-    'One of the problems with auto-levels is that it can introduce nasty color casts to the image.  Consider an image of a Caucasian
-    ' human face; generally speaking, red tends to be exposed fairly equally across skin tones, but green and blue are much more
-    ' variable according to background elements.  A face against a bright blue sky will tend to have blue concentrated at the high
-    ' end of the scale, so when we auto-level it, those blue levels will get spread across the full spectrum, introducing an
-    ' unpleasant purplish-cast across the subject's skin.
+    'One of the problems with auto-levels is that it can introduce nasty color casts
+    ' to the image.  Consider an image of a Caucasian human face; generally speaking,
+    ' red tend to be exposed fairly equally across skin tones, but green and blue are
+    ' much more variable according to background elements.  A face against a bright
+    ' blue sky will tend to have blue concentrated at the high end of the scale,
+    ' so when we auto-level it, those blue levels get spread across the full spectrum,
+    ' introducing an unpleasant purplish-cast to skin tones.
     
-    'To avoid this in PD (and to produce a really kick-ass Auto-Level result), we split the calculated auto-level adjustment equally
-    ' between per-channel corrections and net luminance corrections.  This roughly maintains the existing color spread of the image,
-    ' while removing any obviously bad results, and producing a consistently well-exposed final image.  It also serves to balance out
-    ' color temperature in an elegant way, without subjecting photos to the standard over-cooled look of other auto-level tools.
+    'To avoid this in PD (and to produce a kick-ass Auto-Level result), we split the
+    ' calculated auto-level adjustment equally between per-channel corrections and net
+    ' luminance corrections.  This roughly maintains the existing color spread of the
+    ' image, while removing any obviously bad results, and producing a consistently
+    ' well-exposed final image.  It also serves to balance out color temperature in an
+    ' elegant way, without subjecting photos to the standard over-cooled look of other
+    ' auto-level tools.
     rMin = rMin \ 2
     gMin = gMin \ 2
     bMin = bMin \ 2
@@ -578,9 +582,6 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     gMax = gMax + ((255 - gMax) \ 2)
     bMax = bMax + ((255 - bMax) \ 2)
     lMax = lMax + ((255 - lMax) \ 2)
-    
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
     
     'Convert the calculated values to a valid paramstring equivalent
     Dim cParams As pdSerialize
@@ -1189,14 +1190,13 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     If (Not toPreview) Then Message "Mapping new image levels..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
     
     Dim xStride As Long
@@ -1204,6 +1204,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
@@ -1280,7 +1281,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
         Next x
         
     Next i
-        
+    
     'Now run all input-mapped values through our midtone-correction look-up
     For i = 0 To 3
         For x = 0 To 255
@@ -1302,28 +1303,28 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next i
     
     'Now we can finally loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
     For y = initY To finalY
-    
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+    For x = initX To finalX Step 4
+        
         'Get the source pixel color values
-        b = newLevels(2, imageData(xStride, y))
-        g = newLevels(1, imageData(xStride + 1, y))
-        r = newLevels(0, imageData(xStride + 2, y))
+        b = newLevels(2, imageData(x))
+        g = newLevels(1, imageData(x + 1))
+        r = newLevels(0, imageData(x + 2))
         
         'Assign new values looking the lookup table
-        imageData(xStride, y) = newLevels(3, b)
-        imageData(xStride + 1, y) = newLevels(3, g)
-        imageData(xStride + 2, y) = newLevels(3, r)
+        imageData(x) = newLevels(3, b)
+        imageData(x + 1) = newLevels(3, g)
+        imageData(x + 2) = newLevels(3, r)
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData
