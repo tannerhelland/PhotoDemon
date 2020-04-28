@@ -61,6 +61,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Hans Nolte](https://github.com/hansnolte)
 * Helmut Kuerbiss
 * Hidayat Suriapermana
+* [J. Scott Elblein](https://geekdrop.com)
 * [Jason Bullen](http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 * [Jason Peter Brown](https://github.com/jpbro)
 * Jean Jacques Piedfort

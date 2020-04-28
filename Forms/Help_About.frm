@@ -353,6 +353,7 @@ Private Sub Form_Load()
     GenerateContributor "Hans Nolte", "https://github.com/hansnolte"
     GenerateContributor "Helmut Kuerbiss"
     GenerateContributor "Hidayat Suriapermana"
+    GenerateContributor "J. Scott Elblein", "https://geekdrop.com"
     GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateContributor "Jason Peter Brown", "https://github.com/jpbro"
     GenerateContributor "Jean Jacques Piedfort"
