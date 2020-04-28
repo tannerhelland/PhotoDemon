@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1895</langversion>
+<langversion>8.0.1904</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6960,7 +6960,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>preserve</original>
-<translation></translation>
+<translation>Beibehalten</translation>
 </phrase>
 
 <phrase>
@@ -12864,7 +12864,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation>Spenden Sie für die PhotoDemon-Development</translation>
+<translation>Spenden Sie für das PhotoDemon-Development</translation>
 </phrase>
 
 <phrase>
