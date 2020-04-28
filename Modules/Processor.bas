@@ -1966,7 +1966,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Sepia", True) Then
-        MenuSepia
+        If raiseDialog Then ShowPDDialog vbModal, FormSepia Else FormSepia.ApplySepiaEffect processParameters
         Process_AdjustmentsMenu = True
         
     'Channel operations

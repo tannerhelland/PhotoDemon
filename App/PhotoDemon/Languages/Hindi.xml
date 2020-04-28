@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.177</langversion>
+<langversion>1.0.178</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -402,11 +402,6 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Engaging hipsters to perform sepia conversion</original>
-<translation>सेपिया रूपांतरण करने के लिए हिपस्टर्स को उलझाना</translation>
-</phrase>
-
-<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>इस छवि में अद्वितीय रंगों की संख्या की गिनती</translation>
 </phrase>
@@ -428,7 +423,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>चित्र रंगों की गणना करें</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -15995,12 +15990,23 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
+
+<phrase>
+<original>Engaging hipsters to perform sepia conversion</original>
+<translation>सेपिया रूपांतरण करने के लिए हिपस्टर्स को उलझाना</translation>
+</phrase>
+
+<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Adjustments_Color_Sepia.frm-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5006 phrases. -->
+<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>

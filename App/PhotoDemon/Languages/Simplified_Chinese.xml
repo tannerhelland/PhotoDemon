@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.1884</langversion>
+<langversion>8.0.1885</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -401,11 +401,6 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
-<original>Engaging hipsters to perform sepia conversion</original>
-<translation>从时尚向棕褐色进行转换</translation>
-</phrase>
-
-<phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>在这幅独特的颜色统计数</translation>
 </phrase>
@@ -428,7 +423,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>图像的颜色数</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for Filters_Misc.bas-->
 
@@ -15989,12 +15984,23 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
+
+<phrase>
+<original>Engaging hipsters to perform sepia conversion</original>
+<translation>从时尚向棕褐色进行转换</translation>
+</phrase>
+
+<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Adjustments_Color_Sepia.frm-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5003 phrases. -->
-<!-- 2350 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5006 phrases. -->
+<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
 <!-- These 2653 phrases contain approximately 12264 total words. -->
 
 </pdData>

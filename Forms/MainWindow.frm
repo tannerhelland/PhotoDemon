@@ -907,7 +907,7 @@ Begin VB.Form FormMain
             Index           =   10
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Sepia"
+            Caption         =   "Sepia..."
             Index           =   11
          End
       End

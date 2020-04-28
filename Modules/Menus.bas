@@ -377,7 +377,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
         AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
         AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 10
-        AddMenuItem "Sepia", "adj_sepia", 5, 13, 11
+        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 11
     AddMenuItem "Histogram", "adj_histogram", 5, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
         AddMenuItem "-", "-", 5, 14, 1
@@ -2060,7 +2060,7 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 Process "Replace color", True
                 
             Case "adj_sepia"
-                Process "Sepia", , , UNDO_Layer
+                Process "Sepia", True
                 
         Case "adj_histogram"
             Case "adj_histogramdisplay"
