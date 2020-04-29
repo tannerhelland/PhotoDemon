@@ -33,19 +33,13 @@ Begin VB.Form FormExposure
       _ExtentX        =   21220
       _ExtentY        =   1323
    End
-   Begin VB.PictureBox picChart 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picChart 
       Height          =   2415
       Left            =   8400
-      ScaleHeight     =   159
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   223
-      TabIndex        =   3
       Top             =   240
       Width           =   3375
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdSlider sltExposure 
       Height          =   705
@@ -73,7 +67,7 @@ Begin VB.Form FormExposure
    Begin PhotoDemon.pdSlider sltOffset 
       Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   3720
       Width           =   5895
       _ExtentX        =   10398
@@ -122,8 +116,8 @@ Attribute VB_Exposed = False
 'Exposure Dialog
 'Copyright 2013-2020 by Tanner Helland
 'Created: 13/July/13
-'Last updated: 20/July/17
-'Last update: migrate to XML params, minor optimizations
+'Last updated: 28/April/20
+'Last update: overhaul live chart display to use pd2D; minor perf improvements
 '
 'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
 ' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
@@ -148,6 +142,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Exposure curve image
+Private m_Graph As pdDIB
+
 'Adjust an image's exposure.
 ' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
 '                 increase (+values) or decrease (-values) in luminance.  Thus an EV of -1 will cut the amount of light in
@@ -166,9 +163,8 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     gammaAdjust = cParams.GetDouble("gamma", 1#)
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -182,8 +178,6 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    Dim r As Long, g As Long, b As Long
-    
     'Exposure can be easily applied using a look-up table
     Dim gLookup(0 To 255) As Byte
     For x = 0 To 255
@@ -195,17 +189,13 @@ Public Sub Exposure(ByVal effectParams As String, Optional ByVal toPreview As Bo
     finalX = finalX * 4
     
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
         
-        'Get the source pixel color values
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
-        
         'Apply a new value based on the lookup table
-        imageData(x, y) = gLookup(b)
-        imageData(x + 1, y) = gLookup(g)
-        imageData(x + 2, y) = gLookup(r)
+        imageData(x) = gLookup(imageData(x))
+        imageData(x + 1) = gLookup(imageData(x + 1))
+        imageData(x + 2) = gLookup(imageData(x + 2))
         
     Next x
         If (Not toPreview) Then
@@ -279,20 +269,41 @@ End Sub
 'TODO: rewrite this sub against pd2D
 Private Sub UpdatePreview()
     
-    If cmdBar.PreviewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
+    If cmdBar.PreviewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid And (Not g_Themer Is Nothing) Then
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
         Dim x As Long
         
+        If (m_Graph Is Nothing) Then Set m_Graph = New pdDIB
+        
         Dim xWidth As Long, yHeight As Long
-        xWidth = picChart.ScaleWidth
-        yHeight = picChart.ScaleHeight
-            
-        'Clear out the old chart and draw a gray line across the diagonal for reference
-        picChart.Picture = LoadPicture(vbNullString)
-        picChart.ForeColor = RGB(127, 127, 127)
-        GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        xWidth = picChart.GetWidth
+        yHeight = picChart.GetHeight
+        If (m_Graph.GetDIBWidth <> xWidth) Or (m_Graph.GetDIBHeight <> yHeight) Then m_Graph.CreateBlank xWidth, yHeight, 32, vbWhite, 255
+        
+        'pd2D handles rendering duties
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB m_Graph
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        'We first want to wipe the old chart, then draw a gray line across the diagonal for reference
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, xWidth - 1, yHeight - 1
+        
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth 1!
+        cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+        PD2D.DrawRectangleI cSurface, cPen, 0, 0, xWidth - 1, yHeight - 1
+        
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        PD2D.DrawLineI cSurface, cPen, 0, yHeight, xWidth, 0
         
         'Draw the corresponding exposure curve (line, actually) for this EV
         Dim expVal As Double, offsetVal As Double, gammaVal As Double, tmpVal As Double
@@ -300,40 +311,56 @@ Private Sub UpdatePreview()
         offsetVal = sltOffset
         gammaVal = sltGamma
         
-        picChart.ForeColor = RGB(0, 0, 255)
+        cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
+        cPen.SetPenWidth 1.6!
+        cPen.SetPenLineJoin P2_LJ_Round
+        cPen.SetPenLineCap P2_LC_Round
+        
+        'Shrink the chart by two pixels (to account for borders); we will add 1 to
+        ' all coordinates in the inner loop to ensure the chart is properly centered
+        yHeight = yHeight - 2
+        xWidth = xWidth - 2
         
         prevX = 0
         prevY = yHeight
         curX = 0
         curY = yHeight
         
+        Dim listOfPoints() As PointFloat, numOfPoints As Long
+        ReDim listOfPoints(0 To xWidth) As PointFloat
+        
         For x = 0 To xWidth
             
             'Get the corrected, clamped exposure value
             tmpVal = GetCorrectedValue(x, xWidth, expVal, offsetVal, gammaVal)
             
-            'Because the picture box is not square, we also need to multiply the value by the picture box's aspect ratio
+            'Because the graph may not be square, we also need to multiply the returned value
+            ' by the graph's aspect ratio
             tmpVal = tmpVal * (yHeight / xWidth)
             
             'Invert this final value, because screen coordinates are upside-down
             tmpVal = yHeight - tmpVal
             
-            'Draw a line between this point and the previous one, then move on to the next point
+            'Clip the current points to the boundaries of the image, then add it to the running list
             curY = tmpVal
             curX = x
-            If x = 0 Then prevY = curY
-            If curY > yHeight - 1 Then curY = yHeight - 1
+            If (x = 0) Then prevY = curY
+            If (curY > yHeight - 1) Then curY = yHeight - 1
             
-            GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+            listOfPoints(numOfPoints).x = curX + 1
+            listOfPoints(numOfPoints).y = curY + 1
+            numOfPoints = numOfPoints + 1
             
             prevX = curX
             prevY = curY
             
         Next x
         
-        picChart.Picture = picChart.Image
-        picChart.Refresh
-    
+        'Draw the finished line
+        PD2D.DrawLinesF_FromPtF cSurface, cPen, numOfPoints, VarPtr(listOfPoints(0)), False
+        Set cSurface = Nothing
+        picChart.RequestRedraw True
+        
         'Finally, apply the exposure correction to the preview image
         Me.Exposure GetLocalParamString(), True, pdFxPreview
         
@@ -344,6 +371,10 @@ End Sub
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
+End Sub
+
+Private Sub picChart_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_Graph Is Nothing) Then GDI.BitBltWrapper targetDC, 0, 0, ctlWidth, ctlHeight, m_Graph.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
