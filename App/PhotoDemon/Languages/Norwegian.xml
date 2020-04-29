@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Split toning</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>utjevne</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Utsettelse</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Utsettelse</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Photo filter</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 <phrase>
 <original>Red-eye removal</original>
 <translation>fjerning av røde øyne</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Split toning</translation>
 </phrase>
 
 <phrase>
@@ -5929,18 +5929,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 klokken</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Roter 90 klokken</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 mot klokken</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Roter 90 mot klokken</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Vilkårlig</translation>
+<original>Rotate 180</original>
+<translation>Roter 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Roter vilkårlig</translation>
 </phrase>
 
 <phrase>
@@ -6076,26 +6081,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>orientering</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Roter 90 klokken</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Roter 90 mot klokken</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Roter 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Roter vilkårlig</translation>
 </phrase>
 
 <phrase>
@@ -6711,7 +6696,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Språk endret.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16004,10 +15989,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

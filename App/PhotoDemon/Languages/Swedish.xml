@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1966,6 +1966,11 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Split toning</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>utjämna</translation>
 </phrase>
@@ -1991,8 +1996,18 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Exponering</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2006,16 +2021,6 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Exponering</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Fotofilter...</translation>
 </phrase>
@@ -2023,11 +2028,6 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <phrase>
 <original>Red-eye removal</original>
 <translation>borttagning av röda ögon</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Split toning</translation>
 </phrase>
 
 <phrase>
@@ -5925,18 +5925,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 medurs</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Rotera 90 medsols</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 moturs</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Rotera 90 moturs</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>godtycklig</translation>
+<original>Rotate 180</original>
+<translation>rotera 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Rotera godtycklig</translation>
 </phrase>
 
 <phrase>
@@ -6072,26 +6077,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>läggning</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Rotera 90 medsols</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Rotera 90 moturs</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>rotera 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Rotera godtycklig</translation>
 </phrase>
 
 <phrase>
@@ -6707,7 +6692,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Språk ändrats.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16001,10 +15986,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

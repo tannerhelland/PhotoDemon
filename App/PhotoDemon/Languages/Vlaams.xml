@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.475</langversion>
+<langversion>6.7.476</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1971,6 +1971,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Splits toning</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Egaliseren</translation>
 </phrase>
@@ -1996,8 +2001,18 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Blootstelling</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2011,16 +2026,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Blootstelling</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Fotofilter</translation>
 </phrase>
@@ -2028,11 +2033,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Red-eye removal</original>
 <translation>Rode ogen verwijdering</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Splits toning</translation>
 </phrase>
 
 <phrase>
@@ -5930,18 +5930,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 met de klok mee</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Draai 90 met de klok mee</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 tegen de klok in</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Draai 90 tegen de klok in</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Willekeurig draaien</translation>
+<original>Rotate 180</original>
+<translation>Draai 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Draai willekeurig</translation>
 </phrase>
 
 <phrase>
@@ -6077,26 +6082,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>Oriënatie</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Draai 90 met de klok mee</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Draai 90 tegen de klok in</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Draai 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Draai willekeurig</translation>
 </phrase>
 
 <phrase>
@@ -6712,7 +6697,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16007,10 +15992,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

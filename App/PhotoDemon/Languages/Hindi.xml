@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.178</langversion>
+<langversion>1.0.179</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1971,6 +1971,11 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>स्प्लिट टोनिंग</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>बराबर करना</translation>
 </phrase>
@@ -1996,8 +2001,18 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>अनावरण</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>गामा</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>एचडीआर</translation>
 </phrase>
 
 <phrase>
@@ -2011,16 +2026,6 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>अनावरण</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>एचडीआर</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>फोटो फिल्टर</translation>
 </phrase>
@@ -2028,11 +2033,6 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <phrase>
 <original>Red-eye removal</original>
 <translation>लाल-आँख हटाने</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>स्प्लिट टोनिंग</translation>
 </phrase>
 
 <phrase>
@@ -5927,18 +5927,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 दक्षिणावर्त</translation>
+<original>Rotate 90 clockwise</original>
+<translation>90 दक्षिणावर्त घुमाएं</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 काउंटर-वाइडवर्ड</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>घुमाएगी 90 घड़ी की दिशा में</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>मनमाना</translation>
+<original>Rotate 180</original>
+<translation>घुमाए 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>मनमाने ढंग से घुमाएं</translation>
 </phrase>
 
 <phrase>
@@ -6074,26 +6079,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>अभिविन्यास</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>90 दक्षिणावर्त घुमाएं</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>घुमाएगी 90 घड़ी की दिशा में</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>घुमाए 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>मनमाने ढंग से घुमाएं</translation>
 </phrase>
 
 <phrase>
@@ -6709,7 +6694,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>भाषा सफलतापूर्वक बदल गई</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16003,10 +15988,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

@@ -341,19 +341,19 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "90 clockwise"
+            Caption         =   "Rotate 90 clockwise"
             Index           =   2
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "90 counter-clockwise"
+            Caption         =   "Rotate 90 counter-clockwise"
             Index           =   3
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "180"
+            Caption         =   "Rotate 180"
             Index           =   4
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "Arbitrary..."
+            Caption         =   "Rotate arbitrary..."
             Index           =   5
          End
       End

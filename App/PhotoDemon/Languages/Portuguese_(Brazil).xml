@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>tonificação Dividir</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>igualar</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>exposição</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>gama</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>exposição</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>filtro de imagens</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <phrase>
 <original>Red-eye removal</original>
 <translation>remoção de olhos vermelhos</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>tonificação Dividir</translation>
 </phrase>
 
 <phrase>
@@ -5929,18 +5929,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 no sentido horário</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Girar 90 no sentido horário</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 anti-horário</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Girar 90 anti-horário</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>arbitrário</translation>
+<original>Rotate 180</original>
+<translation>girar 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>gire arbitrária</translation>
 </phrase>
 
 <phrase>
@@ -6076,26 +6081,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>orientação</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Girar 90 no sentido horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Girar 90 anti-horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>girar 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>gire arbitrária</translation>
 </phrase>
 
 <phrase>
@@ -6711,7 +6696,7 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 <translation>Idioma alterado com sucesso.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16005,10 +15990,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

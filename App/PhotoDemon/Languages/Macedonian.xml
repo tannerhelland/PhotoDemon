@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.271</langversion>
+<langversion>1.0.272</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1970,6 +1970,11 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Сплит тонирање</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>изедначат</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>изложеност</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>гама</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>изложеност</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Фото филтер</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <phrase>
 <original>Red-eye removal</original>
 <translation>отстранување на црвени очи</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Сплит тонирање</translation>
 </phrase>
 
 <phrase>
@@ -5929,18 +5929,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 стрелките на часовникот</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Ротација на 90 стрелките на часовникот</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 од стрелките на часовникот</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Ротација на 90 стрелките на часовникот</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>произволно</translation>
+<original>Rotate 180</original>
+<translation>ротираат 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Ротација произволни</translation>
 </phrase>
 
 <phrase>
@@ -6076,26 +6081,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>ориентација</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Ротација на 90 стрелките на часовникот</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Ротација на 90 стрелките на часовникот</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>ротираат 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Ротација произволни</translation>
 </phrase>
 
 <phrase>
@@ -6711,7 +6696,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16006,10 +15991,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

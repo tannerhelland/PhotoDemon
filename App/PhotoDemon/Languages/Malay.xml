@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>toning Split</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Samakan</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>pendedahan</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>pendedahan</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>penapis Photo</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <phrase>
 <original>Red-eye removal</original>
 <translation>penyingkiran mata merah</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>toning Split</translation>
 </phrase>
 
 <phrase>
@@ -5929,18 +5929,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 mengikut arah jam</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Putar 90 mengikut arah jam</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 lawan</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Putar 90 lawan</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Sewenang-wenang</translation>
+<original>Rotate 180</original>
+<translation>Putar 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Putar sewenang-wenangnya</translation>
 </phrase>
 
 <phrase>
@@ -6076,26 +6081,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>orientasi</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Putar 90 mengikut arah jam</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Putar 90 lawan</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Putar 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Putar sewenang-wenangnya</translation>
 </phrase>
 
 <phrase>
@@ -6711,7 +6696,7 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <translation>Bahasa berubah dengan jayanya.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16006,10 +15991,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

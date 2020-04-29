@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Split toniranje</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Ujednačiti</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Izlaganje</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Gama</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Izlaganje</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Filtar za fotografije</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <phrase>
 <original>Red-eye removal</original>
 <translation>Uklanjanje efekta crvenih očiju</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Split toniranje</translation>
 </phrase>
 
 <phrase>
@@ -5926,18 +5926,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>U smjeru kazaljke na satu</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Zakreni 90 u smjeru kazaljke na satu</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 suprotno od kazaljke na satu</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Zakreni 90 u smjeru suprotnom od kazaljke na satu</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Proizvoljan</translation>
+<original>Rotate 180</original>
+<translation>Zakreni 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Rotiraj proizvoljnim</translation>
 </phrase>
 
 <phrase>
@@ -6073,26 +6078,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>Orijentacija</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Zakreni 90 u smjeru kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Zakreni 90 u smjeru suprotnom od kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Zakreni 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Rotiraj proizvoljnim</translation>
 </phrase>
 
 <phrase>
@@ -6707,7 +6692,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Jezik je uspješno promijenjen.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16002,10 +15987,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

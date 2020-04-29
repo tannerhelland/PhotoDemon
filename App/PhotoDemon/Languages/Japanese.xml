@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.166</langversion>
+<langversion>1.0.167</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>スプリットトーニング</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>イコライズ</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>暴露</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>ガンマ</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>暴露</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>フォトフィルター</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Red-eye removal</original>
 <translation>赤目除去</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>スプリットトーニング</translation>
 </phrase>
 
 <phrase>
@@ -5926,18 +5926,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90時計回り</translation>
+<original>Rotate 90 clockwise</original>
+<translation>時計回りに90度回転する</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90反時計回り</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>反時計回りに90度回転する</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>任意</translation>
+<original>Rotate 180</original>
+<translation>180回転</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>任意の回転</translation>
 </phrase>
 
 <phrase>
@@ -6073,26 +6078,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>オリエンテーション</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>時計回りに90度回転する</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>反時計回りに90度回転する</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>180回転</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>任意の回転</translation>
 </phrase>
 
 <phrase>
@@ -6707,7 +6692,7 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>言語が正常に変更されました。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16001,10 +15986,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

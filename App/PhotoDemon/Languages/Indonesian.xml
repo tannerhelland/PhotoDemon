@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.417</langversion>
+<langversion>6.6.418</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1976,6 +1976,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>toning Berpisah</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Samakan</translation>
 </phrase>
@@ -2001,8 +2006,18 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>pencahayaan</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2016,16 +2031,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>pencahayaan</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>penyaring Photo</translation>
 </phrase>
@@ -2033,11 +2038,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <phrase>
 <original>Red-eye removal</original>
 <translation>Penghapusan mata merah</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>toning Berpisah</translation>
 </phrase>
 
 <phrase>
@@ -5935,18 +5935,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 searah jarum jam</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Putar 90 searah jarum jam</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 berlawanan arah jarum jam</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Putar 90 berlawanan arah jarum jam</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Sewenang-wenang</translation>
+<original>Rotate 180</original>
+<translation>Putar 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Putar sewenang-wenangnya</translation>
 </phrase>
 
 <phrase>
@@ -6082,26 +6087,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>orientasi</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Putar 90 searah jarum jam</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Putar 90 berlawanan arah jarum jam</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Putar 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Putar sewenang-wenangnya</translation>
 </phrase>
 
 <phrase>
@@ -6717,7 +6702,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16012,10 +15997,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Rozdělte tónování</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Vyrovnat</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Expozice</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Expozice</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Fotografický filtr</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <phrase>
 <original>Red-eye removal</original>
 <translation>Odstranění efektu červených očí</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Rozdělte tónování</translation>
 </phrase>
 
 <phrase>
@@ -5926,18 +5926,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 ve směru hodinových ručiček</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Otočte 90 ve směru hodinových ručiček</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 proti směru hodinových ručiček</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Otočit 90 proti směru hodinových ručiček</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Libovolný</translation>
+<original>Rotate 180</original>
+<translation>Otočit 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Otočit libovolně</translation>
 </phrase>
 
 <phrase>
@@ -6073,26 +6078,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>Orientace</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Otočte 90 ve směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Otočit 90 proti směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Otočit 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Otočit libovolně</translation>
 </phrase>
 
 <phrase>
@@ -6707,7 +6692,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Jazyk byl úspěšně změněn.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16000,10 +15985,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

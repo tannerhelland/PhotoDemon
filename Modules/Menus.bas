@@ -229,10 +229,10 @@ Public Sub InitializeMenus()
     AddMenuItem "Rotate", "image_rotate", 2, 12
         AddMenuItem "Straighten...", "image_straighten", 2, 12, 0
         AddMenuItem "-", "-", 2, 12, 1
-        AddMenuItem "90 clockwise", "image_rotate90", 2, 12, 2, "generic_rotateright"
-        AddMenuItem "90 counter-clockwise", "image_rotate270", 2, 12, 3, "generic_rotateleft"
-        AddMenuItem "180", "image_rotate180", 2, 12, 4
-        AddMenuItem "Arbitrary...", "image_rotatearbitrary", 2, 12, 5
+        AddMenuItem "Rotate 90 clockwise", "image_rotate90", 2, 12, 2, "generic_rotateright"
+        AddMenuItem "Rotate 90 counter-clockwise", "image_rotate270", 2, 12, 3, "generic_rotateleft"
+        AddMenuItem "Rotate 180", "image_rotate180", 2, 12, 4
+        AddMenuItem "Rotate arbitrary...", "image_rotatearbitrary", 2, 12, 5
     AddMenuItem "Flip horizontal", "image_fliphorizontal", 2, 13, , "image_fliphorizontal"
     AddMenuItem "Flip vertical", "image_flipvertical", 2, 14, , "image_flipvertical"
     AddMenuItem "-", "-", 2, 15

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3458</langversion>
+<langversion>6.8.3459</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1970,6 +1970,11 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>Сплит тонирование</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>уравнять</translation>
 </phrase>
@@ -1995,8 +2000,18 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Воздействие</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Гамма</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2010,16 +2025,6 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Воздействие</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Фото фильтр</translation>
 </phrase>
@@ -2027,11 +2032,6 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 <phrase>
 <original>Red-eye removal</original>
 <translation>удаление эффекта красных глаз</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Сплит тонирование</translation>
 </phrase>
 
 <phrase>
@@ -5929,18 +5929,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 по часовой стрелке</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Поворот на 90 по часовой стрелке</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 против часовой стрелки</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Поворот на 90 против часовой стрелки</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>произвольный</translation>
+<original>Rotate 180</original>
+<translation>Поворот 180</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Поворотом произвольное</translation>
 </phrase>
 
 <phrase>
@@ -6076,26 +6081,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>ориентация</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Поворот на 90 по часовой стрелке</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Поворот на 90 против часовой стрелки</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Поворот 180</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Поворотом произвольное</translation>
 </phrase>
 
 <phrase>
@@ -6711,7 +6696,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Язык успешно изменен.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16006,10 +15991,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>

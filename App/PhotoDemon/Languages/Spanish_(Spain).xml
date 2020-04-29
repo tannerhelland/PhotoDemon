@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.321</langversion>
+<langversion>6.7.322</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -1971,6 +1971,11 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <phrase>
+<original>Split toning</original>
+<translation>División de tonos</translation>
+</phrase>
+
+<phrase>
 <original>Equalize</original>
 <translation>Ecualizar</translation>
 </phrase>
@@ -1996,8 +2001,18 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <phrase>
+<original>Exposure</original>
+<translation>Exposición</translation>
+</phrase>
+
+<phrase>
 <original>Gamma</original>
 <translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -2011,16 +2026,6 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Exposición</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>Photo filter</original>
 <translation>Filtro fotográfico</translation>
 </phrase>
@@ -2028,11 +2033,6 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 <phrase>
 <original>Red-eye removal</original>
 <translation>Remoción de ojos rojos</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>División de tonos</translation>
 </phrase>
 
 <phrase>
@@ -5935,18 +5935,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>90 grados en sentido horario</translation>
+<original>Rotate 90 clockwise</original>
+<translation>Girar 90 grados en sentido horario</translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>90 grados en sentido contrario al reloj</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation>Girar 90 grados en sentido contrario a las agujas del reloj</translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary</original>
-<translation>Libre</translation>
+<original>Rotate 180</original>
+<translation>Girar 180 grados</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation>Girar libremente</translation>
 </phrase>
 
 <phrase>
@@ -6082,26 +6087,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Orientation</original>
 <translation>Orientación</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 clockwise</original>
-<translation>Girar 90 grados en sentido horario</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>Girar 90 grados en sentido contrario a las agujas del reloj</translation>
-</phrase>
-
-<phrase>
-<original>Rotate 180</original>
-<translation>Girar 180 grados</translation>
-</phrase>
-
-<phrase>
-<original>Rotate arbitrary</original>
-<translation>Girar libremente</translation>
 </phrase>
 
 <phrase>
@@ -6717,7 +6702,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 358 phrases. 161 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16012,10 +15997,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2650</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5006 phrases. -->
-<!-- 2353 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12264 total words. -->
+<!-- As of this build, PhotoDemon contains 5007 phrases. -->
+<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
+<!-- These 2650 phrases contain approximately 12261 total words. -->
 
 </pdData>
