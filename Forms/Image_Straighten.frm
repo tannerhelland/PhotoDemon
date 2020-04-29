@@ -24,6 +24,16 @@ Begin VB.Form FormStraighten
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsGrid 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   3120
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "grid"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -67,8 +77,8 @@ Attribute VB_Exposed = False
 'Image Straightening Interface
 'Copyright 2014-2020 by Tanner Helland
 'Created: 11/May/14
-'Last updated: 11/May/14
-'Last update: initial build, based heavily off PD's existing Rotate dialog
+'Last updated: 29/April/20
+'Last update: allow user to toggle preview grid; use pd2D for grid rendering
 '
 'This tool allows the user to straighten an image at an arbitrary angle in 1/100 degree increments.
 'At present, the tool assumes that you want to straighten the image around its center.  I don't have
@@ -100,11 +110,12 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     Set cParams = New pdSerialize
     cParams.SetParamString processParameters
     
-    Dim rotationAngle As Double, thingToRotate As PD_ActionTarget
+    Dim rotationAngle As Double, thingToRotate As PD_ActionTarget, showPreviewGrid As Boolean
     
     With cParams
         rotationAngle = .GetDouble("angle", 0#)
         thingToRotate = .GetLong("target", pdat_Image)
+        showPreviewGrid = .GetBool("preview-grid", True, True)
     End With
     
     'If the image contains an active selection, disable it before transforming the canvas
@@ -189,22 +200,43 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         'Rotate the new image into place
         GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, smallDIB, 0, 0, smallDIB.GetDIBWidth, smallDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, False, True
         
-        'For previews only, before rendering the final DIB to the screen, going some helpful
-        ' guidelines to help the user confirm the accuracy of their straightening.
-        Dim lineOffset As Double, lineStepX As Double, lineStepY As Double
-        lineStepX = (srcWidth - 1) / 4
-        lineStepY = (srcHeight - 1) / 4
+        If showPreviewGrid Then
+            
+            'For previews only, before rendering the final DIB to the screen, going some helpful
+            ' guidelines to help the user confirm the accuracy of their straightening.
+            Dim lineOffset As Double, lineStepX As Double, lineStepY As Double
+            lineStepX = (srcWidth - 1) / 4
+            lineStepY = (srcHeight - 1) / 4
+            
+            Dim cSurface As pd2DSurface
+            Set cSurface = New pd2DSurface
+            cSurface.WrapSurfaceAroundPDDIB finalDIB
+            cSurface.SetSurfaceAntialiasing P2_AA_None
+            cSurface.SetSurfacePixelOffset P2_PO_Normal
+            
+            Dim cPen As pd2DPen
+            Set cPen = New pd2DPen
+            cPen.SetPenWidth 1!
+            cPen.SetPenColor RGB(255, 255, 0)
+            
+            Dim j As Long
+            For j = 0 To 4
+                lineOffset = lineStepX * j
+                cPen.SetPenOpacity 75
+                PD2D.DrawLineI cSurface, cPen, lineOffset, 0, lineOffset, srcHeight
+                cPen.SetPenOpacity 33
+                PD2D.DrawLineI cSurface, cPen, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, srcHeight
+                lineOffset = lineStepY * j
+                cPen.SetPenOpacity 75
+                PD2D.DrawLineI cSurface, cPen, 0, lineOffset, srcWidth, lineOffset
+                cPen.SetPenOpacity 33
+                PD2D.DrawLineI cSurface, cPen, 0, lineOffset + lineStepY / 2, srcWidth, lineOffset + lineStepY / 2
+            Next j
+            
+            Set cSurface = Nothing
+            
+        End If
         
-        Dim j As Long
-        For j = 0 To 4
-            lineOffset = lineStepX * j
-            GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset, 0, lineOffset, srcHeight, RGB(255, 255, 0), 192, 1
-            GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, srcHeight, RGB(255, 255, 0), 80, 1
-            lineOffset = lineStepY * j
-            GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset, srcWidth, lineOffset, RGB(255, 255, 0), 192, 1
-            GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset + lineStepY / 2, srcWidth, lineOffset + lineStepY / 2, RGB(255, 255, 0), 80, 1
-        Next j
-                    
         'Finally, render the preview and erase the temporary DIB to conserve memory
         pdFxPreview.SetFXImage finalDIB
         
@@ -312,6 +344,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         
 End Sub
 
+Private Sub btsGrid_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
 
@@ -343,6 +379,10 @@ Private Sub Form_Load()
             Me.Caption = g_Language.TranslateMessage("Straighten layer")
         
     End Select
+    
+    btsGrid.AddItem "on", 0
+    btsGrid.AddItem "off", 1
+    btsGrid.ListIndex = 0
     
     'During the preview stage, we want to rotate a smaller version of the image or active layer.  This increases
     ' the speed of previewing immensely (especially for large images, like 10+ megapixel photos)
@@ -450,6 +490,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "angle", sltAngle.Value
         .AddParam "target", m_StraightenTarget
+        .AddParam "preview-grid", (btsGrid.ListIndex = 0), True
     End With
     
     GetLocalParamString = cParams.GetParamString()
