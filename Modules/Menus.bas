@@ -1234,7 +1234,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyM, vbCtrlMask, "Curves", "adj_curves", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyL, vbCtrlMask, "Levels", "adj_levels", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow and highlight", "adj_sandh", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", "adj_sandh", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, True, UNDO_Nothing
         .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_Nothing
@@ -2007,7 +2007,7 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             Process "Levels", True
             
         Case "adj_sandh"
-            Process "Shadow and highlight", True
+            Process "Shadows and highlights", True
             
         Case "adj_vibrance"
             Process "Vibrance", True

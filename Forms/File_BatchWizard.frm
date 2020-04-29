@@ -1605,7 +1605,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         Else
             picPreview.Picture = LoadPicture(vbNullString)
             Dim strToPrint As String
-            strToPrint = g_Language.TranslateMessage("Preview not available")
+            strToPrint = g_Language.TranslateMessage("preview not available")
             picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
             picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
             picPreview.Print strToPrint

@@ -213,7 +213,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     If tmpDIB.CreateFromFile(srcImagePath) Then
         picPreview.CopyDIB tmpDIB, , True, , True, , True
     Else
-        picPreview.PaintText g_Language.TranslateMessage("Preview not available")
+        picPreview.PaintText g_Language.TranslateMessage("preview not available")
     End If
     
 End Sub

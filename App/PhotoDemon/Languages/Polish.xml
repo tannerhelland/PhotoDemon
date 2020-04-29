@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.154</langversion>
+<langversion>7.0.156</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1885,8 +1885,8 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
-<original>Shadow and highlight</original>
-<translation>Cień i podświetlenie</translation>
+<original>Shadows and highlights</original>
+<translation>Cienie i podświetlenia</translation>
 </phrase>
 
 <phrase>
@@ -6188,11 +6188,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>Cienie i podświetlenia</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanały</translation>
 </phrase>
@@ -6677,7 +6672,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8003,12 +7998,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Uwaga: dane auto zapisu zostaną usunięte</translation>
 </phrase>
 
-<phrase>
-<original>Preview not available</original>
-<translation>Podgląd niedostępny</translation>
-</phrase>
-
-<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -13385,7 +13375,7 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <translation>Prostowanie zakończono.</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15967,10 +15957,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2650</phrasecount>
+<phrasecount>2648</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5007 phrases. -->
-<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
-<!-- These 2650 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 5010 phrases. -->
+<!-- 2362 are duplicates, so only 2648 unique phrases have been written to file. -->
+<!-- These 2648 phrases contain approximately 12255 total words. -->
 
 </pdData>

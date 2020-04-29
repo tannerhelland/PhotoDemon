@@ -1899,7 +1899,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         If raiseDialog Then ShowPDDialog vbModal, FormLevels Else FormLevels.MapImageLevels processParameters
         Process_AdjustmentsMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Shadow and highlight", True) Then
+    ElseIf Strings.StringsEqual(processID, "Shadows and highlights", True) Or Strings.StringsEqual(processID, "Shadow and highlight", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormShadowHighlight Else FormShadowHighlight.ApplyShadowHighlight processParameters
         Process_AdjustmentsMenu = True
         

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.144</langversion>
+<langversion>1.0.146</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1894,8 +1894,8 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Shadow and highlight</original>
-<translation>그림자 및 강조 표시</translation>
+<original>Shadows and highlights</original>
+<translation>그림자 및 하이라이트</translation>
 </phrase>
 
 <phrase>
@@ -6200,11 +6200,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>그림자 및 하이라이트</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>채널</translation>
 </phrase>
@@ -6691,7 +6686,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>언어가 성공적으로 변경되었습니다.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8017,12 +8012,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>경고: 자동 저장 데이터가 삭제됩니다.</translation>
 </phrase>
 
-<phrase>
-<original>Preview not available</original>
-<translation>미리보기를 사용할 수 없음</translation>
-</phrase>
-
-<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -13400,7 +13390,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>완전히 교정하십시오.</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15985,10 +15975,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2650</phrasecount>
+<phrasecount>2648</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5007 phrases. -->
-<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
-<!-- These 2650 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 5010 phrases. -->
+<!-- 2362 are duplicates, so only 2648 unique phrases have been written to file. -->
+<!-- These 2648 phrases contain approximately 12255 total words. -->
 
 </pdData>

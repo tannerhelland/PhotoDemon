@@ -222,7 +222,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shadow and highlight", , GetLocalParamString(), UNDO_Layer
+    Process "Shadows and highlights", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

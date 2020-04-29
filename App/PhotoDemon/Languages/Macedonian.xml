@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.272</langversion>
+<langversion>1.0.274</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1895,8 +1895,8 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Shadow and highlight</original>
-<translation>Сенка и нагласување</translation>
+<original>Shadows and highlights</original>
+<translation>Сенки и нагласува</translation>
 </phrase>
 
 <phrase>
@@ -6204,11 +6204,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>Сенки и нагласува</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>канали</translation>
 </phrase>
@@ -6696,7 +6691,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 165 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
+<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8022,12 +8017,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Предупредување: податоци за автоматско зачувување ќе биде избришана</translation>
 </phrase>
 
-<phrase>
-<original>Preview not available</original>
-<translation>Преглед не е достапен</translation>
-</phrase>
-
-<!-- Dialog_AutosaveFound.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_AutosaveFound.frm-->
 
@@ -13405,7 +13395,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Исправете го заврши.</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15991,10 +15981,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2650</phrasecount>
+<phrasecount>2648</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5007 phrases. -->
-<!-- 2357 are duplicates, so only 2650 unique phrases have been written to file. -->
-<!-- These 2650 phrases contain approximately 12261 total words. -->
+<!-- As of this build, PhotoDemon contains 5010 phrases. -->
+<!-- 2362 are duplicates, so only 2648 unique phrases have been written to file. -->
+<!-- These 2648 phrases contain approximately 12255 total words. -->
 
 </pdData>
