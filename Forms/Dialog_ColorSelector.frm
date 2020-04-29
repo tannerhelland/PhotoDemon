@@ -735,13 +735,22 @@ Private Sub sldHSV_RenderTrackImage(Index As Integer, dstDIB As pdDIB, ByVal lef
     gradientMax = (rightBoundary - leftBoundary)
     If (gradientMax <> 0#) Then gradientMax = 1# / gradientMax Else gradientMax = 1#
     
-    Dim targetColor As Long, targetHeight As Long, targetDC As Long
-    targetDC = dstDIB.GetDIBDC
+    Dim targetColor As Long, targetHeight As Long
     targetHeight = dstDIB.GetDIBHeight
     
     'Simple gradient-ish code implementation of drawing any individual color component
-    If (targetDC <> 0) Then
+    If (dstDIB.GetDIBDC <> 0) Then
         
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB dstDIB
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth 1!
+    
         Dim x As Long
         For x = 0 To dstDIB.GetDIBWidth - 1
             
@@ -766,9 +775,12 @@ Private Sub sldHSV_RenderTrackImage(Index As Integer, dstDIB As pdDIB, ByVal lef
             End If
             
             'Draw the finished color onto the target DIB
-            GDI.DrawLineToDC targetDC, x, 0, x, targetHeight, targetColor
+            cPen.SetPenColor targetColor
+            PD2D.DrawLineI cSurface, cPen, x, 0, x, targetHeight
             
         Next x
+        
+        Set cSurface = Nothing
     
     End If
     

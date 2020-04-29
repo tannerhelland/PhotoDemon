@@ -144,27 +144,6 @@ Public Sub ForceGDIFlush()
     GdiFlush
 End Sub
 
-'Basic wrapper to line-drawing via GDI
-Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    
-    'Create a pen with the specified color
-    Dim tmpPen As Long
-    tmpPen = CreatePen(PS_SOLID, 1, crColor)
-    
-    'Select the pen into the target DC
-    Dim oldObject As Long
-    oldObject = SelectObject(targetDC, tmpPen)
-    
-    'Render the line
-    MoveToEx targetDC, x1, y1, 0&
-    LineTo targetDC, x2, y2
-    
-    'Remove the pen and delete it
-    SelectObject targetDC, oldObject
-    DeleteObject tmpPen
-
-End Sub
-
 'Basic wrappers for rect-filling and rect-tracing via GDI
 Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long, ByVal crColor As Long)
     
