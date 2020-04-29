@@ -43,19 +43,13 @@ Begin VB.Form FormGamma
       _ExtentY        =   582
       Caption         =   "keep all colors in sync"
    End
-   Begin VB.PictureBox picChart 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picChart 
       Height          =   2415
       Left            =   8280
-      ScaleHeight     =   159
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   231
-      TabIndex        =   2
       Top             =   120
       Width           =   3495
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -87,7 +81,7 @@ Begin VB.Form FormGamma
       Height          =   705
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   3540
       Width           =   5895
       _ExtentX        =   10398
@@ -141,8 +135,8 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright 2000-2020 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 19/July/17
-'Last update: convert to XML params, minor optimizations
+'Last updated: 29/April/20
+'Last update: theme display graph; minor perf improvements
 '
 'Gamma correction isn't exactly rocket science, but it's an important part of any good editing tool.
 '
@@ -155,16 +149,19 @@ Option Explicit
 
 Private m_UserChange As Boolean
 
+'Exposure curve image
+Private m_Graph As pdDIB
+
 Private Sub chkUnison_Click()
     
     If chkUnison.Value Then
         Dim newGamma As Double
-        newGamma = CDblCustom(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
+        newGamma = CDblCustom(sltGamma(0).Value + sltGamma(1).Value + sltGamma(2).Value) / 3
     
         m_UserChange = False
-        sltGamma(0) = newGamma
-        sltGamma(1) = newGamma
-        sltGamma(2) = newGamma
+        sltGamma(0).Value = newGamma
+        sltGamma(1).Value = newGamma
+        sltGamma(2).Value = newGamma
         m_UserChange = True
     End If
     
@@ -210,9 +207,8 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -226,13 +222,12 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    
     'Make certain that the gamma adjustment values we were passed are not zero
-    If (rGamma = 0#) Then rGamma = 0.01
-    If (gGamma = 0#) Then gGamma = 0.01
-    If (bGamma = 0#) Then bGamma = 0.01
+    ' (we divide by these values)
+    Const GAMMA_MIN As Double = 0.01
+    If (rGamma < GAMMA_MIN) Then rGamma = GAMMA_MIN
+    If (gGamma < GAMMA_MIN) Then gGamma = GAMMA_MIN
+    If (bGamma < GAMMA_MIN) Then bGamma = GAMMA_MIN
     
     'Divisions are expensive, so invert gamma values in advance
     rGamma = 1# / rGamma
@@ -251,12 +246,12 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
         bTmp = rTmp
         
         rTmp = rTmp ^ rGamma
-        bTmp = bTmp ^ bGamma
         gTmp = gTmp ^ gGamma
+        bTmp = bTmp ^ bGamma
         
-        rTmp = rTmp * 255
-        gTmp = gTmp * 255
-        bTmp = bTmp * 255
+        rTmp = rTmp * 255#
+        gTmp = gTmp * 255#
+        bTmp = bTmp * 255#
         
         If (rTmp < 0#) Then rTmp = 0#
         If (rTmp > 255#) Then rTmp = 255#
@@ -277,16 +272,11 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     finalX = finalX * 4
     
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
-        
-        b = imageData(x, y)
-        g = imageData(x + 1, y)
-        r = imageData(x + 2, y)
-        
-        imageData(x, y) = bLookup(b)
-        imageData(x + 1, y) = gLookup(g)
-        imageData(x + 2, y) = rLookup(r)
-        
+        imageData(x) = bLookup(imageData(x))
+        imageData(x + 1) = gLookup(imageData(x + 1))
+        imageData(x + 2) = rLookup(imageData(x + 2))
     Next x
         If (Not toPreview) Then
             If (y And progBarCheck) = 0 Then
@@ -317,45 +307,76 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the preview effect and the gamma chart
-' TODO: rewrite this against pd2D
 Private Sub UpdatePreview()
 
-    If cmdBar.PreviewsAllowed Then
+    If cmdBar.PreviewsAllowed And (Not g_Themer Is Nothing) Then
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
         Dim x As Long, y As Long
         
+        If (m_Graph Is Nothing) Then Set m_Graph = New pdDIB
+        
         Dim xWidth As Long, yHeight As Long
-        xWidth = picChart.ScaleWidth
-        yHeight = picChart.ScaleHeight
-            
-        'Clear out the old chart and draw a gray line across the diagonal for reference
-        picChart.Picture = LoadPicture(vbNullString)
-        picChart.ForeColor = RGB(127, 127, 127)
-        GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
+        xWidth = picChart.GetWidth
+        yHeight = picChart.GetHeight
+        If (m_Graph.GetDIBWidth <> xWidth) Or (m_Graph.GetDIBHeight <> yHeight) Then m_Graph.CreateBlank xWidth, yHeight, 32, vbWhite, 255
+        
+        'pd2D handles rendering duties
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB m_Graph
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        'We first want to wipe the old chart, then draw a gray line across the diagonal for reference
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, xWidth - 1, yHeight - 1
+        
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth 1!
+        cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+        PD2D.DrawRectangleI cSurface, cPen, 0, 0, xWidth - 1, yHeight - 1
+        
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        PD2D.DrawLineI cSurface, cPen, 0, yHeight, xWidth, 0
+        
+        cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
+        cPen.SetPenWidth 1.6!
+        cPen.SetPenLineJoin P2_LJ_Round
+        cPen.SetPenLineCap P2_LC_Round
+        
+        'Shrink the chart by two pixels (to account for borders); we will add 1 to
+        ' all coordinates in the inner loop to ensure the chart is properly centered
+        yHeight = yHeight - 2
+        xWidth = xWidth - 2
         
         Dim gamVal As Double, tmpVal As Double
         
+        'If all channels are in sync, their curves will overlap; don't waste time drawing
+        ' each channel - only draw blue
+        Dim idxStart As Long, idxEnd As Long
+        idxEnd = 2
+        If (sltGamma(0).Value = sltGamma(1).Value) And (sltGamma(1).Value = sltGamma(2).Value) Then
+            idxStart = 2
+        Else
+            idxStart = 0
+        End If
+        
+        Dim listOfPoints() As PointFloat, numOfPoints As Long
+        ReDim listOfPoints(0 To xWidth) As PointFloat
+        
         'Draw each of the current gamma curves for the user's reference
-        For y = 0 To 2
+        For y = idxStart To idxEnd
+            
+            numOfPoints = 0
             
             'If all channels are in sync, draw only blue; otherwise, color each channel individually
-            gamVal = sltGamma(y)
-            If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
-                picChart.ForeColor = RGB(0, 0, 255)
-            Else
-            
-                Select Case y
-                    Case 0
-                        picChart.ForeColor = RGB(255, 0, 0)
-                    Case 1
-                        picChart.ForeColor = RGB(0, 192, 0)
-                    Case 2
-                        picChart.ForeColor = RGB(0, 0, 255)
-                End Select
-                
-            End If
+            gamVal = sltGamma(y).Value
             
             prevX = 0
             prevY = yHeight
@@ -364,26 +385,52 @@ Private Sub UpdatePreview()
         
             'Draw the next channel (with antialiasing!)
             For x = 0 To xWidth
+            
                 tmpVal = x / xWidth
                 tmpVal = tmpVal ^ (1# / gamVal)
                 tmpVal = yHeight - (tmpVal * yHeight)
                 curY = tmpVal
                 curX = x
-                GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+                If (x = 0) Then prevY = curY
+                If (curY > yHeight - 1) Then curY = yHeight - 1
+                
+                listOfPoints(numOfPoints).x = curX + 1
+                listOfPoints(numOfPoints).y = curY + 1
+                numOfPoints = numOfPoints + 1
+                
                 prevX = curX
                 prevY = curY
+                
             Next x
+            
+            'Render in the current channel's color
+            Select Case y
+                Case 0
+                    cPen.SetPenColor g_Themer.GetGenericUIColor(UI_ChannelRed)
+                Case 1
+                    cPen.SetPenColor g_Themer.GetGenericUIColor(UI_ChannelGreen)
+                Case 2
+                    cPen.SetPenColor g_Themer.GetGenericUIColor(UI_ChannelBlue)
+            End Select
+            
+            'Draw the finished line
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, numOfPoints, VarPtr(listOfPoints(0)), False
             
         Next y
         
-        picChart.Picture = picChart.Image
-        picChart.Refresh
-    
+        'Flip the finished buffer to screen
+        Set cSurface = Nothing
+        picChart.RequestRedraw True
+        
         'Once the chart is done, redraw the gamma preview as well
         GammaCorrect GetLocalParamString, True, pdFxPreview
         
     End If
     
+End Sub
+
+Private Sub picChart_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_Graph Is Nothing) Then GDI.BitBltWrapper targetDC, 0, 0, ctlWidth, ctlHeight, m_Graph.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
 
 Private Sub sltGamma_Change(Index As Integer)

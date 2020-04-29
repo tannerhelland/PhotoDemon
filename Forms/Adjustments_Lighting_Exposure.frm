@@ -266,7 +266,6 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
-'TODO: rewrite this sub against pd2D
 Private Sub UpdatePreview()
     
     If cmdBar.PreviewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid And (Not g_Themer Is Nothing) Then
