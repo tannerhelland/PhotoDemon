@@ -260,7 +260,15 @@ Private Sub m_EditBox_GotFocusAPI()
 End Sub
 
 Private Sub m_EditBox_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    
     RaiseEvent KeyDown(Shift, vKey, preventFurtherHandling)
+    
+    'If the caller did not perform special behavior, treat Ctrl+A as "select all"
+    If ((Not preventFurtherHandling) And (vKey = vbKeyA) And (Shift = vbCtrlMask)) Then
+        m_EditBox.SelectAll
+        preventFurtherHandling = True
+    End If
+    
 End Sub
 
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)

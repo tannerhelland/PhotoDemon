@@ -734,9 +734,12 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'On a single-line text box, pressing Enter will cause a ding.  (It's insane that this is the default behavior.)
         ' To prevent this, we capture return presses and forcibly terminate them.  If the user wants to do something with
         ' Enter keypresses on these controls, they will have already handled the key event in the hook proc.
+        '
+        'Note that we also catch the weird case of "wParam = 1"; this prevents a ding when Ctrl+A is used
+        ' to select all text.  (For some reason, this causes a left-button keycode to be sent to the window?)
         If (Not m_Multiline) Then
             
-            If ((wParam = VK_RETURN) Or (wParam = VK_TAB) Or (wParam = VK_ESCAPE)) Then
+            If ((wParam = VK_RETURN) Or (wParam = VK_TAB) Or (wParam = VK_ESCAPE) Or (wParam = 1)) Then
                 HandleEditBoxMsgs = 0
                 msgEaten = True
             End If
@@ -748,7 +751,16 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
             
         Else
+            
+            'The "wParam = 1" case mentioned above still needs to be handled here, alas - dings happen in
+            ' multiline edit boxes too!
+            If (wParam = 1) Then
+                HandleEditBoxMsgs = 0
+                msgEaten = True
+            End If
+            
             RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
+            
         End If
         
         'If we previously cached a Unicode character in WM_KEYDOWN, cast it back to wParam now.
@@ -793,7 +805,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     'Manually dispatch WM_KEYDOWN messages.
     ElseIf (uiMsg = WM_KEYDOWN) Or (uiMsg = WM_KEYUP) Then
         HandleEditBoxMsgs = HandleKeyDownUpMsgs(hWnd, uiMsg, wParam, lParam, msgEaten, uiMsg = WM_KEYDOWN)
-            
+        
     'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
     ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
     ElseIf (uiMsg = WM_SETFOCUS) Then
