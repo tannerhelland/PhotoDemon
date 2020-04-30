@@ -137,11 +137,11 @@ Begin VB.Form toolpanel_TextAdvanced
             _ExtentY        =   0
             Begin PhotoDemon.pdSlider sldTextFontSize 
                Height          =   375
-               Left            =   1320
+               Left            =   1200
                TabIndex        =   46
                Top             =   435
-               Width           =   2535
-               _ExtentX        =   4471
+               Width           =   2655
+               _ExtentX        =   4683
                _ExtentY        =   661
                Min             =   1
                Max             =   1000
@@ -188,7 +188,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   240
                Index           =   2
                Left            =   0
-               Top             =   930
+               Top             =   945
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -288,7 +288,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Index           =   0
                Left            =   5280
                TabIndex        =   17
-               Top             =   0
+               Top             =   15
                Width           =   1215
                _ExtentX        =   1720
                _ExtentY        =   609
@@ -311,7 +311,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   375
                Left            =   1320
                TabIndex        =   18
-               Top             =   0
+               Top             =   15
                Width           =   2595
                _ExtentX        =   4577
                _ExtentY        =   661
@@ -320,7 +320,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   240
                Index           =   30
                Left            =   0
-               Top             =   540
+               Top             =   495
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -333,7 +333,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   405
                Left            =   1200
                TabIndex        =   19
-               Top             =   420
+               Top             =   435
                Width           =   2760
                _ExtentX        =   4868
                _ExtentY        =   873
@@ -345,7 +345,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   240
                Index           =   31
                Left            =   0
-               Top             =   1020
+               Top             =   945
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -358,7 +358,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   405
                Left            =   1200
                TabIndex        =   20
-               Top             =   900
+               Top             =   885
                Width           =   2760
                _ExtentX        =   4868
                _ExtentY        =   873
@@ -382,7 +382,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   240
                Index           =   33
                Left            =   4125
-               Top             =   1020
+               Top             =   945
                Width           =   960
                _ExtentX        =   1693
                _ExtentY        =   503
@@ -394,7 +394,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   375
                Left            =   5280
                TabIndex        =   21
-               Top             =   945
+               Top             =   915
                Width           =   2595
                _ExtentX        =   4577
                _ExtentY        =   661
@@ -415,7 +415,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   240
                Index           =   34
                Left            =   3960
-               Top             =   540
+               Top             =   495
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -428,7 +428,7 @@ Begin VB.Form toolpanel_TextAdvanced
                Height          =   405
                Left            =   5160
                TabIndex        =   23
-               Top             =   420
+               Top             =   435
                Width           =   2760
                _ExtentX        =   4868
                _ExtentY        =   873
