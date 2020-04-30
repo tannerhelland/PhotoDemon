@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2020 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 09/August/19
-'Last update: improve visual feedback when navigating strip via keyboard
+'Last updated: 29/April/20
+'Last update: migrate renderer to pd2D
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -951,18 +951,35 @@ Private Sub RedrawBackBuffer()
     fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
     fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
     
-    'Start by filling the desired background color, then rendering a single-pixel unselected border around the control.
-    ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
-    With m_ButtonStripRect
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (.Right - .Left) - 1, (.Bottom - .Top) - 1, btnColorBackground
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right - 1, .Bottom - 1, btnColorUnselectedBorder, 255, 1
-    End With
-    
     'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
     If ((m_numOfButtons > 0) And PDMain.IsProgramRunning()) Then
+        
+        'pd2D simplifies many rendering tasks
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth 1!
+        cPen.SetPenLineJoin P2_LJ_Miter
+        
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        
+        'Start by filling the desired background color, then rendering a single-pixel unselected border around the control.
+        ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
+        With m_ButtonStripRect
+            cBrush.SetBrushColor btnColorBackground
+            PD2D.FillRectangleI_AbsoluteCoords cSurface, cBrush, .Left, .Top, .Right - 1, .Bottom - 1
+            cPen.SetPenColor btnColorUnselectedBorder
+            PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, .Left, .Top, .Right - 1, .Bottom - 1
+        End With
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
@@ -979,12 +996,14 @@ Private Sub RedrawBackBuffer()
             
                 'Fill the current button with its target fill color
                 If isButtonSelected Then curColor = btnColorSelectedFill Else curColor = btnColorUnselectedFill
-                GDI_Plus.GDIPlusFillRectToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top, curColor
+                cBrush.SetBrushColor curColor
+                PD2D.FillRectangleI cSurface, cBrush, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top
                 
-                'For performance reasons, we only render each button's right-side border at this stage, and we always start
-                ' with the inactive border color.
+                'For performance reasons, we only render each button's right-side border at this stage,
+                ' and we always start with the inactive border color.
                 If (i < (m_numOfButtons - 1)) Then
-                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, m_ButtonStripRect.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorder, 255, 1
+                    cPen.SetPenColor btnColorUnselectedBorder
+                    PD2D.DrawLineI cSurface, cPen, .btBounds.Right + 1, m_ButtonStripRect.Top, .btBounds.Right + 1, .btBounds.Bottom
                 End If
                 
                 'Active/hover changes are only rendered if the control is enabled
@@ -994,12 +1013,16 @@ Private Sub RedrawBackBuffer()
                     ' (Note that we skip this step if the button is hovered, because the hover rect is drawn LAST to ensure that it overlaps
                     '  the surrounding buttons correctly.)
                     If isButtonSelected Then
-                        If (Not isButtonHovered) Or (m_ColoringMode = CM_LIGHT) Then GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorSelectedBorder, 255, 1
+                        If (Not isButtonHovered) Or (m_ColoringMode = CM_LIGHT) Then
+                            cPen.SetPenColor btnColorSelectedBorder
+                            PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom
+                        End If
                         
                     'If the user is hovering an inactive button, and we're in "light" color mode, paint the button immediately
                     Else
                         If isButtonHovered And (m_ColoringMode = CM_LIGHT) Then
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, GP_LJ_Miter
+                            cPen.SetPenColor btnColorUnselectedBorderHover
+                            PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom
                         End If
                     End If
                     
@@ -1075,12 +1098,16 @@ Private Sub RedrawBackBuffer()
             End If
             
             With m_Buttons(targetIndex).btBounds
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
+                cPen.SetPenWidth 3!
+                cPen.SetPenColor curColor
+                PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, .Left - 1, .Top - 1, .Right + 1, .Bottom
             End With
             
         End If
         
     End If
+    
+    Set cSurface = Nothing
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
