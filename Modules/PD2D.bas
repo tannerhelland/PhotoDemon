@@ -448,6 +448,10 @@ Public Function FillRectangleI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, B
     FillRectangleI_AbsoluteCoords = PD2D.FillRectangleI(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
 End Function
 
+Public Function FillRectangleI_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectF) As Boolean
+    FillRectangleI_FromRectF = PD2D.FillRectangleI(dstSurface, srcBrush, Int(srcRect.Left), Int(srcRect.Top), Int(PDMath.Frac(srcRect.Left) + srcRect.Width + 0.5), Int(PDMath.Frac(srcRect.Top) + srcRect.Height + 0.5))
+End Function
+
 Public Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RectL) As Boolean
     FillRectangleI_FromRectL = PD2D.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function

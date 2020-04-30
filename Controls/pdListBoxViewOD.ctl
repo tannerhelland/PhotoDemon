@@ -506,7 +506,20 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         Dim listHasFocus As Boolean
         listHasFocus = ucSupport.DoIHaveFocus Or listSupport.IsMouseInsideListBox
         
+        'pd2D is used for all rendering
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        Dim cPen As pd2DPen: Set cPen = New pd2DPen
+        Dim cBrush As pd2DBrush: Set cBrush = New pd2DBrush
+        
         If (Not listIsEmpty) Then
+            
+            cPen.SetPenWidth 1
+            cPen.SetPenLineJoin P2_LJ_Miter
             
             Dim curListIndex As Long, curColor As Long
             curListIndex = listSupport.ListIndex
@@ -549,7 +562,8 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     If itemIsHovered Then curColor = itemColorUnselectedFillHover Else curColor = itemColorUnselectedFill
                 End If
                 
-                GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRect, curColor
+                cBrush.SetBrushColor curColor
+                PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRect
                 
                 '...then interject an event, so our parent can draw the remainder of this object
                 If listHasFocus Then
@@ -568,12 +582,16 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
                 '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.
                 '  Note also that the caller can manually request borderless rendering via the matching property.)
-                If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, GP_LJ_Miter
+                If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then
+                    cPen.SetPenColor curColor
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRect
+                End If
                 
                 '...and finally, render a separator line, if any
                 If itemHasSeparator Then
                     lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) / 2
-                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, m_ListRect.Left + FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - FixDPI(12), lineY, separatorColor, 255
+                    cPen.SetPenColor separatorColor
+                    PD2D.DrawLineF cSurface, cPen, m_ListRect.Left + FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - FixDPI(12), lineY
                 End If
                 
             Next i
@@ -589,13 +607,19 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             If listHasFocus Then borderWidth = 3! Else borderWidth = 1!
             borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
             
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
+            cPen.SetPenWidth borderWidth
+            cPen.SetPenColor borderColor
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
             
             If (Not listHasFocus) Then
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
+                cPen.SetPenWidth 1
+                cPen.SetPenColor finalBackColor
+                PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
             End If
             
         End If
+        
+        Set cSurface = Nothing
         
     End If
     

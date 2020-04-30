@@ -197,6 +197,9 @@ Private m_InSubclassNow As Boolean, m_SubclassActive As Boolean
 Private WithEvents m_SubclassReleaseTimer As pdTimer
 Attribute m_SubclassReleaseTimer.VB_VarHelpID = -1
 
+'Persistent brush and pen objects for rendering list elements
+Private m_Brush As pd2DBrush, m_Pen As pd2DPen
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_SearchBar
 End Function
@@ -373,11 +376,24 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     
     'Grab the rendering rect
     Dim tmpRectF As RectF
-    CopyMemoryStrict VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     'Paint the fill and border
-    GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor, 255, GP_CM_SourceCopy
-    GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRectF, itemFillBorderColor, , , , GP_LJ_Miter
+    Dim cSurface As pd2DSurface: Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundDC bufferDC
+    cSurface.SetSurfaceCompositing P2_CM_Overwrite
+    
+    If (m_Brush Is Nothing) Then Set m_Brush = New pd2DBrush
+    m_Brush.SetBrushColor itemFillColor
+    PD2D.FillRectangleF_FromRectF cSurface, m_Brush, tmpRectF
+    
+    If (m_Pen Is Nothing) Then
+        Set m_Pen = New pd2DPen
+        m_Pen.SetPenLineJoin P2_LJ_Miter
+    End If
+    m_Pen.SetPenColor itemFillBorderColor
+    PD2D.DrawRectangleF_FromRectF cSurface, m_Pen, tmpRectF
+    Set cSurface = Nothing
     
     'Paint the font name in the default UI font
     Dim tmpFont As pdFont, textPadding As Single

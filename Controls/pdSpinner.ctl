@@ -425,6 +425,17 @@ Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
 End Sub
 
+Private Sub m_EditBox_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+
+    'Many edit boxes defer to PD's central hotkey handler for Ctrl+A; edit boxes, however,
+    ' are one where we definitely want to handle Ctrl+A ourselves.
+    If ((vKey = vbKeyA) And (Shift = vbCtrlMask)) Then
+        m_EditBox.SelectAll
+        preventFurtherHandling = True
+    End If
+    
+End Sub
+
 'On spinner controls, edit boxes support use of "Enter" and "Esc" keys to auto-trigger "OK" and "Cancel"
 ' options on an associated command bar (if any)
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
@@ -1120,7 +1131,7 @@ Private Sub RedrawBackBuffer()
         ' to account for things like padding and subpixel positioning.
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
-                    
+        
         'Start with the up-pointing arrow
         buttonPt1.x = m_UpRect.Left + FixDPIFloat(4) + 0.5
         buttonPt1.y = (m_UpRect.Height) / 2 + FixDPIFloat(2)
@@ -1131,7 +1142,7 @@ Private Sub RedrawBackBuffer()
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         
-        Drawing2D.QuickCreateSolidPen cPen, 2#, upButtonArrowColor, , P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidPen cPen, 2!, upButtonArrowColor, , P2_LJ_Round, P2_LC_Round
         PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
         PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
                     

@@ -250,13 +250,10 @@ Friend Sub SetBrushTextureTransform(ByRef srcTransform As pd2DTransform)
 End Sub
 
 Friend Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
-    
     m_TextureWrapMode = newSetting
-    
     If (m_BrushHandle <> 0) Then
         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
     End If
-    
 End Sub
 
 Friend Sub SetBoundaryRect(ByRef srcRect As RectF)

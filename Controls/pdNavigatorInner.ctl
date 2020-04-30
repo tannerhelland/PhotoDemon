@@ -539,8 +539,8 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         'Store the boundary rect of where the thumb will actually appear; we need this for rendering
         ' a transparency checkerboard
         With m_AniThumbBounds
-            .Left = (bWidth * 0.5) - (thumbImageWidth * 0.5)
-            .Top = (bHeight * 0.5) - (thumbImageHeight * 0.5)
+            .Left = (bWidth - thumbImageWidth) * 0.5
+            .Top = (bHeight - thumbImageHeight) * 0.5
             .Width = thumbImageWidth
             .Height = thumbImageHeight
         End With
@@ -549,8 +549,8 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
         
         Dim xThumb As Long, yThumb As Long
-        xThumb = (bWidth * 0.5) - (thumbSize * 0.5)
-        yThumb = (bHeight * 0.5) - (thumbSize * 0.5)
+        xThumb = (bWidth - thumbSize) \ 2
+        yThumb = (bHeight - thumbSize) \ 2
         
         'Load all thumbnails
         Dim i As Long, loopStart As Long, loopEnd As Long
@@ -749,11 +749,18 @@ Private Sub RenderAnimationFrame()
             
             'Paint a checkerboard background only over the relevant image region, followed by the frame itself
             With m_Frames(idxFrame)
-                GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, m_AniThumbBounds.Left, m_AniThumbBounds.Top, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, bufferDC, True
+            
+                Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
+                dstSurface.WrapSurfaceAroundDC bufferDC
+                dstSurface.SetSurfaceAntialiasing P2_AA_None
+                dstSurface.SetSurfacePixelOffset P2_PO_Normal
+                PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(m_AniThumbBounds.Left + 0.99999), Int(m_AniThumbBounds.Top + 0.99999), m_AniThumbBounds.Width, m_AniThumbBounds.Height
+                Set dstSurface = Nothing
                 
                 'Make sure we have the necessary image in the spritesheet cache
                 If (Not m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth))) Then UpdateAnimationSettings PDImages.GetActiveImage, idxFrame, True
-                m_Thumbs.PaintCachedImage bufferDC, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, m_Frames(idxFrame).afThumbKey
+                m_Thumbs.PaintCachedImage bufferDC, (bWidth - .afWidth) \ 2, (bHeight - .afHeight) \ 2, m_Frames(idxFrame).afThumbKey
+                
             End With
             
         End If

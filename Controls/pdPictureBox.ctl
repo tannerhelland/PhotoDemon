@@ -216,10 +216,10 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
         previewY = (dstHeightOrig - srcHeight) * 0.5
     Else
         If (srcAspect > dstAspect) Then
-            previewY = CLng((dstHeight - dHeight) * 0.5)
+            previewY = Int((dstHeight - dHeight) * 0.5)
             previewX = 0
         Else
-            previewX = CLng((dstWidth - dWidth) * 0.5)
+            previewX = Int((dstWidth - dWidth) * 0.5)
             previewY = 0
         End If
     End If
@@ -229,12 +229,20 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
     dstDC = ucSupport.GetBackBufferDC(True, IIf(useNeutralBackground, RGB(127, 127, 127), -1))
     
     'Paint a transparency grid, as required
-    If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstDC
+    Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
+    dstSurface.WrapSurfaceAroundDC dstDC
+    dstSurface.SetSurfaceAntialiasing P2_AA_None
+    dstSurface.SetSurfacePixelOffset P2_PO_Normal
+    If (Not suspendTransparencyGrid) Then PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, previewX, previewY, dWidth, dHeight
     
     'Finally, paint the image itself
-    GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, srcDIB, 0, 0, srcWidth, srcHeight, , , dstDC
+    Dim srcSurface As pd2DSurface: Set srcSurface = New pd2DSurface
+    srcSurface.WrapSurfaceAroundPDDIB srcDIB
+    dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
+    PD2D.DrawSurfaceResizedCroppedI dstSurface, previewX, previewY, dWidth, dHeight, srcSurface, 0, 0, srcWidth, srcHeight
     
     'Free the source DIB from its DC, as a convenience
+    Set srcSurface = Nothing
     srcDIB.FreeFromDC
     
     'Remaining operations require a RectF; populate one now
@@ -250,22 +258,19 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
     'As a convenience, we can draw a border around the image or entire control
     If drawBorderAroundImage Or drawBorderAroundControl Then
         
-        Dim cSurface As pd2DSurface
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDC, False
-        
         Dim cPen As pd2DPen
         Drawing2D.QuickCreateSolidPen cPen, 1!, g_Themer.GetGenericUIColor(UI_CanvasElement)
         
-        If drawBorderAroundImage Then PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+        If drawBorderAroundImage Then PD2D.DrawRectangleF_FromRectF dstSurface, cPen, tmpRectF
         If drawBorderAroundControl Then
             tmpRectF.Left = 0!
             tmpRectF.Top = 0!
             tmpRectF.Width = dstWidthOrig - 1
             tmpRectF.Height = dstHeightOrig - 1
-            PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+            PD2D.DrawRectangleF_FromRectF dstSurface, cPen, tmpRectF
         End If
         
-        Set cPen = Nothing: Set cSurface = Nothing
+        Set cPen = Nothing: Set dstSurface = Nothing
         
     End If
     

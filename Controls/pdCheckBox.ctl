@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Checkbox control
 'Copyright 2013-2020 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 15/February/16
-'Last update: finalize theming support
+'Last updated: 29/April/20
+'Last update: migrate UI rendering to pd2D
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -430,29 +430,52 @@ Private Sub RedrawBackBuffer()
     
     If PDMain.IsProgramRunning() Then
         
-        'Fill the checkbox area
-        With m_CheckboxRect
-            GDI_Plus.GDIPlusFillRectToDC bufferDC, Int(.Left), Int(.Top), Int(.Width + 1.999), Int(.Height + 1.999), chkBoxColorFill
-        End With
+        'pd2D is used for all UI rendering
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
         
-        'If the check box button is checked, draw a checkmark inside the border.  The checkmark is defined by three points,
-        ' defined in LTR order
-        If m_Value Then
-            Dim pt1 As PointFloat, pt2 As PointFloat, pt3 As PointFloat
-            pt1.x = m_CheckboxRect.Left + Interface.FixDPIFloat(3)
-            pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
-            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - Interface.FixDPIFloat(1.25)
-            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - Interface.FixDPIFloat(3)
-            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - Interface.FixDPIFloat(2)
-            pt3.y = m_CheckboxRect.Top + Interface.FixDPIFloat(3)
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt1.x, pt1.y, pt2.x, pt2.y, chkColor, 255, FixDPI(2), True, GP_LC_Round, True
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt2.x, pt2.y, pt3.x, pt3.y, chkColor, 255, FixDPI(2), True, GP_LC_Round, True
-        End If
+        Dim cPen As pd2DPen: Set cPen = New pd2DPen
+        Dim cBrush As pd2DBrush: Set cBrush = New pd2DBrush
+        
+        'Fill the checkbox area
+        cBrush.SetBrushColor chkBoxColorFill
+        With m_CheckboxRect
+            PD2D.FillRectangleI cSurface, cBrush, Int(.Left), Int(.Top), Int(.Width + 1.99999), Int(.Height + 1.99999)
+        End With
         
         'Draw the checkbox border.  (Note that it has variable width, contingent on MouseOver status.)
         Dim borderWidth As Single
         If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3! Else borderWidth = 1!
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , borderWidth, , GP_LJ_Miter
+        cPen.SetPenWidth borderWidth
+        cPen.SetPenColor chkBoxColorBorder
+        cPen.SetPenLineJoin P2_LJ_Miter
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_CheckboxRect
+        
+        'If the check box button is checked, draw a checkmark inside the border.  The checkmark is defined by three points,
+        ' defined in LTR order
+        If m_Value Then
+            
+            Dim ptList(0 To 2) As PointFloat
+            ptList(0).x = m_CheckboxRect.Left + Interface.FixDPIFloat(3)
+            ptList(0).y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
+            ptList(1).x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - Interface.FixDPIFloat(1.25)
+            ptList(1).y = m_CheckboxRect.Top + m_CheckboxRect.Height - Interface.FixDPIFloat(3)
+            ptList(2).x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - Interface.FixDPIFloat(2)
+            ptList(2).y = m_CheckboxRect.Top + Interface.FixDPIFloat(3)
+            
+            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            cPen.SetPenLineJoin P2_LJ_Round
+            cPen.SetPenColor chkColor
+            cPen.SetPenWidth Interface.FixDPIFloat(2)
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, 3, VarPtr(ptList(0)), False
+            
+        End If
+        
+        Set cSurface = Nothing
         
     End If
     

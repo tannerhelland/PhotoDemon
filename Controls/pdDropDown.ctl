@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Drop Down control 2.0
 'Copyright 2016-2020 by Tanner Helland
 'Created: 24/February/16
-'Last updated: 09/February/17
-'Last update: migrate to safer comctl32 subclassing technique
+'Last updated: 29/April/20
+'Last update: migrate remainder of UI rendering to pd2D
 '
 'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar in construction to
 ' the pdListBox object, including its reliance on a separate pdListSupport class for managing its data.
@@ -909,44 +909,59 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     If PDMain.IsProgramRunning() Then
         
+        'pd2D is used for all UI rendering
+        Dim cSurface As pd2DSurface: Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
         'First, fill the combo area interior with the established fill color
-        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ComboRect, ddColorFill, 255
+        Dim cBrush As pd2DBrush: Set cBrush = New pd2DBrush
+        cBrush.SetBrushColor ddColorFill
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_ComboRect
         
         'A border is always drawn around the control; its size and color vary by hover state, however.
         Dim borderWidth As Single
         If m_MouseInComboRect Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, GP_LJ_Miter
+        
+        Dim cPen As pd2DPen: Set cPen = New pd2DPen
+        cPen.SetPenWidth borderWidth
+        cPen.SetPenColor ddColorBorder
+        cPen.SetPenLineJoin P2_LJ_Miter
+        cPen.SetPenLineCap P2_LC_Round
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ComboRect
         
         'Next, the right-aligned arrow.  (We need its measurements to know where to restrict the caption's length.)
-        Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
-        buttonPt1.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(16)
-        buttonPt1.y = m_ComboRect.Top + (m_ComboRect.Height / 2) - FixDPIFloat(1)
+        Dim ptList(0 To 2) As PointFloat
+        ptList(0).x = m_ComboRect.Left + m_ComboRect.Width - Interface.FixDPIFloat(16)
+        ptList(0).y = m_ComboRect.Top + (m_ComboRect.Height / 2) - Interface.FixDPIFloat(1)
         
-        buttonPt3.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(8)
-        buttonPt3.y = buttonPt1.y
+        ptList(2).x = m_ComboRect.Left + m_ComboRect.Width - Interface.FixDPIFloat(8)
+        ptList(2).y = ptList(0).y
         
-        buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-        buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
+        ptList(1).x = ptList(0).x + (ptList(2).x - ptList(0).x) / 2
+        ptList(1).y = ptList(0).y + Interface.FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, ddColorArrow, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, ddColorArrow, 255, 2, True, GP_LC_Round
+        cPen.SetPenColor ddColorArrow
+        cPen.SetPenWidth 2
+        cPen.SetPenLineJoin P2_LJ_Round
         
-        Dim arrowLeftLimit As Single
-        arrowLeftLimit = buttonPt1.x - FixDPI(2)
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        
+        PD2D.DrawLinesF_FromPtF cSurface, cPen, 3, VarPtr(ptList(0))
         
         'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again;
         ' I personally prefer this behavior (as the list box may extend up or down), but I'm not sold on implementing
         ' it just yet, because it's out of place next to regular Windows drop-downs...
-        'buttonPt1.y = fullWinRect.Bottom - buttonPt1.y
-        'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
-        'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
-        '
-        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
-        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
+        Set cSurface = Nothing
         
         'Finally, paint the caption, and restrict its length to the available dropdown space
         If (Me.ListIndex <> -1) Then
         
+            Dim arrowLeftLimit As Single
+            arrowLeftLimit = ptList(0).x - Interface.FixDPI(2)
+            
             Dim tmpFont As pdFont
             Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
             tmpFont.SetFontColor ddColorText
