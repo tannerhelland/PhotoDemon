@@ -224,12 +224,12 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get offsetX() As Long
-    offsetX = pdPreviewBox.offsetX
+Public Property Get GetOffsetX() As Long
+    GetOffsetX = pdPreviewBox.GetOffsetX
 End Property
 
-Public Property Get offsetY() As Long
-    offsetY = pdPreviewBox.offsetY
+Public Property Get GetOffsetY() As Long
+    GetOffsetY = pdPreviewBox.GetOffsetY
 End Property
 
 'External functions may need to access the color selected by the preview control

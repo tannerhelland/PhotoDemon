@@ -196,8 +196,8 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
         Else
         
             'Calculate offsets, if any, for the image
-            hOffset = previewTarget.offsetX
-            vOffset = previewTarget.offsetY
+            hOffset = previewTarget.GetOffsetX
+            vOffset = previewTarget.GetOffsetY
             
             If (workingDIB.GetDIBWidth <> newWidth) Or (workingDIB.GetDIBHeight <> newHeight) Or (workingDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
                 workingDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth
@@ -439,8 +439,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 Else
                 
                     'Calculate offsets, if any, for the selected area
-                    hOffset = previewTarget.offsetX
-                    vOffset = previewTarget.offsetY
+                    hOffset = previewTarget.GetOffsetX
+                    vOffset = previewTarget.GetOffsetY
                     workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
                     
                     GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpLayer.layerDIB.GetDIBDC, hOffset + selBounds.Left, vOffset + selBounds.Top, vbSrcCopy
@@ -459,8 +459,8 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 Else
                 
                     'Calculate offsets, if any, for the image
-                    hOffset = previewTarget.offsetX
-                    vOffset = previewTarget.offsetY
+                    hOffset = previewTarget.GetOffsetX
+                    vOffset = previewTarget.GetOffsetY
                     workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
                     
                     GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, PDImages.GetActiveImage.GetActiveDIB().GetDIBDC, hOffset, vOffset, vbSrcCopy
@@ -596,7 +596,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
                 ' selection processing DIB.
                 Else
-                    GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, PDImages.GetActiveImage.MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
+                    GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, PDImages.GetActiveImage.MainSelection.GetMaskDC(), selBounds.Left + previewTarget.GetOffsetX, selBounds.Top + previewTarget.GetOffsetY, vbSrcCopy
                 End If
                 
                 Set m_SelectionMaskBackup = selMaskCopy

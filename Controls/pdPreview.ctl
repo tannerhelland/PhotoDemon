@@ -118,6 +118,9 @@ Private m_Colors As pdThemeColors
 Private m_PreviewAreaWidth As Long, m_PreviewAreaHeight As Long
 Private Const BORDER_PADDING As Long = 2&
 
+'Some pd2D rendering items are cached to improve preview performance
+Private m_Brush As pd2DBrush, m_Pen As pd2DPen
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Preview
 End Function
@@ -180,12 +183,12 @@ Public Property Get hWnd() As Long
 End Property
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get offsetX() As Long
-    If m_HScrollAllowed Then offsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else offsetX = 0
+Public Property Get GetOffsetX() As Long
+    If m_HScrollAllowed Then GetOffsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else GetOffsetX = 0
 End Property
 
-Public Property Get offsetY() As Long
-    If m_VScrollAllowed Then offsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else offsetY = 0
+Public Property Get GetOffsetY() As Long
+    If m_VScrollAllowed Then GetOffsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else GetOffsetY = 0
 End Property
 
 'External functions may need to access the color selected by the preview control
@@ -307,8 +310,8 @@ End Function
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If viewport scrolling is allowed, initialize it now
-    If Not ViewportFitFullImage Then
-        If Button = vbLeftButton Then
+    If (Not ViewportFitFullImage) Then
+        If (Button = vbLeftButton) Then
             m_InitX = x
             m_InitY = y
             ucSupport.RequestCursor IDC_SIZEALL
@@ -318,7 +321,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     'If color selection is allowed, initialize it now
     If m_ColorSelectionAllowed Then
         
-        If Button = vbRightButton Then
+        If (Button = vbRightButton) Then
             
             'Convert the mouse coordinates to DIB coordinates.
             Dim dibX As Single, dibY As Single
@@ -370,9 +373,9 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'If the viewport is not set to "fit to screen", then we must determine offsets based on the mouse position
-    If Not ViewportFitFullImage Then
+    If (Not ViewportFitFullImage) Then
         
-        If Button = vbLeftButton Then
+        If (Button = vbLeftButton) Then
         
             'Make sure the move cursor remains accurate
             ucSupport.RequestCursor IDC_SIZEALL
@@ -397,10 +400,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
     End If
     
-    If m_colorJustClicked > 0 Then
+    If (m_colorJustClicked > 0) Then
     
         'To accomodate shaky hands, allow a few mouse movements before resetting the image
-        If m_colorJustClicked < 4 Then
+        If (m_colorJustClicked < 4) Then
             m_colorJustClicked = m_colorJustClicked + 1
         Else
             m_colorJustClicked = 0
@@ -415,7 +418,7 @@ End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
 
-    If Not ViewportFitFullImage Then
+    If (Not ViewportFitFullImage) Then
         ucSupport.RequestCursor IDC_HAND
         
         m_HScrollValue = ValidateXOffset(m_HScrollValue + m_OffsetX)
@@ -471,12 +474,12 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
     
     'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
-    If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
-    If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+    If (srcHeight > 0#) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
+    If (dstHeight > 0#) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
         
     Dim finalWidth As Long, finalHeight As Long
     If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.ViewportFitFullImage Then
-        ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
+        PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
     Else
         finalWidth = srcWidth
         finalHeight = srcHeight
@@ -484,28 +487,27 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
         
     'Images smaller than the target area in one (or more) dimensions need to be centered in the target area
     Dim previewX As Long, previewY As Long
-    If srcAspect > dstAspect Then
-        previewY = CLng((dstHeight - finalHeight) / 2) + BORDER_PADDING
-        
-        If finalWidth = dstWidth Then
+    If (srcAspect > dstAspect) Then
+        previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
+        If (finalWidth = dstWidth) Then
             previewX = BORDER_PADDING
         Else
-            previewX = CLng((dstWidth - finalWidth) / 2) + BORDER_PADDING
+            previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
         End If
     Else
-        previewX = CLng((dstWidth - finalWidth) / 2) + BORDER_PADDING
-        If finalHeight = dstHeight Then
+        previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
+        If (finalHeight = dstHeight) Then
             previewY = BORDER_PADDING
         Else
-            previewY = CLng((dstHeight - finalHeight) / 2) + BORDER_PADDING
+            previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
         End If
     End If
     
     'We now have an original DIB width/height pair, destination DIB width/height pair, preview (x, y) offset - all that's left
     ' is a source (x, y) offset.
     Dim srcX As Single, srcY As Single
-    srcX = Me.offsetX
-    srcY = Me.offsetY
+    srcX = Me.GetOffsetX
+    srcY = Me.GetOffsetY
     
     'Convert the destination (x, y) pair to the [0, 1] range.
     Dim dstX As Single, dstY As Single
@@ -522,14 +524,14 @@ End Sub
 ' need to validate those offsets to make sure they don't result in an offset outside the image, these standardized
 ' validation functions were created.
 Private Function ValidateXOffset(ByVal currentOffset As Long) As Long
-    If currentOffset < 0 Then currentOffset = 0
-    If currentOffset > m_HScrollMax Then currentOffset = m_HScrollMax
+    If (currentOffset < 0) Then currentOffset = 0
+    If (currentOffset > m_HScrollMax) Then currentOffset = m_HScrollMax
     ValidateXOffset = currentOffset
 End Function
 
 Private Function ValidateYOffset(ByVal currentOffset As Long) As Long
-    If currentOffset < 0 Then currentOffset = 0
-    If currentOffset > m_VScrollMax Then currentOffset = m_VScrollMax
+    If (currentOffset < 0) Then currentOffset = 0
+    If (currentOffset > m_VScrollMax) Then currentOffset = m_VScrollMax
     ValidateYOffset = currentOffset
 End Function
 
@@ -643,7 +645,7 @@ Private Sub CalculateScrollMaxMin()
     maxHOffset = m_SrcImageWidth - m_PreviewAreaWidth
     maxVOffset = m_SrcImageHeight - m_PreviewAreaHeight
     
-    If maxHOffset > 0 Then
+    If (maxHOffset > 0) Then
         m_HScrollMax = maxHOffset
         m_HScrollAllowed = True
     Else
@@ -651,7 +653,7 @@ Private Sub CalculateScrollMaxMin()
         m_HScrollAllowed = False
     End If
     
-    If maxVOffset > 0 Then
+    If (maxVOffset > 0) Then
         m_VScrollMax = maxVOffset
         m_VScrollAllowed = True
     Else
@@ -691,7 +693,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
     
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
-    If m_ShowOriginalInstead Or overrideWithOriginalImage Then
+    If (m_ShowOriginalInstead Or overrideWithOriginalImage) Then
         If m_HasOriginal Then Set srcDIB = m_OriginalImage Else Set srcDIB = m_fxImage
     Else
         If m_HasFX Then Set srcDIB = m_fxImage Else Set srcDIB = m_OriginalImage
@@ -700,10 +702,11 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
     'It's entirely possible for srcDIB to be nothing, particularly inside the IDE, so this check is necessary.
     If (Not srcDIB Is Nothing) Then
         
-        'srcDIB points at either the original or effect image.  We don't care which, as we render them identically.
+        'srcDIB points at either the original or effect image.
+        ' (We don't care which; both are rendered identically.)
         
-        'Start by calculating a target buffer region.  If the preview control is set to "fit" mode, we want to center
-        ' it in the preview area.
+        'Start by calculating a target buffer region.
+        ' (If the preview control is set to "fit" mode, we want to center it in the preview area.)
         Dim dstWidth As Double, dstHeight As Double
         dstWidth = m_PreviewAreaWidth
         dstHeight = m_PreviewAreaHeight
@@ -714,12 +717,12 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         
         'Calculate the aspect ratio of this DIB and the target picture box
         Dim srcAspect As Double, dstAspect As Double
-        If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
-        If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
+        If (srcHeight > 0#) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
+        If (dstHeight > 0#) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
             
         Dim finalWidth As Long, finalHeight As Long
         If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.ViewportFitFullImage Then
-            ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
+            PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
         Else
             finalWidth = srcWidth
             finalHeight = srcHeight
@@ -727,20 +730,19 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         
         'Images smaller than the target area in one (or more) dimensions need to be centered in the target area
         Dim previewX As Long, previewY As Long
-        If srcAspect > dstAspect Then
-            previewY = CLng((dstHeight - finalHeight) / 2) + BORDER_PADDING
-            If finalWidth = dstWidth Then
+        If (srcAspect > dstAspect) Then
+            previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
+            If (finalWidth = dstWidth) Then
                 previewX = BORDER_PADDING
             Else
-                previewX = CLng((dstWidth - finalWidth) / 2) + BORDER_PADDING
+                previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
             End If
         Else
-            previewX = CLng((dstWidth - finalWidth) / 2) + BORDER_PADDING
-            
-            If finalHeight = dstHeight Then
+            previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
+            If (finalHeight = dstHeight) Then
                 previewY = BORDER_PADDING
             Else
-                previewY = CLng((dstHeight - finalHeight) / 2) + BORDER_PADDING
+                previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
             End If
         End If
         
@@ -757,20 +759,44 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         ctlBorderColor = m_Colors.RetrieveColor(PDP_PreviewBorder, True, , hoverMatters)
         
         'We now have a set of source and destination coordinates, allowing us to perform a StretchBlt-style copy
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, BORDER_PADDING, BORDER_PADDING, m_PreviewAreaWidth, m_PreviewAreaHeight, ctlBackColor
-        GDI_Plus.GDIPlusFillPatternToDC bufferDC, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern, True
+        Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
+        dstSurface.WrapSurfaceAroundDC bufferDC
+        dstSurface.SetSurfaceAntialiasing P2_AA_None
+        dstSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+        If (m_Brush Is Nothing) Then Set m_Brush = New pd2DBrush
+        m_Brush.SetBrushColor ctlBackColor
+        PD2D.FillRectangleI dstSurface, m_Brush, BORDER_PADDING, BORDER_PADDING, m_PreviewAreaWidth, m_PreviewAreaHeight
+        PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(previewX), Int(previewY), Int(PDMath.Frac(previewX) + finalWidth + 0.99999), Int(PDMath.Frac(previewY) + finalHeight + 0.99999)
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
         Dim interpMode As GP_InterpolationMode, isZoomedIn As Boolean
         isZoomedIn = (srcWidth < dstWidth) And (srcHeight < dstHeight)
-        If isZoomedIn Then interpMode = GP_IM_NearestNeighbor Else interpMode = GP_IM_HighQualityBicubic
-        GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpMode, bufferDC, , isZoomedIn
+        If isZoomedIn Then
+            dstSurface.SetSurfacePixelOffset P2_PO_Half
+            dstSurface.SetSurfaceResizeQuality P2_RQ_Fast
+        Else
+            dstSurface.SetSurfacePixelOffset P2_PO_Normal
+            dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
+        End If
+        
+        Dim srcSurface As pd2DSurface: Set srcSurface = New pd2DSurface
+        srcSurface.WrapSurfaceAroundPDDIB srcDIB
+        PD2D.DrawSurfaceResizedCroppedI dstSurface, previewX, previewY, finalWidth, finalHeight, srcSurface, 0, 0, srcWidth, srcHeight
+        Set srcSurface = Nothing
         srcDIB.FreeFromDC
         
         'We also draw a border around the final result
         Dim halfBorder As Long
         halfBorder = BORDER_PADDING \ 2
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder, ctlBorderColor, , borderWidth, False, GP_LJ_Miter
+        If (m_Pen Is Nothing) Then
+            Set m_Pen = New pd2DPen
+            m_Pen.SetPenLineJoin P2_LJ_Miter
+        End If
+        m_Pen.SetPenColor ctlBorderColor
+        m_Pen.SetPenWidth borderWidth
+        PD2D.DrawRectangleI_AbsoluteCoords dstSurface, m_Pen, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder
+        Set dstSurface = Nothing
         
         'Paint the results to the screen!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
         If PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
