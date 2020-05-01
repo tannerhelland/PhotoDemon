@@ -17,6 +17,7 @@ Begin VB.UserControl pdListBoxViewOD
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -49,6 +50,11 @@ Option Explicit
 
 'This control raises much fewer events than a standard ListBox, by design
 Public Event Click()
+
+'Drag/drop events are raised (these are just relays, identical to standard VB drag/drop events).
+' Note that these are *only* raised by the child pdListBoxView object, and we simply relay them.
+Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
 Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
@@ -228,8 +234,8 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
 
-Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    listSupport.NotifyMouseClick Button, Shift, x, y
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+    listSupport.NotifyMouseClick Button, Shift, X, Y
     UpdateMousePosition
 End Sub
 
@@ -250,28 +256,28 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
     listSupport.NotifyKeyUp Shift, vkCode, markEventHandled
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    listSupport.NotifyMouseDown Button, Shift, x, y
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
+    listSupport.NotifyMouseDown Button, Shift, X, Y
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    listSupport.NotifyMouseEnter Button, Shift, x, y
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+    listSupport.NotifyMouseEnter Button, Shift, X, Y
     UpdateMousePosition
 End Sub
 
-Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    listSupport.NotifyMouseLeave Button, Shift, x, y
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+    listSupport.NotifyMouseLeave Button, Shift, X, Y
     UpdateMousePosition
     RaiseEvent MouseLeave
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    listSupport.NotifyMouseMove Button, Shift, x, y
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
+    listSupport.NotifyMouseMove Button, Shift, X, Y
     UpdateMousePosition
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    listSupport.NotifyMouseUp Button, Shift, x, y, clickEventAlsoFiring
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    listSupport.NotifyMouseUp Button, Shift, X, Y, clickEventAlsoFiring
 End Sub
 
 Private Sub UpdateMousePosition()
@@ -293,8 +299,8 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    listSupport.NotifyMouseWheelVertical Button, Shift, x, y, scrollAmount
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+    listSupport.NotifyMouseWheelVertical Button, Shift, X, Y, scrollAmount
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -409,6 +415,14 @@ Private Sub UserControl_InitProperties()
     BorderlessMode = False
     Enabled = True
     ListItemHeight = 36
+End Sub
+
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, X, Y)
+End Sub
+
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, X, Y, State)
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.

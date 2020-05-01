@@ -26,6 +26,28 @@ Attribute VB_Name = "VBHacks"
 
 Option Explicit
 
+Private Type DROPFILES
+    pFiles As Long
+    ptX As Long
+    ptY As Long
+    fNC As Long
+    fWide As Long
+End Type
+
+Private Type FORMATETC
+    cfFormat As Long
+    pDVTARGETDEVICE As Long
+    dwAspect As Long
+    lIndex As Long
+    TYMED As Long
+End Type
+
+Private Type STGMEDIUM
+    TYMED As Long
+    Data As Long
+    pUnkForRelease As Long
+End Type
+
 Private Type winMsg
     hWnd As Long
     sysMsg As Long
@@ -57,6 +79,8 @@ Public Declare Sub PutMem2 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue 
 Public Declare Sub PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long)
 Public Declare Sub PutMem8 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Currency)
 
+Public Const WM_NCDESTROY As Long = &H82&
+
 'Private declares follow:
 
 'We use Karl E. Peterson's approach of declaring subclass functions by ordinal, per the documentation at http://vb.mvps.org/samples/HookXP/
@@ -69,6 +93,7 @@ Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibraryW Lib "kernel32" (ByVal lpLibFileName As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToFirstChar As Long) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Private Declare Function RtlCompareMemory Lib "ntdll" (ByVal ptrSource1 As Long, ByVal ptrSource2 As Long, ByVal Length As Long) As Long
@@ -77,6 +102,7 @@ Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, 
 
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
+Private Declare Sub ReleaseStgMedium Lib "ole32" (ByVal ptrToStgMedium As Long)
 
 Private Declare Function DispatchMessageA Lib "user32" (ByRef lpMsg As winMsg) As Long
 Private Declare Function DispatchMessageW Lib "user32" (ByRef lpMsg As winMsg) As Long
@@ -89,12 +115,14 @@ Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) A
 Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 
+Private Const CC_STDCALL As Long = 4
+Private Const DVASPECT_CONTENT As Long = 1
 Private Const GMEM_MOVEABLE As Long = &H2&
-Public Const WM_NCDESTROY As Long = &H82&
-Private Const WH_KEYBOARD As Long = 2
-
-'Unsigned arithmetic helpers
+Private Const IDataObjVTable_GetData As Long = 12   '12 is an offset to the GetData function (e.g. the 4th VTable entry)
 Private Const SIGN_BIT As Long = &H80000000
+Private Const TYMED_HGLOBAL As Long = 1
+Private Const TYMED_ISTREAM As Long = 4
+Private Const WH_KEYBOARD As Long = 2
 
 'Higher-performance timing functions are also handled by this class.  Note that you *must* initialize the timer engine
 ' before requesting any time values, or crashes will occurs because the frequency timer is 0.
@@ -552,6 +580,141 @@ Public Function KeyboardHookProcEditBox(ByVal nCode As Long, ByVal wParam As Lon
     If (Not m_EditBoxRef Is Nothing) Then
         KeyboardHookProcEditBox = m_EditBoxRef.EditBoxKeyboardProc(nCode, wParam, lParam)
     End If
+End Function
+
+'PD can use standard VB6 OLEDragDrop/Over events, but we need to perform some hackery to prevent
+' VB from downsampling paths and filenames from 16-bits per char to 8.  Use this function to
+' do the hackery for you.
+'
+'Note that - by default - this function validates the existence of each file before returning it.
+' This doesn't spare you from also needing to validate the list (as file existence can obviously
+' change over time!) but it does ensure that this function will never return a non-existent file.
+'
+'The Unicode-friendly drag/drop interpreter code comes courtesy LaVolpe, c/o
+' http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste (retrieved on 27/Feb/2016).
+' IMPORTANT NOTE: this function has been modified for use inside PD.  If using it in your own project,
+' I strongly recommend downloading the original version, as it includes additional helper code
+' and explanations.
+'
+'Returns: TRUE if the drag/drop object contains a list of files, *and* at least one valid path exists.
+Public Function GetDragDropFileListW(ByRef OLEDragDrop_DataObject As DataObject, ByRef dstStringStack As pdStringStack) As Boolean
+
+    On Error GoTo DragDropFilesFailed
+    
+    GetDragDropFileListW = False
+    
+    'Note that I always validate data objects before passing them, but better safe than sorry
+    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
+    If (Not OLEDragDrop_DataObject.GetFormat(vbCFFiles)) Then Exit Function
+    
+    'This function basically handles the task of hacking around the DataObject's VTable,
+    ' and manually retrieving pointers to the original, unmodified Unicode filenames in
+    ' the Data object.
+    Dim fmtEtc As FORMATETC
+    With fmtEtc
+        .cfFormat = vbCFFiles
+        .lIndex = -1                  ' -1 means "we want everything"
+        .TYMED = TYMED_HGLOBAL        ' TYMED_HGLOBAL means we want to use "hGlobal" as the transfer medium
+        .dwAspect = DVASPECT_CONTENT  ' dwAspect is used to request extra metadata (like an icon representation) - we want the actual data
+    End With
+    
+    'The IDataObject pointer appears 16 bytes past VBs DataObject
+    Dim IID_IDataObject As Long
+    CopyMemoryStrict VarPtr(IID_IDataObject), ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
+    
+    'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.
+    ' Since we know the VTable address and we know which function index we want, we can call it
+    ' directly using DispCallFunc. (You could also do this using a TLB, obviously.)
+    
+    ' In particular, we want the GetData function which is #4 in the VTable, per
+    ' http://msdn2.microsoft.com/en-us/library/ms688421.aspx
+    
+    'Next, we need to populate the input values required by the OLE API
+    ' (http://msdn2.microsoft.com/en-us/library/ms221473.aspx)
+    Dim pVartypes(0 To 1) As Integer, Vars(0 To 1) As Variant, pVars(0 To 1) As Long
+    pVartypes(0) = vbLong: Vars(0) = VarPtr(fmtEtc): pVars(0) = VarPtr(Vars(0))
+    
+    Dim pMedium As STGMEDIUM
+    pVartypes(1) = vbLong: Vars(1) = VarPtr(pMedium): pVars(1) = VarPtr(Vars(1))
+    
+    'Manually invoke the desired interface
+    Dim varRtn As Variant
+    If (DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0) Then
+        
+        'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
+        If (pMedium.Data = 0) Then Exit Function
+        
+        'Remember that this data object doesn't point directly at the files themselves,
+        ' but to a 20-byte DROPFILES structure
+        Dim hDrop As Long
+        CopyMemoryStrict VarPtr(hDrop), pMedium.Data, 4&
+        
+        'Technically we should never retrieve have received a null-pointer, but again,
+        ' better safe than sorry.
+        If (hDrop <> 0) Then
+            
+            'Convert the hDrop into a usable DROPFILES struct
+            Dim dFiles As DROPFILES
+            CopyMemoryStrict VarPtr(dFiles), hDrop, 20&
+            
+            'To my knowledge, we'll never get an ANSI listing from this (convoluted) approach,
+            ' at least not on XP or later - but check just in case.
+            If (dFiles.fWide <> 0) Then
+                
+                'Use the pFiles member to track the filename's offsets
+                dFiles.pFiles = dFiles.pFiles + hDrop
+                
+                'Prep a string stack.  Some of the passed files may not be valid, so we want to
+                ' validate them in turn before sending them off
+                Set dstStringStack = New pdStringStack
+                
+                Dim lLen As Long, tmpString As String
+                
+                'Now we're going to iterate through each of the original files, and copy the C-style
+                ' strings into BSTRs
+                Dim i As Long
+                For i = 0 To OLEDragDrop_DataObject.Files.Count - 1
+                
+                    'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
+                    lLen = lstrlenW(dFiles.pFiles) * 2
+                    
+                    If (lLen <> 0) Then
+                        tmpString = String$(lLen \ 2, 0&)
+                        CopyMemoryStrict StrPtr(tmpString), dFiles.pFiles, lLen
+                    
+                        'Any valid files get added to the collection.
+                        If Files.FileExists(tmpString) Then dstStringStack.AddString tmpString
+                        
+                    End If
+                        
+                    'Manually move the pointer to the next file, and note that we add two extra
+                    ' bytes because of the double-null delimiter between filenames
+                    dFiles.pFiles = dFiles.pFiles + lLen + 2
+                    
+                Next i
+                
+                'We've got what we need from the hGlobal pointer, so go ahead and free it
+                ' (if we're responsible for the drop - note that a NULL value for pUnkForRelease
+                ' means that we must free the data; non-NULL means the caller will do it.)
+                If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
+                
+                'The cFiles string stack now contains all the valid filenames from the dropped list.
+                GetDragDropFileListW = (dstStringStack.GetNumOfStrings > 0)
+                
+            '/End failsafe check for wchar strings
+            End If
+            
+        '/End non-zero hDrop
+        End If
+
+    '/End DispCallFunc success
+    End If
+    
+    Exit Function
+    
+DragDropFilesFailed:
+    PDDebug.LogAction "WARNING!  VBHacks.GetDragDropFileListW() experienced error #" & Err.Number & ": " & Err.Description
+    
 End Function
 
 'If you have any hack-related cleanup that needs to be performed at shutdown time, use this function.

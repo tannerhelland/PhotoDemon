@@ -1217,127 +1217,27 @@ End Function
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
 Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
     
-    On Error GoTo DragDropFilesFailed
-    
-    DragDrop_FileList = False
-    
-    'Note that PD will validate the data object before passing it, but better safe than sorry
-    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
-    If (Not OLEDragDrop_DataObject.GetFormat(vbCFFiles)) Then Exit Function
-    
-    'This function basically handles the task of hacking around the DataObject's VTable, and manually retrieving pointers
-    ' to the original, unmodified Unicode filenames in the Data object.  We then overwrite the OUT filename strings with
-    ' new Unicode-enabled pointers, so our receiving function can proceed identically regardless of the presence of
-    ' non-ANSI chars.
-    Dim fmtEtc As FORMATETC
-    With fmtEtc
-        .cfFormat = vbCFFiles
-        .lIndex = -1                  ' -1 means "we want everything"
-        .TYMED = TYMED_HGLOBAL        ' TYMED_HGLOBAL means we want to use "hGlobal" as the transfer medium
-        .dwAspect = DVASPECT_CONTENT  ' dwAspect is used to request extra metadata (like an icon representation) - we want the actual data
-    End With
+    'Unicode-enabled drag/drop code is used elsewhere in PD, so we have a master function for it
+    Dim cFiles As pdStringStack
+    If VBHacks.GetDragDropFileListW(OLEDragDrop_DataObject, cFiles) Then
 
-    'The IDataObject pointer appears 16 bytes past VBs DataObject
-    Dim IID_IDataObject As Long
-    CopyMemoryStrict VarPtr(IID_IDataObject), ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
-    
-    'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.  Since we know the
-    ' VTable address and we know which function index we want, we can call it directly using the DispCallFunc.
-    ' (You could also do this using a TLB, obviously.)  In particular, we want the GetData function which is #4 in
-    ' the VTable, per http://msdn2.microsoft.com/en-us/library/ms688421.aspx
-    
-    'Next, we need to populate the input values required by the OLE API (http://msdn2.microsoft.com/en-us/library/ms221473.aspx)
-    Dim pVartypes(0 To 1) As Integer, Vars(0 To 1) As Variant, pVars(0 To 1) As Long
-    pVartypes(0) = vbLong: Vars(0) = VarPtr(fmtEtc): pVars(0) = VarPtr(Vars(0))
-    
-    Dim pMedium As STGMEDIUM
-    pVartypes(1) = vbLong: Vars(1) = VarPtr(pMedium): pVars(1) = VarPtr(Vars(1))
-    
-    'Manually invoke the desired interface
-    Dim varRtn As Variant
-    If (DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0) Then
-        
-        'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
-        If (pMedium.Data = 0) Then Exit Function
-        
-        'Remember that this data object doesn't point directly at the files themselves, but to a 20-byte DROPFILES structure
-        Dim hDrop As Long
-        CopyMemoryStrict VarPtr(hDrop), pMedium.Data, 4&
-        
-        'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
-        If (hDrop <> 0) Then
+        'The cFiles string stack now contains all the valid filenames from the dropped list.
+        If (cFiles.GetNumOfStrings > 0) Then
             
-            'Convert the hDrop into a usable DROPFILES struct
-            Dim dFiles As DROPFILES
-            CopyMemoryStrict VarPtr(dFiles), hDrop, 20&
+            DragDrop_FileList = True
             
-            'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later.
-            ' (But just in case, check - otherwise we'll get gibberish string results.)
-            If (dFiles.fWide <> 0) Then
-                
-                'Use the pFiles member to track the filename's offsets
-                dFiles.pFiles = dFiles.pFiles + hDrop
-                
-                'Prep a string stack.  Some of the passed files may not be valid, so we want to validate them in turn before
-                ' sending them off to the "load image" function(s)
-                Dim cFiles As pdStringStack: Set cFiles = New pdStringStack
-                
-                Dim lLen As Long, tmpString As String
-                
-                'Now we're going to iterate through each of the original files, and copy the C-style strings into BSTRs
+            If PDImages.IsImageActive() And loadAsLayers Then
                 Dim i As Long
-                For i = 0 To OLEDragDrop_DataObject.Files.Count - 1
-                
-                    'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
-                    lLen = lstrlenW(dFiles.pFiles) * 2
-                    
-                    If (lLen <> 0) Then
-                        tmpString = String$(lLen \ 2, 0&)
-                        CopyMemoryStrict StrPtr(tmpString), dFiles.pFiles, lLen
-                    
-                        'Any valid files get added to the collection.  (Note that we only validate file existence; validating the
-                        ' actual image data is handled by the load image function.)
-                        If Files.FileExists(tmpString) Then cFiles.AddString tmpString
-                    End If
-                        
-                    'Manually move the pointer to the next file, and note that we add two extra bytes because of the
-                    ' double-null delimiter between filenames
-                    dFiles.pFiles = dFiles.pFiles + lLen + 2
-                    
+                For i = 0 To cFiles.GetNumOfStrings - 1
+                    Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
                 Next i
-                
-                'We've got what we need from the hGlobal pointer, so go ahead and free it (if we're responsible for the drop -
-                ' note that a NULL value for pUnkForRelease means that we must free the data; non-NULL means the caller will do it.)
-                If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
-                
-                'The cFiles string stack now contains all the valid filenames from the dropped list.
-                If (cFiles.GetNumOfStrings > 0) Then
-                    
-                    DragDrop_FileList = True
-                    
-                    If PDImages.IsImageActive() And loadAsLayers Then
-                        For i = 0 To cFiles.GetNumOfStrings - 1
-                            Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
-                        Next i
-                    Else
-                        Loading.LoadMultipleImageFiles cFiles
-                    End If
-                    
-                End If
-                
-            '/End failsafe check for wchar strings
+            Else
+                Loading.LoadMultipleImageFiles cFiles
             End If
             
-        '/End non-zero hDrop
         End If
-
-    '/End DispCallFunc success
+        
     End If
-    
-    Exit Function
-    
-DragDropFilesFailed:
-    PDDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_FileList() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
 
@@ -1608,7 +1508,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
     Dim dragText As String
     dragText = OLEDragDrop_DataObject.GetData(vbCFText)
     
-    If (Len(dragText) <> 0) Then
+    If (LenB(dragText) <> 0) Then
     
         'First, test the text for URL-like indicators
         Dim testURL As String

@@ -68,6 +68,11 @@ Option Explicit
 'This control raises much fewer events than a standard ListBox, by design
 Public Event Click()
 
+'Drag/drop events are raised (these are just relays, identical to standard VB drag/drop events).
+' Note that these are *only* raised by the child pdListBoxView object, and we simply relay them.
+Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+
 'Note that drawing events *must* be responded to!  If you don't handle them, your listbox won't display anything.
 Public Event DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, ByRef itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
@@ -285,6 +290,14 @@ End Sub
 
 Private Sub lbView_Click()
     RaiseEvent Click
+End Sub
+
+Private Sub lbView_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
+End Sub
+
+Private Sub lbView_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 Private Sub lbView_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
