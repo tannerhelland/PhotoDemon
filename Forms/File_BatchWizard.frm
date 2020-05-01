@@ -80,6 +80,195 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6780
+      Index           =   1
+      Left            =   3300
+      TabIndex        =   3
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdLabel lblCurrentFile 
+         Height          =   285
+         Left            =   330
+         Top             =   3570
+         Width           =   9405
+         _ExtentX        =   16589
+         _ExtentY        =   503
+         Caption         =   ""
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
+         Height          =   375
+         Left            =   225
+         TabIndex        =   44
+         Top             =   5670
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   661
+         Caption         =   "include subfolders"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdListBox lstFiles 
+         Height          =   3405
+         Left            =   120
+         TabIndex        =   42
+         Top             =   0
+         Width           =   6465
+         _ExtentX        =   11404
+         _ExtentY        =   6006
+         Caption         =   "current batch list"
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdButton cmdSaveList 
+         Height          =   615
+         Left            =   6960
+         TabIndex        =   19
+         Top             =   4995
+         Width           =   2775
+         _ExtentX        =   5318
+         _ExtentY        =   1085
+         Caption         =   "save list..."
+      End
+      Begin PhotoDemon.pdButton cmdLoadList 
+         Height          =   615
+         Left            =   6960
+         TabIndex        =   20
+         Top             =   4290
+         Width           =   2775
+         _ExtentX        =   5318
+         _ExtentY        =   1085
+         Caption         =   "load list..."
+      End
+      Begin PhotoDemon.pdButton cmdRemoveAll 
+         Height          =   615
+         Left            =   3600
+         TabIndex        =   21
+         Top             =   6045
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "erase entire list"
+      End
+      Begin PhotoDemon.pdButton cmdRemove 
+         Height          =   615
+         Left            =   3600
+         TabIndex        =   22
+         Top             =   4290
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "remove selected image"
+      End
+      Begin PhotoDemon.pdButton cmdAddFiles 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   23
+         Top             =   4290
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "add individual images..."
+      End
+      Begin VB.PictureBox picPreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00808080&
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00FFFFFF&
+         Height          =   2925
+         Left            =   6600
+         ScaleHeight     =   193
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   207
+         TabIndex        =   6
+         Top             =   465
+         Width           =   3135
+      End
+      Begin PhotoDemon.pdCheckBox chkEnablePreview 
+         Height          =   330
+         Left            =   6600
+         TabIndex        =   7
+         Top             =   0
+         Width           =   3150
+         _ExtentX        =   5556
+         _ExtentY        =   582
+         Caption         =   "show image previews"
+      End
+      Begin PhotoDemon.pdLabel lblFiles 
+         Height          =   285
+         Left            =   120
+         Top             =   3930
+         Width           =   3315
+         _ExtentX        =   5847
+         _ExtentY        =   503
+         Caption         =   "add images"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblModify 
+         Height          =   285
+         Left            =   3480
+         Top             =   3930
+         Width           =   3285
+         _ExtentX        =   5794
+         _ExtentY        =   503
+         Caption         =   "modify list"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblLoadSaveList 
+         Height          =   285
+         Left            =   6840
+         Top             =   3930
+         Width           =   2970
+         _ExtentX        =   5239
+         _ExtentY        =   503
+         Caption         =   "load / save list"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdButton cmdAddFolders 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   41
+         Top             =   4995
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "add entire folder(s)..."
+      End
+      Begin PhotoDemon.pdButton cmdRemoveFolder 
+         Height          =   615
+         Left            =   3600
+         TabIndex        =   43
+         Top             =   4995
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "remove all images in this folder"
+      End
+      Begin PhotoDemon.pdCheckBox chkRemoveSubfolders 
+         Height          =   375
+         Left            =   3585
+         TabIndex        =   45
+         Top             =   5670
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   661
+         Caption         =   "include subfolders"
+         Value           =   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
       Index           =   4
       Left            =   3300
       TabIndex        =   24
@@ -503,195 +692,6 @@ Begin VB.Form FormBatchWizard
             _ExtentY        =   2910
             UnknownSizeMode =   -1  'True
          End
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6780
-      Index           =   1
-      Left            =   3300
-      TabIndex        =   3
-      Top             =   660
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   11959
-      Begin PhotoDemon.pdLabel lblCurrentFile 
-         Height          =   285
-         Left            =   330
-         Top             =   3570
-         Width           =   9405
-         _ExtentX        =   16589
-         _ExtentY        =   503
-         Caption         =   ""
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
-         Height          =   375
-         Left            =   225
-         TabIndex        =   44
-         Top             =   5670
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   661
-         Caption         =   "include subfolders"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdListBox lstFiles 
-         Height          =   3405
-         Left            =   120
-         TabIndex        =   42
-         Top             =   0
-         Width           =   6465
-         _ExtentX        =   11404
-         _ExtentY        =   6006
-         Caption         =   "current batch list"
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdButton cmdSaveList 
-         Height          =   615
-         Left            =   6960
-         TabIndex        =   19
-         Top             =   4995
-         Width           =   2775
-         _ExtentX        =   5318
-         _ExtentY        =   1085
-         Caption         =   "save list..."
-      End
-      Begin PhotoDemon.pdButton cmdLoadList 
-         Height          =   615
-         Left            =   6960
-         TabIndex        =   20
-         Top             =   4290
-         Width           =   2775
-         _ExtentX        =   5318
-         _ExtentY        =   1085
-         Caption         =   "load list..."
-      End
-      Begin PhotoDemon.pdButton cmdRemoveAll 
-         Height          =   615
-         Left            =   3600
-         TabIndex        =   21
-         Top             =   6045
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "erase entire list"
-      End
-      Begin PhotoDemon.pdButton cmdRemove 
-         Height          =   615
-         Left            =   3600
-         TabIndex        =   22
-         Top             =   4290
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "remove selected image"
-      End
-      Begin PhotoDemon.pdButton cmdAddFiles 
-         Height          =   615
-         Left            =   240
-         TabIndex        =   23
-         Top             =   4290
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "add individual images..."
-      End
-      Begin VB.PictureBox picPreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00808080&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FFFFFF&
-         Height          =   2925
-         Left            =   6600
-         ScaleHeight     =   193
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   207
-         TabIndex        =   6
-         Top             =   465
-         Width           =   3135
-      End
-      Begin PhotoDemon.pdCheckBox chkEnablePreview 
-         Height          =   330
-         Left            =   6600
-         TabIndex        =   7
-         Top             =   0
-         Width           =   3150
-         _ExtentX        =   5556
-         _ExtentY        =   582
-         Caption         =   "show image previews"
-      End
-      Begin PhotoDemon.pdLabel lblFiles 
-         Height          =   285
-         Left            =   120
-         Top             =   3930
-         Width           =   3315
-         _ExtentX        =   5847
-         _ExtentY        =   503
-         Caption         =   "add images"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblModify 
-         Height          =   285
-         Left            =   3480
-         Top             =   3930
-         Width           =   3285
-         _ExtentX        =   5794
-         _ExtentY        =   503
-         Caption         =   "modify list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblLoadSaveList 
-         Height          =   285
-         Left            =   6840
-         Top             =   3930
-         Width           =   2970
-         _ExtentX        =   5239
-         _ExtentY        =   503
-         Caption         =   "load / save list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdButton cmdAddFolders 
-         Height          =   615
-         Left            =   240
-         TabIndex        =   41
-         Top             =   4995
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "add entire folder(s)..."
-      End
-      Begin PhotoDemon.pdButton cmdRemoveFolder 
-         Height          =   615
-         Left            =   3600
-         TabIndex        =   43
-         Top             =   4995
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "remove all images in this folder"
-      End
-      Begin PhotoDemon.pdCheckBox chkRemoveSubfolders 
-         Height          =   375
-         Left            =   3585
-         TabIndex        =   45
-         Top             =   5670
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   661
-         Caption         =   "include subfolders"
-         Value           =   0   'False
       End
    End
 End
@@ -1632,6 +1632,52 @@ Private Sub UpdateBatchListCount()
             
     End Select
     
+End Sub
+
+Private Sub lstFiles_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'File lists (from e.g. Explorer) can be drag-dropped onto the batch listview
+    If (Not Data Is Nothing) Then
+    If Data.GetFormat(vbCFFiles) Then
+        
+        Dim cFiles As pdStringStack
+        If VBHacks.GetDragDropFileListW(Data, cFiles) Then
+
+            'As a convenience, sort the list alphabetically and remove any duplicate entries
+            cFiles.SortAlphabetically True
+            
+            'Bulk add the entire file collection to the list box
+            lstFiles.SetAutomaticRedraws False, False
+            
+            Dim i As Long
+            For i = 0 To cFiles.GetNumOfStrings - 1
+                lstFiles.AddItem cFiles.GetString(i)
+            Next i
+            
+            Set cFiles = Nothing
+            lstFiles.SetAutomaticRedraws True, True
+            
+            'Update any related UI elements to reflect the new list
+            UpdateBatchListCount
+            m_ImageListSaved = False
+            cmdRemoveAll.Enabled = (lstFiles.ListCount > 0)
+            cmdSaveList.Enabled = (lstFiles.ListCount > 0)
+            
+        End If
+        
+    
+    'End validation checks
+    End If
+    End If
+    
+End Sub
+
+Private Sub lstFiles_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    If Data.GetFormat(vbCFFiles) Then
+        Effect = vbDropEffectCopy And Effect
+    Else
+        Effect = vbDropEffectNone
+    End If
 End Sub
 
 Private Sub optCase_Click(Index As Integer)
