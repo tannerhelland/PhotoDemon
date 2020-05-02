@@ -3,10 +3,8 @@ Attribute VB_Name = "Strings"
 'Additional string support functions
 'Copyright 2017-2020 by Tanner Helland
 'Created: 13/June/17
-'Last updated: 29/May/19
-'Last update: add proper support for Unicode normalizing; while this is rarely needed for data coming from Windows
-'             (as normalization form C is used across most win32 functions), it may be useful for data coming from
-'             outside files.
+'Last updated: 02/May/20
+'Last update: add wrapper for StrCmpLogicalW
 '
 'Special thank-yous go out to some valuable references while developing this class:
 ' - fast Boyer-Moore string comparisons: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
@@ -127,7 +125,8 @@ Private Declare Function NormalizeString Lib "Normaliz" (ByVal normForm As Unico
 
 Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As Long, ByVal strLength As Long) As String
 
-'While shlwapi provides StrStr and StrStrI functions, they are dog-slow - so avoid them as much as possible!
+Private Declare Function StrCmpLogicalW Lib "shlwapi" (ByVal ptrString1 As Long, ByVal ptrString2 As Long) As Long
+'While shlwapi provides StrStr and StrStrI functions, they are dog-slow - so avoid them if possible!
 Private Declare Function StrStrIW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
 Private Declare Function StrStrW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
 
@@ -135,14 +134,17 @@ Private Declare Function StrStrW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal
 ' This reduces the overhead required between calls.
 Private m_HighestChar As Long, m_lastAlphabetSize As Long, m_charOccur() As Long
 
-'Apply basic heuristics to the first (n) bytes of a potentially UTF-8 source, and return a "best-guess" on whether the bytes
-' represent valid UTF-8 data.
+'Apply basic heuristics to the first (n) bytes of a potentially UTF-8 source,
+' and return a "best-guess" on whether the bytes represent valid UTF-8 data.
 '
-'This is based off a similar function by Dana Seaman, who noted an original source of http://www.geocities.co.jp/SilkRoad/4511/vb/utf8.htm
-' I have modified the function to ignore invalid 5- and 6- byte extensions, and to shorten the validation range as the original 2048 count
-' seems excessive.  (For a 24-byte sequence, the risk of a false positive is less than 1 in 1,000,000;
-' see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file?lq=1.  False negative results have
-' a higher probability, but ~100 characters should be enough to determine this, especially given the typical use-cases in PD.)
+'This is based off a similar function by Dana Seaman, who noted an original source of
+' http://www.geocities.co.jp/SilkRoad/4511/vb/utf8.htm
+' I have modified the function to ignore invalid 5- and 6- byte extensions, and to shorten
+' the validation range as the original 2048 count seems excessive.  (For a 24-byte sequence,
+' the risk of a false positive is less than 1 in 1,000,000; see
+' http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file?lq=1
+' False negative results have a higher probability, but ~100 characters should be enough
+' to determine this, especially given the typical use-cases in PD.)
 '
 'For additional details on UTF-8 heuristics, see:
 '  https://github.com/neitanod/forceutf8/blob/master/src/ForceUTF8/Encoding.php
@@ -720,6 +722,13 @@ Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringP
     
 End Function
 
+'Wrapper to StrCmpLogicalW, which Windows Explorer uses for filename sort order.
+' Important caveat, per MSDN: "Behavior of this function, and therefore the results it returns,
+' can change from release to release. It should not be used for canonical sorting applications."
+Public Function StrCompSortPtr_Filenames(ByVal firstStringPtr As Long, ByVal secondStringPtr As Long) As Long
+    StrCompSortPtr_Filenames = StrCmpLogicalW(firstStringPtr, secondStringPtr)
+End Function
+
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
 Public Function StringsEqual(ByRef firstString As String, ByRef secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
@@ -927,8 +936,8 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
     Loop
     
     'Before exiting, free all temp arrays
-    CopyMemory ByVal VarPtrArray(needle()), 0&, 4&
-    CopyMemory ByVal VarPtrArray(haystack()), 0&, 4&
+    PutMem4 VarPtrArray(needle()), 0&
+    PutMem4 VarPtrArray(haystack()), 0&
 
 End Function
 

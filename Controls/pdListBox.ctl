@@ -247,6 +247,10 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     lbView.RemoveItem itemIndex
 End Sub
 
+Public Sub SetDisplayMode_Files(ByVal newState As Boolean)
+    lbView.SetDisplayMode_Files newState
+End Sub
+
 Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
     UpdateItem = lbView.UpdateItem(itemIndex, newItemText)
 End Function

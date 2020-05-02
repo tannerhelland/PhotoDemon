@@ -55,8 +55,8 @@ Public Event ScrollMaxChanged(ByVal newMax As Long)
 Public Event ScrollValueChanged(ByVal newValue As Long)
 
 'Drag/drop events are raised (these are just relays, identical to standard VB drag/drop events)
-Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Public Event CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Public Event CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -73,6 +73,12 @@ Private Const LIST_PADDING_VERTICAL As Single = 2#
 
 'The rectangle where the list is actually rendered
 Private m_ListRect As RectF
+
+'Callers can set "file" display mode; when active, this will truncate displayed text
+' to the available window space using PathCompactPathW
+Private m_FileDisplayMode As Boolean
+Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Function PathCompactPathW Lib "shlwapi" (ByVal hDC As Long, ByVal ptrToMaxPathString As Long, ByVal maxSizeInPixels As Long) As Long
 
 'List box support class.  Handles data storage and coordinate math for rendering.
 Private WithEvents listSupport As pdListSupport
@@ -210,8 +216,8 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
 
-Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
-    listSupport.NotifyMouseClick Button, Shift, X, Y
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseClick Button, Shift, x, y
     UpdateMousePosition
 End Sub
 
@@ -232,27 +238,27 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
     listSupport.NotifyKeyUp Shift, vkCode, markEventHandled
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
-    listSupport.NotifyMouseDown Button, Shift, X, Y
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    listSupport.NotifyMouseDown Button, Shift, x, y
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
-    listSupport.NotifyMouseEnter Button, Shift, X, Y
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseEnter Button, Shift, x, y
     UpdateMousePosition
 End Sub
 
-Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
-    listSupport.NotifyMouseLeave Button, Shift, X, Y
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseLeave Button, Shift, x, y
     UpdateMousePosition
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
-    listSupport.NotifyMouseMove Button, Shift, X, Y
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    listSupport.NotifyMouseMove Button, Shift, x, y
     UpdateMousePosition
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    listSupport.NotifyMouseUp Button, Shift, X, Y, clickEventAlsoFiring
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    listSupport.NotifyMouseUp Button, Shift, x, y, clickEventAlsoFiring
 End Sub
 
 Private Sub UpdateMousePosition()
@@ -269,8 +275,8 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
-    listSupport.NotifyMouseWheelVertical Button, Shift, X, Y, scrollAmount
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    listSupport.NotifyMouseWheelVertical Button, Shift, x, y, scrollAmount
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -330,6 +336,10 @@ Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRe
     listSupport.SetAutomaticRedraws newState, raiseRedrawImmediately
 End Sub
 
+Public Sub SetDisplayMode_Files(ByVal newState As Boolean)
+    m_FileDisplayMode = newState
+End Sub
+
 Public Function ShouldScrollBarBeVisible() As Boolean
     ShouldScrollBarBeVisible = (Me.ScrollMax > 0)
 End Function
@@ -380,12 +390,12 @@ Private Sub UserControl_InitProperties()
     FontSize = 10
 End Sub
 
-Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, X, Y)
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent CustomDragDrop(Data, Effect, Button, Shift, x, y)
 End Sub
 
-Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
-    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, X, Y, State)
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent CustomDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -502,7 +512,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             Dim itemIsSelected As Boolean, itemIsHovered As Boolean, itemHasSeparator As Boolean
             
             'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
-            Dim tmpFont As pdFont, textPadding As Single
+            Dim tmpFont As pdFont, textPadding As Single, strTruncate As String, targetText As String
             Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize)
             tmpFont.AttachToDC bufferDC
             tmpFont.SetTextAlignment vbLeftJustify
@@ -560,7 +570,20 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 End If
                 
                 tmpFont.SetFontColor curColor
-                tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, tmpListItem.textTranslated, True, True, False
+                
+                If m_FileDisplayMode Then
+                    strTruncate = String$(MAX_PATH_LEN, 0)
+                    CopyMemoryStrict StrPtr(strTruncate), StrPtr(tmpListItem.textTranslated), PDMath.Min2Int(MAX_PATH_LEN * 2, LenB(tmpListItem.textTranslated))
+                    If (PathCompactPathW(bufferDC, StrPtr(strTruncate), tmpRect.Width - textPadding * 2) <> 0) Then
+                        targetText = Left$(strTruncate, lstrlenW(StrPtr(strTruncate)))
+                    Else
+                        targetText = tmpListItem.textTranslated
+                    End If
+                Else
+                    targetText = tmpListItem.textTranslated
+                End If
+                
+                tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, targetText, True, True, False
                 
                 'Separators are drawn separately, external to the other items
                 If itemHasSeparator Then

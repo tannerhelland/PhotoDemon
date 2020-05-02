@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 15/May/19
-'Last update: add AppendStack function for easily "merging" two stacks
+'Last updated: 02/May/20
+'Last update: add new function(s) for sorting stack using StrCmpLogicalW; this matches Explorer sort order
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -288,7 +288,7 @@ Friend Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
     
 End Sub
 
-Private Sub QuickSortStringStack()
+Private Sub QuickSortStringStack(Optional ByVal useLogicalSortOrder As Boolean = False)
     
     If (m_NumOfStrings > 1) Then
     
@@ -298,7 +298,11 @@ Private Sub QuickSortStringStack()
         m_qsStack(0).sLB = 0
         m_qsStack(0).sUB = m_NumOfStrings - 1
         
-        NaiveQuickSortExtended
+        If useLogicalSortOrder Then
+            NaiveQuickSortExtended_Logical
+        Else
+            NaiveQuickSortExtended
+        End If
         
         'Free the stack before exiting
         Erase m_qsStack
@@ -385,6 +389,161 @@ Private Sub NaiveQuickSortExtended()
             
             'Advance from the left
             Do While (Strings.StrCompSortPtr(StrPtr(m_Strings(i)), StrPtr(v)) < 0): i = i + 1: Loop
+            
+        Loop
+        
+        'Conditionally add new entries to the processing stack
+        If (lowVal < j) Then
+            m_qsStack(m_qsStackPtr).sLB = lowVal
+            m_qsStack(m_qsStackPtr).sUB = j
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        
+        If (i < highVal) Then
+            m_qsStack(m_qsStackPtr).sLB = i
+            m_qsStack(m_qsStackPtr).sUB = highVal
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        
+'Yep, VB6 requires us to use GOTO and line labels.  There is no "Continue For" equivalent.
+NextSortItem:
+        
+        'Decrement the stack pointer
+        m_qsStackPtr = m_qsStackPtr - 1
+        
+    Loop While (m_qsStackPtr >= 0)
+    
+End Sub
+
+'Per the name, sort the current stack the same way Windows Explorer does.  As users can create
+' or import their own lists of filenames (e.g. in the Batch Process window), we also perform
+' a failsafe check for duplicate entries.
+Friend Sub SortLogically(Optional ByVal removeDuplicates As Boolean = True)
+    
+    If (m_NumOfStrings <= 1) Then Exit Sub
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Sort the stack in-place
+    QuickSortStringStack True
+    
+    'If the user wants duplicates removed, do so now.  (This check is fast and easy, because duplicates are
+    ' sitting next to each other in the sorted list.)
+    If removeDuplicates Then
+        
+        Dim itemsRemoved As Long
+        itemsRemoved = 0
+        
+        Dim itemCount As Long
+        itemCount = m_NumOfStrings - 1
+        
+        Dim i As Long, j As Long
+        i = 0
+        
+        Do While (i < (itemCount - itemsRemoved))
+            
+            'If this string and the string above it match, shift everything above it downward
+            If (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), StrPtr(m_Strings(i + 1))) = 0) Then
+                
+                If (itemCount - itemsRemoved) < UBound(m_Strings) Then
+                    For j = i To itemCount - itemsRemoved
+                        m_Strings(j) = m_Strings(j + 1)
+                    Next j
+                End If
+                
+                itemsRemoved = itemsRemoved + 1
+                
+            Else
+                i = i + 1
+            End If
+            
+        Loop
+        
+        'If one or more items were removed, mark the new array size accordingly
+        If (itemsRemoved > 0) Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
+        
+    End If
+    
+    'Want timing reports?  Here you go:
+    'pdDebug.LogAction "String collection sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+End Sub
+
+'Semi-standard QuickSort implementation, using StrCmpLogicalW (the sort function used by
+' Windows Explorer), with VB-specific enhancements provided by georgekar, and further
+' enhancements by myself to further improve performance.
+'
+'georgekar's original, unmodified implementation can be found here:
+' http://www.vbforums.com/showthread.php?781043-VB6-Dual-Pivot-QuickSort
+Private Sub NaiveQuickSortExtended_Logical()
+    
+    Dim lowVal As Long, highVal As Long
+    Dim i As Long, j As Long
+    Dim v As String, vPtr As Long
+    
+    Do
+        
+        'Load the next set of boundaries, and reset all pivots
+        lowVal = m_qsStack(m_qsStackPtr).sLB
+        highVal = m_qsStack(m_qsStackPtr).sUB
+        
+        'Check for single-entry ranges
+        If (highVal - lowVal = 1) Then
+            i = lowVal
+            If (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), StrPtr(m_Strings(highVal))) > 0) Then SwapIndices i, highVal  'Tmp = m_Strings(i): m_Strings(i) = m_Strings(highVal): m_Strings(highVal) = Tmp
+            GoTo NextSortItem
+        Else
+            
+            'Bisect this range
+            i = (lowVal + highVal) \ 2
+            
+            'Migrate all equal entries into place
+            If (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), StrPtr(m_Strings(lowVal))) = 0) Then
+                
+                j = highVal - 1
+                i = lowVal
+                
+                Do
+                    i = i + 1
+                    If (i > j) Then
+                        If (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(highVal)), StrPtr(m_Strings(lowVal))) < 0) Then SwapIndices lowVal, highVal
+                        GoTo NextSortItem
+                    End If
+                Loop Until (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), StrPtr(m_Strings(lowVal))) <> 0)
+                
+                v = m_Strings(i)
+                If (i > lowVal) Then If (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(lowVal)), StrPtr(m_Strings(i))) > 0) Then SwapIndices lowVal, i
+            
+            'Move the pointer until we arrive at an unsorted pivot
+            Else
+                v = m_Strings(i)
+                vPtr = StrPtr(m_Strings(i))
+                i = lowVal
+                Do While (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), vPtr) < 0): i = i + 1: Loop
+            End If
+        
+        'End special case handling
+        End If
+        
+        'Resume standard QuickSort behavior
+        j = highVal
+        
+        Do
+            'Advance from the right
+            Do While (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(j)), StrPtr(v)) > 0): j = j - 1: Loop
+            
+            'Swap as necessary
+            If (i <= j) Then
+                SwapIndices i, j
+                i = i + 1
+                j = j - 1
+            End If
+            
+            If (i > j) Then Exit Do
+            
+            'Advance from the left
+            Do While (Strings.StrCompSortPtr_Filenames(StrPtr(m_Strings(i)), StrPtr(v)) < 0): i = i + 1: Loop
             
         Loop
         

@@ -1552,7 +1552,10 @@ Private Sub Form_Load()
     For i = 1 To picContainer.Count - 1
         picContainer(i).Visible = False
     Next i
-        
+    
+    'Switch the batch file listview to file mode (which will automatically truncate long paths)
+    lstFiles.SetDisplayMode_Files True
+    
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
     
@@ -1584,6 +1587,52 @@ Private Sub lstFiles_Click()
         
     End If
     
+End Sub
+
+Private Sub lstFiles_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    
+    'File lists (from e.g. Explorer) can be drag-dropped onto the batch listview
+    If (Not Data Is Nothing) Then
+    If Data.GetFormat(vbCFFiles) Then
+        
+        Dim cFiles As pdStringStack
+        If VBHacks.GetDragDropFileListW(Data, cFiles) Then
+
+            'As a convenience, sort the list alphabetically and remove any duplicate entries
+            cFiles.SortLogically True
+            
+            'Bulk add the entire file collection to the list box
+            lstFiles.SetAutomaticRedraws False, False
+            
+            Dim i As Long
+            For i = 0 To cFiles.GetNumOfStrings - 1
+                lstFiles.AddItem cFiles.GetString(i)
+            Next i
+            
+            Set cFiles = Nothing
+            lstFiles.SetAutomaticRedraws True, True
+            
+            'Update any related UI elements to reflect the new list
+            UpdateBatchListCount
+            m_ImageListSaved = False
+            cmdRemoveAll.Enabled = (lstFiles.ListCount > 0)
+            cmdSaveList.Enabled = (lstFiles.ListCount > 0)
+            
+        End If
+        
+    
+    'End validation checks
+    End If
+    End If
+    
+End Sub
+
+Private Sub lstFiles_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    If Data.GetFormat(vbCFFiles) Then
+        Effect = vbDropEffectCopy And Effect
+    Else
+        Effect = vbDropEffectNone
+    End If
 End Sub
 
 'Update the active image preview in the top-right
@@ -1632,52 +1681,6 @@ Private Sub UpdateBatchListCount()
             
     End Select
     
-End Sub
-
-Private Sub lstFiles_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'File lists (from e.g. Explorer) can be drag-dropped onto the batch listview
-    If (Not Data Is Nothing) Then
-    If Data.GetFormat(vbCFFiles) Then
-        
-        Dim cFiles As pdStringStack
-        If VBHacks.GetDragDropFileListW(Data, cFiles) Then
-
-            'As a convenience, sort the list alphabetically and remove any duplicate entries
-            cFiles.SortAlphabetically True
-            
-            'Bulk add the entire file collection to the list box
-            lstFiles.SetAutomaticRedraws False, False
-            
-            Dim i As Long
-            For i = 0 To cFiles.GetNumOfStrings - 1
-                lstFiles.AddItem cFiles.GetString(i)
-            Next i
-            
-            Set cFiles = Nothing
-            lstFiles.SetAutomaticRedraws True, True
-            
-            'Update any related UI elements to reflect the new list
-            UpdateBatchListCount
-            m_ImageListSaved = False
-            cmdRemoveAll.Enabled = (lstFiles.ListCount > 0)
-            cmdSaveList.Enabled = (lstFiles.ListCount > 0)
-            
-        End If
-        
-    
-    'End validation checks
-    End If
-    End If
-    
-End Sub
-
-Private Sub lstFiles_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-    If Data.GetFormat(vbCFFiles) Then
-        Effect = vbDropEffectCopy And Effect
-    Else
-        Effect = vbDropEffectNone
-    End If
 End Sub
 
 Private Sub optCase_Click(Index As Integer)
