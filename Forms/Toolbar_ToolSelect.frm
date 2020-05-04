@@ -1105,9 +1105,9 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     End If
     
     'Next, we want to display the current tool options panel, while hiding all inactive ones.
-    ' (This must be handled carefully, or we risk accidentally enabling unloaded panels, which we don't want
-    '  as toolpanels are quite resource-heavy.)
-    g_WindowManager.DeactivateToolPanel False
+    ' (This must be handled carefully, or we risk accidentally enabling unloaded panels,
+    '  which we don't want as toolpanels are quite resource-heavy.)
+    g_WindowManager.DeactivateToolPanel
     
     'To prevent flicker, we handle this in two passes.
     
@@ -1134,7 +1134,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
                     g_WindowManager.SetVisibilityByHWnd m_Panels(i).PanelHWnd, False
                     m_Panels(i).PanelHWnd = 0
                 End If
-                    
+                
                 'Unload the panel form to free up resources
                 Select Case i
                 

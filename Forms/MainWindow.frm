@@ -2952,52 +2952,41 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Now that toolpanels are loaded/unloaded on-demand, we don't need to manually unload them at shutdown.
     ' Instead, just unload the *active* one (which we can infer from the active tool).
+    g_WindowManager.DeactivateToolPanel
     If (g_CurrentTool = NAV_MOVE) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
         Unload toolpanel_MoveSize
         Set toolpanel_MoveSize = Nothing
     ElseIf (g_CurrentTool = COLOR_PICKER) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_ColorPicker.hWnd
         Unload toolpanel_ColorPicker
         Set toolpanel_ColorPicker = Nothing
     ElseIf (g_CurrentTool = ND_MEASURE) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Measure.hWnd
         Unload toolpanel_Measure
         Set toolpanel_Measure = Nothing
     ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
         Unload toolpanel_Selections
         Set toolpanel_Selections = Nothing
     ElseIf (g_CurrentTool = TEXT_BASIC) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_TextBasic.hWnd
         Unload toolpanel_TextBasic
         Set toolpanel_TextBasic = Nothing
     ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_TextAdvanced.hWnd
         Unload toolpanel_TextAdvanced
         Set toolpanel_TextAdvanced = Nothing
     ElseIf (g_CurrentTool = PAINT_PENCIL) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
         Unload toolpanel_Pencil
         Set toolpanel_Pencil = Nothing
     ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
         Unload toolpanel_Paintbrush
         Set toolpanel_Paintbrush = Nothing
     ElseIf (g_CurrentTool = PAINT_ERASER) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Eraser.hWnd
         Unload toolpanel_Eraser
         Set toolpanel_Eraser = Nothing
     ElseIf (g_CurrentTool = PAINT_CLONE) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Clone.hWnd
         Unload toolpanel_Clone
         Set toolpanel_Clone = Nothing
     ElseIf (g_CurrentTool = PAINT_FILL) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Fill.hWnd
         Unload toolpanel_Fill
         Set toolpanel_Fill = Nothing
     ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Gradient.hWnd
         Unload toolpanel_Gradient
         Set toolpanel_Gradient = Nothing
     End If
