@@ -211,13 +211,11 @@ Friend Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boole
 End Function
 
 Friend Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-
     If (m_SurfaceHandle <> 0) Then
         SetSurfaceClip_FromRectangle = GDI_Plus.GDIPlus_GraphicsSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode)
     Else
         SetSurfaceClip_FromRectangle = False
     End If
-        
 End Function
 
 Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
@@ -233,23 +231,19 @@ Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RectL, Optional ByVal
 End Function
 
 Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-
     If (m_SurfaceHandle <> 0) Then
         SetSurfaceClip_FromRegion = GDI_Plus.GDIPlus_GraphicsSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode)
     Else
         SetSurfaceClip_FromRegion = False
     End If
-    
 End Function
 
 Friend Function SetSurfaceClip_None() As Boolean
-
     If (m_SurfaceHandle <> 0) Then
         SetSurfaceClip_None = GDI_Plus.GDIPlus_GraphicsResetClipRegion(m_SurfaceHandle)
     Else
         SetSurfaceClip_None = False
     End If
-    
 End Function
 
 'Make an exact copy of an existing surface.
@@ -918,7 +912,7 @@ Friend Function ReleaseSurface() As Boolean
         ' the central Drawing2D module also needs to be notified.
         If ReleaseSurface Then
             m_SurfaceHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange False
+            If m_DebugMode Then Drawing2D.DEBUG_NotifySurfaceCountChange False
             
             'Also reset any surface-type-specific values
             If (m_SurfaceType = P2_ST_WrapperOnly) Then

@@ -204,6 +204,9 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'Brush and surface objects are used by pd2D to paint the back buffer
+Private m_Surface As pd2DSurface, m_Brush As pd2DBrush
+
 
 '***************************************************************************
 ' SETUP AND INITIALIZATION FUNCTIONS
@@ -645,7 +648,7 @@ End Function
 'The naming of this function is potentially confusing, but it restores the back buffer to the currently specified back color.
 ' It does not resize the DIB; it just fill it with a single uniform color.  Optionally, a specific erase rect can be supplied.
 ' (If coordinates are *not* supplied, the entire buffer will be wiped.)
-Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional ByVal rpLeft As Single = 0#, Optional ByVal rpTop As Single = 0#, Optional ByVal rpWidth As Single = 0#, Optional ByVal rpHeight As Single = 0#)
+Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional ByVal rpLeft As Single = 0!, Optional ByVal rpTop As Single = 0!, Optional ByVal rpWidth As Single = 0!, Optional ByVal rpHeight As Single = 0!)
     
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
     ' PD's central themer.
@@ -660,27 +663,43 @@ Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional 
     'There are a couple different ways to apply the repaint.  If the caller specifies a fill rect, we obey it, but if they don't,
     ' we want to wipe the entire buffer.  As a convenience to the caller, we also apply the backcolor inside the IDE.
     If (Not m_NoBackBufferMode) Then
+    
         If PDMain.IsProgramRunning() And (m_BackBuffer.GetDIBDC <> 0) Then
             
             'Use GDI+ to apply the fill
-            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-            Drawing2D.QuickCreateSolidBrush cBrush, newBackColor
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_BackBuffer.GetDIBDC, False
+            If (m_Surface Is Nothing) Then
+                Set m_Surface = New pd2DSurface
+                m_Surface.SetSurfaceAntialiasing P2_AA_None
+                m_Surface.SetSurfacePixelOffset P2_PO_Normal
+            End If
+            m_Surface.WrapSurfaceAroundDC m_BackBuffer.GetDIBDC
             
-            If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-                PD2D.FillRectangleI cSurface, cBrush, 0#, 0#, m_Width, m_Height
+            If (m_Brush Is Nothing) Then Set m_Brush = New pd2DBrush
+            m_Brush.SetBrushColor newBackColor
+            
+            If (rpLeft = 0!) And (rpTop = 0!) And (rpWidth = 0!) And (rpHeight = 0!) Then
+                PD2D.FillRectangleI m_Surface, m_Brush, 0, 0, m_Width, m_Height
             Else
-                PD2D.FillRectangleF cSurface, cBrush, rpLeft, rpTop, rpWidth, rpHeight
+                PD2D.FillRectangleF m_Surface, m_Brush, rpLeft, rpTop, rpWidth, rpHeight
             End If
             
+            m_Surface.ReleaseSurface
+            
+            'Normally, brushes self-release, but because this class outlives almost everything else
+            ' in PD, an instance of it may still exist after GDI+ is shutdown.  To prevent crashes,
+            ' we need to release this brush manually when we're done with it.
+            m_Brush.ReleaseBrush
+            
         Else
-            If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
+            If (rpLeft = 0!) And (rpTop = 0!) And (rpWidth = 0!) And (rpHeight = 0!) Then
                 GDI.FillRectToDC m_BackBuffer.GetDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
             Else
                 GDI.FillRectToDC m_BackBuffer.GetDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
             End If
         End If
+        
         m_BackBuffer.FreeFromDC
+        
     End If
             
 End Sub
@@ -951,7 +970,7 @@ Private Sub m_WindowPainter_EraseBkgnd()
     If m_NoBackBufferMode Then
     
         Dim finalBackColor As Long
-        If m_BackColor = -1 Then
+        If (m_BackColor = -1) Then
             finalBackColor = m_Colors.RetrieveColor(UCS_Background)
         Else
             finalBackColor = m_BackColor
@@ -980,7 +999,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     If m_NoBackBufferMode Then
     
         Dim finalBackColor As Long
-        If m_BackColor = -1 Then
+        If (m_BackColor = -1) Then
             finalBackColor = m_Colors.RetrieveColor(UCS_Background)
         Else
             finalBackColor = m_BackColor
