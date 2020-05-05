@@ -320,6 +320,10 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         'Create a local array and point it at the pixel data we want to operate on
         Dim imageData() As Byte, tmpSA As SafeArray1D
         
+        'Support both 24-bpp and 32-bpp images
+        Dim pxSize As Long
+        pxSize = srcDIB.GetDIBColorDepth \ 8
+        
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
@@ -342,7 +346,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         For x = initX To finalX
             
             'Get the source pixel color values
-            xStride = x * 4
+            xStride = x * pxSize
             b = imageData(xStride)
             g = imageData(xStride + 1)
             r = imageData(xStride + 2)
