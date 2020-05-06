@@ -690,7 +690,7 @@ Private Sub m_EditBox_LostFocusAPI()
     ' calculation result in the edit box (instead of the formula)
     If IsTextEntryValid() Then
         If m_ErrorState Then m_ErrorState = False
-        Me.Value = Evaluator.Evaluate(m_EditBox.Text)
+        Me.Value = CDblCustom(Evaluator.Evaluate(m_EditBox.Text))
         m_EditBox.Text = GetFormattedStringValue(m_Value)
     Else
         If Me.Enabled Then m_ErrorState = True

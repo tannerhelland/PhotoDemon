@@ -66,7 +66,7 @@ Public Function Evaluate(ByVal srcExpression As String) As Variant
     
     'See if the passed expression is a plain number; if it is, return it immediately
     If TextSupport.IsNumberLocaleUnaware(srcExpression) Then
-       Evaluate = srcExpression
+       Evaluate = CDblCustom(srcExpression)
     
     'The passed string is not a plain number; attempt to evaluate it as an expression
     Else
@@ -275,7 +275,7 @@ Rematch:
     
 End Function
 
-Private Function EvalFnc(ByRef srcExpr As String)
+Private Function EvalFnc(ByRef srcExpr As String) As Variant
     Select Case LCase$(Left$(srcExpr, 3))
         Case "abs": EvalFnc = Abs(Val(Mid$(srcExpr, 4)))
         Case "sin": EvalFnc = Sin(Val(Mid$(srcExpr, 4)))
