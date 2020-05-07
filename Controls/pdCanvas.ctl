@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdCanvas 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    ClientHeight    =   7695
    ClientLeft      =   0

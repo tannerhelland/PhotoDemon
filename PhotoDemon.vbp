@@ -449,7 +449,7 @@ Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=7
 MinorVer=9
-RevisionVer=1929
+RevisionVer=1933
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Copyright 2000-2020 Tanner Helland - photodemon.org"
@@ -495,5 +495,3 @@ RevisionVersion=0
 
 [Rubberduck]
 ProjectId=54eecfdc-d8f9-4895-82dc-9f97eb2f0d65
-
-

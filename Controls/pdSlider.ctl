@@ -17,7 +17,6 @@ Begin VB.UserControl pdSlider
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   MousePointer    =   99  'Custom
    ScaleHeight     =   33
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
