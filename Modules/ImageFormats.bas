@@ -196,8 +196,8 @@ Public Sub GenerateInputFormats()
     'Always start with an "All Compatible Images" option
     inputDescriptions(0) = g_Language.TranslateMessage("All Compatible Images")
     
-    'Unique to this first one is the full list of compatible extensions.  Instead of generating a full list here,
-    ' it will be automatically generated as we go.
+    'Unique to that first "All Compatible Images" entry is a matching list of compatible extensions.
+    ' We don't need to supply it; this class automatically generates a matching list as we go.
     
     'Set the location tracker to "0".  Beyond this point, it will be automatically updated.
     m_curFormatIndex = 0
@@ -210,7 +210,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "DNG - Adobe Digital Negative", "*.dng", PDIF_RAW
     End If
     
-    'EMFs will be loaded via GDI+ for improved rendering and feature compatibility
+    'EMFs are loaded via GDI+ for improved rendering and feature compatibility
     AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
     
     If m_FreeImageEnabled Then
@@ -252,7 +252,6 @@ Public Sub GenerateInputFormats()
         AddInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", PDIF_JXR
         AddInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", PDIF_KOALA
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
-        AddInputFormat "MNG - Multiple Network Graphics", "*.mng", PDIF_MNG
     End If
     
     AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
@@ -278,7 +277,12 @@ Public Sub GenerateInputFormats()
     If m_FreeImageEnabled Then
         AddInputFormat "PNM - Portable Anymap", "*.pnm", PDIF_PPM
         AddInputFormat "PPM - Portable Pixmap", "*.ppm", PDIF_PPM
-        AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
+    End If
+    
+    'As of v7.2 nightly builds, PhotoDemon has its own PSD parser
+    AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
+    
+    If m_FreeImageEnabled Then
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
         AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
         AddInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", PDIF_SGI
@@ -357,41 +361,29 @@ Public Sub GenerateOutputFormats()
     ReDim outputDescriptions(0 To 50) As String
     ReDim outputPDIFs(0 To 50) As PD_IMAGE_FORMAT
 
-    'Formats should be added in alphabetical order, as this class has no "sort" functionality.
+    'Formats must be added in alphabetical order, as this class has no "sort" functionality.
     
-    'Start by effectively setting the location tracker to "0".  Beyond this point, it will be automatically updated.
+    'If a given export format requires a matching plugin or system library, make sure to
+    ' check availability of said library BEFORE adding support for that format.
+    
+    'Start by effectively setting the location tracker to "0"
+    ' (Beyond this point, it will be automatically updated.)
     m_curFormatIndex = -1
 
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
-    
-    'FreeImage or GDI+ can write GIFs for us
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
-    
-    If m_FreeImageEnabled Then
-        AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
-        AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
-    End If
-        
-    'FreeImage or GDI+ can write JPEGs for us
+    If m_FreeImageEnabled Then AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
+    AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
+    If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
-        
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
-    
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
-    
-    'FreeImage or GDI+ can write PNGs for us
     AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
-    
-    If m_FreeImageEnabled Then
-        AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
-        AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
-        AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
-    End If
-    
-    'FreeImage or GDI+ can write TIFFs for us
+    If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
+    AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
+    If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
-    
     If m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
@@ -632,420 +624,6 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
 
 End Function
 
-'This can be used to see if an output format supports multiple color depths.
-Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
-
-    Select Case outputPDIF
-    
-        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG, PDIF_ORA
-            DoesPDIFSupportMultipleColorDepths = False
-            
-        Case Else
-            DoesPDIFSupportMultipleColorDepths = True
-    
-    End Select
-
-End Function
-
-'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
-    
-    'Internal engines are covered first; in the absence of these, we'll rely on feature sets in
-    ' either FreeImage (if available) or GDI+
-    
-    'Check the special case of PDI (internal PhotoDemon images)
-    If (outputPDIF = PDIF_PDI) Then
-        IsColorDepthSupported = True
-        Exit Function
-    End If
-    
-    'OpenRaster support uses an internal engine
-    If (outputPDIF = PDIF_ORA) Then
-        IsColorDepthSupported = (desiredColorDepth = 32)
-        Exit Function
-    End If
-    
-    'All subsequent checks rely on FreeImage or GDI+
-
-    'By default, report that a given color depth is NOT supported
-    IsColorDepthSupported = False
-    
-    'First, address formats handled only by FreeImage
-    If m_FreeImageEnabled Then
-        
-        Select Case outputPDIF
-        
-            'BMP
-            Case PDIF_BMP
-            
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 16
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-        
-            'GIF
-            Case PDIF_GIF
-            
-                If desiredColorDepth = 8 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
-                
-            'HDR
-            Case PDIF_HDR
-            
-                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
-                
-            'JP2 (JPEG 2000)
-            Case PDIF_JP2
-            
-                Select Case desiredColorDepth
-                
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-                
-            'JPEG
-            Case PDIF_JPEG
-            
-                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
-            
-            'JXR (JPEG XR)
-            Case PDIF_JXR
-            
-                Select Case desiredColorDepth
-                
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-            
-            'PNG
-            Case PDIF_PNG
-        
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-                
-            'PPM (Portable Pixmap)
-            Case PDIF_PPM
-            
-                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
-            
-            'PSD (Photoshop document)
-            Case PDIF_PSD
-                    
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    
-                    'Higher bit-depths may be supported, but I'm not enabling them until high bit-depth output is
-                    ' better supported throughout all of PD.
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-            
-            'TGA (Targa)
-            Case PDIF_TARGA
-            
-                Select Case desiredColorDepth
-                
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                
-                End Select
-                
-            'TIFF
-            Case PDIF_TIFF
-            
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-                
-            'WebP
-            Case PDIF_WEBP
-            
-                Select Case desiredColorDepth
-                
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-        
-        End Select
-        
-        'Because FreeImage covers every available file type, we can now exit the function with whatever value has been set
-        Exit Function
-        
-    'If FreeImage isn't available, fall back to GDI+ features
-    Else
-    
-        Select Case outputPDIF
-        
-            'GIF
-            Case PDIF_GIF
-                IsColorDepthSupported = (desiredColorDepth = 8)
-                
-            'JPEG
-            Case PDIF_JPEG
-                IsColorDepthSupported = (desiredColorDepth = 24)
-                
-            'PNG
-            Case PDIF_PNG
-        
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-                
-            'TIFF
-            Case PDIF_TIFF
-            
-                Select Case desiredColorDepth
-        
-                    Case 1
-                        IsColorDepthSupported = True
-                    Case 4
-                        IsColorDepthSupported = True
-                    Case 8
-                        IsColorDepthSupported = True
-                    Case 24
-                        IsColorDepthSupported = True
-                    Case 32
-                        IsColorDepthSupported = True
-                    Case Else
-                        IsColorDepthSupported = False
-                        
-                End Select
-        
-        End Select
-     
-    End If
-
-End Function
-
-'Given a file format and desired color depth, return the next-best color depth that can be used (assuming the desired one is not available)
-' (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Public Function GetClosestColorDepth(ByVal outputPDIF As PD_IMAGE_FORMAT, ByVal desiredColorDepth As Long) As Long
-    
-    'Internal export engines are handled first, as they tend to have the most comprehensive
-    ' (and reliable) color depth coverage
-    If (outputPDIF = PDIF_PDI) Then
-        GetClosestColorDepth = desiredColorDepth
-        Exit Function
-    End If
-    
-    If (outputPDIF = PDIF_ORA) Then
-        GetClosestColorDepth = 32
-        Exit Function
-    End If
-    
-    'Subsequent formats are covered by either FreeImage or GDI+
-
-    'By default, report that 24bpp is the preferred alternative
-    GetClosestColorDepth = 24
-    
-    'Certain file formats only support one output color depth, so they are easily handled (e.g. GIF)
-    
-    'Some file formats support many color depths (PNG, for example, can handle 1/4/8/24/32)
-    
-    'This function attempts to return the color depth nearest to the one the user has requested
-    Select Case outputPDIF
-    
-        'BMP support changes based on the available encoder
-        Case PDIF_BMP
-        
-            If desiredColorDepth <= 1 Then
-                GetClosestColorDepth = 1
-            ElseIf desiredColorDepth <= 4 Then
-                GetClosestColorDepth = 4
-            ElseIf desiredColorDepth <= 8 Then
-                GetClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-            
-        'GIF only supports 8bpp
-        Case PDIF_GIF
-            GetClosestColorDepth = 8
-            
-        'HDR only supports 24bpp
-        Case PDIF_HDR
-            GetClosestColorDepth = 24
-            
-        'JP2 (JPEG 2000) supports 24/32bpp
-        Case PDIF_JP2
-            If (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-        'JPEG only supports 24bpp (8bpp grayscale is currently handled automatically by the encoder)
-        Case PDIF_JPEG
-            GetClosestColorDepth = 24
-        
-        'JXR (JPEG XR) supports 24/32bpp
-        Case PDIF_JXR
-            If (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-        Case PDIF_ORA
-            GetClosestColorDepth = 32
-            
-        'PNG supports all available color depths
-        Case PDIF_PNG
-        
-            If (desiredColorDepth <= 1) Then
-                GetClosestColorDepth = 1
-            ElseIf (desiredColorDepth <= 4) Then
-                GetClosestColorDepth = 4
-            ElseIf (desiredColorDepth <= 8) Then
-                GetClosestColorDepth = 8
-            ElseIf (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-        'PPM only supports 24bpp
-        Case PDIF_PPM
-            GetClosestColorDepth = 24
-        
-        'PSD supports all available color depths
-        Case PDIF_PSD
-        
-            If (desiredColorDepth <= 1) Then
-                GetClosestColorDepth = 1
-            ElseIf (desiredColorDepth <= 4) Then
-                GetClosestColorDepth = 4
-            ElseIf (desiredColorDepth <= 8) Then
-                GetClosestColorDepth = 8
-            ElseIf (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-        'TGA supports 8/24/32
-        Case PDIF_TARGA
-            If (desiredColorDepth <= 8) Then
-                GetClosestColorDepth = 8
-            ElseIf (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-        'TIFF supports all available color depths
-        Case PDIF_TIFF
-            If (desiredColorDepth <= 1) Then
-                GetClosestColorDepth = 1
-            ElseIf (desiredColorDepth <= 4) Then
-                GetClosestColorDepth = 4
-            ElseIf (desiredColorDepth <= 8) Then
-                GetClosestColorDepth = 8
-            ElseIf (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-            
-        'WebP supports 24/32bpp
-        Case PDIF_WEBP
-            If (desiredColorDepth <= 24) Then
-                GetClosestColorDepth = 24
-            Else
-                GetClosestColorDepth = 32
-            End If
-        
-    End Select
-    
-End Function
-
 'Given an output PDIF, return the ideal metadata format for that image format.
 Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
 
@@ -1058,6 +636,9 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         
         Case PDIF_HDR
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
+        Case PDIF_ICO
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         
         Case PDIF_JP2
@@ -1098,8 +679,10 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
-' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
-'  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
+' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000,
+' but PD prefers not to do this as the resulting data can't be read by anything but ExifTool itself.)
+
+'If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
 Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
@@ -1111,6 +694,9 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
             IsExifAllowedForPDIF = False
         
         Case PDIF_HDR
+            IsExifAllowedForPDIF = False
+        
+        Case PDIF_ICO
             IsExifAllowedForPDIF = False
         
         Case PDIF_JP2
@@ -1166,6 +752,9 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         
         Case PDIF_HDR
             IsExportDialogSupported = False
+        
+        Case PDIF_ICO
+            IsExportDialogSupported = True
         
         Case PDIF_JP2
             IsExportDialogSupported = True

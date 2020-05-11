@@ -12,19 +12,23 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon ICO (Icon) Container and Parser
+'PhotoDemon ICO (Icon) Container and Import/Export engine
 'Copyright 2020-2020 by Tanner Helland
 'Created: 07/May/20
 'Last updated: 11/May/20
 'Last update: wrap up initial work on ICO import; export is up next!
 '
-'This class (and its associated pdICO- child classes) handle icon file parsing duties.
-' It is custom-built for PhotoDemon, with an emphasis on performance and robustness.
+'This class (and its associated pdICO- child classes) handle import and export of
+' old-school ICO files.  The class was custom-built for PhotoDemon, with an emphasis on
+' performance, robustness, and automatic coverage of core ICO features - e.g. users
+' shouldn't need to know any details about the ICO format to produce useable ICO files.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work
 ' off info found in the following articles (links good as of May 2020):
-' https://en.wikipedia.org/wiki/ICO_(file_format)
 ' https://devblogs.microsoft.com/oldnewthing/20101018-00/?p=12513
+' https://docs.microsoft.com/en-us/previous-versions/ms997538(v=msdn.10)
+' https://docs.microsoft.com/en-us/windows/win32/uxguide/vis-icons
+' https://en.wikipedia.org/wiki/ICO_(file_format)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -35,7 +39,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps all kinds of
 ' diagnostic information to the debug log.
-Private Const ICO_DEBUG_VERBOSE As Boolean = False
+Private Const ICO_DEBUG_VERBOSE As Boolean = True
 
 'ICO parsing is complicated, and a lot of things can go wrong.  Instead of returning
 ' binary "success/fail" values, we return specific flags; "warnings" may be recoverable
