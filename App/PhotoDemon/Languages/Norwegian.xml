@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11092,6 +11092,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>gjeldende batch liste</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>lagre liste</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>last liste</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>slette hele listen</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>fjerne valgte bilde</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>legge til enkeltbilder </translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>vise forhåndsvisninger </translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>legge til bilder</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>modifisere liste</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>belastning/lagre liste</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>legge hele mapper)</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>fjerne alle bildene i denne mappen</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Batch konverteringsprosessen  vil vises her ved kjøring)</translation>
 </phrase>
@@ -11204,66 +11264,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>fikse eksponering og belysning problemer</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>gjeldende batch liste</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>lagre liste</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>last liste</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>slette hele listen</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>fjerne valgte bilde</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>legge til enkeltbilder </translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>vise forhåndsvisninger </translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>legge til bilder</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>modifisere liste</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>belastning/lagre liste</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>legge hele mapper)</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>fjerne alle bildene i denne mappen</translation>
 </phrase>
 
 <phrase>
@@ -15976,6 +15976,12 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

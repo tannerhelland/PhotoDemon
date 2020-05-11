@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.274</langversion>
+<langversion>1.0.275</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -11092,6 +11092,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>тековната листа серија</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>зачувате листата</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>листа оптоварување</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>бришење на целата листа</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>ја отстраните избраната слика</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>додадете поединечни слики</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>покаже слика прегледи</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>додадете слики</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>менувате листа</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>Вчитување/Зачувување листа</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>додадете целиот папки)</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>отстранат сите слики во оваа папка</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
 </phrase>
@@ -11204,66 +11264,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>поправат проблемите на експозицијата и осветлување</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>тековната листа серија</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>зачувате листата</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>листа оптоварување</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>бришење на целата листа</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>ја отстраните избраната слика</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>додадете поединечни слики</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>покаже слика прегледи</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>додадете слики</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>менувате листа</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>Вчитување/Зачувување листа</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>додадете целиот папки)</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>отстранат сите слики во оваа папка</translation>
 </phrase>
 
 <phrase>
@@ -15978,6 +15978,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

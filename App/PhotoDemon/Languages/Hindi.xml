@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.181</langversion>
+<langversion>1.0.182</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11090,6 +11090,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>वर्तमान बैच सूची</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>सूची को बचाने</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>लोड सूची</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>पूरी सूची मिटाएं</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>चयनित चित्र को हटा दें</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>व्यक्तिगत चित्र जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>छवि पूर्वावलोकन दिखाएं</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>छवियां जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>सूची को संशोधित करें</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>भार</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>संपूर्ण फ़ोल्डर जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>इस फ़ोल्डर में सभी छवियों को हटा दें</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(बैच रूपांतरण प्रक्रिया यहां रन-टाइम पर दिखाई जाएगी)</translation>
 </phrase>
@@ -11202,66 +11262,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>जोखिम और प्रकाश की समस्याओं को ठीक करना</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>वर्तमान बैच सूची</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>सूची को बचाने</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>लोड सूची</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>पूरी सूची मिटाएं</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>चयनित चित्र को हटा दें</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>व्यक्तिगत चित्र जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>छवि पूर्वावलोकन दिखाएं</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>छवियां जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>सूची को संशोधित करें</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>भार</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>संपूर्ण फ़ोल्डर जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>इस फ़ोल्डर में सभी छवियों को हटा दें</translation>
 </phrase>
 
 <phrase>
@@ -15975,6 +15975,12 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

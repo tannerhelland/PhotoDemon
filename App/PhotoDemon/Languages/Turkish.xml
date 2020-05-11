@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11084,6 +11084,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>Geçerli toplu liste</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>listesini kaydetmek</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>yük listesi</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>Tüm listeyi silmek</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>Seçilen görüntüyü kaldırmak</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>Tek tek görüntüleri eklemek</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>resim önizleme göstermek</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>görüntüleri eklemek</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>listesini değiştirmek</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>yükleme/kaydetme liste</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>) Tüm klasörleri eklemek</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>Bu klasördeki tüm görüntüleri kaldırmak</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Toplu dönüştürme işlemi çalışma anında burada görünecek)</translation>
 </phrase>
@@ -11196,66 +11256,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>pozlama ve aydınlatma sorunları gidermek</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>Geçerli toplu liste</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>listesini kaydetmek</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>yük listesi</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>Tüm listeyi silmek</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>Seçilen görüntüyü kaldırmak</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>Tek tek görüntüleri eklemek</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>resim önizleme göstermek</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>görüntüleri eklemek</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>listesini değiştirmek</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>yükleme/kaydetme liste</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>) Tüm klasörleri eklemek</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>Bu klasördeki tüm görüntüleri kaldırmak</translation>
 </phrase>
 
 <phrase>
@@ -15965,6 +15965,12 @@ If yamalı vardır.</translation>
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

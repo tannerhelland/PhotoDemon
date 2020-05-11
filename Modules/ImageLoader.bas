@@ -18,16 +18,20 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
+'A custom icon parser was added in the 7.2 release cycle.  I know of no reason to disable it at present,
+' but you can use this constant to deactivate parsing support if necessary.
+Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
+
+'OpenRaster support was added in the 7.2 release cycle.  I know of no reason to disable it at present,
+' but you can use this constant to deactivate parsing support if necessary.
+Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
+
 'As of v7.2, PD includes its own custom-built PNG parser.  This offers a number of performance and
 ' feature enhancements relative to the 3rd-party libraries.  I know of no reason why it would need
 ' to be disabled, but if you want to fall back to the old FreeImage and GDI+ interface, you can set
 ' this to FALSE.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private m_PNG As pdPNG
-
-'OpenRaster support was added in the 7.2 release cycle.  I know of no reason to disable it at present,
-' but you can use this constant to deactivate parsing support if necessary.
-Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 
 'As of v7.2, PD's internal PSD parser is both stable and feature-complete.
 ' If you try to load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.
@@ -979,6 +983,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'In v7.2, I wrote a custom icon (ICO) file parser for PD.
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ICO Then
+        CascadeLoadGenericImage = LoadICO(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_ICOParser
+            dstImage.SetOriginalFileFormat PDIF_ICO
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v7.2, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to a
     ' lot of bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now more selective about
@@ -1094,6 +1107,39 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             
     End Select
+    
+End Function
+
+Private Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadICO = False
+    
+    'pdICOhandles all the dirty work for us
+    Dim cIconReader As pdICO
+    Set cIconReader = New pdICO
+    
+    'Validate the potential icon file
+    LoadICO = cIconReader.IsFileICO(srcFile, True)
+    
+    'If validation passes, attempt a full load
+    If LoadICO Then LoadICO = (cIconReader.LoadICO(srcFile, dstImage, dstDIB) < ico_Failure)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadICO Then
+        
+        dstImage.SetOriginalFileFormat PDIF_ICO
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
     
 End Function
 

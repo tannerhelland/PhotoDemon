@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11088,6 +11088,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>Aktuální seznam šarží</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>Uložte seznam</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>Seznam zatížení</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>Vymazat celý seznam</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>Odstranit vybraný obrázek</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>Přidat jednotlivé snímky</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>Zobrazit náhledy obrázků</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>Přidat obrázky</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>Změnit seznam</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>zatížení</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>Přidat celý adresář (y)</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>Odstraňte všechny obrázky v této složce</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(V běhu se zde objeví proces převodu dávky)</translation>
 </phrase>
@@ -11200,66 +11260,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>Opravit problémy s expozicí a osvětlením</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>Aktuální seznam šarží</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>Uložte seznam</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>Seznam zatížení</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>Vymazat celý seznam</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>Odstranit vybraný obrázek</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>Přidat jednotlivé snímky</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>Zobrazit náhledy obrázků</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>Přidat obrázky</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>Změnit seznam</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>zatížení</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>Přidat celý adresář (y)</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>Odstraňte všechny obrázky v této složce</translation>
 </phrase>
 
 <phrase>
@@ -15972,6 +15972,12 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

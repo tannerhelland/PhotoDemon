@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11087,6 +11087,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>aktuella uppsättningen lista</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>spara listan</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>lastlista</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>radera hela listan</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>ta bort den valda bilden</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>lägga till enskilda bilder</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>visa bilden förhandsvisningar</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>lägga till bilder</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>ändra förteckning</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>belastning/spara listan</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>lägga till hela mappar)</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>ta bort alla bilder i den här mappen</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(batch konverteringen kommer att visas här på run-time)</translation>
 </phrase>
@@ -11199,66 +11259,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>fixa exponering och ljusproblem</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>aktuella uppsättningen lista</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>spara listan</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>lastlista</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>radera hela listan</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>ta bort den valda bilden</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>lägga till enskilda bilder</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>visa bilden förhandsvisningar</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>lägga till bilder</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>ändra förteckning</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>belastning/spara listan</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>lägga till hela mappar)</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>ta bort alla bilder i den här mappen</translation>
 </phrase>
 
 <phrase>
@@ -15973,6 +15973,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.479</langversion>
+<langversion>6.7.480</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -11094,6 +11094,66 @@ Les fichiers réparés ont été sauvegardés dasn le dossier de destination. Le
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>liste de lots actuelle</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>sauvegarder cette liste</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>chargement d'une liste</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>effacer toute la liste</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>supprimer l'image sélectionnée</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>ajouter des images individuelles</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>voir les aperçus d'image</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>ajouter des images</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>modifier la liste</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>charger / sauver une liste</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>ajouter un dossier entier</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>supprimer toutes les images de ce dossier</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(le processus de conversion par lots apparaitra ici au moment de l'exécution)</translation>
 </phrase>
@@ -11206,66 +11266,6 @@ Les fichiers réparés ont été sauvegardés dasn le dossier de destination. Le
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>corriger l'exposition et les problèmes d'éclairage</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>liste de lots actuelle</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>sauvegarder cette liste</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>chargement d'une liste</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>effacer toute la liste</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>supprimer l'image sélectionnée</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>ajouter des images individuelles</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>voir les aperçus d'image</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>ajouter des images</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>modifier la liste</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>charger / sauver une liste</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>ajouter un dossier entier</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>supprimer toutes les images de ce dossier</translation>
 </phrase>
 
 <phrase>
@@ -15988,6 +15988,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

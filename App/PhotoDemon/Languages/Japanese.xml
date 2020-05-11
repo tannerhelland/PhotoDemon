@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.169</langversion>
+<langversion>1.0.170</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11088,6 +11088,66 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>現在のバッチリスト</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>リストを保存する</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>ロードリスト</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>リスト全体を消去する</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>選択した画像を削除する</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>個々の画像を追加する</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>画像のプレビューを表示する</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>画像を追加する</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>リストを変更する</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>負荷</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>フォルダ全体を追加する</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>このフォルダ内のすべての画像を削除する</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>（バッチ変換プロセスは実行時にここに表示されます）</translation>
 </phrase>
@@ -11200,66 +11260,6 @@ Repairedファイルが保存先フォルダに保存されました。 修復�
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>露光と照明の問題を解決する</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>現在のバッチリスト</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>リストを保存する</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>ロードリスト</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>リスト全体を消去する</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>選択した画像を削除する</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>個々の画像を追加する</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>画像のプレビューを表示する</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>画像を追加する</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>リストを変更する</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>負荷</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>フォルダ全体を追加する</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>このフォルダ内のすべての画像を削除する</translation>
 </phrase>
 
 <phrase>
@@ -15973,6 +15973,12 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

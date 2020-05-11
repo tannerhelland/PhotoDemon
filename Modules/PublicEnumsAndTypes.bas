@@ -283,18 +283,19 @@ End Enum
 'PhotoDemon supports multiple image encoders and decoders.
 Public Enum PD_ImageDecoder
     id_Failure = -1
-    id_Internal = 0
-    id_FreeImage = 1
-    id_GDIPlus = 2
-    id_PNGParser = 3
+    id_FreeImage = 0
+    id_GDIPlus = 1
+    id_ICOParser = 2
+    id_Internal = 3
     id_ORAParser = 4
-    id_PSDParser = 5
-    id_SVGParser = 6
-    id_WIC = 7
+    id_PNGParser = 5
+    id_PSDParser = 6
+    id_SVGParser = 7
+    id_WIC = 8
 End Enum
 
 #If False Then
-    Private Const id_Failure = -1, id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_PNGParser = 3, id_ORAParser = 4, id_PSDParser = 5, id_SVGParser = 6, id_WIC = 7
+    Private Const id_Failure = -1, id_FreeImage = 0, id_GDIPlus = 1, id_ICOParser = 2, id_Internal = 3, id_ORAParser = 4, id_PNGParser = 5, id_PSDParser = 6, id_SVGParser = 7, id_WIC = 8
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.

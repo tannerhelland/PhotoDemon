@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.146</langversion>
+<langversion>1.0.147</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11087,6 +11087,66 @@ Repaired 파일이 대상 폴더에 저장되었습니다. 복구되지 않은 �
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>현재 배치 목록</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>목록 저장</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>하중 목록</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>전체 목록을 지우다.</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>선택한 이미지 제거</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>개별 이미지 추가</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>이미지 미리보기 표시</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>이미지 추가</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>목록을 수정하다</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>하중</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>전체 폴더 추가</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>이 폴더의 모든 이미지를 제거하십시오.</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(일괄 변환 프로세스가 런타임에 여기에 나타납니다)</translation>
 </phrase>
@@ -11199,66 +11259,6 @@ Repaired 파일이 대상 폴더에 저장되었습니다. 복구되지 않은 �
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>노출 및 조명 문제 해결</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>현재 배치 목록</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>목록 저장</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>하중 목록</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>전체 목록을 지우다.</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>선택한 이미지 제거</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>개별 이미지 추가</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>이미지 미리보기 표시</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>이미지 추가</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>목록을 수정하다</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>하중</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>전체 폴더 추가</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>이 폴더의 모든 이미지를 제거하십시오.</translation>
 </phrase>
 
 <phrase>
@@ -15972,6 +15972,12 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

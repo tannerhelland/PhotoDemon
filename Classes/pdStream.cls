@@ -116,6 +116,15 @@ Private m_FilePointerOffset As Long
 'File-backed mode requires a number of other pointers and trackers
 Private m_FileHandle As Long
 
+'Returns TRUE if at least numBytesRequired exist in the current stream; FALSE otherwise.
+Friend Function AreBytesAvailable(ByVal readLength As Long) As Boolean
+    If m_Open Then
+        AreBytesAvailable = Not (Me.GetPosition() + readLength > m_BufferSize)
+    Else
+        AreBytesAvailable = False
+    End If
+End Function
+
 'Remove (n) bytes from the stream, starting at the front of the stream.  Any un-removed bytes will be shifted to
 ' the front of the stream, and the current pointer will be shifted accordingly.  (That said, if the current pointer
 ' would be moved before the front of the stream, it will be forcibly reset to 0.)

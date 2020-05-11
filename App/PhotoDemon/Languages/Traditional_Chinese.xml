@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.148</langversion>
+<langversion>7.0.149</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -11051,6 +11051,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>目前批次列表</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>儲存列表</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>載入列表</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>清除完整列表</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>移除所選影像</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>加入獨立影像</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>顯示影像預覽</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>加入影像</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>修改列表</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>載入 / 儲存列表</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>加入整個資料夾</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>移除此資料夾的所有影像</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation></translation>
 </phrase>
@@ -11163,66 +11223,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>修正曝光與亮度問題</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>目前批次列表</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>儲存列表</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>載入列表</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>清除完整列表</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>移除所選影像</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>加入獨立影像</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>顯示影像預覽</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>加入影像</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>修改列表</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>載入 / 儲存列表</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>加入整個資料夾</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>移除此資料夾的所有影像</translation>
 </phrase>
 
 <phrase>
@@ -15923,6 +15923,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

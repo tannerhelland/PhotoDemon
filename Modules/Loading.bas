@@ -237,7 +237,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             '*************************************************************************************************************************************
             
             'If the source file was already designed as a multi-layer format (e.g. OpenRaster, PSD), this step is unnecessary.
-            If (targetImage.GetCurrentFileFormat <> PDIF_ORA) And ((targetImage.GetCurrentFileFormat <> PDIF_PSD) Or (decoderUsed <> id_PSDParser)) Then
+            Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSD)
+            If (Not layersAlreadyLoaded) Then
                 
                 'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
                 Dim newLayerName As String
@@ -266,18 +270,20 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         Dim decoderName As String
         Select Case decoderUsed
-            Case id_Internal
-                decoderName = "Internal PDI parser"
-            Case id_PNGParser
-                decoderName = "Internal PNG parser"
-            Case id_ORAParser
-                decoderName = "Internal OpenRaster parser"
-            Case id_PSDParser
-                decoderName = "Internal PSD parser"
-            Case id_GDIPlus
-                decoderName = "GDI+"
             Case id_FreeImage
                 decoderName = "FreeImage plugin"
+            Case id_GDIPlus
+                decoderName = "GDI+"
+            Case id_ICOParser
+                decoderName = "Internal ICO parser"
+            Case id_Internal
+                decoderName = "Internal PDI parser"
+            Case id_ORAParser
+                decoderName = "Internal OpenRaster parser"
+            Case id_PNGParser
+                decoderName = "Internal PNG parser"
+            Case id_PSDParser
+                decoderName = "Internal PSD parser"
             Case id_WIC
                 decoderName = "Windows Imaging Component"
         End Select

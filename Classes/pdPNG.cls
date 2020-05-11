@@ -5585,8 +5585,7 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
         'There's not a performance-friendly way to mask flags in VB, so we just use a byte array for clarity
         Case 1
         
-            Dim bitFlags() As Byte
-            ReDim bitFlags(0 To 7) As Byte
+            Dim bitFlags(0 To 7) As Byte
             bitFlags(0) = 128
             bitFlags(1) = 64
             bitFlags(2) = 32
@@ -5624,8 +5623,7 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                     
         Case 2
             
-            Dim shiftTable() As Byte
-            ReDim shiftTable(0 To 3) As Byte
+            Dim shiftTable(0 To 3) As Byte
             shiftTable(0) = 2 ^ 6
             shiftTable(1) = 2 ^ 4
             shiftTable(2) = 2 ^ 2

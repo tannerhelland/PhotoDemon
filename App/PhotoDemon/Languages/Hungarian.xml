@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11074,6 +11074,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>aktuális tétel lista</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>menteni a listát</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>terhelés lista</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>törli a teljes lista</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>eltávolítani a kiválasztott kép</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>add hozzá az egyes képek</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>mutatják kép előnézetét</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>hozzá képeket</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>módosíthatja a listát</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>töltés/mentés lista</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>add egész mappa)</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>távolítsa el az összes kép ebben a mappában</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Kötegelt konvertálási folyamat itt jelennek meg futási időben)</translation>
 </phrase>
@@ -11186,66 +11246,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>fix expozíció és megvilágítási problémákat</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>aktuális tétel lista</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>menteni a listát</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>terhelés lista</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>törli a teljes lista</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>eltávolítani a kiválasztott kép</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>add hozzá az egyes képek</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>mutatják kép előnézetét</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>hozzá képeket</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>módosíthatja a listát</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>töltés/mentés lista</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>add egész mappa)</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>távolítsa el az összes kép ebben a mappában</translation>
 </phrase>
 
 <phrase>
@@ -15955,6 +15955,12 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

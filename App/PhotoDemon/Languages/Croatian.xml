@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3461</langversion>
+<langversion>6.8.3462</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11088,6 +11088,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>Trenutni popis serija</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>Spremite popis</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>Popisa opterećenja</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>Izbrisati cijeli popis</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>Ukloni odabranu sliku</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>Dodajte pojedinačne slike</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>Prikaži pregled slika</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>Dodajte slike</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>Izmijeniti popis</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>opterećenje</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>Dodavanje cijele mape</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>Uklonite sve slike u ovoj mapi</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Proces pretvorbe serije pojavit će se ovdje u vrijeme pokretanja)</translation>
 </phrase>
@@ -11200,66 +11260,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>Popraviti izloženost i probleme s rasvjetom</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>Trenutni popis serija</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>Spremite popis</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>Popisa opterećenja</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>Izbrisati cijeli popis</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>Ukloni odabranu sliku</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>Dodajte pojedinačne slike</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>Prikaži pregled slika</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>Dodajte slike</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>Izmijeniti popis</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>opterećenje</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>Dodavanje cijele mape</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>Uklonite sve slike u ovoj mapi</translation>
 </phrase>
 
 <phrase>
@@ -15974,6 +15974,12 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

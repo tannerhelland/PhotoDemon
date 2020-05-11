@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.420</langversion>
+<langversion>6.6.421</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -11098,6 +11098,66 @@ R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki t
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>daftar batch saat ini</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>simpan daftar</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>daftar beban</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>hapus seluruh daftar</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>hapus gambar yang dipilih</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>tambahkan gambar individu</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>menunjukkan preview imej</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>tambahkan gambar</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>memodifikasi daftar</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>beban</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>tambahkan seluruh folder</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>hapus semua gambar dalam folder ini</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(proses penukaran kumpulan akan muncul di sini pada jangka masa)</translation>
 </phrase>
@@ -11210,66 +11270,6 @@ R File berpasangan telah disimpan ke folder tujuan. File yang tidak diperbaiki t
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>menetapkan pendedahan dan pencahayaan masalah</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>daftar batch saat ini</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>simpan daftar</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>daftar beban</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>hapus seluruh daftar</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>hapus gambar yang dipilih</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>tambahkan gambar individu</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>menunjukkan preview imej</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>tambahkan gambar</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>memodifikasi daftar</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>beban</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>tambahkan seluruh folder</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>hapus semua gambar dalam folder ini</translation>
 </phrase>
 
 <phrase>
@@ -15984,6 +15984,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

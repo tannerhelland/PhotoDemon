@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1908</langversion>
+<langversion>8.0.1909</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11096,6 +11096,66 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>Aktuelle Batchliste</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>Liste speichern</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>Liste laden</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>Gesamte Liste löschen</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>Ausgewähltes Bild entfernen</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>Einzelne Bilder hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>Bildvorschauen zeigen</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>Bilder hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>Liste modifizieren</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>Liste laden / speichern</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>Gesamte(n) Ordner hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>Alle Bilder in diesem Ordner entfernen</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Batch-Konvertierungsprozess wird hier bei Laufzeit erscheinen)</translation>
 </phrase>
@@ -11208,66 +11268,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>Belichtungs- und Beleuchtungsprobleme beheben</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>Aktuelle Batchliste</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>Liste speichern</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>Liste laden</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>Gesamte Liste löschen</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>Ausgewähltes Bild entfernen</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>Einzelne Bilder hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>Bildvorschauen zeigen</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>Bilder hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>Liste modifizieren</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>Liste laden / speichern</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>Gesamte(n) Ordner hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>Alle Bilder in diesem Ordner entfernen</translation>
 </phrase>
 
 <phrase>
@@ -15982,6 +15982,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

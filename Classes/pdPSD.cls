@@ -1569,7 +1569,7 @@ InternalVBError:
 End Function
 
 Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PSDResult
-
+    
     On Error GoTo InternalVBError
     
     'If the passed path is zero, assume the caller is loading the PSD from memory.

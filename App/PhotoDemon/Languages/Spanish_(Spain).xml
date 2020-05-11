@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.324</langversion>
+<langversion>6.7.325</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -11098,6 +11098,66 @@ Los archivos reparados se han guardado en la carpeta destino. Los archivos sin r
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>Lista de lotes actual</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>Guardar lista</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>Cargar lista</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>Borrar lista íntegramente</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>Eliminar la imagen seleccionada</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>Agregar imágenes una por una</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>Mostrar vista previa de imágenes</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>Añadir imágenes</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>Modificar lista</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>Cargar / guardar lista</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>Agregar carpetas completas</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>Eliminar todas las imágenes de la carpeta</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(El proceso de conversión por lotes aparecerá aquí en tiempo de ejecución)</translation>
 </phrase>
@@ -11210,66 +11270,6 @@ Los archivos reparados se han guardado en la carpeta destino. Los archivos sin r
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>Corregir problemas de exposición e iluminación</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>Lista de lotes actual</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>Guardar lista</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>Cargar lista</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>Borrar lista íntegramente</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>Eliminar la imagen seleccionada</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>Agregar imágenes una por una</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>Mostrar vista previa de imágenes</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>Añadir imágenes</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>Modificar lista</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>Cargar / guardar lista</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>Agregar carpetas completas</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>Eliminar todas las imágenes de la carpeta</translation>
 </phrase>
 
 <phrase>
@@ -15984,6 +15984,12 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

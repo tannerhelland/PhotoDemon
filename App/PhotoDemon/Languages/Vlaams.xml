@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.478</langversion>
+<langversion>6.7.479</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11093,6 +11093,66 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 </phrase>
 
 <phrase>
+<original>current batch list</original>
+<translation>huidige batch lijst</translation>
+</phrase>
+
+<phrase>
+<original>save list</original>
+<translation>bewaar lijst</translation>
+</phrase>
+
+<phrase>
+<original>load list</original>
+<translation>laad lijst</translation>
+</phrase>
+
+<phrase>
+<original>erase entire list</original>
+<translation>wis volledige lijst</translation>
+</phrase>
+
+<phrase>
+<original>remove selected image</original>
+<translation>verwijder geselecteerde afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>add individual images</original>
+<translation>voeg individuele afbeeldingen toe</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>toon afbeeldingsvoorbeelden</translation>
+</phrase>
+
+<phrase>
+<original>add images</original>
+<translation>voeg afbeeldingen toe</translation>
+</phrase>
+
+<phrase>
+<original>modify list</original>
+<translation>aanpassen lijst</translation>
+</phrase>
+
+<phrase>
+<original>load / save list</original>
+<translation>laad / bewaar lijst</translation>
+</phrase>
+
+<phrase>
+<original>add entire folder(s)</original>
+<translation>voeg de hele map(en) toe</translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation>verwijder alle afbeeldingen in deze map</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(batch-conversie proces zal hier verschijnen in run-time)</translation>
 </phrase>
@@ -11205,66 +11265,6 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>repareer belichting en belichtingsproblemen</translation>
-</phrase>
-
-<phrase>
-<original>current batch list</original>
-<translation>huidige batch lijst</translation>
-</phrase>
-
-<phrase>
-<original>save list</original>
-<translation>bewaar lijst</translation>
-</phrase>
-
-<phrase>
-<original>load list</original>
-<translation>laad lijst</translation>
-</phrase>
-
-<phrase>
-<original>erase entire list</original>
-<translation>wis volledige lijst</translation>
-</phrase>
-
-<phrase>
-<original>remove selected image</original>
-<translation>verwijder geselecteerde afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>add individual images</original>
-<translation>voeg individuele afbeeldingen toe</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>toon afbeeldingsvoorbeelden</translation>
-</phrase>
-
-<phrase>
-<original>add images</original>
-<translation>voeg afbeeldingen toe</translation>
-</phrase>
-
-<phrase>
-<original>modify list</original>
-<translation>aanpassen lijst</translation>
-</phrase>
-
-<phrase>
-<original>load / save list</original>
-<translation>laad / bewaar lijst</translation>
-</phrase>
-
-<phrase>
-<original>add entire folder(s)</original>
-<translation>voeg de hele map(en) toe</translation>
-</phrase>
-
-<phrase>
-<original>remove all images in this folder</original>
-<translation>verwijder alle afbeeldingen in deze map</translation>
 </phrase>
 
 <phrase>
@@ -15979,6 +15979,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Adjustments_Color_Sepia.frm-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- Automatic text extraction complete. -->
 
