@@ -391,9 +391,9 @@ Public Sub InitializeMenus()
     AddMenuItem "Lighting", "adj_lighting", 5, 16
         AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 16, 0
         AddMenuItem "Curves...", "adj_curves", 5, 16, 1
-        AddMenuItem "Exposure...", "adj_exposure", 5, 18, 2
+        AddMenuItem "Exposure...", "adj_exposure", 5, 16, 2
         AddMenuItem "Gamma...", "adj_gamma", 5, 16, 3
-        AddMenuItem "HDR...", "adj_hdr", 5, 18, 4
+        AddMenuItem "HDR...", "adj_hdr", 5, 16, 4
         AddMenuItem "Levels...", "adj_levels", 5, 16, 5
         AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 6
     AddMenuItem "Monochrome", "adj_monochrome", 5, 17
