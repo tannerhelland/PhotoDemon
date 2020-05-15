@@ -75,7 +75,7 @@ Private m_IconSubtype As PD_IconSubtype
 
 'Icon bitmaps use standard 40-byte BITMAPINFOHEADER structs as headers
 Private Type BITMAPINFOHEADER
-    Size As Long
+    size As Long
     Width As Long
     Height As Long
     Planes As Integer
@@ -111,10 +111,12 @@ Private Type PD_Icon
     ico_OffsetInFile As Long
     'Data in file, unprocessed
     ico_RawData() As Byte
-    'Finished pdDIB object
-    ico_DIB As pdDIB
+    'Data is in PNG format
+    ico_IsPNG As Boolean
     'Set to TRUE if the frame was constructed OK (as far as we know, anyway)
     ico_OK As Boolean
+    'Finished pdDIB object
+    ico_DIB As pdDIB
 End Type
 
 Private m_NumIcons As Long
@@ -259,174 +261,18 @@ Friend Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
 
 End Function
 
-'After an icon file has been successfully parsed, call this function to produce usable pdLayer objects
-' from the raw frame data.
-Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoadState As PD_ICOResult) As PD_ICOResult
-    
-    'Mirror the original load state
-    LoadICO_GenerateFrames = origLoadState
-    
-    'As before, we're going to work through each individual frame in turn.  The goal of this stage
-    ' is to produce a usable 32-bpp DIB for the underlying icon data.  If an icon consists of a
-    ' 1-bpp mask, we will produce a full alpha channel from it.
-    Dim i As Long
-    For i = 0 To m_NumIcons - 1
-    
-        'The raw bitstream for each icon has been dumped into each entry's .ico_RawData() array.
-        ' The bitstream can consist of 1 of 2 possible entries:
-        ' 1) A traditional Win32 BITMAPINFOHEADER, followed by a color table, pixels, and mask...
-        ' 2) ...or, a full PNG file, embedded as-is
-        
-        'For option (2), a pdPNG class instance will do all the hard work of loading the icon
-        ' for us.  Note that all other parameters (e.g. BITMAPINFOHEADER) must not exist.
-        
-        'Because of this, we always start by attempting to validate the data as PNG format.
-        ' If that fails, we'll try to load the data as a traditional Win32 icon.
-        Dim cPNG As pdPNG, tmpImage As pdImage
-        
-        With m_Icons(i)
-            
-            'Start by attempting to validate the data as PNG
-            Set cPNG = New pdPNG
-            If (cPNG.LoadPNG_Simple(vbNullString, tmpImage, .ico_DIB, False, VarPtr(.ico_RawData(0)), .ico_SizeInBytes) = png_Success) Then
-                
-                'This frame is a PNG!  We've done everything we need to do; no other work is required.
-                Set cPNG = Nothing
-                Erase .ico_RawData
-                .ico_OK = True
-                
-            Else
-                
-                'The embedded frame is *not* a PNG.  It must be a traditional Win32 icon.
-                ' We'll need to parse the raw bytestream as if it were a BMP file.
-                ' (In the future, perhaps we could dump this off to a dedicated BMP reader.)
-                Dim okToContinue As Boolean
-                
-                Dim cStream As pdStream: Set cStream = New pdStream
-                okToContinue = cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, .ico_SizeInBytes, VarPtr(.ico_RawData(0)))
-                If (Not okToContinue) Then
-                    LoadICO_GenerateFrames = ico_Failure
-                    InternalError "LoadICO_GenerateFrames", "couldn't start stream on raw frame bytes"
-                    Exit Function
-                End If
-                
-                'The first entry in the source bytes will be a traditional BITMAPINFOHEADER.
-                ' Retrieve it first.
-                Dim tmpBIHeader As BITMAPINFOHEADER
-                okToContinue = (cStream.ReadBytesToBarePointer(VarPtr(tmpBIHeader), LenB(tmpBIHeader)) = LenB(tmpBIHeader))
-                If (Not okToContinue) Then
-                    LoadICO_GenerateFrames = ico_Failure
-                    InternalError "LoadICO_GenerateFrames", "ran out of bytes for BIH"
-                    Exit Function
-                End If
-                
-                'Perform basic validation on the header
-                
-                'Per the icon file spec on MSDN (https://docs.microsoft.com/en-us/previous-versions/ms997538(v=msdn.10)?redirectedfrom=MSDN)
-                ' "The icHeader member has the form of a DIB BITMAPINFOHEADER. Only the following members
-                '  are used: biSize, biWidth, biHeight, biPlanes, biBitCount, biSizeImage. All other
-                '  members must be 0. The biHeight member specifies the combined height of the XOR and
-                '  AND masks. The members of icHeader define the contents and sizes of the other elements
-                '  of the ICONIMAGE structure in the same way that the BITMAPINFOHEADER structure defines
-                '  a CF_DIB format DIB."
-                Dim headerValid As Boolean
-                headerValid = (tmpBIHeader.Size = 40)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header size: " & tmpBIHeader.Size
-                headerValid = (tmpBIHeader.Width > 0)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header width: " & tmpBIHeader.Width
-                headerValid = (tmpBIHeader.Height > 0)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header height: " & tmpBIHeader.Height
-                headerValid = (tmpBIHeader.Planes = 1)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header planes: " & tmpBIHeader.Planes
-                headerValid = (tmpBIHeader.BitCount > 0)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header bitcount: " & tmpBIHeader.BitCount
-                
-                'biSizeImage doesn't actually matter; per the MSDN spec (https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)
-                ' "biSizeImage: Specifies the size, in bytes, of the image. This can be set to
-                '  0 for uncompressed RGB bitmaps."
-                
-                'Because of this, we don't attempt validation on that member.
-                
-                'If all checks passed, this is probably a valid icon!  Generate a unique
-                ' frame for it.
-                If headerValid Then m_Icons(i).ico_OK = CreateDIBForIndex(tmpBIHeader, cStream, i)
-                
-            End If
-            
-        End With
-    
-    Next i
-    
-    'With all frames parsed, we now need to construct a new layer for each frame in the
-    ' destination pdImage object.
-    
-    'Start by finding the largest frame in the file; we'll use this for our master image dimensions
-    Dim maxWidth As Long, maxHeight As Long
-    For i = 0 To m_NumIcons - 1
-        If m_Icons(i).ico_OK Then
-            If (Not m_Icons(i).ico_DIB Is Nothing) Then
-                maxWidth = PDMath.Max2Int(maxWidth, m_Icons(i).ico_DIB.GetDIBWidth())
-                maxHeight = PDMath.Max2Int(maxHeight, m_Icons(i).ico_DIB.GetDIBHeight())
-            End If
-        End If
-    Next i
-    
-    'Ensure both width and height are non-zero
-    If (maxWidth > 0) And (maxHeight > 0) Then
-        
-        'We have enough data to produce a usable image.  Start by initializing basic pdImage attributes.
-        dstImage.SetOriginalFileFormat PDIF_ICO
-        dstImage.Width = maxWidth
-        dstImage.Height = maxHeight
-        dstImage.SetDPI 96#, 96#
-        
-        'Next, we want to produce a pdLayer object for each valid frame
-        Dim tmpLayer As pdLayer, newLayerID As Long, activeLayerSet As Boolean
-        activeLayerSet = False
-        
-        For i = 0 To m_NumIcons - 1
-            
-            'Skip frames that didn't validate during loading
-            If m_Icons(i).ico_OK And (Not m_Icons(i).ico_DIB Is Nothing) Then
-                
-                'Ensure alpha is premultiplied
-                If (Not m_Icons(i).ico_DIB.GetAlphaPremultiplication()) Then m_Icons(i).ico_DIB.SetAlphaPremultiplication True
-                
-                'Prep a new layer object and initialize it with the image bits we've retrieved
-                newLayerID = dstImage.CreateBlankLayer()
-                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                tmpLayer.InitializeNewLayer PDL_Image, GetNameOfLayer(i), m_Icons(i).ico_DIB
-                
-                'If this layer's dimensions match the largest layer, make this layer visible.
-                ' (All other layers will be hidden, by default.)
-                tmpLayer.SetLayerVisibility (m_Icons(i).ico_DIB.GetDIBWidth = maxWidth) And (m_Icons(i).ico_DIB.GetDIBHeight = maxHeight) And (Not activeLayerSet)
-                If tmpLayer.GetLayerVisibility Then
-                    activeLayerSet = True
-                    dstImage.SetActiveLayerByID newLayerID
-                End If
-                
-                'Notify the layer of new changes, so it knows to regenerate internal caches on next access
-                tmpLayer.NotifyOfDestructiveChanges
-                
-            End If
-        
-        Next i
-        
-        'Notify the image of destructive changes, so it can rebuild internal caches
-        dstImage.NotifyImageChanged UNDO_Everything
-        
-    Else
-        LoadICO_GenerateFrames = ico_Failure
-        InternalError "LoadICO_GenerateFrames", "no frames with non-zero width/height"
-        Exit Function
-    End If
-
-End Function
-
 Friend Sub Reset()
     m_NumIcons = 0
     ReDim m_Icons(0) As PD_Icon
 End Sub
+
+'Save an icon file.  Importantly, the passed param string must contain a bunch of information about
+' how to generate frames within the icon file.
+Friend Function SaveICO_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdImage, ByRef fullParamString As String) As Boolean
+
+
+
+End Function
 
 'Given an index into the m_Icons() array, produce a finished DIB for said index's raw icon data
 Private Function CreateDIBForIndex(ByRef srcHeader As BITMAPINFOHEADER, ByRef srcStream As pdStream, ByVal srcIndex As Long) As Boolean
@@ -631,14 +477,15 @@ Private Function CreateDIBForIndex(ByRef srcHeader As BITMAPINFOHEADER, ByRef sr
     'If this frame is not already 32-bpp (or if it is 32-bpp with a blank alpha channel,
     ' e.g. 0RGB format - which is a valid icon color format), we need to generate an alpha
     ' channel using the mask that follows the image.  Note that this step is deliberately
-    ' ignored for PNG frames; they provide their own alpha channel, if desired.
+    ' ignored for PNG frames; they provide their own alpha channel, if one exists.
     If maskExists And (Not alphaFound) Then
     
         'The mask is guaranteed to be a 1-bpp channel at the same dimensions as the underlying
         ' image.  Because it is a literal AND mask, 0 = opaque, 1 = transparent.  Note that
         ' a value of 1 presumes black in the image; PD premultiplies alpha so this is a given
         ' in the final image, but in actual icon rendering, it could potentially produce
-        ' bizarre behavior depending on the screen contents beneath the icon render.
+        ' bizarre behavior depending on the screen contents beneath the icon render.  PD does
+        ' not attempt to cover the (esoteric) use-case of AND + non-zero XOR at present.
         
         'Anyway, populate a 1-bpp LUT
         ReDim bitFlags(0 To 7) As Byte
@@ -694,7 +541,12 @@ End Function
 Private Function GetNameOfLayer(ByVal layerIndex As Long) As String
     If (layerIndex >= 0) And (layerIndex < m_NumIcons) Then
         With m_Icons(layerIndex)
-            GetNameOfLayer = CStr(.ico_DIB.GetDIBWidth) & "x" & CStr(.ico_DIB.GetDIBHeight) & " (" & .ico_BPP & "-bpp)"
+            GetNameOfLayer = CStr(.ico_DIB.GetDIBWidth) & "x" & CStr(.ico_DIB.GetDIBHeight) & " ("
+            If .ico_IsPNG Then
+                GetNameOfLayer = GetNameOfLayer & "PNG)"
+            Else
+                GetNameOfLayer = GetNameOfLayer & .ico_BPP & "-bpp)"
+            End If
         End With
     Else
         InternalError "GetNameOfLayer", "bad layerIndex"
@@ -708,6 +560,188 @@ Private Sub InternalError(ByRef funcName As String, ByRef errDescription As Stri
         Debug.Print "pdICO." & funcName & "() reported an error: " & errDescription
     End If
 End Sub
+
+'After an icon file has been successfully parsed, call this function to produce usable pdLayer objects
+' from the raw frame data.
+Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoadState As PD_ICOResult) As PD_ICOResult
+    
+    'Mirror the original load state
+    LoadICO_GenerateFrames = origLoadState
+    
+    'As before, we're going to work through each individual frame in turn.  The goal of this stage
+    ' is to produce a usable 32-bpp DIB for the underlying icon data.  If an icon consists of a
+    ' 1-bpp mask, we will produce a full alpha channel from it.
+    Dim i As Long
+    For i = 0 To m_NumIcons - 1
+    
+        'The raw bitstream for each icon has been dumped into each entry's .ico_RawData() array.
+        ' The bitstream can consist of 1 of 2 possible entries:
+        ' 1) A traditional Win32 BITMAPINFOHEADER, followed by a color table, pixels, and mask...
+        ' 2) ...or, a full PNG file, embedded as-is
+        
+        'For option (2), a pdPNG class instance will do all the hard work of loading the icon
+        ' for us.  Note that all other parameters (e.g. BITMAPINFOHEADER) must not exist.
+        
+        'Because of this, we always start by attempting to validate the data as PNG format.
+        ' If that fails, we'll try to load the data as a traditional Win32 icon.
+        Dim cPNG As pdPNG, tmpImage As pdImage
+        
+        With m_Icons(i)
+            
+            'Start by attempting to validate the data as PNG
+            Set cPNG = New pdPNG
+            If (cPNG.LoadPNG_Simple(vbNullString, tmpImage, .ico_DIB, False, VarPtr(.ico_RawData(0)), .ico_SizeInBytes) = png_Success) Then
+                
+                'This frame is a PNG!  We've done everything we need to do; no other work is required.
+                Set cPNG = Nothing
+                Erase .ico_RawData
+                .ico_OK = True
+                .ico_IsPNG = True
+                
+            Else
+                
+                'The embedded frame is *not* a PNG.  It must be a traditional Win32 icon.
+                .ico_IsPNG = False
+                
+                'We now need to parse the raw bytestream as if it were a BMP file.
+                ' (In the future, perhaps we could dump this off to a dedicated BMP reader.)
+                Dim okToContinue As Boolean
+                
+                Dim cStream As pdStream: Set cStream = New pdStream
+                okToContinue = cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, .ico_SizeInBytes, VarPtr(.ico_RawData(0)))
+                If (Not okToContinue) Then
+                    LoadICO_GenerateFrames = ico_Failure
+                    InternalError "LoadICO_GenerateFrames", "couldn't start stream on raw frame bytes"
+                    Exit Function
+                End If
+                
+                'The first entry in the source bytes will be a traditional BITMAPINFOHEADER.
+                ' Retrieve it first.
+                Dim tmpBIHeader As BITMAPINFOHEADER
+                okToContinue = (cStream.ReadBytesToBarePointer(VarPtr(tmpBIHeader), LenB(tmpBIHeader)) = LenB(tmpBIHeader))
+                If (Not okToContinue) Then
+                    LoadICO_GenerateFrames = ico_Failure
+                    InternalError "LoadICO_GenerateFrames", "ran out of bytes for BIH"
+                    Exit Function
+                End If
+                
+                'Perform basic validation on the header
+                
+                'Per the icon file spec on MSDN (https://docs.microsoft.com/en-us/previous-versions/ms997538(v=msdn.10)?redirectedfrom=MSDN)
+                ' "The icHeader member has the form of a DIB BITMAPINFOHEADER. Only the following members
+                '  are used: biSize, biWidth, biHeight, biPlanes, biBitCount, biSizeImage. All other
+                '  members must be 0. The biHeight member specifies the combined height of the XOR and
+                '  AND masks. The members of icHeader define the contents and sizes of the other elements
+                '  of the ICONIMAGE structure in the same way that the BITMAPINFOHEADER structure defines
+                '  a CF_DIB format DIB."
+                Dim headerValid As Boolean
+                headerValid = (tmpBIHeader.size = 40)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header size: " & tmpBIHeader.size
+                headerValid = (tmpBIHeader.Width > 0)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header width: " & tmpBIHeader.Width
+                headerValid = (tmpBIHeader.Height > 0)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header height: " & tmpBIHeader.Height
+                headerValid = (tmpBIHeader.Planes = 1)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header planes: " & tmpBIHeader.Planes
+                headerValid = (tmpBIHeader.BitCount > 0)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header bitcount: " & tmpBIHeader.BitCount
+                
+                'biSizeImage doesn't actually matter; per the MSDN spec (https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)
+                ' "biSizeImage: Specifies the size, in bytes, of the image. This can be set to
+                '  0 for uncompressed RGB bitmaps."
+                
+                'Because of this, we don't attempt validation on that member.
+                
+                'If all checks passed, this is probably a valid icon!  Generate a unique
+                ' frame for it.
+                If headerValid Then m_Icons(i).ico_OK = CreateDIBForIndex(tmpBIHeader, cStream, i)
+                
+            End If
+            
+        End With
+    
+    Next i
+    
+    'With all frames parsed, we now need to construct a new layer for each frame in the
+    ' destination pdImage object.
+    
+    'Start by finding the largest frame in the file; we'll use this for our master image dimensions
+    Dim maxWidth As Long, maxHeight As Long
+    For i = 0 To m_NumIcons - 1
+        If m_Icons(i).ico_OK Then
+            If (Not m_Icons(i).ico_DIB Is Nothing) Then
+                maxWidth = PDMath.Max2Int(maxWidth, m_Icons(i).ico_DIB.GetDIBWidth())
+                maxHeight = PDMath.Max2Int(maxHeight, m_Icons(i).ico_DIB.GetDIBHeight())
+            End If
+        End If
+    Next i
+    
+    'Ensure both width and height are non-zero
+    If (maxWidth > 0) And (maxHeight > 0) Then
+        
+        'We have enough data to produce a usable image.  Start by initializing basic pdImage attributes.
+        dstImage.SetOriginalFileFormat PDIF_ICO
+        dstImage.Width = maxWidth
+        dstImage.Height = maxHeight
+        dstImage.SetDPI 96#, 96#
+        
+        'Next, we want to figure out which layer to activate + make visible.  This should be the...
+        ' 1) largest image in the file...
+        ' 2) ...that also has the highest bit-depth...
+        ' 3) ...with preference given to PNG frames
+        Dim activeLayerIndex As Long, highestBitDepth As Long
+        For i = 0 To m_NumIcons - 1
+            If (m_Icons(i).ico_DIB.GetDIBWidth = maxWidth) And (m_Icons(i).ico_DIB.GetDIBHeight = maxHeight) Then
+            
+                'This layer matches the largest layer size we have so far.  If it *also* has the
+                ' highest bit-depth, flag it as the new active index.
+                If (m_Icons(i).ico_BPP > highestBitDepth) Or (m_Icons(i).ico_IsPNG) Then
+                    highestBitDepth = m_Icons(i).ico_BPP
+                    If m_Icons(i).ico_IsPNG Then highestBitDepth = 48   'Give PNGs an arbitrarily large preference
+                    activeLayerIndex = i
+                End If
+            
+            End If
+        Next i
+        
+        'Next, we want to produce a pdLayer object for each valid frame
+        Dim tmpLayer As pdLayer, newLayerID As Long
+        
+        For i = 0 To m_NumIcons - 1
+            
+            'Skip frames that didn't validate during loading
+            If m_Icons(i).ico_OK And (Not m_Icons(i).ico_DIB Is Nothing) Then
+                
+                'Ensure alpha is premultiplied
+                If (Not m_Icons(i).ico_DIB.GetAlphaPremultiplication()) Then m_Icons(i).ico_DIB.SetAlphaPremultiplication True
+                
+                'Prep a new layer object and initialize it with the image bits we've retrieved
+                newLayerID = dstImage.CreateBlankLayer()
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                tmpLayer.InitializeNewLayer PDL_Image, GetNameOfLayer(i), m_Icons(i).ico_DIB
+                
+                'If this layer's dimensions match the largest layer, make this layer visible.
+                ' (All other layers will be hidden, by default.)
+                tmpLayer.SetLayerVisibility (i = activeLayerIndex)
+                If tmpLayer.GetLayerVisibility Then dstImage.SetActiveLayerByID newLayerID
+                
+                'Notify the layer of new changes, so it knows to regenerate internal caches on next access
+                tmpLayer.NotifyOfDestructiveChanges
+                
+            End If
+        
+        Next i
+        
+        'Notify the image of destructive changes, so it can rebuild internal caches
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+    Else
+        LoadICO_GenerateFrames = ico_Failure
+        InternalError "LoadICO_GenerateFrames", "no frames with non-zero width/height"
+        Exit Function
+    End If
+
+End Function
 
 Private Sub Class_Initialize()
     Set m_Stream = New pdStream
