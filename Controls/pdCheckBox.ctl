@@ -422,11 +422,14 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'Populate colors from the master theme object
+    Dim isEnabled As Boolean
+    isEnabled = Me.Enabled()
+    
     Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long, txtColor As Long
-    chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
-    chkBoxColorFill = m_Colors.RetrieveColor(PDCB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    txtColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
+    chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, isEnabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
+    chkBoxColorFill = m_Colors.RetrieveColor(PDCB_ButtonFill, isEnabled, m_Value, m_MouseInsideClickableRect)
+    chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, isEnabled, m_Value, m_MouseInsideClickableRect)
+    txtColor = m_Colors.RetrieveColor(PDCB_Caption, isEnabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     
     If PDMain.IsProgramRunning() Then
         

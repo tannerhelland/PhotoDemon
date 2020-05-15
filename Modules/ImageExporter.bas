@@ -1781,6 +1781,58 @@ ExportHDRError:
     
 End Function
 
+'Export a Windows Icon (ICO) file
+Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportICOError
+    
+    ExportICO = False
+    Dim sFileType As String: sFileType = "ICO"
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    'PD uses its own custom-built ICO encoder to create icon files.
+    PDDebug.LogAction "Using internal ICO encoder for this operation..."
+    
+    Dim cICO As pdICO
+    Set cICO = New pdICO
+    'ExportICO = (cICO.SaveICO(tmpFilename, srcPDImage, formatParams) < ico_Failure)
+    
+    'If we wrote the ICO to a temp file, attempt to replace the original file with it now
+    If ExportICO And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        
+        ExportICO = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        
+        If (Not ExportICO) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  ImageExporter could not overwrite ICO file; original file is likely open elsewhere."
+        End If
+        
+    End If
+    
+    Exit Function
+    
+ExportICOError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportICO = False
+    
+End Function
+
 Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
 
     On Error GoTo ExportORAError

@@ -49,7 +49,6 @@ Begin VB.Form FormAbout
       Height          =   6375
       Index           =   0
       Left            =   120
-      TabIndex        =   1
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
@@ -158,7 +157,6 @@ Begin VB.Form FormAbout
       Height          =   6375
       Index           =   1
       Left            =   120
-      TabIndex        =   5
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
@@ -166,7 +164,7 @@ Begin VB.Form FormAbout
       Begin PhotoDemon.pdListBoxOD lstContributors 
          Height          =   6135
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   1
          Top             =   240
          Width           =   9405
          _ExtentX        =   16589
@@ -178,7 +176,6 @@ Begin VB.Form FormAbout
       Height          =   6375
       Index           =   2
       Left            =   120
-      TabIndex        =   2
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
@@ -186,7 +183,7 @@ Begin VB.Form FormAbout
       Begin PhotoDemon.pdListBoxOD lstPatrons 
          Height          =   6135
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   2
          Top             =   240
          Width           =   9405
          _ExtentX        =   16589
@@ -347,6 +344,7 @@ Private Sub Form_Load()
     GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
     GenerateContributor "FreeImage Project", "http://freeimage.sourceforge.net/"
+    GenerateContributor "Gerry Busch", "http://gbusch.altervista.org/"
     GenerateContributor "Giorgio ""Gibra"" Brausi", "http://nuke.vbcorner.net"
     GenerateContributor "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
     GenerateContributor "Google Translate", "http://translate.google.com"

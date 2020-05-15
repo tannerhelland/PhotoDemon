@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.421</langversion>
+<langversion>6.6.423</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -12200,11 +12200,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
 
 <phrase>
-<original>BMP export options</original>
-<translation>Opsi ekspor BMP</translation>
-</phrase>
-
-<phrase>
 <original>restrict palette size</original>
 <translation>membatasi ukuran palet</translation>
 </phrase>
@@ -12284,16 +12279,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>1-bpp (monokrom)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<phrase>
+<original>%1 options</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
-
-<phrase>
-<original>GIF export options</original>
-<translation>Pilihan ekspor GIF</translation>
-</phrase>
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -12315,16 +12310,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>dengan warna</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- BEGIN text for File_Save_JP2.frm (dialog_ExportJP2) -->
-
-<phrase>
-<original>JPEG 2000 Export Options</original>
-<translation>JPEG 2000 Pilihan Eksport</translation>
-</phrase>
 
 <phrase>
 <original>image compression ratio</original>
@@ -12371,16 +12361,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Nisbah Custom (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2.frm-->
 
 <!-- BEGIN text for File_Save_JPG.frm (dialog_ExportJPEG) -->
-
-<phrase>
-<original>JPEG Export Options</original>
-<translation>JPEG Eksport Pilihan</translation>
-</phrase>
 
 <phrase>
 <original>compression method</original>
@@ -12452,16 +12437,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>hitam dan putih (8-bpp)</translation>
 </phrase>
 
-<!-- File_Save_JPG.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPG.frm-->
 
 <!-- BEGIN text for File_Save_JXR.frm (dialog_ExportJXR) -->
-
-<phrase>
-<original>JPEG XR Export Options</original>
-<translation>JPEG XR Eksport Pilihan</translation>
-</phrase>
 
 <phrase>
 <original>use progressive encoding</original>
@@ -12493,16 +12473,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Super mampatan, kualiti imej yang sangat miskin (20)</translation>
 </phrase>
 
-<!-- File_Save_JXR.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JXR.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXR.frm-->
 
 <!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
-
-<phrase>
-<original>Pixmap Export Options</original>
-<translation>Opsi Ekspor Pixmap</translation>
-</phrase>
 
 <phrase>
 <original>change file extension to match color model</original>
@@ -12529,16 +12504,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
 <!-- BEGIN text for File_Save_PNG.frm (dialog_ExportPNG) -->
-
-<phrase>
-<original>PNG export options</original>
-<translation>Pilihan ekspor PNG</translation>
-</phrase>
 
 <phrase>
 <original>PNG type</original>
@@ -12685,16 +12655,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Pengaturan optimasi lossy ini mengurangi ukuran file sebesar %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 48 phrases. 19 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
 <!-- BEGIN text for File_Save_PSD.frm (dialog_ExportPSD) -->
-
-<phrase>
-<original>PSD Export Options</original>
-<translation></translation>
-</phrase>
 
 <phrase>
 <original>compression</original>
@@ -12711,16 +12676,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PSD.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- File_Save_PSD.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for File_Save_PSD.frm-->
 
 <!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
-
-<phrase>
-<original>TIFF export options</original>
-<translation>Pilihan ekspor TIFF</translation>
-</phrase>
 
 <phrase>
 <original>color compression</original>
@@ -12767,18 +12727,13 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Fax CCITT 3</translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
 <!-- BEGIN text for File_Save_WebP.frm (dialog_ExportWebP) -->
 
-<phrase>
-<original>WebP Export Options</original>
-<translation>WebP Eksport Pilihan</translation>
-</phrase>
-
-<!-- File_Save_WebP.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Save_WebP.frm contains 12 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for File_Save_WebP.frm-->
 
@@ -15991,12 +15946,138 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for pdICO.cls-->
 
+<!-- BEGIN text for File_Save_ICO.frm (dialog_ExportICO) -->
+
+<phrase>
+<original>icon purpose</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>128x128</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>768x768</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>256x256</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>512x512</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>96x96</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>64x64</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>48x48</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>40x40</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32x32</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24x24</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>16x16</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>20x20</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 10</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows Vista, 7, 8</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows XP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 95, 98, ME</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>web - favicon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom icon</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<!-- END text for File_Save_ICO.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2648</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5010 phrases. -->
-<!-- 2362 are duplicates, so only 2648 unique phrases have been written to file. -->
-<!-- These 2648 phrases contain approximately 12255 total words. -->
+<!-- As of this build, PhotoDemon contains 5048 phrases. -->
+<!-- 2385 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12242 total words. -->
 
 </pdData>

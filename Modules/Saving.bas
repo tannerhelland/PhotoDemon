@@ -336,6 +336,9 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_GIF
                 GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
+            Case PDIF_ICO
+                GetExportParamsFromDialog = (Dialogs.PromptICOSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_JP2
                 GetExportParamsFromDialog = (Dialogs.PromptJP2Settings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
@@ -394,6 +397,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_HDR
             ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_ICO
+            ExportToSpecificFormat = ImageExporter.ExportICO(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_JP2
             ExportToSpecificFormat = ImageExporter.ExportJP2(srcImage, dstPath, saveParameters, metadataParameters)

@@ -55,6 +55,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Francis DC
 * [Frank Donckers](http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 * [Frans van Beers](https://plus.google.com/+FransvanBeers/)
+* [Gerry Busch](http://gbusch.altervista.org/)
 * [Giorgio "Gibra" Brausi](http://nuke.vbcorner.net)
 * [GioRock](http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 * [Google Translate](http://translate.google.com)

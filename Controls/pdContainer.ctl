@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdContainer 
    Appearance      =   0  'Flat
    BackColor       =   &H00FFFFFF&
+   CanGetFocus     =   0   'False
    ClientHeight    =   3600
    ClientLeft      =   0
    ClientTop       =   0

@@ -352,6 +352,15 @@ Public Function GetListOfWordsFromString(ByRef srcString As String) As pdStringS
     
 End Function
 
+Public Function SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As String)
+    If (LenB(srcCaption) > 0) Then srcCaption = " " & srcCaption
+    If (Not g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW dstForm.hWnd, srcCaption
+    Else
+        dstForm.Caption = srcCaption
+    End If
+End Function
+
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
 ' into a VB string.
 '

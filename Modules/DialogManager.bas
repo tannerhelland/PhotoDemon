@@ -81,6 +81,20 @@ Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptICOSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportICO
+    dialog_ExportICO.ShowDialog srcImage
+    
+    PromptICOSettings = dialog_ExportICO.GetDialogResult
+    dstFormatParams = dialog_ExportICO.GetFormatParams
+    dstMetadataParams = dialog_ExportICO.GetMetadataParams
+    
+    Unload dialog_ExportICO
+    Set dialog_ExportICO = Nothing
+    
+End Function
+
 Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJP2
