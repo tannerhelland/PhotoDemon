@@ -3,7 +3,6 @@ Begin VB.Form dialog_ExportBMP
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " BMP export options"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -264,6 +263,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "BMP")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

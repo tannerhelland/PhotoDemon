@@ -3,7 +3,6 @@ Begin VB.Form dialog_ExportGIF
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " GIF export options"
    ClientHeight    =   7230
    ClientLeft      =   45
    ClientTop       =   285
@@ -36,13 +35,13 @@ Begin VB.Form dialog_ExportGIF
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   5625
+      Height          =   6225
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   10980
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsCategory 
@@ -59,7 +58,6 @@ Begin VB.Form dialog_ExportGIF
       Height          =   5535
       Index           =   0
       Left            =   5880
-      TabIndex        =   2
       Top             =   840
       Width           =   7095
       _ExtentX        =   0
@@ -161,7 +159,6 @@ Begin VB.Form dialog_ExportGIF
       Height          =   5535
       Index           =   1
       Left            =   5880
-      TabIndex        =   11
       Top             =   840
       Width           =   7095
       _ExtentX        =   0
@@ -169,7 +166,7 @@ Begin VB.Form dialog_ExportGIF
       Begin PhotoDemon.pdMetadataExport mtdManager 
          Height          =   4935
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   2
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -274,6 +271,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "GIF")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

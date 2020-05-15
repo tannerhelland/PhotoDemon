@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportPSD 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " PSD Export Options"
    ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
@@ -57,7 +56,6 @@ Begin VB.Form dialog_ExportPSD
       Height          =   4815
       Index           =   0
       Left            =   5880
-      TabIndex        =   5
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -65,7 +63,7 @@ Begin VB.Form dialog_ExportPSD
       Begin PhotoDemon.pdButtonStrip btsCompression 
          Height          =   975
          Left            =   240
-         TabIndex        =   6
+         TabIndex        =   3
          Top             =   240
          Width           =   6375
          _ExtentX        =   11245
@@ -75,7 +73,7 @@ Begin VB.Form dialog_ExportPSD
       Begin PhotoDemon.pdButtonStrip btsCompatibility 
          Height          =   975
          Left            =   240
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   1320
          Width           =   6375
          _ExtentX        =   11245
@@ -87,7 +85,6 @@ Begin VB.Form dialog_ExportPSD
       Height          =   4815
       Index           =   1
       Left            =   5880
-      TabIndex        =   3
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -248,6 +245,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PSD")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

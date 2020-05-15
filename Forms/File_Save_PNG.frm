@@ -3,7 +3,6 @@ Begin VB.Form dialog_ExportPNG
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " PNG export options"
    ClientHeight    =   8595
    ClientLeft      =   45
    ClientTop       =   285
@@ -59,7 +58,6 @@ Begin VB.Form dialog_ExportPNG
       Height          =   6495
       Index           =   0
       Left            =   5880
-      TabIndex        =   3
       Top             =   1320
       Width           =   7095
       _ExtentX        =   12515
@@ -68,7 +66,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   3
          Top             =   0
          Width           =   6975
          _ExtentX        =   12303
@@ -81,7 +79,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   4
          Top             =   360
          Width           =   6975
          _ExtentX        =   12303
@@ -95,7 +93,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   2
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   5
          Top             =   720
          Width           =   6975
          _ExtentX        =   12303
@@ -109,7 +107,6 @@ Begin VB.Form dialog_ExportPNG
          Height          =   2535
          Index           =   0
          Left            =   120
-         TabIndex        =   7
          Top             =   1200
          Visible         =   0   'False
          Width           =   7095
@@ -118,7 +115,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdDropDown cboOptimize 
             Height          =   855
             Left            =   360
-            TabIndex        =   24
+            TabIndex        =   7
             Top             =   1080
             Width           =   6615
             _ExtentX        =   11668
@@ -192,7 +189,6 @@ Begin VB.Form dialog_ExportPNG
          Height          =   5175
          Index           =   1
          Left            =   120
-         TabIndex        =   4
          Top             =   1200
          Visible         =   0   'False
          Width           =   7095
@@ -201,7 +197,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdColorDepth clrDepth 
             Height          =   5055
             Left            =   360
-            TabIndex        =   23
+            TabIndex        =   11
             Top             =   0
             Width           =   6615
             _ExtentX        =   11668
@@ -212,7 +208,6 @@ Begin VB.Form dialog_ExportPNG
          Height          =   3255
          Index           =   2
          Left            =   120
-         TabIndex        =   5
          Top             =   1200
          Visible         =   0   'False
          Width           =   7095
@@ -233,7 +228,6 @@ Begin VB.Form dialog_ExportPNG
       Height          =   6495
       Index           =   1
       Left            =   5880
-      TabIndex        =   11
       Top             =   1320
       Width           =   7095
       _ExtentX        =   12515
@@ -667,6 +661,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PNG")
     
     'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
     UpdateMasterPanelVisibility

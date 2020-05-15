@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportJPEG 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " JPEG Export Options"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -57,7 +56,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   4695
       Index           =   0
       Left            =   5880
-      TabIndex        =   3
       Top             =   1080
       Width           =   7215
       _ExtentX        =   0
@@ -109,7 +107,7 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   1095
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   3
          Top             =   2640
          Width           =   6975
          _ExtentX        =   12303
@@ -121,7 +119,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   4695
       Index           =   1
       Left            =   5880
-      TabIndex        =   9
       Top             =   1080
       Width           =   7215
       _ExtentX        =   0
@@ -129,7 +126,7 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.pdButtonStrip btsSubsampling 
          Height          =   1095
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   5
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -139,7 +136,7 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.pdButtonStrip btsDepth 
          Height          =   1095
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   9
          Top             =   1440
          Width           =   6975
          _ExtentX        =   12303
@@ -151,7 +148,6 @@ Begin VB.Form dialog_ExportJPEG
       Height          =   4695
       Index           =   2
       Left            =   5880
-      TabIndex        =   5
       Top             =   1080
       Width           =   7215
       _ExtentX        =   0
@@ -441,6 +437,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG")
     
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     

@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportJXR 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " JPEG XR Export Options"
    ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
@@ -57,7 +56,6 @@ Begin VB.Form dialog_ExportJXR
       Height          =   4815
       Index           =   0
       Left            =   5880
-      TabIndex        =   5
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -75,7 +73,7 @@ Begin VB.Form dialog_ExportJXR
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
          Left            =   360
-         TabIndex        =   7
+         TabIndex        =   3
          Top             =   1200
          Width           =   6135
          _ExtentX        =   10821
@@ -84,7 +82,7 @@ Begin VB.Form dialog_ExportJXR
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
          Left            =   240
-         TabIndex        =   8
+         TabIndex        =   5
          Top             =   1800
          Width           =   6255
          _ExtentX        =   11033
@@ -139,7 +137,6 @@ Begin VB.Form dialog_ExportJXR
       Height          =   4815
       Index           =   1
       Left            =   5880
-      TabIndex        =   3
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -364,6 +361,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG-XR")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

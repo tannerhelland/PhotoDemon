@@ -3,7 +3,6 @@ Begin VB.Form dialog_ExportTIFF
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " TIFF export options"
    ClientHeight    =   6900
    ClientLeft      =   45
    ClientTop       =   285
@@ -48,7 +47,7 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   375
       Index           =   0
       Left            =   5880
-      TabIndex        =   10
+      TabIndex        =   2
       Top             =   240
       Width           =   6975
       _ExtentX        =   12303
@@ -61,7 +60,7 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   375
       Index           =   1
       Left            =   5880
-      TabIndex        =   11
+      TabIndex        =   4
       Top             =   600
       Width           =   6975
       _ExtentX        =   12303
@@ -75,7 +74,7 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   375
       Index           =   2
       Left            =   5880
-      TabIndex        =   12
+      TabIndex        =   5
       Top             =   960
       Width           =   6975
       _ExtentX        =   12303
@@ -89,7 +88,6 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   3855
       Index           =   0
       Left            =   5880
-      TabIndex        =   4
       Top             =   1440
       Width           =   7095
       _ExtentX        =   12515
@@ -129,7 +127,6 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   3975
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
       Top             =   1560
       Width           =   7095
       _ExtentX        =   12515
@@ -148,7 +145,6 @@ Begin VB.Form dialog_ExportTIFF
       Height          =   3975
       Index           =   2
       Left            =   5880
-      TabIndex        =   2
       Top             =   1440
       Width           =   7095
       _ExtentX        =   12515
@@ -337,6 +333,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "TIFF")
     
     'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
     UpdateStandardPanelVisibility

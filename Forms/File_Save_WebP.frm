@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportWebP 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " WebP Export Options"
    ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
@@ -289,6 +288,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "WebP")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

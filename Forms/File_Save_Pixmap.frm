@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportPixmap 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Pixmap Export Options"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -333,6 +332,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "Pixmap")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

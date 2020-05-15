@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.Form dialog_ExportJP2 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " JPEG 2000 Export Options"
    ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
@@ -57,7 +56,6 @@ Begin VB.Form dialog_ExportJP2
       Height          =   4815
       Index           =   0
       Left            =   5880
-      TabIndex        =   5
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -65,7 +63,7 @@ Begin VB.Form dialog_ExportJP2
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   735
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   3
          Top             =   1320
          Width           =   6495
          _ExtentX        =   11456
@@ -75,7 +73,7 @@ Begin VB.Form dialog_ExportJP2
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   2280
          Width           =   6495
          _ExtentX        =   11456
@@ -118,7 +116,6 @@ Begin VB.Form dialog_ExportJP2
       Height          =   4815
       Index           =   1
       Left            =   5880
-      TabIndex        =   3
       Top             =   840
       Width           =   6615
       _ExtentX        =   0
@@ -341,6 +338,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    Strings.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG-2000")
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
