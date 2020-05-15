@@ -6,9 +6,10 @@ Attribute VB_Name = "DIBs"
 'Last updated: 10/August/17
 'Last update: new performance improvements, with a special focus on DIB functions called during startup
 '
-'This module contains support functions for the pdDIB class.  In old versions of PD, these functions were provided by pdDIB,
-' but there's no sense cluttering up that class with functions that are only used on rare occasions.  As such, I'm moving
-' as many of those functions as I can to this module.
+'This module contains support functions for the pdDIB class.  In old versions of PD,
+' these functions were provided by pdDIB, but there's no sense cluttering up that class
+' with functions that are only used on rare occasions.  As such, I'm moving as many of
+' those functions as I can to this module.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -2244,3 +2245,263 @@ Public Function GetRectOfInterest_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB
     
 End Function
 
+'Reduce an image's alpha channel to on/off only (e.g. values of 0 or 255).  Useful before converting
+' to legacy file formats like GIF or ICO.
+Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alphaCutoff As Long = 127, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_Stucki, Optional ByVal ditherAmount As Single = 50!, Optional ByVal suppressMessages As Boolean = False) As Boolean
+
+    ditherAmount = ditherAmount * 0.01
+    If (ditherAmount < 0!) Then ditherAmount = 0!
+    If (ditherAmount > 1!) Then ditherAmount = 1!
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte, tmpSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB imageData, tmpSA
+    
+    Dim x As Long, y As Long, i As Long, j As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    Dim xStride As Long
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        ProgressBars.SetProgBarMax finalY
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'Calculating color variables (including luminance)
+    Dim a As Long, newA As Long
+    Dim ditherTable() As Byte
+    Dim xLeft As Long, xRight As Long, yDown As Long
+    Dim errorVal As Single, dDivisor As Single
+    
+    'Process the alpha channel based on the dither method requested
+    Select Case ditherMethod
+        
+        'No dither, so just perform a quick and dirty threshold calculation
+        Case PDDM_None
+    
+            For y = initY To finalY
+            For x = initX To finalX
+                
+                xStride = x * 4
+                
+                'Get the source alpha value
+                a = imageData(xStride + 3, y)
+                
+                'Check the luminance against the threshold, and set new values accordingly
+                If (a >= alphaCutoff) Then
+                    imageData(xStride + 3, y) = 255
+                Else
+                    imageData(xStride + 3, y) = 0
+                End If
+                
+            Next x
+                If (Not suppressMessages) Then
+                    If (y And progBarCheck) = 0 Then
+                        If Interface.UserPressedESC() Then Exit For
+                        SetProgBarVal y
+                    End If
+                End If
+            Next y
+            
+            
+        'Ordered dither (Bayer 4x4).  Unfortunately, this routine requires a unique set of code owing to its
+        ' specialized implementation. Coefficients derived from https://en.wikipedia.org/wiki/Ordered_dithering
+        Case 1
+        
+            'First, prepare a Bayer dither table
+            Palettes.GetDitherTable PDDM_Ordered_Bayer4x4, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+            'Now loop through the image, using the dither values as our threshold
+            For y = initY To finalY
+            For x = initX To finalX
+            
+                xStride = x * 4
+                
+                'Retrieve current alpha
+                a = imageData(xStride + 3, y)
+                
+                'Add the value of the dither table
+                a = a + (CLng(ditherTable(x And 3, y And 3)) - 127) * ditherAmount
+                
+                'Check THAT value against the threshold, and set a new value accordingly
+                If (a >= alphaCutoff) Then
+                    imageData(xStride + 3, y) = 255
+                Else
+                    imageData(xStride + 3, y) = 0
+                End If
+                
+            Next x
+                If (Not suppressMessages) Then
+                    If (y And progBarCheck) = 0 Then
+                        If Interface.UserPressedESC() Then Exit For
+                        SetProgBarVal y
+                    End If
+                End If
+            Next y
+
+        'Ordered dither (Bayer 8x8).  Unfortunately, this routine requires a unique set of code owing to its specialized
+        ' implementation. Coefficients derived from https://en.wikipedia.org/wiki/Ordered_dithering
+        Case 2
+        
+            'First, prepare a Bayer dither table
+            Palettes.GetDitherTable PDDM_Ordered_Bayer8x8, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+            'Now loop through the image, using the dither values as our threshold
+            For y = initY To finalY
+            For x = initX To finalX
+                
+                xStride = x * 4
+                
+                'Retrieve current alpha
+                a = imageData(xStride + 3, y)
+                
+                'Add the value of the dither table
+                a = a + (CLng(ditherTable(x And 7, y And 7)) - 127) * ditherAmount
+                
+                'Check THAT value against the threshold, and set a new value accordingly
+                If (a >= alphaCutoff) Then
+                    imageData(xStride + 3, y) = 255
+                Else
+                    imageData(xStride + 3, y) = 0
+                End If
+                
+            Next x
+                If (Not suppressMessages) Then
+                    If (y And progBarCheck) = 0 Then
+                        If Interface.UserPressedESC() Then Exit For
+                        SetProgBarVal y
+                    End If
+                End If
+            Next y
+        
+        'For all error-diffusion methods, precise dithering table coefficients are retrieved from the
+        ' /Modules/Palettes.bas file.  (We do this because other functions also need to retrieve these tables,
+        ' e.g. the Effects > Stylize > Palettize menu.)
+        
+        'Single neighbor.  Simplest form of error-diffusion.
+        Case 3
+            Palettes.GetDitherTable PDDM_SingleNeighbor, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 4
+            Palettes.GetDitherTable PDDM_FloydSteinberg, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Jarvis, Judice, Ninke.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 5
+            Palettes.GetDitherTable PDDM_JarvisJudiceNinke, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Stucki.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 6
+            Palettes.GetDitherTable PDDM_Stucki, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Burkes.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 7
+            Palettes.GetDitherTable PDDM_Burkes, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Sierra-3.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 8
+            Palettes.GetDitherTable PDDM_Sierra3, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Sierra-2.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 9
+            Palettes.GetDitherTable PDDM_SierraTwoRow, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Sierra-2-4A.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        Case 10
+            Palettes.GetDitherTable PDDM_SierraLite, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+        'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw,
+        ' and HyperCard.)  This is the dithering algorithm used on the original Apple Macintosh.
+        ' Coefficients derived from http://gazs.github.com/canvas-atkinson-dither/
+        Case 11
+            Palettes.GetDitherTable PDDM_Atkinson, ditherTable, dDivisor, xLeft, xRight, yDown
+            
+    End Select
+    
+    'If we have been asked to use a non-ordered dithering method, apply it now
+    If (ditherMethod >= PDDM_SingleNeighbor) Then
+    
+        'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
+        ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
+        Dim dErrors() As Single
+        ReDim dErrors(0 To finalX, 0 To finalY) As Single
+        If (dDivisor <> 0!) Then dDivisor = 1! / dDivisor
+        
+        Dim xQuick As Long, xQuickInner As Long, yQuick As Long
+        
+        'Now loop through the image, calculating errors as we go
+        For y = initY To finalY
+        For x = initX To finalX
+            
+            xQuick = x * 4
+            
+            'Retrieve current alpha
+            a = imageData(xQuick + 3, y)
+            
+            'Add the value of the error at this location
+            newA = a + dErrors(x, y)
+            
+            'Check our modified luminance value against the threshold, and set new values accordingly
+            If (newA >= alphaCutoff) Then
+                errorVal = newA - 255
+                imageData(xQuick + 3, y) = 255
+            Else
+                errorVal = newA
+                imageData(xQuick + 3, y) = 0
+            End If
+            
+            'If there is an error, spread it
+            If (errorVal <> 0) Then
+                
+                errorVal = errorVal * ditherAmount
+                
+                'Now, spread that error across the relevant pixels according to the dither table formula
+                For i = xLeft To xRight
+                For j = 0 To yDown
+                
+                    'First, ignore already processed pixels
+                    If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
+                    
+                    'Second, ignore pixels that have a zero in the dither table
+                    If (ditherTable(i, j) = 0) Then GoTo NextDitheredPixel
+                    
+                    xQuickInner = x + i
+                    yQuick = y + j
+                    
+                    'Next, ignore target pixels that are off the image boundary
+                    If (xQuickInner < initX) Then GoTo NextDitheredPixel
+                    If (xQuickInner > finalX) Then GoTo NextDitheredPixel
+                    If (yQuick > finalY) Then GoTo NextDitheredPixel
+                    
+                    'If we've made it all the way here, we are able to actually spread the error to this location
+                    dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(ditherTable(i, j)) * dDivisor))
+                
+NextDitheredPixel:     Next j
+                Next i
+            
+            End If
+            
+        Next x
+            If (Not suppressMessages) Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal y
+                End If
+            End If
+        Next y
+    
+    End If
+    
+    'Safely deallocate imageData() before exiting
+    srcDIB.UnwrapArrayFromDIB imageData
+    
+    ThresholdAlphaChannel = (Not g_cancelCurrentAction)
+    
+End Function

@@ -2372,6 +2372,10 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         If raiseDialog Then ShowPDDialog vbModal, FormConvert24bpp Else FormConvert24bpp.RemoveLayerTransparency processParameters
         Process_LayerMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Threshold alpha", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormThresholdAlpha Else FormThresholdAlpha.FxThresholdAlpha processParameters
+        Process_LayerMenu = True
+    
     'Convert layers to images (or images to layers)
     ElseIf Strings.StringsEqual(processID, "Split layer into image", True) Then
         Layers.SplitLayerToImage BuildParamList("target-layer", PDImages.GetActiveImage.GetActiveLayerIndex)

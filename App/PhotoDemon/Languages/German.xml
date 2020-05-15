@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1911</langversion>
+<langversion>8.0.1950</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -593,7 +593,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
+<translation>Animation-Frame %1 von %2 wird gespeichert</translation>
 </phrase>
 
 <phrase>
@@ -1773,6 +1773,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Threshold alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rasterize layer</original>
 <translation>Layer rastern</translation>
 </phrase>
@@ -2429,7 +2434,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Custom filter</original>
-<translation>Benutzerdef. Filter</translation>
+<translation>Benutzerdefinierter Filter</translation>
 </phrase>
 
 <phrase>
@@ -2472,7 +2477,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 259 phrases. 30 were duplicates of existing phrases, so only 229 new phrases were written to file. -->
+<!-- Menus.bas contains 260 phrases. 30 were duplicates of existing phrases, so only 230 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -4558,12 +4563,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird optimiert</translation>
+<translation>Animation-Frame %1 von %2 wird optimiert</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation>Animations-Frame %1 von %2 wird analysiert</translation>
+<translation>Animation-Frame %1 von %2 wird analysiert</translation>
 </phrase>
 
 <!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -5801,7 +5806,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Export</original>
-<translation>Export</translation>
+<translation>Exportieren</translation>
 </phrase>
 
 <phrase>
@@ -6122,6 +6127,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>Remove transparency</original>
 <translation>Transparenz entfernen</translation>
+</phrase>
+
+<phrase>
+<original>Threshold</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6697,7 +6707,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 360 phrases. 166 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11612,7 +11622,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Animation export options</original>
-<translation>Animations-Exportoptionen</translation>
+<translation>Animation-Exportoptionen</translation>
 </phrase>
 
 <phrase>
@@ -11699,7 +11709,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Palette export options</original>
-<translation>Paletten-Exportoptionen</translation>
+<translation>Palette-Exportoptionen</translation>
 </phrase>
 
 <phrase>
@@ -11724,7 +11734,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>palette contents</original>
-<translation>Paletten-Contents</translation>
+<translation>Palette-Contents</translation>
 </phrase>
 
 <phrase>
@@ -12279,7 +12289,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>%1 options</original>
-<translation></translation>
+<translation>%1-Optionen</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -14125,7 +14135,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>custom brush</original>
-<translation>Benutzerdef. Pinsel</translation>
+<translation>Benutzerdefinierter Pinsel</translation>
 </phrase>
 
 <phrase>
@@ -15948,134 +15958,145 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>icon purpose</original>
-<translation></translation>
+<translation>Icon-Verwendungszweck</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp</original>
-<translation></translation>
+<translation>32-bpp</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp</original>
-<translation></translation>
+<translation>24-bpp</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp</original>
-<translation></translation>
+<translation>8-bpp</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp</original>
-<translation></translation>
+<translation>4-bpp</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp</original>
-<translation></translation>
+<translation>1-bpp</translation>
 </phrase>
 
 <phrase>
 <original>128x128</original>
-<translation></translation>
+<translation>128x128</translation>
 </phrase>
 
 <phrase>
 <original>768x768</original>
-<translation></translation>
+<translation>768x768</translation>
 </phrase>
 
 <phrase>
 <original>256x256</original>
-<translation></translation>
+<translation>256x256</translation>
 </phrase>
 
 <phrase>
 <original>512x512</original>
-<translation></translation>
+<translation>512x512</translation>
 </phrase>
 
 <phrase>
 <original>96x96</original>
-<translation></translation>
+<translation>96x96</translation>
 </phrase>
 
 <phrase>
 <original>64x64</original>
-<translation></translation>
+<translation>64x64</translation>
 </phrase>
 
 <phrase>
 <original>48x48</original>
-<translation></translation>
+<translation>48x48</translation>
 </phrase>
 
 <phrase>
 <original>40x40</original>
-<translation></translation>
+<translation>40x40</translation>
 </phrase>
 
 <phrase>
 <original>32x32</original>
-<translation></translation>
+<translation>32x32</translation>
 </phrase>
 
 <phrase>
 <original>24x24</original>
-<translation></translation>
+<translation>24x24</translation>
 </phrase>
 
 <phrase>
 <original>16x16</original>
-<translation></translation>
+<translation>16x16</translation>
 </phrase>
 
 <phrase>
 <original>20x20</original>
-<translation></translation>
+<translation>20x20</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 10</original>
-<translation></translation>
+<translation>App - Windows 10</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows Vista, 7, 8</original>
-<translation></translation>
+<translation>App - Windows Vista, 7, 8</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows XP</original>
-<translation></translation>
+<translation>App - Windows XP</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 95, 98, ME</original>
-<translation></translation>
+<translation>App - Windows 95, 98, ME</translation>
 </phrase>
 
 <phrase>
 <original>web - favicon</original>
-<translation></translation>
+<translation>Web - Favicon</translation>
 </phrase>
 
 <phrase>
 <original>custom icon</original>
-<translation></translation>
+<translation>Benutzerdefiniertes Icon</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
+<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
+
+<phrase>
+<original>Converting alpha channel</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Layer_Transparency_Threshold.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2666</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5048 phrases. -->
-<!-- 2385 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12242 total words. -->
+<!-- As of this build, PhotoDemon contains 5056 phrases. -->
+<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
+<!-- These 2666 phrases contain approximately 12248 total words. -->
 
 </pdData>

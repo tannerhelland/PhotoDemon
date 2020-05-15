@@ -664,6 +664,10 @@ Begin VB.Form FormMain
             Caption         =   "Remove transparency..."
             Index           =   3
          End
+         Begin VB.Menu MnuLayerTransparency 
+            Caption         =   "Threshold..."
+            Index           =   4
+         End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
@@ -3582,6 +3586,8 @@ Private Sub MnuLayerTransparency_Click(Index As Integer)
             'separator
         Case 3
             Menus.ProcessDefaultAction_ByName "layer_removealpha"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "layer_thresholdalpha"
     End Select
 End Sub
 

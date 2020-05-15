@@ -312,6 +312,7 @@ Public Sub InitializeMenus()
         AddMenuItem "From luminance...", "layer_luminancetoalpha", 3, 12, 1
         AddMenuItem "-", "-", 3, 12, 2
         AddMenuItem "Remove transparency...", "layer_removealpha", 3, 12, 3, "generic_trash"
+        AddMenuItem "Threshold...", "layer_thresholdalpha", 3, 12, 4
     AddMenuItem "-", "-", 3, 13
     AddMenuItem "Rasterize", "layer_rasterize", 3, 14
         AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 14, 0
@@ -1897,6 +1898,9 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 
             Case "layer_removealpha"
                 Process "Remove alpha channel", True
+            
+            Case "layer_thresholdalpha"
+                Process "Threshold alpha", True
         
         Case "layer_rasterize"
             Case "layer_rasterizecurrent"

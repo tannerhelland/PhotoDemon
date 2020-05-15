@@ -734,6 +734,7 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
         
         'Notify the image of destructive changes, so it can rebuild internal caches
         dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetActiveLayerByIndex activeLayerIndex
         
     Else
         LoadICO_GenerateFrames = ico_Failure

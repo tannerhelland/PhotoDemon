@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.480</langversion>
+<langversion>6.7.481</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -1774,6 +1774,11 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 </phrase>
 
 <phrase>
+<original>Threshold alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rasterize layer</original>
 <translation>Pixellisation du calque</translation>
 </phrase>
@@ -2473,7 +2478,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 <translation>Effacer la liste récente des macros</translation>
 </phrase>
 
-<!-- Menus.bas contains 259 phrases. 30 were duplicates of existing phrases, so only 229 new phrases were written to file. -->
+<!-- Menus.bas contains 260 phrases. 30 were duplicates of existing phrases, so only 230 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6121,6 +6126,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Threshold</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rasterize</original>
 <translation>Rasteriser (Pixelliser)</translation>
 </phrase>
@@ -6693,7 +6703,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 360 phrases. 166 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16080,12 +16090,23 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- END text for File_Save_ICO.frm-->
 
+<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
+
+<phrase>
+<original>Converting alpha channel</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Layer_Transparency_Threshold.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2666</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5048 phrases. -->
-<!-- 2385 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12242 total words. -->
+<!-- As of this build, PhotoDemon contains 5056 phrases. -->
+<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
+<!-- These 2666 phrases contain approximately 12248 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3464</langversion>
+<langversion>6.8.3465</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1770,6 +1770,11 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 </phrase>
 
 <phrase>
+<original>Threshold alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rasterize layer</original>
 <translation>Rastrer lag</translation>
 </phrase>
@@ -2469,7 +2474,7 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 <translation>Clear siste makroliste</translation>
 </phrase>
 
-<!-- Menus.bas contains 259 phrases. 30 were duplicates of existing phrases, so only 229 new phrases were written to file. -->
+<!-- Menus.bas contains 260 phrases. 30 were duplicates of existing phrases, so only 230 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6119,6 +6124,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Threshold</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rasterize</original>
 <translation>Rastrer</translation>
 </phrase>
@@ -6691,7 +6701,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Språk endret.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 359 phrases. 166 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 360 phrases. 166 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16064,12 +16074,23 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- END text for File_Save_ICO.frm-->
 
+<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
+
+<phrase>
+<original>Converting alpha channel</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Layer_Transparency_Threshold.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2666</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5048 phrases. -->
-<!-- 2385 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12242 total words. -->
+<!-- As of this build, PhotoDemon contains 5056 phrases. -->
+<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
+<!-- These 2666 phrases contain approximately 12248 total words. -->
 
 </pdData>
