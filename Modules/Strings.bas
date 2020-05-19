@@ -361,6 +361,73 @@ Public Function SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As Strin
     End If
 End Function
 
+'Given an arbitrary string, split out all integers into a Long-type array.  PD uses this internally
+' for parsing arbitrarily formatted human-readable strings, e.g. "32x32 (8-bpp)" will return a
+' 3-element array with "32, 32, 8" in it.
+'
+'RETURNS: the count of integers found in the string; 0 means no integers found.
+Public Function SplitIntegers(ByRef srcString As String, ByRef dstInts() As Long, Optional ByVal trimArrayPrecisely As Boolean = True) As Long
+    
+    'Reuse existing allocations if we can
+    If (Not VBHacks.IsArrayInitialized(dstInts)) Then
+        Const INIT_ARRAY_SIZE As Long = 4
+        ReDim dstInts(0 To INIT_ARRAY_SIZE - 1) As Long
+    End If
+    
+    Const ASC0 As Long = 48, ASC9 As Long = 57
+    
+    Dim i As Long, j As Long, numInts As Long
+    i = 1
+    
+    Do While (i <= Len(srcString))
+        
+        'Check for numbers
+        If (AscW(Mid$(srcString, i, 1)) >= ASC0) And (AscW(Mid$(srcString, i, 1)) <= ASC9) Then
+        
+            'Number found!
+            
+            'Iterate trailing numbers until a non-number is found
+            j = i + 1
+            Do While (j <= Len(srcString))
+                If (AscW(Mid$(srcString, j, 1)) >= ASC0) And (AscW(Mid$(srcString, j, 1)) <= ASC9) Then
+                    j = j + 1
+                Else
+                    Exit Do
+                End If
+            Loop
+            
+            'j will now point at a character that is *not* a number (or is past the end of the string)
+            'All characters on the range [i, j-1] are guaranteed to be integers on the range [0, 9].
+            
+            'Make sure we have space in our integer collection
+            If (numInts > UBound(dstInts)) Then ReDim Preserve dstInts(0 To numInts * 2 - 1) As Long
+            
+            'Add the new number
+            dstInts(numInts) = Val(Mid$(srcString, i, j - i))
+            numInts = numInts + 1
+            
+            'We know that j points at a non-number; replace with j's value, and note that i will
+            ' automatically be increased below
+            i = j
+        
+        End If
+        
+        'Advance the character index
+        i = i + 1
+        
+    Loop
+    
+    'Trim the destination array to match the final int count
+    If (numInts > 0) Then
+        If trimArrayPrecisely And (UBound(dstInts) <> numInts - 1) Then ReDim Preserve dstInts(0 To numInts - 1) As Long
+    Else
+        Erase dstInts
+    End If
+    
+    SplitIntegers = numInts
+    
+End Function
+
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
 ' into a VB string.
 '

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.150</langversion>
+<langversion>1.0.151</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16066,7 +16066,12 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<phrase>
+<original>use original file settings</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
@@ -16083,10 +16088,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2666</phrasecount>
+<phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5056 phrases. -->
-<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
-<!-- These 2666 phrases contain approximately 12248 total words. -->
+<!-- As of this build, PhotoDemon contains 5058 phrases. -->
+<!-- 2391 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- These 2667 phrases contain approximately 12252 total words. -->
 
 </pdData>

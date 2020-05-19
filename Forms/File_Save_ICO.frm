@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form dialog_ExportICO 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   ClientHeight    =   6645
+   ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12630
@@ -18,10 +18,21 @@ Begin VB.Form dialog_ExportICO
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   443
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   842
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCommandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   5775
+      Width           =   12630
+      _ExtentX        =   22278
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
+   End
    Begin PhotoDemon.pdDropDown ddIcon 
       Height          =   735
       Left            =   6000
@@ -31,17 +42,6 @@ Begin VB.Form dialog_ExportICO
       _ExtentX        =   11456
       _ExtentY        =   1296
       Caption         =   "icon purpose"
-   End
-   Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
-      Height          =   750
-      Left            =   0
-      TabIndex        =   0
-      Top             =   5895
-      Width           =   12630
-      _ExtentX        =   22278
-      _ExtentY        =   1323
-      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,8 +55,8 @@ Begin VB.Form dialog_ExportICO
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   0
-      Left            =   6000
-      Top             =   1080
+      Left            =   5880
+      Top             =   1065
       Width           =   6495
       _ExtentX        =   11456
       _ExtentY        =   8281
@@ -1006,7 +1006,7 @@ Attribute VB_Exposed = False
 'Windows Icon (ICO) Export Dialog
 'Copyright 2020-2020 by Tanner Helland
 'Created: 11/May/20
-'Last updated: 14/May/20
+'Last updated: 18/May/20
 'Last update: ongoing work on initial build
 '
 'This dialog works as a simple relay to the pdICO class. Look there for specific encoding details.
@@ -1059,10 +1059,11 @@ Private Enum ICO_ColorDepths
     cd_8bpp = 3
     cd_4bpp = 4
     cd_1bpp = 5
+    cd_Unknown = 6
 End Enum
 
 #If False Then
-    Private Const cd_PNG = 0, cd_32bpp = 1, cd_24bpp = 2, cd_8bpp = 3, cd_4bpp = 4, cd_1bpp = 5
+    Private Const cd_PNG = 0, cd_32bpp = 1, cd_24bpp = 2, cd_8bpp = 3, cd_4bpp = 4, cd_1bpp = 5, cd_Unknown = 6
 #End If
 
 Private Enum ICO_Sizes
@@ -1078,13 +1079,28 @@ Private Enum ICO_Sizes
     sz_24 = 9
     sz_20 = 10
     sz_16 = 11
+    sz_Unknown = 12
 End Enum
 
 #If False Then
-    Private Const sz_768 = 0, sz_512 = 1, sz_256 = 2, sz_128 = 3, sz_96 = 4, sz_64 = 5, sz_48 = 6, sz_40 = 7, sz_32 = 8, sz_24 = 9, sz_20 = 10, sz_16 = 11
+    Private Const sz_768 = 0, sz_512 = 1, sz_256 = 2, sz_128 = 3, sz_96 = 4, sz_64 = 5, sz_48 = 6, sz_40 = 7, sz_32 = 8, sz_24 = 9, sz_20 = 10, sz_16 = 11, sz_Unknown = 12
 #End If
 
 Private m_Grid(0 To 11, 0 To 5) As Boolean
+
+'If the ICO being exported was originally loaded from an ICO file, we'll attempt to retrieve
+' the original embedding details (size and color-depth).  This allows users to load an ICO,
+' make changes, and save out an identical frame list of sizes + color-depths.
+Private Type PD_OrigIcon
+    icoWidth As Long
+    icoHeight As Long
+    icoSize As ICO_Sizes
+    icoCD As Long
+    icoColorDepth As ICO_ColorDepths
+    origLayerIndex As Long
+End Type
+
+Private m_numOrigIcons As Long, m_OrigIcons() As PD_OrigIcon
 
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
@@ -1156,10 +1172,109 @@ Private Sub cmdBar_OKClick()
 
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    'cParams.AddParam "compression", btsCompression.ListIndex
-    'cParams.AddParam "max-compatibility", (btsCompatibility.ListIndex = 1)
     
-    m_FormatParamString = cParams.GetParamString
+    'This dialog only needs to add one type of thing to its parameter list:
+    ' a list of all the checked checkboxes.  This is as simple as iterating
+    ' through the checkbox collection and writing predictable strings out to
+    ' the parameter list.
+    Dim icoCD As ICO_ColorDepths, icoSize As ICO_Sizes, writeICO As Boolean, numIcons As Long
+    For icoSize = sz_768 To sz_16
+        For icoCD = cd_PNG To cd_1bpp
+            
+            writeICO = False
+            
+            '768 and 512 icons are PNG format only
+            If (icoSize = sz_768) Then
+                If (icoCD = cd_PNG) Then writeICO = chk768(cd_PNG).Value
+            ElseIf (icoSize = sz_512) Then
+                If (icoCD = cd_PNG) Then writeICO = chk512(cd_PNG).Value
+            Else
+                
+                'All other sizes can use variable color-depths
+                Select Case icoSize
+                    Case sz_256
+                        writeICO = chk256(icoCD).Value
+                    Case sz_128
+                        writeICO = chk128(icoCD).Value
+                    Case sz_96
+                        writeICO = chk96(icoCD).Value
+                    Case sz_64
+                        writeICO = chk64(icoCD).Value
+                    Case sz_48
+                        writeICO = chk48(icoCD).Value
+                    Case sz_40
+                        writeICO = chk40(icoCD).Value
+                    Case sz_32
+                        writeICO = chk32(icoCD).Value
+                    Case sz_24
+                        writeICO = chk24(icoCD).Value
+                    Case sz_20
+                        writeICO = chk20(icoCD).Value
+                    Case sz_16
+                        writeICO = chk16(icoCD).Value
+                End Select
+                
+            End If
+            
+            'Write TRUE values to param string
+            If writeICO Then
+                
+                numIcons = numIcons + 1
+                
+                Dim strSize As String, strCD As String
+                
+                Select Case icoSize
+                    Case sz_768
+                        strSize = "768"
+                    Case sz_512
+                        strSize = "512"
+                    Case sz_256
+                        strSize = "256"
+                    Case sz_128
+                        strSize = "128"
+                    Case sz_96
+                        strSize = "96"
+                    Case sz_64
+                        strSize = "64"
+                    Case sz_48
+                        strSize = "48"
+                    Case sz_40
+                        strSize = "40"
+                    Case sz_32
+                        strSize = "32"
+                    Case sz_24
+                        strSize = "24"
+                    Case sz_20
+                        strSize = "20"
+                    Case sz_16
+                        strSize = "16"
+                End Select
+                
+                Select Case icoCD
+                    Case cd_PNG
+                        strCD = "64"   'Any number > 32 represents "PNG" for purposes of this function
+                    Case cd_32bpp
+                        strCD = "32"
+                    Case cd_24bpp
+                        strCD = "24"
+                    Case cd_8bpp
+                        strCD = "8"
+                    Case cd_4bpp
+                        strCD = "4"
+                    Case cd_1bpp
+                        strCD = "1"
+                End Select
+                
+                cParams.AddParam "ico-" & numIcons, strSize & "-" & strSize & "-" & strCD, True, True
+                
+            End If
+        
+        Next icoCD
+    Next icoSize
+    
+    'Finally, add the total count of icons in our request list
+    cParams.AddParam "icon-count", numIcons, True, True
+    m_FormatParamString = cParams.GetParamString()
     
     'ICO files don't support metadata
     m_MetadataParamString = vbNullString
@@ -1168,15 +1283,9 @@ Private Sub cmdBar_OKClick()
     Set m_CompositedImage = Nothing
     Set m_SrcImage = Nothing
     
-    'Temporary while icon saving is still under construction:
-    Dim tmpString As String, tmpTitle As String
-    tmpString = "Saving icons is still under construction.  Sorry!" & vbCrLf & vbCrLf & "(It should be ready soon!)"
-    tmpTitle = "Under construction"
-    PDMsgBox tmpString, vbInformation Or vbOKOnly, tmpTitle
-    
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
-    'm_UserDialogAnswer = vbOK
-    'Me.Visible = False
+    m_UserDialogAnswer = vbOK
+    Me.Visible = False
 
 End Sub
 
@@ -1192,20 +1301,30 @@ Private Sub ddIcon_Click()
 
     'If m_CheckboxesChanging is already TRUE, we are currently initializing the dialog
     If m_CheckboxesChanging Then Exit Sub
-    
     m_CheckboxesChanging = True
     
+    Dim icoCD As ICO_ColorDepths, icoSize As ICO_Sizes
+
     'Reset all flags
     FillMemory VarPtr(m_Grid(0, 0)), 12 * 6 * 2, 0
-    'Private m_Grid(0 To 11, 0 To 5) As Boolean
     
+    'Original file settings (if any)
+    If (ddIcon.ListIndex = 6) Then
+        
+        For icoSize = sz_768 To sz_16
+            For icoCD = cd_PNG To cd_1bpp
+                m_Grid(icoSize, icoCD) = DoesPrevIcoExist(icoSize, icoCD)
+            Next icoCD
+        Next icoSize
+        
     'Favicon
-    If (ddIcon.ListIndex = 4) Then
+    ElseIf (ddIcon.ListIndex = 4) Then
     
         'Favicon settings assumed with thanks to
         ' https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/samples/gg491740(v=vs.85)
         ' https://en.wikipedia.org/wiki/Favicon
         ' https://web.archive.org/web/20160306075956/http://www.jonathantneal.com/blog/understand-the-favicon/
+        ' https://stackoverflow.com/questions/48956465/favicon-standard-2020-svg-ico-png-and-dimensions
         m_Grid(sz_48, cd_32bpp) = True
         m_Grid(sz_48, cd_8bpp) = True
         m_Grid(sz_32, cd_32bpp) = True
@@ -1249,53 +1368,71 @@ Private Sub ddIcon_Click()
     'Populate the checkboxes to match the settings in our flag array
     If (ddIcon.ListIndex <> 5) Then
         
-        Dim cd As ICO_ColorDepths, Size As ICO_Sizes
-        For Size = sz_768 To sz_16
+        For icoSize = sz_768 To sz_16
             
             '768 and 512 icons are PNG format only
-            If (Size = sz_768) Then
-                chk768(cd_PNG) = m_Grid(Size, cd_PNG)
-            ElseIf (Size = sz_512) Then
-                chk512(cd_PNG) = m_Grid(Size, cd_PNG)
+            If (icoSize = sz_768) Then
+                chk768(cd_PNG).Value = m_Grid(icoSize, cd_PNG)
+            ElseIf (icoSize = sz_512) Then
+                chk512(cd_PNG).Value = m_Grid(icoSize, cd_PNG)
             Else
                 
-                For cd = cd_PNG To cd_1bpp
-                    Select Case Size
+                'All other sizes can use variable color-depths
+                For icoCD = cd_PNG To cd_1bpp
+                    Select Case icoSize
                         Case sz_256
-                            chk256(cd).Value = m_Grid(Size, cd)
+                            chk256(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_128
-                            chk128(cd).Value = m_Grid(Size, cd)
+                            chk128(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_96
-                            chk96(cd).Value = m_Grid(Size, cd)
+                            chk96(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_64
-                            chk64(cd).Value = m_Grid(Size, cd)
+                            chk64(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_48
-                            chk48(cd).Value = m_Grid(Size, cd)
+                            chk48(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_40
-                            chk40(cd).Value = m_Grid(Size, cd)
+                            chk40(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_32
-                            chk32(cd).Value = m_Grid(Size, cd)
+                            chk32(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_24
-                            chk24(cd).Value = m_Grid(Size, cd)
+                            chk24(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_20
-                            chk20(cd).Value = m_Grid(Size, cd)
+                            chk20(icoCD).Value = m_Grid(icoSize, icoCD)
                         Case sz_16
-                            chk16(cd).Value = m_Grid(Size, cd)
+                            chk16(icoCD).Value = m_Grid(icoSize, icoCD)
                     End Select
-                Next cd
+                Next icoCD
                 
             End If
             
-        Next Size
+        Next icoSize
         
     End If
     
-    'At present, there are a few different
-    
-    'TODO: change checkboxes according to drop-down index
     m_CheckboxesChanging = False
     
 End Sub
+
+Private Function DoesPrevIcoExist(ByVal icoSize As ICO_Sizes, ByVal icoColor As ICO_ColorDepths, Optional ByRef dstIndex As Long = 0) As Boolean
+    
+    DoesPrevIcoExist = False
+    
+    If (m_numOrigIcons > 0) Then
+    
+        Dim i As Long
+        For i = 0 To m_numOrigIcons - 1
+        
+            If (m_OrigIcons(i).icoSize = icoSize) And (m_OrigIcons(i).icoColorDepth = icoColor) Then
+                DoesPrevIcoExist = True
+                dstIndex = i
+                Exit Function
+            End If
+        
+        Next i
+    
+    End If
+
+End Function
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
@@ -1324,7 +1461,127 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     ddIcon.AddItem "app - Windows XP", 2
     ddIcon.AddItem "app - Windows 95, 98, ME", 3
     ddIcon.AddItem "web - favicon", 4, True
-    ddIcon.AddItem "custom icon", 5
+    
+    'We now want to see if this image was originally stored in ICO format.  If it was,
+    ' we'll give the user a way to save the icon in its current format.
+    If (Not srcImage Is Nothing) Then
+        
+        If (srcImage.GetOriginalFileFormat = PDIF_ICO) Then
+            ddIcon.AddItem "custom icon", 5, True
+            ddIcon.AddItem "use original file settings", 6
+        End If
+        
+        'We now want to retrieve the original ICO file's frame settings (size and color-depth)
+        m_numOrigIcons = 0
+        
+        Const INIT_SIZE As Long = 4
+        ReDim m_OrigIcons(0 To INIT_SIZE - 1) As PD_OrigIcon
+        
+        Dim i As Long, lyrName As String, lyrSettings() As Long, numSettings As Long, lyrIsPNG As Boolean
+        For i = 0 To srcImage.GetNumOfLayers - 1
+            
+            'Parse all integers out of the layer name.  This function returns the number of
+            ' individual integers found; for a standard icon loaded into PD, layer names are
+            ' formatted as e.g. "32x32 (8-bpp)" so this function will return "32, 32, 8"
+            lyrName = srcImage.GetLayerByIndex(i).GetLayerName()
+            numSettings = Strings.SplitIntegers(lyrName, lyrSettings, False)
+            lyrIsPNG = False
+            
+            'Note that we only look for 2 settings (width and height).  PNG-encoded frames
+            ' won't return a numeric color-depth; we'll check this special case in a moment.
+            If (numSettings >= 2) Then
+                
+                'Quick validation of size numbers
+                Dim okToWrite As Boolean
+                okToWrite = (lyrSettings(0) > 0) And (lyrSettings(1) > 0)
+                If okToWrite Then
+                    If (numSettings > 2) Then
+                        okToWrite = (lyrSettings(2) >= 1)
+                    Else
+                        lyrIsPNG = (Strings.StrStrI(StrPtr(lyrName), StrPtr("PNG")) > 0)
+                        okToWrite = lyrIsPNG
+                    End If
+                End If
+                
+                If okToWrite Then
+                    
+                    'Make sure we have storage space before storing this to our module-level array
+                    If (m_numOrigIcons > UBound(m_OrigIcons)) Then ReDim Preserve m_OrigIcons(0 To m_numOrigIcons * 2 - 1) As PD_OrigIcon
+                    
+                    With m_OrigIcons(m_numOrigIcons)
+                        
+                        .icoWidth = lyrSettings(0)
+                        .icoHeight = lyrSettings(1)
+                        
+                        'Attempt to match the retrieved sizes against our internal enum list
+                        If (.icoWidth = .icoHeight) Then
+                            Select Case .icoWidth
+                                Case 768
+                                    .icoSize = sz_768
+                                Case 512
+                                    .icoSize = sz_512
+                                Case 256
+                                    .icoSize = sz_256
+                                Case 128
+                                    .icoSize = sz_128
+                                Case 96
+                                    .icoSize = sz_96
+                                Case 64
+                                    .icoSize = sz_64
+                                Case 48
+                                    .icoSize = sz_48
+                                Case 40
+                                    .icoSize = sz_40
+                                Case 32
+                                    .icoSize = sz_32
+                                Case 24
+                                    .icoSize = sz_24
+                                Case 20
+                                    .icoSize = sz_20
+                                Case 16
+                                    .icoSize = sz_16
+                                Case Else
+                                    .icoSize = sz_Unknown
+                            End Select
+                        Else
+                            .icoSize = sz_Unknown
+                        End If
+                        
+                        If lyrIsPNG Then .icoCD = 64 Else .icoCD = lyrSettings(2)
+                        
+                        'Attempt to match color depth against our internal enum list
+                        Select Case .icoCD
+                            Case 64
+                                .icoColorDepth = cd_PNG
+                            Case 32
+                                .icoColorDepth = cd_32bpp
+                            Case 24
+                                .icoColorDepth = cd_24bpp
+                            Case 8
+                                .icoColorDepth = cd_8bpp
+                            Case 4
+                                .icoColorDepth = cd_4bpp
+                            Case 1
+                                .icoColorDepth = cd_1bpp
+                            Case Else
+                                .icoColorDepth = cd_Unknown
+                        End Select
+                        
+                    End With
+                    
+                    'Increment found frame count
+                    m_numOrigIcons = m_numOrigIcons + 1
+                    
+                End If
+                
+            End If
+            
+        Next i
+        
+    Else
+        ddIcon.AddItem "custom icon", 5
+    End If
+    
     ddIcon.ListIndex = 0
     
     'Prep a preview (if any)

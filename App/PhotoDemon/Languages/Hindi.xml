@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.185</langversion>
+<langversion>1.0.186</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16069,7 +16069,12 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<phrase>
+<original>use original file settings</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
@@ -16086,10 +16091,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2666</phrasecount>
+<phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5056 phrases. -->
-<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
-<!-- These 2666 phrases contain approximately 12248 total words. -->
+<!-- As of this build, PhotoDemon contains 5058 phrases. -->
+<!-- 2391 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- These 2667 phrases contain approximately 12252 total words. -->
 
 </pdData>

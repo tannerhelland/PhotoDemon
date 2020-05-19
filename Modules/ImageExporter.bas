@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/January/18
-'Last update: add export support for OpenRaster (ORA) files
+'Last updated: 19/May/20
+'Last update: add export support for icon (ICO) files
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.  You will not generally
 ' want to interface with this module directly; instead, rely on the high-level functions in the "Saving" module.
@@ -1792,6 +1792,26 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.SetParamString formatParams
+    
+    'TEST: ensure we can retrieve all icon parameters
+    Dim numIcons As Long
+    numIcons = cParams.GetLong("icon-count", 0, True)
+    If (numIcons = 0) Then Exit Function
+    
+    'Split retrieved icon formats into size/color-depth
+    Dim icoSettings() As Long, numSettings As Long
+    
+    Dim i As Long
+    For i = 1 To numIcons
+        numSettings = Strings.SplitIntegers(cParams.GetString("ico-" & i, vbNullString, True), icoSettings, False)
+        If (numSettings > 0) Then
+            'Debug.Print "Size: " & icoSettings(0) & "x" & icoSettings(1) & ", color: " & icoSettings(2)
+        Else
+            'nop
+        End If
+    Next i
+    
+    Exit Function
     
     'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
     ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,

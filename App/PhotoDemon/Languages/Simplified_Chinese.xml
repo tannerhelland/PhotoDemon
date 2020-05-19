@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.1892</langversion>
+<langversion>8.0.1893</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -16063,7 +16063,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<phrase>
+<original>use original file settings</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
@@ -16080,10 +16085,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2666</phrasecount>
+<phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5056 phrases. -->
-<!-- 2390 are duplicates, so only 2666 unique phrases have been written to file. -->
-<!-- These 2666 phrases contain approximately 12248 total words. -->
+<!-- As of this build, PhotoDemon contains 5058 phrases. -->
+<!-- 2391 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- These 2667 phrases contain approximately 12252 total words. -->
 
 </pdData>
