@@ -1774,7 +1774,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Threshold alpha</original>
-<translation></translation>
+<translation>Schwellenwert-Alpha</translation>
 </phrase>
 
 <phrase>
@@ -2563,17 +2563,17 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Ordered (Bayer 4x4)</original>
-<translation>Angeordnet (Bayer 4x4)</translation>
+<translation>Ordered (Bayer 4x4)</translation>
 </phrase>
 
 <phrase>
 <original>Ordered (Bayer 8x8)</original>
-<translation>Angeordnet (Bayer 8x8)</translation>
+<translation>Ordered (Bayer 8x8)</translation>
 </phrase>
 
 <phrase>
 <original>Single neighbor</original>
-<translation>Einzelner Neighbor</translation>
+<translation>Single Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -2583,7 +2583,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Jarvis, Judice, and Ninke</original>
-<translation>Jarvis, Judice und Ninke</translation>
+<translation>Jarvis-Judice-Ninke</translation>
 </phrase>
 
 <phrase>
@@ -2603,7 +2603,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Two-Row Sierra</original>
-<translation>Zwei-Reihen Sierra</translation>
+<translation>Two-Row Sierra</translation>
 </phrase>
 
 <phrase>
@@ -2613,7 +2613,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson / Klassischer Macintosh</translation>
+<translation>Atkinson / Classic Macintosh</translation>
 </phrase>
 
 <!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -6131,7 +6131,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Threshold</original>
-<translation></translation>
+<translation>Schwellenwert</translation>
 </phrase>
 
 <phrase>
@@ -12229,7 +12229,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>premultiply alpha</original>
-<translation>Alpha vormulitplizieren</translation>
+<translation>Premultiply Alpha</translation>
 </phrase>
 
 <phrase>
@@ -13214,7 +13214,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Nearest Neighbor</original>
-<translation>Nearest-Neighbor</translation>
+<translation>Nearest Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -14333,7 +14333,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Nearest neighbor</original>
-<translation>Nearest-Neighbor</translation>
+<translation>Nearest Neighbor</translation>
 </phrase>
 
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -16084,7 +16084,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Converting alpha channel</original>
-<translation></translation>
+<translation>Alpha-Kanal wird konvertiert</translation>
 </phrase>
 
 <!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
