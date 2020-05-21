@@ -3,8 +3,8 @@ Attribute VB_Name = "DIBs"
 'DIB Support Functions
 'Copyright 2012-2020 by Tanner Helland
 'Created: 27/March/15 (though many of the individual functions are much older!)
-'Last updated: 10/August/17
-'Last update: new performance improvements, with a special focus on DIB functions called during startup
+'Last updated: 20/May/20
+'Last update: add a dedicated ReverseScanlines function for converting top-down to bottom-up DIBs
 '
 'This module contains support functions for the pdDIB class.  In old versions of PD,
 ' these functions were provided by pdDIB, but there's no sense cluttering up that class
@@ -1534,6 +1534,112 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
     
 End Function
 
+'If a DIB does not already have 256 colors (or less), you can call this function to forcibly return
+' an optimized RGB-only palette for the DIB (at the requested color count), a matching one-byte-per-pixel
+' palettized image array (with dimensions matching the original image), and a matching one-byte-per-pixel
+' mask describing the image's original alpha channel.  This is particularly useful when exporting to
+' image formats that support separate RGB and mask layers, like ICOs.
+'
+'The returned palette will be in RGBA format with A values forced to 255 (so alpha does *not* matter when
+' calculating colors); you can downsample to pure RGB triplets without problem.
+'
+'RETURNS: number of colors in the destination palette (1-based).  If the image already contains less than
+' the requested number of colors, the return value is a safe way to identify that.  If the return is 0,
+' the function failed.
+Public Function GetDIBAs8bpp_RGBMask_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, ByRef dstPixels() As Byte, ByRef dstMask() As Byte, Optional ByVal maxSizeOfPalette As Long = 256) As Long
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
+        
+        'If image is premultiplied, unpremultiply now
+        Dim alphaWasModified As Boolean
+        alphaWasModified = srcDIB.GetAlphaPremultiplication()
+        If alphaWasModified Then srcDIB.SetAlphaPremultiplication False
+        
+        'Start by retrieving an optimized RGBA palette for the image in question
+        If Palettes.GetOptimizedPalette(srcDIB, dstPalette, maxSizeOfPalette) Then
+        
+            'A palette was successfully generated.  We now want to match each pixel in the original image
+            ' to the palette we've generated, and return the result.
+            ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
+            ReDim dstMask(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
+            
+            Dim srcPixels() As Byte, tmpSA As SafeArray1D
+            
+            Dim pxSize As Long
+            pxSize = srcDIB.GetDIBColorDepth \ 8
+            
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, xOffset As Long
+            initX = 0
+            initY = 0
+            finalX = srcDIB.GetDIBWidth - 1
+            finalY = srcDIB.GetDIBHeight - 1
+            
+            'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+            ' searching for contiguous matching colors.
+            Dim lastColor As Long: lastColor = -1
+            Dim r As Long, g As Long, b As Long, a As Long
+            
+            Dim tmpQuad As RGBQuad, newIndex As Long, lastIndex As Long
+            tmpQuad.Alpha = 255
+            lastIndex = -1
+            
+            'Build the initial tree
+            Dim kdTree As pdKDTree
+            Set kdTree = New pdKDTree
+            kdTree.BuildTree dstPalette, UBound(dstPalette) + 1
+            
+            'Start matching pixels
+            For y = 0 To finalY
+                srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+            For x = 0 To finalX
+                
+                xOffset = x * pxSize
+                b = srcPixels(xOffset)
+                g = srcPixels(xOffset + 1)
+                r = srcPixels(xOffset + 2)
+                a = srcPixels(xOffset + 3)
+                
+                'Store alpha in the mask channel (regardless of value)
+                dstMask(x, y) = a
+                
+                'If this pixel matches the last pixel we tested, reuse our previous match results
+                If (RGB(r, g, b) <> lastColor) Then
+                    
+                    tmpQuad.Red = r
+                    tmpQuad.Green = g
+                    tmpQuad.Blue = b
+                    
+                    'Ask the tree for its best match
+                    newIndex = kdTree.GetNearestPaletteIndex(tmpQuad)
+                    
+                    lastColor = RGB(r, g, b)
+                    lastIndex = newIndex
+                    
+                Else
+                    newIndex = lastIndex
+                End If
+                
+                'Mark the matched index in the destination array
+                dstPixels(x, y) = newIndex
+                
+            Next x
+            Next y
+            
+            srcDIB.UnwrapArrayFromDIB srcPixels
+            
+            GetDIBAs8bpp_RGBMask_Forcibly = UBound(dstPalette) + 1
+    
+        End If
+        
+        'Reset alpha premultiplication, as necessary
+        If alphaWasModified Then srcDIB.SetAlphaPremultiplication True
+        
+    End If
+    
+End Function
+
 'Assuming a source DIB already contains 256 unique RGBA quads (or less), call this function to return two arrays:
 ' a palette array (RGB quads), and a one-byte-per-pixel palettized image array (with dimensions matching the
 ' original image).
@@ -2245,6 +2351,38 @@ Public Function GetRectOfInterest_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB
     
 End Function
 
+'Some GDI functions and file formats use reverse-scanline DIBs.  This function provides a fast,
+' memory-efficient mechanism for converting a top-down DIB to a bottom-up one (or vice-versa).
+Public Sub ReverseScanlines(ByRef dstDIB As pdDIB)
+    
+    Dim pxScanline() As Byte, scanlineSize As Long
+    scanlineSize = dstDIB.GetDIBStride
+    ReDim pxScanline(0 To scanlineSize - 1) As Byte
+    
+    Dim srcPtr As Long, endPtr As Long, numScanlines As Long
+    srcPtr = dstDIB.GetDIBPointer
+    numScanlines = dstDIB.GetDIBHeight
+    endPtr = dstDIB.GetDIBPointer + (scanlineSize * (numScanlines - 1))
+    
+    Dim numLinesToReverse As Long
+    numLinesToReverse = dstDIB.GetDIBHeight \ 2
+    
+    Dim y As Long
+    For y = 0 To numLinesToReverse - 1
+        
+        'Copy the target scanline into our temporary buffer
+        CopyMemoryStrict VarPtr(pxScanline(0)), srcPtr + y * scanlineSize, scanlineSize
+        
+        'Copy the mirrored scanline over the line we just copied.
+        CopyMemoryStrict srcPtr + y * scanlineSize, endPtr - y * scanlineSize, scanlineSize
+        
+        'Copy the temporary buffer over the mirrored scanline
+        CopyMemoryStrict endPtr - y * scanlineSize, VarPtr(pxScanline(0)), scanlineSize
+        
+    Next y
+    
+End Sub
+
 'Reduce an image's alpha channel to on/off only (e.g. values of 0 or 255).  Useful before converting
 ' to legacy file formats like GIF or ICO.
 Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alphaCutoff As Long = 127, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_Stucki, Optional ByVal ditherAmount As Single = 50!, Optional ByVal suppressMessages As Boolean = False) As Boolean
@@ -2252,6 +2390,11 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     ditherAmount = ditherAmount * 0.01
     If (ditherAmount < 0!) Then ditherAmount = 0!
     If (ditherAmount > 1!) Then ditherAmount = 1!
+    
+    'Ensure the target DIB is using *un-premultiplied* alpha
+    Dim needToResetAlpha As Boolean
+    needToResetAlpha = srcDIB.GetAlphaPremultiplication()
+    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication False
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
@@ -2501,6 +2644,9 @@ NextDitheredPixel:     Next j
     
     'Safely deallocate imageData() before exiting
     srcDIB.UnwrapArrayFromDIB imageData
+    
+    'Restore the DIB to its original alpha status (as necessary)
+    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication True
     
     ThresholdAlphaChannel = (Not g_cancelCurrentAction)
     

@@ -1900,6 +1900,16 @@ End Sub
 'External functions can use this function to request a thumbnail version of the layer contents.
 Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = LAYER_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
     
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+    
+    'Check the (rare) special case where the requested thumbnail size equals the layer's size;
+    ' if this happens we can do a simple copy and exit immediately.
+    If (thumbnailSize = Me.GetLayerWidth(True)) And (thumbnailSize = Me.GetLayerHeight(True)) And (Not Me.AffineTransformsActive) And (ptrToRectF = 0) Then
+        dstThumbnailDIB.CreateFromExistingDIB Me.layerDIB
+        RequestThumbnail = True
+        Exit Function
+    End If
+    
     'Is the current thumbnail dirty?  If so, regenerate it.
     If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentLayerThumbSize) Then UpdateInternalThumbnail thumbnailSize
     
@@ -1951,7 +1961,6 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     If (Not thumbIsSquare) And (ptrToRectF <> 0) Then prepDstDIB = False
     
     If prepDstDIB Then
-        If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
         If thumbIsSquare Then
             dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
         Else

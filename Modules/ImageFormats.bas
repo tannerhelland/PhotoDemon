@@ -800,10 +800,13 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
 
     Select Case srcFormat
     
-        Case PDIF_PDI
+        Case PDIF_ICO
             IsExifToolRelevant = False
             
         Case PDIF_ORA
+            IsExifToolRelevant = False
+        
+        Case PDIF_PDI
             IsExifToolRelevant = False
             
         Case Else

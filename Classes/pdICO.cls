@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon ICO (Icon) Container and Import/Export engine
 'Copyright 2020-2020 by Tanner Helland
 'Created: 07/May/20
-'Last updated: 11/May/20
-'Last update: wrap up initial work on ICO import; export is up next!
+'Last updated: 21/May/20
+'Last update: finish up full export support for all color-depths
 '
 'This class (and its associated pdICO- child classes) handle import and export of
 ' old-school ICO files.  The class was custom-built for PhotoDemon, with an emphasis on
@@ -75,7 +75,7 @@ Private m_IconSubtype As PD_IconSubtype
 
 'Icon bitmaps use standard 40-byte BITMAPINFOHEADER structs as headers
 Private Type BITMAPINFOHEADER
-    size As Long
+    Size As Long
     Width As Long
     Height As Long
     Planes As Integer
@@ -117,6 +117,16 @@ Private Type PD_Icon
     ico_OK As Boolean
     'Finished pdDIB object
     ico_DIB As pdDIB
+    
+    'The following settings are *only* used at export time
+    
+    'Export width/height; these need to be *precise*, even if larger than 255
+    ico_ExportWidth As Long
+    ico_ExportHeight As Long
+    
+    'Source layer index to use when generating mask + ico bits
+    ico_ExportLayerIndex As Long
+    
 End Type
 
 Private m_NumIcons As Long
@@ -269,9 +279,463 @@ End Sub
 'Save an icon file.  Importantly, the passed param string must contain a bunch of information about
 ' how to generate frames within the icon file.
 Friend Function SaveICO_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdImage, ByRef fullParamString As String) As Boolean
+    
+    SaveICO_ToFile = False
+    
+    'All export settings are found in the param string
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString fullParamString
+    
+    'How many frames are we writing?
+    Dim outFrames() As PD_Icon, numFrames As Long
+    numFrames = cParams.GetLong("icon-count", 0, True)
+    If (numFrames <= 0) Then
+        InternalError "SaveICO_ToFile", "zero icon count"
+        SaveICO_ToFile = False
+        Exit Function
+    End If
+    
+    'numFrames is now guaranteed > 0
+    ReDim outFrames(0 To numFrames - 1) As PD_Icon
+    
+    'Build a list of required frame sizes and color-depths.
+    Dim i As Long, j As Long, numSettings As Long, icoSettings() As Long
+    For i = 1 To numFrames
+    
+        'A properly formatted settings string must supply three values: width, height, and color-depth (PNG = 64)
+        numSettings = Strings.SplitIntegers(cParams.GetString("ico-" & i, vbNullString, True), icoSettings, False)
+        If (numSettings = 3) Then
+            With outFrames(i - 1)
+                .ico_ExportWidth = icoSettings(0)
+                .ico_ExportHeight = icoSettings(1)
+                .ico_BPP = icoSettings(2)
+                If (.ico_BPP > 32) Then
+                    .ico_IsPNG = True
+                    .ico_BPP = 32
+                End If
+            End With
+        Else
+            'nop; param string is bad!
+        End If
+    Next i
+    
+    'Next, we need to match the list of requested frames against layer indices in the source image.
+    ' We want to match (as best we can) idealized layer sizes and color-counts against frame requirements.
+    ' We also give preferences to layers whose names exactly match requested export settings; that means
+    ' the original file was likely an ICO, and we're just re-saving it after edits.
+    
+    '(Note that this is only relevant for multi-layer images, obviously!)
+    If (srcPDImage.GetNumOfLayers > 1) Then
+        
+        'To avoid the need for determining layer color-depth multiple times (because PD stores everything
+        ' as 32-bpp RGBA internally, and we need to know more detailed color counts), we cache layer data
+        ' as we calculate it.  (Note that in the case of perfect matches between layer names and export
+        ' requirements, we defer to that - this gives the user a way to "tell us" which layer to use for
+        ' which export.)
+        For i = 0 To numFrames - 1
+            
+            Dim tWidth As Long, tHeight As Long, tColorDepth As Long, tPNG As Boolean
+            Dim lName As String, matchFound As Boolean, lyrIsPNG As Boolean
+            tWidth = outFrames(i).ico_ExportWidth
+            tHeight = outFrames(i).ico_ExportHeight
+            tColorDepth = outFrames(i).ico_BPP
+            tPNG = outFrames(i).ico_IsPNG
+            If tPNG Then tColorDepth = 64
+            
+            matchFound = False
+            
+            'Look for any layers whose layer name matches the requested export settings
+            For j = 0 To srcPDImage.GetNumOfLayers() - 1
+            
+                lName = srcPDImage.GetLayerByIndex(j).GetLayerName()
+                numSettings = Strings.SplitIntegers(lName, icoSettings, False)
+            
+                'Note that we only look for 2 settings (width and height).  PNG-encoded frames
+                ' won't return a numeric color-depth; we'll check this special case in a moment.
+                If (numSettings >= 2) Then
+                    
+                    'Compare size numbers; if they match exactly, great!
+                    If (icoSettings(0) = tWidth) And (icoSettings(1) = tHeight) Then
+                    
+                        'Sizes match.  Compare color-depths next.
+                        If (numSettings > 2) Then
+                            matchFound = (icoSettings(2) = tColorDepth)
+                        Else
+                            lyrIsPNG = (Strings.StrStrI(StrPtr(lName), StrPtr("PNG")) > 0)
+                            matchFound = (lyrIsPNG And tPNG)
+                        End If
+                        
+                    End If
+                    
+                    'If we found an exact match, mark it and continue with the next frame.
+                    If matchFound Then
+                        If ICO_DEBUG_VERBOSE Then PDDebug.LogAction "Matched layer name for frame " & i & " and layer " & j
+                        outFrames(i).ico_ExportLayerIndex = j
+                        GoTo NextFrame  'VB6 doesn't provide a Continue statement; sorry for the goto!
+                    End If
+                    
+                End If
+            
+            Next j
+            
+            'If we're still here, an exact layer name match was *not* found for this frame.
+            ' That means we need to perform heuristics on source layers.
+            Dim closestSize As Long, closestIndex As Long
+            closestIndex = -1
+            closestSize = &HFFFFFFF
+            
+            Dim testSize As Long, compareSize As Long
+            
+            'The goal here is to find the layer that is closest in size to the requested icon size.
+            For j = 0 To srcPDImage.GetNumOfLayers() - 1
+                testSize = PDMath.Max2Int(srcPDImage.GetLayerByIndex(j).GetLayerWidth(True), srcPDImage.GetLayerByIndex(j).GetLayerHeight(True))
+                compareSize = Abs(testSize - PDMath.Max2Int(outFrames(i).ico_ExportWidth, outFrames(i).ico_ExportHeight))
+                If (compareSize < closestSize) Then
+                    closestIndex = j
+                    closestSize = compareSize
+                End If
+            Next j
+            
+            If ICO_DEBUG_VERBOSE Then PDDebug.LogAction "Approximating frame " & i & " with source layer " & closestIndex
+            
+            'TODO: factor layer color-depth into the decision tree??
+            
+            'Set the nearest-size index as the target index
+            outFrames(i).ico_ExportLayerIndex = closestIndex
+NextFrame:
+        Next i
+        
+    End If
+    
+    'Every frame is now associated with a layer in the original image.  We have what we need to write
+    ' our icon file!
+    Set m_Stream = New pdStream
+    If m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile) Then
+    
+        'Start with a standard header.
+        ' 2-bytes: 0 (reserved)
+        ' 2-bytes: 1 (for icon), 2 (for cursor), all other values are invalid
+        ' 2-bytes: number of images in the file (must be > 0)
+        m_Stream.WriteInt 0
+        m_Stream.WriteInt 1
+        m_Stream.WriteInt numFrames
+        
+        'Next, we need to write headers for each frame.  This requires us to know the size of each
+        ' frame's pixel + mask (or PNG data), so we need to calculate all frames in advance.
+        Dim tmpDIB As pdDIB
+        For i = 0 To numFrames - 1
+            CreateFrame outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), tmpDIB
+        Next i
+        
+        '6-byte header + (numFrames) * 16-byte frame header = initial offset into bitmap data
+        Dim curOffset As Long
+        curOffset = 6& + numFrames * 16
+        
+        'With all frame data assembled, we can now dump all headers to file!
+        For i = 0 To numFrames - 1
+        
+            'Headers are fixed in size; interpretation does vary slightly for icons vs cursors
+            With outFrames(i)
+                
+                'Width/height can be 0; this means the frame is >= 256 pixels in that dimension.
+                ' (Note that the precise size is listed in the BITMAPINFOHEADER for this frame,
+                ' which uses normal 4-byte integers for dimensions.)
+                If (.ico_ExportWidth > 255) Then m_Stream.WriteByte 0 Else m_Stream.WriteByte .ico_ExportWidth
+                If (.ico_ExportHeight > 255) Then m_Stream.WriteByte 0 Else m_Stream.WriteByte .ico_ExportHeight
+                
+                'Color count in palette (byte)
+                If (.ico_BPP = 1) Then
+                    m_Stream.WriteByte 2
+                ElseIf (.ico_BPP = 2) Then
+                    m_Stream.WriteByte 4
+                ElseIf (.ico_BPP = 4) Then
+                    m_Stream.WriteByte 16
+                Else
+                    m_Stream.WriteByte 0
+                End If
+                
+                'Reserved byte; must be zero, with the following caveat from Wikipedia (https://en.wikipedia.org/wiki/ICO_(file_format)):
+                ' "Although Microsoft's technical documentation states that this value must be zero,
+                ' the icon encoder built into .NET (System.Drawing.Icon.Save) sets this value to 255.
+                ' It appears that the operating system ignores this value altogether."
+                m_Stream.WriteByte 0
+                
+                'Color planes; must be 1 (2-bytes)
+                m_Stream.WriteIntU 1
+                
+                'Bits-per-pixel
+                If .ico_IsPNG Then
+                    m_Stream.WriteIntU 32
+                Else
+                    m_Stream.WriteIntU .ico_BPP
+                End If
+                
+                'Size of the image data, in bytes (4-bytes)
+                m_Stream.WriteLong .ico_SizeInBytes
+                
+                'Starting offset of the data, in bytes
+                m_Stream.WriteLong curOffset
+                
+                'Advance the offset automatically
+                curOffset = curOffset + .ico_SizeInBytes
+                
+            End With
+            
+        Next i
+        
+        'With all headers written, we can now write image data out to file.  Note that it was pre-filled
+        ' by the CreateFrame function, above.
+        For i = 0 To numFrames - 1
+            m_Stream.WriteByteArray outFrames(i).ico_RawData, outFrames(i).ico_SizeInBytes
+        Next i
+        
+        'We're done!  Close the stream and exit
+        m_Stream.StopStream
+        SaveICO_ToFile = True
+    
+    End If
+    
+End Function
 
-
-
+'Given a PD_Icon struct, populate the ico_RawData() member with a valid icon stream, based on the params
+' already filled in relevant PD_Icon members.  To reduce memory churn, a persistent pdDIB object is also required;
+' PD will use this to generate intermediate frame copies.
+'
+'NOTE: at present, this function only produces square thumbnails (by design).  Odd sizes may be accomodated
+' in the future.
+Private Function CreateFrame(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef tmpDIB As pdDIB) As Boolean
+    
+    'Before doing anything else, we need to generate a reference 32-bpp image of the source layer
+    If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+    srcLayer.RequestThumbnail tmpDIB, PDMath.Max2Int(srcIcoData.ico_ExportWidth, srcIcoData.ico_ExportHeight), True
+    If tmpDIB.GetAlphaPremultiplication() Then tmpDIB.SetAlphaPremultiplication False
+    
+    'PD uses top-down DIBs internally.  Reverse scanlines before writing out to file.
+    ' (But *only* for non-PNGs!  PD's PNG engine handles this automatically.)
+    If (Not srcIcoData.ico_IsPNG) Then DIBs.ReverseScanlines tmpDIB
+    
+    'tmpDIB now contains a 32-bpp copy of the source layer.  If this frame is in PNG format, produce such
+    ' a frame now.
+    
+    'NOTE: the closest thing to an "official" spec from Microsoft on PNG-embedded frames is Raymond Chen's
+    ' series of articles on icons (https://devblogs.microsoft.com/oldnewthing/20101018-00/?p=12513)
+    ' In part 4, he explicitly states: "The format of a PNG-compressed image consists simply of a PNG image,
+    ' starting with the PNG file signature. The image must be in 32bpp ARGB format."
+    '
+    'PD follows this recommendation and *always* produces a 32-bpp PNG file, regardless of possible other
+    ' color-depths.
+    If srcIcoData.ico_IsPNG Then
+        
+        Dim cPNG As pdPNG
+        Set cPNG = New pdPNG
+        srcIcoData.ico_SizeInBytes = cPNG.SavePNG_ToMemory(srcIcoData.ico_RawData, tmpDIB, Nothing, png_TruecolorAlpha, 8, 12, vbNullString, png_FilterOptimal, True)
+        CreateFrame = (srcIcoData.ico_SizeInBytes > 0)
+        If ICO_DEBUG_VERBOSE Then PDDebug.LogAction "Embedded PNG frame size: " & srcIcoData.ico_SizeInBytes
+        
+    'The embedded frame is *not* a PNG.  We need to generate the data ourselves.
+    Else
+        
+        'Start by creating a pdStream object.  First we'll write a standard bitmap header,
+        ' then the actual frame pixel data (in whatever color format the user specified).
+        ' Last is a mandatory alpha mask.
+        Dim tmpStream As pdStream
+        Set tmpStream = New pdStream
+        tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
+        
+        'Start with a standard BITMAPINFOHEADER struct
+        tmpStream.WriteLong 40&                     'Struct size
+        tmpStream.WriteLong tmpDIB.GetDIBWidth      'Width
+        tmpStream.WriteLong tmpDIB.GetDIBHeight * 2 'Height * 2 (due to mask)
+        tmpStream.WriteIntU 1&                      'Planes
+        tmpStream.WriteIntU srcIcoData.ico_BPP      'BPP
+        tmpStream.WriteLong 0&                      'Compression
+        tmpStream.WriteLong 0&                      'Image size
+        tmpStream.WriteLong 0&                      'Horizontal resolution (ppm)
+        tmpStream.WriteLong 0&                      'Vertical resolution (ppm)
+        
+        'Palette size; per MSDN, "If biClrUsed is zero, the array contains the maximum number of colors
+        ' for the given bitdepth; that is, 2^biBitCount colors."
+        tmpStream.WriteLong 0&
+        tmpStream.WriteLong 0&  'Important color count (set to 0 for all important colors)
+        
+        'Next, if a palette exists, we need to write it - see the color-depth switches
+        ' below for details.
+        
+        Dim x As Long, y As Long, tmpSA As SafeArray1D, pxData() As Byte, dstOffsetX As Long
+        Dim pxScanline() As Byte, scanlineSize As Long, scanlinePadding As Long
+        
+        Dim pxWidth As Long, pxHeight As Long
+        pxWidth = tmpDIB.GetDIBWidth
+        pxHeight = tmpDIB.GetDIBHeight
+        
+        Dim numColors As Long, imgPalette() As RGBQuad, maskBytes() As Byte
+        
+        'Regardless of color-depth, we must always write a 1-bpp monochrome mask for each frame.
+        ' Prep a lookup table in advance.
+        Dim oneBppLUT(0 To 7) As Byte
+        oneBppLUT(0) = 128
+        oneBppLUT(1) = 64
+        oneBppLUT(2) = 32
+        oneBppLUT(3) = 16
+        oneBppLUT(4) = 8
+        oneBppLUT(5) = 4
+        oneBppLUT(6) = 2
+        oneBppLUT(7) = 1
+        
+        'Do any preliminary work to the DIB (based on color-depth requirements).
+        Select Case srcIcoData.ico_BPP
+        
+            'No work required; write the pixel data as-is!
+            Case 32
+                If tmpDIB.GetAlphaPremultiplication() Then tmpDIB.SetAlphaPremultiplication False
+                tmpStream.WriteBytesFromPointer tmpDIB.GetDIBPointer, 4 * tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
+            
+            'Write RGB data, but *not* alpha data
+            Case 24
+                
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                scanlineSize = (pxWidth * 3 + 3) And &HFFFFFFFC
+                ReDim pxScanline(0 To scanlineSize - 1) As Byte
+                
+                For y = 0 To pxHeight - 1
+                    tmpDIB.WrapArrayAroundScanline pxData, tmpSA, y
+                    FillMemory VarPtr(pxScanline(0)), scanlineSize, 0
+                    For x = 0 To pxWidth - 1
+                        pxScanline(x * 3) = pxData(x * 4)
+                        pxScanline(x * 3 + 1) = pxData(x * 4 + 1)
+                        pxScanline(x * 3 + 2) = pxData(x * 4 + 2)
+                    Next x
+                    tmpStream.WriteBytesFromPointer VarPtr(pxScanline(0)), scanlineSize
+                Next y
+                
+                tmpDIB.UnwrapArrayFromDIB pxData
+                
+            'Next come indexed formats.
+            ' For compatibility reasons, note that PD always writes a full palette
+            ' (e.g. 256-colors for an 8-bpp image), even if fewer colors are actually used.
+            ' Many ICO readers assume a full palette is present, and this improves compatibility.
+            Case 8
+            
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                
+                'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 256)
+                
+                'Regardless of color count, write a full 256-color table out to file
+                tmpStream.WriteBytesFromPointer VarPtr(imgPalette(0)), numColors * 4
+                If (numColors < 256) Then tmpStream.WritePadding (256 - numColors) * 4
+                
+                'Ensure scanline width is a multiple of 4
+                scanlineSize = (pxWidth + 3) And &HFFFFFFFC
+                scanlinePadding = scanlineSize - pxWidth
+                
+                'Write each scanline out to file, with padding as necessary
+                For y = 0 To pxHeight - 1
+                    tmpStream.WriteBytesFromPointer VarPtr(pxData(0, y)), pxWidth
+                    If (scanlinePadding > 0) Then tmpStream.WritePadding scanlinePadding
+                Next y
+            
+            Case 4
+            
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                
+                'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 16)
+                
+                'Regardless of color count, write a full 16-color table out to file
+                tmpStream.WriteBytesFromPointer VarPtr(imgPalette(0)), numColors * 4
+                If (numColors < 16) Then tmpStream.WritePadding (16 - numColors) * 4
+                
+                'Ensure scanline width is a multiple of 4
+                scanlineSize = (pxWidth + 1) \ 2
+                scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
+                ReDim pxScanline(0 To scanlineSize - 1) As Byte
+                
+                'Downsample source pixels to 4-bpp, then write each scanline out to file
+                For y = 0 To pxHeight - 1
+                    FillMemory VarPtr(pxScanline(0)), scanlineSize, 0
+                    For x = 0 To pxWidth - 1
+                        dstOffsetX = x \ 2
+                        If (x And 1) Then
+                            pxScanline(dstOffsetX) = pxScanline(dstOffsetX) Or pxData(x, y)
+                        Else
+                            pxScanline(dstOffsetX) = pxData(x, y) * 16
+                        End If
+                    Next x
+                    tmpStream.WriteBytesFromPointer VarPtr(pxScanline(0)), scanlineSize
+                Next y
+                
+            Case 1
+        
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                
+                'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 2)
+                
+                'Regardless of color count, write a full 16-color table out to file
+                tmpStream.WriteBytesFromPointer VarPtr(imgPalette(0)), numColors * 4
+                If (numColors < 2) Then tmpStream.WritePadding (2 - numColors) * 4
+                
+                'Ensure scanline width is a multiple of 4
+                scanlineSize = (pxWidth + 7) \ 8
+                scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
+                ReDim pxScanline(0 To scanlineSize - 1) As Byte
+                
+                'Downsample source pixels to 4-bpp, then write each scanline out to file
+                For y = 0 To pxHeight - 1
+                    FillMemory VarPtr(pxScanline(0)), scanlineSize, 0
+                    For x = 0 To pxWidth - 1
+                        dstOffsetX = x \ 8
+                        If (pxData(x, y) > 0) Then pxScanline(dstOffsetX) = pxScanline(dstOffsetX) Or oneBppLUT(x And &H7&)
+                    Next x
+                    tmpStream.WriteBytesFromPointer VarPtr(pxScanline(0)), scanlineSize
+                Next y
+                
+        End Select
+        
+        'With pixel data written successfully, pull transparency data from the original DIB, threshold it
+        ' (only for 32-bit - other bit-depths will have already done this!) - then write a 1-bpp mask.
+        If (srcIcoData.ico_BPP = 32) Then DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, True
+        
+        'Masks are written a scanline at a time - and importantly, each scanline *must* be padded a multiple of 4!
+        scanlineSize = (pxWidth + 7) \ 8
+        scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
+        ReDim pxScanline(0 To scanlineSize - 1) As Byte
+        
+        For y = 0 To pxHeight - 1
+            
+            tmpDIB.WrapArrayAroundScanline pxData, tmpSA, y
+            FillMemory VarPtr(pxScanline(0)), scanlineSize, 0
+            
+            For x = 0 To pxWidth - 1
+                dstOffsetX = x \ 8
+                If (pxData(x * 4 + 3) < 128) Then pxScanline(dstOffsetX) = pxScanline(dstOffsetX) Or oneBppLUT(x And &H7&)
+            Next x
+            
+            'Write the finished mask out to file
+            tmpStream.WriteBytesFromPointer VarPtr(pxScanline(0)), scanlineSize
+            
+        Next y
+        
+        tmpDIB.UnwrapArrayFromDIB pxData
+        
+        'Note the final stream size, copy the stream data into a persistent array, then exit!
+        Dim copySize As Long
+        copySize = tmpStream.GetStreamSize()
+        srcIcoData.ico_SizeInBytes = copySize
+        
+        ReDim srcIcoData.ico_RawData(0 To copySize - 1) As Byte
+        CopyMemoryStrict VarPtr(srcIcoData.ico_RawData(0)), tmpStream.Peek_PointerOnly(0, copySize), copySize
+        
+        tmpStream.StopStream True
+        
+    End If
+    
 End Function
 
 'Given an index into the m_Icons() array, produce a finished DIB for said index's raw icon data
@@ -279,7 +743,9 @@ Private Function CreateDIBForIndex(ByRef srcHeader As BITMAPINFOHEADER, ByRef sr
     
     Dim i As Long
     
-    'If the underlying image requires a palette, it immediately follows the header
+    'If the underlying image requires a palette, it immediately follows the header.
+    ' TODO: maybe consider retrieving color table sizes from the BIH itself?  I've never seen
+    ' an ICO that supplied a non-normal palette size, but it is theoretically possible.
     Dim palSize As Long, srcPalette() As RGBQuad
     If (srcHeader.BitCount <= 8) Then palSize = 2 ^ srcHeader.BitCount Else palSize = 0
     
@@ -635,8 +1101,8 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
                 '  of the ICONIMAGE structure in the same way that the BITMAPINFOHEADER structure defines
                 '  a CF_DIB format DIB."
                 Dim headerValid As Boolean
-                headerValid = (tmpBIHeader.size = 40)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header size: " & tmpBIHeader.size
+                headerValid = (tmpBIHeader.Size = 40)
+                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header size: " & tmpBIHeader.Size
                 headerValid = (tmpBIHeader.Width > 0)
                 If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header width: " & tmpBIHeader.Width
                 headerValid = (tmpBIHeader.Height > 0)
@@ -691,16 +1157,18 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
         ' 3) ...with preference given to PNG frames
         Dim activeLayerIndex As Long, highestBitDepth As Long
         For i = 0 To m_NumIcons - 1
-            If (m_Icons(i).ico_DIB.GetDIBWidth = maxWidth) And (m_Icons(i).ico_DIB.GetDIBHeight = maxHeight) Then
-            
-                'This layer matches the largest layer size we have so far.  If it *also* has the
-                ' highest bit-depth, flag it as the new active index.
-                If (m_Icons(i).ico_BPP > highestBitDepth) Or (m_Icons(i).ico_IsPNG) Then
-                    highestBitDepth = m_Icons(i).ico_BPP
-                    If m_Icons(i).ico_IsPNG Then highestBitDepth = 48   'Give PNGs an arbitrarily large preference
-                    activeLayerIndex = i
+            If m_Icons(i).ico_OK And (Not m_Icons(i).ico_DIB Is Nothing) Then
+                If (m_Icons(i).ico_DIB.GetDIBWidth = maxWidth) And (m_Icons(i).ico_DIB.GetDIBHeight = maxHeight) Then
+                
+                    'This layer matches the largest layer size we have so far.  If it *also* has the
+                    ' highest bit-depth, flag it as the new active index.
+                    If (m_Icons(i).ico_BPP > highestBitDepth) Or (m_Icons(i).ico_IsPNG) Then
+                        highestBitDepth = m_Icons(i).ico_BPP
+                        If m_Icons(i).ico_IsPNG Then highestBitDepth = 48   'Give PNGs an arbitrarily large preference
+                        activeLayerIndex = i
+                    End If
+                
                 End If
-            
             End If
         Next i
         

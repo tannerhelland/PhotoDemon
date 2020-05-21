@@ -1469,115 +1469,119 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         If (srcImage.GetOriginalFileFormat = PDIF_ICO) Then
             ddIcon.AddItem "custom icon", 5, True
             ddIcon.AddItem "use original file settings", 6
-        End If
-        
-        'We now want to retrieve the original ICO file's frame settings (size and color-depth)
-        m_numOrigIcons = 0
-        
-        Const INIT_SIZE As Long = 4
-        ReDim m_OrigIcons(0 To INIT_SIZE - 1) As PD_OrigIcon
-        
-        Dim i As Long, lyrName As String, lyrSettings() As Long, numSettings As Long, lyrIsPNG As Boolean
-        For i = 0 To srcImage.GetNumOfLayers - 1
             
-            'Parse all integers out of the layer name.  This function returns the number of
-            ' individual integers found; for a standard icon loaded into PD, layer names are
-            ' formatted as e.g. "32x32 (8-bpp)" so this function will return "32, 32, 8"
-            lyrName = srcImage.GetLayerByIndex(i).GetLayerName()
-            numSettings = Strings.SplitIntegers(lyrName, lyrSettings, False)
-            lyrIsPNG = False
+            'We now want to retrieve the original ICO file's frame settings (size and color-depth)
+            m_numOrigIcons = 0
             
-            'Note that we only look for 2 settings (width and height).  PNG-encoded frames
-            ' won't return a numeric color-depth; we'll check this special case in a moment.
-            If (numSettings >= 2) Then
+            Const INIT_SIZE As Long = 4
+            ReDim m_OrigIcons(0 To INIT_SIZE - 1) As PD_OrigIcon
+            
+            Dim i As Long, lyrName As String, lyrSettings() As Long, numSettings As Long, lyrIsPNG As Boolean
+            For i = 0 To srcImage.GetNumOfLayers - 1
                 
-                'Quick validation of size numbers
-                Dim okToWrite As Boolean
-                okToWrite = (lyrSettings(0) > 0) And (lyrSettings(1) > 0)
-                If okToWrite Then
-                    If (numSettings > 2) Then
-                        okToWrite = (lyrSettings(2) >= 1)
-                    Else
-                        lyrIsPNG = (Strings.StrStrI(StrPtr(lyrName), StrPtr("PNG")) > 0)
-                        okToWrite = lyrIsPNG
-                    End If
-                End If
+                'Parse all integers out of the layer name.  This function returns the number of
+                ' individual integers found; for a standard icon loaded into PD, layer names are
+                ' formatted as e.g. "32x32 (8-bpp)" so this function will return "32, 32, 8"
+                lyrName = srcImage.GetLayerByIndex(i).GetLayerName()
+                numSettings = Strings.SplitIntegers(lyrName, lyrSettings, False)
+                lyrIsPNG = False
                 
-                If okToWrite Then
+                'Note that we only look for 2 settings (width and height).  PNG-encoded frames
+                ' won't return a numeric color-depth; we'll check this special case in a moment.
+                If (numSettings >= 2) Then
                     
-                    'Make sure we have storage space before storing this to our module-level array
-                    If (m_numOrigIcons > UBound(m_OrigIcons)) Then ReDim Preserve m_OrigIcons(0 To m_numOrigIcons * 2 - 1) As PD_OrigIcon
-                    
-                    With m_OrigIcons(m_numOrigIcons)
-                        
-                        .icoWidth = lyrSettings(0)
-                        .icoHeight = lyrSettings(1)
-                        
-                        'Attempt to match the retrieved sizes against our internal enum list
-                        If (.icoWidth = .icoHeight) Then
-                            Select Case .icoWidth
-                                Case 768
-                                    .icoSize = sz_768
-                                Case 512
-                                    .icoSize = sz_512
-                                Case 256
-                                    .icoSize = sz_256
-                                Case 128
-                                    .icoSize = sz_128
-                                Case 96
-                                    .icoSize = sz_96
-                                Case 64
-                                    .icoSize = sz_64
-                                Case 48
-                                    .icoSize = sz_48
-                                Case 40
-                                    .icoSize = sz_40
-                                Case 32
-                                    .icoSize = sz_32
-                                Case 24
-                                    .icoSize = sz_24
-                                Case 20
-                                    .icoSize = sz_20
-                                Case 16
-                                    .icoSize = sz_16
-                                Case Else
-                                    .icoSize = sz_Unknown
-                            End Select
+                    'Quick validation of size numbers
+                    Dim okToWrite As Boolean
+                    okToWrite = (lyrSettings(0) > 0) And (lyrSettings(1) > 0)
+                    If okToWrite Then
+                        If (numSettings > 2) Then
+                            okToWrite = (lyrSettings(2) >= 1)
                         Else
-                            .icoSize = sz_Unknown
+                            lyrIsPNG = (Strings.StrStrI(StrPtr(lyrName), StrPtr("PNG")) > 0)
+                            okToWrite = lyrIsPNG
                         End If
-                        
-                        If lyrIsPNG Then .icoCD = 64 Else .icoCD = lyrSettings(2)
-                        
-                        'Attempt to match color depth against our internal enum list
-                        Select Case .icoCD
-                            Case 64
-                                .icoColorDepth = cd_PNG
-                            Case 32
-                                .icoColorDepth = cd_32bpp
-                            Case 24
-                                .icoColorDepth = cd_24bpp
-                            Case 8
-                                .icoColorDepth = cd_8bpp
-                            Case 4
-                                .icoColorDepth = cd_4bpp
-                            Case 1
-                                .icoColorDepth = cd_1bpp
-                            Case Else
-                                .icoColorDepth = cd_Unknown
-                        End Select
-                        
-                    End With
+                    End If
                     
-                    'Increment found frame count
-                    m_numOrigIcons = m_numOrigIcons + 1
+                    If okToWrite Then
+                        
+                        'Make sure we have storage space before storing this to our module-level array
+                        If (m_numOrigIcons > UBound(m_OrigIcons)) Then ReDim Preserve m_OrigIcons(0 To m_numOrigIcons * 2 - 1) As PD_OrigIcon
+                        
+                        With m_OrigIcons(m_numOrigIcons)
+                            
+                            .icoWidth = lyrSettings(0)
+                            .icoHeight = lyrSettings(1)
+                            
+                            'Attempt to match the retrieved sizes against our internal enum list
+                            If (.icoWidth = .icoHeight) Then
+                                Select Case .icoWidth
+                                    Case 768
+                                        .icoSize = sz_768
+                                    Case 512
+                                        .icoSize = sz_512
+                                    Case 256
+                                        .icoSize = sz_256
+                                    Case 128
+                                        .icoSize = sz_128
+                                    Case 96
+                                        .icoSize = sz_96
+                                    Case 64
+                                        .icoSize = sz_64
+                                    Case 48
+                                        .icoSize = sz_48
+                                    Case 40
+                                        .icoSize = sz_40
+                                    Case 32
+                                        .icoSize = sz_32
+                                    Case 24
+                                        .icoSize = sz_24
+                                    Case 20
+                                        .icoSize = sz_20
+                                    Case 16
+                                        .icoSize = sz_16
+                                    Case Else
+                                        .icoSize = sz_Unknown
+                                End Select
+                            Else
+                                .icoSize = sz_Unknown
+                            End If
+                            
+                            If lyrIsPNG Then .icoCD = 64 Else .icoCD = lyrSettings(2)
+                            
+                            'Attempt to match color depth against our internal enum list
+                            Select Case .icoCD
+                                Case 64
+                                    .icoColorDepth = cd_PNG
+                                Case 32
+                                    .icoColorDepth = cd_32bpp
+                                Case 24
+                                    .icoColorDepth = cd_24bpp
+                                Case 8
+                                    .icoColorDepth = cd_8bpp
+                                Case 4
+                                    .icoColorDepth = cd_4bpp
+                                Case 1
+                                    .icoColorDepth = cd_1bpp
+                                Case Else
+                                    .icoColorDepth = cd_Unknown
+                            End Select
+                            
+                        End With
+                        
+                        'Increment found frame count
+                        m_numOrigIcons = m_numOrigIcons + 1
+                        
+                    End If
                     
                 End If
                 
-            End If
+            Next i
             
-        Next i
-        
+        'Source image isn't ICO
+        Else
+            ddIcon.AddItem "custom icon", 5
+        End If
+            
     Else
         ddIcon.AddItem "custom icon", 5
     End If

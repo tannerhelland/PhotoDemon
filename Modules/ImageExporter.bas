@@ -1798,21 +1798,6 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     numIcons = cParams.GetLong("icon-count", 0, True)
     If (numIcons = 0) Then Exit Function
     
-    'Split retrieved icon formats into size/color-depth
-    Dim icoSettings() As Long, numSettings As Long
-    
-    Dim i As Long
-    For i = 1 To numIcons
-        numSettings = Strings.SplitIntegers(cParams.GetString("ico-" & i, vbNullString, True), icoSettings, False)
-        If (numSettings > 0) Then
-            'Debug.Print "Size: " & icoSettings(0) & "x" & icoSettings(1) & ", color: " & icoSettings(2)
-        Else
-            'nop
-        End If
-    Next i
-    
-    Exit Function
-    
     'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
     ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
     ' the original file remains untouched).
@@ -1831,7 +1816,7 @@ Public Function ExportICO(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     Dim cICO As pdICO
     Set cICO = New pdICO
-    'ExportICO = (cICO.SaveICO(tmpFilename, srcPDImage, formatParams) < ico_Failure)
+    ExportICO = cICO.SaveICO_ToFile(tmpFilename, srcPDImage, formatParams)
     
     'If we wrote the ICO to a temp file, attempt to replace the original file with it now
     If ExportICO And Strings.StringsNotEqual(dstFile, tmpFilename) Then

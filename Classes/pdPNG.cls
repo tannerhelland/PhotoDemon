@@ -2035,7 +2035,6 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     
     'Prep a header; this contains standard IHDR information, and storing it module-level prevents us from
     ' needing to pass it to individual functions over-and-over
-    ' TODO: pull this data from a passed param string, obviously.
     With m_Header
         
         .Width = srcImage.GetDIBWidth
