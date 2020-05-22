@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1951</langversion>
+<langversion>8.0.1961</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -292,7 +292,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Original image</original>
-<translation>Originalbild</translation>
+<translation>Original-Bild</translation>
 </phrase>
 
 <phrase>
@@ -7182,7 +7182,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>original curve (diagonal line)</original>
-<translation>Originalkurve (diagonale Gerade)</translation>
+<translation>Original-Kurve (diagonale Gerade)</translation>
 </phrase>
 
 <phrase>
@@ -11039,7 +11039,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>Nach einer erfolgreichen Wiederherstellung die originale (nicht reparierte) Datei löschen</translation>
+<translation>Nach einer erfolgreichen Wiederherstellung die Original- (nicht reparierte) Datei löschen</translation>
 </phrase>
 
 <phrase>
@@ -11061,7 +11061,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Originalort.</translation>
+<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Original-Ort.</translation>
 </phrase>
 
 <phrase>
@@ -11237,7 +11237,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>keep images in their original format</original>
-<translation>Bilder in deren Originalformat behalten</translation>
+<translation>Bilder in deren Original-Format behalten</translation>
 </phrase>
 
 <phrase>
@@ -11451,7 +11451,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Originalformat behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem originalen Format zu speichern. Wenn das Originalformat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Original-Format behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standard-Format (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -11481,7 +11481,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Originaldateinamen" ausgewählt ist, werden solchen Dateien nach dem Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
+<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien nach dem Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
 </phrase>
 
 <phrase>
@@ -11546,7 +11546,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Original filenames</original>
-<translation>Originaldateinamen</translation>
+<translation>Original-Dateinamen</translation>
 </phrase>
 
 <phrase>
@@ -11556,7 +11556,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-<translation>Wenn PhotoDemon das Originalformat eines Bildes nicht unterstützt, wird ein Standardformat verwendet</translation>
+<translation>Wenn PhotoDemon das Original-Format eines Bildes nicht unterstützt, wird ein Standard-Format verwendet</translation>
 </phrase>
 
 <phrase>
@@ -13018,7 +13018,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Reset tag to its original value</original>
-<translation>Tag auf dessen Originalwert zurücksetzen</translation>
+<translation>Tag auf dessen Original-Wert zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -13033,7 +13033,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Reset entire group to its original values</original>
-<translation>Gesamte Gruppe auf ihre Originalwerte zurücksetzen</translation>
+<translation>Gesamte Gruppe auf ihre Original-Werte zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -14724,7 +14724,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>edit an existing language file</original>
-<translation>Eine vorhandene Sprachdatei bearbeiten</translation>
+<translation>Eine bestehende Sprachdatei bearbeiten</translation>
 </phrase>
 
 <phrase>
@@ -14809,12 +14809,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>original phrase</original>
-<translation>Originale Textpassage</translation>
+<translation>Original-Textpassage</translation>
 </phrase>
 
 <phrase>
 <original>phrases to display</original>
-<translation>Angezeigte Textpassagen</translation>
+<translation>Anzuzeigende Textpassagen</translation>
 </phrase>
 
 <phrase>
@@ -15010,7 +15010,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.</original>
-<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, tren- nen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer vorhandenen Sprachdatei basiert, geben Sie bitte den Namen des ursprünglichen Autors an.</translation>
+<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, tren- nen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer bestehenden Sprachdatei basiert, beziehen Sie bitte den Name des Original-Autors mit ein.</translation>
 </phrase>
 
 <phrase>
@@ -15357,7 +15357,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation>Originale JPEG-Qualitätseinstellungen schätzen</translation>
+<translation>Original-JPEG-Qualitätseinstellungen schätzen</translation>
 </phrase>
 
 <phrase>
@@ -15536,7 +15536,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Bildschirme physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die originalen Bilddaten angewandt werden.</translation>
+<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Bildschirme physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die Original-Bilddaten angewandt werden.</translation>
 </phrase>
 
 <phrase>
@@ -15596,7 +15596,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>In den meisten Fotoeditoren überschreibt der Befehl "Speichern" das Bild in seiner Originalversion, die Kopie wird für immer gelöscht. PhotoDemon bietet eine "sicherere" Option, wo jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
+<translation>In den meisten Fotoeditoren überschreibt der Befehl "Speichern" das Bild in seiner Original-Version, die Kopie wird für immer gelöscht. PhotoDemon bietet eine "sicherere" Option, wo jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
 </phrase>
 
 <phrase>
@@ -16078,7 +16078,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>use original file settings</original>
-<translation></translation>
+<translation>Original-Dateieinstellungen verwenden</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->

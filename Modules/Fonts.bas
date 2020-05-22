@@ -362,9 +362,21 @@ Public Sub DetermineUIFont()
     Dim tmpFontCheck As pdFont
     Set tmpFontCheck = New pdFont
     
-    'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
-    ' (which some dialogs use to slightly modify their layout for better alignments).
-    If tmpFontCheck.DoesFontExist("Segoe UI") Then m_InterfaceFontName = "Segoe UI" Else m_InterfaceFontName = "Tahoma"
+    'Users can override PD's default font by adding a "UIFont" entry to the "Interface"
+    ' segment of PD's settings file.  By default, this entry is *not* added because I
+    ' don't want people changing this willy-nilly (because I can't guarantee that all
+    ' UI elements will reflow correctly).
+    Dim userFontEnabled As Boolean
+    userFontEnabled = (LenB(UserPrefs.GetUIFontName()) > 0)
+    If userFontEnabled Then userFontEnabled = tmpFontCheck.DoesFontExist(UserPrefs.GetUIFontName())
+    If userFontEnabled Then
+        m_InterfaceFontName = UserPrefs.GetUIFontName()
+    
+    'By default, PD uses "Segoe UI" if present; "Tahoma" otherwise
+    Else
+        If tmpFontCheck.DoesFontExist("Segoe UI") Then m_InterfaceFontName = "Segoe UI" Else m_InterfaceFontName = "Tahoma"
+    End If
+    
     Set tmpFontCheck = Nothing
     
 End Sub

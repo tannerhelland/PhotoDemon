@@ -425,7 +425,7 @@ NextFrame:
         ' frame's pixel + mask (or PNG data), so we need to calculate all frames in advance.
         Dim tmpDIB As pdDIB
         For i = 0 To numFrames - 1
-            CreateFrame outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), tmpDIB
+            CreateFrameForExport outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), tmpDIB
         Next i
         
         '6-byte header + (numFrames) * 16-byte frame header = initial offset into bitmap data
@@ -485,7 +485,7 @@ NextFrame:
         Next i
         
         'With all headers written, we can now write image data out to file.  Note that it was pre-filled
-        ' by the CreateFrame function, above.
+        ' by the CreateFrameForExport function, above.
         For i = 0 To numFrames - 1
             m_Stream.WriteByteArray outFrames(i).ico_RawData, outFrames(i).ico_SizeInBytes
         Next i
@@ -504,7 +504,7 @@ End Function
 '
 'NOTE: at present, this function only produces square thumbnails (by design).  Odd sizes may be accomodated
 ' in the future.
-Private Function CreateFrame(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef tmpDIB As pdDIB) As Boolean
+Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef tmpDIB As pdDIB) As Boolean
     
     'Before doing anything else, we need to generate a reference 32-bpp image of the source layer
     If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
@@ -530,7 +530,7 @@ Private Function CreateFrame(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLa
         Dim cPNG As pdPNG
         Set cPNG = New pdPNG
         srcIcoData.ico_SizeInBytes = cPNG.SavePNG_ToMemory(srcIcoData.ico_RawData, tmpDIB, Nothing, png_TruecolorAlpha, 8, 12, vbNullString, png_FilterOptimal, True)
-        CreateFrame = (srcIcoData.ico_SizeInBytes > 0)
+        CreateFrameForExport = (srcIcoData.ico_SizeInBytes > 0)
         If ICO_DEBUG_VERBOSE Then PDDebug.LogAction "Embedded PNG frame size: " & srcIcoData.ico_SizeInBytes
         
     'The embedded frame is *not* a PNG.  We need to generate the data ourselves.

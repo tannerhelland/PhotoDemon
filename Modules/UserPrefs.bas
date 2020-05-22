@@ -80,6 +80,7 @@ End Enum
 #End If
 
 Private m_GenerateDebugLogs As PD_DebugLogBehavior, m_EmergencyDebug As Boolean
+Private m_UIFontName As String
 
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
 ' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
@@ -283,6 +284,11 @@ End Function
 'Return the current update-specific temp path
 Public Function GetUpdatePath() As String
     GetUpdatePath = m_UpdatesPath
+End Function
+
+'Get the user's preferred UI font name (if any; this defaults to "Segoe UI")
+Public Function GetUIFontName() As String
+    GetUIFontName = m_UIFontName
 End Function
 
 'Initialize key program directories.  If this function fails, PD will fail to load.
@@ -543,6 +549,10 @@ Public Sub LoadUserSettings()
         
         m_GenerateDebugLogs = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
+        
+        'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
+        ' want to override PD's default font object.
+        m_UIFontName = UserPrefs.GetPref_String("Interface", "UIFont", vbNullString, False)
         
     Else
         PDDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
@@ -850,7 +860,7 @@ Public Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
+Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString, Optional ByVal writeIfMissing As Boolean = True) As String
 
     'Get the requested value from the preferences file
     Dim tmpString As String
@@ -861,7 +871,7 @@ Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & prefDefaultValue
-        UserPrefs.SetPref_String preferenceSection, preferenceName, prefDefaultValue
+        If writeIfMissing Then UserPrefs.SetPref_String preferenceSection, preferenceName, prefDefaultValue
         GetPref_String = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
