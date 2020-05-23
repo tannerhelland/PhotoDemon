@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_libdeflate"
 'File Compression Interface (via libdeflate)
 'Copyright 2002-2016 by Tanner Helland
 'Created: 3/02/02
-'Last updated: 15/February/19
-'Last update: wrap up initial build
+'Last updated: 22/May/20
+'Last update: switch to new (official) stdcall builds; see https://github.com/ebiggers/libdeflate/blob/master/NEWS
 '
 'LibDeflate: https://github.com/ebiggers/libdeflate
 ' - "libdeflate is a library for fast, whole-buffer DEFLATE-based compression and decompression."
@@ -13,9 +13,8 @@ Attribute VB_Name = "Plugin_libdeflate"
 '
 'PhotoDemon uses libdeflate for reading/writing DEFLATE, zlib, and gzip data buffers.
 '
-'This wrapper class uses a shorthand implementation of DispCallFunc originally written by Olaf Schmidt.
-' Many thanks to Olaf, whose original version can be found here (link good as of Feb 2019):
-' http://www.vbforums.com/showthread.php?781595-VB6-Call-Functions-By-Pointer-(Universall-DLL-Calls)&p=4795471&viewfull=1#post4795471
+'As of v1.4, libdeflate authors now provide "official" 32-bit stdcall builds of the library.
+' This greatly simplifies our interactions with it (vs the old cdecl workarounds).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -41,43 +40,27 @@ Private Const LIBDEFLATE_MIN_CLEVEL = 1
 Private Const LIBDEFLATE_MAX_CLEVEL = 12
 Private Const LIBDEFLATE_DEFAULT_CLEVEL = 6
 
-'libdeflate has very specific compiler needs in order to produce maximum perf code, so rather than
-' recompile myself, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
-Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-
 'A single library handle is maintained for the life of a class instance; see Initialize and Release functions, below.
 Private m_libDeflateHandle As Long
 
-'At load-time, we cache a number of proc addresses (required for passing through DispCallFunc).
-' This saves us a little time vs calling GetProcAddress on each call.
-Private Enum LD_ProcAddress
-    libdeflate_alloc_compressor
-    libdeflate_deflate_compress
-    libdeflate_deflate_compress_bound
-    libdeflate_zlib_compress
-    libdeflate_zlib_compress_bound
-    libdeflate_gzip_compress
-    libdeflate_gzip_compress_bound
-    libdeflate_free_compressor
-    libdeflate_alloc_decompressor
-    libdeflate_deflate_decompress
-    libdeflate_deflate_decompress_ex
-    libdeflate_zlib_decompress
-    libdeflate_gzip_decompress
-    libdeflate_gzip_decompress_ex
-    libdeflate_free_decompressor
-    libdeflate_adler32
-    libdeflate_crc32
-    [last_address]
-End Enum
-
-Private m_ProcAddresses() As Long
-
-'Rather than allocate new memory on each DispCallFunc invoke, just reuse a set of temp arrays declared
-' to the maximum relevant size (see InitializeEngine, below).
-Private Const MAX_PARAM_COUNT As Long = 10
-Private m_vType() As Integer, m_vPtr() As Long
+Private Declare Function libdeflate_alloc_compressor Lib "libdeflate" (ByVal compression_level As Long) As Long
+Private Declare Function libdeflate_deflate_compress Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long) As Long
+Private Declare Function libdeflate_deflate_compress_bound Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal in_nbytes As Long) As Long
+Private Declare Function libdeflate_zlib_compress Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long) As Long
+Private Declare Function libdeflate_zlib_compress_bound Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal in_nbytes As Long) As Long
+Private Declare Function libdeflate_gzip_compress Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long) As Long
+Private Declare Function libdeflate_gzip_compress_bound Lib "libdeflate" (ByVal libdeflate_compressor As Long, ByVal in_nbytes As Long) As Long
+Private Declare Sub libdeflate_free_compressor Lib "libdeflate" (ByVal libdeflate_compressor As Long)
+Private Declare Function libdeflate_alloc_decompressor Lib "libdeflate" () As Long
+Private Declare Function libdeflate_deflate_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Function libdeflate_deflate_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Function libdeflate_zlib_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Function libdeflate_zlib_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Function libdeflate_gzip_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Function libdeflate_gzip_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+Private Declare Sub libdeflate_free_decompressor Lib "libdeflate" (ByVal libdeflate_decompressor As Long)
+Private Declare Function libdeflate_adler32 Lib "libdeflate" (ByVal adler32 As Long, ByVal ptr_buffer As Long, ByVal len_in_bytes As Long) As Long
+Private Declare Function libdeflate_crc32 Lib "libdeflate" (ByVal crc As Long, ByVal ptr_buffer As Long, ByVal len_in_bytes As Long) As Long
 
 'Basic init/release functions
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
@@ -87,35 +70,9 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     m_libDeflateHandle = VBHacks.LoadLib(libDeflatePath)
     InitializeEngine = (m_libDeflateHandle <> 0)
     
-    If InitializeEngine Then
-    
-        'Pre-load all relevant proc addresses
-        ReDim m_ProcAddresses(0 To [last_address] - 1) As Long
-        m_ProcAddresses(libdeflate_alloc_compressor) = GetProcAddress(m_libDeflateHandle, "libdeflate_alloc_compressor")
-        m_ProcAddresses(libdeflate_deflate_compress) = GetProcAddress(m_libDeflateHandle, "libdeflate_deflate_compress")
-        m_ProcAddresses(libdeflate_deflate_compress_bound) = GetProcAddress(m_libDeflateHandle, "libdeflate_deflate_compress_bound")
-        m_ProcAddresses(libdeflate_zlib_compress) = GetProcAddress(m_libDeflateHandle, "libdeflate_zlib_compress")
-        m_ProcAddresses(libdeflate_zlib_compress_bound) = GetProcAddress(m_libDeflateHandle, "libdeflate_zlib_compress_bound")
-        m_ProcAddresses(libdeflate_gzip_compress) = GetProcAddress(m_libDeflateHandle, "libdeflate_gzip_compress")
-        m_ProcAddresses(libdeflate_gzip_compress_bound) = GetProcAddress(m_libDeflateHandle, "libdeflate_gzip_compress_bound")
-        m_ProcAddresses(libdeflate_free_compressor) = GetProcAddress(m_libDeflateHandle, "libdeflate_free_compressor")
-        m_ProcAddresses(libdeflate_alloc_decompressor) = GetProcAddress(m_libDeflateHandle, "libdeflate_alloc_decompressor")
-        m_ProcAddresses(libdeflate_deflate_decompress) = GetProcAddress(m_libDeflateHandle, "libdeflate_deflate_decompress")
-        m_ProcAddresses(libdeflate_deflate_decompress_ex) = GetProcAddress(m_libDeflateHandle, "libdeflate_deflate_decompress_ex")
-        m_ProcAddresses(libdeflate_zlib_decompress) = GetProcAddress(m_libDeflateHandle, "libdeflate_zlib_decompress")
-        m_ProcAddresses(libdeflate_gzip_decompress) = GetProcAddress(m_libDeflateHandle, "libdeflate_gzip_decompress")
-        m_ProcAddresses(libdeflate_gzip_decompress_ex) = GetProcAddress(m_libDeflateHandle, "libdeflate_gzip_decompress_ex")
-        m_ProcAddresses(libdeflate_free_decompressor) = GetProcAddress(m_libDeflateHandle, "libdeflate_free_decompressor")
-        m_ProcAddresses(libdeflate_adler32) = GetProcAddress(m_libDeflateHandle, "libdeflate_adler32")
-        m_ProcAddresses(libdeflate_crc32) = GetProcAddress(m_libDeflateHandle, "libdeflate_crc32")
-            
-    Else
+    If (Not InitializeEngine) Then
         PDDebug.LogAction "WARNING!  LoadLibraryW failed to load libdeflate.  Last DLL error: " & Err.LastDllError
     End If
-    
-    'Initialize all module-level arrays
-    ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
-    ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
     
 End Function
 
@@ -164,20 +121,20 @@ End Function
 Public Function GetCrc32(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal startValue As Long = 0&, Optional ByVal calcStartForMe As Boolean = True) As Long
     
     'Get an initial default "seed"
-    If calcStartForMe Then startValue = CallCDeclW(libdeflate_crc32, vbLong, 0&, 0&, 0&)
+    If calcStartForMe Then startValue = libdeflate_crc32(0&, 0&, 0&)
     
     'Use the seed to calculate an actual Crc32
-    If (srcPtr <> 0) Then GetCrc32 = CallCDeclW(libdeflate_crc32, vbLong, startValue, srcPtr, srcLen) Else GetCrc32 = startValue
+    If (srcPtr <> 0) Then GetCrc32 = libdeflate_crc32(startValue, srcPtr, srcLen) Else GetCrc32 = startValue
     
 End Function
 
 Public Function GetAdler32(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal startValue As Long = 0&) As Long
     
     'Get an initial default "seed"
-    If (startValue = 0) Then startValue = CallCDeclW(libdeflate_adler32, vbLong, 0&, 0&, 0&)
+    If (startValue = 0) Then startValue = libdeflate_adler32(0&, 0&, 0&)
     
     'Use the seed to calculate an actual Crc32
-    GetAdler32 = CallCDeclW(libdeflate_adler32, vbLong, startValue, srcPtr, srcLen)
+    GetAdler32 = libdeflate_adler32(startValue, srcPtr, srcLen)
     
 End Function
 
@@ -191,16 +148,21 @@ Public Function Decompress_ZLib(ByVal constDstPtr As Long, ByVal constDstSizeInB
     'Allocate a decompressor
     ' LIBDEFLATEAPI struct libdeflate_decompressor * libdeflate_alloc_decompressor(void)
     Dim hDecompress As Long
-    hDecompress = CallCDeclW(libdeflate_alloc_decompressor, vbLong)
+    hDecompress = libdeflate_alloc_decompressor()
     If (hDecompress <> 0) Then
         
         'Perform decompression
         ' LIBDEFLATEAPI enum libdeflate_result libdeflate_zlib_decompress(struct libdeflate_decompressor *decompressor, const void *in, size_t in_nbytes, void *out, size_t out_nbytes_avail, size_t *actual_out_nbytes_ret)
-        Decompress_ZLib = CallCDeclW(libdeflate_zlib_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
+        ' "If the actual uncompressed size is known, then pass the actual
+        '  uncompressed size as 'out_nbytes_avail' and pass NULL for
+        '  actual_out_nbytes_ret'.  This makes libdeflate_deflate_decompress() fail
+        '  with LIBDEFLATE_SHORT_OUTPUT if the data decompressed to fewer than the
+        '  specified number of bytes."
+        Decompress_ZLib = libdeflate_zlib_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
         
         ' Make sure we free the compressor before exiting
         'LIBDEFLATEAPI void libdeflate_free_decompressor(struct libdeflate_decompressor *decompressor);
-        CallCDeclW libdeflate_free_decompressor, vbEmpty, hDecompress
+        libdeflate_free_decompressor hDecompress
         
     Else
         InternalError "Decompress_ZLib", "Failed to initialize a decompressor"
@@ -217,7 +179,7 @@ Private Function LibDeflateCompress(ByVal constDstPtr As Long, ByRef dstSizeInBy
     'Allocate a compressor
     ' LIBDEFLATEAPI struct libdeflate_compressor * libdeflate_alloc_compressor(int compression_level)
     Dim hCompress As Long
-    hCompress = CallCDeclW(libdeflate_alloc_compressor, vbLong, compressionLevel)
+    hCompress = libdeflate_alloc_compressor(compressionLevel)
     
     If (hCompress <> 0) Then
         
@@ -227,11 +189,11 @@ Private Function LibDeflateCompress(ByVal constDstPtr As Long, ByRef dstSizeInBy
         ' LIBDEFLATEAPI size_t libdeflate_gzip_compress(struct libdeflate_compressor *compressor, const void *in, size_t in_nbytes, void *out, size_t out_nbytes_avail)
         Dim lReturn As Long
         If (cmpFormat = cf_Zlib) Then
-            lReturn = CallCDeclW(libdeflate_zlib_compress, vbLong, hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
+            lReturn = libdeflate_zlib_compress(hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
         ElseIf (cmpFormat = cf_Deflate) Then
-            lReturn = CallCDeclW(libdeflate_deflate_compress, vbLong, hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
+            lReturn = libdeflate_deflate_compress(hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
         ElseIf (cmpFormat = cf_Gzip) Then
-            lReturn = CallCDeclW(libdeflate_gzip_compress, vbLong, hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
+            lReturn = libdeflate_gzip_compress(hCompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes)
         End If
         
         LibDeflateCompress = (lReturn <> 0)
@@ -243,7 +205,7 @@ Private Function LibDeflateCompress(ByVal constDstPtr As Long, ByRef dstSizeInBy
         
         'Free the compressor before exiting
         ' LIBDEFLATEAPI void libdeflate_free_compressor(struct libdeflate_compressor *compressor)
-        CallCDeclW libdeflate_free_compressor, vbEmpty, hCompress
+        libdeflate_free_compressor hCompress
         
     Else
         InternalError "LibDeflateCompress", "failed to initialize a compressor"
@@ -257,18 +219,18 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
     'Allocate a decompressor
     ' LIBDEFLATEAPI struct libdeflate_decompressor * libdeflate_alloc_decompressor(void)
     Dim hDecompress As Long
-    hDecompress = CallCDeclW(libdeflate_alloc_decompressor, vbLong)
+    hDecompress = libdeflate_alloc_decompressor()
     If (hDecompress <> 0) Then
         
         'Perform decompression
         ' LIBDEFLATEAPI enum libdeflate_result libdeflate_zlib_decompress(struct libdeflate_decompressor *decompressor, const void *in, size_t in_nbytes, void *out, size_t out_nbytes_avail, size_t *actual_out_nbytes_ret)
         Dim lReturn As Long
         If (cmpFormat = cf_Zlib) Then
-            lReturn = CallCDeclW(libdeflate_zlib_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
+            lReturn = libdeflate_zlib_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
         ElseIf (cmpFormat = cf_Deflate) Then
-            lReturn = CallCDeclW(libdeflate_deflate_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
+            lReturn = libdeflate_deflate_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
         ElseIf (cmpFormat = cf_Gzip) Then
-            lReturn = CallCDeclW(libdeflate_gzip_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
+            lReturn = libdeflate_gzip_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, 0&)
         End If
         
         'If decompression failed, try it again, but with the explicit instruction to attempt to decompress enough
@@ -278,11 +240,11 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
             InternalError "LibDeflateDecompress", "full decompress failed; attempting partial decompress instead..."
             Dim bytesWritten As Long
             If (cmpFormat = cf_Zlib) Then
-                lReturn = CallCDeclW(libdeflate_zlib_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, VarPtr(bytesWritten))
+                lReturn = libdeflate_zlib_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, bytesWritten)
             ElseIf (cmpFormat = cf_Deflate) Then
-                lReturn = CallCDeclW(libdeflate_deflate_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, VarPtr(bytesWritten))
+                lReturn = libdeflate_deflate_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, bytesWritten)
             ElseIf (cmpFormat = cf_Gzip) Then
-                lReturn = CallCDeclW(libdeflate_gzip_decompress, vbLong, hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, VarPtr(bytesWritten))
+                lReturn = libdeflate_gzip_decompress(hDecompress, constSrcPtr, constSrcSizeInBytes, constDstPtr, constDstSizeInBytes, bytesWritten)
             End If
             If (constDstSizeInBytes = bytesWritten) Then
                 lReturn = 0
@@ -301,7 +263,7 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
         
         ' Make sure we free the compressor before exiting
         'LIBDEFLATEAPI void libdeflate_free_decompressor(struct libdeflate_decompressor *decompressor);
-        CallCDeclW libdeflate_free_decompressor, vbEmpty, hDecompress
+        libdeflate_free_decompressor hDecompress
         
     Else
         InternalError "LibDeflateDecompress", "WARNING!  Failed to initialize a libdeflate decompressor."
@@ -310,12 +272,12 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
 End Function
 
 'Magic numbers are taken from libdeflate.h
-Private Function GetDecompressErrorText(ByVal ErrNum As Long) As String
-    If (ErrNum = 1) Then
+Private Function GetDecompressErrorText(ByVal srcErrNum As Long) As String
+    If (srcErrNum = 1) Then
         GetDecompressErrorText = "bad input data"
-    ElseIf (ErrNum = 2) Then
+    ElseIf (srcErrNum = 2) Then
         GetDecompressErrorText = "short output"
-    ElseIf (ErrNum = 3) Then
+    ElseIf (srcErrNum = 3) Then
         GetDecompressErrorText = "insufficient destination buffer"
     End If
 End Function
@@ -331,22 +293,22 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, Optional By
     
     'libdeflate requires a compressor object in order to calculate a "worst-case" size
     Dim hCompress As Long
-    hCompress = CallCDeclW(libdeflate_alloc_compressor, vbLong, compressionLevel)
+    hCompress = libdeflate_alloc_compressor(compressionLevel)
     If (hCompress <> 0) Then
     
         If (cmpFormat = cf_Zlib) Then
             ' LIBDEFLATEAPI size_t libdeflate_deflate_compress_bound(struct libdeflate_compressor *compressor, size_t in_nbytes)
-            GetWorstCaseSize = CallCDeclW(libdeflate_deflate_compress_bound, vbLong, hCompress, srcBufferSizeInBytes)
+            GetWorstCaseSize = libdeflate_deflate_compress_bound(hCompress, srcBufferSizeInBytes)
         ElseIf (cmpFormat = cf_Deflate) Then
             ' LIBDEFLATEAPI size_t libdeflate_zlib_compress_bound(struct libdeflate_compressor *compressor, size_t in_nbytes)
-            GetWorstCaseSize = CallCDeclW(libdeflate_zlib_compress_bound, vbLong, hCompress, srcBufferSizeInBytes)
+            GetWorstCaseSize = libdeflate_zlib_compress_bound(hCompress, srcBufferSizeInBytes)
         ElseIf (cmpFormat = cf_Gzip) Then
             ' LIBDEFLATEAPI size_t libdeflate_gzip_compress_bound(struct libdeflate_compressor *compressor, size_t in_nbytes)
-            GetWorstCaseSize = CallCDeclW(libdeflate_gzip_compress_bound, vbLong, hCompress, srcBufferSizeInBytes)
+            GetWorstCaseSize = libdeflate_gzip_compress_bound(hCompress, srcBufferSizeInBytes)
         End If
         
         'Free the compressor before exiting
-        CallCDeclW libdeflate_free_compressor, vbEmpty, hCompress
+        libdeflate_free_compressor hCompress
         
     Else
         InternalError "GetWorstCaseSize", "failed to allocate a compressor"
@@ -377,7 +339,7 @@ End Function
 
 'libdeflate doesn't export a version function, but this class was designed against the v1.2 release.
 Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.2"
+    GetCompressorVersion = "1.6"
 End Function
 
 'Private methods follow
@@ -388,33 +350,6 @@ Private Sub ValidateCompressionLevel(ByRef inputLevel As Long)
     If (inputLevel < LIBDEFLATE_MIN_CLEVEL) Then inputLevel = LIBDEFLATE_MIN_CLEVEL
     If (inputLevel > LIBDEFLATE_MAX_CLEVEL) Then inputLevel = LIBDEFLATE_MAX_CLEVEL
 End Sub
-
-'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
-' for a link to his original, unmodified version
-Private Function CallCDeclW(ByVal lProc As LD_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
-
-    Dim i As Long, vTemp() As Variant, hResult As Long
-    
-    Dim numParams As Long
-    If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
-    
-    If IsMissing(pa) Then
-        ReDim vTemp(0) As Variant
-    Else
-        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
-    End If
-    
-    For i = 0 To numParams - 1
-        If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
-        m_vType(i) = VarType(vTemp(i))
-        m_vPtr(i) = VarPtr(vTemp(i))
-    Next i
-    
-    Const CC_CDECL As Long = 1
-    hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
-    If hResult Then Err.Raise hResult
-    
-End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
