@@ -913,6 +913,10 @@ Private Sub NewToolSelected()
             Tools_Fill.ReduceMemoryIfPossible
     
     End Select
+    
+    'With all tool settings initialized, set focus to the canvas.  (Because the previous
+    ' tool panel was unloaded, focus can be unpredictable if left up to the system.)
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.MainCanvas(0).GetCanvasViewHWnd()
         
 End Sub
 
@@ -960,9 +964,11 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         
     End If
     
-    'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools
-    ' share panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.
-    ' I've tried to strike a balance between "as few panels as possible" without going overboard.
+    'Next, we need to display the correct tool options panel.  There is no set pattern to this;
+    ' some tools share panels, but show/hide certain controls as necessary.  Other tools require
+    ' their own unique panel.
+    
+    'I've tried to strike a balance between "as few panels as possible" without going overboard.
     Select Case g_CurrentTool
         
         'Move/size tool
