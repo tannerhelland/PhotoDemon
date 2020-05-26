@@ -406,10 +406,14 @@ End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
-Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing)
+Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing, Optional ByRef fullParamString As String)
     
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString fullParamString
     
     'Attempt to open the clipboard
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
@@ -489,7 +493,49 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
     ' new layer has been pasted.
     If pasteWasSuccessful Then
-        If srcIsMeantAsLayer Then toolbar_Toolbox.SelectNewTool NAV_MOVE
+        
+        If srcIsMeantAsLayer And (pasteToThisDIBInstead Is Nothing) Then
+            
+            'Check the param string; if it was raised by a hotkey, check for a cursor position.
+            If cParams.GetBool("from-hotkey", False, True) Then
+            
+                'This request was initiated via hotkey.  Look for mouse positions; these will be in
+                ' hWnd coordinate space, and they will only exist if the mouse was over the canvas
+                ' at the time of loading.
+                If cParams.DoesParamExist("canvas-mouse-x", True) And cParams.DoesParamExist("canvas-mouse-y") Then
+                
+                    'Mouse coordinates exist!  Retrieve and validate them, then apply them to
+                    ' the newly created layer.
+                    Dim reportedX As Long, reportedY As Long
+                    reportedX = cParams.GetLong("canvas-mouse-x", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX(), True)
+                    reportedY = cParams.GetLong("canvas-mouse-y", PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY(), True)
+                    
+                    'Convert those values to image coordinates
+                    Dim imgX As Double, imgY As Double
+                    Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, reportedX, reportedY, imgX, imgY, True
+                    
+                    'Apply to the layer
+                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(imgX + 0.5)
+                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY Int(imgY + 0.5)
+                    
+                    'Notify the parent image, then render the new image to screen
+                    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+                    
+                End If
+            
+            End If
+            
+            'Render the new image to screen
+            Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            
+            'Synchronize the interface to the new image
+            SyncInterfaceToCurrentImage
+            
+            'Finally, activate the move tool (in case the user wants to further tweak position)
+            toolbar_Toolbox.SelectNewTool NAV_MOVE
+            
+        End If
+        
     Else
         PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation Or vbOKOnly, "Windows Clipboard Error"
     End If
@@ -522,7 +568,7 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                 Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
             Else
                 If srcIsMeantAsLayer Then
-                    Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, True
+                    Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, False, False
                 Else
                     Loading.LoadFileAsNewImage m_StashFile, sTitle, False
                 End If
@@ -591,7 +637,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                     Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
                 Else
                     If srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
@@ -706,7 +752,7 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean, 
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
                 Do While listOfFiles.PopString(tmpFilename)
-                    If (LenB(tmpFilename) <> 0) Then Layers.LoadImageAsNewLayer False, tmpFilename, , True
+                    If (LenB(tmpFilename) <> 0) Then Layers.LoadImageAsNewLayer False, tmpFilename, , False, False
                 Loop
             Else
                 Loading.LoadMultipleImageFiles listOfFiles
@@ -774,7 +820,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean, Opt
                     Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                 Else
                     If srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
@@ -843,7 +889,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, O
                         Loading.QuickLoadImageToDIB targetFile, pasteToThisDIBInstead, False, False
                     Else
                         If srcIsMeantAsLayer Then
-                            Layers.LoadImageAsNewLayer False, targetFile, , True
+                            Layers.LoadImageAsNewLayer False, targetFile, , False, False
                         Else
                             LoadFileAsNewImage targetFile
                         End If
@@ -888,7 +934,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcI
             ClipboardPaste_WellFormedURL = Loading.QuickLoadImageToDIB(tmpDownloadFile, pasteToThisDIBInstead, False, False)
         Else
             If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-                Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
+                Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, False, False
             Else
                 LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
             End If
@@ -904,7 +950,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcI
         ' and subsequently unloads images in an arbitrary order - but given the rarity of that situation,
         ' I'm content to use this simplified technique for predicting failure.)
         If ((pasteToThisDIBInstead Is Nothing) And PDImages.IsImageActive(PDImages.GetActiveImageID())) Then
-            ClipboardPaste_WellFormedURL = PDImages.GetActiveImage.IsActive
+            ClipboardPaste_WellFormedURL = PDImages.GetActiveImage.IsActive()
         End If
     
     'If the download failed, let the user know that hey, at least we tried.
@@ -1097,7 +1143,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean, 
                         Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                     Else
                         If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
                         Else
                             Loading.LoadFileAsNewImage tmpClipboardFile, sTitle, False
                         End If

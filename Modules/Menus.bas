@@ -1120,8 +1120,9 @@ Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As B
     
 End Sub
 
-'Until I have a better place to stick this, hotkeys are handled here, by the menu module.  This is primarily done because there is
-' fairly tight integration between hotkeys and menu captions, and both need to be handled together while accounting for the usual
+'Until I have a better place to stick this, hotkeys are handled here, by the menu module.
+' This is primarily done because there is (somewhat) tight integration between hotkeys and
+' menu captions, and both need to be handled together while accounting for the usual
 ' nightmares (like language translations).
 Public Sub InitializeAllHotkeys()
     

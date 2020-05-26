@@ -1449,11 +1449,7 @@ Private Function Process_EditMenu(ByRef processID As String, Optional raiseDialo
         
     ElseIf Strings.StringsEqual(processID, "Paste as new layer", True) Then
         'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
-        g_Clipboard.ClipboardPaste PDImages.IsImageActive()
-        Process_EditMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Paste as new image", True) Then
-        g_Clipboard.ClipboardPaste False
+        g_Clipboard.ClipboardPaste PDImages.IsImageActive(), , processParameters
         Process_EditMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Cut special", True) Then

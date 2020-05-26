@@ -275,7 +275,7 @@ Public Sub AddLayerFromVisibleLayers()
 End Sub
 
 'Load an image file, and add it to the current image as a new layer
-Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False)
+Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -342,11 +342,15 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
                 
             End If
             
-            'Render the new image to screen
-            Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-            
-            'Synchronize the interface to the new image
-            SyncInterfaceToCurrentImage
+            If refreshUI Then
+                
+                'Render the new image to screen
+                Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                
+                'Synchronize the interface to the new image
+                SyncInterfaceToCurrentImage
+                
+            End If
             
             Message "New layer added successfully."
         

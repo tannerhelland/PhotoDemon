@@ -2516,8 +2516,21 @@ End Sub
 
 Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
     
+    'Before initiating any actions, cache some values that may be useful to initiated commands
+    ' (like cursor position; tools may use this to initiate an action at that position).
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.AddParam "from-hotkey", True, True, True
+    
+    If (PDImages.GetNumOpenImages > 0) Then
+        If FormMain.MainCanvas(0).IsMouseOverCanvas() Then
+            cParams.AddParam "canvas-mouse-x", FormMain.MainCanvas(0).GetLastMouseX(), True
+            cParams.AddParam "canvas-mouse-y", FormMain.MainCanvas(0).GetLastMouseY(), True
+        End If
+    End If
+    
     'Accelerators are divided into three groups, and they are processed in the following order:
-    ' 1) Direct processor strings.  These are automatically submitted to the software processor.
+    ' 1) Direct processor strings.  These are automatically submitted to PD's command processor.
     ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
     ' 3) Non-processor directives that require an image.
 
@@ -2538,7 +2551,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
                 If (Not Menus.IsMenuEnabled(.GetMenuName(acceleratorIndex))) Then Exit Sub
             End If
             
-            Process .HotKeyName(acceleratorIndex), .IsDialogDisplayed(acceleratorIndex), , .ProcUndoValue(acceleratorIndex)
+            Processor.Process .HotKeyName(acceleratorIndex), .IsDialogDisplayed(acceleratorIndex), cParams.GetParamString(), .ProcUndoValue(acceleratorIndex)
             Exit Sub
             
         End If

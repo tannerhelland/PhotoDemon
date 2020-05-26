@@ -86,6 +86,14 @@ Private m_SuspendRedraws As Boolean
 ' until the next time an "honest" WM_MOUSEMOVE message arrives.
 Private m_ManualMouseMode As Boolean
 
+'The last x/y coordinates recorded by standard canvas mouse events.  Importantly, these are *not* processed
+' at high-DPI; they exist purely as support functions for things like hotkeys that modify their behavior
+' to incorporate last-known mouse coordinates as part of an externally triggered function.
+
+'Also, the value of these is "indeterminate" if the mouse is not currently over the canvas - always check
+' that first!
+Private m_LastMouseX As Long, m_LastMouseY As Long
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -182,6 +190,8 @@ End Sub
 
 Public Sub NotifyExternalMouseMove(ByVal srcX As Long, ByVal srcY As Long)
     m_ManualMouseMode = True
+    m_LastMouseX = srcX
+    m_LastMouseY = srcY
     RaiseEvent MouseMoveCustom(0&, 0&, srcX, srcY, 0&)
 End Sub
 
@@ -251,6 +261,15 @@ Public Sub ClearCanvas()
     ucSupport.RequestRepaint
     
 End Sub
+
+'Retrieve last-known mouse position; only valid if the mouse is actually over the canvas
+Public Function GetLastMouseX() As Long
+    GetLastMouseX = m_LastMouseX
+End Function
+
+Public Function GetLastMouseY() As Long
+    GetLastMouseY = m_LastMouseY
+End Function
 
 'Is the mouse over the canvas view right now?
 Public Function IsMouseOverCanvasView() As Boolean
@@ -405,6 +424,8 @@ End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     m_ManualMouseMode = False
+    m_LastMouseX = x
+    m_LastMouseY = y
     RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
 End Sub
 

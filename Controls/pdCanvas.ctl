@@ -1699,6 +1699,15 @@ Public Function GetNextMouseMovePoint(ByVal ptrToDstMMP As Long) As Boolean
     GetNextMouseMovePoint = CanvasView.GetNextMouseMovePoint(ptrToDstMMP)
 End Function
 
+'Retrieve last-known mouse position; only valid if the mouse is actually over the canvas
+Public Function GetLastMouseX() As Long
+    GetLastMouseX = CanvasView.GetLastMouseX()
+End Function
+
+Public Function GetLastMouseY() As Long
+    GetLastMouseY = CanvasView.GetLastMouseY()
+End Function
+
 'Paint tool mouse operations need to query this function before allowing paint interactions
 Private Function DoesLayerAllowPainting(Optional ByVal displayUIFeedback As Boolean = False) As Boolean
     
