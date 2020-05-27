@@ -553,9 +553,11 @@ Friend Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If (imgLayers(i).GetLayerID = requestedID) Then
-            GetLayerIndexFromID = i
-            Exit Function
+        If (Not imgLayers(i) Is Nothing) Then
+            If (imgLayers(i).GetLayerID = requestedID) Then
+                GetLayerIndexFromID = i
+                Exit Function
+            End If
         End If
     Next i
     
