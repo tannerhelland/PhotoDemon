@@ -275,7 +275,7 @@ Public Sub AddLayerFromVisibleLayers()
 End Sub
 
 'Load an image file, and add it to the current image as a new layer
-Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True)
+Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -318,8 +318,43 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
             ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
-            Dim newX As Double, newY As Double
+            ' (Note that the caller can override this by supplying their own coordinates; if they do this,
+            ' we'll still validate the requested position to ensure it fits nicely in the current viewport.)
+            
+            'Start by retrieving the current top-left position of the canvas, in *image* coordinates
+            Dim newX As Double, newY As Double, safeX As Double, safeY As Double
             Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
+            safeX = newX
+            safeY = newY
+            
+            'If the caller passed in their own x and/or y value, validate each value before replacing
+            ' our auto-calculated position
+            If (xOffset <> LONG_MAX) Then
+                
+                newX = xOffset
+                
+                'Make sure the newly placed layer doesn't lie off-canvas.  (This is a risk with drag+drop,
+                ' as the use may drop the layer into blank areas around the image.)
+                If (newX > PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth) Then newX = PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth
+                If (newX < 0) Then newX = 0
+                
+                'Finally, if our calculated position lies to the left of the current viewport,
+                ' reposition it accordingly.  (This provides the most intuitive behavior, IMO, as it
+                ' guarantees the newly created layer will *always* be visible within the current
+                ' viewport, regardless of where the caller attempted to position it.)
+                If (newX < safeX) Then newX = safeX
+                
+            End If
+            
+            'Repeat all the above steps for y
+            If (yOffset <> LONG_MAX) Then
+                newY = yOffset
+                If (newY > PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight) Then newY = PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight
+                If (newY < 0) Then newY = 0
+                If (newY < safeY) Then newY = safeY
+            End If
+            
+            'Assign the new coordinates to our layer!
             PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
             PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
             
@@ -338,7 +373,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
                     .pcUndoType = UNDO_Image_VectorSafe
                 End With
                 
-                PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, PDImages.GetActiveImage.GetActiveLayerID
+                PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, newLayerID
                 
             End If
             

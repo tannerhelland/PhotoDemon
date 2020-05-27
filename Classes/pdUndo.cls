@@ -435,7 +435,6 @@ Friend Sub RevertToLastSavedState()
     'The image's pixel data now matches the last-saved copy of the image (or the image's original state,
     ' if the user hasn't saved it this session).  We don't need to do any further work; PD's standard
     ' Undo/Redo path will take care of creating a new stack entry at this point.
-    
     m_UndoRedoActive = False
     
 End Sub

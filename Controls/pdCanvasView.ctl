@@ -493,7 +493,13 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
     ' to load the OLE source.
     Dim dropAsNewLayer As VbMsgBoxResult
     dropAsNewLayer = Dialogs.PromptForDropAsNewLayer()
-    If (dropAsNewLayer <> vbCancel) Then g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
+    If (dropAsNewLayer <> vbCancel) Then
+        If (dropAsNewLayer = vbNo) Then
+            g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo), Int(x + 0.5!), Int(y + 0.5!)
+        Else
+            g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
+        End If
+    End If
     
 End Sub
 

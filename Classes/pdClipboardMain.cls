@@ -1202,9 +1202,9 @@ Friend Function IsObjectDragDroppable(ByRef Data As DataObject) As Boolean
 End Function
 
 'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
-' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
-' (if valid) should be loaded as new layers or new images.
-Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
+' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether
+' the image file(s) (if valid) should be loaded as new layers or new images.
+Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
     If (Data Is Nothing) Then Exit Function
     
@@ -1222,28 +1222,42 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     If Data.GetFormat(vbCFFiles) Then numSourcesAvailable = numSourcesAvailable + 1
     If Data.GetFormat(vbCFBitmap) Then numSourcesAvailable = numSourcesAvailable + 1
     
+    'Before calling individual load functions, convert the incoming x/y parameters to image coordinates.
+    ' (Note that this is only useful if the target is a layer - when loading dropped files as new images,
+    ' coordinates are ignored.)
+    Dim newX As Long, newY As Long
+    If intendedTargetIsLayer And (srcX <> LONG_MAX) And (srcY <> LONG_MAX) Then
+        Dim tmpX As Double, tmpY As Double
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), srcX, srcY, tmpX, tmpY, True
+        newX = Int(tmpX + 0.5)
+        newY = Int(tmpY + 0.5)
+    Else
+        newX = LONG_MAX
+        newY = LONG_MAX
+    End If
+    
     'First, look for text fragments that contain valid file or URL paths.  (These are extremely fast to query,
     ' and they're preferred with web browsers, as they generally contain a URL to the image in question,
     ' which we prefer to download manually so we can keep things like metadata intact.)
     If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer, numSourcesAvailable > 1)
+        dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer, numSourcesAvailable > 1, newX, newY)
     End If
     
     'If we can't find text, look for file content or descriptor flags.  These are received when dragging from
     ' .zip files, and we can use them to manually reconstruct image files.
     If (Data.GetFormat(CF_FileContents) Or Data.GetFormat(CF_FileGroupDescriptorW)) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer)
+        dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer, newX, newY)
     End If
     
     'If we're still here, look for formal file or file list objects.  These may be supplied by 3rd-party
     ' file explorer programs.
     If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer)
+        dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer, newX, newY)
     End If
     
     'If the data is not a file list, see if it's actual bitmap data.
     If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
+        dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer, newX, newY)
     End If
     
     'If the drag was successful, and the result is a new layer, switch to the move/size tool
@@ -1261,7 +1275,7 @@ End Function
 ' downloading the original version, as it includes additional helper code and explanations.
 '
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
-Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
     'Unicode-enabled drag/drop code is used elsewhere in PD, so we have a master function for it
     Dim cFiles As pdStringStack
@@ -1275,7 +1289,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
             If PDImages.IsImageActive() And loadAsLayers Then
                 Dim i As Long
                 For i = 0 To cFiles.GetNumOfStrings - 1
-                    Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
+                    Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True, , srcX, srcY
                 Next i
             Else
                 Loading.LoadMultipleImageFiles cFiles
@@ -1293,7 +1307,7 @@ End Function
 ' downloading the original version, as it includes additional helper code and explanations.
 '
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
-Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
     On Error GoTo DragDropZippedFilesFailed
     
@@ -1442,7 +1456,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 If PDImages.IsImageActive() And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
                         If Files.FileExists(listOfFiles.GetString(i)) Then
-                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True
+                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True, , srcX, srcY
                             Files.FileDelete listOfFiles.GetString(i)
                         End If
                     Next i
@@ -1479,7 +1493,7 @@ DragDropZippedFilesFailed:
 End Function
 
 'Load dragged BMP data as a new image and/or layer.
-Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
     On Error GoTo DragDropBMPFailed
     
@@ -1512,11 +1526,11 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     
     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
     If PDImages.IsImageActive() And loadAsLayers Then
-        Layers.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True
+        Layers.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True, , srcX, srcY
     Else
         LoadFileAsNewImage tmpDragDropFile, sTitle, False
     End If
-        
+    
     'Be polite and remove the temporary file
     Files.FileDeleteIfExists tmpDragDropFile
     
@@ -1541,7 +1555,7 @@ DragDropBMPFailed:
 End Function
 
 'Load dragged text data as a new image and/or layer.  The text will be analyzed for valid file paths or URLs.
-Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
+Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal suppressErrorMsgs As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
     'On Error GoTo DragDropTextFailed
     
@@ -1581,7 +1595,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             If (LenB(targetFile) <> 0) Then
             
                 If PDImages.IsImageActive() And loadAsLayers Then
-                    Layers.LoadImageAsNewLayer False, targetFile, , True
+                    Layers.LoadImageAsNewLayer False, targetFile, , True, , srcX, srcY
                 Else
                     LoadFileAsNewImage targetFile
                 End If
