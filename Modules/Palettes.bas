@@ -580,6 +580,152 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     
 End Function
 
+'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
+' the source image as the reference.  Analysis is done in LAB color space, for slower but potentially better results.
+' (That said, internal testing shows that this produces results that don't "look as good" as traditional methods.
+' I'm not sure why - it's possibly caused, in part, by not weighting L more aggressively than A/B, but I can't easily
+' rectify that without major changes to the underlying median cut engine.)  As such, PD doesn't use this function
+' at present, but it may be useful in the future if I have more time to refine it.
+Public Function GetOptimizedPaletteIncAlpha_LAB(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Do not request less than two colors in the final palette!
+    If (numOfColors < 2) Then numOfColors = 2
+    
+    Dim srcPixels() As Byte, srcSA As SafeArray1D
+    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    
+    'Resize the LAB array to the same size as a scanline of the source image
+    ReDim srcPixelsLab(0 To srcDIB.GetDIBStride - 1) As Byte
+    
+    Dim pxSize As Long
+    pxSize = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'Add all pixels from the source image to a base color stack
+    Dim pxStack() As pdMedianCut
+    ReDim pxStack(0 To numOfColors - 1) As pdMedianCut
+    Set pxStack(0) = New pdMedianCut
+    
+    'Note that PD actually supports quite a few different quantization methods.  At present, we use a technique
+    ' that's a good compromise between performance and quality.
+    pxStack(0).SetQuantizeMode quantMode
+    
+    'Use littleCMS to create an RGB -> Lab transform
+    Dim cRGB As pdLCMSProfile
+    Set cRGB = New pdLCMSProfile
+    cRGB.CreateSRGBProfile True
+    
+    Dim cLAB As pdLCMSProfile
+    Set cLAB = New pdLCMSProfile
+    cLAB.CreateLabProfile True
+    
+    Dim cTransform As pdLCMSTransform
+    Set cTransform = New pdLCMSTransform
+    cTransform.CreateTwoProfileTransform cRGB, cLAB, TYPE_BGRA_8, TYPE_ALab_8, INTENT_RELATIVE_COLORIMETRIC
+    
+    For y = 0 To finalY
+        
+        srcDIB.WrapArrayAroundScanline srcPixels, srcSA, y
+        
+        'Translate the RGB values into LAB
+        cTransform.ApplyTransformToScanline VarPtr(srcPixels(0)), VarPtr(srcPixelsLab(0)), srcDIB.GetDIBWidth
+            
+        For x = 0 To finalX Step pxSize
+            
+            'Note that we're adding the values in LAB format, and to ensure order is maintained (BGRA vs ALAB),
+            ' we manually swap B and R in this function
+            pxStack(0).AddColor_RGBA srcPixelsLab(x + 2), srcPixelsLab(x + 1), srcPixelsLab(x), srcPixelsLab(x + 3)
+            
+        Next x
+        
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcPixels
+    
+    'Palette generation works the exact same as RGB data; the splitter doesn't care about what format
+    ' the colors are in - it'll just sort them in 3D space and split planes optimally.  (In a perfect
+    ' world we might weight L over A/B, but that's not handled at present.)
+    If (pxStack(0).GetNumOfColors > numOfColors) Then
+        
+        Dim stackCount As Long
+        stackCount = 1
+        
+        Dim maxVariance As Single, mvIndex As Long
+        Dim i As Long
+        
+        Dim rVariance As Single, gVariance As Single, bVariance As Single, aVariance As Single, netVariance As Single
+        
+        Do
+        
+            maxVariance = 0!
+            
+            For i = 0 To stackCount - 1
+                pxStack(i).GetVariance_Alpha rVariance, gVariance, bVariance, aVariance
+                netVariance = rVariance + gVariance + bVariance + aVariance
+                If (netVariance > maxVariance) Then
+                    mvIndex = i
+                    maxVariance = netVariance
+                End If
+            Next i
+            
+            If (maxVariance > 0!) Then
+                pxStack(mvIndex).SplitIncludingAlpha pxStack(stackCount)
+                stackCount = stackCount + 1
+            Else
+                numOfColors = stackCount
+                Exit Do
+            End If
+        
+        Loop While (stackCount < numOfColors)
+        
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        ReDim dstPalette(0 To numOfColors - 1) As RGBQuad
+        For i = 0 To numOfColors - 1
+            pxStack(i).GetAverageColorAndAlpha newR, newG, newB, newA
+            dstPalette(i).Blue = newB
+            dstPalette(i).Green = newG
+            dstPalette(i).Red = newR
+            dstPalette(i).Alpha = newA
+        Next i
+        
+        GetOptimizedPaletteIncAlpha_LAB = True
+        
+    Else
+        pxStack(0).CopyStackToRGBQuad dstPalette
+        GetOptimizedPaletteIncAlpha_LAB = True
+    End If
+    
+    'We now have a finished palette.  Convert it from ALAB back to BGRA color space
+    Dim tmpPalette() As RGBQuad
+    ReDim tmpPalette(0 To UBound(dstPalette)) As RGBQuad
+    
+    cTransform.ReleaseTransform
+    cTransform.CreateTwoProfileTransform cLAB, cRGB, TYPE_ALab_8, TYPE_BGRA_8, INTENT_RELATIVE_COLORIMETRIC
+    cTransform.ApplyTransformToScanline VarPtr(dstPalette(0)), VarPtr(tmpPalette(0)), UBound(dstPalette) + 1
+    
+    CopyMemoryStrict VarPtr(dstPalette(0)), VarPtr(tmpPalette(0)), (UBound(dstPalette) + 1) * 4
+    
+End Function
+
 Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     ReDim dstPalette(0 To 255) As RGBQuad
     Dim i As Long
@@ -928,6 +1074,126 @@ Public Function ApplyPaletteToImage_IncAlpha_KDTree(ByRef dstDIB As pdDIB, ByRef
     dstDIB.UnwrapArrayFromDIB srcPixels
     
     ApplyPaletteToImage_IncAlpha_KDTree = True
+    
+End Function
+
+'Given an arbitrary RGBA palette (including palettes > 256 colors - they work just fine!),
+' apply said palette to a target image.  Dithering is *not* used.  Alpha is included in
+' palette matching calculations, and all matches are performed in 8-bit ALab color space.
+' Colors are matched using a KD-tree (where the palette is pre-loaded into a tree, and
+' colors are matched via that tree).
+Public Function ApplyPaletteToImage_IncAlpha_KDTree_Lab(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    
+    'Resize the LAB array to the same size as a scanline of the source image
+    ReDim srcPixelsLab(0 To dstDIB.GetDIBStride - 1) As Byte
+    
+    Dim pxSize As Long
+    pxSize = dstDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBStride - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim lastAlpha As Long: lastAlpha = -1
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim tmpQuad As RGBQuad, newQuad As RGBQuad, lastQuad As RGBQuad
+    
+    'Convert the palette to LabA format
+    Dim labPalette() As RGBQuad
+    ReDim labPalette(0 To UBound(srcPalette)) As RGBQuad
+    
+    Dim cRGB As pdLCMSProfile
+    Set cRGB = New pdLCMSProfile
+    cRGB.CreateSRGBProfile True
+    
+    Dim cLAB As pdLCMSProfile
+    Set cLAB = New pdLCMSProfile
+    cLAB.CreateLabProfile True
+    
+    Dim cTransform As pdLCMSTransform
+    Set cTransform = New pdLCMSTransform
+    cTransform.CreateTwoProfileTransform cRGB, cLAB, TYPE_BGRA_8, TYPE_ALab_8, INTENT_PERCEPTUAL
+    
+    cTransform.ApplyTransformToScanline VarPtr(srcPalette(0)), VarPtr(labPalette(0)), UBound(srcPalette) + 1
+    
+    'Build the initial tree
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTreeIncAlpha labPalette, UBound(srcPalette) + 1
+    
+    'Want to see the source palette?  Uncomment this code:
+    'For x = 0 To UBound(srcPalette)
+    '    Debug.Print "RGBA", srcPalette(x).Red, srcPalette(x).Green, srcPalette(x).Blue, srcPalette(x).Alpha
+    '    Debug.Print "ALAB", labPalette(x).Red, labPalette(x).Green, labPalette(x).Blue, labPalette(x).Alpha
+    'Next x
+    
+    'Start matching pixels
+    For y = 0 To finalY
+        dstDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+        cTransform.ApplyTransformToScanline VarPtr(srcPixels(0)), VarPtr(srcPixelsLab(0)), dstDIB.GetDIBWidth
+    For x = 0 To finalX Step pxSize
+    
+        b = srcPixels(x)
+        g = srcPixels(x + 1)
+        r = srcPixels(x + 2)
+        a = srcPixels(x + 3)
+        
+        'If this pixel matches the last pixel we tested, reuse our previous match results
+        If ((RGB(r, g, b) <> lastColor) Or (a <> lastAlpha)) Then
+            
+            tmpQuad.Blue = srcPixelsLab(x)
+            tmpQuad.Green = srcPixelsLab(x + 1)
+            tmpQuad.Red = srcPixelsLab(x + 2)
+            tmpQuad.Alpha = srcPixelsLab(x + 3)
+            
+            'Ask the tree for its best match
+            newQuad = srcPalette(kdTree.GetNearestPaletteIndexIncAlpha(tmpQuad))
+            
+            lastColor = RGB(r, g, b)
+            lastAlpha = a
+            lastQuad = newQuad
+            
+        Else
+            newQuad = lastQuad
+        End If
+        
+        'Apply the closest discovered color to this pixel.
+        With newQuad
+            srcPixels(x) = .Blue
+            srcPixels(x + 1) = .Green
+            srcPixels(x + 2) = .Red
+            srcPixels(x + 3) = .Alpha
+        End With
+        
+    Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
+    Next y
+    
+    dstDIB.UnwrapArrayFromDIB srcPixels
+    
+    ApplyPaletteToImage_IncAlpha_KDTree_Lab = True
     
 End Function
 
@@ -1617,6 +1883,333 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha(ByRef dstDIB As pdDIB, ByR
     dstDIB.UnwrapArrayFromDIB srcPixels
     
     ApplyPaletteToImage_Dithered_IncAlpha = True
+    
+End Function
+
+'Given an arbitrary source palette, apply said palette to the target image.
+' Dithering *is* used.  Colors are matched using a KD-tree.  Alpha values are used when matching.
+Public Function ApplyPaletteToImage_Dithered_IncAlpha_Lab(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal ditherStrength As Single = 1!, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+
+    Dim srcPixels() As Byte, tmpSA As SafeArray2D
+    dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
+    
+    Dim srcPixels1D() As Byte, tmpSA1D As SafeArray1D, srcPtr As Long, srcStride As Long
+    
+    'Comparisons will be done in LAB color space; resize a LAB array to the same size
+    ' as a scanline of the source image (we'll convert lines as we go)
+    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    ReDim srcPixelsLab(0 To dstDIB.GetDIBStride - 1) As Byte
+    
+    Dim pxSize As Long
+    pxSize = dstDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBStride - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    Dim r As Long, g As Long, b As Long, a As Long, i As Long, j As Long
+    Dim newQuad As RGBQuad, tmpQuad As RGBQuad
+    
+    'Validate dither strength
+    If (ditherStrength < 0!) Then ditherStrength = 0!
+    If (ditherStrength > 1!) Then ditherStrength = 1!
+    
+    'Convert the palette to LabA format
+    Dim labPalette() As RGBQuad
+    ReDim labPalette(0 To UBound(srcPalette)) As RGBQuad
+    
+    Dim cRGB As pdLCMSProfile
+    Set cRGB = New pdLCMSProfile
+    cRGB.CreateSRGBProfile True
+    
+    Dim cLAB As pdLCMSProfile
+    Set cLAB = New pdLCMSProfile
+    cLAB.CreateLabProfile True
+    
+    Dim cTransform As pdLCMSTransform
+    Set cTransform = New pdLCMSTransform
+    cTransform.CreateTwoProfileTransform cRGB, cLAB, TYPE_BGRA_8, TYPE_ALab_8, INTENT_PERCEPTUAL
+    cTransform.ApplyTransformToScanline VarPtr(srcPalette(0)), VarPtr(labPalette(0)), UBound(srcPalette) + 1
+    
+    'Build A KD-tree for fast palette matching
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTreeIncAlpha labPalette, UBound(srcPalette) + 1
+    
+    'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
+    Dim ditherTableI() As Byte, ditherDivisor As Single
+    Dim xLeft As Long, xRight As Long, yDown As Long
+    
+    Dim orderedDitherInUse As Boolean
+    orderedDitherInUse = (ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8)
+    
+    If orderedDitherInUse Then
+    
+        'Ordered dithers are handled specially, because we don't need to track running errors (e.g. no dithering
+        ' information is carried to neighboring pixels).  Instead, we simply use the dither tables to adjust our
+        ' threshold values on-the-fly.
+        Dim ditherRows As Long, ditherColumns As Long
+        
+        'First, prepare a dithering table
+        Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        
+        If (ditherMethod = PDDM_Ordered_Bayer4x4) Then
+            ditherRows = 3
+            ditherColumns = 3
+        ElseIf (ditherMethod = PDDM_Ordered_Bayer8x8) Then
+            ditherRows = 7
+            ditherColumns = 7
+        End If
+        
+        'By default, ordered dither trees use a scale of [0, 255].  This works great for thresholding
+        ' against pure black/white, but for color data, it leads to extreme shifts.  Reduce the strength
+        ' of the table before continuing.
+        For x = 0 To ditherRows
+        For y = 0 To ditherColumns
+            ditherTableI(x, y) = ditherTableI(x, y) \ 2
+        Next y
+        Next x
+        
+        'Apply the finished dither table to the image
+        Dim ditherAmt As Long
+        
+        dstDIB.WrapArrayAroundScanline srcPixels1D, tmpSA1D, 0
+        srcPtr = tmpSA1D.pvData
+        srcStride = tmpSA1D.cElements
+        
+        For y = 0 To finalY
+            tmpSA1D.pvData = srcPtr + (srcStride * y)
+            cTransform.ApplyTransformToScanline VarPtr(srcPixels1D(0)), VarPtr(srcPixelsLab(0)), dstDIB.GetDIBWidth
+        For x = 0 To finalX Step pxSize
+        
+            b = srcPixelsLab(x)
+            g = srcPixelsLab(x + 1)
+            r = srcPixelsLab(x + 2)
+            a = srcPixelsLab(x + 3)
+            
+            'Add dither to each component
+            ditherAmt = Int(ditherTableI(Int(x \ 4) And ditherRows, y And ditherColumns)) - 63
+            ditherAmt = ditherAmt * ditherStrength
+            
+            r = r + ditherAmt
+            If (r > 255) Then r = 255
+            If (r < 0) Then r = 0
+            
+            g = g + ditherAmt
+            If (g > 255) Then g = 255
+            If (g < 0) Then g = 0
+            
+            b = b + ditherAmt
+            If (b > 255) Then b = 255
+            If (b < 0) Then b = 0
+            
+            a = a + ditherAmt
+            If (a > 255) Then a = 255
+            If (a < 0) Then a = 0
+            
+            'Retrieve the best-match color
+            tmpQuad.Blue = b
+            tmpQuad.Green = g
+            tmpQuad.Red = r
+            tmpQuad.Alpha = a
+            newQuad = srcPalette(kdTree.GetNearestPaletteIndexIncAlpha(tmpQuad))
+            
+            srcPixels1D(x) = newQuad.Blue
+            srcPixels1D(x + 1) = newQuad.Green
+            srcPixels1D(x + 2) = newQuad.Red
+            srcPixels1D(x + 3) = newQuad.Alpha
+            
+        Next x
+            If (Not suppressMessages) Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal y + modifyProgBarOffset
+                End If
+            End If
+        Next y
+        
+        dstDIB.UnwrapArrayFromDIB srcPixels1D
+    
+    'All error-diffusion dither methods are handled similarly
+    Else
+        
+        Dim rError As Long, gError As Long, bError As Long, aError As Long
+        Dim errorMult As Single
+        
+        'Retrieve a hard-coded dithering table matching the requested dither type
+        Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        If (ditherDivisor <> 0!) Then ditherDivisor = 1! / ditherDivisor
+        
+        'Next, build an error tracking array.  Some diffusion methods require three rows worth of others;
+        ' others require two.  Note that errors must be tracked separately for each color component.
+        Dim xWidth As Long
+        xWidth = dstDIB.GetDIBWidth - 1
+        Dim rErrors() As Single, gErrors() As Single, bErrors() As Single, aErrors() As Single
+        ReDim rErrors(0 To xWidth, 0 To yDown) As Single
+        ReDim gErrors(0 To xWidth, 0 To yDown) As Single
+        ReDim bErrors(0 To xWidth, 0 To yDown) As Single
+        ReDim aErrors(0 To xWidth, 0 To yDown) As Single
+        
+        Dim xNonStride As Long, xQuickInner As Long
+        Dim newR As Long, newG As Long, newB As Long, newA As Long, newIndex As Long
+        
+        dstDIB.WrapArrayAroundScanline srcPixels1D, tmpSA1D, 0
+        srcPtr = tmpSA1D.pvData
+        srcStride = tmpSA1D.cElements
+        
+        'Start calculating pixels.
+        For y = 0 To finalY
+            tmpSA1D.pvData = srcPtr + (srcStride * y)
+            cTransform.ApplyTransformToScanline VarPtr(srcPixels1D(0)), VarPtr(srcPixelsLab(0)), dstDIB.GetDIBWidth
+        For x = 0 To finalX Step pxSize
+        
+            b = srcPixelsLab(x)
+            g = srcPixelsLab(x + 1)
+            r = srcPixelsLab(x + 2)
+            a = srcPixelsLab(x + 3)
+            
+            'Add our running errors to the original colors
+            xNonStride = x \ 4
+            newR = r + rErrors(xNonStride, 0)
+            newG = g + gErrors(xNonStride, 0)
+            newB = b + bErrors(xNonStride, 0)
+            newA = a + aErrors(xNonStride, 0)
+            
+            If (newR > 255) Then newR = 255
+            If (newR < 0) Then newR = 0
+            
+            If (newG > 255) Then newG = 255
+            If (newG < 0) Then newG = 0
+            
+            If (newB > 255) Then newB = 255
+            If (newB < 0) Then newB = 0
+            
+            If (newA > 255) Then newA = 255
+            If (newA < 0) Then newA = 0
+            
+            'Find the best palette match
+            tmpQuad.Blue = newB
+            tmpQuad.Green = newG
+            tmpQuad.Red = newR
+            tmpQuad.Alpha = newA
+            newIndex = kdTree.GetNearestPaletteIndexIncAlpha(tmpQuad)
+            
+            With srcPalette(newIndex)
+            
+                'Apply the closest discovered color to this pixel.
+                srcPixels1D(x) = .Blue
+                srcPixels1D(x + 1) = .Green
+                srcPixels1D(x + 2) = .Red
+                srcPixels1D(x + 3) = .Alpha
+            
+            End With
+            
+            With labPalette(newIndex)
+                
+                'Calculate new errors
+                rError = newR - CLng(.Red)
+                gError = newG - CLng(.Green)
+                bError = newB - CLng(.Blue)
+                aError = newA - CLng(.Alpha)
+                
+            End With
+            
+            'Reduce color bleed, if specified
+            rError = rError * ditherStrength
+            gError = gError * ditherStrength
+            bError = bError * ditherStrength
+            aError = aError * ditherStrength
+            
+            'Spread any remaining error to neighboring pixels, using the precalculated dither table as our guide
+            For i = xLeft To xRight
+            For j = 0 To yDown
+                
+                If (ditherTableI(i, j) <> 0) Then
+                    
+                    xQuickInner = xNonStride + i
+                    
+                    'Next, ignore target pixels that are off the image boundary
+                    If (xQuickInner >= initX) Then
+                        If (xQuickInner < xWidth) Then
+                        
+                            'If we've made it all the way here, we are able to actually spread the error to this location
+                            errorMult = CSng(ditherTableI(i, j)) * ditherDivisor
+                            rErrors(xQuickInner, j) = rErrors(xQuickInner, j) + (rError * errorMult)
+                            gErrors(xQuickInner, j) = gErrors(xQuickInner, j) + (gError * errorMult)
+                            bErrors(xQuickInner, j) = bErrors(xQuickInner, j) + (bError * errorMult)
+                            aErrors(xQuickInner, j) = aErrors(xQuickInner, j) + (aError * errorMult)
+                            
+                        End If
+                    End If
+                    
+                End If
+                
+            Next j
+            Next i
+            
+        Next x
+        
+            'When moving to the next line, we need to "shift" all accumulated errors upward.
+            ' (Basically, what was previously the "next" line, is now the "current" line.
+            ' The last line of errors must also be zeroed-out.
+            If (yDown > 0) Then
+            
+                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemory ByVal VarPtr(aErrors(0, 0)), ByVal VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
+                
+                If (yDown = 1) Then
+                    FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(gErrors(0, 1)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(aErrors(0, 1)), (xWidth + 1) * 4, 0
+                Else
+                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemory ByVal VarPtr(aErrors(0, 1)), ByVal VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
+                    
+                    FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(bErrors(0, 2)), (xWidth + 1) * 4, 0
+                    FillMemory VarPtr(aErrors(0, 2)), (xWidth + 1) * 4, 0
+                End If
+                
+            Else
+                FillMemory VarPtr(rErrors(0, 0)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(gErrors(0, 0)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(bErrors(0, 0)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(aErrors(0, 0)), (xWidth + 1) * 4, 0
+            End If
+            
+            'Update the progress bar, as necessary
+            If (Not suppressMessages) Then
+                If (y And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal y + modifyProgBarOffset
+                End If
+            End If
+            
+        Next y
+        
+        dstDIB.UnwrapArrayFromDIB srcPixels1D
+    
+    End If
+    
+    dstDIB.UnwrapArrayFromDIB srcPixels
+    
+    ApplyPaletteToImage_Dithered_IncAlpha_Lab = True
     
 End Function
 

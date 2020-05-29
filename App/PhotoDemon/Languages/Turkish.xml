@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3466</langversion>
+<langversion>6.8.3467</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10634,6 +10634,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use Lab color space</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>quantization method</original>
 <translation>niceleme yöntemi</translation>
 </phrase>
@@ -10718,7 +10723,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 33 phrases. 15 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -16064,7 +16069,7 @@ If yamalı vardır.</translation>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
@@ -16081,10 +16086,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2667</phrasecount>
+<phrasecount>2668</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5058 phrases. -->
-<!-- 2391 are duplicates, so only 2667 unique phrases have been written to file. -->
-<!-- These 2667 phrases contain approximately 12252 total words. -->
+<!-- As of this build, PhotoDemon contains 5060 phrases. -->
+<!-- 2392 are duplicates, so only 2668 unique phrases have been written to file. -->
+<!-- These 2668 phrases contain approximately 12256 total words. -->
 
 </pdData>

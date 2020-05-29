@@ -55,11 +55,20 @@ Begin VB.Form FormPalettize
       Height          =   6000
       Index           =   0
       Left            =   5880
-      TabIndex        =   3
       Top             =   960
       Width           =   6375
       _ExtentX        =   11245
       _ExtentY        =   10583
+      Begin PhotoDemon.pdCheckBox chkLab 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   16
+         Top             =   5160
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   661
+         Caption         =   "use Lab color space"
+      End
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   855
          Left            =   120
@@ -130,7 +139,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdCheckBox chkPreserveWB 
          Height          =   375
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   2
          Top             =   3885
          Width           =   5895
          _ExtentX        =   10398
@@ -140,7 +149,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdButtonStrip btsAlpha 
          Height          =   975
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   3
          Top             =   0
          Width           =   6015
          _ExtentX        =   10610
@@ -153,7 +162,6 @@ Begin VB.Form FormPalettize
       Height          =   5175
       Index           =   1
       Left            =   5880
-      TabIndex        =   2
       Top             =   960
       Width           =   6375
       _ExtentX        =   11245
@@ -284,11 +292,16 @@ Private Sub ReflowFirstPanel()
     yPadding = Interface.FixDPI(6)
     yOffset = btsAlpha.GetTop + btsAlpha.GetHeight + yPadding
     
-    'Only expose quantization method in RGB mode
+    'Only expose quantization method in RGB mode, and only expose Lab color space matching
+    ' in RGBA mode.
     btsMethod.Visible = rgbPaletteMode
+    chkLab.Visible = (Not rgbPaletteMode)
     If rgbPaletteMode Then
         btsMethod.SetTop yOffset
         yOffset = yOffset + btsMethod.GetHeight + yPadding
+    Else
+        chkLab.SetTop yOffset
+        yOffset = yOffset + chkLab.GetHeight + yPadding * 2
     End If
     
     'Palette size and "preserve black and white" are always available
@@ -339,6 +352,10 @@ End Sub
 Private Sub SetDitherVisibility(ByVal srcIndex As Long)
     sldDitherAmount(srcIndex).Visible = (cboDither(srcIndex).ListIndex <> 0)
     If (srcIndex = 0) Then ReflowFirstPanel
+End Sub
+
+Private Sub chkLab_Click()
+    UpdatePreview
 End Sub
 
 Private Sub chkMatchAlpha_Click()
@@ -437,6 +454,10 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         End If
     End If
     
+    'Only our internal RGBA quantizer supports Lab color matching
+    Dim useLAB As Boolean
+    useLAB = cParams.GetBool("use-lab-color", False)
+    
     Dim paletteSize As Long
     paletteSize = cParams.GetLong("palettesize", 256)
     
@@ -448,6 +469,13 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     
     Dim ditherAmount As Single
     ditherAmount = cParams.GetDouble("ditheramount", 100#) * 0.01
+    
+    'This is a weird adjustment, but... Lab color-matching is way more sensitive
+    ' to the broad-spectrum dithering caused by ordered dithers.  As such, we need
+    ' to ramp the strength waaaay down.
+    If (useLAB And useRGBAQuantizer And ((ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8))) Then
+        ditherAmount = ditherAmount * 0.5
+    End If
     
     Dim finalBackColor As Long
     finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
@@ -477,7 +505,15 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     
         'Generate an optimal palette, and if alpha is involved, use it as part of the calculation.
         If useRGBAQuantizer Then
-            Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
+            
+            'I'm not super-pleased with the output of the Lab palette generator at present;
+            ' only RGBA is currently used for palette generation
+            'If useLAB Then
+            '    Palettes.GetOptimizedPaletteIncAlpha_LAB workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
+            'Else
+                Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
+            'End If
+            
         Else
             Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
         End If
@@ -493,13 +529,21 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
             If useRGBAQuantizer Then
-                Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                If useLAB Then
+                    Palettes.ApplyPaletteToImage_IncAlpha_KDTree_Lab workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                Else
+                    Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                End If
             Else
                 Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             End If
         Else
             If useRGBAQuantizer Then
-                Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                If useLAB Then
+                    Palettes.ApplyPaletteToImage_Dithered_IncAlpha_Lab workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                Else
+                    Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+                End If
             Else
                 Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             End If
@@ -742,6 +786,9 @@ Private Function GetToolParamString() As String
             Case 2
                 .AddParam "quantizer", "NeuQuant"
         End Select
+        
+        'Similarly, Lab color space matching only works for RGBA palettes
+        .AddParam "use-lab-color", chkLab.Value
         
         .AddParam "palettesize", sldPalette.Value
         .AddParam "preservewhiteblack", chkPreserveWB.Value

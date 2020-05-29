@@ -18,30 +18,35 @@ Attribute VB_Exposed = False
 'Last updated: 25/March/19
 'Last update: new support for full RGBA modes, which also attempt to quantize alpha as part of the process
 '
-'This class provides a highly optimized Median Cut Quantization implementation.  For a nice overview of
-' how the median cut algorithm works, see http://www.leptonica.com/papers/mediancut.pdf
+'This class provides a highly optimized Median Cut Quantization implementation.
+' For a nice overview of how the median cut algorithm works, see
+' http://www.leptonica.com/papers/mediancut.pdf
 '
-'For best results, I *strongly* suggest that you resample images to a smaller size before calculating
-' an optimized palette via this class.  Specifically, the DIBs.ResizeDIBByPixelCount() function
-' allows you to resize an image to a specific number of pixels, which will greatly improve this class's
-' performance without harming the final palette's quality.  (In fact, the natural "softening" that comes
+'For best results, I *strongly* suggest that you resample images to a smaller size
+' before calculating an optimized palette via this class.  Specifically, the
+' DIBs.ResizeDIBByPixelCount() function allows you to resize an image to a specific
+' number of pixels, which will greatly improve this class's performance without
+' harming the final palette's quality.  (In fact, the natural "softening" that comes
 ' with resampling may actually improve the final palette.)
 '
-'To use this class, first add all colors from the image via the AddColor_RGB() function.  This class will
-' automatically generate related statistical data as colors are added.
+'To use this class, first add all colors from the image via the AddColor_RGB() function.
+' This class will automatically generate related statistical data as colors are added.
 '
-'After adding all colors, use Split() function to automatically split this class into two new classes.
-' Each class will contain roughly half the colors in the image, split along the axis with the largest variance.
+'After adding all colors, use Split() function to automatically split this class into
+' two new classes.  Each class will contain roughly half the colors in the image,
+' split along the axis with the largest variance.
 '
-'Then recursively query the variance of all generated classes (using the .GetVariance() function),
-' while always asking the highest-variance class to split itself.  Stop splitting classes when the desired
-' number of colors is reached.  (Each class instance maps to one color in the final image.)
+'Then recursively query the variance of all generated classes (using the .GetVariance()
+' function), and ask the highest-variance class to split itself.  Stop splitting classes
+' when the desired number of colors is reached.  (Each class instance maps to one color
+' in the final palette.)
 '
-'To generate the final palette, query each class instance using the GetAverageColor() function.
+'To generate the final palette, query each class instance using the GetAverageColor()
+' function; this produces a weighted average of all colors in that "stack".
 '
-'For a full example of how to use this class, please see the Palettes.GetOptimizedPalette() function.
-' That function also demonstrates some caveats, like workarounds for the (impractical) case where a caller
-' requests a single-color palette.
+'For a full example of how to use this class, see the Palettes.GetOptimizedPalette()
+' function.  That implementation also demonstrates some caveats, like workarounds for
+' the (impractical) case where a caller requests a single-color palette.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -52,19 +57,22 @@ Option Explicit
 
 Private Const INITIAL_STACK_SIZE As Long = 256
 
-'Used for testing color weighting by human eye sensitivity.  I haven't made up my mind on the best way to
-' handle this.  Using standard illuminants is great for photographs of humans, as it preferentially preserves
-' warm tones over cool ones - but blue is weighted *so* lightly that you lose all nuance in nature photography
-' involving water or skies.  For now, I'm using reduced versions of the illuminant modifiers, which provides
-' a "halfway" solution.
+'Used for testing color weighting by human eye sensitivity.  I haven't made up my mind
+' on the best way to handle this.  Using standard illuminants is great for photographs
+' of humans, as it preferentially preserves warm tones over cool ones - but blue gets
+' weighted *so* lightly that you lose all nuance in nature photography involving water
+' or skies.  For now, I'm using reduced versions of the illuminant modifiers, which
+' provides a "halfway" solution.  Note also that some modes do not use these values
+' at all.
 Private Const CUSTOM_WEIGHT_RED As Single = 0.33!     '0.299
 Private Const CUSTOM_WEIGHT_GREEN As Single = 0.42!   '0.587
 Private Const CUSTOM_WEIGHT_BLUE As Single = 0.25!    '0.114
 
-'Alpha is similarly tricky, as alpha variance in a few antialiased pixels can overwhelm variance tracking for
-' the image as a whole... but reduce it too much, and antialiased edges get aggressively matched by color
-' instead of opacity.  In a perfect world, we'd probably want to do something like sample areas of color,
-' then construct a palette from that - consider it to-do!
+'Alpha is similarly tricky, as alpha variance in a few antialiased pixels can overwhelm
+' variance tracking for the image as a whole... but reduce it too much, and antialiased
+' edges get aggressively matched by color instead of opacity.  In a perfect world, we'd
+' probably want to sample regions of color, then construct a palette from those -
+' consider it a to-do item!
 Private Const CUSTOM_WEIGHT_ALPHA As Single = 0.75!   '0.5
 
 Private Type RGBStackItem
@@ -531,8 +539,8 @@ Private Sub SplitA(ByRef dstStack As pdMedianCut, ByVal aMidpoint As Long, Optio
     Next i
 End Sub
 
-'Return the average color of this stack.  Note that "average" always means "weighted average," as colors are weighted
-' by their prominence in the original image.
+'Return the average color of this stack.  Note that "average" always means "weighted average,"
+' as colors are weighted by their prominence in the original image.
 Friend Sub GetAverageColor(ByRef r As Long, ByRef g As Long, ByRef b As Long)
     
     If (m_NumOfColors > 0) Then

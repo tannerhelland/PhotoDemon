@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.329</langversion>
+<langversion>6.7.330</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -10647,6 +10647,11 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use Lab color space</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>quantization method</original>
 <translation>Método de cuantificación</translation>
 </phrase>
@@ -10731,7 +10736,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 33 phrases. 15 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -16083,7 +16088,7 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 30 phrases. 5 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_ICO.frm-->
 
@@ -16100,10 +16105,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2667</phrasecount>
+<phrasecount>2668</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5058 phrases. -->
-<!-- 2391 are duplicates, so only 2667 unique phrases have been written to file. -->
-<!-- These 2667 phrases contain approximately 12252 total words. -->
+<!-- As of this build, PhotoDemon contains 5060 phrases. -->
+<!-- 2392 are duplicates, so only 2668 unique phrases have been written to file. -->
+<!-- These 2668 phrases contain approximately 12256 total words. -->
 
 </pdData>

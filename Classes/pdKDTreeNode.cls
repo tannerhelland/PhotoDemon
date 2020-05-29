@@ -29,13 +29,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'If you want to weight color matches during comparisons, you can set custom weights here
-Private Const USE_CUSTOM_WEIGHTS As Boolean = False
-Private Const CUSTOM_WEIGHT_RED As Single = 0.33
-Private Const CUSTOM_WEIGHT_GREEN As Single = 0.42
-Private Const CUSTOM_WEIGHT_BLUE As Single = 0.25
-Private Const CUSTOM_WEIGHT_ALPHA As Single = 0.75
-
 'This node's color.  For performance purposes, we also cache Long-type versions so we can use them in
 ' various signed arithmetic operations (e.g. m_Color.Red - someOtherColor.Red can underflow).
 Private m_Color As RGBQuad
@@ -352,11 +345,7 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
     r = m_Red - srcColor.Red
     g = m_Green - srcColor.Green
     b = m_Blue - srcColor.Blue
-    If USE_CUSTOM_WEIGHTS Then
-        m_testDistance = (r * r * CUSTOM_WEIGHT_RED + g * g * CUSTOM_WEIGHT_GREEN + b * b * CUSTOM_WEIGHT_BLUE)
-    Else
-        m_testDistance = (r * r + g * g + b * b)
-    End If
+    m_testDistance = (r * r + g * g + b * b)
     
     If (m_testDistance < curBestDistance) Then
         curBestDistance = m_testDistance
@@ -473,11 +462,7 @@ Friend Sub NearestColorIncAlpha(ByRef srcColor As RGBQuad, ByRef curBestColor As
     g = m_Green - srcColor.Green
     b = m_Blue - srcColor.Blue
     a = m_Alpha - srcColor.Alpha
-    If USE_CUSTOM_WEIGHTS Then
-        m_testDistance = (r * r * CUSTOM_WEIGHT_RED + g * g * CUSTOM_WEIGHT_GREEN + b * b * CUSTOM_WEIGHT_BLUE + a * a * CUSTOM_WEIGHT_ALPHA)
-    Else
-        m_testDistance = (r * r + g * g + b * b + a * a)
-    End If
+    m_testDistance = (r * r + g * g + b * b + a * a)
     
     If (m_testDistance < curBestDistance) Then
         curBestDistance = m_testDistance
