@@ -1226,7 +1226,7 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     ' (Note that this is only useful if the target is a layer - when loading dropped files as new images,
     ' coordinates are ignored.)
     Dim newX As Long, newY As Long
-    If intendedTargetIsLayer And (srcX <> LONG_MAX) And (srcY <> LONG_MAX) Then
+    If intendedTargetIsLayer And (PDImages.GetNumOpenImages > 0) And (srcX <> LONG_MAX) And (srcY <> LONG_MAX) Then
         Dim tmpX As Double, tmpY As Double
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), srcX, srcY, tmpX, tmpY, True
         newX = Int(tmpX + 0.5)

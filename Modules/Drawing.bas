@@ -153,7 +153,7 @@ End Sub
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
 Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 
-    If (Not srcImage.ImgViewport Is Nothing) Then
+    If (Not srcImage Is Nothing) Then
     
         'Get the current zoom value from the source image, then invert it.  (We're only going to use that value in division.)
         Dim zoomVal As Double

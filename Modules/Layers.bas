@@ -323,9 +323,14 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Start by retrieving the current top-left position of the canvas, in *image* coordinates
             Dim newX As Double, newY As Double, safeX As Double, safeY As Double
-            Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
-            safeX = newX
-            safeY = newY
+            If (Not PDImages.GetActiveImage Is Nothing) Then
+                Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
+                safeX = newX
+                safeY = newY
+            Else
+                newX = 0
+                newY = 0
+            End If
             
             'If the caller passed in their own x and/or y value, validate each value before replacing
             ' our auto-calculated position

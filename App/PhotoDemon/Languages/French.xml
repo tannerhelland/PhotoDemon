@@ -403,7 +403,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>Comptage des couleurs spécifiques à cette image</translation>
+<translation>Nombre de couleurs spécifiques à cette image</translation>
 </phrase>
 
 <phrase>
@@ -422,7 +422,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RGBA).</
 
 <phrase>
 <original>Count image colors</original>
-<translation>Comptage des couleurs de l'image</translation>
+<translation>Nombre de couleurs de l'image</translation>
 </phrase>
 
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -1775,7 +1775,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Threshold alpha</original>
-<translation></translation>
+<translation>Seuil</translation>
 </phrase>
 
 <phrase>
@@ -1850,7 +1850,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Load selection</original>
-<translation>Chargement de la sélection</translation>
+<translation>Charger une sélection</translation>
 </phrase>
 
 <phrase>
@@ -3499,7 +3499,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Ctrl+Click pour indiquer la source du clonage</translation>
+<translation>Ctrl+Clic pour indiquer la source du clonage</translation>
 </phrase>
 
 <phrase>
@@ -5977,7 +5977,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Count unique colors</original>
-<translation>Compter les couleurs spécifiques</translation>
+<translation>Dénombrer les couleurs spécifiques de l'image</translation>
 </phrase>
 
 <phrase>
@@ -6127,7 +6127,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Threshold</original>
-<translation></translation>
+<translation>Seuil</translation>
 </phrase>
 
 <phrase>
@@ -6716,12 +6716,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>dithering amount</original>
-<translation>taux de juxtaposition</translation>
+<translation>taux de diffusion d'erreur</translation>
 </phrase>
 
 <phrase>
 <original>dithering</original>
-<translation>juxtaposition</translation>
+<translation>diffusion d'erreur</translation>
 </phrase>
 
 <phrase>
@@ -9069,7 +9069,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Animating image (stage %1 of %2)</original>
-<translation>Animer l'image (stade %1 de %2)</translation>
+<translation>Rendu de l'image (stade %1 de %2)</translation>
 </phrase>
 
 <phrase>
@@ -9120,7 +9120,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Projecting image through simulated glass</original>
-<translation>Projection de l'images a travers un verre simulé</translation>
+<translation>Projection de l'image à travers un verre simulé</translation>
 </phrase>
 
 <!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9156,7 +9156,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Asking Sam Spade for help</original>
-<translation>Demander de l'aide à Sam Spade</translation>
+<translation>Demande d'aide à Sam Spade</translation>
 </phrase>
 
 <!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -9183,7 +9183,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>secondary angle</original>
-<translation>vertex secondaires</translation>
+<translation>angle secondaire</translation>
 </phrase>
 
 <phrase>
@@ -9203,7 +9203,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>primary angle</original>
-<translation>sommets principaux</translation>
+<translation>angle primaire</translation>
 </phrase>
 
 <phrase>
@@ -9218,7 +9218,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Peering at image through imaginary kaleidoscope</original>
-<translation>Observervation de l'image à travers un kaléidoscope imaginaire</translation>
+<translation>Observation de l'image à travers un kaléidoscope imaginaire</translation>
 </phrase>
 
 <phrase>
@@ -9322,7 +9322,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Posterizing image</original>
-<translation>Postériser image</translation>
+<translation>Postérisation de l'image</translation>
 </phrase>
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9369,7 +9369,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Carving image from stained glass</original>
-<translation>Sculpture de l'image vitrail</translation>
+<translation>Morcellement de l'image en vitrail</translation>
 </phrase>
 
 <phrase>
@@ -9384,12 +9384,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Cartesian (traditional)</original>
-<translation>Cartesian (traditionnel)</translation>
+<translation>Cartesien (traditionnel)</translation>
 </phrase>
 
 <phrase>
 <original>Manhattan (walking)</original>
-<translation>Manhattan (à pied)</translation>
+<translation>Manhattan (marches)</translation>
 </phrase>
 
 <phrase>
@@ -9546,7 +9546,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying zoom blur</original>
-<translation>Application d'un zoom flou</translation>
+<translation>Application d'un flou par zoom</translation>
 </phrase>
 
 <!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9578,7 +9578,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Projecting image through simulated lens</original>
-<translation>Projection de l'image par la lentille simulée</translation>
+<translation>Projection de l'image à travers une lentille simulée</translation>
 </phrase>
 
 <!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9594,12 +9594,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(a) edges</original>
-<translation>(a) les bords</translation>
+<translation>(a) bords</translation>
 </phrase>
 
 <phrase>
 <original>(b) midpoints</original>
-<translation>(b) points du milieu</translation>
+<translation>(b) points médians</translation>
 </phrase>
 
 <phrase>
@@ -9660,7 +9660,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Deep-frying image</original>
-<translation>Et un nouveau beignet pour Omer</translation>
+<translation>Et un nouveau beignet pour Omer !</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9681,7 +9681,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying %1 distortion</original>
-<translation>Appliquer 1% de distorsion</translation>
+<translation>Application de la distorsion</translation>
 </phrase>
 
 <phrase>
@@ -9742,7 +9742,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Pinching and whirling image</original>
-<translation>Pincer et tourbillonner l'image</translation>
+<translation>Tourbillon et pincement de l'image</translation>
 </phrase>
 
 <!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9753,7 +9753,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Poking image</original>
-<translation>Pousser sur l'image</translation>
+<translation>Calcul de la poussée sur l'image</translation>
 </phrase>
 
 <!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9779,7 +9779,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Simulating ripples across image surface</original>
-<translation>Simulation de rides sur le plan de l'image</translation>
+<translation>Simulation de rides à la surface de l'image</translation>
 </phrase>
 
 <!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9790,7 +9790,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Squeezing image</original>
-<translation>Presser l'image</translation>
+<translation>Pression sur l'image</translation>
 </phrase>
 
 <!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9801,7 +9801,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Swirling image round and round</original>
-<translation>Tourbillonnement en rond</translation>
+<translation>Mouvement tourbillonnant sur l'image</translation>
 </phrase>
 
 <!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10023,7 +10023,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Illuminating image with imaginary blacklight</original>
-<translation>Illumination de la photo à la lumière noire imaginaire</translation>
+<translation>Eclairage de la photo par une lumière noire imaginaire</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10044,7 +10044,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation>Application du filtre cross-écran</translation>
+<translation>Application du filtre inter-écran</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10102,7 +10102,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Creating artificial atmosphere</original>
-<translation>Création une atmosphère artificielle</translation>
+<translation>Création d'une atmosphère artificielle</translation>
 </phrase>
 
 <!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10113,7 +10113,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating artificial fog</original>
-<translation>Génération brouillard artificiel</translation>
+<translation>Génération de brouillard artificiel</translation>
 </phrase>
 
 <!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10134,7 +10134,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Lighting image on fire</original>
-<translation>Eclairage de l'image par le feu</translation>
+<translation>Embrasement de l'image par le feu</translation>
 </phrase>
 
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11135,7 +11135,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>add individual images</original>
-<translation>ajouter des images individuelles</translation>
+<translation>ajouter des images une par une</translation>
 </phrase>
 
 <phrase>
@@ -11414,7 +11414,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>In the next step, you will select the images you want to process.</original>
-<translation>Dans l'étape suivante, vous sélectionnez les images que vous souhaitez traiter.</translation>
+<translation>Dans l'étape suivante, vous sélectionnerez les images que vous souhaitez traiter.</translation>
 </phrase>
 
 <phrase>
@@ -11439,7 +11439,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>In the next step, you will choose how you want the processed images saved.</original>
-<translation>Dans la prochaine étape, vous choisissez comment vous voulez que les images traitées soient sauvegardées.</translation>
+<translation>Dans la prochaine étape, vous choisirez les options de sauvegarde que vous désirez pour les images traitées.</translation>
 </phrase>
 
 <phrase>
@@ -11464,7 +11464,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>In the final step, you will choose how you want the saved files to be named.</original>
-<translation>Dans la dernière étape, vous pourrez choisir comment vous voulez que les fichiers sauvegardés soient nommés.</translation>
+<translation>Dans la dernière étape, vous choisirez comment vous voulez que les fichiers sauvegardés soient nommés.</translation>
 </phrase>
 
 <phrase>
@@ -12573,7 +12573,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>use dithering to improve quality</original>
-<translation>utiliser la modulation d'erreurs pour améliorer la qualité</translation>
+<translation>utiliser la diffusion d'erreurs pour améliorer la qualité</translation>
 </phrase>
 
 <phrase>
@@ -13759,7 +13759,8 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Cette option permet de créer une image vide. Un autre moyen de créer des images est d'utiliser une image existante et de la modifier. Pour cela passer par le menu Fichier -> Importer. ( et ensuite "enregistrer sous" pour donner un nouveau nom à cette image )</translation>
+<translation>Cette option permet de créer une image vide. Un autre moyen de créer des images est d'utiliser une image existante et de la modifier. Pour cela passer par le menu Fichier -> Importer. 
+( Pensez à ensuite "enregistrer sous" pour donner un nouveau nom à cette image si vous la modifiez et que vous desirez garder l'image originale)</translation>
 </phrase>
 
 <phrase>
@@ -13820,7 +13821,10 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
 <translation>La commande "Enregistrer Sous", ouvre toujours une boîte de dialogue.
-vous pouvez alors spécifier 1) le dossier de destination de l'enregitrement, 2) attribuer un nouveau nom de fichier, ou 3) un nouveau format à l'image à sauvegarder.</translation>
+Vous pouvez alors si besoin
+1) indiquer le dossier de destination de l'enregistrement
+2) spécifier un nouveau nom de fichier 
+3) changer le format à l'image à sauvegarder.</translation>
 </phrase>
 
 <phrase>
@@ -13830,7 +13834,8 @@ vous pouvez alors spécifier 1) le dossier de destination de l'enregitrement, 2)
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>Main (cliquez et faire défiler ou déplacer la zone de travail)</translation>
+<translation>Déplacement manuel 
+(cliquer et déplacer l'image dans la zone de travail)</translation>
 </phrase>
 
 <phrase>
@@ -13910,7 +13915,7 @@ vous pouvez alors spécifier 1) le dossier de destination de l'enregitrement, 2)
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation>Pot de peinture (pour remplir de couleur)</translation>
+<translation>Pot de peinture (remplir de couleur)</translation>
 </phrase>
 
 <phrase>
@@ -13955,7 +13960,7 @@ vous pouvez alors spécifier 1) le dossier de destination de l'enregitrement, 2)
 
 <phrase>
 <original>Polygon selection tool</original>
-<translation>Sélection polygonale</translation>
+<translation>Sélection polygonale (par points)</translation>
 </phrase>
 
 <phrase>
@@ -14021,7 +14026,7 @@ vous pouvez alors spécifier 1) le dossier de destination de l'enregitrement, 2)
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation>mélange/ mode alpha</translation>
+<translation>mélange / mode alpha</translation>
 </phrase>
 
 <phrase>

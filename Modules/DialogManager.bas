@@ -608,7 +608,7 @@ End Function
 Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
 
     If (PDImages.GetNumOpenImages() = 0) Then
-        PromptForDropAsNewLayer = vbNo
+        PromptForDropAsNewLayer = vbYes
     Else
         
         Dim questionText As String

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1962</langversion>
+<langversion>8.0.1973</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10648,7 +10648,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use Lab color space</original>
-<translation></translation>
+<translation>Lab-Farbraum verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12861,7 +12861,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>compare using Lab color space</original>
-<translation>Vergleichen unter Verwendung des Lab-Farbraums</translation>
+<translation>Vergleichen unter Verwendung des Lab-Farbraumes</translation>
 </phrase>
 
 <phrase>
