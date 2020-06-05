@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl pdDownload 
-   BackColor       =   &H8000000D&
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    ClientHeight    =   480
    ClientLeft      =   0
    ClientTop       =   0

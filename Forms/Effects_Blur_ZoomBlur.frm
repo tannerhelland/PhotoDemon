@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormZoomBlur 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Zoom blur"
@@ -17,6 +18,7 @@ Begin VB.Form FormZoomBlur
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

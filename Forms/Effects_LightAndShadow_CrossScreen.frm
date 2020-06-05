@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormCrossScreen 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Cross-screen"
@@ -7,6 +8,7 @@ Begin VB.Form FormCrossScreen
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12030
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormCrossScreen
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -236,12 +239,12 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     m_thresholdDIB.CreateFromExistingDIB workingDIB
     
     'Use the ever-excellent pdFilterLUT class to apply the threshold
-    Dim cLut As pdFilterLUT
-    Set cLut = New pdFilterLUT
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
     
     Dim tmpLUT() As Byte
-    cLut.FillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
-    cLut.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT
+    cLUT.FillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
+    cLUT.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If (Not toPreview) Then
@@ -351,13 +354,13 @@ Public Sub CrossScreenFilter(ByVal effectParams As String, Optional ByVal toPrev
     'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
     GetDIBMaxMinLuminance m_mbDIB, lMin, lMax
-    cLut.FillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
+    cLUT.FillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
     Dim gammaLUT() As Byte, finalLUT() As Byte
-    cLut.FillLUT_Gamma gammaLUT, 0.5 + (csStrength * 0.01)
-    cLut.MergeLUTs tmpLUT, gammaLUT, finalLUT
-    cLut.ApplyLUTsToDIB_Gray m_mbDIB, finalLUT
+    cLUT.FillLUT_Gamma gammaLUT, 0.5 + (csStrength * 0.01)
+    cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
+    cLUT.ApplyLUTsToDIB_Gray m_mbDIB, finalLUT
     
     'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
     ' quite sharp due to the remapping).

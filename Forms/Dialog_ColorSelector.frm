@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_ColorSelector 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Change color"
@@ -7,6 +8,7 @@ Begin VB.Form dialog_ColorSelector
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   11535
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

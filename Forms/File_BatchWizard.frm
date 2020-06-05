@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormBatchWizard 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Batch Process Wizard"
@@ -7,6 +8,7 @@ Begin VB.Form FormBatchWizard
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   13200
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormBatchWizard
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -82,7 +85,6 @@ Begin VB.Form FormBatchWizard
       Height          =   6780
       Index           =   1
       Left            =   3300
-      TabIndex        =   3
       Top             =   660
       Width           =   9855
       _ExtentX        =   17383
@@ -100,7 +102,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
          Height          =   375
          Left            =   225
-         TabIndex        =   44
+         TabIndex        =   3
          Top             =   5670
          Width           =   3255
          _ExtentX        =   5741
@@ -248,7 +250,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdRemoveFolder 
          Height          =   615
          Left            =   3600
-         TabIndex        =   43
+         TabIndex        =   4
          Top             =   4995
          Width           =   3135
          _ExtentX        =   5530
@@ -258,7 +260,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRemoveSubfolders 
          Height          =   375
          Left            =   3585
-         TabIndex        =   45
+         TabIndex        =   5
          Top             =   5670
          Width           =   3135
          _ExtentX        =   5530
@@ -271,7 +273,6 @@ Begin VB.Form FormBatchWizard
       Height          =   6780
       Index           =   4
       Left            =   3300
-      TabIndex        =   24
       Top             =   660
       Width           =   9855
       _ExtentX        =   17383
@@ -314,7 +315,6 @@ Begin VB.Form FormBatchWizard
       Height          =   6780
       Index           =   3
       Left            =   3300
-      TabIndex        =   8
       Top             =   660
       Width           =   9855
       _ExtentX        =   17383
@@ -322,7 +322,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdDropDown cmbOutputOptions 
          Height          =   375
          Left            =   480
-         TabIndex        =   46
+         TabIndex        =   8
          Top             =   1680
          Width           =   9255
          _ExtentX        =   16325
@@ -501,7 +501,6 @@ Begin VB.Form FormBatchWizard
       Height          =   6780
       Index           =   2
       Left            =   3300
-      TabIndex        =   5
       Top             =   660
       Width           =   9855
       _ExtentX        =   17383
@@ -509,7 +508,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdExportSettings 
          Height          =   735
          Left            =   720
-         TabIndex        =   48
+         TabIndex        =   24
          Top             =   2400
          Width           =   8895
          _ExtentX        =   15690
@@ -519,7 +518,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdDropDown cmbOutputFormat 
          Height          =   375
          Left            =   720
-         TabIndex        =   47
+         TabIndex        =   32
          Top             =   1800
          Width           =   8895
          _ExtentX        =   15690
@@ -564,7 +563,6 @@ Begin VB.Form FormBatchWizard
       Height          =   6780
       Index           =   0
       Left            =   3300
-      TabIndex        =   4
       Top             =   660
       Width           =   9855
       _ExtentX        =   17383
@@ -594,7 +592,6 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdContainer picPhotoEdits 
          Height          =   5400
          Left            =   120
-         TabIndex        =   32
          Top             =   1200
          Width           =   9735
          _ExtentX        =   17171

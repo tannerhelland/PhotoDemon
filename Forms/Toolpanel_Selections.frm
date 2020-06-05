@@ -18,9 +18,12 @@ Begin VB.Form toolpanel_Selections
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolpanel_Selections.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   101
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1110
@@ -112,7 +115,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   0
       Left            =   5340
-      TabIndex        =   4
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -226,7 +228,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   0
          Left            =   3960
-         TabIndex        =   40
+         TabIndex        =   4
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -239,7 +241,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   1
       Left            =   5340
-      TabIndex        =   31
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -276,7 +277,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   1
          Left            =   2760
-         TabIndex        =   39
+         TabIndex        =   10
          Top             =   30
          Width           =   3135
          _ExtentX        =   6376
@@ -288,7 +289,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   3
          Left            =   5520
-         TabIndex        =   41
+         TabIndex        =   15
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -300,7 +301,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   345
          Index           =   2
          Left            =   2865
-         TabIndex        =   42
+         TabIndex        =   19
          Top             =   870
          Width           =   1080
          _ExtentX        =   2328
@@ -313,7 +314,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   345
          Index           =   3
          Left            =   4440
-         TabIndex        =   43
+         TabIndex        =   23
          Top             =   870
          Width           =   1080
          _ExtentX        =   2328
@@ -326,7 +327,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   2
          Left            =   3960
-         TabIndex        =   44
+         TabIndex        =   31
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -352,7 +353,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   2
       Left            =   5340
-      TabIndex        =   23
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -479,7 +479,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   3
       Left            =   5340
-      TabIndex        =   19
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -531,7 +530,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   4
       Left            =   5340
-      TabIndex        =   15
       Top             =   0
       Width           =   9975
       _ExtentX        =   0
@@ -584,7 +582,6 @@ Begin VB.Form toolpanel_Selections
       Height          =   1470
       Index           =   5
       Left            =   5340
-      TabIndex        =   10
       Top             =   0
       Width           =   9975
       _ExtentX        =   0

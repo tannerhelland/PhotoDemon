@@ -1,13 +1,13 @@
 VERSION 5.00
 Begin VB.Form dialog_MsgBox 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6150
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9045
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +17,7 @@ Begin VB.Form dialog_MsgBox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -36,7 +37,6 @@ Begin VB.Form dialog_MsgBox
    Begin PhotoDemon.pdContainer pnlBase 
       Height          =   750
       Left            =   0
-      TabIndex        =   0
       Top             =   5400
       Width           =   9015
       _ExtentX        =   15901
@@ -65,7 +65,7 @@ Begin VB.Form dialog_MsgBox
          Height          =   510
          Index           =   2
          Left            =   4320
-         TabIndex        =   3
+         TabIndex        =   0
          Top             =   120
          Width           =   1365
          _ExtentX        =   2910

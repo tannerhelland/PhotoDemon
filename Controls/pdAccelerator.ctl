@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdAccelerator 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
+   CanGetFocus     =   0   'False
    ClientHeight    =   3600
    ClientLeft      =   0
    ClientTop       =   0

@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_MoveSize
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   16650
+   ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,9 +19,12 @@ Begin VB.Form toolpanel_MoveSize
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolpanel_MoveSize.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   101
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1110
@@ -39,7 +43,6 @@ Begin VB.Form toolpanel_MoveSize
       Height          =   1455
       Index           =   0
       Left            =   2520
-      TabIndex        =   1
       Top             =   0
       Width           =   14055
       _ExtentX        =   0
@@ -141,7 +144,6 @@ Begin VB.Form toolpanel_MoveSize
       Height          =   1455
       Index           =   1
       Left            =   2520
-      TabIndex        =   12
       Top             =   0
       Width           =   14055
       _ExtentX        =   0
@@ -163,7 +165,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
          Left            =   4080
-         TabIndex        =   16
+         TabIndex        =   1
          Top             =   60
          Width           =   3495
          _ExtentX        =   6165
@@ -177,7 +179,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
          Height          =   570
          Left            =   8040
-         TabIndex        =   17
+         TabIndex        =   8
          Top             =   360
          Width           =   660
          _ExtentX        =   1164
@@ -187,7 +189,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdSlider sltLayerShearY 
          Height          =   405
          Left            =   4080
-         TabIndex        =   18
+         TabIndex        =   12
          Top             =   840
          Width           =   3495
          _ExtentX        =   6165
@@ -211,7 +213,6 @@ Begin VB.Form toolpanel_MoveSize
       Height          =   1455
       Index           =   2
       Left            =   2520
-      TabIndex        =   8
       Top             =   0
       Width           =   14055
       _ExtentX        =   0

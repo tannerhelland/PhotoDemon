@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormLayerSplit 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Split images into layers"
@@ -9,6 +8,7 @@ Begin VB.Form FormLayerSplit
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   12510
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,6 +18,7 @@ Begin VB.Form FormLayerSplit
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

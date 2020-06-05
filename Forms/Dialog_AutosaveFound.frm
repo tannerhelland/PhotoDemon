@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_AutosaveWarning 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Autosave data detected"
@@ -9,6 +8,7 @@ Begin VB.Form dialog_AutosaveWarning
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9165
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,6 +18,7 @@ Begin VB.Form dialog_AutosaveWarning
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

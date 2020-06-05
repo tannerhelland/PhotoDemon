@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_Clone
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   15345
+   ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,9 +19,12 @@ Begin VB.Form toolpanel_Clone
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolpanel_Clone.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   101
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1023

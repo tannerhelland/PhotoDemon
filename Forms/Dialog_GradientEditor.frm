@@ -8,6 +8,7 @@ Begin VB.Form dialog_GradientEditor
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   12660
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form dialog_GradientEditor
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -28,7 +30,6 @@ Begin VB.Form dialog_GradientEditor
    Begin PhotoDemon.pdContainer pnlShared 
       Height          =   2175
       Left            =   120
-      TabIndex        =   24
       Top             =   5880
       Visible         =   0   'False
       Width           =   12375
@@ -68,7 +69,7 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdCheckBox chkGamma 
          Height          =   330
          Left            =   4680
-         TabIndex        =   27
+         TabIndex        =   2
          Top             =   480
          Width           =   3495
          _ExtentX        =   6165
@@ -91,7 +92,7 @@ Begin VB.Form dialog_GradientEditor
          Height          =   615
          Index           =   1
          Left            =   5340
-         TabIndex        =   28
+         TabIndex        =   3
          Top             =   1440
          Width           =   3480
          _ExtentX        =   6138
@@ -113,7 +114,7 @@ Begin VB.Form dialog_GradientEditor
          Height          =   615
          Index           =   2
          Left            =   8880
-         TabIndex        =   29
+         TabIndex        =   20
          Top             =   1440
          Width           =   3480
          _ExtentX        =   6138
@@ -124,7 +125,7 @@ Begin VB.Form dialog_GradientEditor
          Height          =   615
          Index           =   0
          Left            =   120
-         TabIndex        =   30
+         TabIndex        =   24
          Top             =   1440
          Width           =   5160
          _ExtentX        =   9102
@@ -159,7 +160,6 @@ Begin VB.Form dialog_GradientEditor
       Height          =   4620
       Index           =   2
       Left            =   0
-      TabIndex        =   3
       Top             =   1200
       Width           =   12615
       _ExtentX        =   22251
@@ -333,7 +333,6 @@ Begin VB.Form dialog_GradientEditor
       Height          =   6975
       Index           =   0
       Left            =   0
-      TabIndex        =   2
       Top             =   1200
       Width           =   12615
       _ExtentX        =   22251
@@ -385,7 +384,6 @@ Begin VB.Form dialog_GradientEditor
       Height          =   4575
       Index           =   1
       Left            =   0
-      TabIndex        =   20
       Top             =   1200
       Width           =   12615
       _ExtentX        =   22251

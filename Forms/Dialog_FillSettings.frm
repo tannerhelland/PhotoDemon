@@ -8,6 +8,7 @@ Begin VB.Form dialog_FillSettings
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   12270
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form dialog_FillSettings
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -93,7 +95,6 @@ Begin VB.Form dialog_FillSettings
       Height          =   3600
       Index           =   0
       Left            =   120
-      TabIndex        =   3
       Top             =   4440
       Width           =   12015
       _ExtentX        =   21193
@@ -114,7 +115,6 @@ Begin VB.Form dialog_FillSettings
       Height          =   3600
       Index           =   3
       Left            =   120
-      TabIndex        =   6
       Top             =   4440
       Width           =   12015
       _ExtentX        =   21193
@@ -124,7 +124,6 @@ Begin VB.Form dialog_FillSettings
       Height          =   3600
       Index           =   2
       Left            =   120
-      TabIndex        =   5
       Top             =   4440
       Width           =   12015
       _ExtentX        =   21193
@@ -132,7 +131,7 @@ Begin VB.Form dialog_FillSettings
       Begin PhotoDemon.pdGradientSelector gsPrimary 
          Height          =   2535
          Left            =   0
-         TabIndex        =   13
+         TabIndex        =   3
          Top             =   0
          Width           =   6015
          _ExtentX        =   10610
@@ -142,7 +141,7 @@ Begin VB.Form dialog_FillSettings
       Begin PhotoDemon.pdButtonStrip btsGradientShape 
          Height          =   1035
          Left            =   6120
-         TabIndex        =   15
+         TabIndex        =   4
          Top             =   0
          Width           =   5895
          _ExtentX        =   10398
@@ -152,7 +151,7 @@ Begin VB.Form dialog_FillSettings
       Begin PhotoDemon.pdSlider sldGradientAngle 
          Height          =   705
          Left            =   6120
-         TabIndex        =   16
+         TabIndex        =   5
          Top             =   1080
          Width           =   5895
          _ExtentX        =   10398
@@ -166,7 +165,6 @@ Begin VB.Form dialog_FillSettings
       Height          =   3600
       Index           =   1
       Left            =   120
-      TabIndex        =   4
       Top             =   4440
       Width           =   12015
       _ExtentX        =   21193
@@ -174,7 +172,7 @@ Begin VB.Form dialog_FillSettings
       Begin PhotoDemon.pdListBoxOD lstFillPattern 
          Height          =   2535
          Left            =   0
-         TabIndex        =   14
+         TabIndex        =   6
          Top             =   0
          Width           =   5895
          _ExtentX        =   10398

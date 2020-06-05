@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdCheckBox 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   375
    ClientLeft      =   0

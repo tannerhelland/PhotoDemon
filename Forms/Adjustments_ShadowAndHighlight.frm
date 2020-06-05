@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormShadowHighlight 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Shadows and highlights"
@@ -7,6 +8,7 @@ Begin VB.Form FormShadowHighlight
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12120
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormShadowHighlight
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -56,7 +59,6 @@ Begin VB.Form FormShadowHighlight
       Height          =   4575
       Index           =   0
       Left            =   5880
-      TabIndex        =   4
       Top             =   120
       Width           =   6135
       _ExtentX        =   0
@@ -102,7 +104,6 @@ Begin VB.Form FormShadowHighlight
       Height          =   4575
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
       Top             =   120
       Width           =   6135
       _ExtentX        =   0
@@ -110,7 +111,7 @@ Begin VB.Form FormShadowHighlight
       Begin PhotoDemon.pdSlider sltShadowWidth 
          Height          =   705
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   4
          Top             =   360
          Width           =   5700
          _ExtentX        =   10054
@@ -152,7 +153,7 @@ Begin VB.Form FormShadowHighlight
       Begin PhotoDemon.pdSlider sltHighlightRadius 
          Height          =   705
          Left            =   240
-         TabIndex        =   10
+         TabIndex        =   5
          Top             =   3600
          Width           =   5700
          _ExtentX        =   10054

@@ -21,6 +21,7 @@ Begin VB.Form FormSplash
       Strikethrough   =   0   'False
    EndProperty
    FontTransparent =   0   'False
+   HasDC           =   0   'False
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -92,8 +93,8 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     
     'Load the logo DIB, and calculate an aspect ratio (important if high-DPI settings are in use)
     Dim origLogoWidth As Long, origLogoHeight As Long
-    origLogoWidth = FixDPI(779)
-    origLogoHeight = FixDPI(220)
+    origLogoWidth = Interface.FixDPI(779)
+    origLogoHeight = Interface.FixDPI(220)
     m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight, , , True)
     If m_dibsLoadedSuccessfully Then m_logoAspectRatio = CDbl(m_logoDIB.GetDIBWidth) / CDbl(m_logoDIB.GetDIBHeight)
     
@@ -121,7 +122,7 @@ Public Sub PrepareRestOfSplash()
         formHeight = captureRect.Bottom - captureRect.Top
         
         'Copy the screen background, shadow, and logo onto a single composite DIB
-        m_shadowDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / m_logoAspectRatio
+        m_shadowDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , Interface.FixDPI(1), Interface.FixDPI(1), formWidth, formWidth / m_logoAspectRatio
         m_logoDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , 0, 0, formWidth, formWidth / m_logoAspectRatio
         
         'Free all intermediate DIBs
@@ -134,9 +135,9 @@ Public Sub PrepareRestOfSplash()
         Dim pdLogoTop As Long, pdLogoBottom As Long, pdLogoRight As Long
         
         'FYI: the hard-coded values are for 96 DPI
-        pdLogoTop = FixDPI(60)
-        pdLogoBottom = FixDPI(125)
-        pdLogoRight = FixDPI(755)
+        pdLogoTop = Interface.FixDPI(60)
+        pdLogoBottom = Interface.FixDPI(125)
+        pdLogoRight = Interface.FixDPI(755)
         
         'Next, we need to prepare a font renderer for displaying the current program version
         Set m_versionFont = New pdFont
@@ -164,7 +165,7 @@ Public Sub PrepareRestOfSplash()
             m_versionFont.AttachToDC m_splashDIB.GetDIBDC
             versionWidth = m_versionFont.GetWidthOfString(versionString)
             versionHeight = m_versionFont.GetHeightOfString(versionString)
-            m_versionFont.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + FixDPI(8), versionString
+            m_versionFont.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + Interface.FixDPI(8), versionString
             m_versionFont.ReleaseFromDC
         End If
         
@@ -174,7 +175,7 @@ Public Sub PrepareRestOfSplash()
         GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Ensure the form has been painted at least once prior to display
-        FlipBackBufferToScreen
+        Me.Refresh
         
     Else
         PDDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
@@ -197,14 +198,14 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     
     'Draw the current progress, if relevant
     If (m_maxProgress > 0) And Me.Visible Then
-    
-        'Copy the splash DIB to overwrite any old drawing
-        GDI.BitBltWrapper Me.hDC, 0, 0, m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        
+        'Erase any previous rendering
+        GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Draw the progress line using GDI+
         Dim lineRadius As Long, lineY As Long
-        lineRadius = FixDPI(6)
-        lineY = m_splashDIB.GetDIBHeight - FixDPI(2) - lineRadius
+        lineRadius = Interface.FixDPI(6)
+        lineY = m_splashDIB.GetDIBHeight - Interface.FixDPI(2) - lineRadius
         
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         
@@ -219,7 +220,7 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         Set cSurface = Nothing
         
         'Manually refresh the form
-        FlipBackBufferToScreen
+        Me.Refresh
         
     End If
 
@@ -234,10 +235,6 @@ End Sub
 
 'Painting is easy - just flip the backbuffer to the screen and call it a day!
 Private Sub Form_Paint()
-    FlipBackBufferToScreen
-End Sub
-
-Private Sub FlipBackBufferToScreen()
     GDI.BitBltWrapper Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
 End Sub
 

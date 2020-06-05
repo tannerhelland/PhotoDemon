@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormRipple 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Ripple"
@@ -8,6 +8,7 @@ Begin VB.Form FormRipple
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12135
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormRipple
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -59,7 +61,6 @@ Begin VB.Form FormRipple
       Height          =   4335
       Index           =   0
       Left            =   5880
-      TabIndex        =   4
       Top             =   120
       Width           =   6135
       _ExtentX        =   0
@@ -165,7 +166,6 @@ Begin VB.Form FormRipple
       Height          =   4335
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
       Top             =   120
       Visible         =   0   'False
       Width           =   6135
@@ -189,7 +189,7 @@ Begin VB.Form FormRipple
       Begin PhotoDemon.pdSlider sltPhase 
          Height          =   705
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   4
          Top             =   2400
          Width           =   5895
          _ExtentX        =   10398
@@ -200,7 +200,7 @@ Begin VB.Form FormRipple
       Begin PhotoDemon.pdDropDown cboEdges 
          Height          =   735
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   5
          Top             =   3360
          Width           =   5895
          _ExtentX        =   10398

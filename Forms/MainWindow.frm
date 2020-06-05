@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormMain 
-   BackColor       =   &H80000010&
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    Caption         =   "PhotoDemon by Tanner Helland - www.photodemon.org"
    ClientHeight    =   11130
    ClientLeft      =   1290
@@ -17,6 +18,7 @@ Begin VB.Form FormMain
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "MainWindow.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual

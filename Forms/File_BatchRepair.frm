@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormBatchRepair 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Batch repair"
@@ -17,6 +18,7 @@ Begin VB.Form FormBatchRepair
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

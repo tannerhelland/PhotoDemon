@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormLensCorrect 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Correct existing distortion"
@@ -8,6 +8,7 @@ Begin VB.Form FormLensCorrect
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12090
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormLensCorrect
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -59,7 +61,6 @@ Begin VB.Form FormLensCorrect
       Height          =   4575
       Index           =   1
       Left            =   5880
-      TabIndex        =   4
       Top             =   1200
       Width           =   6135
       _ExtentX        =   10821
@@ -150,7 +151,7 @@ Begin VB.Form FormLensCorrect
       Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   3
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -164,7 +165,7 @@ Begin VB.Form FormLensCorrect
       Begin PhotoDemon.pdSlider sltYCenter 
          Height          =   405
          Left            =   3120
-         TabIndex        =   17
+         TabIndex        =   4
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -206,7 +207,6 @@ Begin VB.Form FormLensCorrect
       Height          =   4575
       Index           =   0
       Left            =   5880
-      TabIndex        =   3
       Top             =   1200
       Width           =   6135
       _ExtentX        =   10821

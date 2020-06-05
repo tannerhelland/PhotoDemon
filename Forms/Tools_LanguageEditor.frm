@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormLanguageEditor 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Language editor"
@@ -7,6 +8,7 @@ Begin VB.Form FormLanguageEditor
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   15360
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormLanguageEditor
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -79,7 +82,6 @@ Begin VB.Form FormLanguageEditor
       Height          =   7455
       Index           =   0
       Left            =   3480
-      TabIndex        =   6
       Top             =   720
       Width           =   11775
       _ExtentX        =   0
@@ -87,7 +89,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdListBox lstLanguages 
          Height          =   4575
          Left            =   840
-         TabIndex        =   23
+         TabIndex        =   6
          Top             =   1560
          Width           =   10695
          _ExtentX        =   18865
@@ -143,7 +145,6 @@ Begin VB.Form FormLanguageEditor
       Height          =   7455
       Index           =   1
       Left            =   3480
-      TabIndex        =   11
       Top             =   720
       Width           =   11775
       _ExtentX        =   0
@@ -353,7 +354,6 @@ Begin VB.Form FormLanguageEditor
       Height          =   7455
       Index           =   2
       Left            =   3480
-      TabIndex        =   8
       Top             =   720
       Width           =   11775
       _ExtentX        =   0
@@ -361,7 +361,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdListBox lstPhrases 
          Height          =   5175
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   8
          Top             =   360
          Width           =   4455
          _ExtentX        =   7858
@@ -370,7 +370,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdDropDown cboPhraseFilter 
          Height          =   375
          Left            =   240
-         TabIndex        =   21
+         TabIndex        =   11
          Top             =   6000
          Width           =   4455
          _ExtentX        =   7858

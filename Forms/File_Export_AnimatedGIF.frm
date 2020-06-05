@@ -8,6 +8,7 @@ Begin VB.Form dialog_ExportAnimatedGIF
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12060
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

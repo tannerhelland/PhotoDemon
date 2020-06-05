@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormScreenCapture 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Screenshot options"
@@ -8,6 +8,7 @@ Begin VB.Form FormScreenCapture
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13095
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormScreenCapture
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -29,7 +31,6 @@ Begin VB.Form FormScreenCapture
       Height          =   4335
       Index           =   1
       Left            =   120
-      TabIndex        =   5
       Top             =   1200
       Width           =   5895
       _ExtentX        =   0
@@ -37,7 +38,7 @@ Begin VB.Form FormScreenCapture
       Begin PhotoDemon.pdButton cmdResetList 
          Height          =   615
          Left            =   5175
-         TabIndex        =   8
+         TabIndex        =   3
          Top             =   3150
          Width           =   615
          _ExtentX        =   1085
@@ -57,7 +58,7 @@ Begin VB.Form FormScreenCapture
       Begin PhotoDemon.pdCheckBox chkChrome 
          Height          =   330
          Left            =   240
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   3240
          Width           =   4635
          _ExtentX        =   8176
@@ -84,7 +85,6 @@ Begin VB.Form FormScreenCapture
       Height          =   4335
       Index           =   0
       Left            =   120
-      TabIndex        =   3
       Top             =   1200
       Width           =   5895
       _ExtentX        =   0

@@ -8,6 +8,7 @@ Begin VB.Form dialog_OutlineSettings
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   12660
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form dialog_OutlineSettings
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

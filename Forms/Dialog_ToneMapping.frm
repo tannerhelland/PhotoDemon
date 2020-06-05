@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_ToneMapping 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " HDR image identified"
@@ -8,6 +8,7 @@ Begin VB.Form dialog_ToneMapping
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   11655
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form dialog_ToneMapping
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -88,7 +90,6 @@ Begin VB.Form dialog_ToneMapping
       Height          =   3135
       Index           =   1
       Left            =   4800
-      TabIndex        =   12
       Top             =   2280
       Visible         =   0   'False
       Width           =   6855
@@ -98,7 +99,7 @@ Begin VB.Form dialog_ToneMapping
          Height          =   690
          Index           =   2
          Left            =   120
-         TabIndex        =   13
+         TabIndex        =   3
          Top             =   0
          Width           =   6615
          _ExtentX        =   11668
@@ -116,7 +117,7 @@ Begin VB.Form dialog_ToneMapping
          Height          =   690
          Index           =   1
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   4
          Top             =   840
          Width           =   6615
          _ExtentX        =   11668
@@ -133,7 +134,7 @@ Begin VB.Form dialog_ToneMapping
       Begin PhotoDemon.pdSlider sltWhitepoint 
          Height          =   690
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   6
          Top             =   1680
          Width           =   6615
          _ExtentX        =   11668
@@ -152,7 +153,6 @@ Begin VB.Form dialog_ToneMapping
       Height          =   3135
       Index           =   0
       Left            =   4800
-      TabIndex        =   3
       Top             =   2280
       Width           =   6855
       _ExtentX        =   12091
@@ -160,7 +160,7 @@ Begin VB.Form dialog_ToneMapping
       Begin PhotoDemon.pdButtonStrip btsNormalize 
          Height          =   975
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   12
          Top             =   840
          Width           =   6615
          _ExtentX        =   11456
@@ -191,7 +191,6 @@ Begin VB.Form dialog_ToneMapping
       Height          =   3135
       Index           =   2
       Left            =   4800
-      TabIndex        =   6
       Top             =   2280
       Visible         =   0   'False
       Width           =   6855
@@ -235,7 +234,6 @@ Begin VB.Form dialog_ToneMapping
       Height          =   3135
       Index           =   3
       Left            =   4800
-      TabIndex        =   4
       Top             =   2280
       Visible         =   0   'False
       Width           =   6855

@@ -18,7 +18,12 @@ Begin VB.Form layerpanel_Layers
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Layerpanel_Layers.frx":0000
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   489
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   259
@@ -27,7 +32,7 @@ Begin VB.Form layerpanel_Layers
    Begin PhotoDemon.pdLayerList lstLayers 
       Height          =   2295
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   4
       Top             =   1320
       Width           =   3255
       _ExtentX        =   5741
@@ -36,7 +41,6 @@ Begin VB.Form layerpanel_Layers
    Begin PhotoDemon.pdContainer ctlGroupLayerButtons 
       Height          =   525
       Left            =   0
-      TabIndex        =   4
       Top             =   6720
       Width           =   3735
       _ExtentX        =   6588

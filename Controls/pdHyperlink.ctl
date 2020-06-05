@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdHyperlink 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    CanGetFocus     =   0   'False
    ClientHeight    =   690

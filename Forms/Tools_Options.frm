@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormOptions 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PhotoDemon Options"
@@ -48,7 +49,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   6
       Left            =   3000
-      TabIndex        =   6
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -56,7 +56,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
          Height          =   975
          Left            =   0
-         TabIndex        =   43
+         TabIndex        =   0
          Top             =   1950
          Width           =   8175
          _ExtentX        =   14420
@@ -186,7 +186,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButtonStrip btsDebug 
          Height          =   975
          Left            =   0
-         TabIndex        =   44
+         TabIndex        =   3
          Top             =   780
          Width           =   8175
          _ExtentX        =   14420
@@ -198,7 +198,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   5
       Left            =   3000
-      TabIndex        =   4
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -266,7 +265,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   0
       Left            =   3000
-      TabIndex        =   0
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -344,7 +342,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   810
          Left            =   180
-         TabIndex        =   39
+         TabIndex        =   4
          Top             =   4530
          Width           =   5895
          _ExtentX        =   10398
@@ -355,7 +353,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   795
          Left            =   180
-         TabIndex        =   40
+         TabIndex        =   6
          Top             =   3660
          Width           =   5895
          _ExtentX        =   10398
@@ -366,7 +364,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdColorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   41
+         TabIndex        =   7
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -376,7 +374,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdColorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   42
+         TabIndex        =   8
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -400,7 +398,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   4
       Left            =   3000
-      TabIndex        =   7
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -409,7 +406,7 @@ Begin VB.Form FormOptions
          Height          =   315
          Index           =   0
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   13
          Top             =   4080
          Width           =   7935
          _ExtentX        =   13996
@@ -520,7 +517,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   2
       Left            =   3000
-      TabIndex        =   13
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -620,7 +616,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   1
       Left            =   3000
-      TabIndex        =   8
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631
@@ -728,7 +723,6 @@ Begin VB.Form FormOptions
       Height          =   6720
       Index           =   3
       Left            =   3000
-      TabIndex        =   3
       Top             =   120
       Width           =   8295
       _ExtentX        =   14631

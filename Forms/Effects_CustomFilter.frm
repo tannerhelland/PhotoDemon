@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormCustomFilter 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom filter"
@@ -7,6 +8,7 @@ Begin VB.Form FormCustomFilter
    ClientLeft      =   150
    ClientTop       =   120
    ClientWidth     =   12735
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormCustomFilter
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

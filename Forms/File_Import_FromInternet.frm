@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormInternetImport 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Download image"
@@ -7,6 +8,7 @@ Begin VB.Form FormInternetImport
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10050
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormInternetImport
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormAbout 
-   AutoRedraw      =   -1  'True
-   BackColor       =   &H00FFFFFF&
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
    ClientHeight    =   7980

@@ -8,6 +8,7 @@ Begin VB.Form FormThemeEditor
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13260
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormThemeEditor
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

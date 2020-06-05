@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl pdFxPreviewCtl 
    AccessKeys      =   "T"
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   5685
    ClientLeft      =   0

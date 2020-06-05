@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormMetadata 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Edit metadata"
@@ -8,6 +8,7 @@ Begin VB.Form FormMetadata
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   14190
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormMetadata
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -102,7 +104,7 @@ Begin VB.Form FormMetadata
       Height          =   630
       Index           =   2
       Left            =   1560
-      TabIndex        =   17
+      TabIndex        =   4
       Top             =   6600
       Width           =   630
       _ExtentX        =   1111
@@ -113,7 +115,6 @@ Begin VB.Form FormMetadata
       Height          =   6015
       Index           =   1
       Left            =   8040
-      TabIndex        =   5
       Top             =   1200
       Visible         =   0   'False
       Width           =   6090
@@ -202,7 +203,6 @@ Begin VB.Form FormMetadata
       Height          =   6015
       Index           =   0
       Left            =   8040
-      TabIndex        =   4
       Top             =   1200
       Width           =   6090
       _ExtentX        =   0
@@ -295,7 +295,7 @@ Begin VB.Form FormMetadata
          Height          =   630
          Index           =   2
          Left            =   1440
-         TabIndex        =   16
+         TabIndex        =   5
          Top             =   4560
          Width           =   630
          _ExtentX        =   1111

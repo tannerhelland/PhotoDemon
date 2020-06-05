@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormColorTemp 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color temperature"
@@ -7,6 +8,7 @@ Begin VB.Form FormColorTemp
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12330
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormColorTemp
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -56,7 +59,6 @@ Begin VB.Form FormColorTemp
       Height          =   4455
       Index           =   0
       Left            =   5880
-      TabIndex        =   3
       Top             =   1200
       Width           =   6255
       _ExtentX        =   11033
@@ -64,7 +66,7 @@ Begin VB.Form FormColorTemp
       Begin PhotoDemon.pdSlider sldTempBasic 
          Height          =   705
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   3
          Top             =   120
          Width           =   6135
          _ExtentX        =   10821
@@ -108,7 +110,6 @@ Begin VB.Form FormColorTemp
       Height          =   4455
       Index           =   1
       Left            =   5880
-      TabIndex        =   4
       Top             =   1200
       Width           =   6255
       _ExtentX        =   11033
@@ -131,7 +132,7 @@ Begin VB.Form FormColorTemp
       Begin PhotoDemon.pdSlider sltTemperature 
          Height          =   705
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   4
          Top             =   120
          Width           =   6135
          _ExtentX        =   10821

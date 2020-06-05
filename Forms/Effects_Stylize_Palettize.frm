@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormPalettize 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Palettize"
@@ -7,6 +8,7 @@ Begin VB.Form FormPalettize
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   12315
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormPalettize
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -455,8 +458,8 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     End If
     
     'Only our internal RGBA quantizer supports Lab color matching
-    Dim useLAB As Boolean
-    useLAB = cParams.GetBool("use-lab-color", False)
+    Dim useLab As Boolean
+    useLab = cParams.GetBool("use-lab-color", False)
     
     Dim paletteSize As Long
     paletteSize = cParams.GetLong("palettesize", 256)
@@ -473,7 +476,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     'This is a weird adjustment, but... Lab color-matching is way more sensitive
     ' to the broad-spectrum dithering caused by ordered dithers.  As such, we need
     ' to ramp the strength waaaay down.
-    If (useLAB And useRGBAQuantizer And ((ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8))) Then
+    If (useLab And useRGBAQuantizer And ((ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8))) Then
         ditherAmount = ditherAmount * 0.5
     End If
     
@@ -529,7 +532,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
             If useRGBAQuantizer Then
-                If useLAB Then
+                If useLab Then
                     Palettes.ApplyPaletteToImage_IncAlpha_KDTree_Lab workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
                 Else
                     Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
@@ -539,7 +542,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
             End If
         Else
             If useRGBAQuantizer Then
-                If useLAB Then
+                If useLab Then
                     Palettes.ApplyPaletteToImage_Dithered_IncAlpha_Lab workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
                 Else
                     Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight

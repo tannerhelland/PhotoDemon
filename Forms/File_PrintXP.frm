@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormPrint 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Print"
@@ -8,6 +9,7 @@ Begin VB.Form FormPrint
    ClientTop       =   270
    ClientWidth     =   8745
    ControlBox      =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +19,7 @@ Begin VB.Form FormPrint
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

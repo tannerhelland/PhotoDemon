@@ -7,6 +7,7 @@ Begin VB.Form dialog_ExportTIFF
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   13095
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

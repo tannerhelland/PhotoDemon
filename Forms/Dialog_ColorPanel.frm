@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_ColorPanel 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color panel settings"
@@ -9,6 +8,7 @@ Begin VB.Form dialog_ColorPanel
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9045
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,6 +18,7 @@ Begin VB.Form dialog_ColorPanel
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -49,7 +50,6 @@ Begin VB.Form dialog_ColorPanel
       Height          =   2055
       Index           =   1
       Left            =   120
-      TabIndex        =   3
       Top             =   1320
       Width           =   8775
       _ExtentX        =   15478
@@ -57,7 +57,7 @@ Begin VB.Form dialog_ColorPanel
       Begin PhotoDemon.pdDropDown cboPalettes 
          Height          =   735
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   2
          Top             =   960
          Width           =   8655
          _ExtentX        =   15266
@@ -68,7 +68,7 @@ Begin VB.Form dialog_ColorPanel
       Begin PhotoDemon.pdButton cmdPaletteChoose 
          Height          =   375
          Left            =   8280
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   330
          Width           =   480
          _ExtentX        =   847
@@ -99,7 +99,6 @@ Begin VB.Form dialog_ColorPanel
       Height          =   1335
       Index           =   0
       Left            =   120
-      TabIndex        =   2
       Top             =   1320
       Width           =   8775
       _ExtentX        =   15478

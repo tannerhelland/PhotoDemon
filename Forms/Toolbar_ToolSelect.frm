@@ -20,9 +20,12 @@ Begin VB.Form toolbar_Toolbox
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolbar_ToolSelect.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   654
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   156

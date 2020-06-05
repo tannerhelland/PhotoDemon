@@ -20,9 +20,12 @@ Begin VB.Form toolbar_Layers
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolbar_Layers.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   483
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
@@ -32,7 +35,6 @@ Begin VB.Form toolbar_Layers
       Height          =   615
       Index           =   0
       Left            =   240
-      TabIndex        =   3
       Top             =   3840
       Width           =   2535
       _ExtentX        =   4471
@@ -78,7 +80,6 @@ Begin VB.Form toolbar_Layers
       Height          =   615
       Index           =   1
       Left            =   240
-      TabIndex        =   4
       Top             =   4560
       Width           =   2535
       _ExtentX        =   4471
@@ -88,7 +89,6 @@ Begin VB.Form toolbar_Layers
       Height          =   615
       Index           =   2
       Left            =   240
-      TabIndex        =   5
       Top             =   5280
       Width           =   2535
       _ExtentX        =   4471
@@ -98,7 +98,7 @@ Begin VB.Form toolbar_Layers
       Height          =   270
       Index           =   3
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1440
       Width           =   3495
       _ExtentX        =   6165
@@ -110,7 +110,6 @@ Begin VB.Form toolbar_Layers
       Height          =   615
       Index           =   3
       Left            =   240
-      TabIndex        =   7
       Top             =   6000
       Width           =   2535
       _ExtentX        =   4471

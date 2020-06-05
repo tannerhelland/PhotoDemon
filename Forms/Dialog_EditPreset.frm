@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form dialog_AddPreset 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Saved presets"
@@ -7,6 +8,7 @@ Begin VB.Form dialog_AddPreset
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   6735
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form dialog_AddPreset
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -49,7 +52,6 @@ Begin VB.Form dialog_AddPreset
       Height          =   2535
       Index           =   1
       Left            =   120
-      TabIndex        =   4
       Top             =   1080
       Width           =   6495
       _ExtentX        =   11456
@@ -58,7 +60,7 @@ Begin VB.Form dialog_AddPreset
          Height          =   615
          Index           =   0
          Left            =   240
-         TabIndex        =   7
+         TabIndex        =   2
          Top             =   1800
          Width           =   945
          _ExtentX        =   1667
@@ -89,7 +91,7 @@ Begin VB.Form dialog_AddPreset
          Height          =   615
          Index           =   1
          Left            =   1305
-         TabIndex        =   8
+         TabIndex        =   4
          Top             =   1800
          Width           =   945
          _ExtentX        =   1667
@@ -100,7 +102,6 @@ Begin VB.Form dialog_AddPreset
       Height          =   2535
       Index           =   0
       Left            =   120
-      TabIndex        =   2
       Top             =   1080
       Width           =   6495
       _ExtentX        =   11456

@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl pdButtonStripVertical 
-   BackColor       =   &H00FFFFFF&
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    ClientHeight    =   765
    ClientLeft      =   0
    ClientTop       =   0

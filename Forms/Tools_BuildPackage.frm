@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormPackage 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Create standalone pdPackage"
@@ -7,6 +8,7 @@ Begin VB.Form FormPackage
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   11295
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdNavigator 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   2370
    ClientLeft      =   0
@@ -23,7 +24,6 @@ Begin VB.UserControl pdNavigator
    Begin PhotoDemon.pdContainer pnlAnimation 
       Height          =   375
       Left            =   0
-      TabIndex        =   1
       Top             =   1560
       Visible         =   0   'False
       Width           =   4815
@@ -56,7 +56,7 @@ Begin VB.UserControl pdNavigator
       Begin PhotoDemon.pdSliderStandalone sldFrame 
          Height          =   375
          Left            =   960
-         TabIndex        =   4
+         TabIndex        =   1
          Top             =   0
          Width           =   3855
          _ExtentX        =   6800

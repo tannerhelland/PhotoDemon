@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormKaleidoscope 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Kaleidoscope"
@@ -8,6 +8,7 @@ Begin VB.Form FormKaleidoscope
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12135
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormKaleidoscope
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -59,7 +61,6 @@ Begin VB.Form FormKaleidoscope
       Height          =   3495
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
       Top             =   360
       Visible         =   0   'False
       Width           =   6135
@@ -80,7 +81,7 @@ Begin VB.Form FormKaleidoscope
       Begin PhotoDemon.pdSlider sltRadius 
          Height          =   705
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   4
          Top             =   1200
          Width           =   5895
          _ExtentX        =   10398
@@ -95,7 +96,7 @@ Begin VB.Form FormKaleidoscope
       Begin PhotoDemon.pdButtonStrip btsQuality 
          Height          =   1080
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   5
          Top             =   2160
          Width           =   5715
          _ExtentX        =   10081
@@ -107,7 +108,6 @@ Begin VB.Form FormKaleidoscope
       Height          =   3495
       Index           =   0
       Left            =   5880
-      TabIndex        =   4
       Top             =   360
       Width           =   6135
       _ExtentX        =   0

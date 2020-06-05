@@ -2,6 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdCommandBarMini 
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    ClientHeight    =   750
    ClientLeft      =   0
    ClientTop       =   0

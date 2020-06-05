@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormDonut 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Donut"
@@ -8,6 +8,7 @@ Begin VB.Form FormDonut
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12090
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormDonut
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -59,7 +61,6 @@ Begin VB.Form FormDonut
       Height          =   4335
       Index           =   0
       Left            =   5880
-      TabIndex        =   2
       Top             =   120
       Width           =   6135
       _ExtentX        =   0
@@ -125,7 +126,6 @@ Begin VB.Form FormDonut
       Height          =   4335
       Index           =   1
       Left            =   5880
-      TabIndex        =   7
       Top             =   120
       Width           =   6135
       _ExtentX        =   0
@@ -133,7 +133,7 @@ Begin VB.Form FormDonut
       Begin PhotoDemon.pdDropDown cboEdges 
          Height          =   375
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   2
          Top             =   3000
          Width           =   5655
          _ExtentX        =   9975
@@ -170,7 +170,7 @@ Begin VB.Form FormDonut
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   705
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   7
          Top             =   1500
          Width           =   5895
          _ExtentX        =   10398

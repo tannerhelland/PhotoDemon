@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormFragment 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fragment"
@@ -8,6 +8,7 @@ Begin VB.Form FormFragment
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12030
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormFragment
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

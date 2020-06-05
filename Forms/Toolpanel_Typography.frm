@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_TextAdvanced
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18435
+   ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,9 +19,12 @@ Begin VB.Form toolpanel_TextAdvanced
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolpanel_Typography.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   100
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1229
@@ -29,7 +33,6 @@ Begin VB.Form toolpanel_TextAdvanced
    Begin PhotoDemon.pdContainer ctlGroupConvertLayer 
       Height          =   1335
       Left            =   0
-      TabIndex        =   0
       Top             =   840
       Visible         =   0   'False
       Width           =   1455
@@ -72,7 +75,6 @@ Begin VB.Form toolpanel_TextAdvanced
       Height          =   1500
       Index           =   0
       Left            =   2280
-      TabIndex        =   2
       Top             =   0
       Width           =   10980
       _ExtentX        =   19368
@@ -93,7 +95,6 @@ Begin VB.Form toolpanel_TextAdvanced
       Height          =   1500
       Index           =   1
       Left            =   2280
-      TabIndex        =   3
       Top             =   0
       Width           =   14580
       _ExtentX        =   25718
@@ -111,7 +112,6 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   1500
          Index           =   0
          Left            =   2280
-         TabIndex        =   6
          Top             =   0
          Width           =   10935
          _ExtentX        =   0
@@ -129,7 +129,6 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   1500
             Index           =   0
             Left            =   1920
-            TabIndex        =   8
             Top             =   60
             Visible         =   0   'False
             Width           =   10935
@@ -138,7 +137,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Begin PhotoDemon.pdSlider sldTextFontSize 
                Height          =   375
                Left            =   1200
-               TabIndex        =   46
+               TabIndex        =   0
                Top             =   435
                Width           =   2655
                _ExtentX        =   4683
@@ -277,7 +276,6 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   1500
             Index           =   1
             Left            =   1920
-            TabIndex        =   16
             Top             =   60
             Visible         =   0   'False
             Width           =   10935
@@ -441,7 +439,6 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   1500
          Index           =   3
          Left            =   2280
-         TabIndex        =   24
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -452,7 +449,6 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   1500
          Index           =   2
          Left            =   2280
-         TabIndex        =   25
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -471,7 +467,6 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   1500
             Index           =   1
             Left            =   1920
-            TabIndex        =   27
             Top             =   0
             Visible         =   0   'False
             Width           =   10935
@@ -548,7 +543,6 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   1500
             Index           =   0
             Left            =   1920
-            TabIndex        =   32
             Top             =   0
             Visible         =   0   'False
             Width           =   10935
@@ -609,7 +603,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Begin PhotoDemon.pdCheckBox chkOutlineText 
                Height          =   330
                Left            =   3480
-               TabIndex        =   36
+               TabIndex        =   2
                Top             =   60
                Width           =   3255
                _ExtentX        =   5741
@@ -623,7 +617,6 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   1500
          Index           =   1
          Left            =   2280
-         TabIndex        =   37
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -632,7 +625,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Begin PhotoDemon.pdSpinner tudLineSpacing 
             Height          =   345
             Left            =   5160
-            TabIndex        =   38
+            TabIndex        =   3
             Top             =   1020
             Width           =   1935
             _ExtentX        =   3413
@@ -644,7 +637,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   345
             Index           =   0
             Left            =   5160
-            TabIndex        =   39
+            TabIndex        =   6
             Top             =   90
             Width           =   1380
             _ExtentX        =   2434
@@ -655,7 +648,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Begin PhotoDemon.pdButtonStrip btsHAlignment 
             Height          =   435
             Left            =   1320
-            TabIndex        =   40
+            TabIndex        =   8
             Top             =   60
             Width           =   1455
             _ExtentX        =   2566
@@ -677,7 +670,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Begin PhotoDemon.pdButtonStrip btsVAlignment 
             Height          =   435
             Left            =   1320
-            TabIndex        =   41
+            TabIndex        =   16
             Top             =   510
             Width           =   1455
             _ExtentX        =   2566
@@ -699,7 +692,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Begin PhotoDemon.pdDropDown cboWordWrap 
             Height          =   375
             Left            =   1320
-            TabIndex        =   42
+            TabIndex        =   24
             Top             =   1020
             Width           =   2070
             _ExtentX        =   3651
@@ -721,7 +714,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   345
             Index           =   1
             Left            =   6540
-            TabIndex        =   43
+            TabIndex        =   25
             Top             =   90
             Width           =   1380
             _ExtentX        =   2434
@@ -733,7 +726,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   345
             Index           =   2
             Left            =   5160
-            TabIndex        =   44
+            TabIndex        =   27
             Top             =   570
             Width           =   1380
             _ExtentX        =   2434
@@ -745,7 +738,7 @@ Begin VB.Form toolpanel_TextAdvanced
             Height          =   345
             Index           =   3
             Left            =   6540
-            TabIndex        =   45
+            TabIndex        =   32
             Top             =   570
             Width           =   1380
             _ExtentX        =   2434

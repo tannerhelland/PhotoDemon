@@ -7,7 +7,7 @@ Begin VB.Form toolpanel_TextBasic
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18465
-   ClipControls    =   0   'False
+   ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -19,9 +19,12 @@ Begin VB.Form toolpanel_TextBasic
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Toolpanel_TextBasic.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
+   Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   100
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1231
@@ -39,7 +42,6 @@ Begin VB.Form toolpanel_TextBasic
    Begin PhotoDemon.pdContainer picConvertLayer 
       Height          =   1335
       Left            =   17280
-      TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
       Width           =   1455
@@ -73,7 +75,6 @@ Begin VB.Form toolpanel_TextBasic
       Height          =   1500
       Index           =   1
       Left            =   2280
-      TabIndex        =   3
       Top             =   0
       Width           =   10980
       _ExtentX        =   18521
@@ -81,7 +82,7 @@ Begin VB.Form toolpanel_TextBasic
       Begin PhotoDemon.pdSlider sldTextFontSize 
          Height          =   375
          Left            =   1320
-         TabIndex        =   15
+         TabIndex        =   0
          Top             =   465
          Width           =   2415
          _ExtentX        =   4260
@@ -265,7 +266,7 @@ Begin VB.Form toolpanel_TextBasic
       Begin PhotoDemon.pdButtonStrip btsVAlignment 
          Height          =   435
          Left            =   9360
-         TabIndex        =   13
+         TabIndex        =   2
          Top             =   450
          Width           =   1455
          _ExtentX        =   2566
@@ -275,7 +276,7 @@ Begin VB.Form toolpanel_TextBasic
       Begin PhotoDemon.pdDropDownFont cboTextFontFace 
          Height          =   375
          Left            =   1320
-         TabIndex        =   14
+         TabIndex        =   3
          Top             =   45
          Width           =   2430
          _ExtentX        =   4286
@@ -286,7 +287,6 @@ Begin VB.Form toolpanel_TextBasic
       Height          =   1500
       Index           =   0
       Left            =   2280
-      TabIndex        =   2
       Top             =   0
       Width           =   10980
       _ExtentX        =   18521

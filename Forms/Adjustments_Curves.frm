@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormCurves 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Curves"
@@ -8,6 +8,7 @@ Begin VB.Form FormCurves
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   13095
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormCurves
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -68,7 +70,6 @@ Begin VB.Form FormCurves
       Height          =   6150
       Index           =   0
       Left            =   5880
-      TabIndex        =   4
       Top             =   60
       Width           =   7215
       _ExtentX        =   0
@@ -103,7 +104,6 @@ Begin VB.Form FormCurves
       Height          =   6150
       Index           =   1
       Left            =   5880
-      TabIndex        =   5
       Top             =   60
       Width           =   7215
       _ExtentX        =   0
@@ -111,7 +111,7 @@ Begin VB.Form FormCurves
       Begin PhotoDemon.pdButtonStrip btsHistogram 
          Height          =   1080
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   4
          Top             =   840
          Width           =   6795
          _ExtentX        =   11986
@@ -131,7 +131,7 @@ Begin VB.Form FormCurves
       Begin PhotoDemon.pdButtonStrip btsDiagonalLine 
          Height          =   1080
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   5
          Top             =   3420
          Width           =   6795
          _ExtentX        =   11986

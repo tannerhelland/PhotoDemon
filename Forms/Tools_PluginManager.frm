@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormPluginManager 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Plugin manager"
@@ -7,6 +8,7 @@ Begin VB.Form FormPluginManager
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10815
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +18,7 @@ Begin VB.Form FormPluginManager
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -26,7 +29,7 @@ Begin VB.Form FormPluginManager
    Begin PhotoDemon.pdListBox lstPlugins 
       Height          =   5295
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   240
       Width           =   2775
       _ExtentX        =   4895
@@ -56,7 +59,6 @@ Begin VB.Form FormPluginManager
       Height          =   5895
       Index           =   1
       Left            =   3000
-      TabIndex        =   3
       Top             =   240
       Width           =   7695
       _ExtentX        =   0
@@ -64,7 +66,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.pdButtonStrip btsDisablePlugin 
          Height          =   1095
          Left            =   360
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   2520
          Width           =   7095
          _ExtentX        =   12515
@@ -187,7 +189,6 @@ Begin VB.Form FormPluginManager
       Height          =   5895
       Index           =   0
       Left            =   3000
-      TabIndex        =   0
       Top             =   240
       Width           =   7695
       _ExtentX        =   0

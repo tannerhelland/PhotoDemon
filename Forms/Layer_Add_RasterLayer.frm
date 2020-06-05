@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormNewLayer 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Add new layer"
@@ -8,6 +8,7 @@ Begin VB.Form FormNewLayer
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9630
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form FormNewLayer
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
