@@ -2571,8 +2571,8 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     'If we have been asked to use a non-ordered dithering method, apply it now
     If (ditherMethod >= PDDM_SingleNeighbor) Then
     
-        'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
-        ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
+        'First, we need a dithering table the same size as the image.  Note that we use floats
+        ' to prevent rounding errors.
         Dim dErrors() As Single
         ReDim dErrors(0 To finalX, 0 To finalY) As Single
         If (dDivisor <> 0!) Then dDivisor = 1! / dDivisor
@@ -2588,49 +2588,60 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
             'Retrieve current alpha
             a = imageData(xQuick + 3, y)
             
-            'Add the value of the error at this location
-            newA = a + dErrors(x, y)
-            
-            'Check our modified luminance value against the threshold, and set new values accordingly
-            If (newA >= alphaCutoff) Then
-                errorVal = newA - 255
-                imageData(xQuick + 3, y) = 255
-            Else
-                errorVal = newA
-                imageData(xQuick + 3, y) = 0
+            'Now, for a shortcut: if this pixel is opaque, we want to keep it opaque.
+            ' Similarly, if this pixel is transparent, we want to keep it transparent.
+            ' Only semi-transparent regions (like drop-shadows) should get dithered.
+            If (a < 255) Then
+                If (a > 0) Then
+                    
+                    'Add the value of the error at this location
+                    newA = a + dErrors(x, y)
+                    
+                    'Check our modified luminance value against the threshold, and set new values accordingly
+                    If (newA >= alphaCutoff) Then
+                        errorVal = newA - 255
+                        imageData(xQuick + 3, y) = 255
+                    Else
+                        errorVal = newA
+                        imageData(xQuick + 3, y) = 0
+                    End If
+                    
+                    'If there is an error, spread it
+                    If (errorVal <> 0) Then
+                        
+                        errorVal = errorVal * ditherAmount
+                        
+                        'Now, spread that error across the relevant pixels according to the dither table formula
+                        For i = xLeft To xRight
+                        For j = 0 To yDown
+                        
+                            'First, ignore already processed pixels
+                            If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
+                            
+                            'Second, ignore pixels that have a zero in the dither table
+                            If (ditherTable(i, j) = 0) Then GoTo NextDitheredPixel
+                            
+                            xQuickInner = x + i
+                            yQuick = y + j
+                            
+                            'Next, ignore target pixels that are off the image boundary
+                            If (xQuickInner < initX) Then GoTo NextDitheredPixel
+                            If (xQuickInner > finalX) Then GoTo NextDitheredPixel
+                            If (yQuick > finalY) Then GoTo NextDitheredPixel
+                            
+                            'If we've made it all the way here, we are able to actually spread the error to this location
+                            dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(ditherTable(i, j)) * dDivisor))
+                        
+NextDitheredPixel:             Next j
+                        Next i
+                    
+                    End If
+                
+                '/end a > 0
+                End If
+            '/end a < 255
             End If
-            
-            'If there is an error, spread it
-            If (errorVal <> 0) Then
-                
-                errorVal = errorVal * ditherAmount
-                
-                'Now, spread that error across the relevant pixels according to the dither table formula
-                For i = xLeft To xRight
-                For j = 0 To yDown
-                
-                    'First, ignore already processed pixels
-                    If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                     
-                    'Second, ignore pixels that have a zero in the dither table
-                    If (ditherTable(i, j) = 0) Then GoTo NextDitheredPixel
-                    
-                    xQuickInner = x + i
-                    yQuick = y + j
-                    
-                    'Next, ignore target pixels that are off the image boundary
-                    If (xQuickInner < initX) Then GoTo NextDitheredPixel
-                    If (xQuickInner > finalX) Then GoTo NextDitheredPixel
-                    If (yQuick > finalY) Then GoTo NextDitheredPixel
-                    
-                    'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(ditherTable(i, j)) * dDivisor))
-                
-NextDitheredPixel:     Next j
-                Next i
-            
-            End If
-            
         Next x
             If (Not suppressMessages) Then
                 If (y And progBarCheck) = 0 Then
