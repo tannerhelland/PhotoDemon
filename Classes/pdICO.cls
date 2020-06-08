@@ -425,7 +425,7 @@ NextFrame:
         ' frame's pixel + mask (or PNG data), so we need to calculate all frames in advance.
         Dim tmpDIB As pdDIB
         For i = 0 To numFrames - 1
-            CreateFrameForExport outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), tmpDIB
+            CreateFrameForExport outFrames(i), srcPDImage.GetLayerByIndex(outFrames(i).ico_ExportLayerIndex), srcPDImage, tmpDIB
         Next i
         
         '6-byte header + (numFrames) * 16-byte frame header = initial offset into bitmap data
@@ -504,11 +504,68 @@ End Function
 '
 'NOTE: at present, this function only produces square thumbnails (by design).  Odd sizes may be accomodated
 ' in the future.
-Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef tmpDIB As pdDIB) As Boolean
+Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLayer As pdLayer, ByRef srcPDImage As pdImage, ByRef tmpDIB As pdDIB) As Boolean
     
     'Before doing anything else, we need to generate a reference 32-bpp image of the source layer
     If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-    srcLayer.RequestThumbnail tmpDIB, PDMath.Max2Int(srcIcoData.ico_ExportWidth, srcIcoData.ico_ExportHeight), True
+    
+    'For now, PD forces icon width and height to be identical.  This could be changed in the future,
+    ' but for now, I prefer to write icons with a minimal chance of incompatibility.
+    Dim icoSizeEqual As Long
+    icoSizeEqual = PDMath.Max2Int(srcIcoData.ico_ExportWidth, srcIcoData.ico_ExportHeight)
+    
+    'Next, a quick note - PD's layer objects have an internal thumbnail renderer that produces
+    ' nice layer thumbnails for PD's UI (like the layer toolbox), a la:
+    ' srcLayer.RequestThumbnail tmpDIB, icoSizeEqual, True
+    ' Unfortunately, that internal function uses a quality parameter controllable by the user
+    ' (via Tools > Settings), which deliberately keeps the source layerat its original
+    ' orientation, instead of modifying it by any/all non-destructive transforms.  As such,
+    ' it cannot be used here.  We must manually produce a highest-possible-quality version
+    ' of the image at the requested size.  The complexity of this task depends on how severely
+    ' the source layer has been modified.
+    Dim referenceDIB As pdDIB
+    If srcLayer.AffineTransformsActive Then
+    
+        'We need to produce an affine-transformed version of this layer as our reference DIB.
+        ' (Note that layer offsets don't matter; we will use the entire source layer as-is.)
+        Dim irrelevantX As Long, irrelevantY As Long
+        srcLayer.GetAffineTransformedDIB referenceDIB, irrelevantX, irrelevantY, srcPDImage.Width, srcPDImage.Height
+    
+    'The source layer does *not* have any active affine transforms.  This makes it much faster
+    ' (and simpler!) to produce an icon-sized DIB, because all our coordinate math involves
+    ' rectangles.
+    Else
+        Set referenceDIB = srcLayer.layerDIB
+    End If
+    
+    'Perform a quick shortcut check.  If the reference DIB is identical in size to the requested
+    ' icon frame size, simply copy over the reference as-is (instead of attempting to resize it)
+    If (icoSizeEqual = referenceDIB.GetDIBWidth) And (icoSizeEqual = referenceDIB.GetDIBHeight) Then
+        tmpDIB.CreateFromExistingDIB referenceDIB
+        
+    'If the sizes don't match, we need to perform a manual resize
+    Else
+        
+        'Create the icon
+        tmpDIB.CreateBlank icoSizeEqual, icoSizeEqual, 32, 0, 0
+        
+        'Figure out where to position the DIB when we draw it
+        Dim newWidth As Long, newHeight As Long
+        PDMath.ConvertAspectRatio referenceDIB.GetDIBWidth, referenceDIB.GetDIBHeight, icoSizeEqual, icoSizeEqual, newWidth, newHeight, True
+        
+        'Render the source layer into the destination thumbnail at maximum quality
+        Dim dstX As Long, dstY As Long
+        dstX = (icoSizeEqual - newWidth) \ 2
+        dstY = (icoSizeEqual - newHeight) \ 2
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstX, dstY, newWidth, newHeight, referenceDIB, 0, 0, referenceDIB.GetDIBWidth, referenceDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, dstCopyIsOkay:=True
+        
+    End If
+    
+    'The reference DIB is no longer required.  It may be large (especially if we had to calculate
+    ' affine transforms to produce it) so free it immediately
+    Set referenceDIB = Nothing
+    
+    'With the icon generated, we now need to remove alpha premultiplication.
     If tmpDIB.GetAlphaPremultiplication() Then tmpDIB.SetAlphaPremultiplication False
     
     'PD uses top-down DIBs internally.  Reverse scanlines before writing out to file.

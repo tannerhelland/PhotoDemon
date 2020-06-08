@@ -1004,17 +1004,21 @@ Friend Sub GetLayerBoundaryRect(ByRef dstRect As RectF)
     
 End Sub
 
-'Generally speaking, extracting the portion of this layer's DIB relevant to the image is really easy - just BitBlt it directly from
-' the layer DIB itself!  Unfortunately, PD 7.0 greatly complicates this by introducing non-destructive affine transformations, which
-' can make the layer occupy a non-rectangular portion of the image.
+'Generally speaking, extracting the portion of this layer's DIB relevant to the image is
+' really easy - just BitBlt it directly from the layer DIB itself!  Unfortunately, PD 7.0
+' greatly complicates this by introducing non-destructive affine transformations, which
+' can make a layer occupy a non-rectangular portion of the image.
 '
-'This helper function can be used to retrieve a DIB - at 100% zoom - that contains an affine-transformed copy of the layer DIB and
-' new (x, y) offsets (which are relevant for things like rotation, as the affine-transformed image will have negative offsets
-' relative to the "pure" layer offsets).  Note that the destination (x, y) values will already have been transformed to integers
-' for you; this function will automatically calculate offsets in a way that preserves sub-pixel positioning.
+'This helper function can be used to retrieve a DIB - at 100% zoom - that contains an
+' affine-transformed copy of the layer DIB.  By necessity, it will also return new (x, y)
+' offsets (which are relevant for things like rotation, as the affine-transformed image
+' will have negative offsets relative to the "original" layer offsets).  Note that the
+' destination (x, y) values will already have been transformed to integers for you; this
+' function automatically calculates offsets in a sub-pixel-friendly way.
 '
-'I have optimized this function as much as I physically can.  Separate paths are used depending on the complexity of the transform
-' (if the only active non-destructive transform is scaling, we can bypass certain steps, for example).
+'I have optimized this function as much as I physically can.  Separate paths are used
+' depending on the complexity of the transform (if the only active non-destructive
+' transform is scaling, we can bypass certain steps, for example).
 '
 'RETURNS: TRUE if the destination DIB was filled, FALSE if the DIB lies outside the crop area (e.g. entirely off the image)
 Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long, Optional ByVal cropWidth As Long = 0, Optional ByVal cropHeight As Long = 0) As Boolean
@@ -1023,7 +1027,8 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     'Get a copy of the current layer coordinates
     Me.GetLayerCornerCoordinates m_PlgPoints
     
-    'From our boundary points, find the largest and smallest (x, y) values.  These give us a bounding box for the layer as a whole.
+    'From our boundary points, find the largest and smallest (x, y) values.
+    ' These give us a bounding box for the layer as a whole.
     Dim minX As Single, maxX As Single, minY As Single, maxY As Single
     FindMaxMinOfPointFs m_PlgPoints, 4, minX, minY, maxX, maxY
     
@@ -1037,20 +1042,25 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     End With
     
     'We now know two crucial pieces of data:
-    ' 1) the final locations of the affine-transformed layer corner points, in image coordinate space
-    ' 2) a bounding box for the affine-transformed layer, in image coordinate space
+    ' 1) the final locations of the affine-transformed layer corner points
+    '     (in image coordinate space)
+    ' 2) a bounding box for the affine-transformed layer
+    '     (in image coordinate space)
     
-    'Next, we need to calculate the minimum boundary size required by the destination DIB.  This is the lesser of two things:
-    ' 1) The crop width/height supplied by the caller (typically the size of the compositing surface itself; pixels outside
-    '     this are irrelevant, so we can completely ignore them for a speed boost).
+    'Next, we need to calculate the minimum boundary size required by the destination DIB.
+    ' This is the lesser of two things:
+    ' 1) A crop width/height supplied by the caller, if any (typically the size of the
+    '     compositing surface itself; pixels outside this are irrelevant, so we can
+    '     completely ignore them for a speed boost).
     ' 2) If the layer left/top values are negative, the max x/y values calculated above
     ' 3) If the layer left/top values are positive, the width of the layer boundary rect
     
-    'During this step, we will also calculate fractional values I call "normalizeX/Y".  PD's internal compositor can only
-    ' render to integer offsets, for performance reasons.  Affine transformations almost always result in an image with
-    ' fractional offsets; to make sure these offsets are preserved, we "normalize" the coordinates by offseting them by
-    ' their fractional amount.  This ensures that the final composite looks identical between GDI+ and PD's internal
-    ' compositing code.
+    'During this step, we will also calculate fractional values I call "normalizeX/Y".
+    ' PD's internal compositor can only render to integer offsets, for performance reasons.
+    ' Affine transformations almost always result in an image with fractional offsets;
+    ' to make sure these offsets are preserved, we "normalize" the coordinates by offseting
+    ' them by their fractional amount.  This ensures that the final composite looks identical
+    ' between GDI+ and PD's internal compositing code.
     
     'Start by calculating (2) or (3), and padding it to account for fractional offsets
     Dim intLayerWidth As Long, intLayerHeight As Long
