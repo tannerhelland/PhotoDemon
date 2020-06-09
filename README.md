@@ -1,10 +1,13 @@
-[![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--7.2a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?label=build-nightly&style=flat-square) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square)
+### Download
 
-[![Download source](https://img.shields.io/badge/download--source-PhotoDemon--7.2a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/tannerhelland/PhotoDemon?style=flat-square)
+| Stable (7.0.1) | Nightly (8.0a) | Source |
+| :----: | :-----: | :----: |
+| [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [![Download source](https://img.shields.io/badge/download--source-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
-[![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) 
+#### Nightly build status: 
+![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square)  ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square)
 
-## PhotoDemon 7.2-alpha
+## About PhotoDemon 8.0-alpha
 
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
@@ -60,6 +63,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 - Comprehensive support for [Adobe Photoshop (PSD) files](https://photodemon.org/2019/02/20/psd-support-now-available.html) and their open-source equivalent, [OpenRaster (ORA) files](https://www.openraster.org/)
 - Comprehensive support for [animated PNG and GIF files](https://github.com/tannerhelland/PhotoDemon/issues/278)
+- Comprehensive support for [Windows Icon (ICO) files](https://github.com/tannerhelland/PhotoDemon/issues/300)
 - New [custom-built PNG engine](https://github.com/tannerhelland/PhotoDemon/commit/8206ae38831bc095afa49556420bbb7d5c15778f) with a fully integrated color-mangement pipeline; the engine also [auto-optimizes PNGs losslessly](https://github.com/tannerhelland/PhotoDemon/commit/10c78b3cc12c7e99af49d1667f5d8887b99a054c) for maximum file size reductions, with additional options for lossy quantization (similar to [pngquant](https://pngquant.org/)).
 - Main UI support for viewing animated images
 - New best-in-class [gradient tool](https://www.patreon.com/posts/photodemons-new-26199115) and gradient editor
@@ -67,6 +71,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 - Main UI now provides [a search bar](https://www.patreon.com/posts/photodemon-now-26904685) for locating features and tools
 - Main UI now provides [on-canvas rulers](https://www.patreon.com/posts/canvas-rulers-to-19178070)
 - New on-canvas [measure tool](https://www.patreon.com/posts/how-to-use-new-7-20466383) with support for auto-straightening the image
+- New [real-time Surface Blur tool](https://github.com/tannerhelland/PhotoDemon/commit/4c081253b8b38538c6ba489dbf08f4ac00f3dc72#diff-0539d6bdf5df4fc219d938f151f3e2d9)
 - New [Effects > Render menu](https://www.patreon.com/posts/photodemon-7-2-29679659) with Clouds and Fibers tools.
 - Macros can now be [automatically created from session history](https://github.com/tannerhelland/PhotoDemon/issues/265)
 - [Many](https://github.com/tannerhelland/PhotoDemon/issues/244) [improvements](https://github.com/tannerhelland/PhotoDemon/issues/243) to [keyboard](https://github.com/tannerhelland/PhotoDemon/commit/730f2ebe7a8121e7c5c633ce7b3ff7aea01dc273) [navigation](https://github.com/tannerhelland/PhotoDemon/issues/277)
@@ -86,7 +91,7 @@ For a full list of changes, please consult [the commit log](https://github.com/t
 
 ## Contributing
 
-PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like monthly tutorials and updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon):
+PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like monthly tutorials and updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
 
 PhotoDemon's lone developer is also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  Thank you!
 
@@ -94,7 +99,7 @@ If you are interested in contributing in other ways (language translations, bug 
 
 ## Licensing
 
-PhotoDemon is BSD-licensed.  This allows you to use its source code in any application, commercial or otherwise, if you supply proper attribution.  Proper attribution includes **a notice of copyright** and **disclaimer of warranty**.
+PhotoDemon is BSD-licensed.  This allows you to use its source code in any application, commercial or otherwise, if you supply proper attribution.  Proper attribution includes a **notice of copyright** and **disclaimer of warranty**.
 
 PhotoDemon uses some 3rd-party open-source libraries.  These libraries are found in the /App/PhotoDemon/Plugins folder.  These libraries have their own licenses, separate from PhotoDemon.
 
