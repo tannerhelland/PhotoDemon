@@ -2385,16 +2385,16 @@ End Sub
 
 'Reduce an image's alpha channel to on/off only (e.g. values of 0 or 255).  Useful before converting
 ' to legacy file formats like GIF or ICO.
-Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alphaCutoff As Long = 127, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_Stucki, Optional ByVal ditherAmount As Single = 50!, Optional ByVal suppressMessages As Boolean = False) As Boolean
-
+Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alphaCutoff As Long = 127, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_Stucki, Optional ByVal ditherAmount As Single = 50!, Optional ByVal matteColor As Long = vbWhite, Optional ByVal suppressMessages As Boolean = False) As Boolean
+    
     ditherAmount = ditherAmount * 0.01
     If (ditherAmount < 0!) Then ditherAmount = 0!
     If (ditherAmount > 1!) Then ditherAmount = 1!
     
     'Ensure the target DIB is using *un-premultiplied* alpha
     Dim needToResetAlpha As Boolean
-    needToResetAlpha = srcDIB.GetAlphaPremultiplication()
-    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication False
+    needToResetAlpha = (Not srcDIB.GetAlphaPremultiplication())
+    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication True
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
@@ -2423,6 +2423,26 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Single, dDivisor As Single
     
+    'We also need to manually merge colors with their matte equivalent
+    Dim matteR As Byte, matteG As Byte, matteB As Byte
+    matteR = Colors.ExtractRed(matteColor)
+    matteG = Colors.ExtractGreen(matteColor)
+    matteB = Colors.ExtractBlue(matteColor)
+    
+    'Because alpha values are pre-multiplied, we can composite them against the background color
+    ' via fast use of a look-up table.
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
+    Dim tmpAlpha As Double, refAlpha As Byte
+    For x = 0 To 255
+        tmpAlpha = 1# - (x * ONE_DIV_255)
+        rLookup(x) = Int(matteR * tmpAlpha)
+        gLookup(x) = Int(matteG * tmpAlpha)
+        bLookup(x) = Int(matteB * tmpAlpha)
+    Next x
+    
     'Process the alpha channel based on the dither method requested
     Select Case ditherMethod
         
@@ -2439,8 +2459,15 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 
                 'Check the luminance against the threshold, and set new values accordingly
                 If (a >= alphaCutoff) Then
+                    refAlpha = imageData(xStride + 3, y)
+                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
+                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
+                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
+                    imageData(xStride, y) = 0
+                    imageData(xStride + 1, y) = 0
+                    imageData(xStride + 2, y) = 0
                     imageData(xStride + 3, y) = 0
                 End If
                 
@@ -2475,8 +2502,15 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 
                 'Check THAT value against the threshold, and set a new value accordingly
                 If (a >= alphaCutoff) Then
+                    refAlpha = imageData(xStride + 3, y)
+                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
+                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
+                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
+                    imageData(xStride, y) = 0
+                    imageData(xStride + 1, y) = 0
+                    imageData(xStride + 2, y) = 0
                     imageData(xStride + 3, y) = 0
                 End If
                 
@@ -2510,8 +2544,15 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                 
                 'Check THAT value against the threshold, and set a new value accordingly
                 If (a >= alphaCutoff) Then
+                    refAlpha = imageData(xStride + 3, y)
+                    imageData(xStride, y) = imageData(xStride, y) + bLookup(refAlpha)
+                    imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(refAlpha)
+                    imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(refAlpha)
                     imageData(xStride + 3, y) = 255
                 Else
+                    imageData(xStride, y) = 0
+                    imageData(xStride + 1, y) = 0
+                    imageData(xStride + 2, y) = 0
                     imageData(xStride + 3, y) = 0
                 End If
                 
@@ -2577,16 +2618,16 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
         ReDim dErrors(0 To finalX, 0 To finalY) As Single
         If (dDivisor <> 0!) Then dDivisor = 1! / dDivisor
         
-        Dim xQuick As Long, xQuickInner As Long, yQuick As Long
+        Dim xStrideInner As Long, yOffset As Long
         
         'Now loop through the image, calculating errors as we go
         For y = initY To finalY
         For x = initX To finalX
             
-            xQuick = x * 4
+            xStride = x * 4
             
             'Retrieve current alpha
-            a = imageData(xQuick + 3, y)
+            a = imageData(xStride + 3, y)
             
             'Now, for a shortcut: if this pixel is opaque, we want to keep it opaque.
             ' Similarly, if this pixel is transparent, we want to keep it transparent.
@@ -2600,10 +2641,16 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                     'Check our modified luminance value against the threshold, and set new values accordingly
                     If (newA >= alphaCutoff) Then
                         errorVal = newA - 255
-                        imageData(xQuick + 3, y) = 255
+                        imageData(xStride, y) = imageData(xStride, y) + bLookup(a)
+                        imageData(xStride + 1, y) = imageData(xStride + 1, y) + gLookup(a)
+                        imageData(xStride + 2, y) = imageData(xStride + 2, y) + rLookup(a)
+                        imageData(xStride + 3, y) = 255
                     Else
                         errorVal = newA
-                        imageData(xQuick + 3, y) = 0
+                        imageData(xStride, y) = 0
+                        imageData(xStride + 1, y) = 0
+                        imageData(xStride + 2, y) = 0
+                        imageData(xStride + 3, y) = 0
                     End If
                     
                     'If there is an error, spread it
@@ -2621,16 +2668,16 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
                             'Second, ignore pixels that have a zero in the dither table
                             If (ditherTable(i, j) = 0) Then GoTo NextDitheredPixel
                             
-                            xQuickInner = x + i
-                            yQuick = y + j
+                            xStrideInner = x + i
+                            yOffset = y + j
                             
                             'Next, ignore target pixels that are off the image boundary
-                            If (xQuickInner < initX) Then GoTo NextDitheredPixel
-                            If (xQuickInner > finalX) Then GoTo NextDitheredPixel
-                            If (yQuick > finalY) Then GoTo NextDitheredPixel
+                            If (xStrideInner < initX) Then GoTo NextDitheredPixel
+                            If (xStrideInner > finalX) Then GoTo NextDitheredPixel
+                            If (yOffset > finalY) Then GoTo NextDitheredPixel
                             
                             'If we've made it all the way here, we are able to actually spread the error to this location
-                            dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(ditherTable(i, j)) * dDivisor))
+                            dErrors(xStrideInner, yOffset) = dErrors(xStrideInner, yOffset) + (errorVal * (CSng(ditherTable(i, j)) * dDivisor))
                         
 NextDitheredPixel:             Next j
                         Next i
@@ -2657,7 +2704,7 @@ NextDitheredPixel:             Next j
     srcDIB.UnwrapArrayFromDIB imageData
     
     'Restore the DIB to its original alpha status (as necessary)
-    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication True
+    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication False
     
     ThresholdAlphaChannel = (Not g_cancelCurrentAction)
     

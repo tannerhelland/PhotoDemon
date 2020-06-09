@@ -26,11 +26,21 @@ Begin VB.Form FormThresholdAlpha
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdColorSelector csMatte 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3600
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1720
+      Caption         =   "matte"
+   End
    Begin PhotoDemon.pdSlider sldDitheringAmount 
       Height          =   855
       Left            =   6000
       TabIndex        =   4
-      Top             =   3120
+      Top             =   2640
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   1508
@@ -44,7 +54,7 @@ Begin VB.Form FormThresholdAlpha
       Height          =   855
       Left            =   6000
       TabIndex        =   3
-      Top             =   2160
+      Top             =   1680
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   1508
@@ -54,7 +64,7 @@ Begin VB.Form FormThresholdAlpha
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1320
+      Top             =   840
       Width           =   6045
       _ExtentX        =   10663
       _ExtentY        =   1244
@@ -143,9 +153,14 @@ Private Function GetFunctionParamString() As String
         .AddParam "threshold", sldThreshold.Value
         .AddParam "dither", cboDither.ListIndex
         .AddParam "dither-amount", sldDitheringAmount.Value
+        .AddParam "matte-color", csMatte.Color
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function
+
+Private Sub csMatte_ColorChanged()
+    UpdatePreview
+End Sub
 
 Private Sub Form_Load()
     
@@ -175,22 +190,23 @@ Public Sub FxThresholdAlpha(ByVal fxParams As String, Optional ByVal toPreview A
     Set cParams = New pdSerialize
     cParams.SetParamString fxParams
     
-    Dim cThreshold As Long, ditherMethod As PD_DITHER_METHOD, ditherAmount As Single
+    Dim cThreshold As Long, ditherMethod As PD_DITHER_METHOD, ditherAmount As Single, matteColor As Long
     With cParams
         cThreshold = .GetLong("threshold", 127)
         ditherMethod = .GetLong("dither", 6)
         ditherAmount = .GetSingle("dither-amount", 100!)
+        matteColor = .GetLong("matte-color", vbWhite)
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
     
     'Pass handling off to the dedicated alpha-threshold function
-    DIBs.ThresholdAlphaChannel workingDIB, cThreshold, ditherMethod, ditherAmount, toPreview
+    DIBs.ThresholdAlphaChannel workingDIB, cThreshold, ditherMethod, ditherAmount, matteColor, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
 
 End Sub
 

@@ -652,7 +652,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             Case 24
                 
                 'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 scanlineSize = (pxWidth * 3 + 3) And &HFFFFFFFC
                 ReDim pxScanline(0 To scanlineSize - 1) As Byte
                 
@@ -675,8 +675,14 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             ' Many ICO readers assume a full palette is present, and this improves compatibility.
             Case 8
             
-                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent).
+                ' Note that we attempt to dither alpha if the icon is larger than 32x32; this can improve
+                ' visual quality somewhat, but below that size, it just devolves into noise.
+                If (tmpDIB.GetDIBWidth > 32) Then
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                Else
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                End If
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 256)
@@ -698,7 +704,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             Case 4
             
                 'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 16)
@@ -729,7 +735,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             Case 1
         
                 'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, True
+                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 2)
@@ -757,7 +763,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         
         'With pixel data written successfully, pull transparency data from the original DIB, threshold it
         ' (only for 32-bit - other bit-depths will have already done this!) - then write a 1-bpp mask.
-        If (srcIcoData.ico_BPP = 32) Then DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, True
+        If (srcIcoData.ico_BPP = 32) Then DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, RGB(255, 255, 255), True
         
         'Masks are written a scanline at a time - and importantly, each scanline *must* be padded a multiple of 4!
         scanlineSize = (pxWidth + 7) \ 8
