@@ -158,7 +158,6 @@ Private Function GetProcAddressHelper(ByVal zstdHandle As Long, ByRef srcFuncNam
     'Attempt to load the function as-is
     GetProcAddressHelper = GetProcAddress(zstdHandle, srcFuncName)
     If (GetProcAddressHelper <> 0) Then
-        FormPatch.TextOut "Found cdecl " & srcFuncName
         m_UseStdCallFallback = False
     
     'If the load function failed, the most likely explanation is that an stdcall version of the library
@@ -170,7 +169,6 @@ Private Function GetProcAddressHelper(ByVal zstdHandle As Long, ByRef srcFuncNam
             tmpFuncName = "_" & srcFuncName & "@" & Trim$(Str$(i))
             GetProcAddressHelper = GetProcAddress(zstdHandle, tmpFuncName)
             If (GetProcAddressHelper <> 0) Then
-                FormPatch.TextOut "Found stdcall " & tmpFuncName
                 m_UseStdCallFallback = True
                 Exit Function
             End If
