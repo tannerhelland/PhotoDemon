@@ -2391,7 +2391,7 @@ Public Function ThresholdAlphaChannel(ByRef srcDIB As pdDIB, Optional ByVal alph
     If (ditherAmount < 0!) Then ditherAmount = 0!
     If (ditherAmount > 1!) Then ditherAmount = 1!
     
-    'Ensure the target DIB is using *un-premultiplied* alpha
+    'Ensure the target DIB is using *premultiplied* alpha
     Dim needToResetAlpha As Boolean
     needToResetAlpha = (Not srcDIB.GetAlphaPremultiplication())
     If needToResetAlpha Then srcDIB.SetAlphaPremultiplication True
@@ -2703,8 +2703,11 @@ NextDitheredPixel:             Next j
     'Safely deallocate imageData() before exiting
     srcDIB.UnwrapArrayFromDIB imageData
     
-    'Restore the DIB to its original alpha status (as necessary)
-    If needToResetAlpha Then srcDIB.SetAlphaPremultiplication False
+    'Importantly, after thresholding alpha in this function, there is no material difference
+    ' between premultiplied and un-premultiplied alpha (because transparent pixels have been
+    ' forced to black, and all other pixels have been forced to full opacity).  As such, we
+    ' can simply reset the premultiplication flag *without* actually looping pixels.
+    If needToResetAlpha Then srcDIB.SetInitialAlphaPremultiplicationState False
     
     ThresholdAlphaChannel = (Not g_cancelCurrentAction)
     

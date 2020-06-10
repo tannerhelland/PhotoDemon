@@ -565,8 +565,8 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
     ' affine transforms to produce it) so free it immediately
     Set referenceDIB = Nothing
     
-    'With the icon generated, we now need to remove alpha premultiplication.
-    If tmpDIB.GetAlphaPremultiplication() Then tmpDIB.SetAlphaPremultiplication False
+    'Previously, we would now un-premultiply alpha - but some preprocessing steps are actually
+    ' faster with premultiplied alpha.  As such, we don't want to un-premultiply alpha just yet!
     
     'PD uses top-down DIBs internally.  Reverse scanlines before writing out to file.
     ' (But *only* for non-PNGs!  PD's PNG engine handles this automatically.)
@@ -583,6 +583,9 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
     'PD follows this recommendation and *always* produces a 32-bpp PNG file, regardless of possible other
     ' color-depths.
     If srcIcoData.ico_IsPNG Then
+        
+        'Un-premultiply alpha before handing the image off to the PNG engine
+        If tmpDIB.GetAlphaPremultiplication() Then tmpDIB.SetAlphaPremultiplication False
         
         Dim cPNG As pdPNG
         Set cPNG = New pdPNG
@@ -684,6 +687,11 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                     DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 End If
                 
+                'The returned image will always force transparent pixels to black, so premultiplication
+                ' is irrelevant.  Set the corresponding flag, however, to prevent the palettizer from
+                ' attempting to unpremultiply first.
+                tmpDIB.SetInitialAlphaPremultiplicationState False
+                
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 256)
                 
@@ -707,6 +715,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                tmpDIB.SetInitialAlphaPremultiplicationState False
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 16)
                 
                 'Regardless of color count, write a full 16-color table out to file
@@ -738,9 +747,10 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                tmpDIB.SetInitialAlphaPremultiplicationState False
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 2)
                 
-                'Regardless of color count, write a full 16-color table out to file
+                'Write a corresponding color table out to file
                 tmpStream.WriteBytesFromPointer VarPtr(imgPalette(0)), numColors * 4
                 If (numColors < 2) Then tmpStream.WritePadding (2 - numColors) * 4
                 

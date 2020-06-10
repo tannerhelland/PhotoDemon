@@ -1,12 +1,8 @@
 ## Download
 
-| Stable (7.0.1) | Nightly (8.0a) | Source |
-| :----: | :-----: | :----: |
-| [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [![Download source](https://img.shields.io/badge/download--source-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
-
-Nightly build status
-
-![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square)  ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
+| Nightly (8.0a) | Stable (7.0.1) | Source code |
+| :------------: | :------------: | :---------: |
+| [![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [![Download source](https://img.shields.io/badge/download--source-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
 ## About PhotoDemon 8.0-alpha
 
@@ -59,6 +55,8 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 * PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
 
 ## What's new in nightly builds
+
+![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
 [Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2017/11/28/photodemon-7-0-release.html):
 
