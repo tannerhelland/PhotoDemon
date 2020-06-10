@@ -157,20 +157,6 @@ End Enum
     Private Const fu_Pixel = 0, fu_Point = 1
 #End If
 
-Private Enum GdiPlusMeasurementUnit
-    gpUnitWorld = 0       '(non-physical unit; do not use)
-    gpUnitDisplay = 1     '(varies by display, as you can imagine; do not use)
-    gpUnitPixel = 2
-    gpUnitPoint = 3       '1/72 in
-    gpUnitInch = 4        '1 in
-    gpUnitDocument = 5    '1/300 in
-    gpUnitMillimeter = 6  '1 mm
-End Enum
-
-#If False Then
-    Private Const gpUnitWorld = 0, gpUnitDisplay = 1, gpUnitPixel = 2, gpUnitPoint = 3, gpUnitInch = 4, gpUnitDocument = 5, gpUnitMillimeter = 6
-#End If
-
 'GDI+ maps a number of enums to this default "QualityMode" enum.  These values tend to be unpredictable, so I recommend sticking with
 ' explicit mapping options whenever possible.
 Private Enum GdiPlusQualityMode
@@ -246,7 +232,7 @@ End Enum
 #End If
 
 'Font style settings
-Private Enum FontStyle
+Private Enum GP_FontStyle
     FontStyleRegular = 0
     FontStyleBold = 1
     FontStyleItalic = 2
@@ -256,7 +242,7 @@ Private Enum FontStyle
 End Enum
 
 #If False Then
-    Const FontStyleRegular = 0, FontStyleBold = 1, FontStyleItalic = 2, FontStyleBoldItalic = 3, FontStyleUnderline = 4, FontStyleStrikeout = 8
+    Private Const FontStyleRegular = 0, FontStyleBold = 1, FontStyleItalic = 2, FontStyleBoldItalic = 3, FontStyleUnderline = 4, FontStyleStrikeout = 8
 #End If
 
 'GDI+ string format settings.  Note that "near" and "far" monikers are used, to better support RTL languages.
@@ -273,10 +259,10 @@ End Enum
 'GDI+ font family functions
 Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
 Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
-Private Declare Function GdipIsStyleAvailable Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcStyleToTest As FontStyle, ByRef dstIsStyleAvailable As Long) As GP_Result
+Private Declare Function GdipIsStyleAvailable Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcStyleToTest As GP_FontStyle, ByRef dstIsStyleAvailable As Long) As GP_Result
 
 'GDI+ font functions
-Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As FontStyle, ByVal srcMeasurementUnit As GdiPlusMeasurementUnit, ByRef dstCreatedFont As Long) As GP_Result
+Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As GP_FontStyle, ByVal srcMeasurementUnit As GP_Unit, ByRef dstCreatedFont As Long) As GP_Result
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
 
 'GDI+ string format functions
@@ -318,27 +304,27 @@ Private Const FONT_TRANSPARENT As Long = &H1
 Private Const FONT_OPAQUE As Long = &H2
 
 'Formatting constants for DrawText
-Private Const DT_TOP = &H0
-Private Const DT_LEFT = &H0
-Private Const DT_CENTER = &H1
-Private Const DT_RIGHT = &H2
-Private Const DT_VCENTER = &H4
-Private Const DT_BOTTOM = &H8
-Private Const DT_WORDBREAK = &H10
-Private Const DT_SINGLELINE = &H20
-Private Const DT_EXPANDTABS = &H40
-Private Const DT_TABSTOP = &H80
-Private Const DT_NOCLIP = &H100
-Private Const DT_EXTERNALLEADING = &H200
-Private Const DT_CALCRECT = &H400
-Private Const DT_NOPREFIX = &H800
-Private Const DT_INTERNAL = &H1000
-Private Const DT_EDITCONTROL = &H2000
-Private Const DT_PATH_ELLIPSIS = &H4000
-Private Const DT_END_ELLIPSIS = &H8000
-Private Const DT_MODIFYSTRING = &H10000
-Private Const DT_RTLREADING = &H20000
-Private Const DT_WORD_ELLIPSIS = &H40000
+Private Const DT_TOP As Long = &H0
+Private Const DT_LEFT As Long = &H0
+Private Const DT_CENTER As Long = &H1
+Private Const DT_RIGHT As Long = &H2
+Private Const DT_VCENTER As Long = &H4
+Private Const DT_BOTTOM As Long = &H8
+Private Const DT_WORDBREAK As Long = &H10
+Private Const DT_SINGLELINE As Long = &H20
+Private Const DT_EXPANDTABS As Long = &H40
+Private Const DT_TABSTOP As Long = &H80
+Private Const DT_NOCLIP As Long = &H100
+Private Const DT_EXTERNALLEADING As Long = &H200
+Private Const DT_CALCRECT As Long = &H400
+Private Const DT_NOPREFIX As Long = &H800
+Private Const DT_INTERNAL As Long = &H1000
+Private Const DT_EDITCONTROL As Long = &H2000
+Private Const DT_PATH_ELLIPSIS As Long = &H4000
+Private Const DT_END_ELLIPSIS As Long = &H8000
+Private Const DT_MODIFYSTRING As Long = &H10000
+Private Const DT_RTLREADING As Long = &H20000
+Private Const DT_WORD_ELLIPSIS As Long = &H40000
 
 'The current text-to-be-rendered
 Private m_CurrentText As String
@@ -1263,15 +1249,15 @@ Friend Sub SetFontFace(ByVal fontName As String)
 End Sub
 
 'Convert a PD_FontUnit enum to a GDI+ format measurement unit.  Note that not all GDI+ units are reachable this way, by design.
-Private Function ConvertPDFontUnitToGdipFontUnit(ByRef srcFontUnit As PD_FontUnit) As GdiPlusMeasurementUnit
+Private Function ConvertPDFontUnitToGdipFontUnit(ByRef srcFontUnit As PD_FontUnit) As GP_Unit
     
     Select Case srcFontUnit
     
         Case fu_Pixel
-            ConvertPDFontUnitToGdipFontUnit = gpUnitPixel
+            ConvertPDFontUnitToGdipFontUnit = GP_U_Pixel
         
         Case fu_Point
-            ConvertPDFontUnitToGdipFontUnit = gpUnitPoint
+            ConvertPDFontUnitToGdipFontUnit = GP_U_Point
             
     End Select
     

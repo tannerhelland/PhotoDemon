@@ -649,6 +649,7 @@ Public Function GetPhotoDemonVersion() As String
     
     'Even-numbered releases are "official" releases, so simply return the full version string
     If (CLng(App.Minor) Mod 2 = 0) Then
+    
         GetPhotoDemonVersion = App.Major & "." & App.Minor
         If (App.Revision <> 0) Then GetPhotoDemonVersion = GetPhotoDemonVersion & "." & App.Revision
         

@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Splash Screen
 'Copyright 2001-2020 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 02/September/17
-'Last update: handle paint messages internally, rather than leaning on AutoRedraw
+'Last updated: 10/June/20
+'Last update: rewrite as a proper layered window with alpha effects
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -52,8 +52,23 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function UpdateLayeredWindow Lib "user32" (ByVal hWnd As Long, ByVal hdcDst As Long, ByVal pptDst As Long, ByVal psize As Long, ByVal hdcSrc As Long, ByVal pptSrc As Long, ByVal crKey As Long, ByVal pblend As Long, ByVal dwFlags As Long) As Long
+
+'Unfortunately, GDI doesn't render text onto 32-bpp surfaces correctly (the alpha channel gets ignored).
+' We need to use a more convoluted GDI+ approach, and because I don't have a safe wrapper class for
+' GDI+ font rendering, everything gets called manually.
+Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As Long, ByVal srcMeasurementUnit As Long, ByRef dstCreatedFont As Long) As GP_Result
+Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
+Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As Long, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
+Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
+Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
+Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As GP_Result
+Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RectF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As GP_Result
+Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As Long) As GP_Result
+Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As Long) As GP_Result
 
 'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once m_splashDIB (below)
 ' has been successfully assembled.
@@ -65,9 +80,6 @@ Private m_BackBuffer As pdDIB
 
 'We skip the entire display process if any of the DIBs can't be created
 Private m_dibsLoadedSuccessfully As Boolean
-
-'Some information is custom-drawn onto the logo at run-time.  pdFont objects are used to render any text.
-Private m_versionFont As pdFont
 
 'On high-DPI monitors, some stretching is required.  In the future, I would like to replace this with a more
 ' elegant solution.
@@ -95,11 +107,11 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     Dim origLogoWidth As Long, origLogoHeight As Long
     origLogoWidth = Interface.FixDPI(779)
     origLogoHeight = Interface.FixDPI(220)
-    m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight, , , True)
+    m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight, suspendMonochrome:=True)
     If m_dibsLoadedSuccessfully Then m_logoAspectRatio = CDbl(m_logoDIB.GetDIBWidth) / CDbl(m_logoDIB.GetDIBHeight)
     
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
-    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight, , , True)
+    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight, suspendMonochrome:=True)
     
 End Sub
 
@@ -107,75 +119,121 @@ End Sub
 Public Sub PrepareRestOfSplash()
     
     If m_dibsLoadedSuccessfully Then
-    
-        'Use the GetDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
-        ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
+        
+        'Create a blank DIB at the size of the current splash window
         Dim captureRect As RectL
         GetWindowRect Me.hWnd, captureRect
-        ScreenCapture.GetPartialDesktopAsDIB m_splashDIB, captureRect
         
-        Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
-        formLeft = captureRect.Left
-        formTop = captureRect.Top
-        GetClientRect Me.hWnd, captureRect
+        Dim formWidth As Long, formHeight As Long
         formWidth = captureRect.Right - captureRect.Left
         formHeight = captureRect.Bottom - captureRect.Top
         
-        'Copy the screen background, shadow, and logo onto a single composite DIB
+        Set m_splashDIB = New pdDIB
+        m_splashDIB.CreateBlank formWidth, formHeight, 32, 0, 0
+        m_splashDIB.SetInitialAlphaPremultiplicationState True
+        
+        'Paint the drop shadow and logo onto the newly created composite DIB
         m_shadowDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , Interface.FixDPI(1), Interface.FixDPI(1), formWidth, formWidth / m_logoAspectRatio
         m_logoDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , 0, 0, formWidth, formWidth / m_logoAspectRatio
         
-        'Free all intermediate DIBs
+        'Free all intermediate DIBs; they are no longer needed
         Set m_shadowDIB = Nothing
         Set m_logoDIB = Nothing
         
-        'Next, we need to figure out where the top and bottom of the "PHOTODEMON" logo lie.  These values may change
-        ' depending on the current screen DPI.  (Their position is important, because other text is laid out proportional
-        ' to these values.)
+        'Next, we need to figure out where the top and bottom of the "PHOTODEMON" logo lie.
+        ' These values may change depending on screen DPI.  (Their position is important,
+        ' because other text - like PD's version number - gets laid out proportional to
+        ' these values.)
         Dim pdLogoTop As Long, pdLogoBottom As Long, pdLogoRight As Long
         
-        'FYI: the hard-coded values are for 96 DPI
+        'FYI: these hard-coded values are for 96 DPI; the FixDPI() function scales as needed
         pdLogoTop = Interface.FixDPI(60)
         pdLogoBottom = Interface.FixDPI(125)
-        pdLogoRight = Interface.FixDPI(755)
+        pdLogoRight = Interface.FixDPI(760)
         
-        'Next, we need to prepare a font renderer for displaying the current program version
-        Set m_versionFont = New pdFont
-        m_versionFont.SetFontBold True
-        m_versionFont.SetFontSize 14
+        'Next, we need to prepare a font renderer for displaying the current program version.
+        ' Because we're rendering to a 32-bpp surface, we can't use simple GDI fonts -
+        ' GDI+ is required.
+        Dim logoFontSize As Single
+        logoFontSize = 14
         
-        'Non-production builds are tagged RED; normal builds, BLUE.  In the future, this may be tied to the theming engine.
-        ' (It's not easy to do it at present, because the themer is loaded late in the program intialization process.)
-        If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then
-            m_versionFont.SetFontColor RGB(255, 50, 50)
-        Else
-            m_versionFont.SetFontColor RGB(50, 127, 255)
+        'Font availability varies by OS
+        Dim logoFontName As String
+        If OS.IsVistaOrLater Then logoFontName = "Segoe UI" Else logoFontName = "Tahoma"
+        
+        'Next, we need to create various GDI+ font objects.  These may fail (particularly on
+        ' non-standard configs like Wine), so abandon font rendering if anything goes badly.
+        Dim fontOK As Boolean
+        
+        Dim gpFontFamily As Long, gpFontHandle As Long
+        fontOK = (GdipCreateFontFamilyFromName(StrPtr(logoFontName), 0&, gpFontFamily) = GP_OK)
+        
+        Const GP_FONTBOLD As Long = 1
+        If fontOK Then fontOK = (GdipCreateFont(gpFontFamily, logoFontSize, GP_FONTBOLD, GP_U_Point, gpFontHandle) = GP_OK)
+        
+        'Next, we need a text formatter.  Minimal options are used, but we do need right-aligned
+        Dim gpStringFormat As Long
+        If fontOK Then fontOK = (GdipCreateStringFormat(0&, 0&, gpStringFormat) = GP_OK)
+        
+        Const GP_STRINGALIGNFAR As Long = 2
+        If fontOK Then fontOK = (GdipSetStringFormatAlign(gpStringFormat, GP_STRINGALIGNFAR) = GP_OK)
+        
+        'Everything else uses prebuilt PD classes
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+        
+        'If we created everything correctly, render version text
+        If fontOK And (m_splashDIB.GetDIBDC <> 0) Then
+            
+            'Next, we need a layout rect
+            Dim fontRect As RectF
+            fontRect.Top = pdLogoBottom + Interface.FixDPI(8)
+            fontRect.Left = 0
+            fontRect.Width = pdLogoRight
+            fontRect.Height = fontRect.Top + 100
+        
+            'Assemble the current version and description strings
+            Dim versionString As String
+            versionString = Trim$(g_Language.TranslateMessage("version %1", Updates.GetPhotoDemonVersion()))
+            
+            'Wrap a GDI+ surface around the destination DIB
+            Set cSurface = New pd2DSurface
+            cSurface.WrapSurfaceAroundPDDIB m_splashDIB
+            
+            'Activate grayscale antialiasing + hinting
+            Const GP_TextRenderingHintAntiAliasGridFit As Long = 3
+            GdipSetTextRenderingHint cSurface.GetHandle, GP_TextRenderingHintAntiAliasGridFit
+            
+            'Next, font color.
+            ' (As a convenience, non-production builds are tagged RED; normal builds, BLUE.)
+            Dim logoFontColor As Long
+            If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then logoFontColor = RGB(255, 50, 50) Else logoFontColor = RGB(50, 127, 255)
+            
+            'Text gets painted by a stock GDI+ brush
+            Set cBrush = New pd2DBrush
+            cBrush.SetBrushColor logoFontColor
+        
+            'Render the finished text!
+            GdipDrawString cSurface.GetHandle, StrPtr(versionString), Len(versionString), gpFontHandle, fontRect, gpStringFormat, cBrush.GetHandle
+            
         End If
         
-        m_versionFont.CreateFontObject
+        'Free various font and string objects
+        Set cBrush = Nothing
+        Set cSurface = Nothing
+        If (gpStringFormat <> 0) Then GdipDeleteStringFormat gpStringFormat
+        If (gpFontHandle <> 0) Then GdipDeleteFont gpFontHandle
+        If (gpFontFamily <> 0) Then GdipDeleteFontFamily gpFontFamily
         
-        'Assemble the current version and description strings
-        Dim versionString As String
-        Dim versionWidth As Long, versionHeight As Long
-        
-        versionString = g_Language.TranslateMessage("version %1", GetPhotoDemonVersion)
-        
-        'Render the version string just below the logo text
-        If (m_splashDIB.GetDIBDC <> 0) Then
-            m_versionFont.AttachToDC m_splashDIB.GetDIBDC
-            versionWidth = m_versionFont.GetWidthOfString(versionString)
-            versionHeight = m_versionFont.GetHeightOfString(versionString)
-            m_versionFont.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + Interface.FixDPI(8), versionString
-            m_versionFont.ReleaseFromDC
-        End If
-        
-        'Copy the composite image onto the underlying form
+        'We now have a back buffer with everything the splash screen requires
+        ' (except the progress bar, which will be drawn later).  Create a front buffer
+        ' and copy the back buffer over to it.
         If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
-        m_BackBuffer.CreateBlank m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, 24, 0
-        GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        m_BackBuffer.CreateBlank m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, 32, 0, 0
+        m_BackBuffer.SetInitialAlphaPremultiplicationState True
+        m_splashDIB.AlphaBlendToDC m_BackBuffer.GetDIBDC
         
-        'Ensure the form has been painted at least once prior to display
-        Me.Refresh
+        'Ensure the splash gets painted at least once prior to display
+        UpdateLayeredWindowAPI
         
     Else
         PDDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
@@ -199,28 +257,28 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     'Draw the current progress, if relevant
     If (m_maxProgress > 0) And Me.Visible Then
         
-        'Erase any previous rendering
-        GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
+        'Erase any previous rendering by copying the static backbuffer over the front buffer
+        GDI.BitBltWrapper m_BackBuffer.GetDIBDC, 0, 0, m_splashDIB.GetDIBWidth, m_splashDIB.GetDIBHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
-        'Draw the progress line using GDI+
+        'Draw a progress line using GDI+
         Dim lineRadius As Long, lineY As Long
         lineRadius = Interface.FixDPI(6)
         lineY = m_splashDIB.GetDIBHeight - Interface.FixDPI(2) - lineRadius
         
-        Dim cSurface As pd2DSurface, cPen As pd2DPen
-        
+        Dim cSurface As pd2DSurface
         Set cSurface = New pd2DSurface
         cSurface.WrapSurfaceAroundPDDIB m_BackBuffer
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
+        Dim cPen As pd2DPen
         Drawing2D.QuickCreateSolidPen cPen, lineRadius, g_Themer.GetGenericUIColor(UI_Accent), 100#, , P2_LC_Round
         PD2D.DrawLineF cSurface, cPen, lineOffset, lineY, (m_splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_progressAtFirstNotify) / (m_maxProgress - m_progressAtFirstNotify)), lineY
         
         Set cSurface = Nothing
         
         'Manually refresh the form
-        Me.Refresh
+        UpdateLayeredWindowAPI
         
     End If
 
@@ -231,11 +289,33 @@ Private Sub Form_Load()
     'Unfortunately, we have to subclass to prevent obnoxious flickering when the form is first displayed
     If PDMain.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
     
+    'Immediately after load, we need to change this to a layered window (for alpha handling)
+    Const GWL_EXSTYLE As Long = -20
+    Const WS_EX_LAYERED As Long = &H80000
+    SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
+    
 End Sub
 
-'Painting is easy - just flip the backbuffer to the screen and call it a day!
-Private Sub Form_Paint()
-    GDI.BitBltWrapper Me.hDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+Private Sub UpdateLayeredWindowAPI()
+    
+    'Create a temporary blend function parameter; see https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-blendfunction
+    ' (This is the equivalent of AlphaFormat = AC_SRC_ALPHA (1) and SourceConstantAlpha = 255)
+    Dim bfParams As Long
+    bfParams = &H1FF0000
+    
+    'MSDN says size is optional, but it really isn't; if this isn't supplied, the update request
+    ' gets ignored on Win 10 (haven't tested other OSes).
+    Dim srcSize(0 To 1) As Long
+    srcSize(0) = m_BackBuffer.GetDIBWidth
+    srcSize(1) = m_BackBuffer.GetDIBHeight
+    
+    'Also create a dummy (0, 0) point
+    Dim srcPoint(0 To 1) As Long
+    
+    'Request full 32-bpp alpha as part of the update
+    Const ULW_ALPHA As Long = &H2&
+    UpdateLayeredWindow Me.hWnd, 0&, 0&, VarPtr(srcSize(0)), m_BackBuffer.GetDIBDC, VarPtr(srcPoint(0)), 0&, VarPtr(bfParams), ULW_ALPHA
+    
 End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
