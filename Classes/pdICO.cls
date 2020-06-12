@@ -572,8 +572,10 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
     ' (But *only* for non-PNGs!  PD's PNG engine handles this automatically.)
     If (Not srcIcoData.ico_IsPNG) Then DIBs.ReverseScanlines tmpDIB
     
-    'tmpDIB now contains a 32-bpp copy of the source layer.  If this frame is in PNG format, produce such
-    ' a frame now.
+    'tmpDIB now contains a 32-bpp copy of the source layer.
+    
+    'If this frame is in PNG format, we want to skip any further processing and instead,
+    ' immediately produce a PNG stream for the frame.
     
     'NOTE: the closest thing to an "official" spec from Microsoft on PNG-embedded frames is Raymond Chen's
     ' series of articles on icons (https://devblogs.microsoft.com/oldnewthing/20101018-00/?p=12513)
@@ -593,12 +595,12 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         CreateFrameForExport = (srcIcoData.ico_SizeInBytes > 0)
         If ICO_DEBUG_VERBOSE Then PDDebug.LogAction "Embedded PNG frame size: " & srcIcoData.ico_SizeInBytes
         
-    'The embedded frame is *not* a PNG.  We need to generate the data ourselves.
+    'The embedded frame is *not* a PNG.  We need to generate old-fashioned icon data ourselves.
     Else
         
         'Start by creating a pdStream object.  First we'll write a standard bitmap header,
         ' then the actual frame pixel data (in whatever color format the user specified).
-        ' Last is a mandatory alpha mask.
+        ' Last follows the mandatory alpha mask.
         Dim tmpStream As pdStream
         Set tmpStream = New pdStream
         tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
@@ -607,21 +609,24 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         tmpStream.WriteLong 40&                     'Struct size
         tmpStream.WriteLong tmpDIB.GetDIBWidth      'Width
         tmpStream.WriteLong tmpDIB.GetDIBHeight * 2 'Height * 2 (due to mask)
-        tmpStream.WriteIntU 1&                      'Planes
+        tmpStream.WriteIntU 1&                      'Planes (always 1)
         tmpStream.WriteIntU srcIcoData.ico_BPP      'BPP
-        tmpStream.WriteLong 0&                      'Compression
-        tmpStream.WriteLong 0&                      'Image size
-        tmpStream.WriteLong 0&                      'Horizontal resolution (ppm)
-        tmpStream.WriteLong 0&                      'Vertical resolution (ppm)
+        tmpStream.WriteLong 0&                      'Compression (always 0 - None)
+        tmpStream.WriteLong 0&                      'Image size  (spec allows 0 when compression is 0)
+        tmpStream.WriteLong 0&                      'Horizontal resolution (not used for icon frames)
+        tmpStream.WriteLong 0&                      'Vertical resolution (not used for icon frames)
         
         'Palette size; per MSDN, "If biClrUsed is zero, the array contains the maximum number of colors
         ' for the given bitdepth; that is, 2^biBitCount colors."
+        '
+        'After some testing, I found that values other than 0 are not always handled correctly
+        ' by other ICO readers.  As such, we always write a max palette size for the current frame
+        ' depth, even if the frame uses fewer colors.
         tmpStream.WriteLong 0&
-        tmpStream.WriteLong 0&  'Important color count (set to 0 for all important colors)
+        tmpStream.WriteLong 0&  'Important color count (set to 0 for "all colors are important")
         
         'Next, if a palette exists, we need to write it - see the color-depth switches
         ' below for details.
-        
         Dim x As Long, y As Long, tmpSA As SafeArray1D, pxData() As Byte, dstOffsetX As Long
         Dim pxScanline() As Byte, scanlineSize As Long, scanlinePadding As Long
         
@@ -631,8 +636,8 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         
         Dim numColors As Long, imgPalette() As RGBQuad, maskBytes() As Byte
         
-        'Regardless of color-depth, we must always write a 1-bpp monochrome mask for each frame.
-        ' Prep a lookup table in advance.
+        'Regardless of color-depth, we will always write a trailing 1-bpp monochrome mask for
+        ' this frame (yes, even for 32-bpp frames).  Prep a lookup table in advance.
         Dim oneBppLUT(0 To 7) As Byte
         oneBppLUT(0) = 128
         oneBppLUT(1) = 64
@@ -654,13 +659,24 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             'Write RGB data, but *not* alpha data
             Case 24
                 
-                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent).
+                ' We do this because we need to composite semi-transparent pixels against a matte color
+                ' (white by default) *before* writing them out to file.
+                
+                'Note also that alpha premultiplication of the pixel data doesn't matter after alpha
+                ' thresholding, because the only alpha values left in the file will be 0 and 255 which
+                ' produce identical RGB data regardless of alpha premultiplication.
                 DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 scanlineSize = (pxWidth * 3 + 3) And &HFFFFFFFC
                 ReDim pxScanline(0 To scanlineSize - 1) As Byte
                 
                 For y = 0 To pxHeight - 1
                     tmpDIB.WrapArrayAroundScanline pxData, tmpSA, y
+                    
+                    'This FillMemory technically isn't necessary (as all data will be overwritten anyway),
+                    ' but I leave it as a reminder that we can't blindly copy pixel data into the
+                    ' icon stream - we need to convert it to a properly padded scanline first, with a
+                    ' width that's a multiple of 4.
                     FillMemory VarPtr(pxScanline(0)), scanlineSize, 0
                     For x = 0 To pxWidth - 1
                         pxScanline(x * 3) = pxData(x * 4)
@@ -668,11 +684,13 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                         pxScanline(x * 3 + 2) = pxData(x * 4 + 2)
                     Next x
                     tmpStream.WriteBytesFromPointer VarPtr(pxScanline(0)), scanlineSize
+                    
                 Next y
                 
                 tmpDIB.UnwrapArrayFromDIB pxData
                 
-            'Next come indexed formats.
+            'Next come indexed (palette) pixel formats.
+            
             ' For compatibility reasons, note that PD always writes a full palette
             ' (e.g. 256-colors for an 8-bpp image), even if fewer colors are actually used.
             ' Many ICO readers assume a full palette is present, and this improves compatibility.
@@ -684,7 +702,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 If (tmpDIB.GetDIBWidth > 32) Then
                     DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
                 Else
-                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, RGB(255, 255, 255), True
                 End If
                 
                 'The returned image will always force transparent pixels to black, so premultiplication
@@ -692,10 +710,10 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 ' attempting to unpremultiply first.
                 tmpDIB.SetInitialAlphaPremultiplicationState False
                 
-                'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
+                'Next, retrieve separate palettized and mask channels, as well as an optimized palette
                 numColors = DIBs.GetDIBAs8bpp_RGBMask_Forcibly(tmpDIB, imgPalette, pxData, maskBytes, 256)
                 
-                'Regardless of color count, write a full 256-color table out to file
+                'Regardless of color count, write the full 256-color table out to file
                 tmpStream.WriteBytesFromPointer VarPtr(imgPalette(0)), numColors * 4
                 If (numColors < 256) Then tmpStream.WritePadding (256 - numColors) * 4
                 
@@ -703,7 +721,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 scanlineSize = (pxWidth + 3) And &HFFFFFFFC
                 scanlinePadding = scanlineSize - pxWidth
                 
-                'Write each scanline out to file, with padding as necessary
+                'Write each scanline out to file, with extra padding as necessary
                 For y = 0 To pxHeight - 1
                     tmpStream.WriteBytesFromPointer VarPtr(pxData(0, y)), pxWidth
                     If (scanlinePadding > 0) Then tmpStream.WritePadding scanlinePadding
@@ -711,8 +729,14 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
             
             Case 4
             
-                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent).
+                ' Note that we attempt to dither alpha if the icon is larger than 32x32; this can improve
+                ' visual quality somewhat, but below that size, it just devolves into noise.
+                If (tmpDIB.GetDIBWidth > 32) Then
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                Else
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, RGB(255, 255, 255), True
+                End If
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 tmpDIB.SetInitialAlphaPremultiplicationState False
@@ -743,8 +767,14 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
                 
             Case 1
         
-                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent)
-                DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                'Before writing RGB data, threshold alpha (e.g. set it to fully opaque or fully transparent).
+                ' Note that we attempt to dither alpha if the icon is larger than 32x32; this can improve
+                ' visual quality somewhat, but below that size, it just devolves into noise.
+                If (tmpDIB.GetDIBWidth > 32) Then
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_FloydSteinberg, 50!, RGB(255, 255, 255), True
+                Else
+                    DIBs.ThresholdAlphaChannel tmpDIB, 127, PDDM_None, 0!, RGB(255, 255, 255), True
+                End If
                 
                 'Next, retrieve separate palettized and mask channels (as well as an optimized palette)
                 tmpDIB.SetInitialAlphaPremultiplicationState False
