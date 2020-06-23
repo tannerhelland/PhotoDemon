@@ -386,7 +386,7 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
     End If
     Set m_Result = Nothing
 
-    Dim hr As Long, lPtr As Long, pIDL As Long
+    Dim hR As Long, lPtr As Long, pIDL As Long
     Dim oIShellItem As IUnknown, pReturn As Long
     Dim aGuid() As Long
 
@@ -421,10 +421,10 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
         End If
     End If
     
-    hr = CoCreateInstance(VarPtr(aGuid(0)), 0&, CLSCTX_INPROC_SERVER, VarPtr(aGuid(4)), lPtr)
-    If Not hr = 0& Then
+    hR = CoCreateInstance(VarPtr(aGuid(0)), 0&, CLSCTX_INPROC_SERVER, VarPtr(aGuid(4)), lPtr)
+    If Not hR = 0& Then
         Call Me.Clear
-        DialogShow = hr
+        DialogShow = hR
         Exit Function
     End If
     
@@ -434,11 +434,11 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
             pvCallFunction_COM lPtr, ifFileDialog_ClearClientData
         ElseIf Len(m_ClientGUID) = 38& Or (Len(m_ClientGUID) = 39& And Left$(m_ClientGUID, 1) = "-") Then
             If Left$(m_ClientGUID, 1) = "-" Then
-                hr = IIDFromString(StrPtr(m_ClientGUID) + 2&, VarPtr(aGuid(4)))
+                hR = IIDFromString(StrPtr(m_ClientGUID) + 2&, VarPtr(aGuid(4)))
             Else
-                hr = IIDFromString(StrPtr(m_ClientGUID), VarPtr(aGuid(4)))
+                hR = IIDFromString(StrPtr(m_ClientGUID), VarPtr(aGuid(4)))
             End If
-            If hr = 0& Then
+            If hR = 0& Then
                 pvCallFunction_COM lPtr, ifFileDialog_SetClientGuid, VarPtr(aGuid(4))
                 If Left$(m_ClientGUID, 1) = "-" Then pvCallFunction_COM lPtr, ifFileDialog_ClearClientData
             End If
@@ -509,16 +509,16 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
     ' create the events callbacks
     If (m_State And 7) Then Call AttachEvents(m_Events, (m_State And 7))
     ' display the dialog
-    hr = pvCallFunction_COM(ObjPtr(m_FDlg), ifModalWindow_Show, CLng(ownerHwnd))
+    hR = pvCallFunction_COM(ObjPtr(m_FDlg), ifModalWindow_Show, CLng(ownerHwnd))
     
     ' release the callbacks
     Call AttachEvents(m_Events, , False)
     
-    DialogShow = hr
-    If hr = 0& Then
+    DialogShow = hR
+    If hR = 0& Then
         If m_Flags And FOS_ALLOWMULTISELECT Then
-            hr = pvCallFunction_COM(ObjPtr(m_FDlg), ifFileDialogOpen_GetResults, VarPtr(pReturn))
-            If hr = 0& Then     ' if only 1 item was selected, use IShellItem vs IShellItemArray
+            hR = pvCallFunction_COM(ObjPtr(m_FDlg), ifFileDialogOpen_GetResults, VarPtr(pReturn))
+            If hR = 0& Then     ' if only 1 item was selected, use IShellItem vs IShellItemArray
                 If pvCallFunction_COM(pReturn, ifShellItemArray_GetCount, VarPtr(pIDL)) = 0& Then
                     If pIDL = 1& Then
                         lPtr = 0&
@@ -531,7 +531,7 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
                 End If
             End If
         Else
-            hr = pvCallFunction_COM(ObjPtr(m_FDlg), ifFileDialog_GetResult, VarPtr(pReturn))
+            hR = pvCallFunction_COM(ObjPtr(m_FDlg), ifFileDialog_GetResult, VarPtr(pReturn))
         End If
     End If
     Set m_FDCustomize = Nothing

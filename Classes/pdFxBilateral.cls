@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'Bilateral Filters
+'Bilateral Filter
 'Copyright 2014-2020 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 13/December/19

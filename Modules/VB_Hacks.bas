@@ -135,10 +135,16 @@ Private m_EditBoxRef As pdEditBoxW
 Private m_AcceleratorRef As pdAccelerator
 Private m_PDIKRef As pdInputKeyboard
 
-'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
-' or it will leak memory.  Any arrays aliased this way must be freed via Unalias1DArray or VB will crash.
-Public Sub Alias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte)
-    GetMem4 VarPtrArray(orig1DArray()), ByVal VarPtrArray(new1DArray())
+'"Wrap" an arbitrary VB array at some other arbitrary array.  The new array must *NOT* be initialized
+' or its memory will leak.
+'
+'The destination array inherits all properties of the source array.  This is useful for very specific
+' performance scenarios - i.e. instead of passing arrays to functions inside a tight loop, a single
+' alias can be performed before the loop, and when the loop completes, unalias the array.)
+'
+'Any arrays aliased this way must be freed via UnaliasArbitraryArray or VB will crash (double-free).
+Public Sub AliasArbitraryArray(ByVal source_VarPtrArray As Long, ByVal destination_VarPtrArray As Long)
+    GetMem4 source_VarPtrArray, ByVal destination_VarPtrArray
 End Sub
 
 'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
@@ -161,10 +167,12 @@ Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As 
     GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
 End Sub
 
-'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally
-' processed by an Alias21Array_ function.
-Public Sub Unalias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte)
-    PutMem4 VarPtrArray(new1DArray), 0&
+'Counterpart to AliasArbitraryArray(), above.  Do NOT call this function on arrays that
+' were not originally processed by AliasArbitraryArray().  (Note that the source pointer
+' is not used - the function is left this way, by design, so it's symmetrical with the
+' original AliasArbitraryArray call!)
+Public Sub UnaliasArbitraryArray(ByVal source_VarPtrArray As Long, ByVal destination_VarPtrArray As Long)
+    PutMem4 destination_VarPtrArray, 0&
 End Sub
 
 'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally

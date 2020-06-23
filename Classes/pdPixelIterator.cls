@@ -18,23 +18,27 @@ Attribute VB_Exposed = False
 'Last updated: 05/April/20
 'Last update: code clean-up and stability improvements
 '
-'By the time the 7.0 release rolled around, a ridiculous number of PD effects were managing their own pixel iteration
-' methods.  Most of these were a variant of a "sliding window" implementation, where a running histogram is maintained
-' for a given pixel region, and when moving to the next pixel, instead of recalculating the entire region from scratch,
-' the histograms from the previous pixel are simply updated against the new region, typically by subtracting a line of
-' pixels on the left or top, and adding a new line of pixels on the right or bottom.
+'By the time the 7.0 release rolled around, a ridiculous number of PD effects managed
+' their own pixel iteration methods.  Most of these were variants of a "sliding window"
+' implementation, where a running histogram is maintained for a given pixel region,
+' and when moving to the next pixel, instead of recalculating the entire region from scratch,
+' histograms from the previous pixel are simply updated against the new region, typically by
+' subtracting a line of pixels on the left or top, and adding a new line of pixels on the
+' right or bottom.
 '
-'These methods tended to use a single copy+paste chunk of code that was pretty advanced, supporting serpentine scanning
-' and a number of other neat features, but maintenance quickly became unwieldy because any improvements to the method
-' required copy+pasting the changes across dozens of functions.  Worse still, the function only supported rectangular
-' regions, and a lot of region functions look more natural when a circle is used.
+'These methods tended to use a single copy+paste chunk of code that was pretty advanced,
+' supporting serpentine scanning and a number of other neat features, but maintenance quickly
+' became unwieldy because any improvements to the method required copy+pasting the changes
+' across dozens of functions.  Worse still, the function only supported rectangular regions,
+' and many region functions look more natural when a circle is used.
 '
-'So as part of the 7.0 release, this class was created.  This class is designed to abstract away the messy duties of
-' iterating per-pixel regions, while supporting a bunch more features than PD's old implementation.  Because this class
-' uses generic histograms, many functions can tap into it, without needing to modify the actual iteration code.
+'So as part of the 7.0 release, this class was created.  This class is designed to abstract
+' away the messy duties of iterating per-pixel regions, while supporting more features than
+' PD's old implementation.  Because this class uses generic histograms, many functions can
+' tap into it, without needing to modify the actual iteration code.
 '
-'Please note that this class has several dependencies throughout PD, including pdDIB, and some specialized enums
-' (located in PD's central Public_Enums_and_Types module).
+'Please note that this class has several dependencies throughout PD, including pdDIB,
+' and some specialized enums (located in PD's central Public_Enums_and_Types module).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -231,15 +235,15 @@ Friend Function LockTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
-    VBHacks.Alias1DArray_Long dstRed, m_Red
-    VBHacks.Alias1DArray_Long dstGreen, m_Green
-    VBHacks.Alias1DArray_Long dstBlue, m_Blue
+    VBHacks.AliasArbitraryArray VarPtrArray(dstRed), VarPtrArray(m_Red)
+    VBHacks.AliasArbitraryArray VarPtrArray(dstGreen), VarPtrArray(m_Green)
+    VBHacks.AliasArbitraryArray VarPtrArray(dstBlue), VarPtrArray(m_Blue)
     
     'NOTE: see comments elsewhere on m_AlphaSupport.  It is currently disabled; you'll need to uncomment various bits
     ' to make it work.
     calcAlpha = False
     If calcAlpha And m_AlphaSupport Then
-        VBHacks.Alias1DArray_Long dstAlpha, m_Alpha
+        VBHacks.AliasArbitraryArray VarPtrArray(dstAlpha), VarPtrArray(m_Alpha)
     Else
         m_AlphaSupport = False
     End If
@@ -254,10 +258,10 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long) As Boolean
 
-    VBHacks.Unalias1DArray_Long dstRed, m_Red
-    VBHacks.Unalias1DArray_Long dstGreen, m_Green
-    VBHacks.Unalias1DArray_Long dstBlue, m_Blue
-    If m_AlphaSupport Then VBHacks.Unalias1DArray_Long dstAlpha, m_Alpha
+    VBHacks.UnaliasArbitraryArray VarPtrArray(dstRed), VarPtrArray(m_Red)
+    VBHacks.UnaliasArbitraryArray VarPtrArray(dstGreen), VarPtrArray(m_Green)
+    VBHacks.UnaliasArbitraryArray VarPtrArray(dstBlue), VarPtrArray(m_Blue)
+    If m_AlphaSupport Then VBHacks.UnaliasArbitraryArray VarPtrArray(dstAlpha), VarPtrArray(m_Alpha)
     
     'While we're here, release our DIB reference, too
     UnaliasPixelArray
@@ -280,7 +284,7 @@ Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long, Optional 
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
-    VBHacks.Alias1DArray_Long dstLum, m_Luminance
+    VBHacks.AliasArbitraryArray VarPtrArray(dstLum), VarPtrArray(m_Luminance)
     
     'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
     AliasPixelArray
@@ -292,7 +296,7 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_Luminance(ByRef dstLum() As Long) As Boolean
 
-    VBHacks.Unalias1DArray_Long dstLum, m_Luminance
+    VBHacks.UnaliasArbitraryArray VarPtrArray(dstLum), VarPtrArray(m_Luminance)
     
     'While we're here, release our DIB reference, too
     UnaliasPixelArray
@@ -313,7 +317,7 @@ Friend Function LockTargetHistograms_ByteArray(ByRef dstHist() As Long) As Long
     
     'Alias our internal histogram array around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target array until the iterator has finished.
-    VBHacks.Alias1DArray_Long dstHist, m_Luminance
+    VBHacks.AliasArbitraryArray VarPtrArray(dstHist), VarPtrArray(m_Luminance)
     
     'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
     AliasByteArray
@@ -325,7 +329,7 @@ End Function
 ' release our aliases to their histogram arrays and DIB.
 Friend Function ReleaseTargetHistograms_ByteArray(ByRef dstHist() As Long) As Boolean
 
-    VBHacks.Unalias1DArray_Long dstHist, m_Luminance
+    VBHacks.UnaliasArbitraryArray VarPtrArray(dstHist), VarPtrArray(m_Luminance)
     
     'While we're here, release our DIB reference, too
     UnaliasByteArray
@@ -417,6 +421,11 @@ Private Function GenerateInitialWindow_ByteArray() As Long
             'Actually generate the initial histogram window
             GenerateInitialWindow_ByteArray = GenerateInitialWindowBytes_ArbitraryShape()
         
+        Case PDPRS_Diamond
+            CreateShape PDPRS_Diamond
+            FindBoundaries
+            GenerateInitialWindow_ByteArray = GenerateInitialWindowBytes_ArbitraryShape()
+        
     End Select
     
 End Function
@@ -469,9 +478,9 @@ Private Sub CreateShape(ByVal srcShape As PD_PixelRegionShape)
     
     Set cSurface = Nothing: Set cBrush = Nothing
     
-    'TODO: as a failsafe, scan the DIB and trim any empty lines, because they'll grossly mess up our calculations.
-    '      (Weird shapes may not extend all the way to the edge of the target DIB, and it's difficult to predict this
-    '       in advance.)
+    'TODO: as a failsafe, scan the DIB and trim any empty lines, because they'll grossly mess
+    ' up our calculations. (Weird shapes may not extend all the way to the edge of the target DIB,
+    ' and it's difficult to predict this in advance.)
     
     'Convert the reference image into a 2D byte array, which is much faster to access and process.
     DIBs.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
@@ -577,8 +586,9 @@ Private Function GenerateInitialWindow_Square() As Long
     xStart = m_InitX * 4
     xFinal = (m_InitX + m_XBRight) * 4
     
-    'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
-    ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
+    'To improve performance, we're going to wrap a 1D array around the current image scanline.
+    ' This doesn't provide a huge performance benefit on small kernels, but on large kernels,
+    ' it can be meaningfully faster.
     With m_PixelSA1D
         .cbElements = 1
         .cDims = 1
@@ -625,8 +635,8 @@ Private Function GenerateInitialWindow_Square() As Long
     
 End Function
 
-'Populate an initial window of values for a square shape.  The cope is optimized for this specific use-case, and it's not
-' meant to be applied to other shapes!
+'Populate an initial window of values for a square shape.  The cope is optimized for this specific use-case,
+' and it's not meant to be applied to other shapes!
 Private Function GenerateInitialWindowBytes_Square() As Long
     
     Dim x As Long, y As Long, v As Long
@@ -635,8 +645,9 @@ Private Function GenerateInitialWindowBytes_Square() As Long
     xStart = m_InitX
     xFinal = (m_InitX + m_XBRight)
     
-    'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
-    ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
+    'To improve performance, we're going to wrap a 1D array around the current image scanline.
+    ' This doesn't provide a huge performance benefit on small kernels, but on large kernels,
+    ' it can be meaningfully faster.
     With m_BytesSA1D
         .cbElements = 1
         .cDims = 1
@@ -663,8 +674,7 @@ Private Function GenerateInitialWindowBytes_Square() As Long
     
 End Function
 
-'Populate an initial window of values for a square shape.  The cope is optimized for this specific use-case, and it's not
-' meant to be applied to other shapes!
+'Populate an initial window of values for an arbitrary shape.
 Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     Dim x As Long, y As Long
@@ -674,8 +684,9 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     Dim r As Long, g As Long, b As Long, a As Long
     
-    'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
-    ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
+    'To improve performance, we're going to wrap a 1D array around the current image scanline.
+    ' This doesn't provide a huge performance benefit on small kernels, but on large kernels,
+    ' it can be meaningfully faster.
     With m_PixelSA1D
         .cbElements = 1
         .cDims = 1
@@ -692,7 +703,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     For x = xStart To xFinal Step 4
         
         'Only calculate pixels that lie inside the reference map
-        If (m_ReferenceMap(((x * 0.25) - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0) Then
+        If (m_ReferenceMap(((x \ 4) - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0) Then
             
             b = m_PixelLine(x)
             g = m_PixelLine(x + 1)
@@ -727,8 +738,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
 End Function
 
-'Populate an initial window of values for a square shape.  The cope is optimized for this specific use-case, and it's not
-' meant to be applied to other shapes!
+'Populate an initial window of values for an arbitrary shape.
 Private Function GenerateInitialWindowBytes_ArbitraryShape() As Long
     
     Dim x As Long, y As Long, v As Long
@@ -736,8 +746,9 @@ Private Function GenerateInitialWindowBytes_ArbitraryShape() As Long
     xStart = m_InitX
     xFinal = (m_InitX + m_XBRight)
     
-    'To improve performance, we're going to wrap 1D arrays around both the current image scanline, and the reference map.
-    ' This doesn't provide a huge performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
+    'To improve performance, we're going to wrap 1D arrays around both the current image scanline,
+    ' and the reference map. This doesn't provide a huge performance benefit on small kernels,
+    ' but on large kernels it can be meaningfully faster.
     With m_BytesSA1D
         .cbElements = 1
         .cDims = 1
@@ -778,9 +789,9 @@ Private Function GetLuminanceFromRGB(ByVal srcR As Long, ByVal srcG As Long, ByV
     End If
 End Function
 
-'After the caller has successfully processed a pixel, they can call these functions to move to the next pixel
-' in the X or Y direction.  Because this class uses serpentine scanning, the caller is responsible for changing
-' direction on each Y increment.
+'After the caller has successfully processed a pixel, they can call these functions to move to
+' the next pixel in the X or Y direction.  Because this class uses serpentine scanning, the caller
+' is responsible for changing direction on each line increment.
 Friend Function MoveXRight() As Long
     
     Dim yTop As Long, yBottom As Long, y As Long
@@ -894,7 +905,7 @@ Friend Function MoveXRight() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    If m_HistogramMode = PDPIM_RGBA Then
+                    If (m_HistogramMode = PDPIM_RGBA) Then
                     
                         m_Blue(b) = m_Blue(b) - 1
                         m_Green(g) = m_Green(g) - 1
@@ -1042,6 +1053,181 @@ Friend Function MoveXRight_Byte() As Long
     
 End Function
 
+Friend Function MoveXLeft() As Long
+    
+    Dim yTop As Long, yBottom As Long, y As Long
+    Dim xLeft As Long, xRight As Long, x As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    'Move our target pixel coordinate to the left
+    m_X = m_X - 1
+    
+    'Rectangular regions get special, optimized treatment
+    If (m_WindowShape = PDPRS_Rectangle) Then
+    
+        'Figure out Y bounds first
+        yTop = m_Y - m_YBTop
+        yBottom = m_Y + m_YBBottom
+        If (yTop < m_InitY) Then yTop = m_InitY
+        If (yBottom > m_FinalY) Then yBottom = m_FinalY
+            
+        'If the *left* x-bound is within bounds, add that line of pixels to the window.
+        xLeft = (m_X - m_XBLeft)
+        If (xLeft >= m_InitX) Then
+            
+            x = xLeft * 4
+            For y = yTop To yBottom
+                
+                b = m_Pixels(x, y)
+                g = m_Pixels(x + 1, y)
+                r = m_Pixels(x + 2, y)
+                
+                If (m_HistogramMode = PDPIM_RGBA) Then
+                
+                    m_Blue(b) = m_Blue(b) + 1
+                    m_Green(g) = m_Green(g) + 1
+                    m_Red(r) = m_Red(r) + 1
+                    
+                    'If m_AlphaSupport Then
+                    '    a = m_Pixels(x + 3, y)
+                    '    m_Alpha(a) = m_Alpha(a) + 1
+                    'End If
+                                    
+                Else
+                    a = GetLuminanceFromRGB(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) + 1
+                End If
+                
+            Next y
+            
+            'Infer the number of pixels added to the histogram(s)
+            m_NumOfPixels = m_NumOfPixels + (yBottom - yTop) + 1
+        
+        End If
+        
+        'If the *right* x-bound is within bounds, remove that line of pixels from the window.
+        xRight = m_X + m_XBRight + 1
+        If (xRight <= m_FinalX) Then
+            
+            x = xRight * 4
+            For y = yTop To yBottom
+                
+                b = m_Pixels(x, y)
+                g = m_Pixels(x + 1, y)
+                r = m_Pixels(x + 2, y)
+                
+                If (m_HistogramMode = PDPIM_RGBA) Then
+                
+                    m_Blue(b) = m_Blue(b) - 1
+                    m_Green(g) = m_Green(g) - 1
+                    m_Red(r) = m_Red(r) - 1
+                    
+                    'If m_AlphaSupport Then
+                    '    a = m_Pixels(x + 3, y)
+                    '    m_Alpha(a) = m_Alpha(a) - 1
+                    'End If
+                    
+                Else
+                    a = GetLuminanceFromRGB(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) - 1
+                End If
+                
+            Next y
+            
+            'Infer the number of pixels removed from the histogram(s)
+            m_NumOfPixels = m_NumOfPixels - (yBottom - yTop + 1)
+        
+        End If
+    
+    'Non-rectangular kernels require custom handling
+    Else
+    
+        'Because kernels may be non-standard sizes, we don't know in advance if a given pixel
+        ' needs to be added or removed.  The only way to know is to scan each boundary pixel
+        ' in turn, and see if it lies in-bounds.
+        Dim tmpY As Long, tmpX As Long
+        
+        'Start with trailing pixels
+        For y = -m_YBTop To m_YBBottom
+        
+            'Calculate the position of the trailing boundary pixel in this column
+            tmpY = y + m_Y
+            
+            'If y-coordinate lies out of bounds, ignore it
+            If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                
+                'This y-boundary potentially lies in-bounds.  Check the matching (x) position.
+                tmpX = (m_X + m_XLeft(y + m_YBTop))
+                
+                'If this x-coordinate lies in-bounds, this pixel can be added to the kernel
+                If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+                
+                    tmpX = tmpX * 4
+                    b = m_Pixels(tmpX, tmpY)
+                    g = m_Pixels(tmpX + 1, tmpY)
+                    r = m_Pixels(tmpX + 2, tmpY)
+                    
+                    If (m_HistogramMode = PDPIM_RGBA) Then
+                    
+                        m_Blue(b) = m_Blue(b) + 1
+                        m_Green(g) = m_Green(g) + 1
+                        m_Red(r) = m_Red(r) + 1
+                        
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) + 1
+                        'End If
+                        
+                    Else
+                        a = GetLuminanceFromRGB(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) + 1
+                    End If
+                    
+                    m_NumOfPixels = m_NumOfPixels + 1
+                    
+                End If
+                
+                'Repeat the above steps, but for the matching (x) position on the right.
+                tmpX = m_X + m_XRight(y + m_YBTop) + 1
+                
+                'If this x-coordinate lies in-bounds, this pixel can be removed from the kernel
+                If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+                
+                    tmpX = tmpX * 4
+                    b = m_Pixels(tmpX, tmpY)
+                    g = m_Pixels(tmpX + 1, tmpY)
+                    r = m_Pixels(tmpX + 2, tmpY)
+                    
+                    If (m_HistogramMode = PDPIM_RGBA) Then
+                    
+                        m_Blue(b) = m_Blue(b) - 1
+                        m_Green(g) = m_Green(g) - 1
+                        m_Red(r) = m_Red(r) - 1
+                        
+                        'If m_AlphaSupport Then
+                        '    a = m_Pixels(tmpX + 3, tmpY)
+                        '    m_Alpha(a) = m_Alpha(a) - 1
+                        'End If
+                        
+                    Else
+                        a = GetLuminanceFromRGB(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) - 1
+                    End If
+                    
+                    m_NumOfPixels = m_NumOfPixels - 1
+                    
+                End If
+                
+            End If
+        
+        Next y
+    
+    End If
+    
+    MoveXLeft = m_NumOfPixels
+    
+End Function
+
 Friend Function MoveYDown() As Long
     
     Dim xLeft As Long, xRight As Long, x As Long
@@ -1060,10 +1246,10 @@ Friend Function MoveYDown() As Long
         xRight = m_X + m_XBRight
         If (xRight > m_FinalX) Then xRight = m_FinalX
         
-        'To improve performance, we're going to wrap a 1D array around the current image scanline.  This doesn't provide a huge
-        ' performance benefit on small kernels, but on large kernels, it can be meaningfully faster.
-        ' (Note that the SafeArray header was already populated correctly in the initialization step, so we don't need to
-        '  initialize it here.)
+        'To improve performance, we're going to wrap a 1D array around the current image scanline.
+        ' This doesn't provide a huge performance benefit on small kernels, but on large kernels,
+        ' it can be meaningfully faster. (Note that the SafeArray header was already populated
+        ' correctly in the initialization step, so we don't need to initialize it here.)
         PutMem4 VarPtrArray(m_PixelLine()), VarPtr(m_PixelSA1D)
         
         'If the *top* y-bound is within bounds, remove a line of pixels from the window.
@@ -1154,7 +1340,8 @@ Friend Function MoveYDown() As Long
             tmpX = x + m_X
             
             'If this x-coordinate lies out of bounds, ignore it
-            If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+            If (tmpX >= m_InitX) Then
+            If (tmpX <= m_FinalX) Then
                 
                 tmpX = tmpX * 4
                 
@@ -1162,7 +1349,8 @@ Friend Function MoveYDown() As Long
                 tmpY = m_Y + m_YTop(x + m_XBLeft) - 1
                 
                 'If this y-coordinate lies in-bounds, this pixel can be removed from the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                 
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
@@ -1187,12 +1375,14 @@ Friend Function MoveYDown() As Long
                     m_NumOfPixels = m_NumOfPixels - 1
                     
                 End If
+                End If
                 
                 'Repeat the above steps, but for the matching y-position on the bottom.
                 tmpY = m_Y + m_YBottom(x + m_XBLeft)
                 
                 'If this y-coordinate lies in-bounds, this pixel can be added to the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                     
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
@@ -1217,7 +1407,9 @@ Friend Function MoveYDown() As Long
                     m_NumOfPixels = m_NumOfPixels + 1
                     
                 End If
+                End If
                 
+            End If
             End If
         
         Next x
@@ -1299,7 +1491,8 @@ Friend Function MoveYDown_Byte() As Long
             tmpX = x + m_X
             
             'If this x-coordinate lies out of bounds, ignore it
-            If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+            If (tmpX >= m_InitX) Then
+            If (tmpX <= m_FinalX) Then
                 
                 'This x-boundary potentially lies in-bounds.  Check the matching y-position.
                 tmpY = m_Y + m_YTop(x + m_XBLeft) - 1
@@ -1320,7 +1513,8 @@ Friend Function MoveYDown_Byte() As Long
                     m_Luminance(v) = m_Luminance(v) + 1
                     m_NumOfPixels = m_NumOfPixels + 1
                 End If
-                
+            
+            End If
             End If
         
         Next x
@@ -1443,7 +1637,8 @@ Friend Function MoveYUp() As Long
             tmpX = x + m_X
             
             'If this x-coordinate lies out of bounds, ignore it
-            If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+            If (tmpX >= m_InitX) Then
+            If (tmpX <= m_FinalX) Then
                 
                 tmpX = tmpX * 4
                 
@@ -1451,7 +1646,8 @@ Friend Function MoveYUp() As Long
                 tmpY = m_Y + m_YBottom(x + m_XBLeft) + 1
                 
                 'If this y-coordinate lies in-bounds, this pixel can be removed from the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                 
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
@@ -1476,12 +1672,14 @@ Friend Function MoveYUp() As Long
                     m_NumOfPixels = m_NumOfPixels - 1
                     
                 End If
+                End If
                 
                 'Repeat the above steps, but for the matching y-position on the bottom.
                 tmpY = m_Y + m_YTop(x + m_XBLeft)
                 
                 'If this y-coordinate lies in-bounds, this pixel can be added to the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                 
                     b = m_Pixels(tmpX, tmpY)
                     g = m_Pixels(tmpX + 1, tmpY)
@@ -1506,7 +1704,9 @@ Friend Function MoveYUp() As Long
                     m_NumOfPixels = m_NumOfPixels + 1
                     
                 End If
+                End If
                 
+            End If
             End If
         
         Next x
@@ -1589,28 +1789,34 @@ Friend Function MoveYUp_Byte() As Long
             tmpX = x + m_X
             
             'If this x-coordinate lies out of bounds, ignore it
-            If (tmpX >= m_InitX) And (tmpX <= m_FinalX) Then
+            If (tmpX >= m_InitX) Then
+            If (tmpX <= m_FinalX) Then
                 
                 'This x-boundary potentially lies in-bounds.  Check the matching y-position.
                 tmpY = m_Y + m_YBottom(x + m_XBLeft) + 1
                 
                 'If this y-coordinate lies in-bounds, this pixel can be removed from the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                     v = m_Bytes(tmpX, tmpY)
                     m_Luminance(v) = m_Luminance(v) - 1
                     m_NumOfPixels = m_NumOfPixels - 1
+                End If
                 End If
                 
                 'Repeat the above steps, but for the matching y-position on the bottom.
                 tmpY = m_Y + m_YTop(x + m_XBLeft)
                 
                 'If this y-coordinate lies in-bounds, this pixel can be added to the kernel
-                If (tmpY >= m_InitY) And (tmpY <= m_FinalY) Then
+                If (tmpY >= m_InitY) Then
+                If (tmpY <= m_FinalY) Then
                     v = m_Bytes(tmpX, tmpY)
                     m_Luminance(v) = m_Luminance(v) + 1
                     m_NumOfPixels = m_NumOfPixels + 1
                 End If
+                End If
                 
+            End If
             End If
         
         Next x
@@ -1620,4 +1826,3 @@ Friend Function MoveYUp_Byte() As Long
     MoveYUp_Byte = m_NumOfPixels
     
 End Function
-

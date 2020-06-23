@@ -989,11 +989,7 @@ Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalX Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
@@ -1201,7 +1197,6 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
     End If
     
 End Function
-
 
 'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
 Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PixelRegionShape, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean

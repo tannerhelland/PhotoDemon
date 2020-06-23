@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.330</langversion>
+<langversion>6.7.331</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -10328,6 +10328,11 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
 
 <phrase>
+<original>luminance only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>percentile</original>
 <translation>Percentil</translation>
 </phrase>
@@ -10347,7 +10352,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <translation>Aplicando filtro de mediana</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -16099,16 +16104,16 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation></translation>
 </phrase>
 
-<!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_Threshold.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2668</phrasecount>
+<phrasecount>2669</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5060 phrases. -->
-<!-- 2392 are duplicates, so only 2668 unique phrases have been written to file. -->
-<!-- These 2668 phrases contain approximately 12256 total words. -->
+<!-- As of this build, PhotoDemon contains 5062 phrases. -->
+<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
+<!-- These 2669 phrases contain approximately 12258 total words. -->
 
 </pdData>

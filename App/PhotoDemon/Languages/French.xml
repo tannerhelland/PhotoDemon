@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.483</langversion>
+<langversion>6.7.484</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -10324,6 +10324,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
 
 <phrase>
+<original>luminance only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>percentile</original>
 <translation>pourcentage</translation>
 </phrase>
@@ -10343,7 +10348,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application du filtre médian</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -16112,16 +16117,16 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation></translation>
 </phrase>
 
-<!-- Layer_Transparency_Threshold.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Layer_Transparency_Threshold.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2668</phrasecount>
+<phrasecount>2669</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5060 phrases. -->
-<!-- 2392 are duplicates, so only 2668 unique phrases have been written to file. -->
-<!-- These 2668 phrases contain approximately 12256 total words. -->
+<!-- As of this build, PhotoDemon contains 5062 phrases. -->
+<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
+<!-- These 2669 phrases contain approximately 12258 total words. -->
 
 </pdData>
