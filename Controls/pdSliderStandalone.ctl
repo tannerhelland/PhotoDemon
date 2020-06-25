@@ -551,8 +551,15 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    
+    'Ensure mouse trackers are properly reset
+    m_MouseDown = False
+    m_MouseOverSlider = False
+    m_MouseOverSliderTrack = False
+    
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
+    
 End Sub
 
 'Up and right arrows are used to increment the slider value, while left and down arrows decrement it
@@ -611,6 +618,7 @@ End Sub
 
 'Because this control supports quite a few different hover behaviors, we may need to redraw the control upon MouseLeave
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseDown = False
     m_MouseOverSlider = False
     m_MouseOverSliderTrack = False
     RenderTrack
@@ -658,10 +666,10 @@ End Sub
 ' If intensive processing occurred while the slider was being used, this ensures that the mouse location at its
 ' exact point of release is correctly rendered.
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    m_MouseDown = False
     If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
         Value = GetCustomPositionValue(x)
         RaiseEvent FinalChange
-        m_MouseDown = False
     End If
 End Sub
 
