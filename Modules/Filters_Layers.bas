@@ -211,11 +211,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If modifyProgBarMax = -1 Then SetProgBarMax finalX Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
@@ -559,11 +555,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If (Not suppressMessages) Then
-        If (modifyProgBarMax = -1) Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalX Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     

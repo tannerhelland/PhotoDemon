@@ -75,7 +75,7 @@ Begin VB.Form FormContour
       _ExtentY        =   1270
       Caption         =   "thickness"
       Min             =   1
-      Max             =   30
+      Max             =   100
       Value           =   1
       DefaultValue    =   1
    End
@@ -89,8 +89,8 @@ Attribute VB_Exposed = False
 'Trace Contour (Outline) Tool
 'Copyright 2013-2020 by Tanner Helland
 'Created: 15/Feb/13
-'Last updated: 30/July/17
-'Last update: performance improvements, migrate to XML params
+'Last updated: 24/June/20
+'Last update: introduce wavelet optimizations for the median step; this provides large performance improvements
 '
 'Contour tracing is performed by "stacking" a series of filters together:
 ' 1) Gaussian blur to smooth out fine details
@@ -131,8 +131,9 @@ Public Sub TraceContour(ByVal effectParams As String, Optional ByVal toPreview A
     Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    'Create a second local array.  This will contain the a copy of the current image, and we will
+    ' use it as our source reference (necessary to prevent modified pixel values from spreading
+    ' across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
@@ -146,34 +147,137 @@ Public Sub TraceContour(ByVal effectParams As String, Optional ByVal toPreview A
     Dim finalX As Long, finalY As Long
     finalX = workingDIB.GetDIBWidth
     finalY = workingDIB.GetDIBHeight
+    
+    Dim progBarMax As Long, progBarOffsets() As Long
         
     If useSmoothing Then
-    
+        
+        'Calculate a progress bar maximum value.  At present, each sub-function has its own strategy for
+        ' calculating progress.
+        ReDim progBarOffsets(0 To 3) As Long
+        
+        'Blur uses 3 iterations in each direction (width/height)
+        progBarOffsets(0) = 0
+        progBarMax = finalX * 3 + finalY * 3
+        progBarOffsets(1) = progBarMax
+        
+        'Median uses a wavelet approximation; its size is specific to the median filter.
+        ' (For details on how this works, refer to FormMedian.ApplyMedianFilter().)
+        Dim waveletsUsed As Boolean, waveletRatio As Double, waveletWidth As Long, waveletHeight As Long, waveletRadius As Long
+        waveletsUsed = False
+        
+        If (cRadius > 1) Then
+            
+            If (workingDIB.GetDIBWidth > cRadius) Or (workingDIB.GetDIBHeight > cRadius) Then
+            
+                waveletRatio = 100# - (170# * CDbl(cRadius)) ^ 0.4
+                
+                'Convert the ratio to the range [0, 1], and invert it so that it represents
+                ' a multiplication factor.
+                If (waveletRatio > 100#) Then waveletRatio = 100#
+                If (waveletRatio < 1#) Then waveletRatio = 1#
+                waveletRatio = waveletRatio / 100#
+                
+                'If we produced a valid value, activate wavelet mode
+                waveletsUsed = (waveletRatio < 1#)
+                
+            End If
+        
+        End If
+        
+        'If wavelets are a valid option, modify the median radius accordingly.
+        If waveletsUsed Then
+        
+            waveletWidth = Int(CDbl(workingDIB.GetDIBWidth) * waveletRatio + 0.5)
+            If (waveletWidth < 1) Then waveletWidth = 1
+            
+            waveletHeight = Int(CDbl(workingDIB.GetDIBHeight) * waveletRatio + 0.5)
+            If (waveletHeight < 1) Then waveletHeight = 1
+            
+            waveletRadius = Int(CDbl(cRadius) * waveletRatio + 0.5)
+            If (waveletRadius < 1) Then waveletRadius = 1
+            
+        Else
+            waveletWidth = finalX
+        End If
+        
+        progBarMax = progBarMax + waveletWidth * 4
+        progBarOffsets(2) = progBarMax
+        
+        'ContourDIB uses width of the image
+        progBarMax = progBarMax + finalX
+        progBarOffsets(3) = progBarMax
+        
+        'WhiteBalance uses height
+        progBarMax = progBarMax + finalY
+        
         'Blur the current DIB
-        If CreateApproximateGaussianBlurDIB(cRadius, srcDIB, workingDIB, 3, toPreview, finalX * 6 + finalY * 3) Then
+        If Filters_Layers.CreateApproximateGaussianBlurDIB(cRadius, srcDIB, workingDIB, 3, toPreview, progBarMax, progBarOffsets(0)) Then
         
             'Use the median filter to round out edges
-            If CreateMedianDIB(cRadius, 50, PDPRS_Circle, workingDIB, srcDIB, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
+            Dim medianOK As Boolean
+            If waveletsUsed Then
+                
+                'Produce wavelet copies of the image.  (Actually, we just want a low-frequency version
+                ' of the image, because median is specifically designed to remove high-frequency noise!)
+                Dim wSrcDIB As pdDIB, wDstDIB As pdDIB
+                
+                Set wSrcDIB = New pdDIB
+                wSrcDIB.CreateBlank waveletWidth, waveletHeight, 32, 0, 0
+                GDI_Plus.GDIPlus_StretchBlt wSrcDIB, 0, 0, waveletWidth, waveletHeight, workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+                
+                Set wDstDIB = New pdDIB
+                wDstDIB.CreateFromExistingDIB wSrcDIB
+                
+                medianOK = (Filters_Layers.CreateMedianDIB(waveletRadius, 50, PDPRS_Circle, wSrcDIB, wDstDIB, toPreview, progBarMax, progBarOffsets(1)) <> 0)
+                Set wSrcDIB = Nothing
+                
+                'Paint the wavelet result into "srcDIB", which will be used for the next stage of processing
+                srcDIB.ResetDIB 0
+                GDI_Plus.GDIPlus_StretchBlt srcDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, wDstDIB, 0, 0, wDstDIB.GetDIBWidth, wDstDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, dstCopyIsOkay:=True
+                Set wDstDIB = Nothing
+                
+            Else
+                medianOK = (Filters_Layers.CreateMedianDIB(cRadius, 50, PDPRS_Circle, workingDIB, srcDIB, toPreview, progBarMax, progBarOffsets(1)) <> 0)
+            End If
+            
+            If medianOK Then
         
                 'Next, create a contour of the DIB
-                If CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, finalX * 6 + finalY * 3, finalX * 4 + finalY * 3) Then
+                If Filters_Layers.CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, progBarMax, progBarOffsets(2)) Then
             
                     'Finally, white balance the resulting DIB
-                    WhiteBalanceDIB 0.01, workingDIB, toPreview, finalX * 6 + finalY * 3, finalX * 5 + finalY * 3
+                    Filters_Layers.WhiteBalanceDIB 0.01, workingDIB, toPreview, progBarMax, progBarOffsets(3)
                     
                 End If
             End If
         End If
     Else
         
+        'Calculate a progress bar maximum value.  At present, each sub-function has its own strategy for
+        ' calculating progress.
+        ReDim progBarOffsets(0 To 2) As Long
+        
+        'Blur uses 3 iterations in each direction (width/height)
+        progBarOffsets(0) = 0
+        progBarMax = finalX * 3 + finalY * 3
+        progBarOffsets(1) = progBarMax
+        
+        'ContourDIB uses width of the image
+        progBarMax = progBarMax + finalX
+        progBarOffsets(2) = progBarMax
+        
+        'WhiteBalance uses height
+        progBarMax = progBarMax + finalY
+        
         'Blur the current DIB
-        If CreateApproximateGaussianBlurDIB(cRadius, workingDIB, srcDIB, 3, toPreview, finalX * 5 + finalY * 3) Then
+        If Filters_Layers.CreateApproximateGaussianBlurDIB(cRadius, workingDIB, srcDIB, 3, toPreview, progBarMax, progBarOffsets(0)) Then
         
             'Next, create a contour of the DIB
-            If CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, finalX * 5 + finalY * 3, finalX * 3 + finalY * 3) Then
+            If Filters_Layers.CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, progBarMax, progBarOffsets(1)) Then
             
                 'Finally, white balance the resulting DIB
-                WhiteBalanceDIB 0.01, workingDIB, toPreview, finalX * 5 + finalY * 3, finalX * 4 + finalY * 3
+                Filters_Layers.WhiteBalanceDIB 0.01, workingDIB, toPreview, progBarMax, progBarOffsets(2)
                 
             End If
         End If

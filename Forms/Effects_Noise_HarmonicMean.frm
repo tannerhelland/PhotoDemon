@@ -56,7 +56,8 @@ Begin VB.Form FormHarmonicMean
       _ExtentY        =   1270
       Caption         =   "horizontal strength"
       Min             =   1
-      Max             =   200
+      Max             =   500
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   5
    End
@@ -71,7 +72,8 @@ Begin VB.Form FormHarmonicMean
       _ExtentY        =   1270
       Caption         =   "vertical strength"
       Min             =   1
-      Max             =   200
+      Max             =   500
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   5
    End
@@ -79,11 +81,21 @@ Begin VB.Form FormHarmonicMean
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
-      Top             =   3240
+      Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1931
       Caption         =   "kernel shape"
+   End
+   Begin PhotoDemon.pdCheckBox chkSynchronize 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   3240
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
+      Caption         =   "synchronize search radius"
    End
 End
 Attribute VB_Name = "FormHarmonicMean"
@@ -95,8 +107,9 @@ Attribute VB_Exposed = False
 'Harmonic mean Tool
 'Copyright 2013-2020 by Tanner Helland
 'Created: 27/July/17
-'Last updated: 27/July/17
-'Last update: initial build
+'Last updated: 25/June/20
+'Last update: as radius increases, use increasingly strong wavelet approximation for
+'             huge perf boost
 '
 'This is a heavily optimized "harmonic mean" function.  An accumulation technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -122,66 +135,38 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
     Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
-    Dim hRadius As Double, vRadius As Double, kernelShape As PD_PixelRegionShape
-    hRadius = cParams.GetDouble("radius-x", 1#)
-    vRadius = cParams.GetDouble("radius-y", hRadius)
+    Dim hRadius As Long, vRadius As Long, kernelShape As PD_PixelRegionShape
+    hRadius = cParams.GetLong("radius-x", 1)
+    vRadius = cParams.GetLong("radius-y", hRadius)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     If (Not toPreview) Then Message "Applying harmonic mean filter..."
         
     'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SafeArray2D
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    Dim x As Long, y As Long
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        hRadius = hRadius * curDIBValues.previewModifier
-        vRadius = vRadius * curDIBValues.previewModifier
+        hRadius = Int(hRadius * curDIBValues.previewModifier + 0.5)
+        vRadius = Int(vRadius * curDIBValues.previewModifier + 0.5)
     End If
     
-    'Range-check the radius.  (During previews, the line of code above may cause the radius to drop to zero.)
-    If (hRadius = 0) Then hRadius = 1
-    If (vRadius = 0) Then vRadius = 1
+    'Limit radius to the size of the underlying image
+    If (hRadius > workingDIB.GetDIBWidth) Then hRadius = workingDIB.GetDIBWidth
+    If (vRadius > workingDIB.GetDIBHeight) Then vRadius = workingDIB.GetDIBHeight
     
-    'Split the radius into integer-only components, and make sure each isn't larger than the image itself
-    ' in that dimension.
-    Dim xRadius As Long, yRadius As Long
-    xRadius = hRadius: yRadius = vRadius
-    If xRadius > (finalX - initX) Then xRadius = finalX - initX
-    If yRadius > (finalY - initY) Then yRadius = finalY - initY
-    
-    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
-    ' processing time in the inner loop.
-    initX = initX * 4
-    finalX = finalX * 4
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If (Not toPreview) Then
-        SetProgBarMax finalX
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
+    'Final sanity check
+    If (hRadius < 1) Then hRadius = 1
+    If (vRadius < 1) Then vRadius = 1
     
     'The number of pixels in the current median box are tracked dynamically.
     Dim numOfPixels As Long
     numOfPixels = 0
             
-    'Median filtering takes a lot of variables
+    'Harmonic mean filtering takes a lot of variables
     Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
     ReDim rValues(0 To 255) As Long
     ReDim gValues(0 To 255) As Long
@@ -193,17 +178,102 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
     Dim directionDown As Boolean
     directionDown = True
     
-    Dim pxSum As Double, pxCount As Long
-    Dim finalR As Double, finalG As Double, finalB As Double
+    'Normally we use doubles (as they're generally faster than singles in VB6 since they
+    ' use the old x87 fp pathways), but this function is extremely cache constrained,
+    ' so every byte saved helps.
+    Dim pxSum As Single, pxCount As Long
+    Dim finalR As Single, finalG As Single, finalB As Single
     
     'Prebuild a lookup table for all possible (1 / i) values.  To allow us to process the case of i=0
     ' (e.g. black pixels), we increment all values by 1.0, then subtract 1.0 in the inner loop, after the
     ' mean has been calculated.
-    Dim oneDiv() As Double
-    ReDim oneDiv(0 To 255) As Double
+    Dim oneDiv(0 To 255) As Single
     For i = 0 To 255
-        oneDiv(i) = 1# / (i + 1)
+        oneDiv(i) = 1! / (i + 1)
     Next i
+    
+    'This filter is incredibly slow.  To improve performance at very large radii, we use a
+    ' wavelet approach.  Figure out how far we can shrink the image while still maintaining an
+    ' acceptable level of quality.
+    Dim waveletsUsed As Boolean, waveletRatio As Double, waveletWidth As Long, waveletHeight As Long
+    waveletsUsed = False
+    
+    'Use the smallest directional radius
+    Dim mRadius As Long
+    mRadius = hRadius
+    If (vRadius < mRadius) Then mRadius = vRadius
+    
+    If (mRadius > 1) Then
+        
+        'First, if the image is sufficiently small, don't optimize with wavelets as it's a
+        ' waste of time.
+        If (workingDIB.GetDIBWidth > mRadius) Or (workingDIB.GetDIBHeight > mRadius) Then
+        
+            'If the image is larger than the underlying radius, use a wavelet approximation.
+            ' See FormMedian.ApplyMedianEffect() for details on this formula.
+            waveletRatio = 100# - (170# * CDbl(mRadius)) ^ 0.4
+            
+            'Convert the ratio to the range [0, 1], and invert it so that it represents
+            ' a multiplication factor.
+            If (waveletRatio > 100#) Then waveletRatio = 100#
+            If (waveletRatio < 1#) Then waveletRatio = 1#
+            waveletRatio = waveletRatio / 100#
+            
+            'If we produced a valid value, activate wavelet mode!
+            waveletsUsed = (waveletRatio < 1#)
+            
+        End If
+    
+    End If
+    
+    Dim srcDIB As pdDIB, dstDIB As pdDIB
+    Set srcDIB = New pdDIB
+    
+    'If wavelets are a valid option, create a copy of the source image at a smaller size and
+    ' modify the effect radius accordingly.
+    If waveletsUsed Then
+    
+        waveletWidth = Int(CDbl(workingDIB.GetDIBWidth) * waveletRatio + 0.5)
+        If (waveletWidth < 1) Then waveletWidth = 1
+        
+        waveletHeight = Int(CDbl(workingDIB.GetDIBHeight) * waveletRatio + 0.5)
+        If (waveletHeight < 1) Then waveletHeight = 1
+        
+        hRadius = Int(CDbl(hRadius) * waveletRatio + 0.5)
+        If (hRadius < 1) Then hRadius = 1
+        
+        vRadius = Int(CDbl(vRadius) * waveletRatio + 0.5)
+        If (vRadius < 1) Then vRadius = 1
+        
+        srcDIB.CreateBlank waveletWidth, waveletHeight, 32, 0, 0
+        GDI_Plus.GDIPlus_StretchBlt srcDIB, 0, 0, waveletWidth, waveletHeight, workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+        
+        Set dstDIB = New pdDIB
+        dstDIB.CreateFromExistingDIB srcDIB
+        
+    'If the radius isn't small enough to warrant a wavelet approach, simply mirror the
+    ' existing image as-is.  Note also that we can also cheat and "paint" the finished result
+    ' directly into the working DIB provided us by PD's effect engine.
+    Else
+        srcDIB.CreateFromExistingDIB workingDIB
+        Set dstDIB = workingDIB
+    End If
+    
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+    
+    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this,
+    ' to spare us some processing time in the inner loop.
+    Dim finalX As Long, finalY As Long
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
+    finalY = (srcDIB.GetDIBHeight - 1)
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not toPreview) Then
+        SetProgBarMax finalX
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
     
     'Prep the pixel iterator
     Dim cPixelIterator As pdPixelIterator
@@ -214,16 +284,16 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX Step 4
+        For x = 0 To finalX Step 4
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then
-                startY = initY
+                startY = 0
                 stopY = finalY
                 yStep = 1
             Else
                 startY = finalY
-                stopY = initY
+                stopY = 0
                 yStep = -1
             End If
             
@@ -233,26 +303,26 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
                 'With histograms successfully calculated, we can now find the harmonic mean for this pixel.
                 
                 'Loop through each color component histogram, and average all non-zero pixels found
-                pxSum = 0#
+                pxSum = 0!
                 pxCount = 0
                 
                 For i = 0 To 255
                     pxSum = pxSum + rValues(i) * oneDiv(i)
                     pxCount = pxCount + rValues(i)
                 Next i
-                If (pxSum > 0#) Then finalR = pxCount / pxSum Else finalR = 1#
+                If (pxSum > 0!) Then finalR = pxCount / pxSum Else finalR = 1!
                 
                 'Repeat for green and blue
-                pxSum = 0#
+                pxSum = 0!
                 pxCount = 0
                 
                 For i = 0 To 255
                     pxSum = pxSum + gValues(i) * oneDiv(i)
                     pxCount = pxCount + gValues(i)
                 Next i
-                If (pxSum > 0#) Then finalG = pxCount / pxSum Else finalG = 1#
+                If (pxSum > 0!) Then finalG = pxCount / pxSum Else finalG = 1!
                 
-                pxSum = 0#
+                pxSum = 0!
                 pxCount = 0
                 
                 For i = 0 To 255
@@ -260,19 +330,19 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
                     pxCount = pxCount + bValues(i)
                 Next i
                 
-                If (pxSum > 0#) Then finalB = pxCount / pxSum Else finalB = 1#
+                If (pxSum > 0!) Then finalB = pxCount / pxSum Else finalB = 1!
                 
                 'Subtract one from the calculated average (which is how we compensate for black pixels),
                 ' then perform a failsafe upper-bound check.  (Lower bound is guaranteed safe.)
-                finalR = finalR - 1
-                finalG = finalG - 1
-                finalB = finalB - 1
-                If (finalR > 255#) Then finalR = 255#
-                If (finalR < 0#) Then finalR = 0#
-                If (finalG > 255#) Then finalG = 255#
-                If (finalG < 0#) Then finalG = 0#
-                If (finalB > 255#) Then finalB = 255#
-                If (finalB < 0#) Then finalB = 0#
+                finalR = finalR - 1!
+                finalG = finalG - 1!
+                finalB = finalB - 1!
+                If (finalR > 255!) Then finalR = 255!
+                If (finalR < 0!) Then finalR = 0!
+                If (finalG > 255!) Then finalG = 255!
+                If (finalG < 0!) Then finalG = 0!
+                If (finalB > 255!) Then finalB = 255!
+                If (finalB < 0!) Then finalB = 0!
                 
                 'Update the pixel data in the destination image with our final result(s)
                 dstImageData(x, y) = finalB
@@ -283,7 +353,7 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
                 If directionDown Then
                     If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > 0) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
@@ -306,11 +376,22 @@ Public Sub ApplyHarmonicMean(ByVal parameterList As String, Optional ByVal toPre
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapArrayFromDIB dstImageData
         
-        'Erase our temporary DIB
+        'Regardless of how we produced the median effect, we're finished with the source DIB;
+        ' free it as it may be quite large.
         Set srcDIB = Nothing
-    
+        
+        'If wavelets were used, we now need to sample the processed result back into workingDIB.
+        ' Importantly, note that different settings from the original downsample are used - this is
+        ' intentional and critical for avoiding fringing while accurately mimicking the "soft edge"
+        ' look produced by the full-radius median filter we're attempting to approximate.
+        If waveletsUsed Then
+            workingDIB.ResetDIB 0
+            GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBilinear, dstCopyIsOkay:=True
+            Set dstDIB = Nothing
+        End If
+        
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
         EffectPrep.FinalizeImageData toPreview, dstPic
         
@@ -320,6 +401,10 @@ End Sub
 
 Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
     UpdatePreview
+End Sub
+
+Private Sub chkSynchronize_Click()
+    If chkSynchronize.Value Then sltRadius(1).Value = sltRadius(0).Value
 End Sub
 
 'OK button
@@ -360,7 +445,17 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltRadius_Change(Index As Integer)
+    
+    If chkSynchronize.Value Then
+        If (sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value) Then
+            cmdBar.SetPreviewStatus False
+            sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
+            cmdBar.SetPreviewStatus True
+        End If
+    End If
+    
     UpdatePreview
+    
 End Sub
 
 Private Function GetLocalParamString() As String

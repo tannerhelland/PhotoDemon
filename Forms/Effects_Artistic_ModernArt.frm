@@ -98,17 +98,18 @@ Attribute VB_Exposed = False
 'Last updated: 23/November/15
 'Last update: convert to XML parameter list
 '
-'This is a heavily optimized "extreme rank" function.  An accumulation technique is used instead of the standard sliding
-' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
-' This allows the algorithm to perform extremely well, despite being written in pure VB.
+'This is a heavily optimized "extreme rank" function.  An accumulation technique is used
+' instead of the standard sliding window mechanism.
+' (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
+' This allows the algorithm to perform well, despite being written in pure VB.
 '
-'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before applying any
-' filter of a large radius (> 20).
+'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the
+' project before using this tool.
 '
-'Extreme rank is a function of my own creation.  Basically, it performs both a minimum and a maxmimum rank calculation,
-' and then it sets the pixel to whichever value is further from the current one.  This leads to an odd cut-out or stencil
-' look unlike any other filter I've seen.  I'm not sure how much utility such a function provides, but it's fun so I
-' include it.  :)
+'This function works by performing both a minimum and a maximum rank calculation,
+' then setting the target pixel to whichever value is further from the current one.
+' This leads to a unique cut-out (or stencil?) look.  I'm not sure how much utility it
+' provides, but it's fun so I've left it in the project.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -117,7 +118,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply a "modern art" filter to the current master image (basically a max/min rank algorithm, with some tweaks)
+'Apply a "modern art" filter to the current master image (basically a max/min rank algorithm,
+' with some tweaks like shape-specific search regions)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
@@ -136,41 +138,91 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image,
-    ' and we will use it as our source reference.
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-        
-    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
+    'If this is a preview, we need to adjust the kernel radius to match the size of
+    ' the preview box
     If toPreview Then
         hRadius = hRadius * curDIBValues.previewModifier
         vRadius = vRadius * curDIBValues.previewModifier
     End If
     
-    'Range-check the radius.  (During previews, the line of code above may cause the radius to drop to zero.)
-    If (hRadius = 0) Then hRadius = 1
-    If (vRadius = 0) Then vRadius = 1
+    'Range-check the radius.  (During previews, the line of code above may cause the radius
+    ' to drop to zero.)
+    If (hRadius > workingDIB.GetDIBWidth) Then hRadius = workingDIB.GetDIBWidth
+    If (vRadius > workingDIB.GetDIBHeight) Then vRadius = workingDIB.GetDIBHeight
+    If (hRadius < 1) Then hRadius = 1
+    If (vRadius < 1) Then vRadius = 1
     
-    'Split the radius into integer-only components, and make sure each isn't larger than the image itself
-    ' in that dimension.
-    Dim xRadius As Long, yRadius As Long
-    xRadius = hRadius: yRadius = vRadius
-    If xRadius > (finalX - initX) Then xRadius = finalX - initX
-    If yRadius > (finalY - initY) Then yRadius = finalY - initY
+    'Next, let's see if we can use wavelets to accelerate the filter.  For details on how
+    ' this approach works, see FormMedian.ApplyMedianFilter() (which this function is based on).
+    Dim minRadius As Long
+    minRadius = hRadius
+    If (vRadius < minRadius) Then minRadius = vRadius
+    
+    Dim waveletsUsed As Boolean, waveletRatio As Double, waveletWidth As Long, waveletHeight As Long
+    waveletsUsed = False
+    
+    If (minRadius > 1) Then
+        
+        'First, if the image is sufficiently small, don't optimize with wavelets as it's a
+        ' waste of time.
+        If (workingDIB.GetDIBWidth > minRadius) Or (workingDIB.GetDIBHeight > minRadius) Then
+        
+            'If the image is larger than the underlying radius, use a wavelet approximation.
+            waveletRatio = 100# - (170# * CDbl(minRadius)) ^ 0.4
+            
+            'Convert the ratio to the range [0, 1], and invert it so that it represents
+            ' a multiplication factor.
+            If (waveletRatio > 100#) Then waveletRatio = 100#
+            If (waveletRatio < 1#) Then waveletRatio = 1#
+            waveletRatio = waveletRatio / 100#
+            
+            'If we produced a valid value, activate wavelet mode!
+            waveletsUsed = (waveletRatio < 1#)
+            
+        End If
+    
+    End If
+    
+    Dim srcDIB As pdDIB, dstDIB As pdDIB
+    Set srcDIB = New pdDIB
+    
+    'If wavelets are a valid option, create a copy of the source image at a smaller size and
+    ' modify the median radius accordingly.
+    If waveletsUsed Then
+    
+        waveletWidth = Int(CDbl(workingDIB.GetDIBWidth) * waveletRatio + 0.5)
+        If (waveletWidth < 1) Then waveletWidth = 1
+        
+        waveletHeight = Int(CDbl(workingDIB.GetDIBHeight) * waveletRatio + 0.5)
+        If (waveletHeight < 1) Then waveletHeight = 1
+        
+        hRadius = Int(CDbl(hRadius) * waveletRatio + 0.5)
+        If (hRadius < 1) Then hRadius = 1
+        
+        vRadius = Int(CDbl(vRadius) * waveletRatio + 0.5)
+        If (vRadius < 1) Then vRadius = 1
+        
+        srcDIB.CreateBlank waveletWidth, waveletHeight, 32, 0, 0
+        GDI_Plus.GDIPlus_StretchBlt srcDIB, 0, 0, waveletWidth, waveletHeight, workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+        
+        Set dstDIB = New pdDIB
+        dstDIB.CreateFromExistingDIB srcDIB
+        
+    'If the radius isn't small enough to warrant a wavelet approach, simply mirror the
+    ' existing image as-is.  Note also that we can also cheat and "paint" the finished result
+    ' directly into the working DIB provided us by PD's effect engine.
+    Else
+        srcDIB.CreateFromExistingDIB workingDIB
+        Set dstDIB = workingDIB
+    End If
     
     'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
     ' processing time in the inner loop.
-    initX = initX * 4
-    finalX = finalX * 4
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
+    finalY = srcDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -206,19 +258,21 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     
     If cPixelIterator.InitializeIterator(srcDIB, hRadius, vRadius, kernelShape) Then
     
+        dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+    
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX Step 4
+        For x = 0 To finalX Step 4
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then
-                startY = initY
+                startY = 0
                 stopY = finalY
                 yStep = 1
             Else
                 startY = finalY
-                stopY = initY
+                stopY = 0
                 yStep = -1
             End If
             
@@ -231,13 +285,24 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 lowR = 0
                 lowG = 0
                 lowB = 0
-                cutoffTotal = 0.01 * numOfPixels
+                highR = 0
+                highG = 0
+                highB = 0
+                cutoffTotal = numOfPixels \ 100
                 If (cutoffTotal < 1) Then cutoffTotal = 1
                 
                 For i = 0 To 255
                     lowR = lowR + rValues(i)
                     If (lowR >= cutoffTotal) Then
                         lowR = i
+                        Exit For
+                    End If
+                Next i
+                
+                For i = 255 To 0 Step -1
+                    highR = highR + rValues(i)
+                    If (highR >= cutoffTotal) Then
+                        highR = i
                         Exit For
                     End If
                 Next i
@@ -250,33 +315,18 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                     End If
                 Next i
                 
-                For i = 0 To 255
-                    lowB = lowB + bValues(i)
-                    If (lowB >= cutoffTotal) Then
-                        lowB = i
-                        Exit For
-                    End If
-                Next i
-                
-                'Now do the same thing at the top of the histogram
-                highR = 0
-                highG = 0
-                highB = 0
-                cutoffTotal = 0.01 * numOfPixels
-                If (cutoffTotal < 1) Then cutoffTotal = 1
-                
-                For i = 255 To 0 Step -1
-                    highR = highR + rValues(i)
-                    If (highR >= cutoffTotal) Then
-                        highR = i
-                        Exit For
-                    End If
-                Next i
-                
                 For i = 255 To 0 Step -1
                     highG = highG + gValues(i)
                     If (highG >= cutoffTotal) Then
                         highG = i
+                        Exit For
+                    End If
+                Next i
+                
+                For i = 0 To 255
+                    lowB = lowB + bValues(i)
+                    If (lowB >= cutoffTotal) Then
+                        lowB = i
                         Exit For
                     End If
                 Next i
@@ -291,31 +341,22 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 
                 'Retrieve the original pixel data, and replace it with the processed result
                 b = dstImageData(x, y)
-                If Abs(lowB - b) > (highB - b) Then
-                    dstImageData(x, y) = lowB
-                Else
-                    dstImageData(x, y) = highB
-                End If
+                If ((b - lowB) > (highB - b)) Then highB = lowB
+                dstImageData(x, y) = highB
                 
                 g = dstImageData(x + 1, y)
-                If Abs(lowG - g) > (highG - g) Then
-                    dstImageData(x + 1, y) = lowG
-                Else
-                    dstImageData(x + 1, y) = highG
-                End If
+                If ((g - lowG) > (highG - g)) Then highG = lowG
+                dstImageData(x + 1, y) = highG
                 
                 r = dstImageData(x + 2, y)
-                If Abs(lowR - r) > (highR - r) Then
-                    dstImageData(x + 2, y) = lowR
-                Else
-                    dstImageData(x + 2, y) = highR
-                End If
+                If ((r - lowR) > (highR - r)) Then highR = lowR
+                dstImageData(x + 2, y) = highR
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
                     If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > 0) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
@@ -338,15 +379,24 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapArrayFromDIB dstImageData
+        
+        'If wavelets were used, we now need to sample the processed result back into workingDIB.
+        If waveletsUsed Then
+            workingDIB.ResetDIB 0
+            GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, interpolationType:=GP_IM_NearestNeighbor, isZoomedIn:=True, dstCopyIsOkay:=True
+            Set dstDIB = Nothing
+        End If
         
         'Erase our temporary DIB
-        srcDIB.EraseDIB
         Set srcDIB = Nothing
-    
+        
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
         EffectPrep.FinalizeImageData toPreview, dstPic
         
+    'If an unforseen error occurs, free our unsafe DIB wrapper
+    Else
+        workingDIB.UnwrapArrayFromDIB dstImageData
     End If
 
 End Sub

@@ -76,7 +76,8 @@ Begin VB.Form FormRangeFilter
       _ExtentY        =   1270
       Caption         =   "horizontal radius"
       Min             =   1
-      Max             =   50
+      Max             =   500
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   1
    End
@@ -91,7 +92,8 @@ Begin VB.Form FormRangeFilter
       _ExtentY        =   1270
       Caption         =   "vertical radius"
       Min             =   1
-      Max             =   50
+      Max             =   500
+      ScaleStyle      =   1
       Value           =   5
       DefaultValue    =   1
    End
@@ -105,8 +107,9 @@ Attribute VB_Exposed = False
 'Range filter edge detection tool
 'Copyright 2015-2020 by Tanner Helland
 'Created: 23/November/15
-'Last updated: 23/November/15
-'Last update: initial build
+'Last updated: 25/June/20
+'Last update: as radius increases, use increasingly strong wavelet approximation for
+'             huge perf boost
 '
 'This is a heavily optimized "range filter" function.  An accumulation technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -134,9 +137,9 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Set cParams = New pdSerialize
     cParams.SetParamString parameterList
     
-    Dim hRadius As Double, vRadius As Double, kernelShape As PD_PixelRegionShape
-    hRadius = cParams.GetDouble("radius-x", 1#)
-    vRadius = cParams.GetDouble("radius-y", hRadius)
+    Dim hRadius As Long, vRadius As Long, kernelShape As PD_PixelRegionShape
+    hRadius = cParams.GetLong("radius-x", 1)
+    vRadius = cParams.GetLong("radius-y", hRadius)
     kernelShape = cParams.GetLong("kernelshape", PDPRS_Circle)
     
     If (Not toPreview) Then Message "Searching each pixel range for edges..."
@@ -144,49 +147,22 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second copy of the target DIB.
-    ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.CreateFromExistingDIB workingDIB
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    Dim x As Long, y As Long
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
-        hRadius = hRadius * curDIBValues.previewModifier
-        vRadius = vRadius * curDIBValues.previewModifier
+        hRadius = Int(hRadius * curDIBValues.previewModifier + 0.5)
+        vRadius = Int(vRadius * curDIBValues.previewModifier + 0.5)
     End If
     
-    'Range-check the radius.  (During previews, the line of code above may cause the radius to drop to zero.)
+    'Limit radius to the size of the underlying image
+    If (hRadius > workingDIB.GetDIBWidth) Then hRadius = workingDIB.GetDIBWidth
+    If (vRadius > workingDIB.GetDIBHeight) Then vRadius = workingDIB.GetDIBHeight
+    
+    'Final sanity check
     If (hRadius < 1) Then hRadius = 1
     If (vRadius < 1) Then vRadius = 1
-    
-    'Split the radius into integer-only components, and make sure each isn't larger than the image itself
-    ' in that dimension.
-    Dim xRadius As Long, yRadius As Long
-    xRadius = hRadius: yRadius = vRadius
-    If xRadius > (finalX - initX) Then xRadius = finalX - initX
-    If yRadius > (finalY - initY) Then yRadius = finalY - initY
-    
-    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
-    ' processing time in the inner loop.
-    initX = initX * 4
-    finalX = finalX * 4
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If (Not toPreview) Then
-        SetProgBarMax finalX
-        progBarCheck = ProgressBars.FindBestProgBarValue()
-    End If
     
     'The number of pixels in the current box are tracked dynamically.
     Dim numOfPixels As Long
@@ -207,25 +183,108 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Dim directionDown As Boolean
     directionDown = True
     
+    'This filter is incredibly slow.  To improve performance at very large radii, we use a
+    ' wavelet approach.  Figure out how far we can shrink the image while still maintaining an
+    ' acceptable level of quality.
+    Dim waveletsUsed As Boolean, waveletRatio As Double, waveletWidth As Long, waveletHeight As Long
+    waveletsUsed = False
+    
+    'Use the smallest directional radius
+    Dim mRadius As Long
+    mRadius = hRadius
+    If (vRadius < mRadius) Then mRadius = vRadius
+    
+    If (mRadius > 1) Then
+        
+        'First, if the image is sufficiently small, don't optimize with wavelets as it's a
+        ' waste of time.
+        If (workingDIB.GetDIBWidth > mRadius) Or (workingDIB.GetDIBHeight > mRadius) Then
+        
+            'If the image is larger than the underlying radius, use a wavelet approximation.
+            ' See FormMedian.ApplyMedianEffect() for details on this formula.
+            waveletRatio = 100# - (170# * CDbl(mRadius)) ^ 0.4
+            
+            'Convert the ratio to the range [0, 1], and invert it so that it represents
+            ' a multiplication factor.
+            If (waveletRatio > 100#) Then waveletRatio = 100#
+            If (waveletRatio < 1#) Then waveletRatio = 1#
+            waveletRatio = waveletRatio / 100#
+            
+            'If we produced a valid value, activate wavelet mode!
+            waveletsUsed = (waveletRatio < 1#)
+            
+        End If
+    
+    End If
+    
+    Dim srcDIB As pdDIB, dstDIB As pdDIB
+    Set srcDIB = New pdDIB
+    
+    'If wavelets are a valid option, create a copy of the source image at a smaller size and
+    ' modify the effect radius accordingly.
+    If waveletsUsed Then
+    
+        waveletWidth = Int(CDbl(workingDIB.GetDIBWidth) * waveletRatio + 0.5)
+        If (waveletWidth < 1) Then waveletWidth = 1
+        
+        waveletHeight = Int(CDbl(workingDIB.GetDIBHeight) * waveletRatio + 0.5)
+        If (waveletHeight < 1) Then waveletHeight = 1
+        
+        hRadius = Int(CDbl(hRadius) * waveletRatio + 0.5)
+        If (hRadius < 1) Then hRadius = 1
+        
+        vRadius = Int(CDbl(vRadius) * waveletRatio + 0.5)
+        If (vRadius < 1) Then vRadius = 1
+        
+        srcDIB.CreateBlank waveletWidth, waveletHeight, 32, 0, 0
+        GDI_Plus.GDIPlus_StretchBlt srcDIB, 0, 0, waveletWidth, waveletHeight, workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBicubic, isZoomedIn:=True, dstCopyIsOkay:=True
+        
+        Set dstDIB = New pdDIB
+        dstDIB.CreateFromExistingDIB srcDIB
+        
+    'If the radius isn't small enough to warrant a wavelet approach, simply mirror the
+    ' existing image as-is.  Note also that we can also cheat and "paint" the finished result
+    ' directly into the working DIB provided us by PD's effect engine.
+    Else
+        srcDIB.CreateFromExistingDIB workingDIB
+        Set dstDIB = workingDIB
+    End If
+    
+    dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+    
+    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this,
+    ' to spare us some processing time in the inner loop.
+    Dim finalX As Long, finalY As Long
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
+    finalY = (srcDIB.GetDIBHeight - 1)
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not toPreview) Then
+        SetProgBarMax finalX
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
     'Prep the pixel iterator
     Dim cPixelIterator As pdPixelIterator
     Set cPixelIterator = New pdPixelIterator
     
-    If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, kernelShape) Then
+    If cPixelIterator.InitializeIterator(srcDIB, hRadius, vRadius, kernelShape) Then
         
         numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX Step 4
+        For x = 0 To finalX Step 4
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then
-                startY = initY
+                startY = 0
                 stopY = finalY
                 yStep = 1
             Else
                 startY = finalY
-                stopY = initY
+                stopY = 0
                 yStep = -1
             End If
             
@@ -240,21 +299,21 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 i = 0
                 Do While (rValues(i) = 0)
                     i = i + 1
-                    If i > 255 Then Exit Do
+                    If (i > 255) Then Exit Do
                 Loop
                 lowR = i
                 
                 i = 0
                 Do While (gValues(i) = 0)
                     i = i + 1
-                    If i > 255 Then Exit Do
+                    If (i > 255) Then Exit Do
                 Loop
                 lowG = i
                 
                 i = 0
                 Do While (bValues(i) = 0)
                     i = i + 1
-                    If i > 255 Then Exit Do
+                    If (i > 255) Then Exit Do
                 Loop
                 lowB = i
                 
@@ -266,28 +325,28 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 i = 255
                 Do While (rValues(i) = 0)
                     i = i - 1
-                    If i < 0 Then Exit Do
+                    If (i < 0) Then Exit Do
                 Loop
                 highR = i
                 
                 i = 255
                 Do While (gValues(i) = 0)
                     i = i - 1
-                    If i < 0 Then Exit Do
+                    If (i < 0) Then Exit Do
                 Loop
                 highG = i
                 
                 i = 255
                 Do While (bValues(i) = 0)
                     i = i - 1
-                    If i < 0 Then Exit Do
+                    If (i < 0) Then Exit Do
                 Loop
                 highB = i
                 
                 'Failsafe check for empty histograms
-                If highB < lowB Then highB = lowB
-                If highG < lowG Then highG = lowG
-                If highR < lowR Then highR = lowR
+                If (highB < lowB) Then highB = lowB
+                If (highG < lowG) Then highG = lowG
+                If (highR < lowR) Then highR = lowR
                 
                 'Set each channel to the difference between their max/min values.
                 dstImageData(x, y) = highB - lowB
@@ -296,16 +355,16 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > 0) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If (Not toPreview) Then
@@ -321,12 +380,22 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        dstDIB.UnwrapArrayFromDIB dstImageData
         
-        'Erase our temporary DIB
-        srcDIB.EraseDIB
+        'Regardless of how we produced the median effect, we're finished with the source DIB;
+        ' free it as it may be quite large.
         Set srcDIB = Nothing
-    
+        
+        'If wavelets were used, we now need to sample the processed result back into workingDIB.
+        ' Importantly, note that different settings from the original downsample are used - this is
+        ' intentional and critical for avoiding fringing while accurately mimicking the "soft edge"
+        ' look produced by the full-radius median filter we're attempting to approximate.
+        If waveletsUsed Then
+            workingDIB.ResetDIB 0
+            GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, interpolationType:=GP_IM_HighQualityBilinear, isZoomedIn:=True, dstCopyIsOkay:=True
+            Set dstDIB = Nothing
+        End If
+        
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
         EffectPrep.FinalizeImageData toPreview, dstPic
         
@@ -382,7 +451,11 @@ End Sub
 Private Sub sltRadius_Change(Index As Integer)
     
     If chkSynchronize.Value Then
-        If sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value Then sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
+        If (sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value) Then
+            cmdBar.SetPreviewStatus False
+            sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
+            cmdBar.SetPreviewStatus True
+        End If
     End If
     
     UpdatePreview

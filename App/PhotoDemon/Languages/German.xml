@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.1974</langversion>
+<langversion>8.0.2018</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10329,7 +10329,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>luminance only</original>
-<translation></translation>
+<translation>Nur Luminanz</translation>
 </phrase>
 
 <phrase>

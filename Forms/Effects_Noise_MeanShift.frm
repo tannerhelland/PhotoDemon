@@ -93,8 +93,8 @@ Attribute VB_Exposed = False
 'Mean Shift Effect Tool
 'Copyright 2015-2020 by Tanner Helland
 'Created: 02/October/15
-'Last updated: 08/December/15
-'Last update: convert to the new pdPixelIterator class
+'Last updated: 25/June/20
+'Last update: minor perf improvements
 '
 'Mean shift filter, heavily optimized.  Wiki has a nice summary of this technique:
 ' https://en.wikipedia.org/wiki/Mean_shift
@@ -179,9 +179,21 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     ReDim bValues(0 To 255) As Long
     ReDim aValues(0 To 255) As Long
     
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, a As Long
     Dim lColor As Long, hColor As Long, cCount As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
+    
+    'Build luts for low- and high-color values.  (These are fixed based on the user-supplied
+    ' threshold value.)
+    Dim lowLUT(0 To 255) As Byte, highLUT(0 To 255) As Byte
+    For x = 0 To 255
+        y = x - mThreshold
+        If (y < 0) Then y = 0
+        lowLUT(x) = y
+        y = x + mThreshold
+        If (y > 255) Then y = 255
+        highLUT(x) = y
+    Next x
     
     Dim directionDown As Boolean
     directionDown = True
@@ -219,56 +231,47 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 
                 'Start by finding low/high bounds
                 lColor = dstImageData(x, y)
-                hColor = lColor
-                
-                lColor = lColor - mThreshold
-                If lColor < 0 Then lColor = 0
-                hColor = hColor + mThreshold
-                If hColor > 255 Then hColor = 255
+                hColor = highLUT(lColor)
+                lColor = lowLUT(lColor)
                 
                 'Search from low to high, tallying colors as we go
                 b = 0: cCount = 0
                 For i = lColor To hColor
-                    b = b + i * bValues(i)
-                    cCount = cCount + bValues(i)
+                    a = bValues(i)
+                    b = b + i * a
+                    cCount = cCount + a
                 Next i
                 
                 'Take the mean of this range of values
-                If cCount > 0 Then b = b / cCount Else b = 255
+                If (cCount > 0) Then b = b \ cCount Else b = 255
                 
                 'Repeat for green
                 lColor = dstImageData(x + 1, y)
-                hColor = lColor
-                
-                lColor = lColor - mThreshold
-                If lColor < 0 Then lColor = 0
-                hColor = hColor + mThreshold
-                If hColor > 255 Then hColor = 255
+                hColor = highLUT(lColor)
+                lColor = lowLUT(lColor)
                 
                 g = 0: cCount = 0
                 For i = lColor To hColor
-                    g = g + i * gValues(i)
-                    cCount = cCount + gValues(i)
+                    a = gValues(i)
+                    g = g + i * a
+                    cCount = cCount + a
                 Next i
                 
-                If cCount > 0 Then g = g / cCount Else g = 255
+                If (cCount > 0) Then g = g \ cCount Else g = 255
                 
                 'Repeat for red
                 lColor = dstImageData(x + 2, y)
-                hColor = lColor
-                
-                lColor = lColor - mThreshold
-                If lColor < 0 Then lColor = 0
-                hColor = hColor + mThreshold
-                If hColor > 255 Then hColor = 255
+                hColor = highLUT(lColor)
+                lColor = lowLUT(lColor)
                 
                 r = 0: cCount = 0
                 For i = lColor To hColor
-                    r = r + i * rValues(i)
-                    cCount = cCount + rValues(i)
+                    a = rValues(i)
+                    r = r + i * a
+                    cCount = cCount + a
                 Next i
                 
-                If cCount > 0 Then r = r / cCount Else r = 255
+                If (cCount > 0) Then r = r \ cCount Else r = 255
                 
                 'Finally, apply the results to the image.
                 dstImageData(x, y) = b
@@ -277,16 +280,16 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If (Not toPreview) Then
