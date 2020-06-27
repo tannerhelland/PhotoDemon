@@ -813,9 +813,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         'PDDebug.LogAction "WARNING!  WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
     End If
-        
-    'TODO!  Add basic error handling.
-
+    
 End Function
 
 'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that

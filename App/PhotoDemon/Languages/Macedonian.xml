@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.281</langversion>
+<langversion>1.0.282</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -10304,7 +10304,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Примена на хармониски среден филтер</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11895,102 +11895,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>Повеќе слики се најдат</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>Вчитај секоја страница како свој имиџ</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>секогаш ја применуваат оваа акција за мулти-датотеки со слики</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>Оптоварување само на првата страница</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1 содржи повеќе страници ( %2 вкупно). Како вие би сакале да продолжите?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1 е анимиран GIF датотеки ( %2 слики вкупно). Како вие би сакале да продолжите?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>Вчитај секоја рамка, како посебна слика</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>Оваа опција ќе го вчита секоја рамка во анимиран GIF формат како поединец сликата.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>Транспорт само првата рамка</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Оваа опција ќе се вчита само една рамка од анимиран GIF формат, ефикасно лекувани како не-анимиран GIF датотека.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1 содржи повеќе икони ( %2 вкупно). Како вие би сакале да продолжите?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>Вчитај секоја икона како посебна слика</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>Оваа опција ќе го вчита секоја икона во датотеката МЦК како поединец сликата.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>Транспорт само првата икона</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>Оваа опција ќе се вчита само една икона од датотеката МЦК.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>Вчитај секоја страница како посебна слика</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>Оваа опција ќе го вчита секоја страница од датотека TIFF како поединец сликата.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>Оваа опција ќе се вчита само една страница од датотека TIFF.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16104,10 +16008,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

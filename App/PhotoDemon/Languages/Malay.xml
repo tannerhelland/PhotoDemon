@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3468</langversion>
+<langversion>6.8.3469</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10304,7 +10304,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon penapis bermakna harmonik</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11895,102 +11895,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>Imej berbilang Temui</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>Muatkan setiap halaman sebagai imej sendiri</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>sentiasa memohon tindakan ini kepada fail berbilang imej</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>Beban hanya halaman pertama</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1 mengandungi beberapa halaman (2 %dalam jumlah). Bagaimana anda ingin teruskan?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1 adalah fail GIF animasi ( %2 bingkai jumlah). Bagaimana anda ingin teruskan?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>Muatkan setiap frame imej yang berasingan</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>Pilihan ini akan memuatkan setiap bingkai dalam fail GIF animasi sebagai imej individu.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>Beban hanya bingkai pertama</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Opsyen ini hanya akan memuatkan bingkai tunggal dari fail GIF animasi, berkesan merawat di sebagai fail GIF bukan animasi.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1 mengandungi beberapa ikon (2 %dalam jumlah). Bagaimana anda ingin teruskan?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>Muatkan setiap ikon imej yang berasingan</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>Pilihan ini akan memuatkan setiap ikon dalam fail ICO sebagai imej individu.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>Beban hanya icon pertama</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>Opsyen ini hanya akan memuatkan ikon tunggal dari fail ICO itu.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>Muatkan setiap halaman sebagai imej yang berasingan</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>Pilihan ini akan memuatkan setiap halaman dalam fail TIFF sebagai imej individu.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>Opsyen ini hanya akan memuatkan satu halaman daripada fail TIFF itu.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16104,10 +16008,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

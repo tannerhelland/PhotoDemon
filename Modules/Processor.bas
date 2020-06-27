@@ -2132,7 +2132,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'NOTE!  Some Image-menu actions have been removed in new versions of the programs.  If they exist inside macros, we don't want to
     ' raise any errors, so I've included their keywords here even though they are basically NOPs.
     
-    'TODO 7.2: reinstate auto-cropping
+    'TODO 8.2: reinstate auto-cropping
     ElseIf Strings.StringsEqual(processID, "Autocrop", True) Then
     '    AutocropImage
         Process_ImageMenu = True

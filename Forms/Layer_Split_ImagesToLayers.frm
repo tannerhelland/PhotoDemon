@@ -207,8 +207,8 @@ Attribute VB_Exposed = False
 'Last updated: 03/September/19
 'Last update: wrap up initial build
 '
-'To make editing animated images easier, PhotoDemon 7.2 gained the ability to split multi-layer images into
-' a multi-image session, then merge those images back into a single multi-layer image.
+'To make editing animated images easier, PhotoDemon 8.0 gained the ability to split multi-layer
+' images into a multi-image session, then merge those images back into a single multi-layer image.
 '
 'Merging is fairly complicated, with many possible options for "how to" merge (especially in an animation
 ' context), and this dialog gives the user some control over the process.

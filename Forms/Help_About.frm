@@ -286,6 +286,10 @@ Private Sub Form_Load()
     End If
     
     GeneratePatron "EFF.ORG", "https://www.eff.org/"
+    GeneratePatron "Jason Brown", "https://statslog.com/"
+    GeneratePatron "Jessica H"
+    GeneratePatron "Johannes Nendel"
+    
     m_superPatronEndIndex = m_numOfPatrons
     GeneratePatron vbNullString
     

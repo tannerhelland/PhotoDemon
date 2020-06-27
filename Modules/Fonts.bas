@@ -648,8 +648,8 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
         
         Select Case fontMeasurementUnit
         
-            'Pixels use a modified version of the standard Windows formula; note that this assumes 96 DPI at present - high DPI
-            ' systems still need testing!  TODO!
+            'Pixels use a modified version of the standard Windows formula; note that this assumes
+            ' 96 DPI at present - high DPI systems still need testing!  TODO!
             Case fu_Pixel
                 
                 'Convert font size to points

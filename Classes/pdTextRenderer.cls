@@ -991,8 +991,8 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
                 SetGenericTextProperty = True
             End If
         
-        'TODO: consider raising some kind of error or message if the listed font is not available.  This is a possibility for PDI images
-        ' traded between PCs.
+        'TODO: consider raising some kind of error or message if the listed font is not available.
+        ' This is a possibility for PDI images traded between PCs.
         Case ptp_FontFace
             If Strings.StringsNotEqual(m_FontFace, CStr(newValue), True) Then
                 m_FontFace = newValue

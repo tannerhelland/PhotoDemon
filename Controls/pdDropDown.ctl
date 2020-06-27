@@ -899,8 +899,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Thanks to the v7.0 theming overhaul, it's completely safe to retrieve colors in the IDE, so we no longer
-    ' need to handle these specially.
+    'Thanks to the v7.0 theming overhaul, it's completely safe to retrieve colors in the IDE,
+    ' so we no longer need to handle these specially.
     Dim ddColorBorder As Long, ddColorFill As Long, ddColorText As Long, ddColorArrow As Long
     ddColorBorder = m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
     ddColorFill = m_Colors.RetrieveColor(PDDD_ComboFill, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)

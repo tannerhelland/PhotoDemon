@@ -594,11 +594,12 @@ Private Sub CreateNewPreferencesFile()
         .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
         .WriteBlankLine
         
-        'New in v7.2 are auto-constructed assets for various tools.  These are just folders of standalone files
-        ' that populate various "collections" in the program - e.g. the default gradient files that ship for the
-        ' gradient tool.  To avoid overwriting user changes, we only attempt to extract these once, when the
-        ' program is run for the first time (or if the preference is encountered for the first time).  After that
-        ' point, the assets are never extracted again.
+        'New in v8.0 are auto-constructed assets for various tools.  These are just folders of
+        ' standalone files that populate various "collections" in the program - e.g. the default
+        ' gradient files that ship for the gradient tool.  To avoid overwriting user changes,
+        ' we only attempt to extract these once, when the program is run for the first time
+        ' (or if the preference is encountered for the first time).  After that point,
+        ' the assets are never extracted again.
         .WriteTag "Assets", vbNullString, True
             .WriteTag "ExtractedGradients", "False"
         .CloseTag "Assets"

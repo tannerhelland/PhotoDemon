@@ -1101,7 +1101,7 @@ Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     End If
         
     'We now branch according to active color management.  This is a hackish fix designed to work around some current
-    ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 7.0 release.
+    ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 8.2 release.
     If colorManagementMatters Then
         
         'Create a temporary DIB to house the stretched image.  Because the stretched image is typically smaller than

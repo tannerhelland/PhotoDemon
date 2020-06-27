@@ -6,11 +6,11 @@ Attribute VB_Name = "GDI_Plus"
 'Last updated: 12/August/19
 'Last update: extend multipage loader to support animated GIF import, including relevant animation metadata
 '
-'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback
-' for image loading and saving if the FreeImage DLL was not found, but over time it has become more and more essential
-' to PhotoDemon .  As of version 7.2, GDI+ is embedded deeply into PD's rendering pipeline, as it's currently the
-' easiest+fastest way to quickly resize 32-bpp image data regardless of underlying PC features.  It is also used
-' extensively in rendering PD's custom UI.
+'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally
+' used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time
+' it has become more and more essential to PhotoDemon .  As of version 7.0, GDI+ is deeply embedded
+' into PD's rendering pipeline, as it's currently the easiest+fastest way to reasmple 32-bpp pixel
+' data regardless of underlying PC features.  It is also used extensively in rendering PD's custom UI.
 '
 'Jose Roca's convenient GDI+ reference has been a huge help with GDI+ development:
 ' http://www.jose.it-berater.org/gdiplus/iframe/index.htm

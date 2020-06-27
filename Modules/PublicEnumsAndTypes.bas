@@ -561,7 +561,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_EMF = 111
     PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
     PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
-    PDIF_ORA = 114      'OpenRaster support is official as of 7.2
+    PDIF_ORA = 114      'OpenRaster support was added in 8.0 nightly builds
     PDIF_HEIF = 115     'Loaded via WIC; requires Win 8.1 or later and possible downloads from the MS store
     
 End Enum
@@ -713,8 +713,8 @@ Public Type PD_UndoEntry
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
 
-'As of 7.0, PD automatically handles navigation keypresses for a variety of controls.  Want more keys handled?
-' Add them to this enum.
+'As of 7.0, PD automatically handles navigation keypresses for a variety of controls.
+' Want more keys handled?  Add them to this enum.
 Public Enum PD_NavigationKey
     pdnk_Enter = vbKeyReturn
     pdnk_Escape = vbKeyEscape

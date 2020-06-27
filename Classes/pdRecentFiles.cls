@@ -19,13 +19,14 @@ Attribute VB_Exposed = False
 'Last update: Rewrote class from scratch as a standalone instance, to enable optimizations that aren't easily
 '             accomplished otherwise (especially regarding maintenance of image thumbnails).
 '
-'PhotoDemon's File > Open Recent menu supports some neat features, like large thumbnail icons on Vista+.  This class
-' is responsible for maintaining the full list of file paths and thumbnails for that menu.
+'PhotoDemon's File > Open Recent menu supports some neat features, like large thumbnail icons on Vista+.
+' This class is responsible for maintaining the full list of file paths and thumbnails for that menu.
 '
-'Many thanks to Raj Chaudhuri for his original work on this class.  I feel bad that I had to rewrite the whole thing
-' in 2017, but this class was consuming an inordinately large amount of time (especially because it was only storing
-' thumbnails in file, not in memory - so every menu refresh required a full trip out to the HDD, and manually loading
-' every thumbnail in the menu!) so it really needed to be dealt with before 7.0 releases.
+'Many thanks to Raj Chaudhuri for his original work on this class.  I feel bad that I had to rewrite
+' the whole thing in 2017, but this class was consuming an inordinately large amount of time
+' (especially because it was only storing thumbnails in file, not in memory - so every menu refresh
+' required a full trip out to the HDD, and manually loading every thumbnail in the menu!) so it really
+' needed to be dealt with before v7.0 released.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

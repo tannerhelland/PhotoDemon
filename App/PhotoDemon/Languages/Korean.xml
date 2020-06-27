@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.153</langversion>
+<langversion>1.0.154</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10299,7 +10299,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>고조파 평균 필터 적용</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11890,102 +11890,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>여러 이미지를 찾았습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>각 페이지를 자체 이미지로로드</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>이 작업을 항상 다중 이미지 파일에 적용하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>첫 번째 페이지 만로드</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1에 여러 페이지 (총  %2)가 있습니다. 계속 하시겠습니까?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1은 애니메이션 GIF 파일입니다 (총  %2 프레임). 계속 하시겠습니까?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>각 프레임을 별도의 이미지로로드하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>이 옵션은 애니메이션 GIF 파일의 모든 프레임을 개별 이미지로로드합니다.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>첫 번째 프레임 만로드</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>이 옵션은 애니메이션 GIF 파일에서 하나의 프레임 만로드하여 애니메이션이 아닌 GIF 파일로 효과적으로 처리합니다.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1에 여러 아이콘 (총  %2)이 있습니다. 계속 하시겠습니까?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>각 아이콘을 별도의 이미지로로드하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>이 옵션은 ICO 파일의 모든 아이콘을 개별 이미지로로드합니다.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>첫 번째 아이콘 만로드</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>이 옵션은 ICO 파일에서 하나의 아이콘 만로드합니다.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>각 페이지를 별도의 이미지로로드하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>이 옵션은 TIFF 파일의 모든 페이지를 개별 이미지로로드합니다.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>이 옵션은 TIFF 파일에서 한 페이지 만로드합니다.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16098,10 +16002,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

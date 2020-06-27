@@ -85,12 +85,12 @@ Attribute VB_Exposed = False
 'Last updated: 22/August/19
 'Last update: overhaul control to support new animation mode
 '
-'In 7.0, a "navigation" panel was added to the right-side toolbar.  This user control provides the
+'In v7.0, a "navigation" panel was added to the right-side toolbar.  This user control provides the
 ' actual "navigation" behavior, where the user can click anywhere on the image thumbnail to move the
 ' viewport over that location.
 '
-'In 7.2, animation-centric controls were added.  These auto-activate when the underlying image is
-' flagged as animate-able (animated GIFs or PNGs, for example).
+'In v8.0, animation-centric controls were added.  These auto-activate when the underlying image is
+' flagged as animated (animated GIFs or APNGs, for example).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

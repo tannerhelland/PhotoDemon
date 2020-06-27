@@ -237,9 +237,6 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             AddSinglePoint srcX, srcY
         End If
         
-        'todo: if shift down, interpolate points and add *all* to the queue
-        ' if shift not down, just add this point by itself
-        
     'If this is *not* the first dab, we need to add all points between the previous point and this one.
     Else
         

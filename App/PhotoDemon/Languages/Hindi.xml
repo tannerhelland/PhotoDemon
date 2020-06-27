@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.188</langversion>
+<langversion>1.0.189</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10302,7 +10302,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>हार्मोनिक माध्य फ़िल्टर लागू करना</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11893,102 +11893,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>कई छवियां मिली</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>प्रत्येक पृष्ठ को अपनी छवि के रूप में लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>हमेशा मल्टी-इमेज फ़ाइलों पर यह क्रिया लागू करें</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>केवल प्रथम पृष्ठ लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1 में एकाधिक पृष्ठ हैं (कुल में %2) आप कैसे आगे बढ़ना चाहेंगे?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1 एक एनिमेटेड GIF फ़ाइल है ( %2 फ्रेम कुल) आप कैसे आगे बढ़ना चाहेंगे?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>प्रत्येक फ्रेम को एक अलग छवि के रूप में लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>यह विकल्प एक फ्रेम के रूप में एनिमेटेड GIF फ़ाइल में हर फ्रेम को लोड करेगा।</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>केवल पहले फ्रेम लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>यह विकल्प केवल एनिमेटेड जीआईएफ फ़ाइल से एक एकल फ्रेम लोड करेगा, प्रभावी रूप से एक गैर-एनिमेटेड GIF फ़ाइल के रूप में इलाज करना।</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1 में एकाधिक आइकन (कुल में %2) हैं आप कैसे आगे बढ़ना चाहेंगे?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>प्रत्येक आइकन को एक अलग छवि के रूप में लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>यह विकल्प ICO फ़ाइल में प्रत्येक आइकन को एक व्यक्तिगत छवि के रूप में लोड करेगा।</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>केवल प्रथम आइकन लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>यह विकल्प केवल ICO फ़ाइल से एक एकल आइकन लोड करेगा।</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>प्रत्येक पृष्ठ को एक अलग छवि के रूप में लोड करें</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>यह विकल्प प्रत्येक पृष्ठ को एक व्यक्तिगत छवि के रूप में TIFF फ़ाइल में लोड करेगा।</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>यह विकल्प केवल TIFF फ़ाइल से एक पृष्ठ लोड करेगा।</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16101,10 +16005,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.155</langversion>
+<langversion>7.0.156</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -10265,7 +10265,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>套用調和平均數濾波器</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11848,102 +11848,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>已找到數個影像</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>永遠套用此操作至包含數個影像的檔案</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>僅載入第一頁</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>僅載入第一個框架</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>載入每一個圖示為不同影像</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>此操作將會載入 ICO 檔案中每一個圖示為獨立的影像。</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>僅載入第一個圖示</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>此操作將僅載入 ICO 檔案中的單一圖示。</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16049,10 +15953,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

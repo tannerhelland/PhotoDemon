@@ -253,7 +253,7 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     m_XMLFilename = UserPrefs.GetPresetPath & "Pen_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
-    'loadRecentPenList
+    'LoadRecentPenList
         
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -289,7 +289,7 @@ Private Sub cmdBar_OKClick()
     UpdateOutlineObject
     
     'TODO: save the current list of recently used pens
-    'saveRecentPenList
+    'SaveRecentPenList
     
     userAnswer = vbOK
     Me.Visible = False

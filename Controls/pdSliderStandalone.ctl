@@ -105,9 +105,10 @@ End Enum
 
 Private m_SliderStyle As SLIDER_TRACK_STYLE
 
-'Knob style.  Most pdSlider controls use a circular knob atop a thin track (with rounded edges).  As of 7.0, a new "square" option
-' was created, which is used on the color selection screen for the individual channel sliders.  While this is called "knob style",
-' it does affect the shape of the underlying track, as well.
+'Knob style.  Most pdSlider controls use a circular knob atop a thin track (with rounded edges).
+' As of 7.0, a new "square" option was created, which is used on the color selection screen for
+' the individual channel sliders.  While this is called "knob style", it does affect the shape
+' of the underlying track, as well.
 Public Enum SLIDER_KNOB_STYLE
     DefaultKnobStyle = 0
     SquareStyle = 1
@@ -119,8 +120,9 @@ End Enum
 
 Private m_KnobStyle As SLIDER_KNOB_STYLE
 
-'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
-' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
+'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.
+' Color Middle is used for the 3-color style only, and note that it *must* be accompanied by an
+' owner-supplied middle position value.
 Private m_GradientColorLeft As Long, m_GradientColorRight As Long, m_GradientColorMiddle As Long
 Private m_GradientMiddleValue As Double
 

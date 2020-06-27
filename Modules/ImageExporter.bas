@@ -41,13 +41,19 @@ Private Type PD_GifFrame
     pixelData() As Byte
 End Type
 
-'Given an input DIB, return the most relevant output color depth.  This will be a numeric value like "32" or "24".
-' IMPORTANT NOTE: for best results, you must also handle the optional parameter "currentAlphaStatus", which has
-'  three possible states.  If you are working with a format (like JPEG) that does not offer alpha support, convert
-'  the incoming DIB to 24-bpp *prior* to calling this function; that will improve performance by skipping alpha
-'  heuristics entirely.  Similarly, for a format like GIF, this function will return 8-bpp as the recommended
-'  color depth, *but you still need to deal with the alpha result*.  You may need to forcibly crop alpha to 0 and 255
-'  prior to exporting the GIF; PD provides a built-in function for this.
+'Given an input DIB, return the most relevant output color depth.
+'This will be a numeric value like "32" or "24".
+'
+'IMPORTANT NOTE: for best results, you must also handle the optional parameter "currentAlphaStatus",
+' which has three possible states.  If you are working with a format like JPEG that doesn't support
+' alpha channels, convert the incoming DIB to 24-bpp *prior* to calling this function; this improves
+' performance by skipping alpha heuristics entirely.  Similarly, for legacy formats that only support
+' sub-24-bpp color, this function will return 8-bpp as the recommended color depth *but you may still
+' need to deal with the alpha result*, by e.g. thresholding alpha to binary on/off values.
+'
+'ANOTHER IMPORTANT NOTE: for some formats, this function is superceded by per-format logic.
+' For example, PNG's color-depth representations are convoluted and PNG-specific, so PD's PNG exporter
+' doesn't rely on this function at all.  This is why some PD export formats are not covered here.
 Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False, Optional ByRef goodTransparentColor As Long = vbBlack) As Long
     
     Dim colorCheckSuccessful As Boolean: colorCheckSuccessful = False
@@ -98,15 +104,6 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                     End If
                 End If
             
-            'GIF files always recommend an output depth of 8-bpp, regardless of the presence of alpha.  Specific details of
-            ' alpha-handling is left to the caller.
-            Case PDIF_GIF
-                AutoDetectOutputColorDepth = 8
-            
-            'It's technically pointless to pass HDR files to this function, as they are always output at 96-bpp RGBF
-            Case PDIF_HDR
-                AutoDetectOutputColorDepth = 96
-            
             'JPEG-2000 files support 8-bpp, 24-bpp, and 32-bpp.  Meaningful alpha values result in a recommendation for 32-bpp.
             Case PDIF_JP2
                 If (currentAlphaStatus <> PDAS_NoAlpha) Then
@@ -144,114 +141,6 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                     End If
                 End If
             
-            'OpenRaster files are just embedded PNGs; for simplicity and interop purposes, we write all layers
-            ' as 32-bit
-            Case PDIF_ORA
-                AutoDetectOutputColorDepth = 32
-            
-            'PDI files should not technically be passed to this function, as it's a big fat waste of time.  They always
-            ' recommend 32-bpp output.
-            Case PDIF_PDI
-                AutoDetectOutputColorDepth = 32
-            
-            'PNG files are by far the worst ones to deal with, as they support a bunch of weird, PNG-specific color formats.
-            ' Alpha is particularly problematic since it is supported in multiple different ways (transparent key, even in
-            ' 24-bpp mode, or a full alpha channel, among others).  As such, the caller must exercise caution, as indexed color
-            ' mode may still require 32-bpp saving, if the 256 available colors are mapped to more than 256 variants of color+alpha.
-            Case PDIF_PNG
-                
-                If isTrueColor Then
-                    If (currentAlphaStatus = PDAS_NoAlpha) Then
-                        AutoDetectOutputColorDepth = 24
-                    Else
-                        AutoDetectOutputColorDepth = 32
-                    End If
-                
-                'Non-truecolor images are less pleasant to work with, as the presence of alpha complicates everything.
-                Else
-                    
-                    If isMonochrome Then
-                        AutoDetectOutputColorDepth = 1
-                        
-                    ElseIf isGrayscale Then
-                            
-                        'Assume 8-bit output by default; we'll perform additional tests to clarify whether
-                        ' 1/2/4-bit data can be used instead.
-                        AutoDetectOutputColorDepth = 8
-                        
-                        Dim i As Long, badValueFound As Boolean
-                        badValueFound = False
-                        
-                        'Check 2-bit
-                        If (uniqueColorCount <= 4) Then
-                            For i = 0 To uniqueColorCount - 1
-                                If (outPalette(i).Red Mod 85 <> 0) Then
-                                    badValueFound = False
-                                    Exit For
-                                End If
-                            Next i
-                            If (Not badValueFound) Then AutoDetectOutputColorDepth = 2
-                        
-                        'Check 4-bit
-                        ElseIf (uniqueColorCount <= 16) Then
-                            For i = 0 To uniqueColorCount - 1
-                                If (outPalette(i).Red Mod 17 <> 0) Then
-                                    badValueFound = False
-                                    Exit For
-                                End If
-                            Next i
-                            If (Not badValueFound) Then AutoDetectOutputColorDepth = 4
-                        End If
-                        
-                    'For non-grayscale images, output color depth depends on the number of unique RGBA combinations only.
-                    Else
-                        If (uniqueColorCount <= 2) Then
-                            AutoDetectOutputColorDepth = 1
-                        ElseIf (uniqueColorCount <= 4) Then
-                            AutoDetectOutputColorDepth = 2
-                        ElseIf (uniqueColorCount <= 16) Then
-                            AutoDetectOutputColorDepth = 4
-                        Else
-                            AutoDetectOutputColorDepth = 8
-                        End If
-                    End If
-'
-'                    'If the image contains meaningful alpha channel data, we have two output options
-'                    If (currentAlphaStatus <> PDAS_NoAlpha) Then
-'
-'                        'If the alpha is "complicated" (meaning it contains more values than just 0 or 255), we must fall back to
-'                        ' 32-bpp output modes, regardless of color status.  (PNG supports more fine-grained results than this,
-'                        ' but FreeImage does not, so our hands are tied.)
-'                        If (currentAlphaStatus = PDAS_ComplicatedAlpha) Then
-'                            AutoDetectOutputColorDepth = 32
-'
-'                        'If the alpha is *not* complicated - meaning it consists of only 0 or 255 values - we can use
-'                        ' an 8-bpp output mode, with a designated transparent color.
-'                        Else
-'                            AutoDetectOutputColorDepth = 8
-'                        End If
-'
-'                    Else
-'                        If isMonochrome Then
-'                            AutoDetectOutputColorDepth = 1
-'                        Else
-'                            'Subsequent FreeImage testing in March 2018 shows that 4-bit PNG output may get
-'                            ' converted to 4-bit grayscale.  There may be a way to avoid this, but I don't know
-'                            ' it at present; as such, I'm suspending 4-bpp output until further notice.
-'
-'                            'I'm debating whether to provide 4-bpp as an output depth.  It has limited usage, and there
-'                            ' are complications with binary alpha... this is marked as TODO for now
-'                            'If (uniqueColorCount <= 16) Then
-'                            '    AutoDetectOutputColorDepth = 4
-'                            'Else
-'                                AutoDetectOutputColorDepth = 8
-'                                Debug.Print "here?"
-'
-'                            'End If
-'                        End If
-'                    End If
-                End If
-            
             'PNM supports only non-alpha modes, but the file extension should really be changed to match the output depth
             Case PDIF_PNM
                 If isTrueColor Then
@@ -262,14 +151,6 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                     Else
                         AutoDetectOutputColorDepth = 8
                     End If
-                End If
-            
-            'PSD supports multiple bit-depths, but at present, we limit it to 24 or 32 only
-            Case PDIF_PSD
-                If (currentAlphaStatus = PDAS_NoAlpha) Then
-                    AutoDetectOutputColorDepth = 24
-                Else
-                    AutoDetectOutputColorDepth = 32
                 End If
             
             'TGA files support 1, 8, 24, and 32-bpp modes.  Basic GIF-like alpha is supported in 8-bpp mode; anything more
@@ -1671,8 +1552,9 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     If ImageFormats.IsFreeImageEnabled Then
         
-        'TODO: parse incoming HDR parameters.  (FreeImage doesn't support any HDR export parameters at present, but we could still provide
-        ' options for things like gamma correction, background color for 32-bpp images, etc.)
+        'TODO: parse incoming HDR parameters.  (FreeImage doesn't support any HDR export parameters
+        ' at present, but we could still provide options for things like gamma correction,
+        ' background color for 32-bpp images, etc.)
         Dim cParams As pdSerialize
         Set cParams = New pdSerialize
         cParams.SetParamString formatParams

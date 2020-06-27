@@ -2340,8 +2340,8 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByRef warnin
                 End With
             Next i
             
-        'TODO!  I have not encountered these segments "in the wild" on single-layer images, as the single-layer data
-        ' is typically stored in a separate Lr16/Lr32 segment.
+        'TODO!  I have not encountered these segments "in the wild" on single-layer images,
+        ' as the single-layer data is typically stored in a separate Lr16/Lr32 segment.
         Case ccZip
             If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ZIP compression is not yet supported."
             

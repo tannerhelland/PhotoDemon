@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.485</langversion>
+<langversion>6.7.486</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -10304,7 +10304,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione del filtro medio armonico</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11894,102 +11894,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>Immagini Multiple Trovate</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>Carico ogni pagina come l'immagine stessa</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>applica sempre questa azione ai file multimmagine</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>Carico solo la prima pagina</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation>%1 contiene pagine multiple (%2 in totale).  Come preferisci procedere?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation>%1 è un file GIF animato (%2 cornici totali).  Come preferisci procedere?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>Carico ogni cornice come un'immagine separata</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>Questa opzione caricherà ogni cornice nel file GIF animato come un'unica immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>Carico solo la prima cornice</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Questa opzione caricherà una singola cornice dal file GIF animato, effettivamente trattandola come una GIF non animata.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation>%1 contiene icone multiple (%2 in totale).  Come preferisci procedere?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>Carico ogni icona come immagini separate</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>Questa opzione caricherà ogni icona presente nel file ICO come un'immagine individuale.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>Carico solamente la prima icona</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>Questa opzione caricherà solo un'icona dal file ICO.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>Carico ogni pagina come immagini separate</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>Questa opzione caricherà ogni pagina nel file TIFF come un'immagine individuale.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>Questa opzione caricherà solo una pagina singola dal file TIFF.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16102,10 +16006,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

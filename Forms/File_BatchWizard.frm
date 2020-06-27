@@ -1754,8 +1754,8 @@ Private Sub PrepareForBatchConversion()
             Dim howManyPages As Long
             howManyPages = Plugin_FreeImage.IsMultiImage(tmpFilename)
             
-            'TODO: integrate this with future support for exporting multipage files.  At present, to avoid complications,
-            ' PD will only load the first page/frame of a multipage file during conversion.
+            'TODO: integrate this with full multipage support.  At present, to avoid complications,
+            ' PD only loads the first page/frame of multipage files during conversion.
             
             'Load the current image
             If Loading.LoadFileAsNewImage(tmpFilename, , False, True, False) Then

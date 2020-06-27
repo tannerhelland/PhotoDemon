@@ -3621,8 +3621,8 @@ Friend Function ReadSelectionFromFile_Legacy(ByRef srcFilename As String, Option
     
 End Function
 
-'As of v7.0, pdPackageChunky is used to read/write selection files.  Note that this function will blindly overwrite the destination
-' file if it exists; it's up to the caller to plan for this.
+'As of v8.0, pdPackageChunky is used to read/write selection files.  Note that this function will
+' blindly overwrite the destination file if it exists; it's up to the caller to plan for this.
 Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal compressXML As PD_CompressionFormat = cf_Zstd, Optional ByVal xmlCompressionLevel As Long = -1, Optional ByVal compressRaster As PD_CompressionFormat = cf_Zstd, Optional ByVal rasterCompressionLevel As Long = -1, Optional ByRef dstUndoFileSize As Long) As Boolean
     
     Dim cPackage As pdPackageChunky

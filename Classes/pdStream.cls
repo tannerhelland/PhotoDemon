@@ -469,7 +469,7 @@ Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition 
             'Memory mode is a hell of a lot faster!
             If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
                 
-                'TODO: look at wrapping an API for this; it'd be faster
+                'TODO: look at wrapping an API for this; it'd potentially be faster
                 Do
                     If (m_MemBuffer(startPosition) = targetByte) Then Exit Do
                     startPosition = startPosition + 1
@@ -679,9 +679,10 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
         
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             
+            'This function is unsupported for file-backed streams, as there's no pointer
+            ' to reference!
+            InternalStreamError "ReadBytes_PointerOnly can't be used on file-backed streams"
             ReadBytes_PointerOnly = 0
-            
-            'TODO!!
             
         ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
             If (Not m_FileMM Is Nothing) Then

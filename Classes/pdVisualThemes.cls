@@ -350,8 +350,8 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
             End If
         
         'If the theme file doesn't exist in the base folder either, we're SOL.  Exit now.
-        ' (In the future, we'll want to try and recover a failsafe copy from the .exe resource file.)
-        ' TODO 7.0!
+        ' (In the future, we could try to recover a failsafe copy from the .exe resource segment?)
+        ' TODO 8.2!
         Else
             PDDebug.LogAction "WARNING!  Theme file <" & themeFile & "> wasn't found in alternate locations.  Initialization abandoned."
         End If

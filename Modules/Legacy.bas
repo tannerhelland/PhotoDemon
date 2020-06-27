@@ -194,8 +194,8 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
         
         End If
         
-        '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
-        ' and other changes.)
+        '(As of v7.0, a serialized copy of the image's metadata is also stored.
+        ' This copy contains all user edits and other changes.)
         If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
         
             PDDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
@@ -260,7 +260,7 @@ LoadPDIFail:
 
 End Function
 
-'PDI version used until Jan 2020 (v7.2 it was replaced).
+'PDI version used until Jan 2020 (v8.0 it was replaced).
 Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
     PDDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."

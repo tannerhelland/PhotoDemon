@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3468</langversion>
+<langversion>6.8.3469</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10300,7 +10300,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Použití harmonického středního filtru</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11891,102 +11891,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>Nalezeno více obrázků</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>Vložte každou stránku jako vlastní obrázek</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>Tuto akci vždy použijte pro soubory s více snímky</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>Vložte pouze první stránku</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1 obsahuje více stránek ( %2 celkem). Jak byste chtěli postupovat?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1 je animovaný soubor GIF (celkem %2 snímků). Jak byste chtěli postupovat?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>Vložte každý snímek jako samostatný snímek</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>Tato volba načte každý rámeček v animovaném souboru GIF jako samostatný obrázek.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>Vložte pouze první snímek</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Tato volba nahraje pouze jeden snímek z animovaného souboru GIF, který efektivně zpracovává jako neinvitační soubor GIF.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1 obsahuje více ikon ( %2 celkem). Jak byste chtěli postupovat?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>Vložte každou ikonu jako samostatný obrázek</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>Tato volba načte každou ikonu v souboru ICO jako samostatný obrázek.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>Vložte pouze první ikonu</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>Tato možnost načte pouze jednu ikonu z ICO souboru.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>Vložte každou stránku jako samostatný obrázek</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>Tato volba načte každou stránku v souboru TIFF jako samostatný obrázek.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>Tato volba nahraje pouze jednu stránku ze souboru TIFF.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16098,10 +16002,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

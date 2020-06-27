@@ -87,7 +87,7 @@ Public UndoManager As pdUndo
 'Various viewport actions are now handled through a separate pdViewport class
 Public ImgViewport As pdViewport
 
-'As of 7.2, pdImage objects now associate with two different color profiles.
+'As of v8.0, pdImage objects now associate with two different color profiles.
 ' 1) an "original" profile; this points to image's ICC profile, if any, when it was first loaded/created.
 ' 2) a "working space" profile; this points to the working space that all layers *must* be converted to
 '    prior to merging / blending / compositing / etc.

@@ -18,22 +18,21 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
-'A custom icon parser was added in the 7.2 release cycle.  I know of no reason to disable it at present,
-' but you can use this constant to deactivate parsing support if necessary.
+'A custom icon import/export engine was added to 8.0 nightly builds.  You can use this constant
+' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 
-'OpenRaster support was added in the 7.2 release cycle.  I know of no reason to disable it at present,
-' but you can use this constant to deactivate parsing support if necessary.
+'A custom OpenRaster import/export engine was added to 8.0 nightly builds.  You can use this constant
+' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 
-'As of v7.2, PD includes its own custom-built PNG parser.  This offers a number of performance and
-' feature enhancements relative to the 3rd-party libraries.  I know of no reason why it would need
-' to be disabled, but if you want to fall back to the old FreeImage and GDI+ interface, you can set
-' this to FALSE.
+'A custom PNG/APNG import/export engine was added to 8.0 nightly builds.  You can use this constant
+' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private m_PNG As pdPNG
 
-'As of v7.2, PD's internal PSD parser is both stable and feature-complete.
+'A custom Photoshop (PSD) import/export engine was added to 8.0 nightly builds.
+' You can use this constant to disable the engine if necessary.
 ' If you try to load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.
 ' I don't have a modern copy of Photoshop for testing, so outside help is essential for
 ' fixing esoteric PSD bugs!
@@ -943,8 +942,9 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         dstImage.SetOriginalAlpha True
     End If
     
-    'PD's internal PNG parser is preferred for all PNG images.  For backwards compatibility reasons, it does *not* rely
-    ' on the .png extension.  (Instead, it will manually verify the PNG signature, then work from there.)
+    'PD's internal PNG/APNG parser is preferred for all PNG images.  For backwards compatibility reasons,
+    ' it does *not* rely on the .png extension.  (Instead, it will manually verify the PNG signature,
+    ' then work from there.)
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then
         CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
         If CascadeLoadGenericImage Then
@@ -953,8 +953,8 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'OpenRaster support was added in v7.2.  OpenRaster is similar to ODF, basically a .zip wrapper around an XML file
-    ' and a bunch of PNGs - easy enough to support!
+    'OpenRaster support was added in v8.0.  OpenRaster is similar to ODF, basically a .zip wrapper
+    ' around an XML file and a bunch of PNGs - easy enough to support!
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ORA Then
         CascadeLoadGenericImage = LoadOpenRaster(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
@@ -963,8 +963,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'PD's internal PSD decoder is experimental as of v7.2.  If it fails (likely), we still fall back
-    ' to FreeImage's generic PSD support in a subsequent step.
+    'PSD support was added in v8.0.
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PSD Then
         CascadeLoadGenericImage = LoadPSD(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
@@ -973,8 +972,8 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'HEIF/HEIC loading requires Win 10 and possible extra downloads from the MS Store.
-    ' We attempt to use WIC to load such files.
+    'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
+    ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
     If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
         CascadeLoadGenericImage = LoadHEIF(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
@@ -983,7 +982,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'In v7.2, I wrote a custom icon (ICO) file parser for PD.
+    'A custom ICO parser was added in v8.0.
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ICO Then
         CascadeLoadGenericImage = LoadICO(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
@@ -993,20 +992,20 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
-    ' (Pre v7.2, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to a
-    ' lot of bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now more selective about
-    ' which library gets used first.)
+    ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
+    ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
+    ' more selective about which library gets used first.)
     If (Not CascadeLoadGenericImage) Then
     
-        'FreeImage's TIFF support (via libTIFF?) is wonky.  It's prone to bad crashes and inexplicable memory
-        ' issues (including allocation failures on normal-sized images), so for TIFFs we want to try GDI+ before
-        ' trying FreeImage.  (PD's GDI+ image loader was heavily restructured in v7.2 to support things like
-        ' multi-page import, so this strategy wasn't viable until then.)
+        'FreeImage's TIFF support (via libTIFF?) is wonky.  It's prone to bad crashes and inexplicable
+        ' memory issues (including allocation failures on normal-sized images), so for TIFFs we want to
+        ' try GDI+ before trying FreeImage.  (PD's GDI+ image loader was heavily restructured in v8.0 to
+        ' support things like multi-page import, so this strategy wasn't viable until then.)
         Dim tryGDIPlusFirst As Boolean
         tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "tif", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "tiff", True)
         
-        'On modern Windows builds (8+) FreeImage is markedly slower than GDI+ at loading JPEG images, so let's also default
-        ' to GDI+ for JPEGs.
+        'On modern Windows builds (8+) FreeImage is markedly slower than GDI+ at loading JPEG images,
+        ' so let's also default to GDI+ for JPEGs.
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
         
         'Animated GIF support is currently a work in progress
@@ -1032,8 +1031,8 @@ Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As
     
     PDDebug.LogAction "Attempting to load via FreeImage..."
     
-    'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
-    ' TODO: preferences or prompt for how to handle such files??
+    'Start by seeing if the image file contains multiple pages.
+    ' If it does, we will load each page as a separate layer.
     numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
     imageHasMultiplePages = (numOfPages > 1)
     freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB, , , dstImage)
@@ -1097,9 +1096,11 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.NotifyImageChanged UNDO_Everything
             decoderUsed = id_Internal
             
-        'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.  As ridiculous as it sounds, we must
-        ' default to the generic load engine list, as the format of a TMP file is not guaranteed in advance.  Because of this,
-        ' we can rely on the generic load engine to properly set things like "original color depth".
+        'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.
+        ' As ridiculous as it sounds, we must default to the generic load engine list,
+        ' as the format of a TMP file is not guaranteed in advance.  Because of this,
+        ' we can rely on the generic load engine to properly set things like
+        ' "original color depth".
         '
         '(TODO: settle on a single tmp file format, so we don't have to play this game??)
         Case PDIF_TMPFILE

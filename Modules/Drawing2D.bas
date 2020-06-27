@@ -71,8 +71,8 @@ Public Enum PD_2D_BRUSH_SETTINGS
     P2_BrushGradientWrapMode = 11
     P2_BrushGradientNodes = 12
     
-    'Textures are somewhat problematic because we store them inside a DIB, which is not easily serializable.  Solving this
-    ' is TODO; there's always Base-64, obviously, although performance ain't gonna be great.
+    'Textures are somewhat problematic because we store them inside a DIB, which is not easily serializable.
+    ' Solving this is TODO; there's always Base-64, obviously, although performance ain't gonna be great.
     P2_BrushTextureWrapMode = 13
     
     [_P2_NumOfBrushSettings] = 14

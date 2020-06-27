@@ -30,8 +30,9 @@ Attribute VB_Exposed = False
 ' As an added bonus, PD can use libdeflate instead of zlib for de/compression tasks, allowing it to both
 ' create smaller PNG files, and have faster de/compression times than libpng offers.
 '
-'As of v7.2 nightly builds, this class *is* used as PD's primary PNG importer and exporter.  If you encounter
-' bugs or surprises, please let me know so I can resolve them before 7.2 stable releases.
+'As of v8.0 nightly builds, this class *is* used as PD's primary PNG importer and exporter.
+' If you encounter bugs or surprises, please let me know so I can resolve them before the next
+' stable release.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -1560,7 +1561,7 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
         Exit Function
     End If
     
-    'As of 7.2, PD assumes sRGB for untagged files, so the sRGB chunk doesn't mean anything special to us.
+    'As of v8.0, PD assumes sRGB for untagged files, so the sRGB chunk doesn't mean anything special to us.
     ' If it exists, however, it will keep us from manually adjusting gamma and chromaticity to match.
     ' (Gamma in particular is important, as sRGB doesn't use a standard exponent curve, so you can't use a
     ' gAMA chunk to replicate it correctly.)

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3468</langversion>
+<langversion>6.8.3469</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10304,7 +10304,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>Применение гармонического среднего фильтра</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_HarmonicMean.frm-->
 
@@ -11895,102 +11895,6 @@ I искренние извинения за неудобства, но, к со
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
-
-<!-- BEGIN text for File_Import_Multipage.frm (dialog_MultiImage) -->
-
-<phrase>
-<original>Multiple Images Found</original>
-<translation>Несколько изображений не найдено</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as its own image</original>
-<translation>Загрузите каждую страницу своего собственного образа</translation>
-</phrase>
-
-<phrase>
-<original>always apply this action to multi-image files</original>
-<translation>всегда применять это действие для многостраничных файлов изображений</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first page</original>
-<translation>Нагрузка только на первой странице</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation> %1 содержит несколько страниц ( %2 в общей сложности). Как вы хотели бы продолжить?</translation>
-</phrase>
-
-<phrase>
-<original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation> %1 представляет собой анимированный GIF-файл ( %всего 2 кадра). Как вы хотели бы продолжить?</translation>
-</phrase>
-
-<phrase>
-<original>Load each frame as a separate image</original>
-<translation>Загрузите каждый кадр как отдельное изображение</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every frame in the animated GIF file as an individual image.</original>
-<translation>Эта опция будет загружать каждый кадр в файл анимированного GIF в качестве отдельного изображения.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first frame</original>
-<translation>Нагрузка только первый кадр</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Эта опция будет загружать только один кадр из анимированного GIF-файла, эффективного лечения в качестве неанимированного файла GIF.</translation>
-</phrase>
-
-<phrase>
-<original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation> %1 содержит несколько значков ( %2 в общей сложности). Как вы хотели бы продолжить?</translation>
-</phrase>
-
-<phrase>
-<original>Load each icon as a separate image</original>
-<translation>Загрузите каждый значок в виде отдельного изображения</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every icon in the ICO file as an individual image.</original>
-<translation>Эта опция будет загружать каждую иконку в файл ICO в качестве отдельного изображения.</translation>
-</phrase>
-
-<phrase>
-<original>Load only the first icon</original>
-<translation>Нагрузка только первый значок</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single icon from the ICO file.</original>
-<translation>Эта опция будет загружать только один значок из файла ICO.</translation>
-</phrase>
-
-<phrase>
-<original>Load each page as a separate image</original>
-<translation>Загрузите каждую страницу как отдельное изображение</translation>
-</phrase>
-
-<phrase>
-<original>This option will load every page in the TIFF file as an individual image.</original>
-<translation>Эта опция будет загружать каждую страницу в файле TIFF в качестве отдельного изображения.</translation>
-</phrase>
-
-<phrase>
-<original>This option will only load a single page from the TIFF file.</original>
-<translation>Эта опция будет загружать только одну страницу из файла TIFF.</translation>
-</phrase>
-
-<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for File_Import_Multipage.frm-->
 
 <!-- BEGIN text for File_Import_ScreenCapture.frm (FormScreenCapture) -->
 
@@ -16104,10 +16008,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2669</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5062 phrases. -->
-<!-- 2393 are duplicates, so only 2669 unique phrases have been written to file. -->
-<!-- These 2669 phrases contain approximately 12258 total words. -->
+<!-- As of this build, PhotoDemon contains 5040 phrases. -->
+<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12079 total words. -->
 
 </pdData>

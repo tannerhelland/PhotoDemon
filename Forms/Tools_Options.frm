@@ -944,14 +944,14 @@ Private Sub cboMonitors_Click()
     
     'Prior to v7.0, PD used HMONITOR handles to track displays, using the reasoning from this article:
     ' http://www.microsoft.com/msj/0697/monitor/monitor.aspx
-    '...specifically the line, "A physical device has the same HMONITOR value throughout its lifetime, even across changes
-    ' to display settings, as long as it remains a part of the desktop."
+    '...specifically the line, "A physical device has the same HMONITOR value throughout its lifetime,
+    ' even across changes to display settings, as long as it remains a part of the desktop."
     
-    'This worked "well enough", as long as the user never disconnected the display monitor only to attach it again at
-    ' some point in the future (as is common with second monitors and a laptop, for example).
+    'This worked "well enough", as long as the user never disconnected the display monitor only to attach
+    ' it again at some point in the future (as is common with second monitors and a laptop, for example).
     
-    'In 7.0, this system was upgraded to use monitor serial numbers, and only fall back to the HMONITOR value if a
-    ' serial number (or EDID) doesn't exist.
+    'In 7.0, this system was upgraded to use monitor serial numbers, and only fall back to the HMONITOR
+    ' if a serial number (or EDID) doesn't exist.
     
     Dim uniqueMonitorID As String
     If (Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then
@@ -1651,8 +1651,8 @@ Private Sub LoadAllPreferences()
         ' unless the user has done something dumb like install us to a restricted folder.)
         lblSettingsFolder.Caption = UserPrefs.GetDataPath()
         
-        'By default, debug logs are only generated in developer and beta builds.  As of 7.2, this behavior can be forcibly
-        ' toggled in production builds as well.
+        'By default, debug logs are only generated in developer and beta builds.
+        ' As of v8.0, this behavior can be forcibly toggled in production builds as well.
         btsDebug.AddItem "auto", 0
         btsDebug.AddItem "no", 1
         btsDebug.AddItem "yes", 2

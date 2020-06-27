@@ -333,24 +333,23 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
             
         '*************************************************************************************************************************************
-        ' If the just-loaded image was in a multipage format (icon, animated GIF, multipage TIFF), perform a few extra checks.
+        ' If the just-loaded image was in a multipage format (e.g. multipage TIFF),
+        '  perform a few extra checks.
         '*************************************************************************************************************************************
         
-        'Before continuing on to the next image (if any), see if the just-loaded image contains multiple pages within the file.
-        ' If it does, load each page into its own layer.
+        'Before continuing on to the next image (if any), see if the just-loaded image contains multiple
+        ' pages within the file. If it does, load each page into its own layer.
         '
-        'NOTE: as of v7.0, this feature has been disabled for icons.  Why?  PD doesn't yet provide a way to
-        ' export "multipage" icon files.  As such, importing them as multipage is just frustrating.  I'll look
-        ' at fixing this in a future release.
+        'NOTE: some multipage formats (like PSD, ORA, ICO, etc) load all pages/frames in the initial
+        ' load function.  This "separate multipage loader function" approach primarily exists for
+        ' legacy functions where a 3rd-party library is responsible for parsing the extra pages.
         If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG)) Then
-            
-            'TODO: deal with UI prompt options here!
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
             
             'The actual load process now varies by import engine.  PD can use both FreeImage and GDI+
-            ' to import multipage images.
+            ' to import certain types of multipage images (e.g. TIFF).
             If (decoderUsed = id_FreeImage) Then
             
                 'We now have several options for loading the remaining pages in this file.
@@ -378,15 +377,15 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 'Otherwise, assume they want all pages loaded
                 loadSuccessful = GDI_Plus.ContinueLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
             
-            'Internal multipage loader
+            'Internal multipage loader; this is used for animated PNG files
             Else
-            
                 If (targetImage.GetOriginalFileFormat = PDIF_PNG) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
-                
             End If
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or PNG.
-            ' (TIFFs don't require this, as all pages are typically the same size.)
+            ' (TIFFs don't typically require this, as all pages tend to be the same size.  Note that an exception
+            '  to this is PSDs exported as multipage TIFFs via Photoshop - but in that case, we *still* want to
+            '  make all pages visible by default)
             If (targetImage.GetNumOfLayers > 1) And (targetImage.GetOriginalFileFormat <> PDIF_TIFF) Then
                 
                 Dim pageTracker As Long
@@ -701,8 +700,9 @@ Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PD_I
         Case "TMPDIB", "PDTMPDIB"
             CheckForInternalFiles = PDIF_RAWBUFFER
             
-        'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.  These are typically older conversion functions,
-        ' created before PDIs were finalized.
+        'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.
+        ' In some cases these come from 3rd-party libraries (e.g. EZTWAIN) so their format
+        ' is not necessarily guaranteed in advance.
         Case "TMP"
             CheckForInternalFiles = PDIF_TMPFILE
             

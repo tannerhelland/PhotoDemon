@@ -91,9 +91,9 @@ Attribute VB_Exposed = False
 'Last updated: 14/October/19
 'Last update: use the new pdPackageChunky format for resource collections
 '
-'As of v7.2, PD ships with some resource collections (e.g. prebuilt gradients).  These have to be stored in PD's
-' resource segment, and it is helpful to package such collections into their own sub-archives.  This dialog
-' helps you construct such sub-archives.
+'As of v8.0, PD ships with some resource collections (e.g. prebuilt gradients).  These are stored
+' in PD's resource segment, and it is helpful to package such collections into their own sub-archives.
+' This dialog helps you construct sub-archives like this.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

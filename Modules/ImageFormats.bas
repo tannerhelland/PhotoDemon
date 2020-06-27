@@ -279,7 +279,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "PPM - Portable Pixmap", "*.ppm", PDIF_PPM
     End If
     
-    'As of v7.2 nightly builds, PhotoDemon has its own PSD parser
+    'In v8.0, PhotoDemon received a custom PSD parser
     AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
     
     If m_FreeImageEnabled Then

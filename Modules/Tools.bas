@@ -175,7 +175,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     'Request the scroll-specific viewport pipeline stage
     Viewport.Stage2_CompositeAllLayers srcImage, FormMain.MainCanvas(0)
     
-    'As of 7.2, rulers also need to be notified of this change.  (Normally they are notified
+    'As of v8.0, rulers also need to be notified of this change.  (Normally they are notified
     ' of all canvas mouse events, but this tool is a little strange because we move the canvas
     ' *after* rulers have received mouse move notifications - so their coordinates are out of
     ' date by the time this function finishes).

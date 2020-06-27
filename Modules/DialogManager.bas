@@ -42,15 +42,6 @@ Public Function ConfirmClose(ByVal srcImageID As Long, ByVal numOfUnsavedImages 
     Set dialog_UnsavedChanges = Nothing
 End Function
 
-'Present a dialog box to ask the user how they want to deal with a multipage image.
-Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
-    Load dialog_MultiImage
-    dialog_MultiImage.ShowDialog srcFilename, numOfPages
-    PromptMultiImage = dialog_MultiImage.DialogResult
-    Unload dialog_MultiImage
-    Set dialog_MultiImage = Nothing
-End Function
-
 Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportBMP

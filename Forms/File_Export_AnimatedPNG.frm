@@ -167,7 +167,7 @@ Attribute VB_Exposed = False
 'Last updated: 06/September/19
 'Last update: separate from original animated GIF export dialog, as the two exporters have different needs
 '
-'In v7.2, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
+'In v8.0, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
 ' export parameters to the user.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.

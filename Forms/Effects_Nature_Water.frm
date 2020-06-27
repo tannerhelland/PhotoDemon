@@ -114,8 +114,9 @@ Attribute VB_Exposed = False
 'Last updated: 18/October/17
 'Last update: created dedicated UI, expose more options to the user
 '
-'PhotoDemon has always provided some sort of silly "underwater" effect.  In 7.0, the filter was finally expanded
-' to provide a full UI and user-controllable parameters.
+'PhotoDemon has always provided some sort of silly "underwater" effect.
+'
+'In 7.0, the filter was expanded to provide a full UI and user-controllable parameters.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

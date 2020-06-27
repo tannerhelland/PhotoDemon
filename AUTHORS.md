@@ -9,6 +9,9 @@ Ongoing PhotoDemon development is supported by our [awesome Patreon members](htt
 Super Patrons:
 
 * [EFF.ORG](https://www.eff.org/)
+* [Jason Brown](https://statslog.com/)
+* Jessica H
+* Johannes Nendel
 
 ### 3rd-party libraries
 

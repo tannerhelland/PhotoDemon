@@ -391,7 +391,7 @@ Private Sub cmdBar_OKClick()
     UpdateFillObject
     
     'TODO: save the current list of recently used brushes
-    'saveRecentBrushList
+    'SaveRecentBrushList
     
     userAnswer = vbOK
     Me.Visible = False

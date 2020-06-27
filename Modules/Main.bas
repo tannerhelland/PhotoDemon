@@ -133,8 +133,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     'Enable program-wide high-performance timer objects
     VBHacks.EnableHighResolutionTimers
     
-    'Regardless of debug mode, we initialize our internal debugger.  (As of 7.2, the user can opt-out of debug tracking,
-    ' or they can manually enable it in stable builds.)
+    'Regardless of debug mode, we initialize our internal debugger.  (As of 8.0, the user can
+    ' also opt-out of debug tracking, or they can manually enable it in stable builds.)
     PDDebug.InitializeDebugger
     
     'During development, I find it helpful to profile PhotoDemon's startup process (so I can watch for obvious regressions).
@@ -472,13 +472,13 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     g_WindowManager.SetAutoRefreshMode False
     g_WindowManager.RegisterMainForm FormMain
     
-    'As of 7.0, all we need to do here is initialize the new, lightweight toolbox handler.  This will load things
-    ' like toolbox sizes and visibility from the previous session.
+    'As of 7.0, all we need to do here is initialize the new, lightweight toolbox handler.
+    ' This will load things like toolbox sizes and visibility from the previous session.
     Toolboxes.LoadToolboxData
     
-    'With toolbox data assembled, we can now silently load each tool window.  Even though these windows may not
-    ' be visible (as the user can elect to hide them), we still want them loaded so that we can activate them quickly
-    ' if/when they are enabled.
+    'With toolbox data assembled, we can now silently load each tool window.  Even though these
+    ' windows may not be visible (as the user can elect to hide them), we still want them loaded
+    ' so we can activate them quickly if/when they are enabled.
     perfCheck.MarkEvent "Window manager: load left toolbox"
     Load toolbar_Toolbox
     

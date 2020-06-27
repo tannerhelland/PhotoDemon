@@ -2166,8 +2166,8 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
             poiList(3).x = 0!
             poiList(3).y = 0! + Me.GetLayerHeight(False)
             
-            'As of PD 7.7, rotation handles are also provided.  Note that changes to these positions *must be mirrored* in the
-            ' GetLayerRotationNodeCoordinates() function above!
+            'As of PD v8.0, rotation handles are also provided.  Note that changes to these positions
+            ' *must be mirrored* in the GetLayerRotationNodeCoordinates() function above!
             poiList(4).x = 0! + Me.GetLayerWidth(False)
             poiList(4).y = 0! + Me.GetLayerHeight(False) * 0.5
             
