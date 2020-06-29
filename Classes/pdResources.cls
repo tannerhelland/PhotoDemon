@@ -158,20 +158,18 @@ Friend Function ExtractDefaultAssets() As Boolean
     Set cPackage = New pdPackageChunky
     
     Dim dstFilename As String
+    Dim tmpBytes() As Byte, tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
     
     'Extract the default gradient collection (but only if it's never been extracted before).
     If (Not UserPrefs.GetPref_Boolean("Assets", "ExtractedGradients", False)) Then
     
         PDDebug.LogAction "Gradient collection has never been extracted before.  Extracting now..."
-        
-        Dim tmpBytes() As Byte
         If Me.LoadGenericResource("gradients", tmpBytes) Then
             
             'Load the byte array into a temporary package manager
             If cPackage.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
                 
                 'Gradient chunks are stored as name-value pairs
-                Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long
                 Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
                 
                     'Ensure the chunk name is actually a "NAME" chunk
@@ -214,7 +212,37 @@ Friend Function ExtractDefaultAssets() As Boolean
         UserPrefs.SetPref_Boolean "Assets", "ExtractedGradients", True
         
     End If
-
+    
+    'Repeat the above steps for other assets
+    
+    'ICC profiles
+    If (Not UserPrefs.GetPref_Boolean("Assets", "ExtractedColorProfiles", False)) Then
+        PDDebug.LogAction "ICC profile collection has never been extracted before.  Extracting now..."
+        If Me.LoadGenericResource("color_profiles", tmpBytes) Then
+            If cPackage.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
+                Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+                    If (tmpChunkName = "NAME") Then
+                        dstFilename = UserPrefs.GetColorProfilePath() & tmpStream.ReadString_UTF8(tmpChunkSize)
+                        If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                            If (tmpChunkName = "DATA") Then
+                                If (Not Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True)) Then
+                                    RaiseResourceError "ExtractDefaultAssets: failed to create target file " & dstFilename
+                                End If
+                            End If
+                        Else
+                            RaiseResourceError "bad profile data: " & tmpChunkName
+                        End If
+                    Else
+                        RaiseResourceError "bad gradient name: " & tmpChunkName
+                    End If
+                Loop
+            Else
+                RaiseResourceError "ExtractDefaultAssets: failed to extract profile resource chunk"
+            End If
+        End If
+        UserPrefs.SetPref_Boolean "Assets", "ExtractedColorProfiles", True
+    End If
+    
 End Function
 
 'Given a path to a .pdr file, attempt to load and validate it

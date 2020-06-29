@@ -319,16 +319,44 @@ Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal 
     Dim bytesPerChannel As Long
     bytesPerChannel = (bitsPC \ 8)
     
-    'Set a flag to determine ICC profile availability; PhotoDemon won't (currently) load CMYK images without
-    ' an embedded profile as the results are likely to be garbage.  Photoshop will *never* write CMYK images
-    ' an ICC profile, but amateur 3rd-party software may attempt to write CMYK like this - and they shouldn't.
+    'Set a flag to determine ICC profile availability.  If I had my way, PhotoDemon wouldn't load
+    ' CMYK images without an embedded color profile as the results will be borderline garbage.
+    ' This is not generally an issue because Photoshop *never* writes CMYK images without embedded
+    ' color profiles, but 3rd-party PSD encoders are a different story.
+    '
+    'That said, we try to make life easy for users, and given the number of bad 3rd-party PSDs
+    ' floating around the web, we want to try and load bad CMYK data as best we can.  Currently,
+    ' that means using a generic CMYK profile that ships with PhotoDemon.  It is a public-domain
+    ' CMYK transfer built by Graeme Gill of ArgyllCMS fame, and originally shared in the LittleCMS
+    ' mailing list (https://sourceforge.net/p/lcms/mailman/message/32755884/).
+    '
+    'PD extracts this profile to the Data/ColorProfiles at first-run, and if we can't find it
+    ' there, we simply abandon ship.
     Dim iccAvailable As Boolean
     iccAvailable = (Not srcProfile Is Nothing)
     If iccAvailable Then iccAvailable = srcProfile.HasICCData()
     If (Not iccAvailable) Then
-        warningStack.AddString "CMYK layer does not contain a usable ICC profile.  Pixel data is junk; this file was written incorrectly."
-        ConstructImage_CMYK = psd_Failure
-        Exit Function
+    
+        warningStack.AddString "CMYK layer does not contain a usable ICC profile.  Looking for default PD CMYK profile..."
+        
+        Dim builtInProfilePath As String
+        builtInProfilePath = UserPrefs.GetColorProfilePath() & "cmyk.icm"
+        
+        If Files.FileExists(builtInProfilePath) Then
+            Set srcProfile = New pdICCProfile
+            iccAvailable = srcProfile.LoadICCFromFile(builtInProfilePath)
+            If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+        End If
+        
+        'If loading the built-in CMYK profile somehow failed, abandon the load process
+        If iccAvailable Then
+            warningStack.AddString "Default CMYK profile found.  Proceeding with PSD import..."
+        Else
+            warningStack.AddString "Default CMYK missing or broken.  PSD import abandoned."
+            ConstructImage_CMYK = psd_Failure
+            Exit Function
+        End If
+        
     End If
     
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
@@ -400,11 +428,13 @@ Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal 
     
     'Prep source and destination ICC profiles
     Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
-    Set lcmsSrcProfile = New pdLCMSProfile
-    lcmsSrcProfile.CreateFromPDICCObject srcProfile
     
-    Set lcmsDstProfile = New pdLCMSProfile
-    lcmsDstProfile.CreateSRGBProfile
+    If iccAvailable Then
+        Set lcmsSrcProfile = New pdLCMSProfile
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        Set lcmsDstProfile = New pdLCMSProfile
+        lcmsDstProfile.CreateSRGBProfile
+    End If
     
     'Preparing the transform itself is a little more complicated, as it varies based on source color depth
     ' and the presence of alpha channels.  (Note that we also explicitly request blackpoint compensation to
@@ -422,23 +452,29 @@ Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal 
     'Photoshop defines CMYK data as vanilla (e.g. 0 is white, 1 is black)
     srcColorMode = srcColorMode Or FLAG_MINISWHITE
     
-    Set lcmsTransform = New pdLCMSTransform
-    lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, srcColorMode, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
+    If iccAvailable Then
+        Set lcmsTransform = New pdLCMSTransform
+        lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, srcColorMode, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
+    End If
     
     'Iterate through each scanline in the image
-    For y = 0 To layerHeight - 1
-    
-        'Copy all present channels into the contiguous planar buffer
-        If (cIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(0)), VarPtr(m_Channels(cIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
-        If (mIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize)), VarPtr(m_Channels(mIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
-        If (yIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 2)), VarPtr(m_Channels(yIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
-        If (kIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 3)), VarPtr(m_Channels(kIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
-        If (aIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 4)), VarPtr(m_Channels(aIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+    If iccAvailable Then
         
-        'Use LCMS to transform the data into our final RGBA buffer
-        lcmsTransform.ApplyTransformToArbitraryMemoryEx VarPtr(tmpPlanarBuffer(0)), scanStart + y * scanWidth, layerWidth, 1, srcLineSize, scanWidth, channelScanlineSize, 0&
+        For y = 0 To layerHeight - 1
         
-    Next y
+            'Copy all present channels into the contiguous planar buffer
+            If (cIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(0)), VarPtr(m_Channels(cIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+            If (mIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize)), VarPtr(m_Channels(mIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+            If (yIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 2)), VarPtr(m_Channels(yIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+            If (kIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 3)), VarPtr(m_Channels(kIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+            If (aIndex >= 0) Then CopyMemoryStrict VarPtr(tmpPlanarBuffer(channelScanlineSize * 4)), VarPtr(m_Channels(aIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+            
+            'Use LCMS to transform the data into our final RGBA buffer
+            lcmsTransform.ApplyTransformToArbitraryMemoryEx VarPtr(tmpPlanarBuffer(0)), scanStart + y * scanWidth, layerWidth, 1, srcLineSize, scanWidth, channelScanlineSize, 0&
+            
+        Next y
+        
+    End If
     
     'Free all source channel data to relieve memory pressure
     If (cIndex >= 0) Then Erase m_Channels(cIndex).ciDataDecoded

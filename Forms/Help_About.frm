@@ -352,6 +352,7 @@ Private Sub Form_Load()
     GenerateContributor "Giorgio ""Gibra"" Brausi", "http://nuke.vbcorner.net"
     GenerateContributor "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
     GenerateContributor "Google Translate", "http://translate.google.com"
+    GenerateContributor "Graeme Gill", "http://argyllcms.com/"
     GenerateContributor "Hans Nolte", "https://github.com/hansnolte"
     GenerateContributor "Helmut Kuerbiss"
     GenerateContributor "Hidayat Suriapermana"
