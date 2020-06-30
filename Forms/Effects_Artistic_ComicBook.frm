@@ -77,7 +77,7 @@ Begin VB.Form FormComicBook
       _ExtentX        =   10451
       _ExtentY        =   1270
       Caption         =   "brush size"
-      Max             =   50
+      Max             =   500
       Value           =   5
       DefaultValue    =   5
    End
@@ -91,15 +91,16 @@ Attribute VB_Exposed = False
 'Comic Book Image Effect
 'Copyright 2013-2020 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
-'Last updated: 23/May/16
-'Last update: optimize function a bit
+'Last updated: 29/June/20
+'Last update: switch to real-time bilateral filter for huge performance improvements
 '
-'PhotoDemon has provided a "comic book" effect for a long time, but despite going through many incarnations, it always
-' used low-quality, "quick and dirty" approximations.
+'PhotoDemon has provided a "comic book" effect for a long time, but despite going through
+' many incarnations, it always used low-quality, "quick and dirty" approximations.
 '
-'In July '14, this changed, and the entire tool was rethought from the ground up.  A dialog is now provided, with
-' various user-settable options.  This yields much more flexible results, and the use of PD's central compositor for
-' overlaying intermediate image copies keeps things nice and fast.
+'In July '14, this changed, and the entire tool was rethought from the ground up.
+' A dialog is now provided, with various user-settable options.  This yields much more
+' flexible results, and the use of PD's central compositor for overlaying intermediate
+' image copies keeps things nice and fast.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -108,10 +109,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private WithEvents m_Bilateral As pdFxBilateral
+Attribute m_Bilateral.VB_VarHelpID = -1
+
 'Apply a "comic book" effect to an image
-'Inputs:
-' 1) strength of the inking
-' 2) color smudging, which controls the radius of the median effect applied to the base image
 Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out individual parameters
@@ -127,7 +128,14 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
         colorStrength = .GetLong("smoothing", btsStrength.ListIndex)
     End With
     
-    If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
+    Dim numOfSteps As Long
+    If (inkOpacity > 0) Then
+        numOfSteps = 3 + colorStrength
+    Else
+        numOfSteps = 2 + colorStrength
+    End If
+    
+    If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, numOfSteps
     
     'Initiate PhotoDemon's central image handler
     Dim dstSA As SafeArray2D
@@ -139,18 +147,9 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
     'During a preview, ink opacity is artificially reduced to give a better idea of how the final image will appear
     If toPreview Then inkOpacity = inkOpacity * curDIBValues.previewModifier
     
-    'If this is not a preview, calculate a new maximum progress bar value.  This changes depending on the number of
-    ' iterations we must run to obtain a proper colored image.
-    Dim numOfSteps As Long, newProgBarMax As Long
-    
-    If (inkOpacity > 0) Then
-        numOfSteps = 2 + colorStrength
-    Else
-        numOfSteps = 1 + colorStrength
-    End If
-    
-    newProgBarMax = workingDIB.GetDIBWidth * numOfSteps + ((colorStrength + 1) * workingDIB.GetDIBWidth)
-    If (Not toPreview) Then SetProgBarMax newProgBarMax
+    'If this is not a preview, calculate a new maximum progress bar value.  This changes depending
+    ' on the number of iterations we must run to obtain our effect.
+    If (Not toPreview) Then SetProgBarMax numOfSteps
     
     'If the user wants the image inked, we're actually going to generate a contour map now, before applying any coloring.
     ' This gives us more interesting lines to work with.
@@ -163,7 +162,8 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
         Dim inkDIB As pdDIB
         Set inkDIB = New pdDIB
         inkDIB.CreateFromExistingDIB workingDIB
-        Filters_Layers.CreateContourDIB True, workingDIB, inkDIB, toPreview, newProgBarMax, 0
+        If (Not toPreview) Then ProgressBars.SetProgBarVal 1
+        Filters_Layers.CreateContourDIB True, workingDIB, inkDIB, True
         
         'Apply premultiplication to the DIB prior to compositing
         inkDIB.SetAlphaPremultiplication True
@@ -189,13 +189,18 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
                 End If
             End If
             
-            CreateBilateralDIB workingDIB, colorSmudge, 100, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
+            If (Not toPreview) Then ProgressBars.SetProgBarVal i + 1
+            
+            If (m_Bilateral Is Nothing) Then Set m_Bilateral = New pdFxBilateral
+            m_Bilateral.Bilateral_Recursive workingDIB, colorSmudge, 30#, False
             
         Next i
         
     End If
     
     'Return the image to the premultiplied alpha space
+    Message "Animating image (stage %1 of %2)...", numOfSteps, numOfSteps
+    If (Not toPreview) Then ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
     workingDIB.SetAlphaPremultiplication True
     
     'If the caller doesn't want us to ink the image, we're all done!

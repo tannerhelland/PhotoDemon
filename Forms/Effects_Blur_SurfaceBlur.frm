@@ -156,32 +156,22 @@ Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toP
     'Enforce a minimum radius of 1; below this, the recursive filter may experience OOB errors
     If (kernelRadius < 1#) Then kernelRadius = 1#
     
-    'As of 2019, PD supports an ultra-fast recursive bilateral filter (adapted from this
+    'For non-previews, set up the progress bar.  (Note that we have to use an integer value,
+    ' or taskbar progress updates won't work - this is specifically an OS limitation, as PD's
+    ' internal progress bar works just fine with [0, 1] progress values.)
+    If (Not toPreview) Then ProgressBars.SetProgBarMax 100#
+        
+    'As of 2019, PD ships with an ultra-fast recursive bilateral filter (adapted from this
     ' MIT-licensed code: https://github.com/ufoym/recursive-bf).  This is now used
-    ' exclusively by the program, although the old (separable) implementation still exists
-    ' in case we need it in the future... note, however, that the separable implementation
-    ' supports additional inputs, which are no longer provided via the UI.
-    Dim useRecursiveBF As Boolean
-    useRecursiveBF = True
+    ' exclusively by the program, as it is multiple orders of magnitude faster than a
+    ' naive bilateral implementation.
+    If (m_Bilateral Is Nothing) Then Set m_Bilateral = New pdFxBilateral
+    m_Bilateral.Bilateral_Recursive workingDIB, kernelRadius, rangeFactor, (Not toPreview)
     
-    If useRecursiveBF Then
-        
-        'For non-previews, set up the progress bar.  (Note that we have to use an integer value,
-        ' or taskbar progress updates won't work - this is specifically an OS limitation, as PD's
-        ' internal progress bar works just fine with [0, 1] progress values.)
-        If (Not toPreview) Then ProgressBars.SetProgBarMax 100#
-        
-        If (m_Bilateral Is Nothing) Then Set m_Bilateral = New pdFxBilateral
-        m_Bilateral.Bilateral_Recursive workingDIB, kernelRadius, rangeFactor, (Not toPreview)
-        
-        'The returned result is not guaranteed to be perfectly premultiplied, as the bilateral
-        ' function can change colors in unpredictable ways.  Forcibly unpremultiply it just to
-        ' be safe.  (The effect handler will take care of re-premultiplying it for us.)
-        workingDIB.SetAlphaPremultiplication False, True
-        
-    Else
-        'Filters_Layers.CreateBilateralDIB workingDIB, kernelRadius, spatialFactor, colorFactor, toPreview
-    End If
+    'The returned result is not guaranteed to be perfectly premultiplied, as the bilateral
+    ' function can change colors in unpredictable ways.  Forcibly unpremultiply it just to
+    ' be safe.  (The effect handler will take care of re-premultiplying it for us.)
+    workingDIB.SetAlphaPremultiplication False, True
         
     'Finalize result
     EffectPrep.FinalizeImageData toPreview, dstPic
