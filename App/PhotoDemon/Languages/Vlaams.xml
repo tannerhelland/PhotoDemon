@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.486</langversion>
+<langversion>6.7.487</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4955,6 +4955,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>standaard</translation>
 </phrase>
@@ -4989,7 +4994,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>geen</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9091,7 +9096,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>hoog</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14447,8 +14452,13 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Knapperig</translation>
+<original>normal</original>
+<translation>normaal</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>knapperig</translation>
 </phrase>
 
 <phrase>
@@ -14466,7 +14476,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14548,16 +14558,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>normaal</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>knapperig</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>beide</translation>
 </phrase>
@@ -14612,7 +14612,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16011,8 +16011,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

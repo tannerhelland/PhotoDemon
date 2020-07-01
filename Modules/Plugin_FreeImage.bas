@@ -1423,7 +1423,7 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
             Next y
             
             'Free our array references
-            CopyMemory ByVal VarPtrArray(srcImageDataInt), 0&, 4
+            PutMem4 VarPtrArray(srcImageDataInt), 0&
             dstDIB.UnwrapArrayFromDIB dstImageData
             
             'Next, perform ICC correction on the integer array, and place the result inside a custom byte array
@@ -1502,7 +1502,7 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
             Next y
             
             'Free our array references
-            CopyMemory ByVal VarPtrArray(srcImageDataByte), 0&, 4
+            PutMem4 VarPtrArray(srcImageDataByte), 0&
             dstDIB.UnwrapArrayFromDIB dstImageData
             
             'Next, perform ICC correction on the integer array, and place the result inside a custom byte array
@@ -2119,10 +2119,10 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Next y
     
     'Free our 1D array reference
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
         
     'Point dstImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
@@ -2293,10 +2293,10 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     Next y
     
     'Free our 1D array reference
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
         
     'Point dstImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
@@ -2396,7 +2396,7 @@ Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     Next y
     
     'Free our 1D array reference
-    CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
+    PutMem4 VarPtrArray(srcImageData()), 0&
     
     'Fill min/max RGB values regardless of normalization
     dstMinR = minR
@@ -3097,7 +3097,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                                 Next x
                                 
                                 'Free our 1D array reference
-                                CopyMemory ByVal VarPtrArray(fiPixels()), 0&, 4
+                                PutMem4 VarPtrArray(fiPixels()), 0&
                                 
                             Next y
                             
@@ -3159,7 +3159,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                                 Next x
                                 
                                 'Free our 1D array reference
-                                CopyMemory ByVal VarPtrArray(fiPixels()), 0&, 4
+                                PutMem4 VarPtrArray(fiPixels()), 0&
                                 
                             Next y
                             
@@ -3197,7 +3197,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                                 Next x
                                 
                                 'Free our 1D array reference
-                                CopyMemory ByVal VarPtrArray(fiPixels()), 0&, 4
+                                PutMem4 VarPtrArray(fiPixels()), 0&
                                 
                             Next y
                         
@@ -3257,7 +3257,7 @@ Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette(
         
             'Copy the source palette into the destination array
             ReDim dstPalette(0 To GetFreeImagePalette - 1) As RGBQuad
-            CopyMemory ByVal VarPtr(dstPalette(0)), ByVal ptrPalette, (GetFreeImagePalette - 1) * 4
+            CopyMemoryStrict VarPtr(dstPalette(0)), ptrPalette, (GetFreeImagePalette - 1) * 4
             
         Else
             GetFreeImagePalette = 0

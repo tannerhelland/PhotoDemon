@@ -949,7 +949,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     blockCategory = lstGroup.ListIndex
     
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left + FixDPI(8)

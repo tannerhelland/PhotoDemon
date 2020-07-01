@@ -250,8 +250,8 @@ Private Sub cmdBar_OKClick()
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    cParams.AddParam "JXRQuality", Abs(sltQuality.Value)
-    cParams.AddParam "JXRProgressive", chkProgressive.Value
+    cParams.AddParam "jxr-quality", Abs(sltQuality.Value)
+    cParams.AddParam "jxr-progressive", chkProgressive.Value
     
     m_FormatParamString = cParams.GetParamString
     

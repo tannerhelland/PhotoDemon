@@ -575,7 +575,7 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     'Start by retrieving the font face name from the LogFontW struct
     Dim thisFontFace As String
     thisFontFace = String$(LF_FACESIZEA, 0)
-    CopyMemory ByVal StrPtr(thisFontFace), ByVal VarPtr(lpElfe.lfFaceName(0)), LF_FACESIZEW
+    CopyMemoryStrict StrPtr(thisFontFace), VarPtr(lpElfe.lfFaceName(0)), LF_FACESIZEW
     thisFontFace = Strings.TrimNull(thisFontFace)
     
     'Perform some basic checks to see if this font is usable
@@ -624,7 +624,7 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
         Dim copyLength As Long
         copyLength = LenB(srcFontFace)
         If (copyLength > LF_FACESIZEW) Then copyLength = LF_FACESIZEW
-        CopyMemory ByVal VarPtr(.lfFaceName(0)), ByVal StrPtr(srcFontFace), copyLength
+        CopyMemoryStrict VarPtr(.lfFaceName(0)), StrPtr(srcFontFace), copyLength
         
         'Bold is a unique style, because it must be translated to a corresponding weight measurement
         If srcFontBold Then .lfWeight = fw_Bold Else .lfWeight = fw_Normal
@@ -743,14 +743,8 @@ Public Function FillOutlineTextMetrics(ByRef srcDC As Long, ByRef dstOutlineMetr
     
     'If the byte array was filled successfully, parse out the struct now.  (I don't have need for the additional name values
     ' right now, so they're just ignored.)
-    If (gtmReturn <> 0) Then
-        
-        FillOutlineTextMetrics = True
-        CopyMemory ByVal VarPtr(dstOutlineMetrics), ByVal VarPtr(tmpBytes(0)), LenB(dstOutlineMetrics)
-        
-    Else
-        FillOutlineTextMetrics = False
-    End If
+    FillOutlineTextMetrics = (gtmReturn <> 0)
+    If FillOutlineTextMetrics Then CopyMemoryStrict VarPtr(dstOutlineMetrics), VarPtr(tmpBytes(0)), LenB(dstOutlineMetrics)
     
 End Function
 

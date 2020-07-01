@@ -2060,7 +2060,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     Dim x As Long, y As Long
     Dim preMultiplicationFactor As Double, textContrastFactor As Double, alphaCalculation As Double
     
-    '"Standard" and "Crisp" AA modes need to mimic the Text Contrast setting GDI+ provides.  We use a custom calculation
+    '"standard" and "crisp" AA modes need to mimic the Text Contrast setting GDI+ provides.  We use a custom calculation
     ' that provides similar results.
     
     'Convert m_TextContrast from the range [0, 10] to [0.5, 3.0]

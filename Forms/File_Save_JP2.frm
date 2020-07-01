@@ -229,7 +229,7 @@ Private Sub cmdBar_OKClick()
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    cParams.AddParam "JP2Quality", Abs(sltQuality)
+    cParams.AddParam "jp2-quality", Abs(sltQuality)
     
     m_FormatParamString = cParams.GetParamString
     

@@ -1519,18 +1519,18 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(rErrors(0, 0)), VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(bErrors(0, 0)), VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(rErrors(0, 1)), VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(bErrors(0, 1)), VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
                     
                     FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
@@ -1837,10 +1837,10 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha(ByRef dstDIB As pdDIB, ByR
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(aErrors(0, 0)), ByVal VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(rErrors(0, 0)), VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(bErrors(0, 0)), VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(aErrors(0, 0)), VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
@@ -1848,10 +1848,10 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha(ByRef dstDIB As pdDIB, ByR
                     FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(aErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(aErrors(0, 1)), ByVal VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(rErrors(0, 1)), VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(bErrors(0, 1)), VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(aErrors(0, 1)), VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
                     
                     FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
@@ -2164,10 +2164,10 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha_Lab(ByRef dstDIB As pdDIB,
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(aErrors(0, 0)), ByVal VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(rErrors(0, 0)), VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(bErrors(0, 0)), VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(aErrors(0, 0)), VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
@@ -2175,10 +2175,10 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha_Lab(ByRef dstDIB As pdDIB,
                     FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(aErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(aErrors(0, 1)), ByVal VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(rErrors(0, 1)), VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(bErrors(0, 1)), VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(aErrors(0, 1)), VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
                     
                     FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
@@ -3260,18 +3260,18 @@ Public Sub Palettize_BitRGB_Dither(ByRef dstDIB As pdDIB, ByVal rNumShades As By
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(rErrors(0, 0)), VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(bErrors(0, 0)), VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(rErrors(0, 1)), VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(bErrors(0, 1)), VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
                     
                     FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
@@ -3746,10 +3746,10 @@ Public Function GetPalettizedImage_Dithered_IncAlpha(ByRef srcDIB As pdDIB, ByRe
             ' The last line of errors must also be zeroed-out.
             If (yDown > 0) Then
             
-                CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
-                CopyMemory ByVal VarPtr(aErrors(0, 0)), ByVal VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(rErrors(0, 0)), VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(gErrors(0, 0)), VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(bErrors(0, 0)), VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+                CopyMemoryStrict VarPtr(aErrors(0, 0)), VarPtr(aErrors(0, 1)), (xWidth + 1) * 4
                 
                 If (yDown = 1) Then
                     FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
@@ -3757,10 +3757,10 @@ Public Function GetPalettizedImage_Dithered_IncAlpha(ByRef srcDIB As pdDIB, ByRe
                     FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(aErrors(0, 1)), (xWidth + 1) * 4, 0
                 Else
-                    CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
-                    CopyMemory ByVal VarPtr(aErrors(0, 1)), ByVal VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(rErrors(0, 1)), VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(gErrors(0, 1)), VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(bErrors(0, 1)), VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                    CopyMemoryStrict VarPtr(aErrors(0, 1)), VarPtr(aErrors(0, 2)), (xWidth + 1) * 4
                     
                     FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
                     FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0

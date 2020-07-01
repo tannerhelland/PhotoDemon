@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3469</langversion>
+<langversion>6.8.3470</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4950,6 +4950,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>standard</translation>
 </phrase>
@@ -4984,7 +4989,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation>ingen</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9086,7 +9091,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>hög</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14441,8 +14446,13 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Knaprig</translation>
+<original>normal</original>
+<translation>vanligt</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>knaprig</translation>
 </phrase>
 
 <phrase>
@@ -14460,7 +14470,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14542,16 +14552,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>vanligt</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>knaprig</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>båda</translation>
 </phrase>
@@ -14606,7 +14606,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16005,8 +16005,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

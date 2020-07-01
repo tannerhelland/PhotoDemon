@@ -1650,7 +1650,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
             
         End If
         
-        CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
+        PutMem4 VarPtrArray(tmpData), 0&
     
     'This coordinate does not lie inside the layer.
     Else

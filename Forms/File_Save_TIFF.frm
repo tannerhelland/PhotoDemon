@@ -374,7 +374,7 @@ Private Function GetExportParamString() As String
             compressName = "LZW"
     End Select
     
-    cParams.AddParam "TIFFCompressionColor", compressName
+    cParams.AddParam "tiff-compression-color", compressName
     
     Select Case btsCompressionColor.ListIndex
         'Auto
@@ -396,16 +396,16 @@ Private Function GetExportParamString() As String
             compressName = "Fax4"
     End Select
     
-    cParams.AddParam "TIFFCompressionMono", compressName
+    cParams.AddParam "tiff-compression-mono", compressName
     
     If (btsMultipage.ListIndex <> 0) Then
-        cParams.AddParam "TIFFMultipage", True
+        cParams.AddParam "tiff-multipage", True
     Else
-        cParams.AddParam "TIFFMultipage", False
+        cParams.AddParam "tiff-multipage", False
     End If
         
     'Next come all the messy color-depth possibilities
-    cParams.AddParam "TIFFColorDepth", clrDepth.GetAllSettings
+    cParams.AddParam "tiff-color-depth", clrDepth.GetAllSettings
     
     GetExportParamString = cParams.GetParamString
     
@@ -441,20 +441,20 @@ Private Sub UpdatePreviewSource()
         ' own parser.
         Dim cParamsDepth As pdSerialize
         Set cParamsDepth = New pdSerialize
-        cParamsDepth.SetParamString cParams.GetString("TIFFColorDepth", vbNullString)
+        cParamsDepth.SetParamString cParams.GetString("tiff-color-depth", vbNullString)
         
         'Color and grayscale modes require different processing, so start there
         Dim forceGrayscale As Boolean
-        forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
+        forceGrayscale = ParamsEqual(cParamsDepth.GetString("cd-color-model", "auto"), "gray")
         
         'For 8-bit modes, grab a palette size.  (This parameter will be ignored in other color modes.)
         Dim newPaletteSize As Long
-        newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+        newPaletteSize = cParamsDepth.GetLong("cd-palette-size", 256)
         
         'Convert the text-only descriptors of color depth into a meaningful bpp value
         Dim newColorDepth As Long
         
-        If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Auto") Then
+        If ParamsEqual(cParamsDepth.GetString("cd-color-model", "auto"), "auto") Then
             newColorDepth = 32
         Else
             
@@ -463,13 +463,13 @@ Private Sub UpdatePreviewSource()
                 
                 newColorDepth = 8
                 
-                If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then
+                If ParamsEqual(cParamsDepth.GetString("cd-gray-depth", "auto"), "gray-monochrome") Then
                     newPaletteSize = 2
                 End If
                 
             Else
                 
-                If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed") Then
+                If ParamsEqual(cParamsDepth.GetString("cd-color-depth", "color-standard"), "color-indexed") Then
                     newColorDepth = 8
                 Else
                     newColorDepth = 32
@@ -482,25 +482,25 @@ Private Sub UpdatePreviewSource()
         'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
         
-        If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
+        If ParamsEqual(cParamsDepth.GetString("cd-alpha-model", "auto"), "auto") Or ParamsEqual(cParamsDepth.GetString("cd-alpha-model", "auto"), "full") Then
             desiredAlphaMode = PDAS_ComplicatedAlpha
             If (newColorDepth = 24) Then newColorDepth = 32
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("cd-alpha-model", "auto"), "none") Then
             desiredAlphaMode = PDAS_NoAlpha
             If (newColorDepth = 32) Then newColorDepth = 24
             desiredAlphaCutoff = 0
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("cd-alpha-model", "auto"), "by-cutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+            desiredAlphaCutoff = cParamsDepth.GetLong("cd-alpha-cutoff", PD_DEFAULT_ALPHA_CUTOFF)
             If (newColorDepth = 24) Then newColorDepth = 32
-        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("cd-alpha-model", "auto"), "by-color") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
-            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
+            desiredAlphaCutoff = cParamsDepth.GetLong("cd-alpha-color", vbBlack)
             If (newColorDepth = 24) Then newColorDepth = 32
         End If
         
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("ColorDepth_CompositeColor", vbWhite), forceGrayscale, newPaletteSize, , True)
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("cd-matte-color", vbWhite), forceGrayscale, newPaletteSize, , True)
         
     End If
     

@@ -188,7 +188,7 @@ Private Sub cmdBar_OKClick()
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    cParams.AddParam "WebPQuality", sltQuality.Value
+    cParams.AddParam "webp-quality", sltQuality.Value
     
     m_FormatParamString = cParams.GetParamString
     

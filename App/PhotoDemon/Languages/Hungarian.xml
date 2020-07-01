@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3469</langversion>
+<langversion>6.8.3470</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4940,6 +4940,11 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>alapértelmezett</translation>
 </phrase>
@@ -4974,7 +4979,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>egyik sem</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9073,7 +9078,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>magas</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14428,8 +14433,13 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Ropogós</translation>
+<original>normal</original>
+<translation>normál</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>ropogós</translation>
 </phrase>
 
 <phrase>
@@ -14447,7 +14457,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14529,16 +14539,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>normál</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>ropogós</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>mindkét</translation>
 </phrase>
@@ -14593,7 +14593,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15987,8 +15987,8 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

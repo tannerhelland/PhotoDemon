@@ -274,7 +274,7 @@ Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As Stri
     If ((LenB(btnValue) <> 0) And PDMain.IsProgramRunning()) Then
     
         Dim tmpRectF As RectF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
 
         'Map the index to an actual color
         Dim targetColor As Long

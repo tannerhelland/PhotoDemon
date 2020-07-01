@@ -303,8 +303,8 @@ Public Sub UnsharpMask(ByVal effectParams As String, Optional ByVal toPreview As
             End If
         Next y
         
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        PutMem4 VarPtrArray(srcImageData), 0&
+        PutMem4 VarPtrArray(dstImageData), 0&
         
         Set srcDIB = Nothing
         

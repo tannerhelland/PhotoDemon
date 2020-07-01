@@ -217,19 +217,19 @@ Private Sub cmdBar_OKClick()
         
         'Auto
         Case 0
-            pnmColorModel = "Auto"
+            pnmColorModel = "auto"
         
         'RGB
         Case 1
-            pnmColorModel = "Color"
+            pnmColorModel = "color"
         
         'Gray
         Case 2
-            pnmColorModel = "Gray"
+            pnmColorModel = "gray"
         
         'Monochrome
         Case 3
-            pnmColorModel = "Monochrome"
+            pnmColorModel = "monochrome"
     
     End Select
     
@@ -239,7 +239,7 @@ Private Sub cmdBar_OKClick()
     Else
         Select Case btsDepth.ListIndex
         
-            '"Auto" depth just corresponds to "standard" depth, at present
+            '"auto" depth just corresponds to "standard" depth, at present
             Case 0, 1
                 pnmColorDepth = "standard"
                 
@@ -252,11 +252,11 @@ Private Sub cmdBar_OKClick()
         End Select
     End If
     
-    cParams.AddParam "PNMColorModel", pnmColorModel
-    cParams.AddParam "PNMColorDepth", pnmColorDepth
-    cParams.AddParam "PNMChangeExtensionToMatch", chkFileExtension.Value
-    cParams.AddParam "PNMUseASCII", (btsFormat.ListIndex = 1)
-    cParams.AddParam "PNMBackgroundColor", clsBackground.Color
+    cParams.AddParam "pnm-color-model", pnmColorModel
+    cParams.AddParam "pnm-color-depth", pnmColorDepth
+    cParams.AddParam "pnm-change-extension", chkFileExtension.Value
+    cParams.AddParam "pnm-use-ascii", (btsFormat.ListIndex = 1)
+    cParams.AddParam "pnm-background-color", clsBackground.Color
     
     m_FormatParamString = cParams.GetParamString
     

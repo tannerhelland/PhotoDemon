@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.428</langversion>
+<langversion>6.6.429</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -4960,6 +4960,11 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>standard</translation>
 </phrase>
@@ -4994,7 +4999,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <translation>tiada</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9096,7 +9101,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>tinggi</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14452,8 +14457,13 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Garing</translation>
+<original>normal</original>
+<translation>normal</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>garing</translation>
 </phrase>
 
 <phrase>
@@ -14471,7 +14481,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14553,16 +14563,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>normal</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>garing</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>kedua</translation>
 </phrase>
@@ -14617,7 +14617,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16016,8 +16016,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

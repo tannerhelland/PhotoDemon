@@ -292,17 +292,17 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             End If
             
         Next x
-            If numUniqueColors > 256 Then Exit For
+            If (numUniqueColors > 256) Then Exit For
         Next y
         
-        CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
+        PutMem4 VarPtrArray(srcPixels), 0&
         
         'By default, we assume that an image is neither monochrome nor grayscale
         isGrayscale = False
         isMonochrome = False
         
         'Further checks are only relevant if the image contains 256 colors or less
-        If numUniqueColors <= 256 Then
+        If (numUniqueColors <= 256) Then
             
             'Check for grayscale images
             isGrayscale = True
@@ -546,14 +546,14 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     cParams.SetParamString formatParams
     
     Dim bmpCompression As Boolean, bmpForceGrayscale As Boolean, bmp16bpp_555Mode As Boolean, bmpCustomColors As Long
-    bmpCompression = cParams.GetBool("BMPRLECompression", False)
-    bmpForceGrayscale = cParams.GetBool("BMPForceGrayscale", False)
-    bmp16bpp_555Mode = cParams.GetBool("BMP16bpp555", False)
-    bmpCustomColors = cParams.GetLong("BMPIndexedColorCount", 256)
+    bmpCompression = cParams.GetBool("bmp-rle", False)
+    bmpForceGrayscale = cParams.GetBool("bmp-force-gray", False)
+    bmp16bpp_555Mode = cParams.GetBool("bmp-16bpp-555", False)
+    bmpCustomColors = cParams.GetLong("bmp-indexed-color-count", 256)
     
     Dim bmpBackgroundColor As Long, bmpFlipRowOrder As Boolean
-    bmpBackgroundColor = cParams.GetLong("BMPBackgroundColor", vbWhite)
-    bmpFlipRowOrder = cParams.GetBool("BMPFlipRowOrder", False)
+    bmpBackgroundColor = cParams.GetLong("bmp-backcolor", vbWhite)
+    bmpFlipRowOrder = cParams.GetBool("bmp-flip-vertical", False)
     
     'Generate a composited image copy, with alpha automatically un-premultiplied
     Dim tmpImageCopy As pdDIB
@@ -563,7 +563,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'Retrieve the recommended output color depth of the image.
     Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     
-    If Strings.StringsEqual(cParams.GetString("BMPColorDepth", "Auto"), "auto", True) Then
+    If Strings.StringsEqual(cParams.GetString("bmp-color-depth", "auto"), "auto", True) Then
         outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_BMP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
@@ -571,16 +571,16 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         If (currentAlphaStatus = PDAS_NoAlpha) Then desiredAlphaStatus = PDAS_NoAlpha Else desiredAlphaStatus = PDAS_ComplicatedAlpha
         
     Else
-        outputColorDepth = cParams.GetLong("BMPColorDepth", 32)
+        outputColorDepth = cParams.GetLong("bmp-color-depth", 32)
         If (outputColorDepth = 32) Then desiredAlphaStatus = PDAS_ComplicatedAlpha
     End If
     
     'BMP files support a number of custom alpha parameters, for legacy compatibility reasons.  These need to be applied manually.
     If (outputColorDepth = 32) Then
-        If cParams.GetBool("BMPUseXRGB", False) Then
+        If cParams.GetBool("bmp-use-xrgb", False) Then
             tmpImageCopy.ForceNewAlpha 0
         Else
-            If cParams.GetBool("BMPPremultiplyAlpha", False) Then tmpImageCopy.SetAlphaPremultiplication True
+            If cParams.GetBool("bmp-use-pargb", False) Then tmpImageCopy.SetAlphaPremultiplication True
         End If
     
     'Because bitmaps do not support transparency < 32-bpp, remove transparency immediately if the output depth is < 32-bpp,
@@ -653,14 +653,14 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     'Only two parameters are mandatory; the others are used on an as-needed basis
     Dim gifColorMode As String, gifAlphaMode As String
-    gifColorMode = cParams.GetString("GIFColorMode", "Auto")
-    gifAlphaMode = cParams.GetString("GIFAlphaMode", "Auto")
+    gifColorMode = cParams.GetString("gif-color-mode", "auto")
+    gifAlphaMode = cParams.GetString("gif-alpha-mode", "auto")
     
     Dim gifAlphaCutoff As Long, gifColorCount As Long, gifBackgroundColor As Long, gifAlphaColor As Long
-    gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
-    gifColorCount = cParams.GetLong("GIFColorCount", 256)
-    gifBackgroundColor = cParams.GetLong("GIFBackgroundColor", vbWhite)
-    gifAlphaColor = cParams.GetLong("GIFAlphaColor", RGB(255, 0, 255))
+    gifAlphaCutoff = cParams.GetLong("gif-alpha-cutoff", 64)
+    gifColorCount = cParams.GetLong("gif-color-count", 256)
+    gifBackgroundColor = cParams.GetLong("gif-backcolor", vbWhite)
+    gifAlphaColor = cParams.GetLong("gif-alpha-color", RGB(255, 0, 255))
     
     'Some combinations of parameters invalidate other parameters.  Calculate any overrides now.
     Dim gifForceGrayscale As Boolean
@@ -670,7 +670,7 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim desiredAlphaStatus As PD_ALPHA_STATUS
     desiredAlphaStatus = PDAS_BinaryAlpha
     If Strings.StringsEqual(gifAlphaMode, "none", True) Then desiredAlphaStatus = PDAS_NoAlpha
-    If Strings.StringsEqual(gifAlphaMode, "bycolor", True) Then
+    If Strings.StringsEqual(gifAlphaMode, "by-color", True) Then
         desiredAlphaStatus = PDAS_NewAlphaFromColor
         gifAlphaCutoff = gifAlphaColor
     End If
@@ -1281,7 +1281,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'The only output parameter JP2 supports is compression level
         Dim jp2Quality As Long
-        jp2Quality = cParams.GetLong("JP2Quality", 1)
+        jp2Quality = cParams.GetLong("jp2-quality", 1)
         
         'Generate a composited image copy, with alpha automatically un-premultiplied
         Dim tmpImageCopy As pdDIB
@@ -1355,11 +1355,11 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     cParamsMetadata.SetParamString metadataParams
     
     Dim jpegQuality As Long
-    jpegQuality = cParams.GetLong("JPEGQuality", 92)
+    jpegQuality = cParams.GetLong("jpg-quality", 92)
     
     Dim jpegCompression As Long
     Const JPG_CMP_BASELINE = 0, JPG_CMP_OPTIMIZED = 1, JPG_CMP_PROGRESSIVE = 2
-    Select Case cParams.GetLong("JPEGCompressionMode", JPG_CMP_OPTIMIZED)
+    Select Case cParams.GetLong("jpg-compression-mode", JPG_CMP_OPTIMIZED)
         Case JPG_CMP_BASELINE
             jpegCompression = JPEG_BASELINE
             
@@ -1373,7 +1373,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     Dim jpegSubsampling As Long
     Const JPG_SS_444 = 0, JPG_SS_422 = 1, JPG_SS_420 = 2, JPG_SS_411 = 3
-    Select Case cParams.GetLong("JPEGSubsampling", JPG_SS_422)
+    Select Case cParams.GetLong("jpg-subsampling", JPG_SS_422)
         Case JPG_SS_444
             jpegSubsampling = JPEG_SUBSAMPLING_444
         Case JPG_SS_422
@@ -1396,18 +1396,18 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     'JPEGs do not support alpha, so forcibly flatten the image (regardless of output color depth).
     ' We also apply a custom backcolor here (if one exists; white is used by default).
     Dim jpegBackgroundColor As Long
-    jpegBackgroundColor = cParams.GetLong("JPEGBackgroundColor", vbWhite)
+    jpegBackgroundColor = cParams.GetLong("jpg-backcolor", vbWhite)
     If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp jpegBackgroundColor
     
     'Retrieve the recommended output color depth of the image.
     Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     Dim forceGrayscale As Boolean
     
-    If StrComp(LCase$(cParams.GetString("JPEGColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
+    If StrComp(LCase$(cParams.GetString("jpg-color-depth", "auto")), "auto", vbBinaryCompare) = 0 Then
         outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JPEG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
     Else
-        outputColorDepth = cParams.GetLong("JPEGColorDepth", 24)
+        outputColorDepth = cParams.GetLong("jpg-color-depth", 24)
         If outputColorDepth = 8 Then forceGrayscale = True
     End If
     
@@ -1428,7 +1428,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
                 tmpFile = cParamsMetadata.GetString("MetadataTempFilename")
                 
-                If (Len(tmpFile) <> 0) Then
+                If (LenB(tmpFile) <> 0) Then
                     Files.FileDeleteIfExists tmpFile
                     FreeImage_SaveEx fThumbnail, tmpFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
                 End If
@@ -1484,8 +1484,8 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'The only output parameter JXR supports is compression level
         Dim jxrQuality As Long, jxrProgressive As Boolean
-        jxrQuality = cParams.GetLong("JXRQuality", 1)
-        jxrProgressive = cParams.GetBool("JXRProgressive", False)
+        jxrQuality = cParams.GetLong("jxr-quality", 1)
+        jxrProgressive = cParams.GetBool("jxr-progressive", False)
         
         'Generate a composited image copy, with alpha automatically un-premultiplied
         Dim tmpImageCopy As pdDIB
@@ -1624,10 +1624,12 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                         srcF = srcImageData(x)
                         
                         'Apply 1/2.2 gamma correction
-                        If srcF > 0 Then srcImageData(x) = srcF ^ gammaCorrection
+                        If (srcF > 0!) Then srcImageData(x) = srcF ^ gammaCorrection
                         
                     Next x
-                    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+                    
+                    PutMem4 VarPtrArray(srcImageData), 0&
+                    
                 Next y
                 
                 'With gamma properly accounted for, we can finally write the image out to file.
@@ -1796,24 +1798,24 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     Dim cParamsDepth As pdSerialize
     Set cParamsDepth = New pdSerialize
-    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
+    cParamsDepth.SetParamString cParams.GetString("png-color-depth")
     
     Dim useWebOptimizedPath As Boolean
-    useWebOptimizedPath = cParams.GetBool("PNGCreateWebOptimized", False)
+    useWebOptimizedPath = cParams.GetBool("png-web-optimized", False)
     
     'Web-optimized PNGs use their own path, and they supply their own special variables
     If useWebOptimizedPath And (ImageFormats.IsPngQuantEnabled() Or PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG)) Then
     
         Dim pngLossyEnabled As Boolean, pngLossyQuality As Long
-        pngLossyEnabled = cParams.GetBool("PNGOptimizeLossy", True)
-        pngLossyQuality = cParams.GetLong("PNGOptimizeLossyQuality", 80)
+        pngLossyEnabled = cParams.GetBool("png-optimize-lossy", True)
+        pngLossyQuality = cParams.GetLong("png-lossy-quality", 80)
         
         Dim pngLossyPerformance As Long, pngLossyDithering As Boolean
-        pngLossyPerformance = cParams.GetLong("PNGOptimizeLossyPerformance", 3)
-        pngLossyDithering = cParams.GetBool("PNGOptimizeLossyDithering", True)
+        pngLossyPerformance = cParams.GetLong("png-lossy-performance", 3)
+        pngLossyDithering = cParams.GetBool("png-lossy-dithering", True)
         
         Dim pngLosslessPerformance As Long
-        pngLosslessPerformance = cParams.GetLong("PNGOptimizeLosslessPerformance")
+        pngLosslessPerformance = cParams.GetLong("png-optimize-lossless-perf")
         
         'Quickly dump out a PNG file; we don't need to spend time here finding optimal outputs, as subsequent
         ' optimization passes will find the most appropriate color depth for us.
@@ -1848,7 +1850,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         'The only settings we need to extract here is compression level; everything else is handled automatically
         ' by the PNG export class.
         Dim pngCompressionLevel As Long
-        pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 9)
+        pngCompressionLevel = cParams.GetLong("png-compression-level", 9)
         
         Dim imgSavedOK As Boolean
         imgSavedOK = False
@@ -1952,15 +1954,15 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     cParams.SetParamString formatParams
     
     Dim pnmColorModel As String, pnmColorDepth As String
-    pnmColorModel = cParams.GetString("PNMColorModel", "Auto")
-    pnmColorDepth = cParams.GetString("PNMColorDepth", "Standard")
+    pnmColorModel = cParams.GetString("pnm-color-model", "auto")
+    pnmColorDepth = cParams.GetString("pnm-color-depth", "standard")
     
     Dim pnmForceExtension As Boolean, pnmUseASCII As Boolean
-    pnmForceExtension = cParams.GetBool("PNMChangeExtensionToMatch", True)
-    pnmUseASCII = cParams.GetBool("PNMUseASCII", True)
+    pnmForceExtension = cParams.GetBool("pnm-change-extension", True)
+    pnmUseASCII = cParams.GetBool("pnm-use-ascii", True)
     
     Dim pnmBackColor As Long
-    pnmBackColor = cParams.GetLong("PNMBackgroundColor", vbWhite)
+    pnmBackColor = cParams.GetLong("pnm-background-color", vbWhite)
     
     'Generate a composited image copy, with alpha premultiplied (as we're just going to composite it, anyway)
     Dim tmpImageCopy As pdDIB
@@ -2245,19 +2247,21 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     Dim cParamsDepth As pdSerialize
     Set cParamsDepth = New pdSerialize
-    cParamsDepth.SetParamString cParams.GetString("TIFFColorDepth")
+    cParamsDepth.SetParamString cParams.GetString("tiff-color-depth")
     
     'First come generic TIFF settings (compression methods, basically)
-    Dim TIFFCompressionColor As String, TIFFCompressionMono As String
-    TIFFCompressionColor = cParams.GetString("TIFFCompressionColor", "LZW")
-    TIFFCompressionMono = cParams.GetString("TIFFCompressionMono", "Fax4")
+    Dim tiffCompressionColor As String, tiffCompressionMono As String
+    tiffCompressionColor = cParams.GetString("tiff-compression-color", "LZW")
+    tiffCompressionMono = cParams.GetString("tiff-compression-mono", "Fax4")
     
-    Dim TIFFBackgroundColor As Long
-    TIFFBackgroundColor = cParams.GetLong("TIFFBackgroundColor", vbWhite)
+    'This value is not currently supplied by the source dialog; I've left it here in case we
+    ' decide to make it user-adjustable in the future
+    Dim tiffBackgroundColor As Long
+    tiffBackgroundColor = cParams.GetLong("tiff-backcolor", vbWhite)
         
     'Next come the various color-depth and alpha modes
     Dim outputColorModel As String
-    outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
+    outputColorModel = cParamsDepth.GetString("cd-color-model", "auto")
     
     'If the output color model is "gray", note that we will apply a forcible grayscale conversion prior to export
     Dim forceGrayscale As Boolean
@@ -2268,11 +2272,11 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Dim outputColorDepth As Long, outputPaletteSize As Long, outputColorDepthName As String
     If forceGrayscale Then
     
-        outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
+        outputColorDepthName = cParamsDepth.GetString("cd-gray-depth", "gray-standard")
         
-        If ParamsEqual(outputColorDepthName, "Gray_HDR") Then
+        If ParamsEqual(outputColorDepthName, "gray-hdr") Then
             outputColorDepth = 16
-        ElseIf ParamsEqual(outputColorDepthName, "Gray_Monochrome") Then
+        ElseIf ParamsEqual(outputColorDepthName, "gray-monochrome") Then
             outputColorDepth = 1
         Else
             outputColorDepth = 8
@@ -2280,11 +2284,11 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
     Else
     
-        outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
+        outputColorDepthName = cParamsDepth.GetString("cd-color-depth", "color-standard")
         
-        If ParamsEqual(outputColorDepthName, "Color_HDR") Then
+        If ParamsEqual(outputColorDepthName, "color-hdr") Then
             outputColorDepth = 48
-        ElseIf ParamsEqual(outputColorDepthName, "Color_Indexed") Then
+        ElseIf ParamsEqual(outputColorDepthName, "color-indexed") Then
             outputColorDepth = 8
         Else
             outputColorDepth = 24
@@ -2292,16 +2296,16 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
     End If
     
-    outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    outputPaletteSize = cParamsDepth.GetLong("cd-palette-size", 256)
     
     'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only 0 or 255 values),
     ' require additional settings.  We always retrieve all values, even if we don't plan on using them.
     Dim outputAlphaModel As String
-    outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto")
+    outputAlphaModel = cParamsDepth.GetString("cd-alpha-model", "auto")
     
     Dim outputTiffCutoff As Long, outputTiffColor As Long
-    outputTiffCutoff = cParams.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-    outputTiffColor = cParams.GetLong("ColorDepth_AlphaColor", vbMagenta)
+    outputTiffCutoff = cParams.GetLong("cd-alpha-cutoff", PD_DEFAULT_ALPHA_CUTOFF)
+    outputTiffColor = cParams.GetLong("cd-alpha-color", vbMagenta)
     
     'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
     ' color-depth and alpha-detection values now.
@@ -2315,7 +2319,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
     Dim writeMultipage As Boolean
-    writeMultipage = cParams.GetBool("TIFFMultipage", False)
+    writeMultipage = cParams.GetBool("tiff-multipage", False)
     
     'Multipage TIFFs use their own custom path (this is due to the way the FreeImage API works; it's convoluted!)
     If writeMultipage And ImageFormats.IsFreeImageEnabled And (srcPDImage.GetNumOfVisibleLayers > 1) Then
@@ -2387,9 +2391,9 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                     If desiredAlphaStatus = PDAS_NoAlpha Then
                         outputAlphaModel = "none"
                     ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
-                        outputAlphaModel = "bycutoff"
+                        outputAlphaModel = "by-cutoff"
                     ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
-                        outputAlphaModel = "bycolor"
+                        outputAlphaModel = "by-color"
                     ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
                         outputAlphaModel = "full"
                     Else
@@ -2419,14 +2423,14 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                     End If
                     outputTiffCutoff = 0
             
-                ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+                ElseIf ParamsEqual(outputAlphaModel, "by-cutoff") Then
                     desiredAlphaStatus = PDAS_BinaryAlpha
                     If (Not pageForceGrayscale) Then
                         If (pageColorDepth = 24) Then pageColorDepth = 32
                         If (pageColorDepth = 48) Then pageColorDepth = 64
                     End If
                     
-                ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+                ElseIf ParamsEqual(outputAlphaModel, "by-color") Then
                     desiredAlphaStatus = PDAS_NewAlphaFromColor
                     outputTiffCutoff = outputTiffColor
                     If (Not pageForceGrayscale) Then
@@ -2444,7 +2448,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 If (pageColorDepth <> 1) Then allPagesMonochrome = False
                 
                 'We now have enough information to create a FreeImage copy of this DIB
-                fi_PageHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpLayerDIB, pageColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, TIFFBackgroundColor, pageForceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+                fi_PageHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpLayerDIB, pageColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, tiffBackgroundColor, pageForceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
                 
                 If (fi_PageHandle <> 0) Then
                 
@@ -2463,9 +2467,9 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         'With all pages inserted, we can now write the multipage TIFF out to file
         If allPagesMonochrome Then
-            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionMono)
+            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(tiffCompressionMono)
         Else
-            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionColor)
+            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(tiffCompressionColor)
         End If
         
         ExportTIFF = FreeImage_CloseMultiBitmap(fi_MasterHandle, TIFFflags)
@@ -2507,9 +2511,9 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             If desiredAlphaStatus = PDAS_NoAlpha Then
                 outputAlphaModel = "none"
             ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
-                outputAlphaModel = "bycutoff"
+                outputAlphaModel = "by-cutoff"
             ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
-                outputAlphaModel = "bycolor"
+                outputAlphaModel = "by-color"
             ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
                 outputAlphaModel = "full"
             Else
@@ -2537,14 +2541,14 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             End If
             outputTiffCutoff = 0
             
-        ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+        ElseIf ParamsEqual(outputAlphaModel, "by-cutoff") Then
             desiredAlphaStatus = PDAS_BinaryAlpha
             If (Not forceGrayscale) Then
                 If (outputColorDepth = 24) Then outputColorDepth = 32
                 If (outputColorDepth = 48) Then outputColorDepth = 64
             End If
             
-        ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+        ElseIf ParamsEqual(outputAlphaModel, "by-color") Then
             desiredAlphaStatus = PDAS_NewAlphaFromColor
             outputTiffCutoff = outputTiffColor
             If (Not forceGrayscale) Then
@@ -2564,14 +2568,14 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         If ImageFormats.IsFreeImageEnabled Then
             
             Dim fi_DIB As Long
-            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, tiffBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
             
             'Finally, prepare some TIFF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
             ' request RLE encoding from FreeImage.
             If (outputColorDepth = 1) Then
-                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionMono)
+                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(tiffCompressionMono)
             Else
-                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionColor)
+                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(tiffCompressionColor)
             End If
                     
             'Use that handle to save the image to TIFF format, with required color conversion based on the outgoing color depth
@@ -2633,7 +2637,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         'The only output parameter WebP supports is compression level
         Dim webPQuality As Long
-        webPQuality = cParams.GetLong("WebPQuality", 100)
+        webPQuality = cParams.GetLong("webp-quality", 100)
         
         'Generate a composited image copy, with alpha automatically un-premultiplied
         Dim tmpImageCopy As pdDIB

@@ -277,8 +277,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Next curChannel
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     If g_cancelCurrentAction Then CreateColorHalftoneDIB = 0 Else CreateColorHalftoneDIB = 1
 
@@ -540,7 +540,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
                 .Green = Int(blendVal * CSng(newG))
                 .Blue = Int(blendVal * CSng(newB))
             End With
-            CopyMemory ByVal VarPtr(vLookup(x)), ByVal VarPtr(tmpQuad), 4&
+            CopyMemoryStrict VarPtr(vLookup(x)), VarPtr(tmpQuad), 4&
         Next x
     
         Dim dstImageDataL() As Long, tmpSA2D As SafeArray2D

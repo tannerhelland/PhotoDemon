@@ -278,14 +278,14 @@ Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
     
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left
     offsetY = tmpRectF.Top
     
     Dim linePadding As Long
-    linePadding = FixDPI(2)
+    linePadding = Interface.FixDPI(2)
     
     'pd2D is used for extra drawing capabilities
     Dim cPen As pd2DPen, cBrush As pd2DBrush, cSurface As pd2DSurface

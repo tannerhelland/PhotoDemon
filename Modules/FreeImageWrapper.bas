@@ -3510,7 +3510,7 @@ Public Function FreeImage_GetPalette_ByTanner(ByVal fiHandle As Long, ByRef dstQ
     'If we're still here, we have what we need to populate the RGB quad array
     FreeImage_GetPalette_ByTanner = True
     ReDim dstQuad(0 To numOfColors - 1) As RGBQuad
-    CopyMemory ByVal VarPtr(dstQuad(0)), ByVal palHandle, numOfColors * 4
+    CopyMemoryStrict VarPtr(dstQuad(0)), palHandle, numOfColors * 4
     
     Exit Function
     

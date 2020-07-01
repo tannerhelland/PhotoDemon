@@ -334,11 +334,8 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Next y
     
     'With our work complete, point all arrays away from their respective DIBs and deallocate any temp copies
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+    PutMem4 VarPtrArray(dstImageData), 0&
+    PutMem4 VarPtrArray(srcImageData), 0&
     
     srcDIB.EraseDIB
     

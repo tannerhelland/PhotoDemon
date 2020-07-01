@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.489</langversion>
+<langversion>6.7.490</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -4953,6 +4953,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>estándar</translation>
 </phrase>
@@ -4987,7 +4992,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>ninguno</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9089,7 +9094,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>alta</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14445,8 +14450,13 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Crujiente</translation>
+<original>normal</original>
+<translation>normal</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>crujiente</translation>
 </phrase>
 
 <phrase>
@@ -14464,7 +14474,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14546,16 +14556,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>normal</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>crujiente</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>ambos</translation>
 </phrase>
@@ -14610,7 +14610,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16008,8 +16008,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

@@ -386,8 +386,8 @@ Public Sub ConvertMonoToColor(ByVal effectParams As String, Optional ByVal toPre
     Next x
         
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

@@ -305,7 +305,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        PutMem4 VarPtrArray(dstImageData), 0&
         
         'Erase our temporary DIB
         srcDIB.EraseDIB

@@ -285,18 +285,18 @@ Private Sub cmdBar_OKClick()
     'Store all parameters inside an XML string
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
-    cParams.AddParam "JPEGQuality", sltQuality.Value
-    cParams.AddParam "JPEGCompressionMode", btsCompression.ListIndex
-    cParams.AddParam "JPEGSubsampling", btsSubsampling.ListIndex
-    cParams.AddParam "JPEGBackgroundColor", clsBackground.Color
+    cParams.AddParam "jpg-quality", sltQuality.Value
+    cParams.AddParam "jpg-compression-mode", btsCompression.ListIndex
+    cParams.AddParam "jpg-subsampling", btsSubsampling.ListIndex
+    cParams.AddParam "jpg-backcolor", clsBackground.Color
     
     Select Case btsDepth.ListIndex
         Case 0
-            cParams.AddParam "JPEGColorDepth", "Auto"
+            cParams.AddParam "jpg-color-depth", "auto"
         Case 1
-            cParams.AddParam "JPEGColorDepth", "24"
+            cParams.AddParam "jpg-color-depth", "24"
         Case 2
-            cParams.AddParam "JPEGColorDepth", "8"
+            cParams.AddParam "jpg-color-depth", "8"
     End Select
     
     m_FormatParamString = cParams.GetParamString

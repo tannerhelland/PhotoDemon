@@ -177,8 +177,8 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     
     'If the source image is tiny, abandon ship to prevent OOB errors
     If (finalX < 1) Or (finalY < 1) Then
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        PutMem4 VarPtrArray(srcImageData), 0&
+        PutMem4 VarPtrArray(dstImageData), 0&
         EffectPrep.FinalizeImageData toPreview, dstPic
         Exit Sub
     End If
@@ -298,8 +298,8 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     Next y
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

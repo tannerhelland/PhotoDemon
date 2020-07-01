@@ -1298,7 +1298,7 @@ Private Function pvComStrPtrToVBstring(pString As Long, Optional FreePointer As 
         lLen = lstrlenW(pString)
         If lLen > 0& Then
             pvComStrPtrToVBstring = String$(lLen, vbNullChar)
-            CopyMemory ByVal StrPtr(pvComStrPtrToVBstring), ByVal pString, lLen * 2&
+            CopyMemoryStrict StrPtr(pvComStrPtrToVBstring), pString, lLen * 2&
         End If
         If FreePointer Then CoTaskMemFree pString
     End If

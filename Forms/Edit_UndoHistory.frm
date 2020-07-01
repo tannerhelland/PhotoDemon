@@ -187,7 +187,7 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left

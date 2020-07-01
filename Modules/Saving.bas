@@ -310,7 +310,7 @@ Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDI
     If (outputPDIF = PDIF_TIFF) Then
     
         'The format parameter string contains the multipage indicator, if any.  (Default is to write a single-page TIFF.)
-        If cParams.GetBool("TIFFMultipage", False) Then saveIsMultipage = True
+        If cParams.GetBool("tiff-multipage", False) Then saveIsMultipage = True
         
     End If
     

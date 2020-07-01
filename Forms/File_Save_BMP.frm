@@ -500,13 +500,13 @@ Private Function GetExportParamString() As String
         
         'Auto
         Case 0
-            outputDepth = "Auto"
+            outputDepth = "auto"
         
         'RGBA
         Case 1
             outputDepth = "32"
-            cParams.AddParam "BMPUseXRGB", False
-            cParams.AddParam "BMPPremultiplyAlpha", chkPremultiplyAlpha.Value
+            cParams.AddParam "bmp-use-xrgb", False
+            cParams.AddParam "bmp-use-pargb", chkPremultiplyAlpha.Value
         
         'RGB
         Case 2
@@ -515,8 +515,8 @@ Private Function GetExportParamString() As String
                 '32-bpp XRGB
                 Case 0
                     outputDepth = "32"
-                    cParams.AddParam "BMPUseXRGB", True
-                    cParams.AddParam "BMPPremultiplyAlpha", False
+                    cParams.AddParam "bmp-use-xrgb", True
+                    cParams.AddParam "bmp-use-pargb", False
                 
                 '24-bpp
                 Case 1
@@ -552,13 +552,13 @@ Private Function GetExportParamString() As String
     
     End Select
     
-    cParams.AddParam "BMPColorDepth", outputDepth
-    cParams.AddParam "BMPRLECompression", chkRLE.Value
-    cParams.AddParam "BMPForceGrayscale", (btsColorModel.ListIndex = 3)
-    cParams.AddParam "BMP16bpp555", chk16555.Value
-    If chkColorCount.Value And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value Else cParams.AddParam "BMPIndexedColorCount", 256
-    cParams.AddParam "BMPBackgroundColor", clsBackground.Color
-    cParams.AddParam "BMPFlipRowOrder", chkFlipRows.Value
+    cParams.AddParam "bmp-color-depth", outputDepth
+    cParams.AddParam "bmp-rle", chkRLE.Value
+    cParams.AddParam "bmp-force-gray", (btsColorModel.ListIndex = 3)
+    cParams.AddParam "bmp-16bpp-555", chk16555.Value
+    If chkColorCount.Value And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "bmp-indexed-color-count", sldColorCount.Value Else cParams.AddParam "bmp-indexed-color-count", 256
+    cParams.AddParam "bmp-backcolor", clsBackground.Color
+    cParams.AddParam "bmp-flip-vertical", chkFlipRows.Value
     
     GetExportParamString = cParams.GetParamString
     
@@ -582,7 +582,7 @@ Private Sub UpdatePreviewSource()
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
-        ' (Note that we can completely skip this step for the "Auto" depth mode.)
+        ' (Note that we can completely skip this step for the "auto" depth mode.)
         Dim prvColorDepth As Long, forceGrayscale As Boolean
         forceGrayscale = False
         

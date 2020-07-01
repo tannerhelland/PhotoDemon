@@ -304,8 +304,8 @@ NextPixelatePixel3:
     Next x
     
     'Safely deallocate all image arrays
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'If rotation was applied, restore the image to its original orientation.
     If (blockAngle <> 0) Then

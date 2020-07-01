@@ -794,39 +794,39 @@ Friend Function GetVResolution() As Single
 End Function
 
 'Only valid after LoadPSD has been called
-Friend Function GetBytesPerPixel() As Long
+Friend Function GetBitsPerPixel() As Long
     
-    Dim bytesPerChannel As Long
-    bytesPerChannel = (m_Header.BitsPerChannel \ 8)
+    Dim bpChannel As Long
+    bpChannel = m_Header.BitsPerChannel
     
     'Bits per pixel is a little convoluted to calculate, as it depends on both color mode and color depth
     ' (and optionally, the presence of alpha).
     With m_Header
         If (.ColorMode = cm_Bitmap) Then
-            GetBytesPerPixel = 1
+            GetBitsPerPixel = 1
         ElseIf (.ColorMode = cm_CMYK) Then
-            GetBytesPerPixel = bytesPerChannel * 4
-            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+            GetBitsPerPixel = bpChannel * 4
+            If Me.HasAlpha() Then GetBitsPerPixel = GetBitsPerPixel + bpChannel
         ElseIf (.ColorMode = cm_Duotone) Then
-            GetBytesPerPixel = bytesPerChannel
+            GetBitsPerPixel = bpChannel
         ElseIf (.ColorMode = cm_Grayscale) Then
-            GetBytesPerPixel = bytesPerChannel
-            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel * 2
+            GetBitsPerPixel = bpChannel
+            If Me.HasAlpha() Then GetBitsPerPixel = GetBitsPerPixel * 2
         ElseIf (.ColorMode = cm_Indexed) Then
-            GetBytesPerPixel = 8
+            GetBitsPerPixel = 8
         ElseIf (.ColorMode = cm_Lab) Then
-            GetBytesPerPixel = bytesPerChannel * 3
-            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+            GetBitsPerPixel = bpChannel * 3
+            If Me.HasAlpha() Then GetBitsPerPixel = GetBitsPerPixel + bpChannel
         
         'Multichannel doesn't have a meaningful analog in PD; treat it as grayscale
         ElseIf (.ColorMode = cm_Multichannel) Then
-            GetBytesPerPixel = bytesPerChannel
-            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel * 2
+            GetBitsPerPixel = bpChannel
+            If Me.HasAlpha() Then GetBitsPerPixel = GetBitsPerPixel * 2
         ElseIf (.ColorMode = cm_RGB) Then
-            GetBytesPerPixel = bytesPerChannel * 3
-            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+            GetBitsPerPixel = bpChannel * 3
+            If Me.HasAlpha() Then GetBitsPerPixel = GetBitsPerPixel + bpChannel
         Else
-            GetBytesPerPixel = 32
+            GetBitsPerPixel = 32
         End If
     End With
     

@@ -480,7 +480,7 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
         End If
     Next x
     
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    PutMem4 VarPtrArray(dstImageData), 0&
     
     'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
 '    For x = 0 To numVoronoiPoints

@@ -486,7 +486,7 @@ Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue A
     If (LenB(histValue) <> 0) And PDMain.IsProgramRunning() And (targetDC <> 0) Then
     
         Dim tmpRectF As RectF
-        If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+        If (ptrToRectF <> 0) Then CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
             
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -607,7 +607,7 @@ End Sub
 Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
     Dim tmpRectF As RectF
-    If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+    If (ptrToRectF <> 0) Then CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
     
     If PDMain.IsProgramRunning() And (targetDC <> 0) Then
         
@@ -628,7 +628,7 @@ End Sub
 Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
     Dim tmpRectF As RectF
-    If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+    If (ptrToRectF <> 0) Then CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
     
     If PDMain.IsProgramRunning() And (targetDC <> 0) Then
         

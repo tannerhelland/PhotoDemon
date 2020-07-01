@@ -598,9 +598,9 @@ Private Sub Form_Load()
         'Antialiasing options behave slightly differently from the advanced text tool
         cboTextRenderingHint.SetAutomaticRedraws False
         cboTextRenderingHint.Clear
-        cboTextRenderingHint.AddItem "None", 0
-        cboTextRenderingHint.AddItem "Normal", 1
-        cboTextRenderingHint.AddItem "Crisp", 2
+        cboTextRenderingHint.AddItem "none", 0
+        cboTextRenderingHint.AddItem "normal", 1
+        cboTextRenderingHint.AddItem "crisp", 2
         cboTextRenderingHint.ListIndex = 1
         cboTextRenderingHint.SetAutomaticRedraws True
         

@@ -219,7 +219,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     End If
     
     'We no longer need direct access to pixel bits
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    PutMem4 VarPtrArray(srcImageData), 0&
     
     If (Not toPreview) Then SetProgBarVal 1
     

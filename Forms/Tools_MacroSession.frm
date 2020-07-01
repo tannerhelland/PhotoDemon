@@ -270,7 +270,7 @@ Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
     
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left
@@ -347,7 +347,7 @@ Private Sub lstStart_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lo
     
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left

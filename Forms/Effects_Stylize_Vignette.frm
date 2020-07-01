@@ -354,7 +354,7 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
             .Green = Int(blendVal * CSng(newG))
             .Blue = Int(blendVal * CSng(newB))
         End With
-        CopyMemory ByVal VarPtr(vLookup(x)), ByVal VarPtr(tmpQuad), 4&
+        CopyMemoryStrict VarPtr(vLookup(x)), VarPtr(tmpQuad), 4&
     Next x
     
     'And that's it!  Loop through each pixel in the image, converting values as we go.

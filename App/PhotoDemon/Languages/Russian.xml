@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3469</langversion>
+<langversion>6.8.3470</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4954,6 +4954,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>стандарт</translation>
 </phrase>
@@ -4988,7 +4993,7 @@ or the File > Open and File > Import menus.</original>
 <translation>никто</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9090,7 +9095,7 @@ If вы хотите сохранить его с другим именем фа
 <translation>высокая</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14446,7 +14451,12 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>Crisp</original>
+<original>normal</original>
+<translation>нормальный</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
 <translation>хрустящий</translation>
 </phrase>
 
@@ -14465,7 +14475,7 @@ I искренние извинения за неудобства, но, к со
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14547,16 +14557,6 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>нормальный</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>хрустящий</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>и то и другое</translation>
 </phrase>
@@ -14611,7 +14611,7 @@ I искренние извинения за неудобства, но, к со
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16010,8 +16010,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

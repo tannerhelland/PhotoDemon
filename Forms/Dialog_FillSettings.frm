@@ -576,7 +576,7 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
     If (bufferDC = 0) Then Exit Sub
     
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim itemBackColor As Long, itemTextColor As Long, itemBorderColor As Long, hatchBorderColor As Long
     itemBackColor = m_Colors.RetrieveColor(PDFP_Background, Me.Enabled, itemIsSelected, itemIsHovered)

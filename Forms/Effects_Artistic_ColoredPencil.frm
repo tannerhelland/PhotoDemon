@@ -240,7 +240,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         Next x
             
         'Release our array copy
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        PutMem4 VarPtrArray(srcImageData), 0&
         
         'Apply premultiplication to the layers prior to compositing
         m_blurDIB.SetAlphaPremultiplication True
@@ -355,7 +355,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         Next x
         
         'Release our array once more
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        PutMem4 VarPtrArray(srcImageData), 0&
         
     End If
     

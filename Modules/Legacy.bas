@@ -62,7 +62,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
                 retString = StrConv(retBytes, vbUnicode)
             End If
@@ -94,7 +94,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
                 'Copy the received bytes into a string
                 If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                     retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), UBound(retBytes) + 1
                 Else
                     retString = StrConv(retBytes, vbUnicode)
                 End If
@@ -140,7 +140,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after the class gained full Unicode compatibility.
                     retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                     If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
@@ -178,7 +178,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
                 retString = StrConv(retBytes, vbUnicode)
             End If
@@ -203,7 +203,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             'Copy the received bytes into a string
             If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
                 retString = StrConv(retBytes, vbUnicode)
             End If
@@ -296,7 +296,7 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
             
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+            CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.SetHeaderFromXML retString, sourceIsUndoFile
@@ -324,7 +324,7 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
             
                 'Copy the received bytes into a string
                 retString = Space$(retSize \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+                CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), retSize
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                 If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString) Then
@@ -367,7 +367,7 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after the class gained full Unicode compatibility.
                     retString = Space$(retSize \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+                    CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                     If dstImage.GetLayerByIndex(i).SetVectorDataFromXML(retString) Then
@@ -406,7 +406,7 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
             
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+            CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), retSize
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
@@ -427,7 +427,7 @@ Public Function LoadPDI_LegacyV2(ByVal pdiPath As String, ByRef dstDIB As pdDIB,
             
             'Copy the received bytes into a string
             retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+            CopyMemoryStrict StrPtr(retString), VarPtr(retBytes(0)), retSize
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.

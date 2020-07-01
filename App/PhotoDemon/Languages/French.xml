@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.485</langversion>
+<langversion>6.7.486</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -4955,6 +4955,11 @@ ou bien dans le menu, la commande Fichier > Ouvrir  ou  Fichier > Importation.</
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>norme</translation>
 </phrase>
@@ -4989,7 +4994,7 @@ ou bien dans le menu, la commande Fichier > Ouvrir  ou  Fichier > Importation.</
 <translation>aucun</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -9092,7 +9097,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>fort</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -14454,8 +14459,13 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>Crisp</original>
-<translation>Croustillant</translation>
+<original>normal</original>
+<translation>ordinaire</translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation>croustillant</translation>
 </phrase>
 
 <phrase>
@@ -14473,7 +14483,7 @@ Vous pouvez alors si besoin
 <translation>Cliquer ici pour convertir ce calque pour le texte basique.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14555,16 +14565,6 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>normal</original>
-<translation>ordinaire</translation>
-</phrase>
-
-<phrase>
-<original>crisp</original>
-<translation>croustillant</translation>
-</phrase>
-
-<phrase>
 <original>both</original>
 <translation>les deux à la fois</translation>
 </phrase>
@@ -14619,7 +14619,7 @@ Vous pouvez alors si besoin
 <translation>Cliquer ici pour convertir en calque de texte avancé</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 35 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -16029,8 +16029,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5040 phrases. -->
-<!-- 2389 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12079 total words. -->
+<!-- As of this build, PhotoDemon contains 5042 phrases. -->
+<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12081 total words. -->
 
 </pdData>

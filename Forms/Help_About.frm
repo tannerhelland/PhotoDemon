@@ -460,7 +460,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         
         'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
         Dim tmpRectF As RectF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
         
         'Manually paint an uncolored background
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush
@@ -549,7 +549,7 @@ Private Sub lstPatrons_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
         
         'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
         Dim tmpRectF As RectF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
         
         'Manually paint an uncolored background
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush

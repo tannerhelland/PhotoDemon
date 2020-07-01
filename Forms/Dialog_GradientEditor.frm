@@ -1792,7 +1792,7 @@ Private Sub lstGradients_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex A
     
     'Retrieve the item's boundary rect
     Dim tmpRectF As RectF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetX As Single, offsetY As Single
     offsetX = tmpRectF.Left + Interface.FixDPI(8)

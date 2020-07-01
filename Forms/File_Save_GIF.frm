@@ -420,34 +420,34 @@ Private Function GetExportParamString() As String
     
     Select Case btsColorModel.ListIndex
         Case 0
-            outputColorMode = "Auto"
+            outputColorMode = "auto"
         Case 1
-            outputColorMode = "Color"
+            outputColorMode = "color"
         Case 2
-            outputColorMode = "Gray"
+            outputColorMode = "gray"
     End Select
     
-    cParams.AddParam "GIFColorMode", outputColorMode
+    cParams.AddParam "gif-color-mode", outputColorMode
     
     Dim outputAlphaMode As String
     Select Case btsAlpha.ListIndex
         Case 0
-            outputAlphaMode = "Auto"
+            outputAlphaMode = "auto"
         Case 1
-            outputAlphaMode = "None"
+            outputAlphaMode = "none"
         Case 2
-            outputAlphaMode = "ByCutoff"
+            outputAlphaMode = "by-cutoff"
         Case 3
-            outputAlphaMode = "ByColor"
+            outputAlphaMode = "by-color"
     End Select
     
-    cParams.AddParam "GIFAlphaMode", outputAlphaMode
+    cParams.AddParam "gif-alpha-mode", outputAlphaMode
     
     'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.  There may be a better way to do this,
     ' but I'm not currently aware of it!
     Dim outputAlphaCutoff As Long
     If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = PD_DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
-    cParams.AddParam "GIFAlphaCutoff", outputAlphaCutoff
+    cParams.AddParam "gif-alpha-cutoff", outputAlphaCutoff
     
     Dim colorCount As Long
     If (btsColorModel.ListIndex <> 0) Then
@@ -455,9 +455,9 @@ Private Function GetExportParamString() As String
     Else
         colorCount = 256
     End If
-    cParams.AddParam "GIFColorCount", colorCount
-    cParams.AddParam "GIFBackgroundColor", clsBackground.Color
-    cParams.AddParam "GIFAlphaColor", clsAlphaColor.Color
+    cParams.AddParam "gif-color-count", colorCount
+    cParams.AddParam "gif-backcolor", clsBackground.Color
+    cParams.AddParam "gif-alpha-color", clsAlphaColor.Color
     
     GetExportParamString = cParams.GetParamString
     

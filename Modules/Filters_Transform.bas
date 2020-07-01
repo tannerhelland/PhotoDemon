@@ -99,13 +99,12 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     'Check for case (1) and warn the user if it occurred
     If (Not colorFails) Then
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
         
+        PutMem4 VarPtrArray(srcImageData), 0&
         SetProgBarVal 0
         ReleaseProgressBar
-        
         Message "Image is all one color.  Autocrop unnecessary."
+        
         Exit Sub
     
     'Next, check for case (2)
@@ -197,8 +196,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     newBottom = y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+    PutMem4 VarPtrArray(srcImageData), 0&
     
     'We now know where to crop the image.  Apply the crop.
     
@@ -1119,11 +1117,11 @@ Public Sub TrimImage()
     'Check for case (1) and warn the user if it occurred
     If (Not colorFails) Then
     
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        PutMem4 VarPtrArray(srcImageData), 0&
         SetProgBarVal 0
         ReleaseProgressBar
-        
         Message "Image is fully transparent.  Trim abandoned."
+        
         Exit Sub
     
     'Next, check for case (2)
@@ -1201,8 +1199,7 @@ Public Sub TrimImage()
     newBottom = y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+    PutMem4 VarPtrArray(srcImageData), 0&
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing

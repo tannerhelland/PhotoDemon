@@ -889,7 +889,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim tmpDstArray() As Byte
         ReDim tmpDstArray(0 To PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1) As Byte
-        CopyMemory ByVal VarPtr(tmpDstArray(0, 0)), ByVal VarPtr(tmpArray(0, 0)), PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+        CopyMemoryStrict VarPtr(tmpDstArray(0, 0)), VarPtr(tmpArray(0, 0)), PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         
         'Blur the first temporary array
         Dim arrWidth As Long, arrHeight As Long
