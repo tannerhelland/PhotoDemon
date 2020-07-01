@@ -136,9 +136,14 @@ Option Explicit
 
 Public Event Change()
 
-'For the "set alpha by color" option, the user should be allowed to click colors straight from the preview area.
-' However, if "set alpha by color" is *not* set, color selection should be left to the parent dialog.
+'For the "set alpha by color" option, the user should be allowed to click colors straight
+' from the preview area.  However, if "set alpha by color" is *not* set, color selection
+' should be left to the parent dialog.
 Public Event ColorSelectionRequired(ByVal selectState As Boolean)
+
+'If a format supports "use original file settings", it can specify that via this event
+' (raised when the control is loaded, if not in design mode)
+Public Event AreOriginalSettingsAllowed(ByRef newSetting As Boolean)
 
 'Because this control dynamically shows/hides subcontrols, its total height can vary.  Parent controls can
 ' use this to reflow other controls, as necessary
@@ -163,6 +168,10 @@ Private m_IdealControlHeight As Long
 Private m_ColorCountVisible As Boolean, m_DepthColorVisible As Boolean, m_DepthGrayscaleVisible As Boolean
 Private m_AlphaModelVisible As Boolean, m_AlphaCutoffVisible As Boolean, m_AlphaColorVisible As Boolean
 Private m_CompositeColorVisible As Boolean
+
+'If the calling dialog allows us to provide a "use original settings" option, this flag
+' will be set by the IsOriginalSettingsAllowed event.
+Private m_UseOriginalAllowed As Boolean
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ColorDepth
@@ -240,15 +249,15 @@ Public Function GetAllSettings() As String
     Dim outputColorModel As String
     Select Case cboColorModel.ListIndex
         Case 0
-            outputColorModel = "Auto"
+            outputColorModel = "auto"
         Case 1
-            outputColorModel = "Color"
+            outputColorModel = "color"
         Case 2
-            outputColorModel = "Gray"
+            outputColorModel = "gray"
         Case 3
-            outputColorModel = "Original"
+            outputColorModel = "original"
     End Select
-    cParams.AddParam "ColorDepth_ColorModel", outputColorModel
+    cParams.AddParam "cd-color-model", outputColorModel
     
     'Which color depth we write is contingent on the color model, as color and gray use different button strips.
     ' (Gray supports some depths that color does not, e.g. 1-bit and 4-bit.)
@@ -256,48 +265,48 @@ Public Function GetAllSettings() As String
     
     Select Case cboDepthColor.ListIndex
         Case 0
-            colorColorDepth = "Color_HDR"
+            colorColorDepth = "color-hdr"
         Case 1
-            colorColorDepth = "Color_Standard"
+            colorColorDepth = "color-standard"
         Case 2
-            colorColorDepth = "Color_Indexed"
+            colorColorDepth = "color-indexed"
     End Select
     
-    cParams.AddParam "ColorDepth_ColorDepth", colorColorDepth
+    cParams.AddParam "cd-color-depth", colorColorDepth
         
     Select Case cboDepthGrayscale.ListIndex
         Case 0
-            grayColorDepth = "Gray_HDR"
+            grayColorDepth = "gray-hdr"
         Case 1
-            grayColorDepth = "Gray_Standard"
+            grayColorDepth = "gray-standard"
         Case 2
-            grayColorDepth = "Gray_Monochrome"
+            grayColorDepth = "gray-monochrome"
     End Select
     
-    cParams.AddParam "ColorDepth_GrayDepth", grayColorDepth
+    cParams.AddParam "cd-gray-depth", grayColorDepth
     
     If sldColorCount.IsValid Then outputPaletteSize = CStr(sldColorCount.Value) Else outputPaletteSize = "256"
-    cParams.AddParam "ColorDepth_PaletteSize", outputPaletteSize
+    cParams.AddParam "cd-palette-size", outputPaletteSize
     
     'Next, we've got a bunch of possible alpha modes to deal with (uuuuuugh)
     Dim outputAlphaModel As String
     Select Case cboAlphaModel.ListIndex
         Case 0
-            outputAlphaModel = "Auto"
+            outputAlphaModel = "auto"
         Case 1
-            outputAlphaModel = "Full"
+            outputAlphaModel = "full"
         Case 2
-            outputAlphaModel = "ByCutoff"
+            outputAlphaModel = "by-cutoff"
         Case 3
-            outputAlphaModel = "ByColor"
+            outputAlphaModel = "by-color"
         Case 4
-            outputAlphaModel = "None"
+            outputAlphaModel = "none"
     End Select
     
-    cParams.AddParam "ColorDepth_AlphaModel", outputAlphaModel
-    If sldAlphaCutoff.IsValid Then cParams.AddParam "ColorDepth_AlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF
-    cParams.AddParam "ColorDepth_AlphaColor", clsAlphaColor.Color
-    cParams.AddParam "ColorDepth_CompositeColor", clsComposite.Color
+    cParams.AddParam "cd-alpha-model", outputAlphaModel
+    If sldAlphaCutoff.IsValid Then cParams.AddParam "cd-alpha-cutoff", sldAlphaCutoff.Value Else cParams.AddParam "cd-alpha-cutoff", PD_DEFAULT_ALPHA_CUTOFF
+    cParams.AddParam "cd-alpha-color", clsAlphaColor.Color
+    cParams.AddParam "cd-matte-color", clsComposite.Color
     
     GetAllSettings = cParams.GetParamString()
     
@@ -311,71 +320,71 @@ Public Sub SetAllSettings(ByVal newSettings As String)
     cParams.SetParamString newSettings
     
     Dim srcParam As String
-    srcParam = cParams.GetString("ColorDepth_ColorModel", "Auto")
+    srcParam = cParams.GetString("cd-color-model", "auto")
     
-    If ParamsEqual(srcParam, "Color") Then
+    If ParamsEqual(srcParam, "color") Then
         cboColorModel.ListIndex = 1
-    ElseIf ParamsEqual(srcParam, "Gray") Then
+    ElseIf ParamsEqual(srcParam, "gray") Then
         cboColorModel.ListIndex = 2
-    ElseIf ParamsEqual(srcParam, "Original") Then
+    ElseIf ParamsEqual(srcParam, "original") Then
         cboColorModel.ListIndex = 3
     Else
         cboColorModel.ListIndex = 0
     End If
     
-    srcParam = cParams.GetString("ColorDepth_ColorDepth", "Color_Standard")
+    srcParam = cParams.GetString("cd-color-depth", "color-standard")
     
-    If ParamsEqual(srcParam, "Color") Then
+    If ParamsEqual(srcParam, "color") Then
         cboColorModel.ListIndex = 1
-    ElseIf ParamsEqual(srcParam, "Gray") Then
+    ElseIf ParamsEqual(srcParam, "gray") Then
         cboColorModel.ListIndex = 2
     Else
         cboColorModel.ListIndex = 0
     End If
     
-    srcParam = cParams.GetString("ColorDepth_ColorDepth", "Color_Standard")
+    srcParam = cParams.GetString("cd-color-depth", "color-standard")
     
-    If ParamsEqual(srcParam, "Color_HDR") Then
+    If ParamsEqual(srcParam, "color-hdr") Then
         cboDepthColor.ListIndex = 0
-    ElseIf ParamsEqual(srcParam, "Color_Indexed") Then
+    ElseIf ParamsEqual(srcParam, "color-indexed") Then
         cboDepthColor.ListIndex = 2
     Else
         cboDepthColor.ListIndex = 1
     End If
     
-    srcParam = cParams.GetString("ColorDepth_GrayDepth", "Gray_Standard")
+    srcParam = cParams.GetString("cd-gray-depth", "gray-standard")
     
-    If ParamsEqual(srcParam, "Gray_HDR") Then
+    If ParamsEqual(srcParam, "gray-hdr") Then
         cboDepthGrayscale.ListIndex = 0
-    ElseIf ParamsEqual(srcParam, "Gray_Monochrome") Then
+    ElseIf ParamsEqual(srcParam, "gray-monochrome") Then
         cboDepthGrayscale.ListIndex = 2
     Else
         cboDepthGrayscale.ListIndex = 1
     End If
     
-    sldColorCount.Value = cParams.GetLong("ColorDepth_PaletteSize", 256)
+    sldColorCount.Value = cParams.GetLong("cd-palette-size", 256)
     
-    srcParam = cParams.GetString("ColorDepth_AlphaModel", "Auto")
+    srcParam = cParams.GetString("cd-alpha-model", "auto")
     
-    If ParamsEqual(srcParam, "Full") Then
+    If ParamsEqual(srcParam, "full") Then
         cboAlphaModel.ListIndex = 1
-    ElseIf ParamsEqual(srcParam, "ByCutoff") Then
+    ElseIf ParamsEqual(srcParam, "by-cutoff") Then
         cboAlphaModel.ListIndex = 2
-    ElseIf ParamsEqual(srcParam, "ByColor") Then
+    ElseIf ParamsEqual(srcParam, "by-color") Then
         cboAlphaModel.ListIndex = 3
-    ElseIf ParamsEqual(srcParam, "None") Then
+    ElseIf ParamsEqual(srcParam, "none") Then
         cboAlphaModel.ListIndex = 4
     Else
         cboAlphaModel.ListIndex = 0
     End If
     
-    sldAlphaCutoff.Value = cParams.GetLong("ColorDepth_AlphaCutoff")
-    clsAlphaColor.Color = cParams.GetLong("ColorDepth_AlphaColor")
-    clsComposite.Color = cParams.GetLong("ColorDepth_CompositeColor", vbWhite)
+    sldAlphaCutoff.Value = cParams.GetLong("cd-alpha-cutoff")
+    clsAlphaColor.Color = cParams.GetLong("cd-alpha-color")
+    clsComposite.Color = cParams.GetLong("cd-matte-color", vbWhite)
     
 End Sub
 
-Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
+Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean
     ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function
 
@@ -414,6 +423,18 @@ End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+'Only some file formats support a "use original file settings" option; it's up to the caller to notify us
+' if they want that option available.
+Public Sub SetOriginalSettingsAvailable(ByVal newSetting As Boolean)
+
+    m_UseOriginalAllowed = newSetting
+    If m_UseOriginalAllowed And (cboColorModel.ListCount < 4) Then
+        cboColorModel.AddItem "original file settings", 3
+        UpdateColorDepthVisibility
+    End If
+
 End Sub
 
 Private Sub cboAlphaModel_Click()
@@ -479,7 +500,6 @@ Private Sub UserControl_Initialize()
     cboColorModel.AddItem "auto", 0
     cboColorModel.AddItem "color", 1
     cboColorModel.AddItem "grayscale", 2
-    'cboColorModel.AddItem "original file settings", 3      'This feature is not fully implemented yet!  TODO 8.2
     cboColorModel.ListIndex = 0
     
     cboDepthColor.AddItem "HDR", 0

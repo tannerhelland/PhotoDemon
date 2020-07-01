@@ -566,8 +566,8 @@ Private Sub cmdBar_ResetClick()
     sldCompression.Value = sldCompression.NotchValueCustom
     
     If (Not m_SrcImage Is Nothing) Then
-        If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
-            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
+        If m_SrcImage.ImgStorage.DoesKeyExist("png-background-color") Then
+            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("png-background-color")
             chkEmbedBackground.Value = True
         Else
             clsBackground.Color = vbWhite
@@ -613,6 +613,10 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         picContainer(i).SetLeft 0
     Next i
     
+    'If the file being saved was originally a PNG, notify the color-depth handler that we want
+    ' to expose a "use original file settings" option
+    If (Not srcImage Is Nothing) Then clrDepth.SetOriginalSettingsAvailable (srcImage.GetOriginalFileFormat = PDIF_PNG)
+    
     clrDepth.SyncToIdealSize
     ttlStandard(0).Value = True
     m_ActiveTitleBar = 0
@@ -649,8 +653,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'If the source image was a PNG, and it also contained a background color, retrieve and set the matching color now
     If (Not m_SrcImage Is Nothing) Then
-        If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
-            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
+        If m_SrcImage.ImgStorage.DoesKeyExist("png-background-color") Then
+            clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("png-background-color")
             chkEmbedBackground.Value = True
         End If
     End If
@@ -749,32 +753,32 @@ Private Function GetExportParamString() As String
     Set cParams = New pdSerialize
     
     'The parameters this function returns vary based on the current PNG mode (standard vs web-optimized).
-    cParams.AddParam "PNGCreateWebOptimized", (btsMasterType.ListIndex = 1)
+    cParams.AddParam "png-web-optimized", (btsMasterType.ListIndex = 1)
     
     'Standard parameters are the more complicated ones, if you can believe it
     If (btsMasterType.ListIndex = 0) Then
     
         'Start with the standard PNG settings, which are consistent across all standard PNG types
-        If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
-        cParams.AddParam "pngBackgroundColor", clsBackground.Color
-        cParams.AddParam "PNGCreateBkgdChunk", chkEmbedBackground.Value
-        cParams.AddParam "PNGFilterStrategy", cboOptimize.ListIndex
+        If sldCompression.IsValid Then cParams.AddParam "png-compression-level", sldCompression.Value Else cParams.AddParam "png-compression-level", sldCompression.NotchValueCustom
+        cParams.AddParam "png-background-color", clsBackground.Color
+        cParams.AddParam "png-create-bkgd", chkEmbedBackground.Value
+        cParams.AddParam "png-filter-strategy", cboOptimize.ListIndex
         
         'Next come all the messy color-depth possibilities
-        cParams.AddParam "PNGColorDepth", clrDepth.GetAllSettings
+        cParams.AddParam "png-color-depth", clrDepth.GetAllSettings
         
     'Remember: web-optimized parameters must not use any UI elements from the "normal" settings panel!
     Else
     
-        cParams.AddParam "PNGOptimizeLossy", chkOptimizeLossy.Value
-        cParams.AddParam "PNGOptimizeLossyQuality", sltTargetQuality.Value
+        cParams.AddParam "png-optimize-lossy", chkOptimizeLossy.Value
+        cParams.AddParam "png-lossy-quality", sltTargetQuality.Value
         
         'pngquant accepts this value on a 1-11 scale, with 1 being slowest and 11 being fastest.  We show the user a
         ' [0, 10] scale where [10] is slowest (like the other settings on the form); reset to the proper range now.
-        cParams.AddParam "PNGOptimizeLossyPerformance", 11 - sltLossyPerformance.Value
-        cParams.AddParam "PNGOptimizeLossyDithering", chkOptimizeDither.Value
+        cParams.AddParam "png-lossy-performance", 11 - sltLossyPerformance.Value
+        cParams.AddParam "png-lossy-dithering", chkOptimizeDither.Value
         
-        cParams.AddParam "PNGOptimizeLosslessPerformance", sltLosslessPerformance.Value
+        cParams.AddParam "png-optimize-lossless-perf", sltLosslessPerformance.Value
         
     End If
     
@@ -809,18 +813,18 @@ Private Sub UpdatePreview()
         cParams.SetParamString GetExportParamString()
         
         Dim bkgdColor As Long
-        bkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+        bkgdColor = cParams.GetLong("png-background-color", vbWhite)
         
         'The color-depth-specific options are embedded as a single option, so extract them into their
         ' own parser.
         Dim cParamsDepth As pdSerialize
         Set cParamsDepth = New pdSerialize
-        cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", vbNullString)
+        cParamsDepth.SetParamString cParams.GetString("png-color-depth", vbNullString)
         
         'Retrieve color and alpha model for this preview; everything else extends from these
         Dim outputColorModel As String, outputAlphaModel As String
-        outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto", True)
-        outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto", True)
+        outputColorModel = cParamsDepth.GetString("cd-color-model", "auto", True)
+        outputAlphaModel = cParamsDepth.GetString("cd-alpha-model", "auto", True)
     
         'Before doing anything else, figure out how to handle alpha.
         Dim previewAlphaMode As PD_ALPHA_STATUS
@@ -828,9 +832,9 @@ Private Sub UpdatePreview()
             previewAlphaMode = PDAS_ComplicatedAlpha
         ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
             previewAlphaMode = PDAS_NoAlpha
-        ElseIf Strings.StringsEqual(outputAlphaModel, "bycutoff", True) Then
+        ElseIf Strings.StringsEqual(outputAlphaModel, "by-cutoff", True) Then
             previewAlphaMode = PDAS_BinaryAlpha
-        ElseIf Strings.StringsEqual(outputAlphaModel, "bycolor", True) Then
+        ElseIf Strings.StringsEqual(outputAlphaModel, "by-color", True) Then
             previewAlphaMode = PDAS_NewAlphaFromColor
         Else
             previewAlphaMode = PDAS_ComplicatedAlpha
@@ -839,21 +843,50 @@ Private Sub UpdatePreview()
         Dim trnsTable() As Byte
         
         Dim outputAlphaCutoff As Long, outputAlphaColor As Long
-        outputAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-        outputAlphaColor = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbMagenta)
-    
+        outputAlphaCutoff = cParamsDepth.GetLong("cd-alpha-cutoff", PD_DEFAULT_ALPHA_CUTOFF)
+        outputAlphaColor = cParamsDepth.GetLong("cd-alpha-color", vbMagenta)
+        
+        'If the caller specified "original file settings", override any settings we have
+        ' calculated with the file's *original* settings.
+        Dim useOrigMode As Boolean, origColorType As PD_PNGColorType
+        useOrigMode = Strings.StringsEqual(cParamsDepth.GetString("cd-color-model", "auto", True), "original", True)
+        
+        If useOrigMode Then
+            
+            'First we want to determine alpha status; colors will be dealt with later
+            origColorType = m_SrcImage.ImgStorage.GetEntry_Long("png-color-type", png_AutoColorType)
+            
+            'For PNGs with full alpha channels, we want to enable full alpha channel output
+            If (origColorType = png_GreyscaleAlpha) Or (origColorType = png_TruecolorAlpha) Then
+                previewAlphaMode = PDAS_ComplicatedAlpha
+            Else
+                
+                'Override the background color (if any) with the one from the original file
+                If m_SrcImage.ImgStorage.DoesKeyExist("png-background-color") Then bkgdColor = m_SrcImage.ImgStorage.GetEntry_Long("png-background-color")
+                
+                'If the file used some other form of transparency, assume binary transparency here
+                If m_SrcImage.GetOriginalAlpha Then
+                    previewAlphaMode = PDAS_BinaryAlpha
+                    outputAlphaCutoff = 127
+                Else
+                    previewAlphaMode = PDAS_NoAlpha
+                End If
+                
+            End If
+            
+        Else
+            If (previewAlphaMode <> PDAS_ComplicatedAlpha) Then bkgdColor = cParamsDepth.GetLong("cd-matte-color", bkgdColor)
+        End If
+        
         'If the caller wants alpha removed, do so now.
         If (previewAlphaMode = PDAS_NoAlpha) Then
-            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             workingDIB.CompositeBackgroundColor Colors.ExtractRed(bkgdColor), Colors.ExtractGreen(bkgdColor), Colors.ExtractBlue(bkgdColor)
             
         ElseIf (previewAlphaMode = PDAS_BinaryAlpha) Then
-            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             DIBs.ApplyAlphaCutoff_Ex workingDIB, trnsTable, outputAlphaCutoff
             DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
         
         ElseIf (previewAlphaMode = PDAS_NewAlphaFromColor) Then
-            bkgdColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", bkgdColor)
             DIBs.MakeColorTransparent_Ex workingDIB, trnsTable, outputAlphaColor
             DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
         
@@ -866,32 +899,35 @@ Private Sub UpdatePreview()
         If Strings.StringsNotEqual(outputColorModel, "auto", True) Then
             
             Dim forceGrayscale As Boolean, forceIndexed As Boolean, newPaletteSize As Long
-            forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
-            forceIndexed = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed")
-            newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
-            If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then newPaletteSize = 2
+            Dim newPalette() As RGBQuad
+            
+            If useOrigMode Then
+            
+                forceGrayscale = (origColorType = png_Greyscale) Or (origColorType = png_GreyscaleAlpha)
+                forceIndexed = (origColorType = png_Indexed)
+                
+                Dim tmpPalette As pdPalette
+                If m_SrcImage.HasOriginalPalette Then
+                    m_SrcImage.GetOriginalPalette tmpPalette
+                    If (Not tmpPalette Is Nothing) Then tmpPalette.CopyPaletteToArray newPalette
+                End If
+                
+            Else
+                forceGrayscale = ParamsEqual(cParamsDepth.GetString("cd-color-model", "auto"), "gray")
+                forceIndexed = ParamsEqual(cParamsDepth.GetString("cd-color-depth", "color-standard"), "color-indexed")
+                newPaletteSize = cParamsDepth.GetLong("cd-palette-size", 256)
+                If ParamsEqual(cParamsDepth.GetString("cd-gray-depth", "auto"), "gray-monochrome") Then newPaletteSize = 2
+            End If
             
             If forceGrayscale Then
                 DIBs.MakeDIBGrayscale workingDIB, newPaletteSize
                 
             ElseIf forceIndexed Then
-                Dim newPalette() As RGBQuad
-                Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
+                If (Not useOrigMode) Then Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
                 Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, newPalette, True
             End If
             
         End If
-        
-        'If the image is in "use original settings" mode, we will need to forcibly overwrite various
-        ' settings to match the original file's settings.)
-        ' (TODO!)
-        'Dim useOrigMode As Boolean
-        'useOrigMode = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Original"), "Original")
-        
-        'In "use original file settings" mode, we need to steal a palette copy from the source image
-        ' (TODO!)
-        'Dim tmpPalette As pdPalette
-        'If (useOrigMode And m_SrcImage.HasOriginalPalette) Then m_SrcImage.GetOriginalPalette tmpPalette
         
         EffectPrep.FinalizeNonstandardPreview pdFxPreview, True
         

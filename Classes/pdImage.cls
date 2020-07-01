@@ -1686,7 +1686,7 @@ Private Function SetHeaderFromXML_Legacy(ByRef srcText As String, Optional ByVal
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
-            If xmlEngine.DoesTagExist("pngBackgroundColor") Then ImgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
+            If xmlEngine.DoesTagExist("png-background-color") Then ImgStorage.AddEntry "png-background-color", xmlEngine.GetUniqueTag_Long("png-background-color")
             
         End If
         

@@ -1195,13 +1195,16 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         dstImage.SetOriginalFileFormat PDIF_PNG
         dstImage.NotifyImageChanged UNDO_Everything
         
-        dstImage.SetOriginalColorDepth m_PNG.GetBytesPerPixel()
+        dstImage.SetOriginalColorDepth m_PNG.GetBitsPerPixel()
         dstImage.SetOriginalGrayscale (m_PNG.GetColorType = png_Greyscale) Or (m_PNG.GetColorType = png_GreyscaleAlpha)
         dstImage.SetOriginalAlpha m_PNG.HasAlpha()
-        If m_PNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", m_PNG.GetBackgroundColor()
+        
+        'Now, some PNG-specific info that can be helpful if the user wants to "preserve original settings" later
+        dstImage.ImgStorage.AddEntry "png-color-type", m_PNG.GetColorType()
+        If m_PNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "png-background-color", m_PNG.GetBackgroundColor()
         If m_PNG.HasChunk("tRNS") Then
             Dim trnsColor As Long
-            If m_PNG.GetTransparentColor(trnsColor) Then dstImage.ImgStorage.AddEntry "pngTransparentColor", trnsColor
+            If m_PNG.GetTransparentColor(trnsColor) Then dstImage.ImgStorage.AddEntry "png-transparent-color", trnsColor
         End If
         
         'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
@@ -1247,7 +1250,7 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         dstImage.SetOriginalFileFormat PDIF_PSD
         dstImage.NotifyImageChanged UNDO_Everything
-        dstImage.SetOriginalColorDepth cPSD.GetBytesPerPixel() * 8
+        dstImage.SetOriginalColorDepth cPSD.GetBitsPerPixel()
         dstImage.SetOriginalGrayscale cPSD.IsGrayscaleColorMode()
         dstImage.SetOriginalAlpha cPSD.HasAlpha()
         

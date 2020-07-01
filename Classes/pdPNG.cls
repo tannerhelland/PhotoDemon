@@ -2843,11 +2843,11 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     ' by a standalone color depth control that's shared between multiple export dialogs.)
     Dim cParamsDepth As pdSerialize
     Set cParamsDepth = New pdSerialize
-    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", , True)
+    cParamsDepth.SetParamString cParams.GetString("png-color-depth", , True)
     
     Dim outputColorModel As String, outputAlphaModel As String
-    outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto", True)
-    outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto", True)
+    outputColorModel = cParamsDepth.GetString("cd-color-model", "auto", True)
+    outputAlphaModel = cParamsDepth.GetString("cd-alpha-model", "auto", True)
     
     Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
     autoColorModeActive = Strings.StringsEqual(outputColorModel, "auto", True)
@@ -2863,16 +2863,35 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     ' This requires different handling, as the source data will likely need to be destructively modified
     ' to fit the user's request.
     
+    'First, see if the "use original file settings" option was clicked.  If it was, we'll need
+    ' to simply retrieve the original PNG file settings and use those for export.
+    Dim useOrigMode As Boolean, origColorType As PD_PNGColorType
+    origColorType = png_AutoColorType
+    If (Not srcPDImage Is Nothing) Then
+        useOrigMode = Strings.StringsEqual(cParamsDepth.GetString("cd-color-model", "auto", True), "original", True)
+        If useOrigMode Then origColorType = srcPDImage.ImgStorage.GetEntry_Long("png-color-type", png_AutoColorType)
+    End If
+    
     'Retrieve some miscellaneous data from the param strings; these settings may not be used in all
     ' output modes (e.g. transparent color has limited usage, depending on the output alpha mode).
-    m_BkgdColor = cParamsDepth.GetLong("pngBackgroundColor", vbWhite)
-    m_CompositingColor = m_BkgdColor
-    m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
+    If useOrigMode Then
+        If srcPDImage.ImgStorage.DoesKeyExist("png-background-color") Then
+            m_BkgdColor = srcPDImage.ImgStorage.GetEntry_Long("png-background-color")
+        Else
+            m_BkgdColor = cParamsDepth.GetLong("png-background-color", vbWhite)
+        End If
+    Else
+        m_BkgdColor = cParamsDepth.GetLong("png-background-color", vbWhite)
+    End If
     
-    'A weird user may choose "automatic" mode for color or alpha mode, but not both.  If they've done this,
-    ' we need to analyze the image to determine proper automatic settings for either mode.
+    m_CompositingColor = m_BkgdColor
+    m_EmbedBkgdColor = cParams.GetBool("png-create-bkgd", False)
+    
+    'A weird user may choose "automatic" mode for color or alpha mode, but not both.
+    ' If they've done this, we need to analyze the image to determine proper automatic
+    ' settings for either mode.
     Dim currentAlphaStatus As PD_ALPHA_STATUS, isGrayscale As Boolean
-    If autoColorModeActive Or autoTransparencyModeActive Then
+    If (autoColorModeActive Or autoTransparencyModeActive) Then
         Export_AnalyzeImage srcImage, m_ImgColorCount, isGrayscale, currentAlphaStatus, m_ImgPalette
     End If
     
@@ -2889,8 +2908,43 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
         If (m_ImgColorCount <= 256) Then outputPaletteSize = m_ImgColorCount Else outputPaletteSize = 256
         m_ImgMaxColorCount = outputPaletteSize
     Else
-        outputGrayscale = Strings.StringsEqual(outputColorModel, "gray", True)
-        outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+        
+        'If the caller wants us to use original file settings, pull those instead of relying
+        ' on the image's current state.
+        If useOrigMode Then
+        
+            outputGrayscale = (origColorType = png_Greyscale) Or (origColorType = png_GreyscaleAlpha)
+            outputIndexed = (origColorType = png_Indexed)
+            
+            'Pull the original file's palette
+            Dim tmpPalette As pdPalette
+            If srcPDImage.HasOriginalPalette Then
+                
+                srcPDImage.GetOriginalPalette tmpPalette
+                If (Not tmpPalette Is Nothing) Then
+                    
+                    'A palette exists!  Copy it, then immediately forcibly convert the source
+                    ' image to use that palette.
+                    m_ImgMaxColorCount = tmpPalette.GetPaletteColorCount()
+                    outputPaletteSize = m_ImgMaxColorCount
+                    tmpPalette.CopyPaletteToArray m_ImgPalette
+                    Palettes.ApplyPaletteToImage_KDTree srcImage, m_ImgPalette, True
+                    m_ImgPaletteSafe = True
+                    
+                End If
+                
+            Else
+                outputPaletteSize = 256
+            End If
+            
+            outputMonochrome = (outputGrayscale And (srcPDImage.GetOriginalColorDepth() = 1))
+            outputHDR = (outputGrayscale And srcPDImage.GetOriginalColorDepth >= 16) Or ((Not outputGrayscale) And (srcPDImage.GetOriginalColorDepth > 32))
+            
+        Else
+            outputGrayscale = Strings.StringsEqual(outputColorModel, "gray", True)
+            outputPaletteSize = cParamsDepth.GetLong("cd-palette-size", 256)
+        End If
+        
     End If
     
     'Interlacing is currently forcibly disabled, as it is unsupported in major web browsers (the images will
@@ -2902,20 +2956,22 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     ' 0 or 255 values), require additional settings.  We always retrieve all values, even if we won't need to
     ' use them given the user's requested output settings.
     Dim outputAlphaCutoff As Long, outputAlphaColor As Long
-    outputAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-    outputAlphaColor = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbMagenta)
+    outputAlphaCutoff = cParamsDepth.GetLong("cd-alpha-cutoff", PD_DEFAULT_ALPHA_CUTOFF)
+    outputAlphaColor = cParamsDepth.GetLong("cd-alpha-color", vbMagenta)
     
     'Look for any requests to forcibly output a specific color or grayscale color depth
     Dim outputColorDepthName As String
-    If outputGrayscale Then
-        outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
-        outputHDR = Strings.StringsEqual(outputColorDepthName, "Gray_HDR", True)
-        outputMonochrome = Strings.StringsEqual(outputColorDepthName, "Gray_Monochrome", True)
-    Else
-        outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
-        outputHDR = Strings.StringsEqual(outputColorDepthName, "Color_HDR", True)
-        outputIndexed = Strings.StringsEqual(outputColorDepthName, "Color_Indexed", True)
-        If outputIndexed Then m_ImgMaxColorCount = outputPaletteSize Else m_ImgMaxColorCount = 256
+    If (Not useOrigMode) Then
+        If outputGrayscale Then
+            outputColorDepthName = cParamsDepth.GetString("cd-gray-depth", "gray-standard")
+            outputHDR = Strings.StringsEqual(outputColorDepthName, "gray-hdr", True)
+            outputMonochrome = Strings.StringsEqual(outputColorDepthName, "gray-monochrome", True)
+        Else
+            outputColorDepthName = cParamsDepth.GetString("cd-color-depth", "color-standard")
+            outputHDR = Strings.StringsEqual(outputColorDepthName, "color-hdr", True)
+            outputIndexed = Strings.StringsEqual(outputColorDepthName, "color-indexed", True)
+            If outputIndexed Then m_ImgMaxColorCount = outputPaletteSize Else m_ImgMaxColorCount = 256
+        End If
     End If
     
     'Finally, pull the requested alpha mode from the user's settings; if "auto" output mode was requested,
@@ -2924,23 +2980,48 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
     If autoTransparencyModeActive Then
         outputAlphaMode = currentAlphaStatus
     Else
-        If Strings.StringsEqual(outputAlphaModel, "full", True) Then
-            outputAlphaMode = PDAS_ComplicatedAlpha
         
-        'For non-standard alpha modes, we also want to use the compositing color specified by the color
-        ' depth parameter string.
-        ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
-            outputAlphaMode = PDAS_NoAlpha
-            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
-        ElseIf Strings.StringsEqual(outputAlphaModel, "bycutoff", True) Then
-            outputAlphaMode = PDAS_BinaryAlpha
-            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
-        ElseIf Strings.StringsEqual(outputAlphaModel, "bycolor", True) Then
-            outputAlphaMode = PDAS_NewAlphaFromColor
-            m_CompositingColor = cParamsDepth.GetLong("ColorDepth_CompositeColor", m_BkgdColor)
+        'If the caller specified "use original file settings", construct an alpha model
+        ' matching the original file
+        If useOrigMode Then
+        
+            'For PNGs with full alpha channels, we want to enable full alpha channel output
+            If (origColorType = png_GreyscaleAlpha) Or (origColorType = png_TruecolorAlpha) Then
+                outputAlphaMode = PDAS_ComplicatedAlpha
+            Else
+                
+                'If the file used some other form of transparency, assume binary transparency here
+                If srcPDImage.GetOriginalAlpha Then
+                    outputAlphaMode = PDAS_BinaryAlpha
+                    outputAlphaCutoff = 127
+                Else
+                    outputAlphaMode = PDAS_NoAlpha
+                End If
+                
+            End If
+            
         Else
-            outputAlphaMode = PDAS_ComplicatedAlpha
+            
+            If Strings.StringsEqual(outputAlphaModel, "full", True) Then
+                outputAlphaMode = PDAS_ComplicatedAlpha
+            
+            'For non-standard alpha modes, we also want to use the compositing color specified by the color
+            ' depth parameter string.
+            ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
+                outputAlphaMode = PDAS_NoAlpha
+                m_CompositingColor = cParamsDepth.GetLong("cd-matte-color", m_BkgdColor)
+            ElseIf Strings.StringsEqual(outputAlphaModel, "by-cutoff", True) Then
+                outputAlphaMode = PDAS_BinaryAlpha
+                m_CompositingColor = cParamsDepth.GetLong("cd-matte-color", m_BkgdColor)
+            ElseIf Strings.StringsEqual(outputAlphaModel, "by-color", True) Then
+                outputAlphaMode = PDAS_NewAlphaFromColor
+                m_CompositingColor = cParamsDepth.GetLong("cd-matte-color", m_BkgdColor)
+            Else
+                outputAlphaMode = PDAS_ComplicatedAlpha
+            End If
+            
         End If
+        
     End If
     
     'Some color modes may require us to produce palettes or custom transparency tables.
@@ -3032,7 +3113,7 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
                     outColorType = png_Indexed
                     outBitsPerChannel = 8
                     m_ImgPaletteSafe = True
-                    Palettes.GetOptimizedPalette srcImage, m_ImgPalette, outputPaletteSize
+                    If (Not useOrigMode) Then Palettes.GetOptimizedPalette srcImage, m_ImgPalette, outputPaletteSize
                     Palettes.ApplyPaletteToImage_KDTree srcImage, m_ImgPalette, True
                 End If
                 
@@ -3041,6 +3122,8 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
         End If
         
     'Alpha from color requires us to manually create a custom alpha channel for the image.
+    ' (Note that this setting *cannot* occur with "use original file settings" mode; that mode
+    ' will use a binary alpha cutoff, instead.)
     ElseIf (outputAlphaMode = PDAS_NewAlphaFromColor) Then
         
         'Request a tRNS chunk in the final image
@@ -3172,9 +3255,9 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
-    m_BkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+    m_BkgdColor = cParams.GetLong("png-background-color", vbWhite)
     m_CompositingColor = m_BkgdColor
-    m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
+    m_EmbedBkgdColor = cParams.GetBool("png-create-bkgd", False)
     
     'Some color modes may require us to produce palettes or custom transparency tables.
     Dim i As Long, trnsTable() As Byte, cCount As pdColorCount
@@ -3283,9 +3366,9 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
         ' If it did, we'll try to reuse the original file's settings as much as possible.
         Dim hasOrigTrnsColor As Boolean, origTrnsColor As Long
         If (Not srcPDImage Is Nothing) Then
-            hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("pngTransparentColor")
+            hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("png-transparent-color")
             If hasOrigTrnsColor Then
-                origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("pngTransparentColor", 0)
+                origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("png-transparent-color", 0)
                 m_TrnsValueR = Colors.ExtractRed(origTrnsColor)
                 m_TrnsValueG = Colors.ExtractGreen(origTrnsColor)
                 m_TrnsValueB = Colors.ExtractBlue(origTrnsColor)
@@ -3649,9 +3732,9 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
         ' (If it did, we'll try to reuse the original file's settings as much as possible.)
         Dim hasOrigTrnsColor As Boolean, origTrnsColor As Long
         If (Not srcPDImage Is Nothing) Then
-            hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("pngTransparentColor")
+            hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("png-transparent-color")
             If hasOrigTrnsColor Then
-                origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("pngTransparentColor", 0)
+                origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("png-transparent-color", 0)
                 m_TrnsValueR = Colors.ExtractRed(origTrnsColor)
                 m_TrnsValueG = Colors.ExtractGreen(origTrnsColor)
                 m_TrnsValueB = Colors.ExtractBlue(origTrnsColor)
@@ -3702,9 +3785,9 @@ Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColor
     Set cParams = New pdSerialize
     cParams.SetParamString fullParamString
     
-    m_BkgdColor = cParams.GetLong("pngBackgroundColor", vbWhite)
+    m_BkgdColor = cParams.GetLong("png-background-color", vbWhite)
     m_CompositingColor = m_BkgdColor
-    m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
+    m_EmbedBkgdColor = cParams.GetBool("png-create-bkgd", False)
     
     'We now know enough (finally) to construct an output color model and suggested bit-depth.  Whew!
     
@@ -4178,7 +4261,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     End If
     
     'From the original param string, determine a filter strategy (unless overridden by the caller).
-    If (useFilterStrategy = png_FilterUndefined) Or (LenB(fullParamString) <> 0) Then useFilterStrategy = cParams.GetLong("PNGFilterStrategy", png_FilterAuto)
+    If (useFilterStrategy = png_FilterUndefined) Or (LenB(fullParamString) <> 0) Then useFilterStrategy = cParams.GetLong("png-filter-strategy", png_FilterAuto)
     
     'Per the spec, indexed-mode images don't usually benefit from automatic filtering.  In the future, perhaps we could
     ' still test fixed filters to see if compression improves?
@@ -5918,8 +6001,8 @@ Friend Sub GetHeader(ByRef dstHeader As PD_PNGHeader)
     dstHeader = m_Header
 End Sub
 
-Friend Function GetBytesPerPixel() As Long
-    GetBytesPerPixel = m_Header.BitsPerPixel
+Friend Function GetBitsPerPixel() As Long
+    GetBitsPerPixel = m_Header.BitsPerPixel
 End Function
 
 Friend Function GetColorType() As PD_PNGColorType
