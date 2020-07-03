@@ -245,10 +245,10 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     newLayerID = tmpImage.CreateBlankLayer
     tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, , tmpDIB
     tmpImage.UpdateSize
-        
+    
     'Give the selection a basic filename
     tmpImage.ImgStorage.AddEntry "OriginalFileName", "PhotoDemon selection"
-        
+    
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
     tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
@@ -271,7 +271,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'Present a common dialog to the user
     If saveDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
-                
+        
         'Store the selected file format to the image object
         tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(saveFormat - 1)
         

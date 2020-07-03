@@ -1508,6 +1508,10 @@ Begin VB.Form FormMain
             Caption         =   "Build standalone package..."
             Index           =   3
          End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Animated screen capture..."
+            Index           =   4
+         End
       End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
@@ -2240,7 +2244,26 @@ End Sub
 
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
 Private Sub MnuDevelopers_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuDevelopers(Index).Caption
+    
+    Select Case Index
+        
+        Case 0
+            Menus.ProcessDefaultAction_ByName "tools_themeeditor"
+            
+        Case 1
+            Menus.ProcessDefaultAction_ByName "tools_themepackage"
+        
+        Case 2
+            'separator
+        
+        Case 3
+            Menus.ProcessDefaultAction_ByName "tools_standalonepackage"
+            
+        Case 4
+            ShowPDDialog vbModal, FormScreenCapPNG
+    
+    End Select
+    
 End Sub
 
 'Menu: effect > transform actions

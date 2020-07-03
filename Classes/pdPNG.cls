@@ -163,14 +163,17 @@ Private m_FrameCount As Long, m_LoopCount As Long
 Private m_FrameDIBs() As pdDIB
 Private m_FrameSequence As Long
 
-'Private type used during APNG exporting to collect frame data.
+'Private type used during APNG exporting to collect frame data.  Note that some members are
+' only used during normal APNG export, while others are used by the specialized "streaming" interface
+' (used for screen recording).
 Private Type PD_APNGFrame
-    frameDisposal As PD_APNG_FrameDisposal
     frameBlend As PD_APNG_BlendOp
-    frameIsDuplicateOrEmpty As Boolean
+    frameDIB As pdDIB
+    frameDisposal As PD_APNG_FrameDisposal
+    frameSeq As Long
     frameTime As Long
     rectOfInterest As RectF
-    frameDIB As pdDIB
+    frameIsDuplicateOrEmpty As Boolean
 End Type
 
 'When exporting the image, we need to cache various export parameters to share between export functions.
@@ -184,6 +187,13 @@ Private m_WriteTrns As Boolean, m_TrnsValueR As Long, m_TrnsValueG As Long, m_Tr
 ' if it isn't (e.g. if the image uses all 256 colors with no room left over for a transparent index),
 ' this will be set to FALSE; optimizations like frame differentials then need to be deactivated.
 Private m_apngTrnsAvailable As Boolean
+
+'When writing an APNG file in a streaming fashion (where the file is started, then left open as
+' we wait for frames to arrive), we need to flag some positions in the file as we don't know
+' their values until the animation is complete (e.g. frame count).
+Const INIT_STREAMING_BUFFER As Long = 32
+Private m_lastFrameTime As Currency, m_flagActlPos As Long, m_streamingFrames() As PD_APNGFrame
+Private m_refFrame As pdDIB
 
 'Simplified wrapper to load a PNG automatically.
 Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
@@ -711,15 +721,6 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
     'If multiple IDAT chunks were condensed into a single chunk, update our net chunk count
     m_NumOfChunks = m_NumOfChunks - numChunksRemoved
     
-    'For i = 0 To UBound(m_fcTLIndices)
-    '    Debug.Print m_fcTLIndices(i), m_fdATIndices(i), m_IDATIsFrame
-    'Next i
-    
-    'Double-check chunk merging:
-    'For i = 0 To m_NumOfChunks - 1
-    '    Debug.Print m_Chunks(i).GetType, m_Chunks(i).GetDataSize
-    'Next i
-    
     'We now want to proceed with decompression, but because the PNG format is moronic, this step isn't
     ' as simple as asking each chunk to decompress itself.  zLib streams don't store the original,
     ' uncompressed size of their data stream.  You are expected to store that data on your own.  PNG files
@@ -777,8 +778,6 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
                     ImportStage3_Decompress = png_Warning
                 End If
                 
-            Else
-                'If (m_Chunks(i).GetType = "IDAT") Then Debug.Print "Successfully decompressed chunk; " & reqIDATSize
             End If
             
         Next i
@@ -2822,6 +2821,287 @@ CouldNotSaveFile:
     
 End Function
 
+'Streaming approach to saving APNGs.  Call this function to start the stream, then pass successive frames
+' at will.  This function is perf-optimized for 24-bpp data.  32-bpp data will not work.  (TODO??)
+' Note that the APNGs produced by this function may be larger than the standard SaveAPNG function.
+' This function does not optimize as aggressively in order to keep performance high.  For the absolute
+' smallest file, use this function to produce the initial PNG, then re-load the file into PhotoDemon
+' and save it again.  That will produce the smallest possible file.
+Friend Function SaveAPNG_Streaming_Start(ByRef dstFile As String, ByVal pxWidth As Long, ByVal pxHeight As Long) As PD_PNGResult
+    
+    On Error GoTo CouldNotStartAPNG
+    
+    If (LenB(dstFile) = 0) Then
+        InternalError "SaveAPNG_Streaming_Start", "invalid function parameters"
+        SaveAPNG_Streaming_Start = False
+        Exit Function
+    End If
+    
+    'Reset frame trackers
+    m_FrameCount = 0
+    m_FrameSequence = 0
+    
+    'For now, this function always assumes 24-bpp output.  This is fast for us to produce,
+    ' and it enables easy per-frame heuristics.
+    Dim outColorType As PD_PNGColorType
+    outColorType = png_Truecolor
+    
+    Dim outBitsPerChannel As Long
+    outBitsPerChannel = 8
+    
+    'If the target file exists, kill it before starting
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'As usual, a pdStream object is used to simplify the process of saving to file *or* memory.
+    ' For this use-case, we want to write to a memory-mapped file, which provides the best of
+    ' both worlds (a persistent file object that we can address with memory pointers).
+    Set m_Stream = New pdStream
+    m_Stream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, pxWidth * pxHeight * 4, , OptimizeSequentialAccess
+    
+    'This APNG exporter has been extensively profiled, and I've left the timing code in place
+    ' because it could prove valuable again if users experience issues.
+    Dim startTime As Currency, firstStartTime As Currency
+    VBHacks.GetHighResTime startTime
+    firstStartTime = startTime
+    
+    'Prep a PNG header; this is a standard IHDR chunk, identical to a static PNG, and storing
+    ' it module-level prevents us from needing to pass it to individual functions over-and-over.
+    With m_Header
+        
+        .Width = pxWidth
+        .Height = pxHeight
+        .BitDepth = outBitsPerChannel
+        .ColorType = outColorType
+        
+        PDDebug.LogAction "Starting animated PNG w/ color type " & outColorType & " with channel bit-depth " & outBitsPerChannel
+        
+        'From color type and bit-depth, determine a "friendly" representation of bits-per-pixel
+        Select Case outColorType
+            Case png_Indexed
+                .BitsPerPixel = outBitsPerChannel
+            Case png_Greyscale
+                .BitsPerPixel = outBitsPerChannel
+            Case png_GreyscaleAlpha
+                .BitsPerPixel = outBitsPerChannel * 2
+            Case png_Truecolor
+                .BitsPerPixel = outBitsPerChannel * 3
+            Case png_TruecolorAlpha
+                .BitsPerPixel = outBitsPerChannel * 4
+        End Select
+        
+        'We never write interlaced PNGs, because interlaced PNGs are much larger and entirely pointless in
+        ' the 21st century, especially for animated PNGs.
+        .Interlaced = False
+        
+    End With
+    
+    'Write out the magic "PNG" numbers to identify a PNG file
+    Dim keepGoing As PD_PNGResult
+    keepGoing = Me.ExportStep1_StartFile(m_Stream)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > initialization " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+        
+    'All subsequent writes must be written as standalone chunks.  Note that chunks contain more than
+    ' just "data" - they also embed length markers, chunk IDs (4-byte ASCII strings), and CRC32 checksums.
+    ' Most of these tedious sub-tasks are automatically handled by the pdPNGChunk class.
+    
+    'PNG files must start with a special "IHDR" chunk.  (This is identical to static PNGs.)
+    ' Write one using the header we prepared earlier.
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(m_Stream)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > IHDR creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Next comes the acTL - or "animation control" - chunk.  This marks the file as an animated PNG,
+    ' and it lists the number of frames in the file (which we won't know until the animation is complete),
+    ' and the loop count.  Flag the current file position so we can return to it later, but advance the
+    ' stream normally so that we're in position to write the first frame.
+    m_flagActlPos = m_Stream.GetPosition()
+    If (keepGoing < png_Failure) Then keepGoing = ExportStep2a_WriteacTL(m_Stream, 0, 0)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > acTL creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Now it is time to prepare and write individual animation frames.  The caller sends these
+    ' as they arrive, so we can't do anything yet!
+    SaveAPNG_Streaming_Start = keepGoing
+    
+    Exit Function
+    
+CouldNotStartAPNG:
+    InternalError "SaveAPNG_Streaming_Start", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SaveAPNG_Streaming_Start = False
+    
+End Function
+
+'Streaming approach to saving APNGs.  After a stream is started, call this function to pass
+' individual frames.  Optimization is handled automatically - just make sure every pdDIB object
+' you pass has the same width, height, and color-depth!  If they don't, this will crash!
+Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhenFrameArrived As Currency) As PD_PNGResult
+    
+    'Each APNG frame consists of two parts:
+    ' - an fcTL ("frame control") chunk that describes frame size and timing
+    ' - an fdAT ("frame data") chunk that describes the pixel data.  (fdAT chunks are nearly
+    '   identical to regular IDAT chunks.)
+    
+    'The fcTL chunk is problematic because it requires us to know things like frame delay,
+    ' but we don't know that until the caller passed us the *next* frame in line.  As such,
+    ' we don't actually write it at present; instead, we just add dummy padding where it will
+    ' go in the future.
+    
+    'If this is the first frame, initialize all buffers
+    If (m_FrameCount = 0) Then
+        ReDim m_fcTLIndices(0 To INIT_STREAMING_BUFFER - 1) As Long
+        ReDim m_fdATIndices(0 To INIT_STREAMING_BUFFER - 1) As Long
+        ReDim m_streamingFrames(0 To INIT_STREAMING_BUFFER - 1) As PD_APNGFrame
+    
+    'If this is *not* the first frame, ensure all buffers are big enough for the next frame
+    Else
+        If (m_FrameCount > UBound(m_fcTLIndices)) Then
+            ReDim Preserve m_fcTLIndices(0 To m_FrameCount * 2 - 1) As Long
+            ReDim Preserve m_fdATIndices(0 To m_FrameCount * 2 - 1) As Long
+            ReDim Preserve m_streamingFrames(0 To m_FrameCount * 2 - 1) As PD_APNGFrame
+        End If
+    End If
+    
+    'Make a note of the current m_fcTL position in the file
+    m_fcTLIndices(m_FrameCount) = m_Stream.GetPosition()
+    
+    'Next, populate what we can of the m_fcTL chunk for this frame
+    With m_streamingFrames(m_FrameCount)
+        .frameSeq = m_FrameSequence
+        m_FrameSequence = m_FrameSequence + 1
+        .frameTime = msTimeWhenFrameArrived
+        .frameBlend = APNG_BlendOp_Source
+        .rectOfInterest.Left = 0
+        .rectOfInterest.Top = 0
+        .rectOfInterest.Width = srcDIB.GetDIBWidth
+        .rectOfInterest.Height = srcDIB.GetDIBHeight
+    End With
+    
+    'Write out a dummy fcTL buffer; we'll come back in and fill this in later.
+    ' (The size of an fcTL chunk is hard-coded; 26-bytes + 12-bytes of required PNG chunk data)
+    Const fcTLChunkSize As Long = 26 + 12
+    m_Stream.WritePadding fcTLChunkSize
+    
+    Dim keepGoing As PD_PNGResult
+    Dim tmpChunk As pdPNGChunk
+    
+    'If this is the first frame, we always want to write it out as-is
+    If (m_FrameCount = 0) Then
+        
+        'Filter the full DIB
+        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterFast, False, False)
+        
+        'Pass the full DIB as-is out to the IDAT writer
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 6, False)
+        
+        'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
+        ' frames will be optimized against it.
+        Set m_refFrame = New pdDIB
+        m_refFrame.CreateFromExistingDIB srcDIB
+        
+    'If this is *not* the first frame, we want to run heuristics on it before embedding it.
+    Else
+        
+        'Get the rect of interest?
+        Dim tmpRectF As RectF
+        'DIBs.GetRectOfInterest_Overlay srcDIB, m_refFrame, tmpRectF
+        
+        'Crop out?
+        
+        'Test run: proceed as normal (filter the full DIB)
+        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterNone, False, False)
+        
+        'Pass the full DIB as-is out to the IDAT writer
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 6, True)
+        
+        'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
+        ' frames will be optimized against it.
+        m_refFrame.CreateFromExistingDIB srcDIB
+        
+    End If
+    
+    'Make a note of where the pointer is for this frame *after* the IDAT/FDAT is written
+    m_fdATIndices(m_FrameCount) = m_Stream.GetPosition()
+    
+    'Increment frame count before exiting
+    m_FrameCount = m_FrameCount + 1
+    
+    SaveAPNG_Streaming_Frame = keepGoing
+        
+End Function
+
+'Streaming approach to saving APNGs.  After all frames have been added to a stream, call this function to
+' finalize the file.  Note that the file will need to be traversed again to embed final frame data
+' (as we can't know things like frame times until the end, due to interframe optimizations).
+Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Optional ByVal msTimeOfLastFrame As Currency = 0@) As PD_PNGResult
+    
+    Dim keepGoing As PD_PNGResult
+    keepGoing = png_Success
+    
+    'No more frames exist!  Note that time of the last frame, if any
+    If (msTimeOfLastFrame > 0@) Then m_streamingFrames(m_FrameCount - 1).frameTime = msTimeOfLastFrame Else m_streamingFrames(m_FrameCount - 1).frameTime = VBHacks.GetHighResTimeInMSEx() - m_streamingFrames(m_FrameCount - 1).frameTime
+    
+    'Rewind to the very start of the stream and note the final frame count
+    m_Stream.SetPosition m_flagActlPos
+    
+    'Write a "real" acTL chunk
+    If (keepGoing < png_Failure) Then keepGoing = ExportStep2a_WriteacTL(m_Stream, m_FrameCount, loopCount)
+    
+    'Next, we want to iterate through all frames and write out their final fcTL results
+    Dim i As Long
+    For i = 0 To m_FrameCount - 1
+        
+        'Move the file pointer to the position we saved for this frame
+        m_Stream.SetPosition m_fcTLIndices(i)
+        
+        'Reset the frame sequence value
+        m_FrameSequence = m_streamingFrames(i).frameSeq
+        
+        'Write out the frame control chunk
+        If (keepGoing < png_Failure) Then
+            
+            'The final frame is written differently, since it doesn't represent a difference between frames
+            If (i < m_FrameCount - 1) Then
+                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i + 1).frameTime - m_streamingFrames(i).frameTime, APNG_DisposeOp_None, APNG_BlendOp_Source
+            Else
+                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i).frameTime, APNG_DisposeOp_None, APNG_BlendOp_Source
+            End If
+            
+        End If
+        
+    Next i
+    
+    'Move the pointer to the end of the file
+    m_Stream.SetPosition m_fdATIndices(m_FrameCount - 1)
+    
+    'With all frames written, we can close out the file with a termination chunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(m_Stream)
+    
+    'Free the underlying stream object
+    m_Stream.StopStream
+    Set m_Stream = Nothing
+    
+    SaveAPNG_Streaming_Stop = keepGoing
+    
+End Function
+    
+'Streaming approach to saving APNGs.  If something goes wrong and you want to cancel, call this function.
+' Note that the file is 100% guaranteed to be invalid (as it will lack a trailing termination chunk),
+' so you *will* need to delete the destination file after calling this.
+Friend Function SaveAPNG_Streaming_Cancel() As PD_PNGResult
+    If (Not m_Stream Is Nothing) Then m_Stream.StopStream
+    Set m_Stream = Nothing
+    SaveAPNG_Streaming_Cancel = png_Success
+End Function
 'Prior to exporting a PNG, this function needs to be called to setup a bunch of image-specific export settings.
 ' Specifically, it'll analyze the source image to determine things like appropriate output color mode and
 ' bit-depth settings.
@@ -4476,7 +4756,7 @@ End Function
 Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'TrueColor mode supports 24/48-bpp output
-    Dim srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim srcStride As Long, srcBPP As Long, srcHeightInPixels As Long, srcPtr As Long
     Dim xLimit As Long, yDstOffset As Long, curOffset As Long
     Dim x As Long, y As Long
     
@@ -4505,6 +4785,8 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As
         
         'Calculate stride manually for source and destination lines
         srcStride = srcImage.GetDIBStride
+        If (srcImage.GetDIBColorDepth = 32) Then srcBPP = 4 Else srcBPP = 3
+        
         dstStride = srcImage.GetDIBWidth * 3
         xLimit = srcImage.GetDIBWidth - 1
         
@@ -4523,9 +4805,9 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As
             'Copy bytes manually, remembering to swizzle r/b
             For x = 0 To xLimit
                 curOffset = yDstOffset + x * 3
-                finalBytes(curOffset) = srcBytes(x * 4 + 2)
-                finalBytes(curOffset + 1) = srcBytes(x * 4 + 1)
-                finalBytes(curOffset + 2) = srcBytes(x * 4)
+                finalBytes(curOffset) = srcBytes(x * srcBPP + 2)
+                finalBytes(curOffset + 1) = srcBytes(x * srcBPP + 1)
+                finalBytes(curOffset + 2) = srcBytes(x * srcBPP)
             Next x
             
         Next y

@@ -167,17 +167,21 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL)
     
     'Make sure the target DIB is the correct size
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32, 0, 0
+    
+    Dim capWidth As Long, capHeight As Long
+    capWidth = srcRect.Right - srcRect.Left
+    capHeight = srcRect.Bottom - srcRect.Top
+    If (dstDIB.GetDIBWidth <> capWidth) Or (dstDIB.GetDIBHeight <> capHeight) Then dstDIB.CreateBlank capWidth, capHeight, 32, 0, 0
     
     'BitBlt the relevant portion of the screen directly from the screen DC to the specified DIB
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
+    GDI.BitBltWrapper dstDIB.GetDIBDC, 0, 0, capWidth, capHeight, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
     ReleaseDC screenHwnd, desktopDC
     
     'Enforce normal alpha on the result
-    dstDIB.ForceNewAlpha 255
+    If (dstDIB.GetDIBColorDepth = 32) Then dstDIB.ForceNewAlpha 255
     
 End Sub
 
