@@ -3001,7 +3001,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterFast, False, False)
         
         'Pass the full DIB as-is out to the IDAT writer
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 6, False)
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 1, False)
         
         'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
         ' frames will be optimized against it.
@@ -3021,7 +3021,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterNone, False, False)
         
         'Pass the full DIB as-is out to the IDAT writer
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 6, True)
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 1, True)
         
         'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
         ' frames will be optimized against it.
