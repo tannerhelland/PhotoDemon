@@ -262,6 +262,10 @@ Friend Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Lon
     
 End Function
 
+Friend Sub SetWindowPos_API(ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+    SetWindowPos targetHWnd, hWndInsertAfter, x, y, cx, cy, wFlags
+End Sub
+
 Friend Sub GetWindowRect_API(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetWindowRect srcHwnd, VarPtr(dstRect)
 End Sub
@@ -302,6 +306,17 @@ Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As Point
     ' but we simply assume success and always return TRUE.
     MapWindowPoints srcHwnd, 0, VarPtr(srcPoint), 1&
     GetClientToScreen = True
+    
+End Function
+
+Friend Function GetClientToScreen_Universal(ByVal srcHwnd As Long, ByVal ptrPtAPI As Long) As Boolean
+    
+    'MapWindowPoints is preferred over ClientToScreen because it works on BiDi systems.  However,
+    ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
+    ' (although I don't know how well that would work in VB, given the way Err.LastDllError works),
+    ' but we simply assume success and always return TRUE.
+    MapWindowPoints srcHwnd, 0, ptrPtAPI, 1&
+    GetClientToScreen_Universal = True
     
 End Function
 

@@ -899,9 +899,11 @@ Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
     
     'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
     If PDMain.IsProgramRunning() Then
-        VBHacks.StopSubclassing srcHwnd, Me
-        m_SubclassedHWnds.DeleteEntry srcHwnd
-        m_SubclassedHWnds.TrimDeletedEntries
+        If m_SubclassedHWnds.DoesKeyExist(srcHwnd) Then
+            VBHacks.StopSubclassing srcHwnd, Me
+            m_SubclassedHWnds.DeleteEntry srcHwnd
+            m_SubclassedHWnds.TrimDeletedEntries
+        End If
     End If
     
 End Sub

@@ -2,12 +2,12 @@ VERSION 5.00
 Begin VB.Form FormScreenCapPNG 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animated screen capture"
    ClientHeight    =   6765
-   ClientLeft      =   45
-   ClientTop       =   390
-   ClientWidth     =   8550
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   8565
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -19,53 +19,18 @@ Begin VB.Form FormScreenCapPNG
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "Tools_ScreenVideo.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   451
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   570
+   ScaleWidth      =   571
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblProgress 
-      Height          =   735
-      Left            =   240
-      Top             =   5280
-      Width           =   8175
-      _ExtentX        =   14420
-      _ExtentY        =   1296
-      Caption         =   ""
-   End
-   Begin PhotoDemon.pdTextBox txtCoords 
-      Height          =   375
-      Index           =   0
-      Left            =   240
-      TabIndex        =   5
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   661
-      Text            =   "0"
-   End
-   Begin PhotoDemon.pdSlider sldFrameRate 
-      Height          =   735
-      Left            =   240
-      TabIndex        =   4
-      Top             =   2520
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   1296
-      Caption         =   "max frame rate (fps)"
-      FontSizeCaption =   10
-      Min             =   1
-      Max             =   30
-      Value           =   10
-      NotchPosition   =   2
-      NotchValueCustom=   10
-   End
    Begin PhotoDemon.pdButton cmdExit 
       Height          =   495
       Left            =   7200
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   6120
       Width           =   1215
       _ExtentX        =   2143
@@ -75,100 +40,28 @@ Begin VB.Form FormScreenCapPNG
    Begin PhotoDemon.pdButton cmdStart 
       Height          =   495
       Left            =   4560
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   6120
       Width           =   2415
       _ExtentX        =   4260
       _ExtentY        =   873
       Caption         =   "Start"
    End
-   Begin PhotoDemon.pdButton cmdExport 
-      Height          =   375
-      Left            =   7680
-      TabIndex        =   1
-      Top             =   1440
-      Width           =   735
-      _ExtentX        =   1296
-      _ExtentY        =   873
-      Caption         =   "..."
-   End
-   Begin PhotoDemon.pdTextBox txtExport 
-      Height          =   375
-      Left            =   240
-      TabIndex        =   0
-      Top             =   1440
-      Width           =   7335
-      _ExtentX        =   12938
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
+   Begin PhotoDemon.pdSlider sldFrameRate 
+      Height          =   735
       Left            =   120
-      Top             =   120
-      Width           =   8145
-      _ExtentX        =   14367
-      _ExtentY        =   503
-      Caption         =   "capture area"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      Top             =   1080
-      Width           =   8145
-      _ExtentX        =   14367
-      _ExtentY        =   503
-      Caption         =   "destination file"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   2
-      Left            =   120
-      Top             =   2040
-      Width           =   8145
-      _ExtentX        =   14367
-      _ExtentY        =   503
-      Caption         =   "capture settings"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdTextBox txtCoords 
-      Height          =   375
-      Index           =   1
-      Left            =   1800
-      TabIndex        =   6
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   661
-      Text            =   "0"
-   End
-   Begin PhotoDemon.pdTextBox txtCoords 
-      Height          =   375
-      Index           =   2
-      Left            =   3960
-      TabIndex        =   7
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   661
-      Text            =   "800"
-   End
-   Begin PhotoDemon.pdTextBox txtCoords 
-      Height          =   375
-      Index           =   3
-      Left            =   5520
-      TabIndex        =   8
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   661
-      Text            =   "600"
+      TabIndex        =   2
+      Top             =   6000
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1296
+      Caption         =   "max frame rate (fps)"
+      FontSizeCaption =   10
+      Min             =   1
+      Max             =   30
+      Value           =   10
+      NotchPosition   =   2
+      NotchValueCustom=   10
    End
 End
 Attribute VB_Name = "FormScreenCapPNG"
@@ -193,6 +86,16 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'The current window must be converted to a layered window to make regions of it transparent
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As Long, ByVal crKey As Long, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
+
+Private Const KEY_COLOR As Long = &HFF00FF
+Private m_BackBuffer As pdDIB
+
 'A timer triggers capture events
 Private WithEvents m_Timer As pdTimer
 Attribute m_Timer.VB_VarHelpID = -1
@@ -203,8 +106,8 @@ Private m_PNG As pdPNG
 'Destination file, if one is selected (check for null before using)
 Private m_DstFilename As String
 
-'Capture rect; once populated (at the start of the capture), it *cannot* be changed
-Private m_CaptureRect As RectL
+'Capture rects; once populated (at the start of the capture), these *cannot* be changed
+Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
 
 'If a capture event is ACTIVE, this will be set to TRUE
 Private m_CaptureActive As Boolean
@@ -217,6 +120,11 @@ Private m_CaptureActive As Boolean
 ' details!)  Anyway, the point is that all captured frames are captured and cached as 24-bpp,
 ' but they are upsampled to 32-bpp before getting passed to the APNG encoder.
 Private m_captureDIB24 As pdDIB, m_captureDIB32 As pdDIB
+
+'To improve performance, we cache last-stored frames and compare them against subsequent
+' frames.  Duplicate frames are auto-skipped.  (This is a very common occurrence during
+' a screen capture, and it can save a *lot* of resources.)
+Private m_captureDIB24_2 As pdDIB
 
 'Captured frames are stored as a collection of lz4-compressed arrays.  I don't currently have
 ' access to a DEFLATE library that can compress screen-capture-sized frames (e.g. 1024x768) in
@@ -239,39 +147,118 @@ Private m_Frames() As FrameCapture
 ' a "worst-case" size before capture begins.
 Private m_CompressionBuffer() As Byte
 
+'UI elements on this dialog are automatically reflowed as the window is moved/resized.
+' We track their positioning rects here; these values are populated at Form_Load().
+Private m_numUIElements As Long
+Private Type UI_Data
+    hWnd As Long
+    ptTopLeft As PointAPI
+End Type
+Private m_UIElements() As UI_Data
+
+'Resize and paint events are handled via API, not VB; this helps us support high-DPI displays
+Private WithEvents m_Resize As pdWindowSize
+Attribute m_Resize.VB_VarHelpID = -1
+Private WithEvents m_Painter As pdWindowPainter
+Attribute m_Painter.VB_VarHelpID = -1
+
 Private Sub cmdExit_Click()
     StopTimer_Forcibly
     Unload Me
 End Sub
 
-Private Sub cmdExport_Click()
+Private Sub cmdStart_Click()
     
+    'If a capture is already active, STOP the timer and construct the APNG file
+    If m_CaptureActive Then
+        
+        Capture_Stop
+        
+    'If a capture is NOT active, START the capture timer (after prompting the user for an export path)
+    Else
+        
+        'Prompt for an export filename; if the user cancels the dialog, abandon the capture
+        If (Not GetExportFilename(m_DstFilename)) Then Exit Sub
+        
+        'Update the screen coord version of the transparent window
+        m_CaptureRectScreen = m_CaptureRectClient
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Left)
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Right)
+        
+        'If all preliminary checks passed, activate the capture timer.  Note that this
+        ' *will* forcibly overwrite the file at the destination location, if one exists.
+        Set m_Timer = New pdTimer
+        m_Timer.Interval = Int(1000# / sldFrameRate.Value + 0.5)
+        
+        'Prep the capture DIB
+        Set m_captureDIB24 = New pdDIB
+        m_captureDIB24.CreateBlank m_CaptureRectClient.Right - m_CaptureRectClient.Left, m_CaptureRectClient.Bottom - m_CaptureRectClient.Top, 24, vbBlack, 255
+        
+        'Prep the "last frame" DIB which we'll use to look for duplicate frames
+        Set m_captureDIB24_2 = New pdDIB
+        m_captureDIB24_2.CreateFromExistingDIB m_captureDIB24
+        
+        'Prepare a persistent compression buffer
+        Dim cmpBufferSize As Long
+        cmpBufferSize = Compression.GetWorstCaseSize(m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4)
+        ReDim m_CompressionBuffer(0 To cmpBufferSize - 1) As Byte
+        
+        'Initialize the frame collection
+        m_FrameCount = 0
+        ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As FrameCapture
+        
+        'Initialize the PNG writer
+        Set m_PNG = New pdPNG
+        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
+            
+            'Change the start button to a STOP button
+            cmdStart.Caption = g_Language.TranslateMessage("Stop")
+            
+            'Start the capture timer
+            m_CaptureActive = True
+            m_Timer.StartTimer
+        
+        Else
+            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+        End If
+        
+    End If
+        
+End Sub
+
+'Returns TRUE if a valid destination capture filename is provided; FALSE otherwise
+Private Function GetExportFilename(ByRef dstFilename As String) As Boolean
+
     Dim cSave As pdOpenSaveDialog
     Set cSave = New pdOpenSaveDialog
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim tmpPath As String, tmpFilename As String, sFile As String
-    If (LenB(txtExport.Text) <> 0) Then
-        sFile = txtExport.Text
-        tmpPath = Files.FileGetPath(sFile)
-    Else
-        tmpPath = UserPrefs.GetPref_String("Paths", "ScreenCapture", vbNullString)
+    tmpPath = UserPrefs.GetPref_String("Paths", "ScreenCapture", vbNullString)
+    If (LenB(tmpPath) = 0) Then
+        tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
         tmpFilename = g_Language.TranslateMessage("capture")
         sFile = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png")
     End If
     
     'Present a common dialog to the user
-    If cSave.GetSaveFileName(sFile, , True, "Animated PNG (.png)|*.png", 1, tmpPath, g_Language.TranslateMessage("Export screen capture animation"), "png", Me.hWnd) Then
-        txtExport.Text = sFile
+    GetExportFilename = cSave.GetSaveFileName(sFile, , True, "Animated PNG (.png)|*.png", 1, tmpPath, g_Language.TranslateMessage("Export screen capture animation"), "png", Me.hWnd)
+    If GetExportFilename Then
+        
+        dstFilename = sFile
+        
+        'Save the current export path to the user's preference file
+        UserPrefs.SetPref_String "Paths", "ScreenCapture", dstFilename
+            
     End If
     
-End Sub
+End Function
 
-Private Sub cmdStart_Click()
-    
-    'If a capture is already active, we STOP the timer now
+'Stop the active capture
+Private Sub Capture_Stop()
+
     If m_CaptureActive Then
-        
+    
         'Immediately stop the capture timer
         m_CaptureActive = False
         If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
@@ -280,8 +267,7 @@ Private Sub cmdStart_Click()
         Dim i As Long
         For i = 0 To m_FrameCount - 1
             
-            lblProgress.Caption = g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
-            lblProgress.RequestRefresh
+            g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
             VBHacks.DoEvents_PaintOnly False
             
             'Extract this frame into the capture DIB
@@ -303,83 +289,11 @@ Private Sub cmdStart_Click()
         Next i
         
         'Notify the PNG encoder that the stream has ended
-        lblProgress.Caption = g_Language.TranslateMessage("Capture complete!")
+        'lblProgress.Caption = g_Language.TranslateMessage("Capture complete!")
         If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0, 0
         
         'Reset this button's caption
         cmdStart.Caption = g_Language.TranslateMessage("Start")
-        
-    'If a capture is NOT active, we START the timer now
-    Else
-        
-        'Validate inputs
-        m_DstFilename = Trim$(txtExport.Text)
-        
-        Dim dstFileOK As Boolean
-        dstFileOK = (LenB(m_DstFilename) <> 0)
-        
-        'If the destination file looks okay, see if a file exists at that locale.
-        ' Provide a failsafe overwrite warning.
-        If dstFileOK Then
-            
-            If Files.FileExists(m_DstFilename) Then
-                Dim msgReturn As VbMsgBoxResult
-                msgReturn = PDMsgBox("%1 already exists.  Do you want to overwrite it?", vbYesNo Or vbExclamation Or vbApplicationModal, "Overwrite warning", m_DstFilename)
-                If (msgReturn = vbNo) Then Exit Sub
-            End If
-            
-        End If
-        
-        'If all preliminary checks passed, activate the capture timer.  Note that this
-        ' *will* forcibly overwrite the file at the destination location, if one exists.
-        If dstFileOK Then
-            
-            'Save the current export path to the user's preference file
-            UserPrefs.SetPref_String "Paths", "ScreenCapture", m_DstFilename
-            
-            'Initialize the timer
-            Set m_Timer = New pdTimer
-            m_Timer.Interval = Int(1000# / sldFrameRate.Value + 0.5)
-            
-            'Determine the capture rect
-            With m_CaptureRect
-                .Left = txtCoords(0).Text
-                .Top = txtCoords(1).Text
-                .Right = .Left + txtCoords(2).Text
-                .Bottom = .Top + txtCoords(3).Text
-            End With
-            
-            'Prep the capture DIB
-            Set m_captureDIB24 = New pdDIB
-            m_captureDIB24.CreateBlank m_CaptureRect.Right - m_CaptureRect.Left, m_CaptureRect.Bottom - m_CaptureRect.Top, 24, vbBlack, 255
-            
-            'Prepare a persistent compression buffer
-            Dim cmpBufferSize As Long
-            cmpBufferSize = Compression.GetWorstCaseSize(m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4)
-            ReDim m_CompressionBuffer(0 To cmpBufferSize - 1) As Byte
-            
-            'Initialize the frame collection
-            m_FrameCount = 0
-            ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As FrameCapture
-            
-            'Initialize the PNG writer
-            Set m_PNG = New pdPNG
-            If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
-                
-                'Change the start button to a STOP button
-                cmdStart.Caption = g_Language.TranslateMessage("Stop")
-                
-                'Start the capture timer
-                m_CaptureActive = True
-                m_Timer.StartTimer
-            
-            Else
-                PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
-            End If
-            
-        Else
-            PDMsgBox "You must enter a valid filename.", vbCritical Or vbOKOnly Or vbApplicationModal, "Invalid filename"
-        End If
         
     End If
         
@@ -387,20 +301,134 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Get the last "apng capture" path from the preferences file, and if it doesn't exist,
-    ' default to the user's current "save image" path
-    Dim tempPathString As String
-    tempPathString = UserPrefs.GetPref_String("Paths", "ScreenCapture", vbNullString)
-    If (LenB(tempPathString) = 0) Then
-        tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
-        If (LenB(tempPathString) <> 0) Then tempPathString = tempPathString & g_Language.TranslateMessage("capture") & ".png"
+    If PDMain.IsProgramRunning Then
+        
+        'Mark the underlying window as a layered window
+        Const GWL_EXSTYLE As Long = -20
+        Const WS_EX_LAYERED As Long = &H80000
+        SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
+    
+        'Subclassers are used to raise resize and paitn events
+        Set m_Resize = New pdWindowSize
+        m_Resize.AttachToHWnd Me.hWnd, True
+        Set m_Painter = New pdWindowPainter
+        m_Painter.StartPainter Me.hWnd, True
+        
+        'We'll momentarily build a collection of all UI elements on the form; we use this
+        ' to anchor their position if/when the form is resized.
+        Const MAX_NUM_UIELEMENTS As Long = 16
+        ReDim m_UIElements(0 To MAX_NUM_UIELEMENTS - 1) As UI_Data
+        
+        'Retrieve the current client rect of our window
+        Dim myRect As winRect
+        g_WindowManager.GetClientWinRect Me.hWnd, myRect
+        
+        'Enumerate every control on the form and cache its position offsets relative to the
+        ' *bottom* of this dialog.
+        Dim eControl As Control, tmpRect As winRect
+        For Each eControl In Me.Controls
+            
+            If (m_numUIElements > UBound(m_UIElements)) Then ReDim Preserve m_UIElements(0 To m_numUIElements * 2 - 1) As UI_Data
+            
+            'Get the top-left coordinate of each control in *screen* coordinates
+            g_WindowManager.GetWindowRect_API eControl.hWnd, tmpRect
+            m_UIElements(m_numUIElements).hWnd = eControl.hWnd
+            m_UIElements(m_numUIElements).ptTopLeft.x = tmpRect.x1
+            m_UIElements(m_numUIElements).ptTopLeft.y = tmpRect.y1
+            
+            'Convert that to *client* coordinates
+            g_WindowManager.GetScreenToClient Me.hWnd, m_UIElements(m_numUIElements).ptTopLeft
+            m_UIElements(m_numUIElements).ptTopLeft.y = m_UIElements(m_numUIElements).ptTopLeft.y - (myRect.y2 - myRect.y1)
+            
+            m_numUIElements = m_numUIElements + 1
+            
+        Next eControl
+        
+        'When applying theming, note that we request to paint our window manually;
+        ' normally PD handles this centrally, but this window has special needs.
+        Interface.ApplyThemeAndTranslations Me, False
+        
+        'Ask the system to let us paint at least once before the form is actually displayed
+        ForceWindowRepaint
+        
     End If
+        
+End Sub
+
+'Whenever the form is resized, we must repaint it with the transparent key color
+Private Sub PaintForm(ByVal targetDC As Long)
     
-    'Place that path in the export box with "capture" appended, as the default export path
-    txtExport.Text = tempPathString
-    
-    Interface.ApplyThemeAndTranslations Me
-    
+    If PDMain.IsProgramRunning() Then
+        
+        'Retrieve a client rect and convert it to screen coordinates
+        Dim myRectClient As winRect, myRectScreen As winRect
+        g_WindowManager.GetClientWinRect Me.hWnd, myRectClient
+        myRectScreen = myRectClient
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(myRectScreen.x1)
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(myRectScreen.x2)
+        
+        'Build the backing surface
+        If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
+        m_BackBuffer.CreateBlank myRectClient.x2 - myRectClient.x1, myRectClient.y2 - myRectClient.y1, 24, 0
+        
+        'Wrap a surface object around the newly created back buffer
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundPDDIB m_BackBuffer
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfaceCompositing P2_CM_Overwrite
+        
+        'Paint the background with the default theme background color
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight
+        
+        'Padding is arbitrary; we want it large enough to create a clean border, but not so large
+        ' that we waste precious screen real estate
+        Dim borderPadding As Long
+        borderPadding = 8
+        
+        'Populate the capture rect; this is the region of this window (client coords)
+        ' that will be made transparent, e.g. mouse events will "click through" this region
+        With m_CaptureRectClient
+            
+            'Pad accordingly
+            .Left = myRectClient.x1 + borderPadding
+            .Right = myRectClient.x2 - borderPadding
+            
+            'Same for top/bottom
+            .Top = myRectClient.y1 + borderPadding
+            .Bottom = myRectClient.y1 + sldFrameRate.GetTop - borderPadding
+            
+        End With
+        
+        'Paint the capture rect with the transparent key color
+        cBrush.SetBrushColor KEY_COLOR
+        PD2D.FillRectangleI_FromRectL cSurface, cBrush, m_CaptureRectClient
+        
+        Set cBrush = Nothing
+        
+        'Finally, paint a 1px black border around the capture area
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenColor RGB(0, 0, 0)
+        cPen.SetPenLineJoin P2_LJ_Miter
+        cPen.SetPenWidth 1!
+        PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, m_CaptureRectClient.Left - 1, m_CaptureRectClient.Top - 1, m_CaptureRectClient.Right, m_CaptureRectClient.Bottom
+        Set cPen = Nothing
+        
+        Set cSurface = Nothing
+        
+        'Paint the backbuffer onto the specified DC
+        GDI.BitBltWrapper targetDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+        
+        'Update window attributes to note the key color
+        Const LWA_COLORKEY As Long = &O1&
+        SetLayeredWindowAttributes Me.hWnd, KEY_COLOR, 255, LWA_COLORKEY
+        
+    End If
+
 End Sub
 
 'On timer events, capture the current frame by calling this function
@@ -416,27 +444,51 @@ Private Sub CaptureFrameNow()
         Dim capTime As Currency, testTime As Currency
         capTime = VBHacks.GetHighResTimeEx()
         
-        'Capture the frame in question into a pdDIB object
-        ScreenCapture.GetPartialDesktopAsDIB m_captureDIB24, m_CaptureRect
+        'Capture the frame in question into a pdDIB object; note that we alternate
+        ' which DIB we use for capture; this allows us to compare back-to-back frames
+        ' in real-time without need for a manual copy op
+        Dim captureTarget As pdDIB
+        If ((m_FrameCount And &H1&) <> 0) Then
+            Set captureTarget = m_captureDIB24_2
+        Else
+            Set captureTarget = m_captureDIB24
+        End If
         
-        'Compress the captured frame into the temporary frame buffer
-        Dim cmpSize As Long
-        cmpSize = UBound(m_CompressionBuffer) + 1
-        Compression.CompressPtrToPtr VarPtr(m_CompressionBuffer(0)), cmpSize, m_captureDIB24.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4
+        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen
         
-        'Allocate memory for this frame and store all data
-        With m_Frames(m_FrameCount)
-            .fcTimeStamp = capTime
-            .frameSizeOrig = m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight
-            .frameSizeCompressed = cmpSize
-            ReDim .frameData(0 To cmpSize - 1) As Byte
-            CopyMemoryStrict VarPtr(.frameData(0)), VarPtr(m_CompressionBuffer(0)), cmpSize
-        End With
+        'Before saving this frame, check for duplicate frames.  This is very common during
+        ' a screen capture event, and we can save a lot of memory by skipping these frames.
+        ' (Note that the way we track time between frames handles these skips naturally,
+        ' no extra work required!)
+        Dim keepFrame As Boolean
+        keepFrame = (m_FrameCount = 0)
         
-        PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
+        If (Not keepFrame) Then
+            keepFrame = Not VBHacks.MemCmp(m_captureDIB24.GetDIBPointer, m_captureDIB24_2.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)
+        End If
         
-        'Increment frame count
-        m_FrameCount = m_FrameCount + 1
+        If keepFrame Then
+            
+            'Compress the captured frame into the temporary frame buffer
+            Dim cmpSize As Long
+            cmpSize = UBound(m_CompressionBuffer) + 1
+            Compression.CompressPtrToPtr VarPtr(m_CompressionBuffer(0)), cmpSize, captureTarget.GetDIBPointer, m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4
+            
+            'Allocate memory for this frame and store all data
+            With m_Frames(m_FrameCount)
+                .fcTimeStamp = capTime
+                .frameSizeOrig = m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight
+                .frameSizeCompressed = cmpSize
+                ReDim .frameData(0 To cmpSize - 1) As Byte
+                CopyMemoryStrict VarPtr(.frameData(0)), VarPtr(m_CompressionBuffer(0)), cmpSize
+            End With
+            
+            PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
+            
+            'Increment frame count
+            m_FrameCount = m_FrameCount + 1
+        
+        End If
         
     End If
 
@@ -446,6 +498,64 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Forcibly stop the current capture (if any)
     StopTimer_Forcibly
+    
+End Sub
+
+'When the system sends a WM_ERASEBKGND message, do a quick fill with the current theme
+' background color; this prevents white flickering along form edges during a resize.
+Private Sub m_Painter_EraseBkgnd()
+    
+    Dim tmpDC As Long
+    tmpDC = m_Painter.GetPaintStructDC()
+    
+    Dim tmpRect As winRect
+    g_WindowManager.GetClientWinRect Me.hWnd, tmpRect
+    
+    With tmpRect
+        GDI.FillRectToDC tmpDC, .x1, .y1, .x2 - .x1, .y2 - .y1, g_Themer.GetGenericUIColor(UI_Background)
+    End With
+    
+End Sub
+
+'Respond to all paint messages, obviously!
+Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    Dim tmpDC As Long
+    tmpDC = m_Painter.GetPaintStructDC()
+    PaintForm tmpDC
+End Sub
+
+Private Sub m_Resize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+
+    'Before resizing, ensure we are *not* capturing - if we are, cancel everything
+    StopTimer_Forcibly
+    
+    'Make sure all UI elements were initialized correctly
+    If (m_numUIElements > 0) Then
+    
+        'Reposition all controls according to their original offset
+        Dim myRect As winRect
+        g_WindowManager.GetClientWinRect Me.hWnd, myRect
+        
+        'Various SetWindowPos constants
+        Const SWP_NOACTIVATE As Long = &H10&
+        Const SWP_NOSIZE As Long = &H1&
+        Const SWP_NOZORDER As Long = &H4&
+
+        Dim wFlags As Long
+        wFlags = SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOZORDER
+        
+        'Enumerate every control on the form and cache its position offsets relative to the
+        ' *bottom* of this dialog.
+        Dim i As Long, uiRect As winRect
+        For i = 0 To m_numUIElements - 1
+            g_WindowManager.GetWindowRect_API m_UIElements(i).hWnd, uiRect
+            g_WindowManager.SetWindowPos_API m_UIElements(i).hWnd, 0&, m_UIElements(i).ptTopLeft.x, myRect.y2 + m_UIElements(i).ptTopLeft.y, 0&, 0&, wFlags
+        Next i
+        
+        'Force a repaint
+        ForceWindowRepaint
+        
+    End If
     
 End Sub
 
@@ -475,4 +585,10 @@ Private Sub StopTimer_Forcibly()
         
     End If
     
+End Sub
+
+'This dialog uses a lazy window repainter; forced repaints simply invalidate the window
+Private Sub ForceWindowRepaint()
+    Const RDW_INVALIDATE As Long = &H1
+    RedrawWindow Me.hWnd, 0&, 0&, RDW_INVALIDATE
 End Sub

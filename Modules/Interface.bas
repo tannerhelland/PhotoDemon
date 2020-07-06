@@ -1226,7 +1226,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handleFormPainting As Boolean = True)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
@@ -1237,7 +1237,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form)
     
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
-    g_Themer.AddWindowPainter dstForm.hWnd
+    If handleFormPainting Then g_Themer.AddWindowPainter dstForm.hWnd
     dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     

@@ -321,14 +321,10 @@ End Sub
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
 
     If (uiMsg = WM_ERASEBKGND) Then
-         ISubclass_WindowMsg = 1
+        ISubclass_WindowMsg = 1
     ElseIf (uiMsg = WM_NCDESTROY) Then
-        
         VBHacks.StopSubclassing hWnd, Me
-        
-        'Allow VB to continue with its own internal teardown process
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
-        
     Else
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If

@@ -14,21 +14,26 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flicker-Free Window Painter class
 'Copyright 2014-2020 by Tanner Helland
-'Created: 20/October/14  (but built from many parts existing earlier)
+'Created: 20/October/14 (built from parts existing much earlier)
 'Last updated: 06/February/17
 'Last update: migrate to safer subclassing technique
 '
-'Now that PD provides so many of its own user-controls, we have to do a lot of manual window painting.  Supporting the
-' full spectrum of Windows versions (particularly XP), theme settings (including accessibility themes), window settings
-' (WS_CLIPCHILDREN, WS_EX_LAYERED, WS_EX_COMPOSITED all have annoying quirks) is a nightmare, and because each new
-' version of Windows introduces new headaches, I've abstracted all basic UC rendering and subclassing into this class.
-' Any updates here will automatically flow to PD's many user controls, hopefully saving me headaches down the road.
+'Now that PD provides so many of its own user-controls, we have to do a lot of manual
+' window painting.  Supporting the full spectrum of Windows versions (particularly XP),
+' theme settings (including accessibility themes), window settings (WS_CLIPCHILDREN,
+' WS_EX_LAYERED, WS_EX_COMPOSITED all have annoying quirks) is a nightmare, and because
+' each new version of Windows introduces new headaches, I've abstracted basic WM_PAINT
+' message pumping into this class.  This simplifies the process of handling paint vs
+' erase messages in a safe way, and this class can also be used on things like VB
+' forms to simplify rendering.
 '
-'Note that this class does not actually manage the window buffer.  That is left to each user control to handle, as
-' different controls have different needs, and it's not possible to use a "one shoe fits all" approach.  (For example,
-' some controls - like the slider/text combo - maintain separate buffers for different control elements.)  This class is
-' simply used to handle all paint event subclassing, and to raise a single "paint" event with the relevant update rect
-' attached, and all validation/invalidation handled automatically.
+'Note that this class does not actually manage a window buffer.  That is left to each
+' underlying UI element to handle, as different controls have different needs, and it's
+' not possible to use a "one shoe fits all" approach.  (For example, some controls -
+' like the slider/text combo - maintain separate buffers for different control elements.)
+' This class is simply used to handle paint event subclassing, and to raise a single
+' "paint" event with the relevant update rect attached, and all validation/invalidation
+' handled automatically.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -192,7 +197,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'Deliberately skip DefSubclassProc, as we've handled all painting
         ISubclass_WindowMsg = 0
-                
+        
     ElseIf (uiMsg = WM_ERASEBKGND) Then
         
         'Controls that do not maintain persistent back buffers need to respond to erase messages.
