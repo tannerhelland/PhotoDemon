@@ -45,7 +45,6 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoW" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
 Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoW" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
@@ -556,75 +555,6 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     
 End Sub
 
-
-Private Function AlphaIconToBmp(ByVal IconHandle As Long, ByRef RefBmp As Long) As Long
-    
-    Dim tRECT As RECT
-    Dim tICONINFO As ICONINFO
-    Dim tBitmapData As BitmapData
-    Dim lPixelFormat As Long
-    Dim sngWidth As Single
-    Dim sngHeight As Single
-
-    If GetIconInfo(IconHandle, tICONINFO) <> 0 Then
-
-        If GdipCreateBitmapFromHBITMAP(tICONINFO.hbmColor, 0&, RefBmp) = 0 Then
-
-            If GdipGetImagePixelFormat(RefBmp, lPixelFormat) = 0 Then
-
-                If GdipGetImageDimension(RefBmp, sngWidth, sngHeight) = 0 Then
-
-                    With tRECT
-                        .Right = CLng(sngWidth)
-                        .Bottom = CLng(sngHeight)
-                    End With
-
-                    If GdipBitmapLockBits(RefBmp, tRECT, ImageLockModeRead, lPixelFormat, tBitmapData) = 0 Then
-                        
-                        Call GdipCreateBitmapFromScan0(tRECT.Right, tRECT.Bottom, tBitmapData.Stride, PixelFormat32bppARGB, ByVal tBitmapData.Scan0, AlphaIconToBmp)
-
-                        Call GdipBitmapUnlockBits(RefBmp, tBitmapData)
-                            
-                    End If
-                    
-                End If
-                
-            End If
-            
-        End If
-
-        Call DeleteObject(tICONINFO.hbmMask)
-        Call DeleteObject(tICONINFO.hbmColor)
-        
-    End If
-    
-End Function
-
-
-Friend Function AddIconFromHandle(ByVal hIcon As Long, Optional bGhosted As Boolean) As Boolean
-
-    Dim hBmp As Long
-    Dim hImage As Long
-    
-    On Local Error GoTo AddIconFromHandle_Error
-
-        
-    If hIcon <> 0 Then
-        If IsAlphaIcon(hIcon) Then
-           hImage = AlphaIconToBmp(hIcon, hBmp)
-        Else
-            GdipCreateBitmapFromHICON hIcon, hImage
-        End If
-    End If
-
-    AddIconFromHandle = pvAddImagen(hImage, bGhosted)
-    
-    If hBmp <> 0 Then GdipDisposeImage hBmp
-
-AddIconFromHandle_Error:
-    
-End Function
-
 'Add a menu image from a source file.  All GDI+ formats are supported (PNG, JPEG, etc).
 ' MODIFIED BY TANNER: PhotoDemon's internal formats are preferentially tested before rolling over to GDI+.
 Friend Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
@@ -672,44 +602,6 @@ Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
 AddImageFromDIB_Error:
     PDDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
     
-End Function
-
-Friend Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
-    
-    On Local Error GoTo AddImageFromStream_Error
-    
-    Dim hImage As Long
-    Dim hIcon As Long
-    Dim hBmp As Long
-
-    If Not IsArrayDim(VarPtrArray(bvData)) Then Exit Function
-
-    If ((bvData(2) = vbResIcon) Or (bvData(2) = vbResCursor)) Then
-    
-        hIcon = LoadIconFromStream(bvData)
-        
-        If hIcon = 0 Then Exit Function
-        
-        If IsAlphaIcon(hIcon) Then
-            hImage = AlphaIconToBmp(hIcon, hBmp)
-        Else
-            GdipCreateBitmapFromHICON hIcon, hImage
-        End If
-        
-        DestroyIcon hIcon
-    Else
-        
-        LoadImageFromStream bvData, hImage
-    
-    End If
-    
-    AddImageFromStream = pvAddImagen(hImage, bGhosted)
-    
-    If hBmp <> 0 Then GdipDisposeImage hBmp
-
-
-AddImageFromStream_Error:
-
 End Function
 
 Private Function pvAddImagen_Tanner(ByRef srcDIB As pdDIB) As Boolean
@@ -940,101 +832,6 @@ Private Function KeyExists(ByRef sKey As String) As Boolean
 
 HandleError:
     Err.Clear
-End Function
-
-Private Function IsAlphaIcon(ByVal IconHandle As Long) As Boolean
-
-    Dim tARGB() As ARGB
-    Dim tRECT As RECT
-    Dim tICONINFO As ICONINFO
-    Dim tBitmapData As BitmapData
-    Dim lPixelFormat As Long
-    Dim lngX As Long
-    Dim lngY As Long
-    Dim sngWidth As Single
-    Dim sngHeight As Single
-    Dim lngArgbBmp As Long
-    Dim lngColorBmp As Long
-    Dim bolRet As Boolean
-
-    If GetIconInfo(IconHandle, tICONINFO) <> 0 Then
-        
-        If tICONINFO.hbmColor <> 0 Then
-
-            If GdipCreateBitmapFromHBITMAP(tICONINFO.hbmColor, 0&, lngColorBmp) = 0 Then
-
-                If GdipGetImagePixelFormat(lngColorBmp, lPixelFormat) = 0 Then
-
-                    If lPixelFormat <> PixelFormat32bppRGB Then
-
-                        bolRet = False
-                        
-                    Else
-
-                        If GdipGetImageDimension(lngColorBmp, sngWidth, sngHeight) = 0 Then
-                            
-                            With tRECT
-                                .Right = CLng(sngWidth)
-                                .Bottom = CLng(sngHeight)
-                            End With
-
-                            ReDim tARGB(tRECT.Right - 1&, tRECT.Bottom - 1&)
-                            
-                            With tBitmapData
-                                .Scan0 = VarPtr(tARGB(0&, 0&))
-                                .Stride = 4& * tRECT.Right
-                            End With
-                            
-                            If GdipBitmapLockBits(lngColorBmp, tRECT, ImageLockModeRead Or ImageLockModeUserInputBuf, lPixelFormat, tBitmapData) = 0 Then
-
-                                For lngY = 0 To tBitmapData.Height - 1
-                                    For lngX = 0 To tBitmapData.Width - 1
-                                    
-                                        If tARGB(lngX, lngY).Alpha > 0 Then
-                                            If tARGB(lngX, lngY).Alpha < 255 Then
-                                            
-                                                bolRet = True
-                                                Exit For
-                                                
-                                            End If
-                                        End If
-                                        
-                                    Next lngX
-
-                                    If bolRet Then Exit For
-                                    
-                                Next lngY
-                                
-                                Call GdipDisposeImage(lngArgbBmp)
-
-                                Call GdipBitmapUnlockBits(lngColorBmp, tBitmapData)
-                                    
-                            End If
-                            
-                        End If
-                        
-                    End If
-                    
-                End If
-                
-                Call GdipDisposeImage(lngColorBmp)
-                
-            End If
-            
-            Call DeleteObject(tICONINFO.hbmColor)
-        
-        End If
-        
-        Call DeleteObject(tICONINFO.hbmMask)
-        
-    Else
-    
-        bolRet = False
-        
-    End If
-
-    IsAlphaIcon = bolRet
-    
 End Function
 
 Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long

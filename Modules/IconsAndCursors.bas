@@ -48,7 +48,7 @@ End Enum
     Private Const DI_COMPAT = &H4, DI_DEFAULTSIZE = &H8, DI_IMAGE = &H2, DI_MASK = &H1, DI_NOMIRROR = &H10, DI_NORMAL = &H3
 #End If
 
-Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal iStepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As DrawIconEx_Flags) As Long
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As DrawIconEx_Flags) As Long
 
 'System constants for retrieving system default icon sizes and related metrics
 Private Const SM_CXICON As Long = 11
@@ -854,7 +854,11 @@ Private Function GetHandAndResizeCursor() As Long
         
         'Make a cursor from the composited DIB
         GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)
-    
+        
+        'Make sure no ddbs are leaked; GetIconInfo allocates two of 'em!
+        If (handInfo.hbmColor <> 0) Then DeleteObject handInfo.hbmColor
+        If (handInfo.hbmMask <> 0) Then DeleteObject handInfo.hbmMask
+        
     Else
         PDDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
     End If

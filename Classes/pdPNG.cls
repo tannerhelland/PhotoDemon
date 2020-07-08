@@ -2998,7 +2998,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
     If (m_FrameCount = 0) Then
         
         'Filter the full DIB
-        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterFast, False, False)
+        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterOptimal, False, False)
         
         'Pass the full DIB as-is out to the IDAT writer
         If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 1, False)

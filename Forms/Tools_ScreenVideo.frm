@@ -270,8 +270,9 @@ Private Sub Capture_Stop()
             g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
             VBHacks.DoEvents_PaintOnly False
             
-            'Extract this frame into the capture DIB
+            'Extract this frame into the capture DIB, then immediately free its compressed memory
             Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+            Erase m_Frames(i).frameData
             
             'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
             If (m_captureDIB32 Is Nothing) Then
@@ -307,8 +308,8 @@ Private Sub Form_Load()
         Const GWL_EXSTYLE As Long = -20
         Const WS_EX_LAYERED As Long = &H80000
         SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
-    
-        'Subclassers are used to raise resize and paitn events
+        
+        'Subclassers are used for resize and paint events
         Set m_Resize = New pdWindowSize
         m_Resize.AttachToHWnd Me.hWnd, True
         Set m_Painter = New pdWindowPainter
@@ -350,6 +351,12 @@ Private Sub Form_Load()
         
         'Ask the system to let us paint at least once before the form is actually displayed
         ForceWindowRepaint
+        
+        'Mark this window as "always on-top"
+        Const HWND_TOPMOST As Long = -1&
+        Const SWP_NOMOVE As Long = &H2&
+        Const SWP_NOSIZE As Long = &H1&
+        g_WindowManager.SetWindowPos_API Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE
         
     End If
         
@@ -454,7 +461,7 @@ Private Sub CaptureFrameNow()
             Set captureTarget = m_captureDIB24
         End If
         
-        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen
+        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, True
         
         'Before saving this frame, check for duplicate frames.  This is very common during
         ' a screen capture event, and we can save a lot of memory by skipping these frames.

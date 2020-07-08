@@ -17,10 +17,43 @@ Attribute VB_Name = "ScreenCapture"
 
 Option Explicit
 
-'Various API calls required for screen capturing
+'Capturing the cursor as part of a screen capture is non-trivial; extra APIs are required
+Private Enum W32_CursorState
+    CursorHidden = 0
+    CursorShowing = 1
+    CursorSuppressed = 2    'Win8+ only
+End Enum
+
+#If False Then
+    Private Const CursorHidden = 0, CursorShowing = 1, CursorSuppressed = 2
+#End If
+
+Private Type W32_IconInfo
+    fIconBool As Long
+    xHotspot As Long
+    yHotspot As Long
+    hbmMask As Long
+    hbmColor As Long
+End Type
+
+Private Type W32_CursorInfo
+    cbSize As Long
+    wFlags As W32_CursorState
+    hCursor As Long
+    ptX As Long
+    ptY As Long
+End Type
+
+'Various API calls required for screen capturing and cursor rendering
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByVal ptrToObject As Long) As Long
+
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetCursorInfo Lib "user32" (ByVal ptrToCursorInfo As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByVal ptrToIconInfo As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -163,7 +196,7 @@ End Sub
 
 'Use this function to return a subsection of the current desktop in DIB format.
 ' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
-Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL)
+Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL, Optional ByVal includeCursor As Boolean = False)
     
     'Make sure the target DIB is the correct size
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -182,6 +215,48 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL)
     
     'Enforce normal alpha on the result
     If (dstDIB.GetDIBColorDepth = 32) Then dstDIB.ForceNewAlpha 255
+    
+    'If the caller wants the cursor included in the capture, we have extra work to do
+    If includeCursor Then
+    
+        'Retrieve cursor info from the system
+        Dim ci As W32_CursorInfo
+        ci.cbSize = LenB(ci)
+        If (GetCursorInfo(VarPtr(ci)) <> 0) Then
+            
+            'Ensure cursor is visible
+            If (ci.wFlags = CursorShowing) Then
+            
+                'Cursor is visible; use the cursor handle to retrieve a matching icon struct.
+                ' (We need this so we can determine cursor hotspots, which may not be [0, 0].)
+                Const DI_NORMAL As Long = 3
+                Dim ii As W32_IconInfo
+                If (GetIconInfo(ci.hCursor, VarPtr(ii)) <> 0) Then
+                
+                    'Mask rendering for cursors can be surprisingly complicated, especially when
+                    ' considering mono vs color (color masks are optional for mono and may not exist!)
+                    ' Rather than use a manual renderer like MaskBlt, just use the system icon renderer
+                    ' and let it sort out any messy details for us.  (Note that this solution has *NOT*
+                    ' been tested on high-DPI displays.)
+                    DrawIconEx dstDIB.GetDIBDC, (ci.ptX - srcRect.Left) - ii.xHotspot, (ci.ptY - srcRect.Top) - ii.yHotspot, ci.hCursor, 0&, 0&, 0&, 0&, DI_NORMAL
+                    
+                    'GetIconInfo allocates up to two bitmaps; these *must* be deleted before exiting!
+                    ' (Note, however, that these *can* be 0, particularly for hbmColor - it is not
+                    '  required for monochrome cursors like the traditional I-beam text cursor, so we
+                    '  must check for existence before blindly deleting 'em.)
+                    If (ii.hbmColor <> 0) Then DeleteObject ii.hbmColor
+                    If (ii.hbmMask <> 0) Then DeleteObject ii.hbmMask
+                
+                'If GetIconInfo failed (this outcome is *not* expected), assume a hotspot of [0, 0]
+                Else
+                    DrawIconEx dstDIB.GetDIBDC, (ci.ptX - srcRect.Left), (ci.ptY - srcRect.Top), ci.hCursor, 0&, 0&, 0&, 0&, DI_NORMAL
+                End If
+            
+            End If
+        
+        End If
+    
+    End If
     
 End Sub
 

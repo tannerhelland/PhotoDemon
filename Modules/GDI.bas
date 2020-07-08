@@ -120,8 +120,8 @@ Public Function GetBitmapHeaderFromDC(ByVal srcDC As Long) As GDI_Bitmap
 End Function
 
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
-Public Function GetMemoryDC() As Long
-    GetMemoryDC = CreateCompatibleDC(0&)
+Public Function GetMemoryDC(Optional ByVal compatDC As Long = 0&) As Long
+    GetMemoryDC = CreateCompatibleDC(compatDC)
     If (GetMemoryDC <> 0) Then
         g_DCsCreated = g_DCsCreated + 1
     Else
