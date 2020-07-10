@@ -121,9 +121,11 @@ Private m_CaptureActive As Boolean
 ' but they are upsampled to 32-bpp before getting passed to the APNG encoder.
 Private m_captureDIB24 As pdDIB, m_captureDIB32 As pdDIB
 
-'To improve performance, we cache last-stored frames and compare them against subsequent
+'To improve performance, we cache the last-captured frame and compare it against subsequent
 ' frames.  Duplicate frames are auto-skipped.  (This is a very common occurrence during
-' a screen capture, and it can save a *lot* of resources.)
+' a screen capture, and it can save a *lot* of resources.)  The capture code automatically
+' switches between two separate capture DIBs; this provides a fast way to perform duplicate
+' detection within a fixed memory budget.
 Private m_captureDIB24_2 As pdDIB
 
 'Captured frames are stored as a collection of lz4-compressed arrays.  I don't currently have

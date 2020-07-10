@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.2020</langversion>
+<langversion>8.0.2047</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4960,7 +4960,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>original file settings</original>
-<translation></translation>
+<translation>Original-Dateieinstellungen</translation>
 </phrase>
 
 <phrase>

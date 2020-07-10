@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3470</langversion>
+<langversion>6.8.3471</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4930,6 +4930,11 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>original file settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>auto</original>
 <translation>kocsi</translation>
 </phrase>
@@ -4937,11 +4942,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <phrase>
 <original>grayscale</original>
 <translation>szürkeárnyalatos</translation>
-</phrase>
-
-<phrase>
-<original>original file settings</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -6450,6 +6450,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated screen capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Test</original>
 <translation>Teszt</translation>
 </phrase>
@@ -6689,7 +6694,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Nyelv módosítása sikeres volt.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 360 phrases. 166 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
+<!-- MainWindow.frm contains 361 phrases. 166 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15985,10 +15990,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2651</phrasecount>
+<phrasecount>2652</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5042 phrases. -->
-<!-- 2391 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12081 total words. -->
+<!-- As of this build, PhotoDemon contains 5043 phrases. -->
+<!-- 2391 are duplicates, so only 2652 unique phrases have been written to file. -->
+<!-- These 2652 phrases contain approximately 12084 total words. -->
 
 </pdData>
