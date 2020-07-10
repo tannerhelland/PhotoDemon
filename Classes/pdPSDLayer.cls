@@ -15,24 +15,25 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2020 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 18/February/19
-'Last update: minor modifications to ensure "optimal" PackBits encoding.  I don't think it's mathematically
-'             possible to produce smaller PackBits runs than my implementation - as evidenced by PD's exported
-'             PSD files being smaller than all 3rd-party PSD encoders and even PSDs from Photoshop itself -
-'             but I would genuinely welcome examples to the contrary!
+'Last updated: 09/July/20
+'Last update: retrieve section boundary data when parsing layer resources; these can include
+'             info on layer groups (start/stop markers) which is important for making sure
+'             child layers inherit parent group visibility state, even though PD doesn't fully
+'             support layers (yet).  Thank you to @Fivavoa for reporting this on GitHub.
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
 ' PhotoDemon itself, refer to the pdLayer class.
 '
-'Unless otherwise noted, all code in this class is my original work.  It is based off the "official" Adobe spec
-' at this URL (link good as of January 2019):
+'Unless otherwise noted, all code in this class is my original work.  It is based off the
+' "official" Adobe spec at this URL (link good as of January 2019):
 ' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
 '
-'Adobe's custom "zip-with-prediction" compression mode is currently undocumented in the PSD spec.  To my knowledge,
-' the first 3rd-party to reverse-engineer it was (were?) the authors of Paint.NET's PSD plugin.  Their MIT-licensed
-' work was used as a reference for this class's "zip-with-prediction" decoder.  Many thanks to those authors;
-' their reference implementation is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
+'Adobe's custom "zip-with-prediction" compression mode is currently undocumented in the PSD spec.
+' To my knowledge, the first 3rd-party to reverse-engineer it was (were?) the authors of
+' Paint.NET's PSD plugin.  Their MIT-licensed work was used as a reference for this class's
+' "zip-with-prediction" decoder.  Many thanks to those authors; their reference implementation is
+' available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -88,6 +89,17 @@ End Enum
     Private Const ccRaw = 0, ccPackBits = 1, ccZip = 2, ccZipWithPrediction = 3
 #End If
 
+Public Enum PSD_LayerGroupState
+    lgs_None = 0
+    lgs_GroupStartOpen = 1
+    lgs_GroupStartClosed = 2
+    lgs_GroupEnd = 3
+End Enum
+
+#If False Then
+    Private Const lgs_None = 0, lgs_GroupStartOpen = 1, lgs_GroupStartClosed = 2, lgs_GroupEnd = 3
+#End If
+
 Private Type PSD_ChannelInfo
     ciID As PSD_ChannelID
     ciSizeL As Long
@@ -132,7 +144,7 @@ Private m_LayerInfo As pdPSDLayerInfo
 Private m_BlendMode As PD_BlendMode
 
 Private m_Opacity As Byte, m_Clipping As Byte, m_Flags As Byte, m_Visible As Boolean, m_LenExtraData As Long
-Private m_LayerNameANSI As String, m_LayerNameUnicode As String
+Private m_LayerNameANSI As String, m_LayerNameUnicode As String, m_GroupState As PSD_LayerGroupState
 
 'The final result of all channel decoding is this pdDIB object, ready for attachment to a pdLayer.
 Private m_LayerDIB As pdDIB
@@ -234,6 +246,16 @@ End Function
 
 Friend Function HasAlpha() As Boolean
     HasAlpha = m_LayerHasAlpha
+End Function
+
+'If this layer marks the beginning of a layer group, this will return TRUE.
+Friend Function IsLayerGroupStart() As Boolean
+    IsLayerGroupStart = ((m_GroupState = lgs_GroupStartOpen) Or (m_GroupState = lgs_GroupStartClosed))
+End Function
+
+'If this layer marks the end of a layer group, this will return TRUE.
+Friend Function IsLayerGroupEnd() As Boolean
+    IsLayerGroupEnd = (m_GroupState = lgs_GroupEnd)
 End Function
 
 'After channel data has been decoded (decompressed), it needs to be assembled into a final usable image.
@@ -2515,6 +2537,11 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     ' 4-char signature, 4-char ID code, length, then some variable amount of data.
     If (srcStream.GetPosition() < finalPointerPos) Then ParseLayer = m_LayerInfo.ParseAdditionalLayerInfo(srcStream, warningStack, imageIsPSB, finalPointerPos)
     
+    'Some layer states (e.g. belonging to a group) are optional; set any of these optional parameters
+    ' to default values in advance.  We'll overwrite their values if we encounter the relevant
+    ' optional chunk(s).
+    m_GroupState = lgs_None
+    
     'Search additional info chunks for settings useful to PD
     If (m_LayerInfo.GetInfoCount > 0) Then
         
@@ -2539,6 +2566,47 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
             tmpStream.StopStream
                     
             If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Layer name (Unicode): " & m_LayerNameUnicode
+            
+        End If
+        
+        'Layer group data is tricky; PD doesn't support groups (at present), but we still want to
+        ' properly handle things like group visibility when importing PSD documents.  Plugins in
+        ' other software that isn't group-aware (e.g. PDN) list group start/stop layers as
+        ' blank layers... maybe there's wisdom in this?
+        '
+        'Anyway, we parse group state if it exists, but we do not construct actual groups from
+        ' the data.
+        '
+        'Note that the PSD spec only lists "lsct" as a valid marker for this data, but files
+        ' "in the wild" (perhaps from older PS versions?) have also used "lsdk" with the same
+        ' data arrangement.  We cover both cases "just in case".
+        If m_LayerInfo.DoesKeyExist("lsct") Or m_LayerInfo.DoesKeyExist("lsdk") Then
+            
+            'Group data exists; set up a stream around it
+            If m_LayerInfo.DoesKeyExist("lsct") Then
+                Set tmpStream = m_LayerInfo.GetStreamForKey("lsct")
+            Else
+                Set tmpStream = m_LayerInfo.GetStreamForKey("lsdk")
+            End If
+            
+            'The first four bytes describe "section divider type"; from the spec:
+            ' 4 possible values, 0 = any other type of layer, 1 = open "folder",
+            ' 2 = closed "folder", 3 = bounding section divider, hidden in the UI
+            m_GroupState = tmpStream.ReadLong_BE()
+            If ((m_GroupState < 0) Or (m_GroupState > 3)) Then m_GroupState = lgs_None
+            
+            'If the chunk is 12-bytes or longer, then it encodes the following:
+            '4-byte signature: '8BIM'
+            '4-byte "key": see blend mode keys in <Layer records>.
+            If (tmpStream.GetStreamSize >= 12) Then
+                If (tmpStream.ReadString_ASCII(4) = "8BIM") Then
+                    'Next four bytes contain group blend mode.
+                    ' We don't currently retrieve this data.
+                End If
+            End If
+            
+            'Important to free stream, as it unsafely wraps the underlying chunk data
+            tmpStream.StopStream
             
         End If
         

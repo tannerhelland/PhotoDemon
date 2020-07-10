@@ -889,9 +889,37 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     Dim tmpLayer As pdLayer, numUsableLayers As Long, newLayerID As Long
     numUsableLayers = 0
     
-    'Now we need to iterate through layers and convert their data from PSD format to PD format
+    'Layer groups are not currently supported by PD, but we do use group data to enable group
+    ' visibility/invisibility when loading groups.  Note that PSDs support nested layer groups,
+    ' so a layer can be within e.g. a whole bunch of parent groups with varying depths.
+    ' I currently use a formula where if *any* of the current parent layers are invisible,
+    ' the current layer gets hidden too.  This produces the most "useful-looking" document
+    ' (in lieu of actually supporting groups ourselves, ha).
+    Dim curGroupDepth As Long
+    curGroupDepth = 0
+    
+    'As of CS5, maximum nesting depth is 10.  PD covers larger depths than this, but we
+    ' initialize our visibility tracker to 10 levels to start. (Source, good as of July 2020:
+    ' https://feedback.photoshop.com/photoshop_family/topics/photoshop_please_remove_the_depth_limitation_on_nested_layer_groups_in_photoshop_cs4_and_earlier )
+    Const MAX_GROUP_DEPTH As Long = 10
+    Dim groupVisibility() As Boolean
+    ReDim groupVisibility(0 To MAX_GROUP_DEPTH - 1) As Boolean
+    
+    'If any group *above* the current one is invisible, the current layer's visibility flag
+    ' gets overriden with the parent group.  This is my preferred behavior as it ensures that
+    ' layers belonging to invisible groups are not visible by default in the image PD constructs.
+    ' (We update this flag whenever group depth changes.)
+    Dim curGroupVisibility As Boolean
+    curGroupVisibility = True
+    
+    'Now we need to iterate through layers and convert their data from PSD format to PD format.
+    ' Note that we deliberately iterate layers *backward*.  I made this change because we need
+    ' to iterate layer group *start* markers before the layers in that group, and Adobe lists
+    ' groups as layers in top-down order (e.g. the start of a layer group appears "above" all
+    ' members of that group).  This allows us to make sure children layers properly inherit
+    ' group visibility state, at least until PD properly supports layer groups.
     Dim i As Long
-    For i = 0 To Abs(m_numOfLayers) - 1
+    For i = Abs(m_numOfLayers) - 1 To 0 Step -1
         
         If m_Layers(i).DoesLayerHaveUsableData() Then
             
@@ -947,9 +975,57 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                 
             End If
             
+            'If we're inside a layer group, override the current layer visibility with its
+            ' parent group visibility.
+            If (curGroupDepth > 0) Then
+                If (Not curGroupVisibility) Then tmpLayer.SetLayerVisibility False
+            End If
+            
+        'If this layer doesn't contain pixel data, it may be a group marker.  Set group
+        ' flags accordingly.
+        Else
+            
+            'When a new layer group, increment our group depth counter
+            If m_Layers(i).IsLayerGroupStart() Then
+                If (curGroupDepth > UBound(groupVisibility)) Then ReDim Preserve groupVisibility(0 To curGroupDepth * 2 - 1) As Boolean
+                groupVisibility(curGroupDepth) = m_Layers(i).GetLayerVisibility()
+                curGroupVisibility = curGroupVisibility And groupVisibility(curGroupDepth)
+                curGroupDepth = curGroupDepth + 1
+            End If
+            
+            'Look for the end of the current layer group (if any)
+            If m_Layers(i).IsLayerGroupEnd() Then
+                
+                'Decrement depth counter, with a failsafe check for malformed PSDs
+                curGroupDepth = curGroupDepth - 1
+                If (curGroupDepth < 0) Then
+                    curGroupDepth = 0
+                    m_Warnings.AddString "malformed layer groups found; curGroupDepth below zero!"
+                End If
+                
+                'Reset the group visibility flag
+                curGroupVisibility = True
+                
+                'If we're still inside a group, look for *any* invisibility flags above us.
+                ' If any are found, set the current visibility flag to FALSE.
+                If (curGroupDepth > 0) Then
+                    Dim gvIndex As Long
+                    For gvIndex = 0 To curGroupDepth - 1
+                        If (Not groupVisibility(gvIndex)) Then
+                            curGroupVisibility = False
+                            Exit For
+                        End If
+                    Next gvIndex
+                End If
+                
+            End If
+            
         End If
         
     Next i
+    
+    'Because layers were loaded in top-down order, we now need to *reverse* the layer stack
+    dstImage.ReverseLayerOrder
     
     'Make sure we were able to generate at least one usable layer.
     If (numUsableLayers <= 0) Or (dstImage.GetNumOfLayers <= 0) Then
@@ -1448,6 +1524,47 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                                 
                                 If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "PSD version info is: " & versionNumber & ", " & hasRealMergedData & ", " & fileVersion & ", " & writerName & ", " & readerName
                                 
+                            End If
+                            
+                        'Group enablement is important for setting layer visibility.  Even though PD
+                        ' doesn't support groups (at present), we still want to hide layers that
+                        ' are part of hidden groups in the PSD.
+                        Case rid_LayerGroupsEnabledID
+                            If (.irDataLength > 0) Then
+                                
+'                                Set tmpStream = New pdStream
+'                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+'
+'                                'I haven't figured out whether this information is actually useful.
+'                                ' PD can parse layer group data without this at present, so I've disabled
+'                                ' parsing + storage until I have a better grasp of what this data even
+'                                ' means.
+'                                Dim grpID As Long
+'                                For grpID = 0 To .irDataLength - 1
+'                                     Debug.Print tmpStream.ReadByte()
+'                                Next grpID
+'
+'                                Set tmpStream = Nothing
+'
+                            End If
+                            
+                        Case rid_LayersGroupInfo
+                            
+                            'See above comments on rid_LayerGroupsEnabledID.  This segment doesn't make
+                            ' sense to me, and parsing it on a few test PSDs has shown no useful data
+                            ' from it.  I've left the parsing code in case files turn up "in the wild"
+                            ' where this information actually matters.
+                            If (.irDataLength > 0) Then
+'
+'                                Set tmpStream = New pdStream
+'                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+'
+'                                For grpID = 0 To (.irDataLength \ 2) - 1
+'                                    Debug.Print tmpStream.ReadIntUnsigned_BE()
+'                                Next grpID
+'
+'                                Set tmpStream = Nothing
+'
                             End If
                             
                     End Select
