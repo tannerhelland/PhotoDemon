@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2020 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 24/March/20
-'Last update: clarify difference between compositing color and background color (yes, they can differ!)
+'Last updated: 11/July/20
+'Last update: new streaming interface for generating APNGs.  This works better for animated screen captures,
+'             as we don't need to have access to all animation frames up front.
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -193,7 +194,13 @@ Private m_apngTrnsAvailable As Boolean
 ' their values until the animation is complete (e.g. frame count).
 Const INIT_STREAMING_BUFFER As Long = 32
 Private m_lastFrameTime As Currency, m_flagActlPos As Long, m_streamingFrames() As PD_APNGFrame
-Private m_refFrame As pdDIB
+
+'Similarly, streaming APNGs need to cache various frame references so it can optimize frame
+' data nicely.  (APNG frames support multiple frame disposal methods, and we have to manually
+' run per-frame tests to figure out which ones produce the smallest final file.)
+Private m_apngPrevFrame As pdDIB, m_apngBufferFrame As pdDIB, m_apngCurFrameBackup As pdDIB
+Private m_cmpTestBuffer() As Byte, m_cmpTestBufferSize As Long
+Private m_lastGoodFrame As Long
 
 'Simplified wrapper to load a PNG automatically.
 Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
@@ -2943,7 +2950,9 @@ End Function
 
 'Streaming approach to saving APNGs.  After a stream is started, call this function to pass
 ' individual frames.  Optimization is handled automatically - just make sure every pdDIB object
-' you pass has the same width, height, and color-depth!  If they don't, this will crash!
+' you pass has the same width, height, and color-depth.  If they don't, this will crash!
+' Also, this function does not currently handle duplicate frames gracefully; that's up to the
+' client to handle (where it makes more sense, *and* conserves memory).
 Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhenFrameArrived As Currency) As PD_PNGResult
     
     'Each APNG frame consists of two parts:
@@ -2980,10 +2989,13 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         m_FrameSequence = m_FrameSequence + 1
         .frameTime = msTimeWhenFrameArrived
         .frameBlend = APNG_BlendOp_Source
+        .frameDisposal = APNG_DisposeOp_None
+        .frameIsDuplicateOrEmpty = False
         .rectOfInterest.Left = 0
         .rectOfInterest.Top = 0
         .rectOfInterest.Width = srcDIB.GetDIBWidth
         .rectOfInterest.Height = srcDIB.GetDIBHeight
+        Set .frameDIB = New pdDIB
     End With
     
     'Write out a dummy fcTL buffer; we'll come back in and fill this in later.
@@ -2991,49 +3003,398 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
     Const fcTLChunkSize As Long = 26 + 12
     m_Stream.WritePadding fcTLChunkSize
     
-    Dim keepGoing As PD_PNGResult
-    Dim tmpChunk As pdPNGChunk
+    Dim keepGoing As PD_PNGResult, tmpChunk As pdPNGChunk
+    
+    'We also need a soft reference that we can point at whatever frame DIB we want; its contents
+    ' are not maintained between frames...
+    Dim refFrame As pdDIB
+    
+    '...as well as a temporary "test" DIB, which is used to test optimizations that may not pan out
+    ' (because they actually harm compression ratio in the end).
+    Dim testDIB As pdDIB
+    Set testDIB = New pdDIB
+    
+    'Transparency tables are used for a bunch of different optimization settings; they are one-byte arrays
+    ' that track transparency data only, making them much more memory-friendly then full RGBA storage.
+    Dim trnsTable() As Byte
     
     'If this is the first frame, we always want to write it out as-is
     If (m_FrameCount = 0) Then
         
+        'Before writing this first frame, we want to find an unused color that we can use to flag
+        ' transparent pixels in frames (which may exist after we perform frame differencing).
+        
+        'We start with magic magenta and use it if unused in this first frame.
+        Dim cColorCount As pdColorCount
+        DIBs.GetDIBColorCountObject srcDIB, cColorCount, False
+        
+        m_TrnsValueR = 254
+        m_TrnsValueG = 1
+        m_TrnsValueB = 239
+        
+        'Next, query the object for an unused color, and start the search with the image's original
+        ' transparent color (if any; if it didn't supply one, we'll just start at black).
+        If cColorCount.DoesColorExist(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+            
+            'The original transparent color now appears in the image, which means we can't use it for export.
+            ' We need to find a new one.
+            If cColorCount.GetUnusedColor(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+                
+                'A new, unused color was found.  Use it to add transparency to the image.
+                m_apngTrnsAvailable = True
+            
+            'By some (horrifying) miracle, all 16.7 million colors are used in this image.  We can't use a tRNS
+            ' chunk to write transparency data; fall back to 32-bit RGBA
+            Else
+                m_apngTrnsAvailable = False
+            End If
+        
+        'The original transparent color does not appear in the image!  Use it as our transparent color.
+        Else
+            m_apngTrnsAvailable = True
+        End If
+        
         'Filter the full DIB
-        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterOptimal, False, False)
+        m_WriteTrns = m_apngTrnsAvailable
+        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterOptimal, True, False)
         
         'Pass the full DIB as-is out to the IDAT writer
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 1, False)
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, Compression.GetMaxCompressionLevel(cf_Zlib), False)
         
-        'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
-        ' frames will be optimized against it.
-        Set m_refFrame = New pdDIB
-        m_refFrame.CreateFromExistingDIB srcDIB
+        'Next, we need to initialize our various optimization DIBs.
+        
+        'Initialize the frame buffer to be the same as the first frame...
+        Set m_apngBufferFrame = New pdDIB
+        m_apngBufferFrame.CreateFromExistingDIB srcDIB
+        
+        '...and initialize the "previous" frame buffer to pure transparency (this is the
+        ' recommended behavior per the spec, on the assumption that the buffer always begins as
+        ' transparent black)
+        Set m_apngPrevFrame = New pdDIB
+        m_apngPrevFrame.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0, 0
+        
+        Set m_apngCurFrameBackup = New pdDIB
+        
+        'Some parts of the optimization process are not guaranteed to improve file size (e.g. blanking out
+        ' duplicate pixels between frames can actually hurt compression if the current frame is very noisy).
+        ' To ensure we only apply beneficial optimizations, we test-compress the current frame after certain
+        ' potentially problematic optimizations to double-check that our compression ratio improved.  (If it
+        ' didn't, we'll roll back the changes we made - see the multiple DIB copies above!)
+        
+        'To reduce memory churn, we initialize a single worst-case-size buffer when the first frame arrives,
+        ' then reuse it for all subsequent compression test runs.
+        m_cmpTestBufferSize = Compression.GetWorstCaseSize(srcDIB.GetDIBWidth * srcDIB.GetDIBHeight * 4, cf_Zlib, 1)
+        ReDim m_cmpTestBuffer(0 To m_cmpTestBufferSize - 1) As Byte
+        
+        'Finally, mark this as the "last good frame" (in case subsequent frames are duplicates
+        ' of this one, we'll need to refer back to the "last good frame" index)
+        m_lastGoodFrame = 0
+        m_FrameCount = 1
         
     'If this is *not* the first frame, we want to run heuristics on it before embedding it.
     Else
         
-        'Get the rect of interest?
-        Dim tmpRectF As RectF
-        'DIBs.GetRectOfInterest_Overlay srcDIB, m_refFrame, tmpRectF
+        'Make a backup of the current frame, before we perform any heuristics
+        m_apngCurFrameBackup.CreateFromExistingDIB srcDIB
         
-        'Crop out?
+        'First, we want to figure out how much of this frame needs to be used at all.  If this frame
+        ' shares contents with the frame that just appeared (an extremely common use-case for
+        ' animations!), we can simply crop out any frame borders that are identical to the previous
+        ' frame.  (Said another way: APNGs only require the *first* frame to be full size - subsequent
+        ' ones can be any size you want, so long as they remain within the first frame's borders.)
         
-        'Test run: proceed as normal (filter the full DIB)
-        keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterNone, False, False)
+        '(If this check fails, it means that this frame is 100% identical to the frame that came
+        ' before it.)
+        Dim dupArea As RectF
+        If DIBs.GetRectOfInterest_Overlay(srcDIB, m_apngBufferFrame, dupArea) Then
         
-        'Pass the full DIB as-is out to the IDAT writer
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, 1, True)
+            'This frame contains at least one unique pixel, so it needs to be added to the file.
+            
+            'Before proceeding further, let's compare this frame to one other buffer - specifically, the
+            ' frame buffer as it appeared *before* the previous frame was painted.  Like GIFs, APNGs
+            ' define a disposal op called "DISPOSE_OP_PREVIOUS", which tells the previous frame to "undo"
+            ' its rendering when it's done.  On certain frames and/or animation styles, this may allow
+            ' for better compression if this frame is more identical to a frame further back in sequence.
+            Dim prevFrameArea As RectF
+            
+            'As before, ensure that the previous check succeeded.  If it fails, it means this frame
+            ' is 100% identical the the frame that preceded the previous frame.  Rather than encode this
+            ' frame at all, we can simply store a lone transparent pixel and paint it "over" the
+            ' corresponding frame buffer - maximum file size savings!
+            If DIBs.GetRectOfInterest_Overlay(srcDIB, m_apngPrevFrame, prevFrameArea) Then
+            
+                'With an overlap rectangle calculated for both cases, determine a "winner"
+                ' (where "winner" equals "least number of pixels").  Store the "winner's" frame
+                ' rect, then mark the *previous* frame's disposal op accordingly.  (This is
+                ' important - disposal ops describe what you do *after* the current frame is
+                ' painted, so if we want a certain frame buffer state *before* rendering this
+                ' frame, we set it using the disposal op of the *previous* frame - an obnoxious
+                ' quirk left over from GIFs, presumably).
+                
+                'The frame *before* the frame *before* this one is smallest...
+                If (prevFrameArea.Width * prevFrameArea.Height) < (dupArea.Width * dupArea.Height) Then
+                    Set refFrame = m_apngPrevFrame
+                    m_streamingFrames(m_FrameCount).rectOfInterest = prevFrameArea
+                    m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_Previous
+                    
+                'The frame immediately preceding this one is smallest...
+                Else
+                    Set refFrame = m_apngBufferFrame
+                    m_streamingFrames(m_FrameCount).rectOfInterest = dupArea
+                    m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_None
+                End If
+                
+                'We now have the smallest possible rectangle that defines this frame, while accounting for
+                ' both DISPOSAL_OP_NONE and DISPOSAL_OP_PREVIOUS.
+                
+                'We have one more potential crop operation we can do, and it involves the third APNG
+                ' disposal op (DISPOSAL_OP_BACKGROUND).  This disposal op asks the previous frame to
+                ' erase itself completely after rendering.  For animations with large transparent borders,
+                ' it may actually be best to crop the current frame according to its transparent borders,
+                ' then use the "erase" disposal op before displaying it, thus forgoing any connection
+                ' whatsoever to preceding frames.
+                Dim trnsRect As RectF
+                If DIBs.GetRectOfInterest(srcDIB, trnsRect) Then
+                
+                    'If this frame is smaller than the previous "winner", switch to using this op instead.
+                    If (trnsRect.Width * trnsRect.Height) < (m_streamingFrames(m_FrameCount).rectOfInterest.Width * m_streamingFrames(m_FrameCount).rectOfInterest.Height) Then
+                        m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_Background
+                        m_streamingFrames(m_FrameCount).frameBlend = APNG_BlendOp_Source
+                        m_streamingFrames(m_FrameCount).rectOfInterest = trnsRect
+                    End If
+                    
+                    'Crop the "winning" region into a separate DIB, and store it as the formal pixel buffer
+                    ' for this frame.
+                    With m_streamingFrames(m_FrameCount).rectOfInterest
+                        m_streamingFrames(m_FrameCount).frameDIB.CreateBlank Int(.Width), Int(.Height), 32, 0, 0
+                        GDI.BitBltWrapper m_streamingFrames(m_FrameCount).frameDIB.GetDIBDC, 0, 0, Int(.Width), Int(.Height), srcDIB.GetDIBDC, Int(.Left), Int(.Top), vbSrcCopy
+                    End With
+                
+                'This weird (but valid) branch means that the current frame is 100% transparent.  For this
+                ' special case, request that the previous frame erase the running buffer, then store a 1 px
+                ' transparent pixel for this frame.
+                Else
+                    
+                    m_streamingFrames(m_FrameCount).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                    With m_streamingFrames(m_FrameCount).rectOfInterest
+                        .Left = 0
+                        .Top = 0
+                        .Width = 1
+                        .Height = 1
+                    End With
+                    m_streamingFrames(m_FrameCount).frameBlend = APNG_BlendOp_Source
+                    m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_None
+                    
+                End If
+                
+                'Because the current frame came from a premultiplied source, we can safely mark it
+                ' as premultiplied as well.
+                If (Not m_streamingFrames(m_FrameCount).frameDIB Is Nothing) Then m_streamingFrames(m_FrameCount).frameDIB.SetInitialAlphaPremultiplicationState True
+                
+                'If the previous frame is not being blanked, we have additional optimization strategies
+                ' to attempt.  (If, however, the previous frame *is* being blanked, we are done with
+                ' preprocessing.  Any further gains will have to come from the PNG encoder itself.)
+                If (m_streamingFrames(m_lastGoodFrame).frameDisposal <> APNG_DisposeOp_Background) Then
+                
+                    'The next optimization we want to attempt is duplicate pixel blanking, which takes
+                    ' pixels in the current frame that are identical to the previous frame and turns them
+                    ' transparent, allowing the previous frame to "show through" in those regions (instead
+                    ' of storing all that pixel data again in the current frame).
+                    
+                    'The more pixels we can turn transparent, the better the resulting buffer will compress,
+                    ' but note that there are two major caveats to this optimization.  Specifically:
+                    
+                    '1) The previous frame must use DisposeOp_None or DisposeOp_Previous.  If it erased the
+                    '   frame (DisposeOp_Background), the previous frame's pixels aren't around for us to
+                    '   use.  (We caught this possibility with the If statement above, FYI.)
+                    '2) Because this approach requires us to alphablend the current frame "over" the previous
+                    '   one (instead of simply *replacing* the previous frame's contents with this one), we
+                    '   need to ensure there are no transparency mismatches.  Specifically, if this frame has
+                    '   variable transparency where the previous frame DOES NOT, we can't use this frame
+                    '   blanking strategy (as this frame's transparent regions will allow the previous frame to
+                    '   "show through" where it shouldn't).
+                    
+                    'Because (1) has already been taken care of by the frame disposal If/Then statement above,
+                    ' we now want to address case (2).
+                    If DIBs.RetrieveTransparencyTable(m_streamingFrames(m_FrameCount).frameDIB, trnsTable) Then
+                    If DIBs.CheckAlpha_DuplicatePixels(refFrame, m_streamingFrames(m_FrameCount).frameDIB, trnsTable, Int(m_streamingFrames(m_FrameCount).rectOfInterest.Left), Int(m_streamingFrames(m_FrameCount).rectOfInterest.Top)) Then
+                        
+                        'This frame contains variable alpha transparency where the previous frame does not.
+                        ' This means the previous frame *must* be blanked.  Skip frame differentials entirely.
+                        m_streamingFrames(m_FrameCount).frameDisposal = APNG_DisposeOp_Background
+                        
+                    'The current frame can be safely alpha-blended "over the top" of the previous one
+                    Else
+                        
+                        'This frame is a candidate for frame differentials!
+                        
+                        'Note that some esoteric color mode settings may *still* prevent us from calculating
+                        ' frame differentials (e.g. if the previous frame is enormous and uses all 16.7m
+                        ' colors).  This state will be flagged by the color model analyzer that runs on the
+                        ' first frame of the stream; check that flag now, and if found, skip frame
+                        ' differentials entirely.
+                        If m_apngTrnsAvailable Then
+                            
+                            'A transparent index is available, meaning we have a mechanism for "erasing" parts
+                            ' of this frame so that the previous frame can show through.
+                            
+                            'Before proceeding, let's get a rough idea of the current frame's entropy.  If
+                            ' subsequent optimizations increase entropy (and thus decrease compression ratio),
+                            ' we'll just revert to the current frame as-is.
+                            
+                            'An easy (and fast) way to estimate entropy is to just compress the current frame!
+                            ' Better compression ratios correlate with lower source entropy, and this is
+                            ' faster than a formal entropy calculation (in VB6 code, anyway).
+                            
+                            '(This is also where use our persistent compression buffer; note that we don't
+                            ' need to clear or prep it in any way - the compression engine will overwrite
+                            ' whatever it needs to.)
+                            Dim initSize As Long, initCmpSize As Long
+                            initCmpSize = m_cmpTestBufferSize
+                            initSize = m_streamingFrames(m_FrameCount).frameDIB.GetDIBStride * m_streamingFrames(m_FrameCount).frameDIB.GetDIBHeight
+                            Plugin_libdeflate.CompressPtrToPtr VarPtr(m_cmpTestBuffer(0)), initCmpSize, m_streamingFrames(m_FrameCount).frameDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                            
+                            'With current entropy established (well... "estimated"), we're next going to try
+                            ' blanking out any pixels that are identical between this frame and the current frame
+                            ' buffer (as calculated in a previous step).  On many animations, this will create
+                            ' large patches of pure transparency that compress *brilliantly* - but note that very
+                            ' noisy images can produce equally noisy results, which can actually *harm* our
+                            ' compression ratio. This is why we estimated entropy for the untouched frame data
+                            ' (above), and why we're gonna perform all our tests on a temporary frame copy (in
+                            ' case we have to throw the copy away).
+                            testDIB.CreateFromExistingDIB m_streamingFrames(m_FrameCount).frameDIB
+                            
+                            If DIBs.RetrieveTransparencyTable(testDIB, trnsTable) Then
+                            If DIBs.ApplyAlpha_DuplicatePixels(testDIB, refFrame, trnsTable, m_streamingFrames(m_FrameCount).rectOfInterest.Left, m_streamingFrames(m_FrameCount).rectOfInterest.Top) Then
+                            If DIBs.ApplyTransparencyTable(testDIB, trnsTable) Then
+                                
+                                'The frame differential was produced successfully.  See if it compresses better
+                                ' than the original, untouched frame did.
+                                Dim testSize As Long
+                                testSize = m_cmpTestBufferSize
+                                Plugin_libdeflate.CompressPtrToPtr VarPtr(m_cmpTestBuffer(0)), testSize, testDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                                
+                                'This frame compressed better!  Use it instead of the original frame, and set
+                                ' the frame blend to OVER (which will allow pixels from the previous frame to
+                                ' "show through" this one, regardless of which disposal op is used).
+                                If (testSize < initCmpSize) Then
+                                    m_streamingFrames(m_FrameCount).frameDIB.CreateFromExistingDIB testDIB
+                                    m_streamingFrames(m_FrameCount).frameBlend = APNG_BlendOp_Over
+                                
+                                'If this frame compressed worse (or identically), we can simply leave current
+                                ' frame settings as they are.
+                                End If
+                            
+                            '/end failsafe "retrieve and apply duplicate pixel test" checks
+                            End If
+                            End If
+                            End If
+                            
+                        '/end m_apngTrnsAvailable = False
+                        End If
+                        
+                    '/end "previous frame is opaque where this frame is transparent"
+                    End If
+                    End If
+                        
+                '/end "previous frame is NOT being blanked, so we can attempt to optimize frame diffs"
+                End If
+            
+            'This (rare) branch means that the current frame is identical to the animation as it appeared
+            ' *before* the previous frame was rendered.  (This is not unheard of, especially for blinking-
+            ' or spinning-style animations.)  A great, cheap optimization is to just ask the previous
+            ' frame to dispose of itself using the DISPOSE_OP_PREVIOUS method (which restores the frame
+            ' buffer to whatever it was *before* the previous frame was rendered), then store this frame
+            ' as a transparent 1-px PNG.  This effectively gives us a copy of the frame two-frames-previous
+            ' "for free".
+            Else
+                
+                'Ensure transparency is available
+                If m_apngTrnsAvailable Then
+                    
+                    m_streamingFrames(m_FrameCount).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                    With m_streamingFrames(m_FrameCount).rectOfInterest
+                        .Left = 0
+                        .Top = 0
+                        .Width = 1
+                        .Height = 1
+                    End With
+                    m_streamingFrames(m_FrameCount).frameBlend = APNG_BlendOp_Source
+                    m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_Previous
+                
+                'Damn - this optimization "cheat" won't work, because we don't have access to transparency
+                ' in the current image.  Unfortunately, the full frame will need to be written out to file :(
+                Else
+                    m_streamingFrames(m_FrameCount).frameDIB.CreateFromExistingDIB m_apngCurFrameBackup
+                End If
+                
+            'end duplicate frame check against previous buffer
+            End If
         
-        'Finally, we need to make a local copy of this DIB.  It is our reference DIB, and all subsequent
-        ' frames will be optimized against it.
-        m_refFrame.CreateFromExistingDIB srcDIB
+        'If the GetRectOfInterest() check failed, it means this frame is 100% identical to the
+        ' frame that preceded it.  Rather than optimize this frame, let's just delete it from
+        ' the animation and merge its frame time into the previous frame.
+        Else
+            m_streamingFrames(m_FrameCount).frameIsDuplicateOrEmpty = True
+            'allFrames(lastGoodFrame).frameTime = allFrames(lastGoodFrame).frameTime + allFrames(i).frameTime
+            Set m_streamingFrames(m_FrameCount).frameDIB = Nothing
+        End If
         
+        'This frame is now optimized as well as we can possibly optimize it.
+        
+        'Before moving to the next frame, create backup copies of the buffer frames *we* were handed.
+        ' The next frame can request that we reset our state to this frame, which may be closer to
+        ' their frame's contents (and thus compress better).
+        If (m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_None) Then
+            m_apngPrevFrame.CreateFromExistingDIB m_apngBufferFrame
+        ElseIf (m_streamingFrames(m_lastGoodFrame).frameDisposal = APNG_DisposeOp_Background) Then
+            m_apngPrevFrame.ResetDIB 0
+        
+        'We don't have to cover the case of DISPOSE_OP_PREVIOUS, as that's the state the prevFrame
+        ' DIB is already in!
+        'Else
+
+        End If
+        
+        'Overwrite the *current* frame buffer with an (untouched) copy of this frame, as it appeared
+        ' before we applied optimizations to it.
+        m_apngBufferFrame.CreateFromExistingDIB m_apngCurFrameBackup
+        
+        'If this frame is valid (e.g. not a duplicate of the previous frame), increment our current
+        ' "good frame" count, and mark this frame as the "last good" index.
+        If (Not m_streamingFrames(m_FrameCount).frameIsDuplicateOrEmpty) Then
+            
+            'If the saved PNG color mode is "true color", *and* we are using a transparent color flag,
+            ' we need to convert the alpha channel of the incoming image to use that flag color to
+            ' represent transparent pixels.
+            If m_apngTrnsAvailable Then
+                DIBs.RetrieveTransparencyTable m_streamingFrames(m_FrameCount).frameDIB, trnsTable
+                DIBs.ApplyBinaryTransparencyTableColor m_streamingFrames(m_FrameCount).frameDIB, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_CompositingColor
+            End If
+            
+            'Unpremultiply the source DIB
+            m_streamingFrames(m_FrameCount).frameDIB.SetAlphaPremultiplication False
+            
+            'Write this frame to the destination file.  (At the end of the stream, we will loop back
+            ' through the file and populate all frame data segments with their final values, but pixel
+            ' values are already ready to go.)
+            keepGoing = Me.ExportStep3_FilterBytes(m_Stream, m_streamingFrames(m_FrameCount).frameDIB, tmpChunk, vbNullString, png_FilterOptimal, False, True)
+            If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, Compression.GetMaxCompressionLevel(cf_Zlib), True)
+            
+            'Make a note of where the pointer is for the next frame *after* the IDAT/FDAT is written
+            m_fdATIndices(m_FrameCount) = m_Stream.GetPosition()
+            
+            'Increment frame count
+            m_lastGoodFrame = m_FrameCount
+            m_FrameCount = m_FrameCount + 1
+            
+        Else
+            Debug.Print "surprise"
+            keepGoing = png_Success
+        End If
+        
+    'End first vs subsequent frames
     End If
-    
-    'Make a note of where the pointer is for this frame *after* the IDAT/FDAT is written
-    m_fdATIndices(m_FrameCount) = m_Stream.GetPosition()
-    
-    'Increment frame count before exiting
-    m_FrameCount = m_FrameCount + 1
     
     SaveAPNG_Streaming_Frame = keepGoing
         
@@ -3046,6 +3407,12 @@ Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Op
     
     Dim keepGoing As PD_PNGResult
     keepGoing = png_Success
+    
+    'Free a bunch of intermediary frame bits that we no longer need
+    Set m_apngPrevFrame = Nothing
+    Set m_apngBufferFrame = Nothing
+    Set m_apngCurFrameBackup = Nothing
+    Erase m_cmpTestBuffer
     
     'No more frames exist!  Note that time of the last frame, if any
     If (msTimeOfLastFrame > 0@) Then m_streamingFrames(m_FrameCount - 1).frameTime = msTimeOfLastFrame Else m_streamingFrames(m_FrameCount - 1).frameTime = VBHacks.GetHighResTimeInMSEx() - m_streamingFrames(m_FrameCount - 1).frameTime
@@ -3071,9 +3438,9 @@ Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Op
             
             'The final frame is written differently, since it doesn't represent a difference between frames
             If (i < m_FrameCount - 1) Then
-                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i + 1).frameTime - m_streamingFrames(i).frameTime, APNG_DisposeOp_None, APNG_BlendOp_Source
+                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i + 1).frameTime - m_streamingFrames(i).frameTime, m_streamingFrames(i).frameDisposal, m_streamingFrames(i).frameBlend
             Else
-                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i).frameTime, APNG_DisposeOp_None, APNG_BlendOp_Source
+                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i).frameTime, m_streamingFrames(i).frameDisposal, m_streamingFrames(i).frameBlend
             End If
             
         End If
@@ -3102,6 +3469,7 @@ Friend Function SaveAPNG_Streaming_Cancel() As PD_PNGResult
     Set m_Stream = Nothing
     SaveAPNG_Streaming_Cancel = png_Success
 End Function
+
 'Prior to exporting a PNG, this function needs to be called to setup a bunch of image-specific export settings.
 ' Specifically, it'll analyze the source image to determine things like appropriate output color mode and
 ' bit-depth settings.

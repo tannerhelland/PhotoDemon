@@ -73,8 +73,8 @@ Attribute VB_Exposed = False
 'Animated screen capture dialog
 'Copyright 2020-2020 by Tanner Helland
 'Created: 01/July/20
-'Last updated: 01/July/20
-'Last update: this is just an experiment at present!
+'Last updated: 11/July/20
+'Last update: get frame optimizations up and running
 '
 'PD can write animated PNGs.  APNGs seem like a great fit for animated screen captures.
 ' Let's see if we can merge the two, eh?
@@ -132,7 +132,9 @@ Private m_captureDIB24_2 As pdDIB
 ' access to a DEFLATE library that can compress screen-capture-sized frames (e.g. 1024x768) in
 ' real-time on an XP-era PC.  lz4 is a better solution here, although it requires us to
 ' "play back" the frames when the capture ends.
-Private Type FrameCapture
+'
+'(This type is now declared publicly, so that we can pass the data directly to the APNG encoder.)
+Private Type PD_APNGFrameCapture
     fcTimeStamp As Currency
     frameSizeOrig As Long
     frameSizeCompressed As Long
@@ -143,7 +145,7 @@ End Type
 ' e.g. the first frame vs subsequent frames.
 Private Const INIT_FRAME_BUFFER As Long = 64
 Private m_FrameCount As Long
-Private m_Frames() As FrameCapture
+Private m_Frames() As PD_APNGFrameCapture
 
 'For perf reasons, a persistent compression buffer is used; it is auto-enlarged to
 ' a "worst-case" size before capture begins.
@@ -207,7 +209,7 @@ Private Sub cmdStart_Click()
         
         'Initialize the frame collection
         m_FrameCount = 0
-        ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As FrameCapture
+        ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As PD_APNGFrameCapture
         
         'Initialize the PNG writer
         Set m_PNG = New pdPNG
@@ -265,7 +267,8 @@ Private Sub Capture_Stop()
         m_CaptureActive = False
         If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
         
-        'Write all frames?
+        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+        ' so that it can produce a usable APNG file!
         Dim i As Long
         For i = 0 To m_FrameCount - 1
             
@@ -280,6 +283,7 @@ Private Sub Capture_Stop()
             If (m_captureDIB32 Is Nothing) Then
                 Set m_captureDIB32 = New pdDIB
                 m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+                m_captureDIB32.SetInitialAlphaPremultiplicationState True
             End If
             
             GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
@@ -447,7 +451,7 @@ Private Sub CaptureFrameNow()
     If (Not m_PNG Is Nothing) Then
         
         'Make sure we have room to store this frame
-        If (m_FrameCount > UBound(m_Frames)) Then ReDim Preserve m_Frames(0 To m_FrameCount * 2 - 1) As FrameCapture
+        If (m_FrameCount > UBound(m_Frames)) Then ReDim Preserve m_Frames(0 To m_FrameCount * 2 - 1) As PD_APNGFrameCapture
         
         '*Immediately* before capture, note the current time
         Dim capTime As Currency, testTime As Currency
