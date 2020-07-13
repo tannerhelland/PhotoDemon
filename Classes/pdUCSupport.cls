@@ -800,7 +800,7 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     m_MouseButtonState = 0
-    m_MouseInsideUC = False
+    If m_MouseInsideUC Then TriggerMouseLeave
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -851,7 +851,11 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+    TriggerMouseEnter Button, Shift, x, y
+End Sub
+
+Private Sub TriggerMouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
     m_MouseInsideUC = True
     HideTooltip True
     
@@ -875,6 +879,10 @@ Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    TriggerMouseLeave Button, Shift, x, y
+End Sub
+
+Private Sub TriggerMouseLeave(Optional ByVal Button As PDMouseButtonConstants = pdLeftButton, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal x As Long = 0, Optional ByVal y As Long = 0)
     m_MouseInsideUC = False
     m_MouseEvents.SetCursor_System IDC_DEFAULT
     HideTooltip False
@@ -887,8 +895,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     m_LastMouseY = y
     
     If (Not m_MouseInsideUC) Then
-        m_MouseInsideUC = True
-        RaiseEvent MouseEnter(Button, Shift, x, y)
+        TriggerMouseEnter Button, Shift, x, y
     Else
         RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
     End If
