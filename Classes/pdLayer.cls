@@ -2025,12 +2025,12 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
         'If the image is wider than it is tall, center the thumbnail vertically
         If (thumbWidth > thumbHeight) Then
             tmpRectF.Left = 0!
-            tmpRectF.Top = (thumbnailSize - thumbHeight) * 0.5
+            tmpRectF.Top = Int((thumbnailSize - thumbHeight) / 2 + 0.5)
         
         '...otherwise, center it horizontally
         Else
             tmpRectF.Top = 0!
-            tmpRectF.Left = (thumbnailSize - thumbWidth) * 0.5
+            tmpRectF.Left = Int((thumbnailSize - thumbWidth) / 2 + 0.5)
         End If
         
         tmpRectF.Width = thumbWidth
@@ -2096,6 +2096,7 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     Drawing2D.QuickCreateSurfaceFromDIB cSurfaceSrc, Me.layerDIB, False
     cSurfaceDst.SetSurfaceClip_FromRectF tmpRectF
     cSurfaceDst.SetSurfaceCompositing P2_CM_Overwrite
+    cSurfaceDst.SetSurfacePixelOffset P2_PO_Half
     
     'Convert the user's thumbnail performance preference into a usable resample mode
     Dim thumbPerf As PD_PerformanceSetting

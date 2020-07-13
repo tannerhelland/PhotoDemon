@@ -265,10 +265,10 @@ Public Function DrawSurfaceTransformedF(ByRef dstSurface As pd2DSurface, ByRef s
     ReDim imgCorners(0 To 3) As PointFloat
     imgCorners(0).x = srcX
     imgCorners(0).y = srcY
-    imgCorners(1).x = srcX + srcWidth
+    imgCorners(1).x = srcX + srcWidth - 1
     imgCorners(1).y = srcY
     imgCorners(2).x = srcX
-    imgCorners(2).y = srcY + srcHeight
+    imgCorners(2).y = srcY + srcHeight - 1
     
     srcTransform.ApplyTransformToPointFs VarPtr(imgCorners(0)), 3
     

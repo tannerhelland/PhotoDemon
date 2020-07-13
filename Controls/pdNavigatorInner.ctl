@@ -753,8 +753,9 @@ Private Sub RenderAnimationFrame()
                 Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
                 dstSurface.WrapSurfaceAroundDC bufferDC
                 dstSurface.SetSurfaceAntialiasing P2_AA_None
-                dstSurface.SetSurfacePixelOffset P2_PO_Normal
-                PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(m_AniThumbBounds.Left + 0.99999), Int(m_AniThumbBounds.Top + 0.99999), m_AniThumbBounds.Width, m_AniThumbBounds.Height
+                dstSurface.SetSurfacePixelOffset P2_PO_Half
+                dstSurface.SetSurfaceClip_FromRectangle Int(m_AniThumbBounds.Left + 1), Int(m_AniThumbBounds.Top + 1), Int(m_AniThumbBounds.Width - 2), Int(m_AniThumbBounds.Height - 2)
+                PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(m_AniThumbBounds.Left + 0.5), Int(m_AniThumbBounds.Top + 0.5), Int(m_AniThumbBounds.Width + 0.5), Int(m_AniThumbBounds.Height + 0.5)
                 Set dstSurface = Nothing
                 
                 'Make sure we have the necessary image in the spritesheet cache

@@ -289,9 +289,6 @@ Private Sub Capture_Stop()
             GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
             m_captureDIB32.ForceNewAlpha 255
             
-            'Make the next-to-last frame stay on-screen for several seconds?
-            'If (i = m_FrameCount - 1) Then m_Frames(i).fcTimeStamp = m_Frames(i).fcTimeStamp + 3000
-            
             'Pass the frame off to the PNG encoder
             m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
             
@@ -299,7 +296,7 @@ Private Sub Capture_Stop()
         
         'Notify the PNG encoder that the stream has ended
         'lblProgress.Caption = g_Language.TranslateMessage("Capture complete!")
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0  ', 0
+        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0
         
         'Reset this button's caption
         cmdStart.Caption = g_Language.TranslateMessage("Start")
