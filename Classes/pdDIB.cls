@@ -353,8 +353,8 @@ Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
             'Loop through the image, checking alphas as we go
             For y = 0 To m_dibHeight - 1
                 tmpSA.pvData = dibPtr + dibStride * y
-            For x = 0 To finalX Step 4
-                iData(x + 3) = newAlpha
+            For x = 3 To finalX + 3 Step 4
+                iData(x) = newAlpha
             Next x
             Next y
             

@@ -273,7 +273,7 @@ Private Sub Capture_Stop()
         For i = 0 To m_FrameCount - 1
             
             g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
-            VBHacks.DoEvents_PaintOnly False
+            VBHacks.DoEvents_SingleHwnd Me.hWnd
             
             'Extract this frame into the capture DIB, then immediately free its compressed memory
             Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
@@ -289,15 +289,17 @@ Private Sub Capture_Stop()
             GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
             m_captureDIB32.ForceNewAlpha 255
             
-            'Pass the frame off to the PNG encoder
+            'Make the next-to-last frame stay on-screen for several seconds?
             'If (i = m_FrameCount - 1) Then m_Frames(i).fcTimeStamp = m_Frames(i).fcTimeStamp + 3000
+            
+            'Pass the frame off to the PNG encoder
             m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
             
         Next i
         
         'Notify the PNG encoder that the stream has ended
         'lblProgress.Caption = g_Language.TranslateMessage("Capture complete!")
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0, 0
+        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0  ', 0
         
         'Reset this button's caption
         cmdStart.Caption = g_Language.TranslateMessage("Start")
@@ -455,7 +457,7 @@ Private Sub CaptureFrameNow()
         
         '*Immediately* before capture, note the current time
         Dim capTime As Currency, testTime As Currency
-        capTime = VBHacks.GetHighResTimeEx()
+        capTime = VBHacks.GetHighResTimeInMSEx()
         
         'Capture the frame in question into a pdDIB object; note that we alternate
         ' which DIB we use for capture; this allows us to compare back-to-back frames
@@ -468,6 +470,15 @@ Private Sub CaptureFrameNow()
         End If
         
         ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, True
+        
+        'Capture can take a non-trivial amount of time on Vista+ due to compositor changes in DWM.
+        ' To try and accurately mirror the moment that was actually captured, set the capture time
+        ' to the halfway point between capture start and end.
+        Dim capTime2 As Currency
+        capTime2 = VBHacks.GetHighResTimeInMSEx()
+        
+        'Safety check for clock rollover
+        If (capTime < capTime2) Then capTime = (capTime + capTime2) / 2
         
         'Before saving this frame, check for duplicate frames.  This is very common during
         ' a screen capture event, and we can save a lot of memory by skipping these frames.
@@ -496,7 +507,7 @@ Private Sub CaptureFrameNow()
                 CopyMemoryStrict VarPtr(.frameData(0)), VarPtr(m_CompressionBuffer(0)), cmpSize
             End With
             
-            PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
+            'PDDebug.LogAction "Total frame time: " & VBHacks.GetTimeDiffNowAsString(capTime) & ", compression reduced size by " & CStr(100# * (1# - (cmpSize / (m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight)))) & "%"
             
             'Increment frame count
             m_FrameCount = m_FrameCount + 1
@@ -573,7 +584,7 @@ Private Sub m_Resize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lon
 End Sub
 
 Private Sub m_Timer_Timer()
-    CaptureFrameNow
+    If m_CaptureActive Then CaptureFrameNow
 End Sub
 
 'Want to emergency stop capture for whatever reason?  Call this function.

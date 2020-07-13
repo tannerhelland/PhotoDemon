@@ -3336,7 +3336,6 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         ' the animation and merge its frame time into the previous frame.
         Else
             m_streamingFrames(m_FrameCount).frameIsDuplicateOrEmpty = True
-            'allFrames(lastGoodFrame).frameTime = allFrames(lastGoodFrame).frameTime + allFrames(i).frameTime
             Set m_streamingFrames(m_FrameCount).frameDIB = Nothing
         End If
         
@@ -3378,7 +3377,12 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
             'Write this frame to the destination file.  (At the end of the stream, we will loop back
             ' through the file and populate all frame data segments with their final values, but pixel
             ' values are already ready to go.)
-            keepGoing = Me.ExportStep3_FilterBytes(m_Stream, m_streamingFrames(m_FrameCount).frameDIB, tmpChunk, vbNullString, png_FilterOptimal, False, True)
+            
+            'Note that we also use a faster frame filter strategy while in the IDE; this is mostly to reduce
+            ' annoyances while testing this interface.
+            Dim curFrameStrategy As PD_PNG_FilterStrategy
+            If OS.IsProgramCompiled Then curFrameStrategy = png_FilterOptimal Else curFrameStrategy = png_FilterFast
+            keepGoing = Me.ExportStep3_FilterBytes(m_Stream, m_streamingFrames(m_FrameCount).frameDIB, tmpChunk, vbNullString, curFrameStrategy, False, True)
             If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, Compression.GetMaxCompressionLevel(cf_Zlib), True)
             
             'Make a note of where the pointer is for the next frame *after* the IDAT/FDAT is written
@@ -3389,7 +3393,6 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
             m_FrameCount = m_FrameCount + 1
             
         Else
-            Debug.Print "surprise"
             keepGoing = png_Success
         End If
         
@@ -3403,7 +3406,7 @@ End Function
 'Streaming approach to saving APNGs.  After all frames have been added to a stream, call this function to
 ' finalize the file.  Note that the file will need to be traversed again to embed final frame data
 ' (as we can't know things like frame times until the end, due to interframe optimizations).
-Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Optional ByVal msTimeOfLastFrame As Currency = 0@) As PD_PNGResult
+Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0) As PD_PNGResult
     
     Dim keepGoing As PD_PNGResult
     keepGoing = png_Success
@@ -3414,9 +3417,6 @@ Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Op
     Set m_apngCurFrameBackup = Nothing
     Erase m_cmpTestBuffer
     
-    'No more frames exist!  Note that time of the last frame, if any
-    If (msTimeOfLastFrame > 0@) Then m_streamingFrames(m_FrameCount - 1).frameTime = msTimeOfLastFrame Else m_streamingFrames(m_FrameCount - 1).frameTime = VBHacks.GetHighResTimeInMSEx() - m_streamingFrames(m_FrameCount - 1).frameTime
-    
     'Rewind to the very start of the stream and note the final frame count
     m_Stream.SetPosition m_flagActlPos
     
@@ -3424,7 +3424,7 @@ Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Op
     If (keepGoing < png_Failure) Then keepGoing = ExportStep2a_WriteacTL(m_Stream, m_FrameCount, loopCount)
     
     'Next, we want to iterate through all frames and write out their final fcTL results
-    Dim i As Long
+    Dim i As Long, curFrameTime As Long
     For i = 0 To m_FrameCount - 1
         
         'Move the file pointer to the position we saved for this frame
@@ -3438,10 +3438,14 @@ Friend Function SaveAPNG_Streaming_Stop(Optional ByVal loopCount As Long = 0, Op
             
             'The final frame is written differently, since it doesn't represent a difference between frames
             If (i < m_FrameCount - 1) Then
-                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i + 1).frameTime - m_streamingFrames(i).frameTime, m_streamingFrames(i).frameDisposal, m_streamingFrames(i).frameBlend
+                curFrameTime = m_streamingFrames(i + 1).frameTime - m_streamingFrames(i).frameTime
+            
+            'Display the last frame for some arbitrary amount of time (currently 3 seconds)
             Else
-                Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, m_streamingFrames(i).frameTime, m_streamingFrames(i).frameDisposal, m_streamingFrames(i).frameBlend
+                curFrameTime = 3000
             End If
+            
+            Me.ExportStep3a_WritefcTL m_Stream, m_streamingFrames(i).rectOfInterest, curFrameTime, m_streamingFrames(i).frameDisposal, m_streamingFrames(i).frameBlend
             
         End If
         
@@ -4948,7 +4952,8 @@ Friend Function ExportStep3a_WritefcTL(ByRef cStream As pdStream, ByRef srcFrame
     dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Left + 0.5)
     dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Top + 0.5)
     
-    'Frame delay is written as (sigh) a ushort numerator/denominator pair.
+    'Frame delay is written as (sigh) a ushort numerator/denominator pair.  Convert the incoming
+    ' floating-point value to an approximate fraction equivalent.
     Dim delayNumerator As Long, delayDenominator As Long
     PDMath.ConvertToFraction CDbl(srcFrameDelayInMS) * 0.001, delayNumerator, delayDenominator, 0.0001
     If (delayNumerator > 65535) Then
