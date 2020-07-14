@@ -333,6 +333,9 @@ Friend Sub AttachToDC(ByVal targetDC As Long)
     If (m_hDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
     If (targetDC = m_hDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
     
+    'Create the font, as necessary
+    If (m_hFont = 0) Then Me.CreateFontObject
+    
     'Set the font
     If (targetDC <> m_hDC) Then
         m_oldHFont = SelectObject(targetDC, m_hFont)

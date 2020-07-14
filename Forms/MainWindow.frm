@@ -2260,8 +2260,8 @@ Private Sub MnuDevelopers_Click(Index As Integer)
             Menus.ProcessDefaultAction_ByName "tools_standalonepackage"
             
         Case 4
-            ShowPDDialog vbModal, FormScreenCapPNG
-    
+            ShowPDDialog vbModal, FormRecordAPNGPrefs
+        
     End Select
     
 End Sub

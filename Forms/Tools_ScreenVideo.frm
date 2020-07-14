@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form FormScreenCapPNG 
+Begin VB.Form FormRecordAPNG 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
@@ -47,24 +47,8 @@ Begin VB.Form FormScreenCapPNG
       _ExtentY        =   873
       Caption         =   "Start"
    End
-   Begin PhotoDemon.pdSlider sldFrameRate 
-      Height          =   735
-      Left            =   120
-      TabIndex        =   2
-      Top             =   6000
-      Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   1296
-      Caption         =   "max frame rate (fps)"
-      FontSizeCaption =   10
-      Min             =   1
-      Max             =   30
-      Value           =   10
-      NotchPosition   =   2
-      NotchValueCustom=   10
-   End
 End
-Attribute VB_Name = "FormScreenCapPNG"
+Attribute VB_Name = "FormRecordAPNG"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -105,6 +89,9 @@ Private m_PNG As pdPNG
 
 'Destination file, if one is selected (check for null before using)
 Private m_DstFilename As String
+
+'Target maximum frame rate (as frames-per-second)
+Private m_FPS As Double
 
 'Capture rects; once populated (at the start of the capture), these *cannot* be changed
 Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
@@ -153,12 +140,12 @@ Private m_CompressionBuffer() As Byte
 
 'UI elements on this dialog are automatically reflowed as the window is moved/resized.
 ' We track their positioning rects here; these values are populated at Form_Load().
-Private m_numUIElements As Long
 Private Type UI_Data
     hWnd As Long
     ptTopLeft As PointAPI
 End Type
-Private m_UIElements() As UI_Data
+
+Private m_numUIElements As Long, m_UIElements() As UI_Data
 
 'Resize and paint events are handled via API, not VB; this helps us support high-DPI displays
 Private WithEvents m_Resize As pdWindowSize
@@ -166,147 +153,24 @@ Attribute m_Resize.VB_VarHelpID = -1
 Private WithEvents m_Painter As pdWindowPainter
 Attribute m_Painter.VB_VarHelpID = -1
 
-Private Sub cmdExit_Click()
-    StopTimer_Forcibly
-    Unload Me
+'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
+' for the recorder to function.
+Public Sub ShowDialog(ByRef dstFilename As String, ByVal dstFrameRateFPS As Double)
+    
+    'Cache all passed values
+    m_DstFilename = dstFilename
+    m_FPS = dstFrameRateFPS
+    
+    'Prepare the dialog (inc. setting up window transparency)
+    PrepWindowForRecording
+    
+    'Display this dialog as a MODELESS window (critical for always-on-top behavior!)
+    Me.Show vbModeless
+    
 End Sub
 
-Private Sub cmdStart_Click()
-    
-    'If a capture is already active, STOP the timer and construct the APNG file
-    If m_CaptureActive Then
-        
-        Capture_Stop
-        
-    'If a capture is NOT active, START the capture timer (after prompting the user for an export path)
-    Else
-        
-        'Prompt for an export filename; if the user cancels the dialog, abandon the capture
-        If (Not GetExportFilename(m_DstFilename)) Then Exit Sub
-        
-        'Update the screen coord version of the transparent window
-        m_CaptureRectScreen = m_CaptureRectClient
-        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Left)
-        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Right)
-        
-        'If all preliminary checks passed, activate the capture timer.  Note that this
-        ' *will* forcibly overwrite the file at the destination location, if one exists.
-        Set m_Timer = New pdTimer
-        m_Timer.Interval = Int(1000# / sldFrameRate.Value + 0.5)
-        
-        'Prep the capture DIB
-        Set m_captureDIB24 = New pdDIB
-        m_captureDIB24.CreateBlank m_CaptureRectClient.Right - m_CaptureRectClient.Left, m_CaptureRectClient.Bottom - m_CaptureRectClient.Top, 24, vbBlack, 255
-        
-        'Prep the "last frame" DIB which we'll use to look for duplicate frames
-        Set m_captureDIB24_2 = New pdDIB
-        m_captureDIB24_2.CreateFromExistingDIB m_captureDIB24
-        
-        'Prepare a persistent compression buffer
-        Dim cmpBufferSize As Long
-        cmpBufferSize = Compression.GetWorstCaseSize(m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4)
-        ReDim m_CompressionBuffer(0 To cmpBufferSize - 1) As Byte
-        
-        'Initialize the frame collection
-        m_FrameCount = 0
-        ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As PD_APNGFrameCapture
-        
-        'Initialize the PNG writer
-        Set m_PNG = New pdPNG
-        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
-            
-            'Change the start button to a STOP button
-            cmdStart.Caption = g_Language.TranslateMessage("Stop")
-            
-            'Start the capture timer
-            m_CaptureActive = True
-            m_Timer.StartTimer
-        
-        Else
-            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
-        End If
-        
-    End If
-        
-End Sub
+Private Sub PrepWindowForRecording()
 
-'Returns TRUE if a valid destination capture filename is provided; FALSE otherwise
-Private Function GetExportFilename(ByRef dstFilename As String) As Boolean
-
-    Dim cSave As pdOpenSaveDialog
-    Set cSave = New pdOpenSaveDialog
-    
-    'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
-    Dim tmpPath As String, tmpFilename As String, sFile As String
-    tmpPath = UserPrefs.GetPref_String("Paths", "ScreenCapture", vbNullString)
-    If (LenB(tmpPath) = 0) Then
-        tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
-        tmpFilename = g_Language.TranslateMessage("capture")
-        sFile = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png")
-    End If
-    
-    'Present a common dialog to the user
-    GetExportFilename = cSave.GetSaveFileName(sFile, , True, "Animated PNG (.png)|*.png", 1, tmpPath, g_Language.TranslateMessage("Export screen capture animation"), "png", Me.hWnd)
-    If GetExportFilename Then
-        
-        dstFilename = sFile
-        
-        'Save the current export path to the user's preference file
-        UserPrefs.SetPref_String "Paths", "ScreenCapture", dstFilename
-            
-    End If
-    
-End Function
-
-'Stop the active capture
-Private Sub Capture_Stop()
-
-    If m_CaptureActive Then
-    
-        'Immediately stop the capture timer
-        m_CaptureActive = False
-        If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
-        
-        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
-        ' so that it can produce a usable APNG file!
-        Dim i As Long
-        For i = 0 To m_FrameCount - 1
-            
-            g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
-            VBHacks.DoEvents_SingleHwnd Me.hWnd
-            
-            'Extract this frame into the capture DIB, then immediately free its compressed memory
-            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
-            Erase m_Frames(i).frameData
-            
-            'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
-            If (m_captureDIB32 Is Nothing) Then
-                Set m_captureDIB32 = New pdDIB
-                m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
-                m_captureDIB32.SetInitialAlphaPremultiplicationState True
-            End If
-            
-            GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
-            m_captureDIB32.ForceNewAlpha 255
-            
-            'Pass the frame off to the PNG encoder
-            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
-            
-        Next i
-        
-        'Notify the PNG encoder that the stream has ended
-        'lblProgress.Caption = g_Language.TranslateMessage("Capture complete!")
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0
-        
-        'Reset this button's caption
-        cmdStart.Caption = g_Language.TranslateMessage("Start")
-        
-    End If
-        
-End Sub
-
-Private Sub Form_Load()
-    
     If PDMain.IsProgramRunning Then
         
         'Mark the underlying window as a layered window
@@ -364,6 +228,112 @@ Private Sub Form_Load()
         g_WindowManager.SetWindowPos_API Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE
         
     End If
+    
+End Sub
+
+Private Sub cmdExit_Click()
+    StopTimer_Forcibly
+    Unload Me
+End Sub
+
+Private Sub cmdStart_Click()
+    
+    'If a capture is already active, STOP the timer and construct the APNG file
+    If m_CaptureActive Then
+        Capture_Stop
+        
+    'If a capture is NOT active, START the capture timer (after prompting the user for an export path)
+    Else
+        
+        'Update the screen coord version of the transparent window
+        m_CaptureRectScreen = m_CaptureRectClient
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Left)
+        g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(m_CaptureRectScreen.Right)
+        
+        'If all preliminary checks passed, activate the capture timer.  Note that this
+        ' *will* forcibly overwrite the file at the destination location, if one exists.
+        Set m_Timer = New pdTimer
+        m_Timer.Interval = Int(1000# / m_FPS + 0.5)
+        
+        'Prep the capture DIB
+        Set m_captureDIB24 = New pdDIB
+        m_captureDIB24.CreateBlank m_CaptureRectClient.Right - m_CaptureRectClient.Left, m_CaptureRectClient.Bottom - m_CaptureRectClient.Top, 24, vbBlack, 255
+        
+        'Prep the "last frame" DIB which we'll use to look for duplicate frames
+        Set m_captureDIB24_2 = New pdDIB
+        m_captureDIB24_2.CreateFromExistingDIB m_captureDIB24
+        
+        'Prepare a persistent compression buffer
+        Dim cmpBufferSize As Long
+        cmpBufferSize = Compression.GetWorstCaseSize(m_captureDIB24.GetDIBStride * m_captureDIB24.GetDIBHeight, cf_Lz4)
+        ReDim m_CompressionBuffer(0 To cmpBufferSize - 1) As Byte
+        
+        'Initialize the frame collection
+        m_FrameCount = 0
+        ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As PD_APNGFrameCapture
+        
+        'Initialize the PNG writer
+        Set m_PNG = New pdPNG
+        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
+            
+            'Change the start button to a STOP button
+            cmdStart.Caption = g_Language.TranslateMessage("Stop")
+            
+            'Start the capture timer
+            m_CaptureActive = True
+            m_Timer.StartTimer
+        
+        Else
+            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+        End If
+        
+    End If
+        
+End Sub
+
+'Stop the active capture
+Private Sub Capture_Stop()
+
+    If m_CaptureActive Then
+    
+        'Immediately stop the capture timer
+        m_CaptureActive = False
+        If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
+        
+        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+        ' so that it can produce a usable APNG file!
+        Dim i As Long
+        For i = 0 To m_FrameCount - 1
+            
+            g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
+            VBHacks.DoEvents_SingleHwnd Me.hWnd
+            
+            'Extract this frame into the capture DIB, then immediately free its compressed memory
+            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+            Erase m_Frames(i).frameData
+            
+            'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
+            If (m_captureDIB32 Is Nothing) Then
+                Set m_captureDIB32 = New pdDIB
+                m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+                m_captureDIB32.SetInitialAlphaPremultiplicationState True
+            End If
+            
+            GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+            m_captureDIB32.ForceNewAlpha 255
+            
+            'Pass the frame off to the PNG encoder
+            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
+            
+        Next i
+        
+        'Notify the PNG encoder that the stream has ended
+        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0
+        
+        'Reset this button's caption
+        cmdStart.Caption = g_Language.TranslateMessage("Start")
+        
+    End If
         
 End Sub
 
@@ -411,7 +381,7 @@ Private Sub PaintForm(ByVal targetDC As Long)
             
             'Same for top/bottom
             .Top = myRectClient.y1 + borderPadding
-            .Bottom = myRectClient.y1 + sldFrameRate.GetTop - borderPadding
+            .Bottom = myRectClient.y1 + cmdStart.GetTop - borderPadding
             
         End With
         

@@ -210,7 +210,7 @@ Private Sub HandleCancelButton()
     If UserControl.Parent.Visible Then UserControl.Parent.Hide
         
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
-    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
+    If (Not m_dontAutoUnloadParent) Then Unload UserControl.Parent
     
 End Sub
 
@@ -371,23 +371,27 @@ Private Sub UpdateControlLayout()
     parentWindowWidth = g_WindowManager.GetClientWidth(UserControl.Parent.hWnd)
     parentWindowHeight = g_WindowManager.GetClientHeight(UserControl.Parent.hWnd)
     
+    'Current command bar height is an arbitrary value
+    Dim cmdBarSize As Long
+    cmdBarSize = Interface.FixDPI(50)
+    
     Dim moveRequired As Boolean
-    If bHeight <> FixDPI(50) Then moveRequired = True
-    If ucSupport.GetControlTop <> parentWindowHeight - FixDPI(50) Then moveRequired = True
+    moveRequired = (bHeight <> cmdBarSize)
+    If (Not moveRequired) And (ucSupport.GetControlTop <> parentWindowHeight - cmdBarSize) Then moveRequired = True
     
     If moveRequired Then
-        ucSupport.RequestNewSize , FixDPI(50)
-        ucSupport.RequestNewPosition 0, parentWindowHeight - ucSupport.GetControlHeight
+        ucSupport.RequestNewSize , cmdBarSize
+        ucSupport.RequestNewPosition 0, parentWindowHeight - ucSupport.GetControlHeight()
     End If
     
     'Make the control the same width as its parent
     If PDMain.IsProgramRunning() Then
         
-        If bWidth <> parentWindowWidth Then ucSupport.RequestNewSize parentWindowWidth
+        If (bWidth <> parentWindowWidth) Then ucSupport.RequestNewSize parentWindowWidth
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - FixDPI(8)
-        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - FixDPI(8)
+        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - Interface.FixDPI(8)
+        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - Interface.FixDPI(8)
         
     End If
     
@@ -415,6 +419,46 @@ End Sub
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
     m_Colors.LoadThemeColor PDCB_Background, "Background", IDE_GRAY
+End Sub
+
+'External functions can call this to set custom OK button text.  The OK button
+' *will* be resized to account for the text change, but the text will *not* get
+' auto-translated - that's up to the caller to handle.
+Public Sub SetCustomOKText(ByRef newText As String, Optional ByVal desiredPaddingAt96DPI As Long = 16)
+
+    'Before assigning the text, we need to measure it and ensure the OK button is
+    ' large enough to fit.
+    Dim btnResized As Boolean
+    
+    'Button resizing requires a valid theme object
+    If (Not g_Themer Is Nothing) Then
+    
+        Dim cFont As pdFont
+        Set cFont = New pdFont
+        cFont.SetFontSize cmdOK.FontSize()
+        cFont.SetFontFace Fonts.GetUIFontName()
+        
+        Dim pxLength As Long
+        pxLength = cFont.GetWidthOfString(newText)
+        
+        'Minimum amount of required padding on either side of the caption
+        ' (including any button border rendering)
+        Dim capPadding As Long
+        capPadding = Interface.FixDPI(desiredPaddingAt96DPI)
+        
+        'If the caption is too small, enlarge the button to fit.
+        If ((pxLength + capPadding * 2) > cmdOK.GetWidth) Then
+            btnResized = True
+            cmdOK.SetWidth pxLength + capPadding * 2
+        End If
+    
+    End If
+    
+    cmdOK.Caption = newText
+    
+    'Always update the control layout after the button has (likely) been resized
+    If btnResized Then UpdateControlLayout
+
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.

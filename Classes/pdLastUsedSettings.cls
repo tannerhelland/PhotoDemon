@@ -18,13 +18,14 @@ Attribute VB_Exposed = False
 'Last updated: 26/June/14
 'Last update: add recent localization fixes from the command bar UC version of this code
 '
-'This class is a spin-off of the (far more involved) command bar user control.  Its purpose is to assist with saving
-' and loading the values of all controls on a given form.  When the parent form is loaded, this control will search
-' for an XML file with the form's last-used settings.  If none is found, it will do nothing, but if one IS found, it
-' will restore all controls to their last-used values.
+'This class is a spin-off of the (far more involved) command bar user control.  Its purpose is
+' to assist with saving and loading the values of all controls on a given form.  When the parent
+' form is loaded, this control will search for an XML file with the form's last-used settings.
+' If one isn't found, this class will do nothing, but if one IS found, it will restore all
+' controls to their last-used values.
 '
-'As with the command bar user control, hook events are provided so that the parent form can easily read/write its
-' own custom data as well.
+'As with the command bar user control, hook events are provided so that the parent form can
+' easily read/write custom data as well.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -33,29 +34,32 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Just like the command bar, this user control provides two hooks that the parent can use to save/write extra
-' preset data.  These events are raised automatically at load and unload time.
+'Just like the command bar, this user control provides two hooks that the parent can use to
+' save/write extra preset data.  These events are raised automatically at load and unload time.
 Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
 
 'XML handling (used to save/load presets) is handled through a specialized class
 Private m_Params As pdSerialize
 
-'Each instance of this control must be tied to a unique form.  The form's name is used to generate a unique key
-' at initialization time, and that key is used to set/retrieve preset data from the master preset file.
+'Each instance of this control must be tied to a unique form.  The form's name is used to
+' generate a unique key at initialization time, and that key is used to set/retrieve preset
+' data from the master preset file.
 Private m_ParentID As String
 
-'If a form needs to read or write custom preset data , we use these variables to store all custom data supplied to us.
+'If a form needs to read or write custom preset data, we use these variables to store all
+' custom data supplied to us.
 Private m_numUserPresets As Long
 Private m_userPresetNames() As String
 Private m_userPresetData() As String
 
 Private m_ParentForm As Object
 
-'BEFORE DOING ANYTHING WITH THIS CLASS, the parent form needs to call this function and pass itself as a reference.
-' This class relies heavily on direct access to its parent form - so don't forget to do this!  (Similarly, the parent
-' control must pass "Nothing" to this same function somewhere before its "Unload" event fires, or circular references
-' will cause problems.)
+'BEFORE DOING ANYTHING WITH THIS CLASS, the parent form needs to call this function and
+' pass itself as a reference. This class relies heavily on direct access to its parent form -
+' so don't forget to do this!  (Similarly, the parent control must pass "Nothing" to this
+' same function somewhere before its "Unload" event fires, or circular references will
+' cause problems.)
 Friend Sub SetParentForm(ByRef ownerForm As Object)
     Set m_ParentForm = ownerForm
 End Sub
@@ -219,6 +223,12 @@ Friend Sub AddPresetData(ByRef presetName As String, ByRef presetData As String)
     m_numUserPresets = m_numUserPresets + 1
     
 End Sub
+
+'Does a preset exist in our list?  Useful for initialization behavior (e.g. creating
+' a default preset value if one doesn't exist in the file)
+Friend Function DoesPresetExist(ByVal presetName As String) As Boolean
+    DoesPresetExist = m_Params.DoesParamExist("custom:" & presetName)
+End Function
 
 'This function is called when the user wants to read custom preset data from file
 Friend Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = vbNullString) As String
