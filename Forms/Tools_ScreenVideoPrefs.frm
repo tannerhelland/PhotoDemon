@@ -99,6 +99,7 @@ Private Sub cmdBar_OKClick()
     
     End If
     
+    'Use a standard common-dialog to prompt for filename
     Dim cSave As pdOpenSaveDialog
     Set cSave = New pdOpenSaveDialog
     
@@ -106,17 +107,27 @@ Private Sub cmdBar_OKClick()
     sFile = m_Filename
     okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_Filename), True, "Animated PNG (.apng)|*.apng;*.png", 1, Files.FileGetPath(m_Filename), "Save image", ".apng", Me.hWnd)
     
+    'The user can cancel the common-dialog - that's fine; it just means we don't save
+    ' any of the current settings (or close the window).
     If okToProceed Then
         
         'Save the current export path as the latest "save image" path
         m_Filename = sFile
         UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(m_Filename)
         
+        'Before hiding this window, retrieve our current window position; the launched
+        ' screen recording window will use this to position itself the first time it's invoked
+        Dim myRect As winRect
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetWindowRect_API Me.hWnd, myRect
+        
         'Because this dialog is modal, it needs to be hidden before we invoke a modeless dialog
         Me.Hide
         
+        'Also hide the main PhotoDemon window
+        FormMain.WindowState = vbMinimized
+        
         'Launch the capture form, then note that the command bar will handle unloading this form
-        FormRecordAPNG.ShowDialog m_Filename, sldFrameRate.Value
+        FormRecordAPNG.ShowDialog VarPtr(myRect), m_Filename, sldFrameRate.Value
         
     Else
         cmdBar.DoNotUnloadForm
@@ -130,8 +141,9 @@ Private Sub Form_Load()
     m_lastUsedSettings.SetParentForm Me
     m_lastUsedSettings.LoadAllControlValues
     
-    'When the dialog first loads, we want to manually update some of the paths
-    ' (like the capture filename).
+    'If this dialog was previously used this session, we want to make sure the capture window
+    ' has also been freed (as we need to reinitialize it)
+    Set FormRecordAPNG = Nothing
     
     'The OK button uses custom text
     If (Not g_Language Is Nothing) Then

@@ -266,6 +266,18 @@ Friend Sub SetWindowPos_API(ByVal targetHWnd As Long, ByVal hWndInsertAfter As L
     SetWindowPos targetHWnd, hWndInsertAfter, x, y, cx, cy, wFlags
 End Sub
 
+Friend Function GetWindowHeight(ByVal srcHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect srcHwnd, VarPtr(tmpRect)
+    GetWindowHeight = (tmpRect.y2 - tmpRect.y1)
+End Function
+
+Friend Function GetWindowWidth(ByVal srcHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect srcHwnd, VarPtr(tmpRect)
+    GetWindowWidth = (tmpRect.x2 - tmpRect.x1)
+End Function
+
 Friend Sub GetWindowRect_API(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetWindowRect srcHwnd, VarPtr(dstRect)
 End Sub

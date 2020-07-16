@@ -3,11 +3,12 @@ Begin VB.Form FormRecordAPNG
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
-   Caption         =   " Animated screen capture"
-   ClientHeight    =   6765
+   Caption         =   " Select capture area"
+   ClientHeight    =   7200
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   8565
+   ClientWidth     =   9600
+   ClipControls    =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -23,15 +24,15 @@ Begin VB.Form FormRecordAPNG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   451
+   ScaleHeight     =   480
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   571
+   ScaleWidth      =   640
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButton cmdExit 
       Height          =   495
-      Left            =   7200
+      Left            =   8280
       TabIndex        =   1
-      Top             =   6120
+      Top             =   6600
       Width           =   1215
       _ExtentX        =   2143
       _ExtentY        =   873
@@ -39,11 +40,11 @@ Begin VB.Form FormRecordAPNG
    End
    Begin PhotoDemon.pdButton cmdStart 
       Height          =   495
-      Left            =   4560
+      Left            =   6960
       TabIndex        =   0
-      Top             =   6120
-      Width           =   2415
-      _ExtentX        =   4260
+      Top             =   6600
+      Width           =   1215
+      _ExtentX        =   2143
       _ExtentY        =   873
       Caption         =   "Start"
    End
@@ -57,8 +58,9 @@ Attribute VB_Exposed = False
 'Animated screen capture dialog
 'Copyright 2020-2020 by Tanner Helland
 'Created: 01/July/20
-'Last updated: 11/July/20
-'Last update: get frame optimizations up and running
+'Last updated: 16/July/20
+'Last update: add run-time switch between SetWindowRgn and SetLayeredWindowAttributes; the latter
+'             is giving me endless grief on Win 10 (aaaaaaargh)
 '
 'PD can write animated PNGs.  APNGs seem like a great fit for animated screen captures.
 ' Let's see if we can merge the two, eh?
@@ -70,15 +72,79 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The current window must be converted to a layered window to make regions of it transparent
+'WAPI
+Private Enum Win32_CombineRgnResult
+    crr_Error = 0
+    crr_NullRegion = 1
+    crr_SimpleRegion = 2
+    crr_ComplexRegion = 3
+End Enum
+
+#If False Then
+    Private Const crr_Error = 0, crr_NullRegion = 1, crr_SimpleRegion = 2, crr_ComplexRegion = 3
+#End If
+
+Private Enum Win32_CombineRgnType
+    crt_And = 1
+    crt_Or = 2
+    crt_Xor = 3
+    crt_Diff = 4
+    crt_Copy = 5
+End Enum
+
+#If False Then
+    Private Const crt_And = 1, crt_Or = 2, crt_Xor = 3, crt_Diff = 4, crt_Copy = 5
+#End If
+
+Private Declare Function CombineRgn Lib "gdi32" (ByVal hDestRgn As Long, ByVal hSrcRgn1 As Long, ByVal hSrcRgn2 As Long, ByVal nCombineMode As Win32_CombineRgnType) As Win32_CombineRgnResult
+Private Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObj As Long) As Long
+
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedrawImmediately As Long) As Long
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As Long, ByVal crKey As Long, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
 
+'END WAPI
+
 Private Const KEY_COLOR As Long = &HFF00FF
-Private m_BackBuffer As pdDIB
+
+'There are several ways to create a window with a "cut-out" region.  They all have trade-offs,
+' especially when attempting to support XP through Win 10.  This value is set when the dialog
+' is first loaded.
+Private Enum PD_TransparentWindow
+    tw_GDIRegion = 0
+    tw_LayeredWindow = 1
+End Enum
+
+#If False Then
+    Private Const tw_GDIRegion = 0, tw_LayeredWindow = 1
+#End If
+
+Private m_WindowMethod As PD_TransparentWindow
+
+'Used for dialog move/size
+Private Enum PD_MouseEdge
+    me_Normal = 0
+    me_Left = 1
+    me_Right = 2
+    me_Top = 3
+    me_TopLeft = 4
+    me_TopRight = 5
+    me_Bottom = 6
+    me_BottomLeft = 7
+    me_BottomRight = 8
+End Enum
+
+#If False Then
+    Private Const me_Normal = 0, me_Left = 1, me_Right = 2, me_Top = 3, me_TopLeft = 4, me_TopRight = 5, me_Bottom = 6, me_BottomLeft = 7, me_BottomRight = 8
+#End If
+
+'The rectangle (in screen coords) of the window that summoned us (if any);
+' this is used to position this window the first time it is launched.
+Private m_parentRect As winRect, m_myRect As winRect
 
 'A timer triggers capture events
 Private WithEvents m_Timer As pdTimer
@@ -98,6 +164,11 @@ Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
 
 'If a capture event is ACTIVE, this will be set to TRUE
 Private m_CaptureActive As Boolean
+
+'If a full capture was performed successfully, this will be set to TRUE.
+' At unload time, we use this to flag whether we should save the current screen position
+' or not.
+Private m_CaptureSuccessful As Boolean
 
 'Capture DIBs.  Reused on successive frames for perf reasons.  Separate 24- and 32-bpp DIBs
 ' are used because we perform the actual capture using a 24-bpp DIB (there is a measurable
@@ -138,30 +209,37 @@ Private m_Frames() As PD_APNGFrameCapture
 ' a "worst-case" size before capture begins.
 Private m_CompressionBuffer() As Byte
 
-'UI elements on this dialog are automatically reflowed as the window is moved/resized.
-' We track their positioning rects here; these values are populated at Form_Load().
-Private Type UI_Data
-    hWnd As Long
-    ptTopLeft As PointAPI
-End Type
-
-Private m_numUIElements As Long, m_UIElements() As UI_Data
-
-'Resize and paint events are handled via API, not VB; this helps us support high-DPI displays
+'Various events are handled via API, not VB; this helps us support high-DPI displays
 Private WithEvents m_Resize As pdWindowSize
 Attribute m_Resize.VB_VarHelpID = -1
 Private WithEvents m_Painter As pdWindowPainter
 Attribute m_Painter.VB_VarHelpID = -1
 
+'Window settings (particularly position) are saved/restored on each window launch
+Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
+
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByRef dstFilename As String, ByVal dstFrameRateFPS As Double)
-    
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double)
+        
+    'Before doing anything else, determine how we're going to "cut-out" a portion of this window
+    m_WindowMethod = tw_GDIRegion
+        
     'Cache all passed values
     m_DstFilename = dstFilename
     m_FPS = dstFrameRateFPS
+    If (ptrToParentRect <> 0) Then CopyMemoryStrict VarPtr(m_parentRect), ptrToParentRect, LenB(m_parentRect)
     
-    'Prepare the dialog (inc. setting up window transparency)
+    'Initialize a last-used settings object
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    
+    'Restore any last-used settings; note that this will include window position
+    m_lastUsedSettings.LoadAllControlValues
+    
+    'Prepare the dialog (inc. setting up window transparency and moving the window to
+    ' its last-used location)
     PrepWindowForRecording
     
     'Display this dialog as a MODELESS window (critical for always-on-top behavior!)
@@ -173,46 +251,21 @@ Private Sub PrepWindowForRecording()
 
     If PDMain.IsProgramRunning Then
         
-        'Mark the underlying window as a layered window
-        Const GWL_EXSTYLE As Long = -20
-        Const WS_EX_LAYERED As Long = &H80000
-        SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
-        
         'Subclassers are used for resize and paint events
         Set m_Resize = New pdWindowSize
         m_Resize.AttachToHWnd Me.hWnd, True
         Set m_Painter = New pdWindowPainter
         m_Painter.StartPainter Me.hWnd, True
         
-        'We'll momentarily build a collection of all UI elements on the form; we use this
-        ' to anchor their position if/when the form is resized.
-        Const MAX_NUM_UIELEMENTS As Long = 16
-        ReDim m_UIElements(0 To MAX_NUM_UIELEMENTS - 1) As UI_Data
+        'Layered window approach!
+        If (m_WindowMethod = tw_LayeredWindow) Then
         
-        'Retrieve the current client rect of our window
-        Dim myRect As winRect
-        g_WindowManager.GetClientWinRect Me.hWnd, myRect
+            'Mark the underlying window as a layered window
+            Const GWL_EXSTYLE As Long = -20
+            Const WS_EX_LAYERED As Long = &H80000
+            SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
         
-        'Enumerate every control on the form and cache its position offsets relative to the
-        ' *bottom* of this dialog.
-        Dim eControl As Control, tmpRect As winRect
-        For Each eControl In Me.Controls
-            
-            If (m_numUIElements > UBound(m_UIElements)) Then ReDim Preserve m_UIElements(0 To m_numUIElements * 2 - 1) As UI_Data
-            
-            'Get the top-left coordinate of each control in *screen* coordinates
-            g_WindowManager.GetWindowRect_API eControl.hWnd, tmpRect
-            m_UIElements(m_numUIElements).hWnd = eControl.hWnd
-            m_UIElements(m_numUIElements).ptTopLeft.x = tmpRect.x1
-            m_UIElements(m_numUIElements).ptTopLeft.y = tmpRect.y1
-            
-            'Convert that to *client* coordinates
-            g_WindowManager.GetScreenToClient Me.hWnd, m_UIElements(m_numUIElements).ptTopLeft
-            m_UIElements(m_numUIElements).ptTopLeft.y = m_UIElements(m_numUIElements).ptTopLeft.y - (myRect.y2 - myRect.y1)
-            
-            m_numUIElements = m_numUIElements + 1
-            
-        Next eControl
+        End If
         
         'When applying theming, note that we request to paint our window manually;
         ' normally PD handles this centrally, but this window has special needs.
@@ -221,11 +274,24 @@ Private Sub PrepWindowForRecording()
         'Ask the system to let us paint at least once before the form is actually displayed
         ForceWindowRepaint
         
-        'Mark this window as "always on-top"
-        Const HWND_TOPMOST As Long = -1&
-        Const SWP_NOMOVE As Long = &H2&
-        Const SWP_NOSIZE As Long = &H1&
-        g_WindowManager.SetWindowPos_API Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE
+        'Validate our initial positioning rectangle, and adjust as necessary for off-screen positions
+        Dim screenRect As RectL
+        g_Displays.GetDesktopRect screenRect
+        
+        With m_myRect
+            If (.x1 < screenRect.Left) Then .x1 = screenRect.Left
+            If (.y1 < screenRect.Top) Then .y1 = screenRect.Top
+            If (.x2 > screenRect.Right) Then .x1 = screenRect.Right - (.x2 - .x1)
+            If (.y2 > screenRect.Bottom) Then .y1 = screenRect.Bottom - (.y2 - .y1)
+        End With
+        
+        'Mark this window as "always on-top", then position it.
+        ' (Note that out of an abundance of caution, we also pass SWP_FRAMECHANGED because
+        ' we may have messed with window bits via SetWindowLong earlier in the function.)
+        Const HWND_TOPMOST As Long = -1&, SWP_FRAMECHANGED As Long = &H20&
+        With m_myRect
+            g_WindowManager.SetWindowPos_API Me.hWnd, HWND_TOPMOST, .x1, .y1, .x2 - .x1, .y2 - .y1, SWP_FRAMECHANGED
+        End With
         
     End If
     
@@ -333,6 +399,12 @@ Private Sub Capture_Stop()
         'Reset this button's caption
         cmdStart.Caption = g_Language.TranslateMessage("Start")
         
+        'Immediately trigger a save of the current screen position.
+        ' (Unlike other dialogs, we don't save position at export time - we save it after
+        ' a successful capture!)
+        m_CaptureSuccessful = True
+        If (Not m_lastUsedSettings Is Nothing) Then m_lastUsedSettings.SaveAllControlValues
+        
     End If
         
 End Sub
@@ -349,22 +421,19 @@ Private Sub PaintForm(ByVal targetDC As Long)
         g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(myRectScreen.x1)
         g_WindowManager.GetClientToScreen_Universal Me.hWnd, VarPtr(myRectScreen.x2)
         
-        'Build the backing surface
-        If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
-        m_BackBuffer.CreateBlank myRectClient.x2 - myRectClient.x1, myRectClient.y2 - myRectClient.y1, 24, 0
-        
-        'Wrap a surface object around the newly created back buffer
+        'Wrap a surface object around the window DC
         Dim cSurface As pd2DSurface
         Set cSurface = New pd2DSurface
-        cSurface.WrapSurfaceAroundPDDIB m_BackBuffer
+        cSurface.WrapSurfaceAroundDC targetDC
         cSurface.SetSurfaceAntialiasing P2_AA_None
         cSurface.SetSurfaceCompositing P2_CM_Overwrite
         
         'Paint the background with the default theme background color
+        ' (and make the paint region arbitrarily large)
         Dim cBrush As pd2DBrush
         Set cBrush = New pd2DBrush
         cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Background)
-        PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, (myRectClient.x2 - myRectClient.x1) * 2, (myRectClient.y2 - myRectClient.y1) * 2
         
         'Padding is arbitrary; we want it large enough to create a clean border, but not so large
         ' that we waste precious screen real estate
@@ -376,18 +445,20 @@ Private Sub PaintForm(ByVal targetDC As Long)
         With m_CaptureRectClient
             
             'Pad accordingly
-            .Left = myRectClient.x1 + borderPadding
+            .Left = borderPadding
             .Right = myRectClient.x2 - borderPadding
             
             'Same for top/bottom
             .Top = myRectClient.y1 + borderPadding
-            .Bottom = myRectClient.y1 + cmdStart.GetTop - borderPadding
+            .Bottom = cmdStart.GetTop - borderPadding
             
         End With
         
-        'Paint the capture rect with the transparent key color
-        cBrush.SetBrushColor KEY_COLOR
-        PD2D.FillRectangleI_FromRectL cSurface, cBrush, m_CaptureRectClient
+        'Paint the capture rect with the transparent key color (layered windows only)
+        If (m_WindowMethod = tw_LayeredWindow) Then
+            cBrush.SetBrushColor KEY_COLOR
+            PD2D.FillRectangleI_FromRectL cSurface, cBrush, m_CaptureRectClient
+        End If
         
         Set cBrush = Nothing
         
@@ -402,12 +473,33 @@ Private Sub PaintForm(ByVal targetDC As Long)
         
         Set cSurface = Nothing
         
-        'Paint the backbuffer onto the specified DC
-        GDI.BitBltWrapper targetDC, 0, 0, m_BackBuffer.GetDIBWidth, m_BackBuffer.GetDIBHeight, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+        If (m_WindowMethod = tw_LayeredWindow) Then
         
-        'Update window attributes to note the key color
-        Const LWA_COLORKEY As Long = &O1&
-        SetLayeredWindowAttributes Me.hWnd, KEY_COLOR, 255, LWA_COLORKEY
+            'Update window attributes to note the key color
+            Const LWA_COLORKEY As Long = &O1&
+            SetLayeredWindowAttributes Me.hWnd, KEY_COLOR, 255, LWA_COLORKEY
+        
+        ElseIf (m_WindowMethod = tw_GDIRegion) Then
+            
+            'The GDI regions used by this function include non-client areas (ugh).  As such,
+            ' we need to manually create a new window
+            'Create two regions: one for the full window rect, and one for the capture area
+            Dim rgn1 As Long, rgn2 As Long, myWinRect As winRect
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetWindowRect_API Me.hWnd, myWinRect
+            rgn1 = CreateRectRgn(0, 0, myWinRect.x2 - myWinRect.x1, myWinRect.y2 - myWinRect.y1)
+            rgn2 = CreateRectRgn((myRectScreen.x1 - myWinRect.x1) + m_CaptureRectClient.Left, (myRectScreen.y1 - myWinRect.y1) + m_CaptureRectClient.Top, (myRectScreen.x1 - myWinRect.x1) + m_CaptureRectClient.Right, (myRectScreen.y1 - myWinRect.y1) + m_CaptureRectClient.Bottom)
+            
+            'Merge them, then delete the original copies
+            Dim rgn3 As Long
+            rgn3 = CreateRectRgn(0, 0, 0, 0)
+            CombineRgn rgn3, rgn1, rgn2, crt_Diff
+            DeleteObject rgn1
+            DeleteObject rgn2
+            
+            'Assign the window region (and importantly, do *not* delete it - the system owns it)
+            SetWindowRgn Me.hWnd, rgn3, 1
+            
+        End If
         
     End If
 
@@ -490,6 +582,67 @@ Private Sub Form_Unload(Cancel As Integer)
     'Forcibly stop the current capture (if any)
     StopTimer_Forcibly
     
+    'Free the last-used settings manager.  (Note that unlike most dialogs, we do NOT
+    ' save dialog settings here - instead, we save it after a successful capture event.)
+    m_lastUsedSettings.SetParentForm Nothing
+    
+    'Restore the main PD window
+    FormMain.WindowState = vbNormal
+    
+End Sub
+
+Private Sub m_LastUsedSettings_AddCustomPresetData()
+    
+    'Start by retrieving our current window rect (in screen coordinates!)
+    Dim myRect As winRect
+    If (Not g_WindowManager Is Nothing) Then
+    
+        g_WindowManager.GetWindowRect_API Me.hWnd, myRect
+    
+        With m_lastUsedSettings
+            .AddPresetData "window-x1", Trim$(Str$(myRect.x1))
+            .AddPresetData "window-x2", Trim$(Str$(myRect.x2))
+            .AddPresetData "window-y1", Trim$(Str$(myRect.y1))
+            .AddPresetData "window-y2", Trim$(Str$(myRect.y2))
+        End With
+        
+    End If
+
+End Sub
+
+Private Sub m_LastUsedSettings_ReadCustomPresetData()
+
+    'Look for previously saved window state
+    If m_lastUsedSettings.DoesPresetExist("window-x1") Then
+    
+        'Screen coordinates are stored individually
+        With m_lastUsedSettings
+            m_myRect.x1 = .RetrievePresetData("window-x1", m_parentRect.x1)
+            m_myRect.x2 = .RetrievePresetData("window-x2", m_parentRect.x2)
+            m_myRect.y1 = .RetrievePresetData("window-y1", m_parentRect.y1)
+            m_myRect.y2 = .RetrievePresetData("window-y2", m_parentRect.y2)
+        End With
+    
+    'Previous window state doesn't exist; try to create a good default position
+    Else
+        
+        'Make sure our parent rect (if any was loaded) is valid
+        If ((m_parentRect.x2 - m_parentRect.x1) > 0) And ((m_parentRect.y2 - m_parentRect.y1) > 0) Then
+            
+            'Position this window identically to our parent window; this makes it likely that
+            ' the user will see where this window loaded!
+            m_myRect = m_parentRect
+        
+        'If we weren't passed a parent rect.... idk.  This should never happen.
+        ' As a failsafe, steal FormMain's rect.
+        Else
+            Dim mainRect As winRect
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetWindowRect_API FormMain.hWnd, mainRect
+            m_myRect = mainRect
+        End If
+        
+    End If
+
 End Sub
 
 'When the system sends a WM_ERASEBKGND message, do a quick fill with the current theme
@@ -520,33 +673,21 @@ Private Sub m_Resize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lon
     'Before resizing, ensure we are *not* capturing - if we are, cancel everything
     StopTimer_Forcibly
     
-    'Make sure all UI elements were initialized correctly
-    If (m_numUIElements > 0) Then
+    'Reposition the "start" and "stop" buttons
+    Dim btnPadding As Long
+    btnPadding = Interface.FixDPI(6)
     
-        'Reposition all controls according to their original offset
-        Dim myRect As winRect
-        g_WindowManager.GetClientWinRect Me.hWnd, myRect
-        
-        'Various SetWindowPos constants
-        Const SWP_NOACTIVATE As Long = &H10&
-        Const SWP_NOSIZE As Long = &H1&
-        Const SWP_NOZORDER As Long = &H4&
-
-        Dim wFlags As Long
-        wFlags = SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOZORDER
-        
-        'Enumerate every control on the form and cache its position offsets relative to the
-        ' *bottom* of this dialog.
-        Dim i As Long, uiRect As winRect
-        For i = 0 To m_numUIElements - 1
-            g_WindowManager.GetWindowRect_API m_UIElements(i).hWnd, uiRect
-            g_WindowManager.SetWindowPos_API m_UIElements(i).hWnd, 0&, m_UIElements(i).ptTopLeft.x, myRect.y2 + m_UIElements(i).ptTopLeft.y, 0&, 0&, wFlags
-        Next i
-        
-        'Force a repaint
-        ForceWindowRepaint
-        
-    End If
+    Dim myClientRect As winRect
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetClientWinRect Me.hWnd, myClientRect
+    
+    cmdExit.SetLeft (myClientRect.x2 - myClientRect.x1) - (btnPadding + cmdExit.GetWidth)
+    cmdExit.SetTop (myClientRect.y2 - myClientRect.y1) - (btnPadding + cmdExit.GetHeight)
+    
+    cmdStart.SetLeft (myClientRect.x2 - myClientRect.x1) - (btnPadding + cmdExit.GetWidth) - (btnPadding + cmdStart.GetWidth)
+    cmdStart.SetTop (myClientRect.y2 - myClientRect.y1) - (btnPadding + cmdStart.GetHeight)
+    
+    'Force a repaint of the back buffer (to ensure the window transparency gets updated too!)
+    ForceWindowRepaint
     
 End Sub
 
