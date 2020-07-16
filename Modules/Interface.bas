@@ -1912,7 +1912,7 @@ End Function
 Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
     
     'This function simply wraps the relevant Drawing module function
-    If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
+    If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY, False) Then
         
         'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
         If PDImages.IsImageActive() Then srcCanvas.DisplayCanvasCoordinates copyX, copyY

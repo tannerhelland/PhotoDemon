@@ -276,7 +276,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y
                 
                 If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
-                If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If isShiftDown Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
                 If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
@@ -289,7 +289,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y
                 
                 If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
-                If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If isShiftDown Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
                 If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
