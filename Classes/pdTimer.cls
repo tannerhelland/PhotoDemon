@@ -69,7 +69,7 @@ Friend Property Get IsActive() As Boolean
     IsActive = (m_TimerID <> 0)
 End Property
 
-Friend Sub StartTimer()
+Friend Sub StartTimer(Optional ByVal coalescingThreshold As Long = &H0&)
 
     'Previously (as a failsafe), we would kill old timers before starting new ones, but now that this class
     ' is used for certain animation duties, it's actually preferable to just replace the current timer as-is
@@ -80,7 +80,7 @@ Friend Sub StartTimer()
     If (m_Interval > 0) Then
         
         If OS.IsWin8OrLater Then
-            m_TimerID = SetCoalescableTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc, 0&)
+            m_TimerID = SetCoalescableTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc, coalescingThreshold)
         Else
             m_TimerID = SetTimer(OS.ThunderMainHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc)
         End If

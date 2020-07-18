@@ -101,7 +101,7 @@ Public Function DrawEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef sr
 End Function
 
 Public Function DrawEllipseI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
-    DrawEllipseI = GDI_Plus.GDIPlus_DrawRectI(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
+    DrawEllipseI = GDI_Plus.GDIPlus_DrawEllipseI(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
 End Function
 
 Public Function DrawEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseRight As Long, ByVal ellipseBottom As Long) As Boolean
@@ -397,7 +397,7 @@ Public Function FillEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef sr
 End Function
 
 Public Function FillEllipseI(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
-    FillEllipseI = GDI_Plus.GDIPlus_FillRectI(dstSurface.GetHandle, srcBrush.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
+    FillEllipseI = GDI_Plus.GDIPlus_FillEllipseI(dstSurface.GetHandle, srcBrush.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
 End Function
 
 Public Function FillEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseRight As Long, ByVal ellipseBottom As Long) As Boolean

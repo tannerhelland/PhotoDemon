@@ -49,6 +49,7 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByVal ptrToObject As Long) As Long
 
 Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorInfo Lib "user32" (ByVal ptrToCursorInfo As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
@@ -196,7 +197,7 @@ End Sub
 
 'Use this function to return a subsection of the current desktop in DIB format.
 ' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
-Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL, Optional ByVal includeCursor As Boolean = False)
+Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL, Optional ByVal includeCursor As Boolean = False, Optional ByVal includeClicks As Boolean = False)
     
     'Make sure the target DIB is the correct size
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -215,15 +216,51 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL,
     
     'Enforce normal alpha on the result
     If (dstDIB.GetDIBColorDepth = 32) Then dstDIB.ForceNewAlpha 255
-    
-    'If the caller wants the cursor included in the capture, we have extra work to do
-    If includeCursor Then
-    
-        'Retrieve cursor info from the system
-        Dim ci As W32_CursorInfo
-        ci.cbSize = LenB(ci)
-        If (GetCursorInfo(VarPtr(ci)) <> 0) Then
+
+    'Retrieve cursor info from the system
+    Dim ci As W32_CursorInfo
+    ci.cbSize = LenB(ci)
+    If (GetCursorInfo(VarPtr(ci)) <> 0) Then
+        
+        'If the caller wants mouse clicks included, handle those first
+        ' (so that our little overlay appears *above* the screenshot but *beneath* the cursor)
+        If includeClicks Then
             
+            'Note that we query both left and right mouse buttons, because GetAsyncKeyState
+            ' doesn't differentiate between these for left-handed mouse users and we don't
+            ' want to query additional APIs for that kind of low-level data - so said another
+            ' way, *either* button down gets an identical render.
+            Dim mbDown As Boolean
+            Const VK_LBUTTON As Long = &H1, VK_RBUTTON As Long = &H2
+            
+            'Also note that GetAsyncKeyState returns a weird short value, e.g. from MSDN:
+            ' "If the most significant bit is set, the key is down..."
+            mbDown = ((GetAsyncKeyState(VK_LBUTTON) And &H8000) <> 0)
+            If (Not mbDown) Then mbDown = ((GetAsyncKeyState(VK_RBUTTON) And &H8000) <> 0)
+            
+            If mbDown Then
+                
+                'pd2D handles rendering duties
+                Dim cBrush As pd2DBrush
+                Drawing2D.QuickCreateSolidBrush cBrush, RGB(255, 255, 0), 50!
+                
+                Dim cSurface As pd2DSurface
+                Set cSurface = New pd2DSurface
+                cSurface.WrapSurfaceAroundPDDIB dstDIB
+                cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+                
+                Dim cRadius As Long
+                cRadius = Interface.FixDPI(15)
+                PD2D.FillCircleI cSurface, cBrush, (ci.ptX - srcRect.Left), (ci.ptY - srcRect.Top), cRadius
+                Set cSurface = Nothing
+                
+            End If
+            
+        End If
+        
+        'If the caller wants the cursor displayed in the capture, we have extra work to do
+        If includeCursor Then
+    
             'Ensure cursor is visible
             If (ci.wFlags = CursorShowing) Then
             
@@ -252,10 +289,12 @@ Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RectL,
                     DrawIconEx dstDIB.GetDIBDC, (ci.ptX - srcRect.Left), (ci.ptY - srcRect.Top), ci.hCursor, 0&, 0&, 0&, 0&, DI_NORMAL
                 End If
             
+            '/end cursor is visible check
             End If
-        
+        '/end caller wants cursor displayed check
         End If
-    
+        
+    '/end cursor info retrieved successfully check
     End If
     
 End Sub

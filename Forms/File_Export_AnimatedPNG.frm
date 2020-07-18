@@ -271,7 +271,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     End If
     
     'Next, prepare various controls on the metadata panel
-    'mtdManager.SetParentImage m_SrcImage, PDIF_GIF
+    'mtdManager.SetParentImage m_SrcImage, PDIF_PNG
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

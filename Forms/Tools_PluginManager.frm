@@ -3,7 +3,7 @@ Begin VB.Form FormPluginManager
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Plugin manager"
+   Caption         =   " Third-party libraries"
    ClientHeight    =   7125
    ClientLeft      =   45
    ClientTop       =   315
@@ -53,7 +53,66 @@ Begin VB.Form FormPluginManager
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   1085
-      Caption         =   "Reset all plugin options"
+      Caption         =   "Reset all library options"
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   5895
+      Index           =   0
+      Left            =   3000
+      Top             =   240
+      Width           =   7695
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   300
+         Index           =   0
+         Left            =   120
+         Top             =   15
+         Width           =   2715
+         _ExtentX        =   4789
+         _ExtentY        =   529
+         Caption         =   "third-party library status:"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblPluginStatus 
+         Height          =   300
+         Left            =   2880
+         Top             =   15
+         Width           =   4770
+         _ExtentX        =   8414
+         _ExtentY        =   529
+         Caption         =   "GOOD"
+         FontSize        =   12
+         ForeColor       =   47369
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         Top             =   720
+         Width           =   705
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "status:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblStatus 
+         Height          =   285
+         Index           =   0
+         Left            =   1080
+         Top             =   720
+         Width           =   3540
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "installed, enabled, and up to date"
+         FontSize        =   11
+         ForeColor       =   49152
+         UseCustomForeColor=   -1  'True
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   5895
@@ -185,67 +244,6 @@ Begin VB.Form FormPluginManager
          Layout          =   2
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
-      Index           =   0
-      Left            =   3000
-      Top             =   240
-      Width           =   7695
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
-         Index           =   0
-         Left            =   120
-         Top             =   15
-         Width           =   2265
-         _ExtentX        =   3995
-         _ExtentY        =   529
-         Caption         =   "current plugin status:"
-         FontSize        =   12
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblPluginStatus 
-         Height          =   285
-         Left            =   2460
-         Top             =   15
-         Width           =   690
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "GOOD"
-         FontSize        =   12
-         ForeColor       =   47369
-         Layout          =   2
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   240
-         Top             =   720
-         Width           =   705
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "status:"
-         FontSize        =   11
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblStatus 
-         Height          =   285
-         Index           =   0
-         Left            =   1080
-         Top             =   720
-         Width           =   3540
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "installed, enabled, and up to date"
-         FontSize        =   11
-         ForeColor       =   49152
-         UseCustomForeColor=   -1  'True
-      End
-   End
 End
 Attribute VB_Name = "FormPluginManager"
 Attribute VB_GlobalNameSpace = False
@@ -256,17 +254,18 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 20/April/16
-'Last update: overhaul the dialog so that it never needs to be updated against new plugins.  (Instead, all settings
-'             are dynamically pulled from the PluginManager module, and a matching UI is generated at run-time.)
+'Last updated: 17/July/20
+'Last update: rename various UI elements on this page with "third-party libraries"
+'             instead of "plugins".  "Plugins" may mean something entirely different
+'             in future builds.
 '
-'I've considered merging this form with the main Tools > Options dialog, but that dialog is already cluttered,
-' and I really prefer that users don't mess around with plugin settings.  So this dialog exists as a standalone UI,
-' and it should really be used only if there are problems.
+'I've considered merging this form with the main Tools > Options dialog, but that dialog
+' is already cluttered, and I really prefer that users don't mess around with 3rd-party libraries.
+' So this dialog exists as a standalone UI, and it should really be used only if there are problems.
 '
-'As of April '16, this dialog should never need to be updated against new plugins.  All plugin information is
-' dynamically pulled from the PluginManager module, so simply update that module with a new plugin's information,
-' and this dialog will pull the changes at run-time.
+'As of April '16, this dialog should never need to be updated against new libraries.  All library
+' information is dynamically pulled from the PluginManager module, so simply update that module
+' with the new library's information, and this dialog will pull those changes at run-time.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -276,10 +275,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'These arrays will contain the full version strings of our various plugins, and the expected version strings
-Private m_PluginVersion() As String
+Private m_LibraryVersion() As String
 
 'If the user presses "cancel", we need to restore the previous enabled/disabled values
-Private m_PluginEnabled() As Boolean
+Private m_LibraryEnabled() As Boolean
 
 'We need to distinguish between the user clicking on the "disable plugin" button strip, and programmatically
 ' changing the button strip to reflect the current setting.
@@ -304,13 +303,13 @@ Private m_Colors As pdThemeColors
 
 Private Sub btsDisablePlugin_Click(ByVal buttonIndex As Long)
     If m_IgnoreButtonStripEvents Then Exit Sub
-    m_PluginEnabled(lstPlugins.ListIndex - 1) = (btsDisablePlugin.ListIndex = 0)
-    UpdatePluginLabels
+    m_LibraryEnabled(lstPlugins.ListIndex - 1) = (btsDisablePlugin.ListIndex = 0)
+    UpdateLibraryLabels
 End Sub
 
 Private Sub cmdBarMini_OKClick()
     
-    Message "Saving plugin options..."
+    Message "Saving preferences..."
     
     'Hide this form
     Me.Visible = False
@@ -323,9 +322,9 @@ Private Sub cmdBarMini_OKClick()
     
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If (PluginManager.IsPluginCurrentlyEnabled(i) <> m_PluginEnabled(i)) Then
-            PluginManager.SetPluginEnablement i, m_PluginEnabled(i)
-            PluginManager.SetPluginAllowed i, m_PluginEnabled(i)
+        If (PluginManager.IsPluginCurrentlyEnabled(i) <> m_LibraryEnabled(i)) Then
+            PluginManager.SetPluginEnablement i, m_LibraryEnabled(i)
+            PluginManager.SetPluginAllowed i, m_LibraryEnabled(i)
             settingsChanged = True
         End If
     Next i
@@ -457,10 +456,10 @@ Private Sub LoadAllPluginSettings()
     
     'Remember which plugins the user has enabled or disabled.  (We store these locally, instead of directly invoking
     ' the plugin manager, so that no changes are applied if the user clicks "Cancel".)
-    ReDim m_PluginEnabled(0 To PluginManager.GetNumOfPlugins - 1) As Boolean
+    ReDim m_LibraryEnabled(0 To PluginManager.GetNumOfPlugins - 1) As Boolean
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        m_PluginEnabled(i) = PluginManager.IsPluginCurrentlyEnabled(i)
+        m_LibraryEnabled(i) = PluginManager.IsPluginCurrentlyEnabled(i)
     Next i
     
     'Now, check version numbers of each plugin.  This is more complicated than it needs to be, on account of
@@ -470,23 +469,23 @@ Private Sub LoadAllPluginSettings()
     
     'We now have a collection of version numbers for our various plugins.  Let's use those to populate our
     ' "good/bad" labels for each plugin.
-    UpdatePluginLabels
+    UpdateLibraryLabels
     
     'Enable the last container the user selected
     lstPlugins.ListIndex = UserPrefs.GetPref_Long("Plugins", "Last Plugin Preferences Page", 0)
-    PluginChanged
+    LibraryChanged
     
 End Sub
 
 'Assuming version numbers have been successfully retrieved, this function can be called to update the
 ' green/red plugin label display on the main panel.
-Private Sub UpdatePluginLabels()
+Private Sub UpdateLibraryLabels()
     
     Dim pluginStatus As Boolean: pluginStatus = True
     
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        pluginStatus = pluginStatus And PopPluginLabel(i)
+        pluginStatus = pluginStatus And PopLibraryLabel(i)
     Next i
     
     If pluginStatus Then
@@ -499,19 +498,19 @@ Private Sub UpdatePluginLabels()
         
 End Sub
 
-'Retrieve all relevant plugin version numbers and store them in the m_PluginVersion() array
+'Retrieve all relevant plugin version numbers and store them in the m_LibraryVersion() array
 Private Sub CollectAllVersionNumbers()
     
-    ReDim m_PluginVersion(0 To PluginManager.GetNumOfPlugins - 1) As String
+    ReDim m_LibraryVersion(0 To PluginManager.GetNumOfPlugins - 1) As String
     
     'Start by querying the plugin file's metadata for version information.  This only works for some plugins,
     ' unfortunately, but we'll manually fill in outliers afterward.
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         If PluginManager.IsPluginCurrentlyInstalled(i) Then
-            m_PluginVersion(i) = PluginManager.GetPluginVersion(i)
+            m_LibraryVersion(i) = PluginManager.GetPluginVersion(i)
         Else
-            m_PluginVersion(i) = vbNullString
+            m_LibraryVersion(i) = vbNullString
         End If
     Next i
     
@@ -519,11 +518,11 @@ Private Sub CollectAllVersionNumbers()
     Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) Then
-            If (LenB(m_PluginVersion(i)) <> 0) Then
-                dotPos = InStrRev(m_PluginVersion(i), ".", -1, vbBinaryCompare)
-                If (dotPos <> 0) Then m_PluginVersion(i) = Left$(m_PluginVersion(i), dotPos - 1)
+            If (LenB(m_LibraryVersion(i)) <> 0) Then
+                dotPos = InStrRev(m_LibraryVersion(i), ".", -1, vbBinaryCompare)
+                If (dotPos <> 0) Then m_LibraryVersion(i) = Left$(m_LibraryVersion(i), dotPos - 1)
             Else
-                m_PluginVersion(i) = g_Language.TranslateMessage("none")
+                m_LibraryVersion(i) = g_Language.TranslateMessage("none")
             End If
         End If
     Next i
@@ -532,40 +531,40 @@ End Sub
 
 'Given a plugin's availability, expected version, and index on this form, populate the relevant labels associated with it.
 ' This function will return TRUE if the plugin is in good status, FALSE if it isn't (for any reason)
-Private Function PopPluginLabel(ByVal pluginID As CORE_PLUGINS) As Boolean
+Private Function PopLibraryLabel(ByVal pluginID As CORE_PLUGINS) As Boolean
     
     'Is this plugin present on the machine?
     If PluginManager.IsPluginCurrentlyInstalled(pluginID) Then
     
         'If present, has it been forcibly disabled?  (Note that we use our internal enablement tracker for this,
         ' to reflect any changes the user has just made.)
-        If m_PluginEnabled(pluginID) Then
+        If m_LibraryEnabled(pluginID) Then
             
             'If this plugin is present and enabled, does its version match what we expect?
-            If Strings.StringsEqual(m_PluginVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), False) Then
+            If Strings.StringsEqual(m_LibraryVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), False) Then
                 lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed and up to date")
                 lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
-                PopPluginLabel = True
+                PopLibraryLabel = True
                 
             'Version mismatch
             Else
                 lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but version is unexpected")
                 lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-                PopPluginLabel = False
+                PopLibraryLabel = False
             End If
             
         'Plugin is disabled
         Else
             lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but disabled by user")
             lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-            PopPluginLabel = False
+            PopLibraryLabel = False
         End If
         
     'Plugin is not present on the machine
     Else
         lblStatus(pluginID).Caption = g_Language.TranslateMessage("not installed")
         lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-        PopPluginLabel = False
+        PopLibraryLabel = False
     End If
     
 End Function
@@ -579,10 +578,10 @@ End Sub
 
 'When a new plugin is selected, display only the relevant plugin panel
 Private Sub lstPlugins_Click()
-    PluginChanged
+    LibraryChanged
 End Sub
 
-Private Sub PluginChanged()
+Private Sub LibraryChanged()
 
     'Display the overview panel
     If (lstPlugins.ListIndex = 0) Then
@@ -602,8 +601,8 @@ Private Sub PluginChanged()
         lblPluginExpectedVersion.Caption = PluginManager.ExpectedPluginVersion(pluginIndex)
         
         If PluginManager.IsPluginCurrentlyInstalled(pluginIndex) Then
-            lblPluginVersion.Caption = m_PluginVersion(pluginIndex)
-            If Strings.StringsEqual(m_PluginVersion(pluginIndex), PluginManager.ExpectedPluginVersion(pluginIndex), False) Then
+            lblPluginVersion.Caption = m_LibraryVersion(pluginIndex)
+            If Strings.StringsEqual(m_LibraryVersion(pluginIndex), PluginManager.ExpectedPluginVersion(pluginIndex), False) Then
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
             Else
                 lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
@@ -619,7 +618,7 @@ Private Sub PluginChanged()
         hypLicense.URL = PluginManager.GetPluginLicenseURL(pluginIndex)
         
         m_IgnoreButtonStripEvents = True
-        If m_PluginEnabled(pluginIndex) Then btsDisablePlugin.ListIndex = 0 Else btsDisablePlugin.ListIndex = 1
+        If m_LibraryEnabled(pluginIndex) Then btsDisablePlugin.ListIndex = 0 Else btsDisablePlugin.ListIndex = 1
         m_IgnoreButtonStripEvents = False
         
     End If

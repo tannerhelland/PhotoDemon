@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.491</langversion>
+<langversion>6.7.495</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -6433,13 +6433,18 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated screen capture (APNG)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Options</original>
 <translation>Opciones</translation>
 </phrase>
 
 <phrase>
-<original>Plugin manager</original>
-<translation>gerente Plugin</translation>
+<original>Third-party libraries</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6459,11 +6464,6 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Build standalone package</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Animated screen capture</original>
 <translation></translation>
 </phrase>
 
@@ -15747,8 +15747,28 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- BEGIN text for Tools_PluginManager.frm (FormPluginManager) -->
 
 <phrase>
-<original>Reset all plugin options</original>
-<translation>Restablecer todas las opciones de complementos</translation>
+<original>Reset all library options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>third-party library status</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BUENO</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>estado</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>instalado, se activa, y hasta la fecha</translation>
 </phrase>
 
 <phrase>
@@ -15779,31 +15799,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <phrase>
 <original>version found</original>
 <translation>versión que se encuentra</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>plugin de estado actual</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BUENO</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>estado</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>instalado, se activa, y hasta la fecha</translation>
-</phrase>
-
-<phrase>
-<original>Saving plugin options</original>
-<translation>Guardando opciones del plugin</translation>
 </phrase>
 
 <phrase>
@@ -15846,7 +15841,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>desaparecido</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 39 phrases. 19 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 20 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -16009,12 +16004,74 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Layer_Transparency_Threshold.frm-->
 
+<!-- BEGIN text for Tools_ScreenVideo.frm (FormRecordAPNG) -->
+
+<phrase>
+<original>Select capture area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>End recording</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1:%2 @ %3 fps</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Tools_ScreenVideo.frm-->
+
+<!-- BEGIN text for Tools_ScreenVideoPrefs.frm (FormRecordAPNGPrefs) -->
+
+<phrase>
+<original>maximum frame rate (fps)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>repeat final animation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>record mouse actions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cursor only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cursor and clicks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Continue</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for Tools_ScreenVideoPrefs.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2652</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5043 phrases. -->
-<!-- 2391 are duplicates, so only 2652 unique phrases have been written to file. -->
-<!-- These 2652 phrases contain approximately 12084 total words. -->
+<!-- As of this build, PhotoDemon contains 5073 phrases. -->
+<!-- 2412 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 12105 total words. -->
 
 </pdData>

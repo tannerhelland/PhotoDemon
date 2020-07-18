@@ -391,14 +391,14 @@ Private m_RemoveDuplicates As Boolean
 Private Sub cmdConvertLabels_Click()
 
     'Make sure a file has been selected
-    If lstProjectFiles.ListIndex <> -1 Then
+    If (lstProjectFiles.ListIndex <> -1) Then
 
         'Read the file into a string array
         Dim srcFilename As String
         srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
         
         Dim fileContents As String
-        fileContents = GetFileAsString(srcFilename)
+        fileContents = getFileAsString(srcFilename)
         
         Dim fileLines() As String
         fileLines = Split(fileContents, vbCrLf)
@@ -536,7 +536,7 @@ Private Sub cmdMaster_Click()
     If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_MasterText = GetFileAsString(fPath)
+        m_MasterText = getFileAsString(fPath)
                 
     End If
     
@@ -549,17 +549,17 @@ Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
     closeTagName = "</" & origTagName & ">"
     
     Dim findText As String, replaceText As String
-    findText = openTagName & GetTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
+    findText = openTagName & getTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
     
     'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place; as such, we want to
     ' auto-increment the language's version number to trigger an update on client machines.
     If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
         
-        findText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+        findText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
         
         'Retrieve the current language version
         Dim curVersion As String
-        curVersion = GetTextBetweenTags(sourceTextTranslation, origTagName)
+        curVersion = getTextBetweenTags(sourceTextTranslation, origTagName)
         
         'Parse the current version into two discrete chunks: the major/minor value, and the revision value
         Dim curMajorMinor As String, curRevision As Long
@@ -571,7 +571,7 @@ Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
         replaceText = openTagName & curMajorMinor & "." & Trim$(Str$(curRevision)) & closeTagName
             
     Else
-        replaceText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+        replaceText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
     End If
     
     destinationText = Replace$(destinationText, findText, replaceText)
@@ -614,7 +614,7 @@ Private Sub cmdMerge_Click()
         phrasesProcessed = phrasesProcessed + 1
     
         'Retrieve the original text associated with this phrase tag
-        origText = GetTextBetweenTags(m_MasterText, "original", sPos)
+        origText = getTextBetweenTags(m_MasterText, "original", sPos)
         
         'Attempt to retrieve a translation for this phrase using the old language file
         translatedText = GetTranslationTagFromCaption(origText)
@@ -682,9 +682,9 @@ Private Function GetPhraseTagLocation(ByRef srcString As String) As Long
     sLocation = InStr(1, m_OldLanguageText, srcString, vbBinaryCompare)
     
     'If the source string was found, work backward to find the phrase tag location
-    If sLocation > 0 Then
+    If (sLocation > 0) Then
         sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbBinaryCompare)
-        If sLocation > 0 Then
+        If (sLocation > 0) Then
             GetPhraseTagLocation = sLocation
         Else
             GetPhraseTagLocation = 0
@@ -709,7 +709,7 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = GetTextBetweenTags(m_OldLanguageText, "translation", phraseLocation)
+        origCaption = getTextBetweenTags(m_OldLanguageText, "translation", phraseLocation)
         'postProcessText origCaption
         GetTranslationTagFromCaption = origCaption
         
@@ -722,7 +722,7 @@ End Function
 'Given a file (as a String) and a tag (without brackets), return the text between that tag.
 ' NOTE: this function will always return the first occurence of the specified tag, starting at the specified search position.
 ' If the tag is not found, a blank string will be returned.
-Private Function GetTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
+Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
 
     Dim tagStart As Long, tagEnd As Long
     tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbBinaryCompare)
@@ -741,14 +741,14 @@ Private Function GetTextBetweenTags(ByRef fileText As String, ByRef fTag As Stri
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
             If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(fTag) + 2
-            GetTextBetweenTags = Mid$(fileText, tagStart, tagEnd - tagStart)
+            getTextBetweenTags = Mid$(fileText, tagStart, tagEnd - tagStart)
             
         Else
-            GetTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
+            getTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
         End If
         
     Else
-        GetTextBetweenTags = vbNullString
+        getTextBetweenTags = vbNullString
     End If
 
 End Function
@@ -773,7 +773,7 @@ Private Sub cmdMergeAll_Click()
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     'Auto-load the latest master language file
-    m_MasterText = GetFileAsString(srcFolder & "Master\MASTER.xml")
+    m_MasterText = getFileAsString(srcFolder & "Master\MASTER.xml")
     
     'Rather than backup the old files to the dev language folder (which is confusing), I now place them inside a dedicated backup folder.
     Dim backupFolder As String
@@ -787,7 +787,7 @@ Private Sub cmdMergeAll_Click()
     Do While (LenB(chkFile) > 0)
         
         'Load the file into a string
-        m_OldLanguageText = GetFileAsString(srcFolder & chkFile)
+        m_OldLanguageText = getFileAsString(srcFolder & chkFile)
         m_OldLanguagePath = srcFolder & chkFile
         
         'MsgBox m_OldLanguageText
@@ -828,7 +828,7 @@ Private Sub cmdMergeAll_Click()
                 phrasesProcessed = phrasesProcessed + 1
             
                 'Retrieve the original text associated with this phrase tag
-                origText = GetTextBetweenTags(m_MasterText, "original", sPos)
+                origText = getTextBetweenTags(m_MasterText, "original", sPos)
                 
                 'Attempt to retrieve a translation for this phrase using the old language file
                 translatedText = GetTranslationTagFromCaption(origText)
@@ -916,7 +916,7 @@ Private Sub cmdOldLanguage_Click()
     If cDlg.VBGetOpenFileName(tmpLangFile, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_OldLanguageText = GetFileAsString(tmpLangFile)
+        m_OldLanguageText = getFileAsString(tmpLangFile)
         m_OldLanguagePath = tmpLangFile
                 
     End If
@@ -926,7 +926,7 @@ End Sub
 'Process all files in a project file.  (NOTE: a VBP file must first be selected before running this step.)
 Private Sub cmdProcess_Click()
 
-    If Len(m_VBPFile) = 0 Then
+    If (LenB(m_VBPFile) = 0) Then
         MsgBox "Select a VBP file first.", vbExclamation + vbApplicationModal + vbOKOnly, "Oops"
         Exit Sub
     End If
@@ -997,7 +997,7 @@ Private Sub cmdProcess_Click()
     
     'We are now going to compare the length of the old file and new file.  If the lengths match, there's no reason to write out this new file.
     Dim oldFileString As String
-    oldFileString = GetFileAsString(outputFile)
+    oldFileString = getFileAsString(outputFile)
     
     Dim newFileLen As Long, oldFileLen As Long
     
@@ -1021,7 +1021,7 @@ End Sub
 'Given a VB file (form, module, class, user control), extract any relevant text from it
 Private Sub ProcessFile(ByVal srcFile As String)
 
-    If Len(srcFile) = 0 Then Exit Sub
+    If (LenB(srcFile) = 0) Then Exit Sub
 
     m_FileName = getFilename(srcFile)
     
@@ -1047,7 +1047,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
             Exit Sub
             
         'Some developer-only dialogs do not need to be translated.
-        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm", "Tools_ScreenVideo.frm"
+        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm"
             Exit Sub
     
     End Select
@@ -1055,7 +1055,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
     
     'Start by copying all text from the file into a line-by-line array
     Dim fileContents As String
-    fileContents = GetFileAsString(srcFile)
+    fileContents = getFileAsString(srcFile)
     Dim fileLines() As String
     fileLines = Split(fileContents, vbCrLf)
     
@@ -1346,7 +1346,7 @@ Private Function AddPhrase(ByRef phraseText As String) As Boolean
     'Before writing the phrase out, check to see if it already exists
     If m_RemoveDuplicates Then
                 
-        If InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0 Then
+        If (InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0) Then
             AddPhrase = False
         Else
             AddPhrase = (LenB(phraseText) <> 0)
@@ -1839,7 +1839,7 @@ Private Sub cmdSelectVBP_Click()
     
     m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
     lblVBP = "Active VBP: " & m_VBPFile
-    m_VBPPath = GetDirectory(m_VBPFile)
+    m_VBPPath = getDirectory(m_VBPFile)
     
     'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
     'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
@@ -1851,7 +1851,7 @@ Private Sub cmdSelectVBP_Click()
     
     'Load the file into a string array, split up line-by-line
     Dim vbpContents As String
-    vbpContents = GetFileAsString(m_VBPFile)
+    vbpContents = getFileAsString(m_VBPFile)
     vbpText = Split(vbpContents, vbCrLf)
     ReDim vbpFiles(0 To UBound(vbpText)) As String
     Dim numOfFiles As Long
@@ -1917,13 +1917,13 @@ Private Sub cmdSelectVBP_Click()
 End Sub
 
 'Given a full file name, remove everything but the directory structure
-Private Function GetDirectory(ByVal sString As String) As String
+Private Function getDirectory(ByVal sString As String) As String
     
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            GetDirectory = Left(sString, x)
+            getDirectory = Left(sString, x)
             Exit Function
         End If
     Next x
@@ -1931,11 +1931,11 @@ Private Function GetDirectory(ByVal sString As String) As String
 End Function
 
 'Retrieve an entire file and return it as a string.  pdXML is used to support UTF-8 encodings (which PD's language files default to).
-Private Function GetFileAsString(ByVal fName As String) As String
+Private Function getFileAsString(ByVal fName As String) As String
            
     'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
     If m_XML.loadXMLFile(fName) Then
-        GetFileAsString = m_XML.returnCurrentXMLString(True)
+        getFileAsString = m_XML.returnCurrentXMLString(True)
         
     Else
         
@@ -1946,16 +1946,16 @@ Private Function GetFileAsString(ByVal fName As String) As String
             fileNum = FreeFile
             
             Open fName For Binary As #fileNum
-                GetFileAsString = Space$(LOF(fileNum))
-                Get #fileNum, , GetFileAsString
+                getFileAsString = Space$(LOF(fileNum))
+                Get #fileNum, , getFileAsString
             Close #fileNum
             
             'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-            If InStr(1, GetFileAsString, vbTab) <> 0 Then GetFileAsString = Replace(GetFileAsString, vbTab, vbNullString)
+            If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, vbNullString)
             
         Else
             Debug.Print "File does not exist; exiting."
-            GetFileAsString = vbNullString
+            getFileAsString = vbNullString
         End If
             
     End If

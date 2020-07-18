@@ -519,19 +519,21 @@ Public Sub InitializeMenus()
     AddMenuItem "Play macro...", "tools_playmacro", 7, 6, , "macro_play"
     AddMenuItem "Recent macros", "tools_recentmacros", 7, 7
     AddMenuItem "-", "-", 7, 8
-    AddMenuItem "Options...", "tools_options", 7, 9, , "pref_advanced"
-    AddMenuItem "Plugin manager...", "tools_plugins", 7, 10, , "tools_plugin"
+    AddMenuItem "Animated screen capture (APNG)...", "tools_screenrecord", 7, 9, , "file_importscreen"
+    AddMenuItem "-", "-", 7, 10
+    AddMenuItem "Options...", "tools_options", 7, 11, , "pref_advanced"
+    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 12, , "tools_plugin"
     
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     If debugMenuVisibility Then
-        AddMenuItem "-", "-", 7, 11
-        AddMenuItem "Developers", "tools_developers", 7, 12
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 12, 0, , False
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 12, 1, , False
-            AddMenuItem "-", "-", 7, 12, 2
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 12, 3, , False
-        AddMenuItem "Test", "effects_developertest", 7, 13
+        AddMenuItem "-", "-", 7, 13
+        AddMenuItem "Developers", "tools_developers", 7, 14
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 14, 0, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 14, 1, , False
+            AddMenuItem "-", "-", 7, 14, 2
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 14, 3, , False
+        AddMenuItem "Test", "effects_developertest", 7, 15
     End If
     
     'View Menu
@@ -1270,7 +1272,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, True, UNDO_Nothing
         
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_plugins", False, False, True, UNDO_Nothing
+        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_3rdpartylibs", False, False, True, UNDO_Nothing
         
         
         'View menu
@@ -2431,10 +2433,13 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
             
         Case "tools_recentmacros"
         
+        Case "tools_screenrecord"
+            ShowPDDialog vbModal, FormRecordAPNGPrefs
+        
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions
             
-        Case "tools_plugins"
+        Case "tools_3rdpartylibs"
             ShowPDDialog vbModal, FormPluginManager
             
         Case "tools_developers"

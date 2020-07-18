@@ -28,6 +28,15 @@ Begin VB.Form FormRecordAPNG
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   640
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblInfo 
+      Height          =   495
+      Left            =   120
+      Top             =   6600
+      Width           =   3855
+      _ExtentX        =   6800
+      _ExtentY        =   873
+      Caption         =   ""
+   End
    Begin PhotoDemon.pdButton cmdExit 
       Height          =   495
       Left            =   8280
@@ -40,13 +49,13 @@ Begin VB.Form FormRecordAPNG
    End
    Begin PhotoDemon.pdButton cmdStart 
       Height          =   495
-      Left            =   6960
+      Left            =   5880
       TabIndex        =   0
       Top             =   6600
-      Width           =   1215
-      _ExtentX        =   2143
+      Width           =   2295
+      _ExtentX        =   4048
       _ExtentY        =   873
-      Caption         =   "Start"
+      Caption         =   "Start recording"
    End
 End
 Attribute VB_Name = "FormRecordAPNG"
@@ -159,6 +168,16 @@ Private m_DstFilename As String
 'Target maximum frame rate (as frames-per-second)
 Private m_FPS As Double
 
+'Current actual FPS (a total of all frame times; divide by timer hits NOT frame count,
+' as duplicate frames are auto-suspended)
+Private m_NetFrameTime As Currency, m_lastFrameTime As Currency, m_TimerHits As Long
+
+'Repeat count of the final APNG
+Private m_LoopCount As Long
+
+'Whether to include mouse cursor position and/or clicks in the animation
+Private m_ShowCursor As Boolean, m_ShowClicks As Boolean
+
 'Capture rects; once populated (at the start of the capture), these *cannot* be changed
 Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
 
@@ -185,6 +204,9 @@ Private m_captureDIB24 As pdDIB, m_captureDIB32 As pdDIB
 ' switches between two separate capture DIBs; this provides a fast way to perform duplicate
 ' detection within a fixed memory budget.
 Private m_captureDIB24_2 As pdDIB
+
+'Time stamp of when the recording started; used to determine elapsed time for the UI
+Private m_StartTimeMS As Currency
 
 'Captured frames are stored as a collection of lz4-compressed arrays.  I don't currently have
 ' access to a DEFLATE library that can compress screen-capture-sized frames (e.g. 1024x768) in
@@ -221,7 +243,7 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double)
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean)
         
     'Before doing anything else, determine how we're going to "cut-out" a portion of this window
     m_WindowMethod = tw_GDIRegion
@@ -230,6 +252,9 @@ Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String
     m_DstFilename = dstFilename
     m_FPS = dstFrameRateFPS
     If (ptrToParentRect <> 0) Then CopyMemoryStrict VarPtr(m_parentRect), ptrToParentRect, LenB(m_parentRect)
+    m_LoopCount = dstLoopCount
+    m_ShowCursor = dstShowCursor
+    m_ShowClicks = dstShowClicks
     
     'Initialize a last-used settings object
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -266,6 +291,9 @@ Private Sub PrepWindowForRecording()
             SetWindowLong Me.hWnd, GWL_EXSTYLE, GetWindowLong(Me.hWnd, GWL_EXSTYLE) Or WS_EX_LAYERED
         
         End If
+        
+        'Apply any icons
+        cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
         
         'When applying theming, note that we request to paint our window manually;
         ' normally PD handles this centrally, but this window has special needs.
@@ -318,8 +346,16 @@ Private Sub cmdStart_Click()
         
         'If all preliminary checks passed, activate the capture timer.  Note that this
         ' *will* forcibly overwrite the file at the destination location, if one exists.
+        ' (Also, note that we deliberately request a slightly shorter interval (4%) than
+        ' we require - timer events are not that precise, especially because of coalescing
+        ' on Win 7+.  A slightly reduced interval gives us some breathing room and
+        ' increases our chances of hitting the user's requested frame rate.)
+        Dim tInterval As Long
+        tInterval = Int(1000# / m_FPS + 0.5)
+        tInterval = Int((tInterval * 96) \ 100)
+        
         Set m_Timer = New pdTimer
-        m_Timer.Interval = Int(1000# / m_FPS + 0.5)
+        m_Timer.Interval = tInterval
         
         'Prep the capture DIB
         Set m_captureDIB24 = New pdDIB
@@ -343,7 +379,8 @@ Private Sub cmdStart_Click()
         If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
             
             'Change the start button to a STOP button
-            cmdStart.Caption = g_Language.TranslateMessage("Stop")
+            cmdStart.AssignImage "macro_stop", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
+            cmdStart.Caption = g_Language.TranslateMessage("End recording")
             
             'Start the capture timer
             m_CaptureActive = True
@@ -371,8 +408,8 @@ Private Sub Capture_Stop()
         Dim i As Long
         For i = 0 To m_FrameCount - 1
             
-            g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Processing frame %1 of %2", i + 1, m_FrameCount)
-            VBHacks.DoEvents_SingleHwnd Me.hWnd
+            lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+            lblInfo.RequestRefresh
             
             'Extract this frame into the capture DIB, then immediately free its compressed memory
             Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
@@ -391,14 +428,19 @@ Private Sub Capture_Stop()
             'Pass the frame off to the PNG encoder
             m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
             
+            'Every few frames, notify the OS that we're still alive
+            If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
+            
         Next i
         
         'Notify the PNG encoder that the stream has ended
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop 0
+        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
         
-        'Reset this button's caption
-        cmdStart.Caption = g_Language.TranslateMessage("Start")
-        
+        'Reset this button's caption and notify the user that we're finished
+        cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
+        cmdStart.Caption = g_Language.TranslateMessage("Start recording")
+        lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
+            
         'Immediately trigger a save of the current screen position.
         ' (Unlike other dialogs, we don't save position at export time - we save it after
         ' a successful capture!)
@@ -528,16 +570,8 @@ Private Sub CaptureFrameNow()
             Set captureTarget = m_captureDIB24
         End If
         
-        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, True
-        
-        'Capture can take a non-trivial amount of time on Vista+ due to compositor changes in DWM.
-        ' To try and accurately mirror the moment that was actually captured, set the capture time
-        ' to the halfway point between capture start and end.
-        Dim capTime2 As Currency
-        capTime2 = VBHacks.GetHighResTimeInMSEx()
-        
-        'Safety check for clock rollover
-        If (capTime < capTime2) Then capTime = (capTime + capTime2) / 2
+        Dim cursX As Long, cursY As Long, mbState As Boolean
+        ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, m_ShowCursor, m_ShowClicks
         
         'Before saving this frame, check for duplicate frames.  This is very common during
         ' a screen capture event, and we can save a lot of memory by skipping these frames.
@@ -686,13 +720,52 @@ Private Sub m_Resize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lon
     cmdStart.SetLeft (myClientRect.x2 - myClientRect.x1) - (btnPadding + cmdExit.GetWidth) - (btnPadding + cmdStart.GetWidth)
     cmdStart.SetTop (myClientRect.y2 - myClientRect.y1) - (btnPadding + cmdStart.GetHeight)
     
+    'Reposition the "info" label
+    lblInfo.SetPositionAndSize Interface.FixDPI(8), cmdStart.GetTop, PDMath.Max2Int(cmdStart.GetLeft - (btnPadding + Interface.FixDPI(8)), btnPadding), lblInfo.GetHeight
+    
     'Force a repaint of the back buffer (to ensure the window transparency gets updated too!)
     ForceWindowRepaint
     
 End Sub
 
 Private Sub m_Timer_Timer()
+    
+    'Update the "time elapsed" window
+    Dim timeElapsedInSeconds As Currency
+    
+    If (m_FrameCount = 0) Then
+        VBHacks.GetHighResTimeInMS m_StartTimeMS
+        timeElapsedInSeconds = 0
+        m_NetFrameTime = 0
+        m_TimerHits = 0
+    Else
+        timeElapsedInSeconds = (VBHacks.GetHighResTimeInMSEx() - m_StartTimeMS) \ 1000
+    End If
+    
+    'Capture the current frame
     If m_CaptureActive Then CaptureFrameNow
+    
+    'Estimate FPS
+    Dim estimatedFPS As Double
+    If (m_TimerHits > 0) Then
+        m_NetFrameTime = m_NetFrameTime + (VBHacks.GetHighResTimeInMSEx() - m_lastFrameTime)
+        estimatedFPS = m_NetFrameTime / m_TimerHits
+        If (estimatedFPS > 0) Then estimatedFPS = (1000 / estimatedFPS)
+    Else
+        estimatedFPS = m_FPS
+    End If
+    
+    m_TimerHits = m_TimerHits + 1
+    VBHacks.GetHighResTimeInMS m_lastFrameTime
+    
+    'Convert total recording time to usable minutes/seconds values
+    Dim timeElapsedInMinutes As Currency
+    timeElapsedInMinutes = Int(timeElapsedInSeconds / 60# + 0.5)
+    timeElapsedInSeconds = timeElapsedInSeconds - (timeElapsedInMinutes * 60)
+    
+    'Display recording speed and elapsed time to the user
+    lblInfo.Caption = g_Language.TranslateMessage("%1:%2 @ %3 fps", Format$(timeElapsedInMinutes, "00"), Format$(timeElapsedInSeconds, "00"), Format$(estimatedFPS, "0.0"))
+    
 End Sub
 
 'Want to emergency stop capture for whatever reason?  Call this function.

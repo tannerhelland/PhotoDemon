@@ -1478,20 +1478,28 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Options..."
+         Caption         =   "Animated screen capture (APNG)..."
          Index           =   9
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Plugin manager..."
+         Caption         =   "-"
          Index           =   10
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "-"
+         Caption         =   "Options..."
          Index           =   11
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Developers"
+         Caption         =   "Third-party libraries..."
          Index           =   12
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "-"
+         Index           =   13
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "Developers"
+         Index           =   14
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Theme editor..."
             Index           =   0
@@ -1507,10 +1515,6 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Build standalone package..."
             Index           =   3
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Animated screen capture..."
-            Index           =   4
          End
       End
       Begin VB.Menu MnuTest 
@@ -2244,26 +2248,16 @@ End Sub
 
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
 Private Sub MnuDevelopers_Click(Index As Integer)
-    
     Select Case Index
-        
         Case 0
             Menus.ProcessDefaultAction_ByName "tools_themeeditor"
-            
         Case 1
             Menus.ProcessDefaultAction_ByName "tools_themepackage"
-        
         Case 2
             'separator
-        
         Case 3
             Menus.ProcessDefaultAction_ByName "tools_standalonepackage"
-            
-        Case 4
-            ShowPDDialog vbModal, FormRecordAPNGPrefs
-        
     End Select
-    
 End Sub
 
 'Menu: effect > transform actions
@@ -3610,7 +3604,34 @@ End Sub
 
 'All tool menu items are launched from here
 Private Sub mnuTool_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuTool(Index).Caption
+    Select Case Index
+        Case 0
+            'Language top-level
+        Case 1
+            Menus.ProcessDefaultAction_ByName "tools_languageeditor"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "tools_theme"
+        Case 4
+            'separator
+        Case 5
+            'Create macro top-level
+        Case 6
+            Menus.ProcessDefaultAction_ByName "tools_playmacro"
+        Case 7
+            'Recent macros top-level
+        Case 8
+            'separator
+        Case 9
+            Menus.ProcessDefaultAction_ByName "tools_screenrecord"
+        Case 10
+            'separator
+        Case 11
+            Menus.ProcessDefaultAction_ByName "tools_options"
+        Case 12
+            Menus.ProcessDefaultAction_ByName "tools_3rdpartylibs"
+    End Select
 End Sub
 
 'Add / Remove / Modify a layer's alpha channel with this menu

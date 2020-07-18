@@ -3313,6 +3313,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
                 If m_apngTrnsAvailable Then
                     
                     m_streamingFrames(m_FrameCount).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                    m_streamingFrames(m_FrameCount).frameDIB.SetInitialAlphaPremultiplicationState True
                     With m_streamingFrames(m_FrameCount).rectOfInterest
                         .Left = 0
                         .Top = 0
