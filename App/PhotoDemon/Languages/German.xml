@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.2052</langversion>
+<langversion>8.0.2086</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -593,7 +593,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation>Animation-Frame %1 von %2 wird gespeichert</translation>
+<translation>Animations-Frame %1 von %2 wird gespeichert</translation>
 </phrase>
 
 <phrase>
@@ -945,7 +945,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Are you sure you want to cancel %1?</original>
-<translation>Wollen Sie wirklich %1 abbrechen?</translation>
+<translation>Sind Sie sicher, dass Sie %1 abbrechen wollen?</translation>
 </phrase>
 
 <phrase>
@@ -1021,7 +1021,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Are you sure you want to continue?</original>
-<translation>Wollen Sie wirklich fortfahren?</translation>
+<translation>Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
@@ -1219,7 +1219,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
 
 (Press No to continue recording.)</original>
-<translation>Dieses Makro enthält keine beschreibbaren Aktionen. Wollen Sie die Aufzeichnung wirklich stoppen? 
+<translation>Dieses Makro enthält keine aufzeichenbaren Aktionen. Sind Sie sicher, dass Sie die Aufzeichnung stoppen wollen? 
 
 (Drücken Sie "Nein", um die Aufzeichnung fortzusetzen.)</translation>
 </phrase>
@@ -1243,7 +1243,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sitzung aufgezeichneten Aktionen permanent verloren sein. Wollen Sie wirklich abbrechen?
+<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sitzung aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
 
 (Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
@@ -3252,7 +3252,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte verwenden Sie das Menüitem "Hilfe > Bug-Bericht einreichen", um dieses Vorfall zu melden.</translation>
+<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte verwenden Sie das Menü-Item "Hilfe > Bug-Bericht einreichen", um dieses Vorfall zu melden.</translation>
 </phrase>
 
 <phrase>
@@ -4033,7 +4033,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Please select a folder</original>
-<translation>Bitte wählen Sie einen Ordner aus</translation>
+<translation>Bitte selektieren Sie einen Ordner</translation>
 </phrase>
 
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4563,12 +4563,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation>Animation-Frame %1 von %2 wird optimiert</translation>
+<translation>Animations-Frame %1 von %2 wird optimiert</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation>Animation-Frame %1 von %2 wird analysiert</translation>
+<translation>Animations-Frame %1 von %2 wird analysiert</translation>
 </phrase>
 
 <!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6441,7 +6441,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Animated screen capture (APNG)</original>
-<translation></translation>
+<translation>Animiertes Screen-Capture (APNG)</translation>
 </phrase>
 
 <phrase>
@@ -6451,7 +6451,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Third-party libraries</original>
-<translation></translation>
+<translation>Drittanbieter-Bibliotheken</translation>
 </phrase>
 
 <phrase>
@@ -8035,7 +8035,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Wenn Sie jetzt beenden, werden diese Autosave-Daten für immer verloren sein. Wollen Sie wirklich beenden?</translation>
+<translation>Wenn Sie jetzt beenden, werden diese Autosave-Daten für immer verloren sein. Sind Sie sicher, dass Sie beenden wollen?</translation>
 </phrase>
 
 <phrase>
@@ -8512,7 +8512,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>please select a node</original>
-<translation>Bitte wählen Sie einen Node aus</translation>
+<translation>Bitte selektieren Sie einen Node</translation>
 </phrase>
 
 <!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
@@ -8813,7 +8813,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (X total)</translation>
+<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (X in total)</translation>
 </phrase>
 
 <phrase>
@@ -8832,7 +8832,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>HINWEIS: Wenn Sie auf "Speichern" klicken, speichert PhotoDemon dieses Bild unter Verwendung seines aktuellen Dateinamens.
 
- Wenn Sie es unter einem anderen Namen speichern wollen, wählen Sie bitte "Abbrechen" aus, dann verwenden Sie das Menüitem "Datei > Speichern unter".</translation>
+ Wenn Sie es unter einem anderen Namen speichern wollen, selektieren Sie bitte "Abbrechen", dann verwenden Sie das Menü-Item "Datei > Speichern unter".</translation>
 </phrase>
 
 <phrase>
@@ -8857,7 +8857,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation>%1 hat ungesicherte Änderungen. Wie möchten Sie vorgehen?</translation>
+<translation>%1 hat ungesicherte Änderungen. Was würden Sie gerne tun?</translation>
 </phrase>
 
 <phrase>
@@ -8872,7 +8872,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (%1 total)</translation>
+<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (%1 in total)</translation>
 </phrase>
 
 <!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -9006,7 +9006,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>* current image state</original>
-<translation>* aktueller Bildstatus</translation>
+<translation>* aktueller Bildzustand</translation>
 </phrase>
 
 <phrase>
@@ -11307,7 +11307,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Are you sure you want to cancel the current batch process?</original>
-<translation>Wollen Sie wirklich den aktuellen Batch-Prozess abbrechen?</translation>
+<translation>Sind Sie sicher, dass Sie den aktuellen Batch-Prozess abbrechen wollen?</translation>
 </phrase>
 
 <phrase>
@@ -11366,7 +11366,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, es ist aber kein Makro ausgewählt worden. Bitte wählen Sie eine gültige Makrodatei aus.</translation>
+<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, es ist aber kein Makro ausgewählt worden. Bitte selektieren Sie eine gültige Makrodatei.</translation>
 </phrase>
 
 <phrase>
@@ -11396,7 +11396,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte wählen Sie einen uneingeschränkten Ordner (keinen Systemordner!) für den Batch-Prozess aus.</translation>
+<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen uneingeschränkten Ordner (keinen Systemordner!) für den Batch-Prozess.</translation>
 </phrase>
 
 <phrase>
@@ -11924,7 +11924,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon vor Erfassen (Capture) minimieren</translation>
+<translation>PhotoDemon vor Erfassung (Capture) minimieren</translation>
 </phrase>
 
 <phrase>
@@ -11934,7 +11934,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation>Bitte wählen Sie ein Fenster zum Erfassen (Capture) aus.</translation>
+<translation>Bitte selektieren Sie ein zu erfassendes (Capture-) Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -11969,7 +11969,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select another one.</original>
-<translation>Bitte wählen Sie einen anderen aus.</translation>
+<translation>Bitte selektieren Sie einen anderen.</translation>
 </phrase>
 
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -14094,7 +14094,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation>Normalerweise breiten sich Füllungen ausgehend von einem Zielpixel aus, benachbarte Pixel werden Schritt für Schritt hinzugefügt. Alternativ können Sie festlegen, das gesamte Bild zu analysieren, ohne Empfehlung zur Kontinuität.</translation>
+<translation>Normalerweise breiten sich Füllungen ausgehend von einem Zielpixel aus, benachbarte Pixel werden Schritt für Schritt hinzugefügt. Sie können es alternativ so festlegen, dass das gesamte Bild analysiert wird, ohne Berücksichtigung der Kontinuität.</translation>
 </phrase>
 
 <phrase>
@@ -14415,7 +14415,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Normalerweise wird der Zauberstab sich ausgehend vom Zielpixel ausbreiten, der Auswahl werden Schritt für Schritt benachbarte Pixel hinzugefügt. Alternativ können Sie festlegen, im gesamten Bild zu suchen, ohne Empfehlungen zur Kontinuität.</translation>
+<translation>Normalerweise wird der Zauberstab sich ausgehend vom Zielpixel ausbreiten, der Auswahl werden Schritt für Schritt benachbarte Pixel hinzugefügt. Sie können es alternativ so festlegen, dass das gesamte Bild durchsucht wird, ohne Berücksichtigung der Kontinuität.</translation>
 </phrase>
 
 <phrase>
@@ -14748,7 +14748,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?</original>
-<translation>Diese Aktion kann zum Abschließen eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Wollen Sie wirklich fortfahren?</translation>
+<translation>Diese Aktion kann zum Abschließen eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
@@ -14780,7 +14780,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <original>Are you sure you want to delete %1?
 
 (Even though this is an official PhotoDemon language file, you can safely delete it.)</original>
-<translation>Wollen Sie wirklich %1 löschen?
+<translation>Sind Sie sicher, dass Sie %1 löschen wollen?
 
 (Auch wenn dies eine offizielle PhotoDemon-Sprachdatei ist, können Sie diese problemlos löschen.)</translation>
 </phrase>
@@ -14804,19 +14804,19 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <original>Are you sure you want to delete %1?
 
 (Unless you have manually backed up this language file, this action cannot be undone.)</original>
-<translation>Wollen Sie wirklich %1 löschen?
+<translation>Sind Sie sicher, dass Sie %1 löschen wollen?
 
 (Sofern Sie diese Sprachdatei nicht manuell gesichert haben, kann diese Aktion nicht rückgängig gemacht werden.)</translation>
 </phrase>
 
 <phrase>
 <original>Please select a language before continuing to the next step.</original>
-<translation>Bitte wählen Sie eine Sprache aus, bevor Sie mit dem nächsten Schritt fortfahren.</translation>
+<translation>Bitte selektieren Sie eine Sprache, bevor Sie mit dem nächsten Schritt fortfahren.</translation>
 </phrase>
 
 <phrase>
 <original>Please select a language</original>
-<translation>Bitte wählen Sie eine Sprache aus</translation>
+<translation>Bitte selektieren Sie eine Sprache</translation>
 </phrase>
 
 <phrase>
@@ -15065,7 +15065,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Your final macro will contain %1 action(s).</original>
-<translation>Ihr finales Makro enthält %1 Aktion(en).</translation>
+<translation>Ihr finales Makro wird %1 Aktion(en) enthalten.</translation>
 </phrase>
 
 <!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -15356,7 +15356,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Please select a color profile</original>
-<translation>Bitte wählen Sie ein Farbprofil aus</translation>
+<translation>Bitte selektieren Sie ein Farbprofil</translation>
 </phrase>
 
 <phrase>
@@ -15365,7 +15365,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 Are you sure you want to continue?</original>
 <translation>Alle Einstellungen werden auf deren defaultwerte zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.
  
-Wollen Sie wirklich fortfahren?</translation>
+Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
@@ -15754,12 +15754,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Reset all library options</original>
-<translation></translation>
+<translation>Alle Bibliotheksoptionen zurücksetzen</translation>
 </phrase>
 
 <phrase>
 <original>third-party library status</original>
-<translation></translation>
+<translation>Drittanbieter-Bibliotheksstatus</translation>
 </phrase>
 
 <phrase>
@@ -15794,7 +15794,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>%1 summary</original>
-<translation>%1 Zusammenfassung</translation>
+<translation>%1 - Zusammenfassung</translation>
 </phrase>
 
 <phrase>
@@ -16014,17 +16014,17 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Select capture area</original>
-<translation></translation>
+<translation>Erfassungs- (Capture-) Bereich auswählen</translation>
 </phrase>
 
 <phrase>
 <original>End recording</original>
-<translation></translation>
+<translation>Aufzeichnung beenden</translation>
 </phrase>
 
 <phrase>
 <original>%1:%2 @ %3 fps</original>
-<translation></translation>
+<translation>%1:%2 @ %3 fps</translation>
 </phrase>
 
 <!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -16035,37 +16035,37 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>maximum frame rate (fps)</original>
-<translation></translation>
+<translation>Maximale Framerate (fps)</translation>
 </phrase>
 
 <phrase>
 <original>repeat final animation</original>
-<translation></translation>
+<translation>Fertige Animation wiederholen</translation>
 </phrase>
 
 <phrase>
 <original>record mouse actions</original>
-<translation></translation>
+<translation>Mausaktionen aufzeichnen</translation>
 </phrase>
 
 <phrase>
 <original>capture</original>
-<translation></translation>
+<translation>Erfassung (Capture)</translation>
 </phrase>
 
 <phrase>
 <original>cursor only</original>
-<translation></translation>
+<translation>Nur Cursor</translation>
 </phrase>
 
 <phrase>
 <original>cursor and clicks</original>
-<translation></translation>
+<translation>Cursor und Klicks</translation>
 </phrase>
 
 <phrase>
 <original>Continue</original>
-<translation></translation>
+<translation>Weiter</translation>
 </phrase>
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
