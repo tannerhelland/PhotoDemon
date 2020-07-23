@@ -4,10 +4,10 @@ Begin VB.Form FormRecordAPNGPrefs
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animated screen capture (APNG)"
-   ClientHeight    =   5100
+   ClientHeight    =   6420
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   5910
+   ClientWidth     =   5895
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,18 +22,18 @@ Begin VB.Form FormRecordAPNGPrefs
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   340
+   ScaleHeight     =   428
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   394
+   ScaleWidth      =   393
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBarMini cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   1
-      Top             =   4365
-      Width           =   5910
-      _ExtentX        =   10425
+      Top             =   5685
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   1296
    End
    Begin PhotoDemon.pdSlider sldFrameRate 
@@ -56,7 +56,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   975
       Left            =   120
       TabIndex        =   2
-      Top             =   2160
+      Top             =   2880
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   1720
@@ -66,7 +66,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   735
       Left            =   480
       TabIndex        =   3
-      Top             =   3240
+      Top             =   3960
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1296
@@ -87,6 +87,21 @@ Begin VB.Form FormRecordAPNGPrefs
       _ExtentX        =   9975
       _ExtentY        =   1720
       Caption         =   "record mouse actions"
+   End
+   Begin PhotoDemon.pdSlider sldCompression 
+      Height          =   735
+      Left            =   120
+      TabIndex        =   5
+      Top             =   2040
+      Width           =   5655
+      _ExtentX        =   11668
+      _ExtentY        =   1296
+      Caption         =   "compression level"
+      Max             =   12
+      Value           =   9
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   9
    End
 End
 Attribute VB_Name = "FormRecordAPNGPrefs"
@@ -178,7 +193,7 @@ Private Sub cmdBar_OKClick()
         End If
         
         'Launch the capture form, then note that the command bar will handle unloading this form
-        FormRecordAPNG.ShowDialog VarPtr(myRect), m_Filename, sldFrameRate.Value, loopCount, (btsMouse.ListIndex >= 1), (btsMouse.ListIndex >= 2)
+        FormRecordAPNG.ShowDialog VarPtr(myRect), m_Filename, sldFrameRate.Value, loopCount, (btsMouse.ListIndex >= 1), (btsMouse.ListIndex >= 2), sldCompression.Value
         
     Else
         cmdBar.DoNotUnloadForm

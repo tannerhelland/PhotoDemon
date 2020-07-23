@@ -2953,7 +2953,7 @@ End Function
 ' you pass has the same width, height, and color-depth.  If they don't, this will crash!
 ' Also, this function does not currently handle duplicate frames gracefully; that's up to the
 ' client to handle (where it makes more sense, *and* conserves memory).
-Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhenFrameArrived As Currency) As PD_PNGResult
+Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhenFrameArrived As Currency, ByVal pngCompressionLevel As Long) As PD_PNGResult
     
     'Each APNG frame consists of two parts:
     ' - an fcTL ("frame control") chunk that describes frame size and timing
@@ -3037,18 +3037,10 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         If cColorCount.DoesColorExist(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
             
             'The original transparent color now appears in the image, which means we can't use it for export.
-            ' We need to find a new one.
-            If cColorCount.GetUnusedColor(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
-                
-                'A new, unused color was found.  Use it to add transparency to the image.
-                m_apngTrnsAvailable = True
+            ' We need to find a new one.  (This will only return false if all 16.7 million colors are already
+            ' in-use in the target image.  This prevents tRNS usage, so per-frame blanking gets deactivated.)
+            m_apngTrnsAvailable = cColorCount.GetUnusedColor(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB)
             
-            'By some (horrifying) miracle, all 16.7 million colors are used in this image.  We can't use a tRNS
-            ' chunk to write transparency data; fall back to 32-bit RGBA
-            Else
-                m_apngTrnsAvailable = False
-            End If
-        
         'The original transparent color does not appear in the image!  Use it as our transparent color.
         Else
             m_apngTrnsAvailable = True
@@ -3059,7 +3051,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
         keepGoing = Me.ExportStep3_FilterBytes(m_Stream, srcDIB, tmpChunk, vbNullString, png_FilterOptimal, True, False)
         
         'Pass the full DIB as-is out to the IDAT writer
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, Compression.GetMaxCompressionLevel(cf_Zlib), False)
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, pngCompressionLevel, False)
         
         'Next, we need to initialize our various optimization DIBs.
         
@@ -3384,7 +3376,7 @@ Friend Function SaveAPNG_Streaming_Frame(ByRef srcDIB As pdDIB, ByVal msTimeWhen
             Dim curFrameStrategy As PD_PNG_FilterStrategy
             If OS.IsProgramCompiled Then curFrameStrategy = png_FilterOptimal Else curFrameStrategy = png_FilterFast
             keepGoing = Me.ExportStep3_FilterBytes(m_Stream, m_streamingFrames(m_FrameCount).frameDIB, tmpChunk, vbNullString, curFrameStrategy, False, True)
-            If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, Compression.GetMaxCompressionLevel(cf_Zlib), True)
+            If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(m_Stream, tmpChunk, pngCompressionLevel, True)
             
             'Make a note of where the pointer is for the next frame *after* the IDAT/FDAT is written
             m_fdATIndices(m_FrameCount) = m_Stream.GetPosition()

@@ -29,13 +29,15 @@ Begin VB.Form FormRecordAPNG
    ScaleWidth      =   640
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdLabel lblInfo 
-      Height          =   495
+      Height          =   540
       Left            =   120
       Top             =   6600
       Width           =   3855
       _ExtentX        =   6800
-      _ExtentY        =   873
+      _ExtentY        =   953
+      Alignment       =   2
       Caption         =   ""
+      Layout          =   1
    End
    Begin PhotoDemon.pdButton cmdExit 
       Height          =   495
@@ -175,6 +177,9 @@ Private m_NetFrameTime As Currency, m_lastFrameTime As Currency, m_TimerHits As 
 'Repeat count of the final APNG
 Private m_LoopCount As Long
 
+'DEFLATE compression level (goes to 12, c/o libdeflate)
+Private m_PNGCompressionLevel As Long
+
 'Whether to include mouse cursor position and/or clicks in the animation
 Private m_ShowCursor As Boolean, m_ShowClicks As Boolean
 
@@ -207,6 +212,10 @@ Private m_captureDIB24_2 As pdDIB
 
 'Time stamp of when the recording started; used to determine elapsed time for the UI
 Private m_StartTimeMS As Currency
+
+'Emergency flag set when the dialog is canceled; if an APNG is actively being saved,
+' we use this flag to terminate any current operations.
+Private m_Cancel As Boolean
 
 'Captured frames are stored as a collection of lz4-compressed arrays.  I don't currently have
 ' access to a DEFLATE library that can compress screen-capture-sized frames (e.g. 1024x768) in
@@ -243,7 +252,7 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean)
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long)
         
     'Before doing anything else, determine how we're going to "cut-out" a portion of this window
     m_WindowMethod = tw_GDIRegion
@@ -255,6 +264,9 @@ Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String
     m_LoopCount = dstLoopCount
     m_ShowCursor = dstShowCursor
     m_ShowClicks = dstShowClicks
+    m_PNGCompressionLevel = pngCompressionLevel
+    If (m_PNGCompressionLevel < 1) Then m_PNGCompressionLevel = 1
+    If (m_PNGCompressionLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then m_PNGCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     
     'Initialize a last-used settings object
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -326,6 +338,7 @@ Private Sub PrepWindowForRecording()
 End Sub
 
 Private Sub cmdExit_Click()
+    m_Cancel = True
     StopTimer_Forcibly
     Unload Me
 End Sub
@@ -381,6 +394,7 @@ Private Sub cmdStart_Click()
             'Change the start button to a STOP button
             cmdStart.AssignImage "macro_stop", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
             cmdStart.Caption = g_Language.TranslateMessage("End recording")
+            cmdExit.Caption = g_Language.TranslateMessage("Cancel")
             
             'Start the capture timer
             m_CaptureActive = True
@@ -408,11 +422,15 @@ Private Sub Capture_Stop()
         Dim i As Long
         For i = 0 To m_FrameCount - 1
             
+            'Periodically check for emergency cancellation
+            If m_Cancel Then GoTo EndImmediately
+            
             lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
             lblInfo.RequestRefresh
             
             'Extract this frame into the capture DIB, then immediately free its compressed memory
             Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+            If m_Cancel Then GoTo EndImmediately
             Erase m_Frames(i).frameData
             
             'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
@@ -423,22 +441,32 @@ Private Sub Capture_Stop()
             End If
             
             GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+            If m_Cancel Then GoTo EndImmediately
             m_captureDIB32.ForceNewAlpha 255
             
             'Pass the frame off to the PNG encoder
-            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp
+            If m_Cancel Then GoTo EndImmediately
+            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
             
             'Every few frames, notify the OS that we're still alive
             If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
             
         Next i
         
+EndImmediately:
+        
         'Notify the PNG encoder that the stream has ended
         If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
+        Set m_PNG = Nothing
+        If m_Cancel Then
+            Files.FileDeleteIfExists m_DstFilename
+            Exit Sub
+        End If
         
         'Reset this button's caption and notify the user that we're finished
         cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
         cmdStart.Caption = g_Language.TranslateMessage("Start recording")
+        cmdExit.Caption = g_Language.TranslateMessage("Exit")
         lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
             
         'Immediately trigger a save of the current screen position.
