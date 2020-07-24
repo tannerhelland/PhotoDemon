@@ -69,12 +69,11 @@ Attribute VB_Exposed = False
 'Animated screen capture dialog
 'Copyright 2020-2020 by Tanner Helland
 'Created: 01/July/20
-'Last updated: 16/July/20
-'Last update: add run-time switch between SetWindowRgn and SetLayeredWindowAttributes; the latter
-'             is giving me endless grief on Win 10 (aaaaaaargh)
+'Last updated: 24/July/20
+'Last update: finishing touches - this tool is ready for primetime!
 '
-'PD can write animated PNGs.  APNGs seem like a great fit for animated screen captures.
-' Let's see if we can merge the two, eh?
+'PD can write animated PNGs.  APNGs are a great fit for animated screen captures (lossless!).
+' This is my attempt to bring those two things together.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -183,6 +182,9 @@ Private m_PNGCompressionLevel As Long
 'Whether to include mouse cursor position and/or clicks in the animation
 Private m_ShowCursor As Boolean, m_ShowClicks As Boolean
 
+'Seconds to countdown (if any) before starting the recording
+Private m_CountdownTime As Long
+
 'Capture rects; once populated (at the start of the capture), these *cannot* be changed
 Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
 
@@ -240,6 +242,11 @@ Private m_Frames() As PD_APNGFrameCapture
 ' a "worst-case" size before capture begins.
 Private m_CompressionBuffer() As Byte
 
+'Countdown timer before starting.  Note that this may *not* be used if the countdown
+' delay is set to 0.
+Private WithEvents m_CountdownTimer As pdTimerCountdown
+Attribute m_CountdownTimer.VB_VarHelpID = -1
+
 'Various events are handled via API, not VB; this helps us support high-DPI displays
 Private WithEvents m_Resize As pdWindowSize
 Attribute m_Resize.VB_VarHelpID = -1
@@ -252,13 +259,12 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long)
-        
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long, ByVal countdownInSeconds As Long)
+    
     'Before doing anything else, determine how we're going to "cut-out" a portion of this window
     m_WindowMethod = tw_GDIRegion
-        
+    
     'Cache all passed values
-    m_DstFilename = dstFilename
     m_FPS = dstFrameRateFPS
     If (ptrToParentRect <> 0) Then CopyMemoryStrict VarPtr(m_parentRect), ptrToParentRect, LenB(m_parentRect)
     m_LoopCount = dstLoopCount
@@ -267,6 +273,7 @@ Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef dstFilename As String
     m_PNGCompressionLevel = pngCompressionLevel
     If (m_PNGCompressionLevel < 1) Then m_PNGCompressionLevel = 1
     If (m_PNGCompressionLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then m_PNGCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
+    m_CountdownTime = countdownInSeconds
     
     'Initialize a last-used settings object
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -387,25 +394,33 @@ Private Sub cmdStart_Click()
         m_FrameCount = 0
         ReDim m_Frames(0 To INIT_FRAME_BUFFER - 1) As PD_APNGFrameCapture
         
-        'Initialize the PNG writer
+        'Initialize the PNG writer, but don't start streaming just yet!
         Set m_PNG = New pdPNG
-        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
-            
-            'Change the start button to a STOP button
-            cmdStart.AssignImage "macro_stop", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
-            cmdStart.Caption = g_Language.TranslateMessage("End recording")
-            cmdExit.Caption = g_Language.TranslateMessage("Cancel")
-            
-            'Start the capture timer
-            m_CaptureActive = True
-            m_Timer.StartTimer
         
+        'Change the start button to a STOP button
+        cmdStart.AssignImage "macro_stop", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
+        cmdStart.Caption = g_Language.TranslateMessage("End recording")
+        cmdExit.Caption = g_Language.TranslateMessage("Cancel")
+        
+        'If a countdown timer was specified, start one now; otherwise, start recording immediately
+        If (m_CountdownTime > 0) Then
+            Set m_CountdownTimer = New pdTimerCountdown
+            m_CountdownTimer.SetIntervalTimeInMS 1000
+            m_CountdownTimer.SetCountdownTimeInMS m_CountdownTime * 1000
+            lblInfo.Caption = g_Language.TranslateMessage("Recording will start in %1...", m_CountdownTime)
+            m_CountdownTimer.StartCountdown
         Else
-            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+            Capture_Start
         End If
         
     End If
         
+End Sub
+
+'Start the capture timer
+Private Sub Capture_Start()
+    m_CaptureActive = True
+    m_Timer.StartTimer
 End Sub
 
 'Stop the active capture
@@ -417,57 +432,103 @@ Private Sub Capture_Stop()
         m_CaptureActive = False
         If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
         
-        'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
-        ' so that it can produce a usable APNG file!
-        Dim i As Long
-        For i = 0 To m_FrameCount - 1
+        'Next, we need to prompt the user for a destination filename
             
-            'Periodically check for emergency cancellation
-            If m_Cancel Then GoTo EndImmediately
+        'Start by validating m_dstFilename, which will be filled with the user's past
+        ' destination filename (if one exists), or a default capture filename in the
+        ' user's current "Save image" folder
+        If ((LenB(m_DstFilename) = 0) Or (Not Files.PathExists(Files.FileGetPath(m_DstFilename)))) Then
+        
+            'm_dstFilename is bad.  Attempt to populate it with default values.
+            Dim tmpPath As String, tmpFilename As String
+            tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+            tmpFilename = g_Language.TranslateMessage("capture")
+            m_DstFilename = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
+        
+        End If
+        
+        'Use a standard common-dialog to prompt for filename
+        Dim cSave As pdOpenSaveDialog
+        Set cSave = New pdOpenSaveDialog
+        
+        Dim okToProceed As Boolean, sFile As String
+        sFile = m_DstFilename
+        okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated PNG (.png)|*.png;*.apng", 1, Files.FileGetPath(m_DstFilename), "Save image", ".png", Me.hWnd)
             
-            lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
-            lblInfo.RequestRefresh
+        'The user can cancel the common-dialog - that's fine; it just means we don't save
+        ' any of the current settings (or close the window).
+        If okToProceed Then
             
-            'Extract this frame into the capture DIB, then immediately free its compressed memory
-            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
-            If m_Cancel Then GoTo EndImmediately
-            Erase m_Frames(i).frameData
+            'Save the current export path as the latest "save image" path
+            m_DstFilename = sFile
+            UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(m_DstFilename)
             
-            'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
-            If (m_captureDIB32 Is Nothing) Then
-                Set m_captureDIB32 = New pdDIB
-                m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
-                m_captureDIB32.SetInitialAlphaPremultiplicationState True
+            'To avoid confusion, set the "start recording" button caption to "please wait".
+            ' It will get formally reset after the image export ends.
+            cmdStart.Caption = g_Language.TranslateMessage("Please wait")
+            
+            'Start the PNG streamer
+            If (m_PNG Is Nothing) Then Set m_PNG = New pdPNG
+            If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
+                
+                'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+                ' so that it can produce a usable APNG file!
+                Dim i As Long
+                For i = 0 To m_FrameCount - 1
+                    
+                    'Periodically check for emergency cancellation
+                    If m_Cancel Then GoTo EndImmediately
+                    
+                    lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+                    lblInfo.RequestRefresh
+                    
+                    'Extract this frame into the capture DIB, then immediately free its compressed memory
+                    Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+                    If m_Cancel Then GoTo EndImmediately
+                    Erase m_Frames(i).frameData
+                    
+                    'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
+                    If (m_captureDIB32 Is Nothing) Then
+                        Set m_captureDIB32 = New pdDIB
+                        m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+                        m_captureDIB32.SetInitialAlphaPremultiplicationState True
+                    End If
+                    
+                    GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+                    If m_Cancel Then GoTo EndImmediately
+                    m_captureDIB32.ForceNewAlpha 255
+                    
+                    'Pass the frame off to the PNG encoder
+                    If m_Cancel Then GoTo EndImmediately
+                    m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
+                    
+                    'Every few frames, notify the OS that we're still alive
+                    If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
+                    
+                Next i
+                
+            Else
+                PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
             End If
             
-            GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
-            If m_Cancel Then GoTo EndImmediately
-            m_captureDIB32.ForceNewAlpha 255
-            
-            'Pass the frame off to the PNG encoder
-            If m_Cancel Then GoTo EndImmediately
-            m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
-            
-            'Every few frames, notify the OS that we're still alive
-            If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
-            
-        Next i
-        
 EndImmediately:
+            
+            'Notify the PNG encoder that the stream has ended
+            If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
+            Set m_PNG = Nothing
+            If m_Cancel Then Files.FileDeleteIfExists m_DstFilename
+            
+            'Note that the save was successful
+            lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
         
-        'Notify the PNG encoder that the stream has ended
-        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
-        Set m_PNG = Nothing
-        If m_Cancel Then
-            Files.FileDeleteIfExists m_DstFilename
-            Exit Sub
+        Else
+            lblInfo.Caption = g_Language.TranslateMessage("Save canceled.")
         End If
         
         'Reset this button's caption and notify the user that we're finished
         cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
         cmdStart.Caption = g_Language.TranslateMessage("Start recording")
         cmdExit.Caption = g_Language.TranslateMessage("Exit")
-        lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
             
         'Immediately trigger a save of the current screen position.
         ' (Unlike other dialogs, we don't save position at export time - we save it after
@@ -653,6 +714,14 @@ Private Sub Form_Unload(Cancel As Integer)
     
 End Sub
 
+Private Sub m_CountdownTimer_CountdownFinished()
+    Capture_Start
+End Sub
+
+Private Sub m_CountdownTimer_UpdateTimeRemaining(ByVal timeRemainingInMS As Long)
+    lblInfo.Caption = g_Language.TranslateMessage("Recording will start in %1...", Int((timeRemainingInMS + 500) \ 1000))
+End Sub
+
 Private Sub m_LastUsedSettings_AddCustomPresetData()
     
     'Start by retrieving our current window rect (in screen coordinates!)
@@ -661,6 +730,7 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
     
         g_WindowManager.GetWindowRect_API Me.hWnd, myRect
     
+        'Save the current rect to file
         With m_lastUsedSettings
             .AddPresetData "window-x1", Trim$(Str$(myRect.x1))
             .AddPresetData "window-x2", Trim$(Str$(myRect.x2))
@@ -669,6 +739,9 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
         End With
         
     End If
+    
+    'Also save the current destination filename, if any
+    If ((LenB(m_DstFilename) <> 0) And Files.PathExists(Files.FileGetPath(m_DstFilename))) Then m_lastUsedSettings.AddPresetData "dst-capture-filename", m_DstFilename
 
 End Sub
 
@@ -704,7 +777,22 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         End If
         
     End If
-
+    
+    'Look for a previously saved destination filename.  If one does not exist,
+    ' we want to populate the destination path with a good default suggestion.
+    If (Not m_lastUsedSettings.DoesPresetExist("dst-capture-filename")) Then
+    
+        Dim tmpPath As String, tmpFilename As String, tmpCombined As String
+        tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+        tmpFilename = g_Language.TranslateMessage("capture")
+        tmpCombined = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
+        
+        m_DstFilename = tmpCombined
+        
+    Else
+        m_DstFilename = m_lastUsedSettings.RetrievePresetData("dst-capture-filename", UserPrefs.GetPref_String("Paths", "Save Image", vbNullString) & "capture.png")
+    End If
+    
 End Sub
 
 'When the system sends a WM_ERASEBKGND message, do a quick fill with the current theme
@@ -792,7 +880,7 @@ Private Sub m_Timer_Timer()
     timeElapsedInSeconds = timeElapsedInSeconds - (timeElapsedInMinutes * 60)
     
     'Display recording speed and elapsed time to the user
-    lblInfo.Caption = g_Language.TranslateMessage("%1:%2 @ %3 fps", Format$(timeElapsedInMinutes, "00"), Format$(timeElapsedInSeconds, "00"), Format$(estimatedFPS, "0.0"))
+    lblInfo.Caption = g_Language.TranslateMessage("Recording - %1:%2 @ %3 fps", Format$(timeElapsedInMinutes, "00"), Format$(timeElapsedInSeconds, "00"), Format$(estimatedFPS, "0.0"))
     
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.170</langversion>
+<langversion>7.0.171</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5122,26 +5122,6 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Apply this action to the current image.</original>
-<translation>Zastosuj tę czynność do bieżącego obrazu.</translation>
-</phrase>
-
-<phrase>
-<original>OK</original>
-<translation>ok</translation>
-</phrase>
-
-<phrase>
-<original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Wyjdź z tego narzędzia. Żadne zmiany nie zostaną wprowadzone do obrazu.</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Anuluj</translation>
-</phrase>
-
-<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Zresetuj wszystkie ustawienia do wartości domyślnych.</translation>
 </phrase>
@@ -5176,7 +5156,7 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 <translation>Wcześniej zapisane położenie można wybrać tutaj. Można zapisać bieżące ustawienia jako nowe położenie, klikając przycisk Zapisz położenie po prawej stronie.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8513,6 +8493,16 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
 
 <phrase>
+<original>OK</original>
+<translation>ok</translation>
+</phrase>
+
+<phrase>
+<original>Cancel</original>
+<translation>Anuluj</translation>
+</phrase>
+
+<phrase>
 <original>No</original>
 <translation>Nie</translation>
 </phrase>
@@ -8522,7 +8512,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Tak</translation>
 </phrase>
 
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
 
@@ -15995,18 +15985,38 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 </phrase>
 
 <phrase>
-<original>%1:%2 @ %3 fps</original>
+<original>Recording will start in %1</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please wait</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recording - %1:%2 @ %3 fps</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideo.frm-->
 
 <!-- BEGIN text for Tools_ScreenVideoPrefs.frm (FormRecordAPNGPrefs) -->
 
 <phrase>
-<original>maximum frame rate (fps)</original>
+<original>recording settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target frame rate (fps)</original>
 <translation></translation>
 </phrase>
 
@@ -16021,7 +16031,12 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 </phrase>
 
 <phrase>
-<original>capture</original>
+<original>countdown before recording (in seconds)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file settings</original>
 <translation></translation>
 </phrase>
 
@@ -16035,21 +16050,22 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Continue</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5073 phrases. -->
-<!-- 2412 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12105 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12101 total words. -->
 
 </pdData>

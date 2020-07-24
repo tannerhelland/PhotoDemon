@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3475</langversion>
+<langversion>6.8.3476</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5135,26 +5135,6 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
-<original>Apply this action to the current image.</original>
-<translation>Primijeni ovu radnju na trenutnu sliku.</translation>
-</phrase>
-
-<phrase>
-<original>OK</original>
-<translation>U Redu</translation>
-</phrase>
-
-<phrase>
-<original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Izađite iz ovog alata. Na sliku se nećete izmijeniti.</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Otkazati</translation>
-</phrase>
-
-<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Ponovno postavite sve postavke na njihove zadane vrijednosti.</translation>
 </phrase>
@@ -5189,7 +5169,7 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <translation>Ovdje možete odabrati prethodno spremljene presete. Trenutačne postavke možete spremiti u novu postavku tako da kliknete gumb Spremi unaprijed postavku desno.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8528,6 +8508,16 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
 
 <phrase>
+<original>OK</original>
+<translation>U Redu</translation>
+</phrase>
+
+<phrase>
+<original>Cancel</original>
+<translation>Otkazati</translation>
+</phrase>
+
+<phrase>
 <original>No</original>
 <translation>Ne</translation>
 </phrase>
@@ -8537,7 +8527,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Da</translation>
 </phrase>
 
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
 
@@ -16015,18 +16005,38 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 </phrase>
 
 <phrase>
-<original>%1:%2 @ %3 fps</original>
+<original>Recording will start in %1</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please wait</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recording - %1:%2 @ %3 fps</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideo.frm-->
 
 <!-- BEGIN text for Tools_ScreenVideoPrefs.frm (FormRecordAPNGPrefs) -->
 
 <phrase>
-<original>maximum frame rate (fps)</original>
+<original>recording settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target frame rate (fps)</original>
 <translation></translation>
 </phrase>
 
@@ -16041,7 +16051,12 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 </phrase>
 
 <phrase>
-<original>capture</original>
+<original>countdown before recording (in seconds)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file settings</original>
 <translation></translation>
 </phrase>
 
@@ -16055,21 +16070,22 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Continue</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5073 phrases. -->
-<!-- 2412 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12105 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12101 total words. -->
 
 </pdData>

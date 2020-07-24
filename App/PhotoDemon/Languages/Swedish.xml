@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3475</langversion>
+<langversion>6.8.3476</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5134,26 +5134,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Apply this action to the current image.</original>
-<translation>Tillämpa denna åtgärd till den aktuella bilden.</translation>
-</phrase>
-
-<phrase>
-<original>OK</original>
-<translation>ok</translation>
-</phrase>
-
-<phrase>
-<original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Avsluta detta verktyg. Inga ändringar kommer att göras i bilden.</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Annullera</translation>
-</phrase>
-
-<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Återställ alla inställningar till standardvärden.</translation>
 </phrase>
@@ -5188,7 +5168,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation>Tidigare sparade förinställningar kan väljas här. Du kan spara de aktuella inställningarna som en ny förinställning genom att klicka på knappen Spara förinställning till höger.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8528,6 +8508,16 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
 
 <phrase>
+<original>OK</original>
+<translation>ok</translation>
+</phrase>
+
+<phrase>
+<original>Cancel</original>
+<translation>Annullera</translation>
+</phrase>
+
+<phrase>
 <original>No</original>
 <translation>Nej</translation>
 </phrase>
@@ -8537,7 +8527,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Ja</translation>
 </phrase>
 
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
 
@@ -16014,18 +16004,38 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>%1:%2 @ %3 fps</original>
+<original>Recording will start in %1</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please wait</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recording - %1:%2 @ %3 fps</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideo.frm-->
 
 <!-- BEGIN text for Tools_ScreenVideoPrefs.frm (FormRecordAPNGPrefs) -->
 
 <phrase>
-<original>maximum frame rate (fps)</original>
+<original>recording settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target frame rate (fps)</original>
 <translation></translation>
 </phrase>
 
@@ -16040,7 +16050,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>capture</original>
+<original>countdown before recording (in seconds)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file settings</original>
 <translation></translation>
 </phrase>
 
@@ -16054,21 +16069,22 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Continue</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5073 phrases. -->
-<!-- 2412 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12105 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12101 total words. -->
 
 </pdData>

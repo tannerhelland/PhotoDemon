@@ -1369,8 +1369,10 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             cmdAction(2).AssignImage "generic_savepreset", , cmdButtonImageSize, cmdButtonImageSize
         End If
         
-        cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
-        cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
+        'I've gone back and forth on whether these tooltips are useful.  My current $0.02 is that
+        ' they are not, and they just add visual clutter.
+        'cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
+        'cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
         cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
         cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
         cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"

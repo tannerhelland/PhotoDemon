@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.492</langversion>
+<langversion>6.7.493</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -5138,26 +5138,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Apply this action to the current image.</original>
-<translation>Applica questa azione all'immagine corrente.</translation>
-</phrase>
-
-<phrase>
-<original>OK</original>
-<translation>Ok</translation>
-</phrase>
-
-<phrase>
-<original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Esci da questo strumento.  Nessun cambiamento sarà fatto all'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Annulla</translation>
-</phrase>
-
-<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Ripristina tutte le impostazioni ai valori predefiniti.</translation>
 </phrase>
@@ -5192,7 +5172,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Le preimpostazioni precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva Preimpostazioni sulla destra.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCommandBar.ctl-->
 
@@ -8532,6 +8512,16 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <!-- BEGIN text for Dialog_MsgBox.frm (dialog_MsgBox) -->
 
 <phrase>
+<original>OK</original>
+<translation>Ok</translation>
+</phrase>
+
+<phrase>
+<original>Cancel</original>
+<translation>Annulla</translation>
+</phrase>
+
+<phrase>
 <original>No</original>
 <translation>No</translation>
 </phrase>
@@ -8541,7 +8531,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Sì</translation>
 </phrase>
 
-<!-- Dialog_MsgBox.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Dialog_MsgBox.frm-->
 
@@ -16017,18 +16007,38 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
-<original>%1:%2 @ %3 fps</original>
+<original>Recording will start in %1</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>capture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please wait</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recording - %1:%2 @ %3 fps</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideo.frm-->
 
 <!-- BEGIN text for Tools_ScreenVideoPrefs.frm (FormRecordAPNGPrefs) -->
 
 <phrase>
-<original>maximum frame rate (fps)</original>
+<original>recording settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target frame rate (fps)</original>
 <translation></translation>
 </phrase>
 
@@ -16043,7 +16053,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
-<original>capture</original>
+<original>countdown before recording (in seconds)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file settings</original>
 <translation></translation>
 </phrase>
 
@@ -16057,21 +16072,22 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Continue</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5073 phrases. -->
-<!-- 2412 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12105 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12101 total words. -->
 
 </pdData>
