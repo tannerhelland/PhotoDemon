@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.2087</langversion>
+<langversion>8.0.2095</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -16014,7 +16014,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation></translation>
+<translation>Aufzeichnung wird starten in %1</translation>
 </phrase>
 
 <phrase>
@@ -16024,12 +16024,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Please wait</original>
-<translation></translation>
+<translation>Bitte warten Sie</translation>
 </phrase>
 
 <phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
-<translation></translation>
+<translation>Aufzeichnung - %1:%2 @ %3 fps</translation>
 </phrase>
 
 <!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -16040,17 +16040,17 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>recording settings</original>
-<translation></translation>
+<translation>Aufzeichnungseinstellungen</translation>
 </phrase>
 
 <phrase>
 <original>target frame rate (fps)</original>
-<translation></translation>
+<translation>Ziel-Framerate (fps)</translation>
 </phrase>
 
 <phrase>
 <original>repeat final animation</original>
-<translation>Fertige Animation wiederholen</translation>
+<translation>Finale Animation wiederholen</translation>
 </phrase>
 
 <phrase>
@@ -16060,12 +16060,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>countdown before recording (in seconds)</original>
-<translation></translation>
+<translation>Countdown vor Aufzeichnung (in Sekunden)</translation>
 </phrase>
 
 <phrase>
 <original>file settings</original>
-<translation></translation>
+<translation>Dateieinstellungen</translation>
 </phrase>
 
 <phrase>
