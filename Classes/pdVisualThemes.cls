@@ -464,14 +464,14 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             
             'Color description files are listed under the DefinitionFile tag.  (This tag is optional, so we can
             ' assume all definitions are embedded in the file if the DefinitionFile tag doesn't exist.)
-            If m_XML.DoesTagExist("DefinitionFile") Or (Len(overrideColorDefinitionFilename) <> 0) Then
+            If m_XML.DoesTagExist("DefinitionFile") Or (LenB(overrideColorDefinitionFilename) <> 0) Then
                 
                 'Load and validate the specified definition file
                 Dim tmpXML As pdXML
                 Set tmpXML = New pdXML
                 
                 Dim fullAccentName As String
-                If (Len(overrideColorDefinitionFilename) <> 0) Then fullAccentName = overrideColorDefinitionFilename Else fullAccentName = m_XML.GetUniqueTag_String("DefinitionFile")
+                If (LenB(overrideColorDefinitionFilename) <> 0) Then fullAccentName = overrideColorDefinitionFilename Else fullAccentName = m_XML.GetUniqueTag_String("DefinitionFile")
                 
                 If LoadAccentWithAllFallbacks(fullAccentName, tmpXML) Then
                 

@@ -571,8 +571,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     FormMain.MnuTest.Visible = debugMenuVisibility
-    FormMain.MnuTool(11).Visible = debugMenuVisibility
-    FormMain.MnuTool(12).Visible = debugMenuVisibility
+    FormMain.MnuTool(13).Visible = debugMenuVisibility
+    FormMain.MnuTool(14).Visible = debugMenuVisibility
     
     'In the future, hotkeys really need to become user-editable, but for now, the list is hard-coded.
     perfCheck.MarkEvent "Initialize hotkey manager"

@@ -1,10 +1,10 @@
 ## Download
 
-| Nightly (8.0a) | Stable (7.0.1) | Source code |
+| Nightly (8.0b) | Stable (7.0.1) | Source code |
 | :------------: | :------------: | :---------: |
 | [![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [![Download source](https://img.shields.io/badge/download--source-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
-## About PhotoDemon 8.0-alpha
+## About PhotoDemon 8.0-beta
 
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
@@ -90,7 +90,7 @@ For a full list of changes, please consult [the commit log](https://github.com/t
 
 ## Contributing
 
-PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like monthly tutorials and updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
+PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like in-depth updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
 
 PhotoDemon's lone developer is also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  Thank you!
 
