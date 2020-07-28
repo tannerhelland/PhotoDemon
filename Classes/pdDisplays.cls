@@ -77,6 +77,29 @@ Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW"
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal ptrToGuidString As Long, ByVal ptrToByteArray As Long) As Long
+
+Private Type Win32_SP_DEVICE_INTERFACE_DATA
+    cbSize As Long
+    InterfaceClassGuid(0 To 15) As Byte
+    wFlags As Long
+    wReserved As Long
+End Type
+
+Private Type Win32_SP_DEVINFO_DATA
+    cbSize As Long
+    ClassGuid(0 To 15) As Byte
+    DevInst As Long
+    Reserved As Long
+End Type
+
+Private Declare Function SetupDiDestroyDeviceInfoList Lib "setupapi" (ByVal hDevInfo As Long) As Long
+Private Declare Function SetupDiEnumDeviceInfo Lib "setupapi" (ByVal hDevInfo As Long, ByVal iMemberIndex As Long, ByVal ptrDevInfoData As Long) As Long
+Private Declare Function SetupDiEnumDeviceInterfaces Lib "setupapi" (ByVal hDevInfo As Long, ByVal ptrDevInfoData As Long, ByVal ptrInterfaceClassGuid As Long, ByVal iMemberIndex As Long, ByVal ptrDstDevInterfaceData As Long) As Long
+Private Declare Function SetupDiGetClassDevs Lib "setupapi" Alias "SetupDiGetClassDevsW" (ByVal ptrClassGuid As Long, ByVal ptrStrEnumerator As Long, ByVal hWndParent As Long, ByVal dwFlags As Long) As Long
+Private Declare Function SetupDiGetDeviceInterfaceDetail Lib "setupapi" Alias "SetupDiGetDeviceInterfaceDetailW" (ByVal hDevInfo As Long, ByVal DevInterfaceData As Long, ByVal ptrToDevInterfaceDetailData As Long, ByVal DevInterfaceDetailDataSize As Long, ByRef dstRequiredSize As Long, ByVal DevInfoData As Long) As Long
+Private Declare Function SetupDiOpenDevRegKey Lib "setupapi" (ByVal hDevInfo As Long, ByVal ptrDevInfoData As Long, ByVal Scope As Long, ByVal HwProfile As Long, ByVal KeyType As Long, ByVal samDesired As Long) As Long
+    
 Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
@@ -353,7 +376,8 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
     
 End Sub
 
-'After adding a new display to the collection, call this to populate detailed info (like friendly name, physical dimensions, etc)
+'After adding a new display to the collection, call this to populate detailed info
+' (like friendly name, physical dimensions, etc)
 Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     
     On Error GoTo DetailedDisplayInfoBug
@@ -366,20 +390,19 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     displayCount = 0
     
     Dim tmpName As String, tmpDescription As String
-    
-    Do While EnumDisplayDevices(0&, displayCount, monitorInfoDetailed, 0&) <> 0
+    Do While (EnumDisplayDevices(0&, displayCount, monitorInfoDetailed, 0&) <> 0)
     
         'Extract the monitor's device name (again, it's really the adapter name - thanks, Windows!) and stick
         ' it in a string, so we can compare this device's name against the one we just added.
         tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceName(0)), CCHDEVICENAME * 2, True)
-        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
+        If (LenB(tmpName) > 0) Then tmpName = Trim$(tmpName)
         
         'If the adapter name of our previous display matches this one, retrieve the extra information
         If Strings.StringsEqual(listOfDisplays(displayIndex).GetAdapterName, tmpName, True) Then
             
             'This is a match!  Grab the description string while we're here.
             tmpDescription = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceString(0)), 256, True)
-            If (Len(tmpDescription) > 0) Then tmpDescription = Trim$(tmpDescription)
+            If (LenB(tmpDescription) > 0) Then tmpDescription = Trim$(tmpDescription)
             listOfDisplays(displayIndex).SetDescription tmpDescription
             
             'Also, if this is the primary monitor, mark it as such
@@ -394,72 +417,202 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     
     Loop
     
-    'EnumDisplayDevices is a strange API.  You can call it multiple times, passing in different device-related strings,
-    ' to retrieve different data.  We're going to do that now, with a string retrieved from the previous enum,
+    'EnumDisplayDevices is a strange API.  You can call it multiple times,
+    ' passing in different device-related strings, to retrieve different data.
+    ' We're going to do that now, with a string retrieved from the previous enum,
     ' so we can grab a little more data about this display device.
-    'Repeat the call a second time, providing the monitor's name, in order to receive even *more* information
+    
+    'Repeat the call a second time, providing the monitor's name, in order to receive
+    ' even *more* information
     Dim adapterName As String
     adapterName = listOfDisplays(displayIndex).GetAdapterName
-    If (EnumDisplayDevices(StrPtr(adapterName), 0&, monitorInfoDetailed, 1&) <> 0) Then
+    
+    Const EDD_GET_DEVICE_INTERFACE_NAME As Long = &H1
+    If (EnumDisplayDevices(StrPtr(adapterName), 0&, monitorInfoDetailed, EDD_GET_DEVICE_INTERFACE_NAME) <> 0) Then
         
-        'The monitor's friendly name should now be stored inside the .DeviceString portion of the struct.
+        'The monitor's "friendly" name should now be stored inside the .DeviceString portion of the struct.
         tmpName = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceString(0)), 256, True)
-        If (Len(tmpName) > 0) Then tmpName = Trim$(tmpName)
+        If (LenB(tmpName) > 0) Then tmpName = Trim$(tmpName)
         listOfDisplays(displayIndex).SetFriendlyName tmpName
         
-        'Normally, the .deviceID portion of the monitorInfoDetailed struct is useless, but MS changed this for Vista.
-        ' Now, on a second call, DeviceID is the GUID of the display and DeviceKey is the registry key.  We can use
-        ' this to pull an EDID out of the registry (if one exists), which can then be queried for all kinds of
-        ' useful info, like physical screen dimensions.
+        'Normally, the .deviceID portion of the monitorInfoDetailed struct is useless,
+        ' but MS changed this for Vista.  Now, on a second call, DeviceID is the GUID of the
+        ' display and DeviceKey is the registry key.  We can use this to pull an EDID out of
+        ' the registry (if one exists), which can then be queried for all kinds of useful info,
+        ' like physical screen dimensions.
         
-        'Because this process is energy-intensive, we only want to do it once.  At present, I also limit it to
-        ' Vista+; rumor has it that the change was introduced at-or-around XP SP3, but because I can't verify
-        ' this, it's easier to simply restrict the functionality to Vista or later.
+        'Because this process is energy-intensive, we only want to do it once.  At present,
+        ' I also limit it to Vista+; rumor has it that the change was introduced at-or-around
+        ' XP SP3, but because I can't verify this, it's easier to simply restrict the check
+        ' to Vista or later.
         
         'If we have not yet retrieved an EDID value for this monitor, attempt to do so now
-        If (Not listOfDisplays(displayIndex).HasEDID) And OS.IsVistaOrLater Then
+        'And OS.IsVistaOrLater
+        If (Not listOfDisplays(displayIndex).HasEDID) Then
         
             'Retrieve and cache the device ID
             Dim devID As String
             devID = Strings.StringFromUTF16_FixedLen(VarPtr(monitorInfoDetailed.DeviceID(0)), 256, True)
-            If (Len(devID) <> 0) Then devID = Trim$(devID)
+            If (LenB(devID) <> 0) Then devID = Trim$(devID)
             listOfDisplays(displayIndex).SetDeviceID devID
             
             'If a device ID was successfully retrieved, use it to try and locate a matching EDID array.
-            If (Len(devID) <> 0) Then
+            If (LenB(devID) <> 0) Then
             
                 'If successful, the EDID contents will be saved to this byte array
                 Dim edidArray() As Byte
                 
-                'We need to parse out various bits of the device ID in order to construct a registry path where the
-                ' EDID lies.  The substrings we need are delimited by pound signs, so make sure at least one exists.
-                If (InStr(1, devID, "#", vbBinaryCompare) <> 0) Then
+                'Addendum July 2020: rather than do our own manual registry spelunking, we can use the
+                ' SetupAPI family of functions to do the spelunking for us.  Thank you to comments in this
+                ' URL for this (much smarter) approach:
+                ' https://ofekshilon.com/2014/06/19/reading-specific-monitor-dimensions/
                 
-                    'Parse the device ID into discrete substrings
-                    Dim tmpStringArray() As String
-                    tmpStringArray = Split(devID, "#")
+                'Importantly, that approach lets us map 1:1 between GDI display objects and their
+                ' corresponding setupapi object.
+                
+                'Start by initializing a device information handle.  GUID comes from MSDN:
+                ' https://docs.microsoft.com/en-us/windows-hardware/drivers/install/guid-devinterface-monitor
+                Const DIGCF_DEVICEINTERFACE As Long = &H10&
+                Dim GUID_DevInterface_Monitor() As Byte
+                ReDim GUID_DevInterface_Monitor(0 To 15) As Byte
+                CLSIDFromString StrPtr("{E6F07B5F-EE97-4a90-B076-33F57BF4EAA7}"), VarPtr(GUID_DevInterface_Monitor(0))
+                
+                Dim hDevInfo As Long
+                hDevInfo = SetupDiGetClassDevs(VarPtr(GUID_DevInterface_Monitor(0)), 0&, 0&, DIGCF_DEVICEINTERFACE)
+                
+                'Next, we need to iterate compatible device interfaces.  See MSDN for details:
+                ' https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdienumdeviceinterfaces
+                Const ERROR_NO_MORE_ITEMS As Long = &H103&
+                Dim tmpInterfaceData As Win32_SP_DEVICE_INTERFACE_DATA
+                tmpInterfaceData.cbSize = LenB(tmpInterfaceData)
+                
+                Dim keyResolved As Boolean
+                keyResolved = False
+                
+                'Interfaces will be manually iterated until we find a match or hit a "no more devices" return
+                Dim idxInterface As Long
+                idxInterface = 0
+                
+                Dim retVal As Long
+                retVal = SetupDiEnumDeviceInterfaces(hDevInfo, 0&, VarPtr(GUID_DevInterface_Monitor(0)), idxInterface, VarPtr(tmpInterfaceData))
+                Do While (retVal <> 0)
                     
-                    'Make sure we generated enough substrings to correctly generate a registry path
-                    If (UBound(tmpStringArray) >= 2) Then
+                    'Retrieving device info uses a variable-size struct which is inelegant to handle in VB.
+                    ' Instead, we just use an array of arbitrary size, with the required buffer size appended
+                    ' to the start of the array.
+                    
+                    'Start by retrieving required buffer size.  (Per MSDN, "This size includes the size of the
+                    ' fixed part of the structure plus the number of bytes required for the variable-length device
+                    ' path string.)
+                    Dim diBufSize As Long
+                    diBufSize = 0
+                    SetupDiGetDeviceInterfaceDetail hDevInfo, VarPtr(tmpInterfaceData), 0&, 0&, diBufSize, 0&
+                    If (diBufSize > 0) Then
                         
-                        'Use the substrings to create a path to the EDID location inside the registry
-                        Dim regPath As String
-                        regPath = "System\CurrentControlSet\Enum\Display\" & tmpStringArray(1) & "\" & tmpStringArray(2) & "\Device Parameters"
+                        'Construct the buffer and note the requirements from MSDN; the cbSize member (at the
+                        ' head of the struct) needs to contain the *fixed* struct size only - in this case,
+                        ' 4 bytes for the size + at least 2 more for a null terminator
+                        Dim arbitraryBuffer() As Byte
+                        ReDim arbitraryBuffer(0 To diBufSize - 1) As Byte
+                        PutMem4 VarPtr(arbitraryBuffer(0)), 6&
                         
-                        'Using that path, retrieve this monitor's EDID
-                        If RetrieveEDIDFromRegistry(edidArray, regPath) Then
-                            listOfDisplays(displayIndex).SetEDID edidArray
+                        If (SetupDiGetDeviceInterfaceDetail(hDevInfo, VarPtr(tmpInterfaceData), VarPtr(arbitraryBuffer(0)), diBufSize, 0&, 0&) <> 0) Then
+                        
+                            'Pull a null-terminated wchar string from the (now-filled) buffer, while obviously
+                            ' skipping the DWORD cbSize member at the head
+                            Dim tmpString As String
+                            tmpString = Strings.StringFromCharPtr(VarPtr(arbitraryBuffer(4)), True)
+                            
+                            'Look for a match with the device ID we pulled from GDI
+                            If Strings.StringsEqual(tmpString, devID, True) Then
+                            
+                                'Device IDs match!  We can now attempt to pull a corresponding EDID
+                                ' from the registry (if one exists; VMs in particular may not supply this).
+                                
+                                'Before doing anything else, note that we've resolved the device ID.  This breaks
+                                ' us out of the setupapi enum loop
+                                keyResolved = True
+                                
+                                Dim tmpDevInfo As Win32_SP_DEVINFO_DATA
+                                tmpDevInfo.cbSize = LenB(tmpDevInfo)
+                                If (SetupDiEnumDeviceInfo(hDevInfo, idxInterface, VarPtr(tmpDevInfo)) <> 0) Then
+                                
+                                    'We've got enough info to open a corresponding registry key.
+                                    Const DICS_FLAG_GLOBAL As Long = 1
+                                    Const DIREG_DEV As Long = 1
+                                    Const KEY_READ = (&H20000 Or &H1& Or &H8& Or &H10&) And (Not &H100000)
+                                    Dim hEDIDRegKey As Long
+                                    hEDIDRegKey = SetupDiOpenDevRegKey(hDevInfo, VarPtr(tmpDevInfo), DICS_FLAG_GLOBAL, 0&, DIREG_DEV, KEY_READ)
+                                    
+                                    Const INVALID_HANDLE_VALUE As Long = -1
+                                    If (hEDIDRegKey <> 0) And (hEDIDRegKey <> INVALID_HANDLE_VALUE) Then
+                                    
+                                        'Registry key checks out.  Attempt to pull an EDID.
+                                        Dim edidSize As Long
+                                        If (RegQueryValueEx(hEDIDRegKey, StrPtr("EDID"), 0&, ByVal 0&, ByVal 0&, edidSize) = 0) Then
+                                            If (edidSize > 0) Then
+                                            
+                                                'EDID found.  Attempt to query it.
+                                                ReDim edidArray(0 To edidSize - 1) As Byte
+                                                If (RegQueryValueEx(hEDIDRegKey, StrPtr("EDID"), 0&, 0&, VarPtr(edidArray(0)), edidSize) = 0) Then
+                                                    listOfDisplays(displayIndex).SetEDID edidArray, False
+                                                Else
+                                                    listOfDisplays(displayIndex).SetEDID edidArray, True
+                                                End If
+                                                
+                                            Else
+                                                listOfDisplays(displayIndex).SetEDID edidArray, True
+                                                PDDebug.LogAction "WARNING!  pdDisplays found an EDID, but its reported length was zero."
+                                            End If
+                                        Else
+                                            listOfDisplays(displayIndex).SetEDID edidArray, True
+                                            PDDebug.LogAction "WARNING!  pdDisplays didn't find an EDID key; this may be a VM."
+                                        End If
+                                    
+                                    Else
+                                        PDDebug.LogAction "WARNING!  pdDisplays couldn't open a registry key for this device"
+                                        listOfDisplays(displayIndex).SetEDID edidArray, True
+                                    End If
+                                    
+                                    'Regardless of outcome, we must close the initial registry handle before exiting.
+                                    ' (Note that this uses regular registry APIs, as there's no special setupapi version:
+                                    ' https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdiopendevregkey)
+                                    RegCloseKey hEDIDRegKey
+                                
+                                Else
+                                    PDDebug.LogAction "WARNING!  pdDisplays.FillDetailedDisplayInfo() failed on SetupDiEnumDeviceInfo: " & Err.LastDllError
+                                End If
+                                
+                                'If we're inside this code, it means we aligned our GDI and setupapi objects.
+                                ' Exit the iteration immediately.
+                                Exit Do
+                                
+                            End If
+                            
                         Else
-                            listOfDisplays(displayIndex).SetEDID edidArray, True
+                            PDDebug.LogAction "WARNING!  pdDisplays.FillDetailedDisplayInfo() failed on SetupDiGetDeviceInterfaceDetail: " & Err.LastDllError
                         End If
                         
+                    Else
+                        PDDebug.LogAction "WARNING!  pdDisplays.FillDetailedDisplayInfo() failed on SetupDiGetDeviceInterfaceDetail buffer size: " & Err.LastDllError
                     End If
                     
-                Else
-                    listOfDisplays(displayIndex).SetEDID edidArray, True
-                End If
+                    'Failsafe key resolution check; should never trigger
+                    If keyResolved Then Exit Do
+                    
+                    'Manually increment interface count and attempt to query again
+                    idxInterface = idxInterface + 1
+                    retVal = SetupDiEnumDeviceInterfaces(hDevInfo, 0&, VarPtr(GUID_DevInterface_Monitor(0)), idxInterface, VarPtr(tmpInterfaceData))
+                    
+                Loop
                 
-            '/End Len(devID) <> 0
+                'Regardless of outcome, free all remaining setupapi objects
+                If (hDevInfo <> 0) Then SetupDiDestroyDeviceInfoList hDevInfo
+                
+                'If we didn't find a match, report failure to the debug log
+                If (Not keyResolved) Then PDDebug.LogAction "pdDisplays couldn't resolve GDI and setupapi devices.  This PC is likely a VM or an older XP machine."
+                
+            '/End LenB(devID) <> 0
             End If
         
         '/End previous attempted to cache devID or not Vista+
@@ -471,76 +624,9 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     Exit Sub
 
 DetailedDisplayInfoBug:
-    PDDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.fillDetailedDisplayInfo.  Some display info may be missing."
+    PDDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.FillDetailedDisplayInfo.  Some display info may be missing."
     
 End Sub
-
-'Given a registry path (created from a monitor's device ID), retrieve a corresponding EDID.
-' Returns: TRUE if the EDID is found, FALSE otherwise.  API errors will be logged to pdDebug.
-Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal registryPath As String) As Boolean
-
-    On Error GoTo RegistryFetchError
-
-    'Make sure the array has been dimensioned at least once; that way, even if this function fails, the caller will not
-    ' experience OOB errors.
-    ReDim dstArray(0) As Byte
-
-    'EDID data is stored in the local machine branch; note that WRITING values here requires admin access, but QUERYING does not.
-    ' (We will only be querying.)
-    Const HKEY_LOCAL_MACHINE As Long = &H80000002
-    
-    'To avoid UAC, we must only use QUERY access rights
-    Const KEY_QUERY_VALUE As Long = &H1
-    
-    'Before we can retrieve the EDID, we first have to open its registry key.  Get a handle to the key (if possible).
-    Dim regHandle As Long, successCheck As Long
-    successCheck = RegOpenKeyEx(HKEY_LOCAL_MACHINE, StrPtr(registryPath), 0&, KEY_QUERY_VALUE, regHandle)
-    
-    'The registry key was opened successfully.  Use it to query the actual value at that location.
-    If (successCheck = 0) And (regHandle <> 0) Then
-        
-        'Before retrieving the array itself, we need to determine its size.
-        Dim regString As String
-        regString = "EDID"
-        
-        Dim edidSize As Long
-        successCheck = RegQueryValueEx(regHandle, StrPtr(regString), 0&, ByVal 0&, ByVal 0&, edidSize)
-
-        'Size was retrieved successfully.  Dimension the array and receive the EDID data.
-        If (successCheck = 0) And (edidSize > 0) Then
-        
-            ReDim dstArray(0 To edidSize - 1) As Byte
-            successCheck = RegQueryValueEx(regHandle, StrPtr(regString), 0&, 0&, VarPtr(dstArray(0)), edidSize)
-            RetrieveEDIDFromRegistry = (successCheck = 0)
-            
-        Else
-        
-            'If the key was queried successfully but the EDID size was 0, we don't have a choice but to fail.
-            RetrieveEDIDFromRegistry = False
-            PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
-            
-        End If
-        
-        'Make sure to close the registry key when we're done with it.  Thank you to vbforums.com user Elroy for
-        ' catching and reporting this.
-        successCheck = RegCloseKey(regHandle)
-        If (successCheck <> 0) Then PDDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
-        
-    'Couldn't open the registry key.  Exit.
-    Else
-        RetrieveEDIDFromRegistry = False
-        PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
-    End If
-    
-    Exit Function
-    
-RegistryFetchError:
-
-    'successCheck will contain the last return value of a registry API call; might as well return it in case it's helpful
-    RetrieveEDIDFromRegistry = False
-    PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
-    
-End Function
 
 'Shortcut function for those who want to access the primary monitor (which may or may not be index 0 in our collection)
 Friend Function PrimaryDisplay() As pdDisplay

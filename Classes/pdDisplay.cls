@@ -132,35 +132,29 @@ End Property
 'Retrieve the best available name for this monitor.  If available, an EDID model name will be used.  If that doesn't
 ' exist, we'll use the Windows fallback (which is often something dumb like "Generic PnP Monitor").
 Friend Function GetBestMonitorName() As String
-    
-    If Len(m_EDIDModelName) <> 0 Then
+    If (LenB(m_EDIDModelName) <> 0) Then
         GetBestMonitorName = m_EDIDModelName
     Else
         GetBestMonitorName = m_FriendlyName
     End If
-    
 End Function
 
 'Retrieve the monitor's size, as a string (useful for displaying to the user)
 Friend Function GetMonitorSizeAsString() As String
-
     If m_hasEDID Then
         GetMonitorSizeAsString = Format$(m_EDIDDiagonalInches, "#0.0") & """"
     Else
         GetMonitorSizeAsString = vbNullString
     End If
-
 End Function
 
 'Retrieve the monitor's native resolution, as a string (useful for displaying to the user)
 Friend Function GetMonitorResolutionAsString() As String
-
     If m_hasEDID Then
         GetMonitorResolutionAsString = CStr(m_EDIDNativeResH) & "x" & CStr(m_EDIDNativeResV)
     Else
         GetMonitorResolutionAsString = CStr(m_MonitorRect.Right - m_MonitorRect.Left) & "x" & CStr(m_MonitorRect.Bottom - m_MonitorRect.Top)
     End If
-
 End Function
 
 Friend Function GetMonitorSerialNo(Optional ByVal getMiniDescriptor As Boolean = False, Optional ByVal getCombinedDescriptor As Boolean = False) As String
