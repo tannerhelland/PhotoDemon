@@ -340,9 +340,13 @@ Private Function StartPatching() As Boolean
                                 'Retrieve the secondary failsafe checksum for this file
                                 failsafeChecksum = GetFailsafeChecksum(xmlEngine, newFilename)
                                 
-                                'Only compare checksums if the returned value is non-zero
+                                'Only compare checksums if the returned value is non-zero.
+                                ' (NOTE: this was disabled in the 8.0 release cycle, as I have migrated PD to a totally different
+                                ' upgrade format.  We want the patch applied no matter what, so we can migrate to the new system.)
                                 Dim checksumOkay As Boolean
-                                If (failsafeChecksum = 0) Then checksumOkay = True Else checksumOkay = CBool(failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile))
+                                'If (failsafeChecksum = 0) Then checksumOkay = True Else checksumOkay = CBool(failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile))
+                                checksumOkay = True
+                                failsafeChecksum = 0
                                 
                                 'Before proceeding with the write, compare the temp file array to our stored checksum
                                 If checksumOkay Then

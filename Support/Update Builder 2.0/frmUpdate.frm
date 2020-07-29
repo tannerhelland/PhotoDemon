@@ -259,6 +259,7 @@ Private Sub AssembleStableAndBetaBuilds()
     cPackage.WritePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz2", , True
     
     'Repeat the above steps for the beta update folder
+    Set cPackage = New pdPackager
     cPackage.PrepareNewPackage 4, PD_PATCH_IDENTIFIER
     cPackage.AutoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta\", 0
     cPackage.AutoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
@@ -267,11 +268,13 @@ Private Sub AssembleStableAndBetaBuilds()
     'Want to test extraction, to verify everything was stored correctly?  Use these lines:
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
+    Set cPackage = New pdPackager
     cPackage.ReadPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta.pdz2", PD_PATCH_IDENTIFIER
     cPackage.AutoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta_auto_extract_test\"
     Debug.Print "Verified beta build file extraction in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     VBHacks.GetHighResTime startTime
+    Set cPackage = New pdPackager
     cPackage.ReadPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz2", PD_PATCH_IDENTIFIER
     cPackage.AutoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable_auto_extract_test\"
     Debug.Print "Verified stable build file extraction in " & VBHacks.GetTimeDiffNowAsString(startTime)

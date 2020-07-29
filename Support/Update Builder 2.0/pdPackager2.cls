@@ -1718,7 +1718,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         'Make sure the destination path was successfully constructed, including any relative path data.
                         ' (If constructing the relative path failed, the destination path string will have been erased.)
                         If (LenB(fullDestinationPath) <> 0) Then
-                        
+                            Debug.Print "working on " & fullDestinationPath
                             'Retrieve this node's contents
                             If GetNodeDataByIndex(i, False, retBytes()) Then
                             
