@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>6.7.339</langversion>
+<langversion>6.7.340</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama</author>
@@ -11994,41 +11994,11 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>Una imagen por página</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>Varias imágenes por página</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>Una imagen repartida en varias páginas (impresión de cartel)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>Tipo de trabajo de impresión</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation># de copias</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>Calidad de impresión</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>Tamaño de papel</translation>
+<original>copies</original>
+<translation>Copias</translation>
 </phrase>
 
 <phrase>
@@ -12037,44 +12007,8 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>En el siguiente paso, puede detallar mejor el diseño (márgenes, posición, etc.)</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>Paso 1 de 2: Configuración básica de impresión</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>Boceto (menos tinta)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>Buena</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>Mejor</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>Óptima (más tinta)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>Copias</translation>
+<original>paper size</original>
+<translation>Tamaño de papel</translation>
 </phrase>
 
 <phrase>
@@ -12117,7 +12051,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>Paisaje</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16092,10 +16026,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>

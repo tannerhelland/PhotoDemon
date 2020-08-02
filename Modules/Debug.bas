@@ -367,8 +367,8 @@ Public Function StartDebugger(Optional ByVal writeLogDataToFile As Boolean = Fal
                 debugHeader.AppendLine "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf
                 If (Not initIsNormal) Then debugHeader.AppendLine "WARNING: debugger was not initiated by default; session data may be incomplete"
                 
-                debugHeader.AppendLine "Date: " & Date
-                debugHeader.AppendLine "Time: " & Time
+                debugHeader.AppendLine "Date: " & Date$
+                debugHeader.AppendLine "Time: " & Time$
                 debugHeader.AppendLine "Session ID: " & OS.UniqueSessionID()
                 debugHeader.AppendLine "Compiled: " & CStr(OS.IsProgramCompiled)
                 debugHeader.AppendLine "First run: " & CStr(g_IsFirstRun) & vbCrLf

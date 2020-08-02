@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.163</langversion>
+<langversion>7.0.164</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -11941,41 +11941,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>每個頁面單個影像</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>每個頁面多個影像</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>列印品質</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>紙張大小</translation>
+<original>copies</original>
+<translation>複本</translation>
 </phrase>
 
 <phrase>
@@ -11984,44 +11954,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>步驟 1 / 2: 基本列印設定</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>草稿 (使用最少墨水)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>佳</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>較佳</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>最佳 (使用較多墨水)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>複本</translation>
+<original>paper size</original>
+<translation>紙張大小</translation>
 </phrase>
 
 <phrase>
@@ -12064,7 +11998,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16031,10 +15965,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>

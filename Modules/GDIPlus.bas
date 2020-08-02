@@ -58,14 +58,14 @@ Private Type GDIPlusStartupInput
     SuppressExternalCodecs   As Long
 End Type
 
-Private Enum GP_DebugEventLevel
-    GP_DebugEventLevelFatal = 0
-    GP_DebugEventLevelWarning = 1
-End Enum
-
-#If False Then
-    Private Const GP_DebugEventLevelFatal = 0, GP_DebugEventLevelWarning = 1
-#End If
+'Private Enum GP_DebugEventLevel
+'    GP_DebugEventLevelFatal = 0
+'    GP_DebugEventLevelWarning = 1
+'End Enum
+'
+'#If False Then
+'    Private Const GP_DebugEventLevelFatal = 0, GP_DebugEventLevelWarning = 1
+'#End If
 
 'Drawing-related enums
 
@@ -729,20 +729,20 @@ End Enum
     Private Const GP_PT_YCbCrPositioning = &H213, GP_PT_YCbCrSubsampling = &H212, GP_PT_YPosition = &H11F, GP_PT_YResolution = &H11B
 #End If
 
-Private Enum GP_PropertyTagType
-    GP_PTT_Byte = 1
-    GP_PTT_ASCII = 2
-    GP_PTT_Short = 3
-    GP_PTT_Long = 4
-    GP_PTT_Rational = 5
-    GP_PTT_Undefined = 7
-    GP_PTT_SLONG = 9
-    GP_PTT_SRational = 10
-End Enum
-
-#If False Then
-    Private Const GP_PTT_Byte = 1, GP_PTT_ASCII = 2, GP_PTT_Short = 3, GP_PTT_Long = 4, GP_PTT_Rational = 5, GP_PTT_Undefined = 7, GP_PTT_SLONG = 9, GP_PTT_SRational = 10
-#End If
+'Private Enum GP_PropertyTagType
+'    GP_PTT_Byte = 1
+'    GP_PTT_ASCII = 2
+'    GP_PTT_Short = 3
+'    GP_PTT_Long = 4
+'    GP_PTT_Rational = 5
+'    GP_PTT_Undefined = 7
+'    GP_PTT_SLONG = 9
+'    GP_PTT_SRational = 10
+'End Enum
+'
+'#If False Then
+'    Private Const GP_PTT_Byte = 1, GP_PTT_ASCII = 2, GP_PTT_Short = 3, GP_PTT_Long = 4, GP_PTT_Rational = 5, GP_PTT_Undefined = 7, GP_PTT_SLONG = 9, GP_PTT_SRational = 10
+'#End If
 
 Public Enum GP_RotateFlip
     GP_RF_NoneFlipNone = 0
@@ -949,6 +949,30 @@ Public Type GP_PropertyItem
     propValue As Long           'Property value or pointer to property value, contingent on propType, above
 End Type
 
+'Like image formats, export encoder properties are also defined by GUID.  These values come from
+' the Win 8.1 version of gdiplusimaging.h.  Note that some are restricted to GDI+ v1.1.
+'Private Const GP_EP_ChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
+Private Const GP_EP_ColorDepth As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
+Private Const GP_EP_Compression As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
+'Private Const GP_EP_LuminanceTable As String = "{EDB33BCE-0266-4A77-B904-27216099E717}"
+Private Const GP_EP_Quality As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"
+'Private Const GP_EP_RenderMethod As String = "{6D42C53A-229A-4825-8BB7-5C99E2B9A8B8}"
+'Private Const GP_EP_SaveFlag As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
+'Private Const GP_EP_ScanMethod As String = "{3A4E2661-3109-4E56-8536-42C156E7DCFA}"
+'Private Const GP_EP_Transformation As String = "{8D0EB2D1-A58E-4EA8-AA14-108074B7B6F9}"
+Private Const GP_EP_Version As String = "{24D18C76-814A-41A4-BF53-1C219CCCF797}"
+
+'THESE ENCODER PROPERTIES REQUIRE GDI+ v1.1 OR LATER!
+'Private Const GP_EP_ColorSpace As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
+'Private Const GP_EP_SaveAsCMYK As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
+
+'Multi-frame (GIF) and multi-page (TIFF) files support retrieval of individual pages via
+' something Microsoft confusingly calls "frame dimensions".  Frame retrieval functions
+' require you to specify which kind of frame you want to retrieve; these GUIDs control that.
+Private Const GP_FD_Page As String = "{7462DC86-6180-4C7E-8E3F-EE7333A7A483}"
+'Private Const GP_FD_Resolution As String = "{84236F7B-3BD3-428F-8DAB-4EA1439CA315}"    'used for ICONs; PD parses those manually
+Private Const GP_FD_Time As String = "{6AEDBD6D-3FB5-418A-83A6-7F45229DC872}"
+
 'GDI+ uses GUIDs to define image formats.  VB6 doesn't let us predeclare byte arrays (at least not easily),
 ' so we save ourselves the trouble and just use string versions.
 Private Const GP_FF_GUID_Undefined = "{B96B3CA9-0728-11D3-9D7B-0000F81EF32E}"
@@ -960,32 +984,8 @@ Private Const GP_FF_GUID_JPEG = "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_PNG = "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_GIF = "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_TIFF = "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
-Private Const GP_FF_GUID_EXIF = "{B96B3CB2-0728-11D3-9D7B-0000F81EF32E}"
+'Private Const GP_FF_GUID_EXIF = "{B96B3CB2-0728-11D3-9D7B-0000F81EF32E}"   'Unused
 Private Const GP_FF_GUID_Icon = "{B96B3CB5-0728-11D3-9D7B-0000F81EF32E}"
-
-'Like image formats, export encoder properties are also defined by GUID.  These values come from the Win 8.1
-' version of gdiplusimaging.h.  Note that some are restricted to GDI+ v1.1.
-Private Const GP_EP_Compression As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
-Private Const GP_EP_ColorDepth As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
-Private Const GP_EP_ScanMethod As String = "{3A4E2661-3109-4E56-8536-42C156E7DCFA}"
-Private Const GP_EP_Version As String = "{24D18C76-814A-41A4-BF53-1C219CCCF797}"
-Private Const GP_EP_RenderMethod As String = "{6D42C53A-229A-4825-8BB7-5C99E2B9A8B8}"
-Private Const GP_EP_Quality As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"
-Private Const GP_EP_Transformation As String = "{8D0EB2D1-A58E-4EA8-AA14-108074B7B6F9}"
-Private Const GP_EP_LuminanceTable As String = "{EDB33BCE-0266-4A77-B904-27216099E717}"
-Private Const GP_EP_ChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
-Private Const GP_EP_SaveFlag As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
-
-'THESE ENCODER PROPERTIES REQUIRE GDI+ v1.1 OR LATER!
-Private Const GP_EP_ColorSpace As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
-Private Const GP_EP_SaveAsCMYK As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
-
-'Multi-frame (GIF) and multi-page (TIFF) files support retrieval of individual pages via something Microsoft
-' confusingly calls "frame dimensions".  Frame retrieval functions require to specify which kind of frame
-' you want to retrieve; these GUIDs control that.
-Private Const GP_FD_Page As String = "{7462DC86-6180-4C7E-8E3F-EE7333A7A483}"
-Private Const GP_FD_Resolution As String = "{84236F7B-3BD3-428F-8DAB-4EA1439CA315}"
-Private Const GP_FD_Time As String = "{6AEDBD6D-3FB5-418A-83A6-7F45229DC872}"
 
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
@@ -1025,11 +1025,11 @@ Private Declare Function GdipCombineRegionPath Lib "gdiplus" (ByVal dstRegion As
 
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDIBitmapInfo As BITMAPINFO, ByRef srcBitmapData As Any, ByRef dstGdipBitmap As Long) As GP_Result
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByRef Scan0 As Any, ByRef dstGdipBitmap As Long) As GP_Result
-Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
+'Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImageAttributes As Long) As GP_Result
-Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
+'Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef dstMatrix As Long) As GP_Result
@@ -1039,25 +1039,25 @@ Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal srcColor As Long, B
 Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
 Private Declare Function GdipCreateRegion Lib "gdiplus" (ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, ByRef hRegion As Long) As GP_Result
-Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RectF, ByRef hRegion As Long) As GP_Result
-Private Declare Function GdipCreateRegionRgnData Lib "gdiplus" (ByVal ptrToRegionData As Long, ByVal sizeOfRegionData As Long, ByRef dstRegion As Long) As GP_Result
+'Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RectF, ByRef hRegion As Long) As GP_Result
+'Private Declare Function GdipCreateRegionRgnData Lib "gdiplus" (ByVal ptrToRegionData As Long, ByVal sizeOfRegionData As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef dstTexture As Long) As GP_Result
 
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
-Private Declare Function GdipDeleteCachedBitmap Lib "gdiplus" (ByVal hCachedBitmap As Long) As GP_Result
-
+'Private Declare Function GdipDeleteCachedBitmap Lib "gdiplus" (ByVal hCachedBitmap As Long) As GP_Result
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As GP_Result
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
+
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GP_Result
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttributes As Long) As GP_Result
 
 Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
 Private Declare Function GdipDrawArcI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal startAngle As Long, ByVal sweepAngle As Long) As GP_Result
-Private Declare Function GdipDrawCachedBitmap Lib "gdiplus" (ByVal hGraphics As Long, ByVal hCachedBitmap As Long, ByVal x As Long, ByVal y As Long) As GP_Result
+'Private Declare Function GdipDrawCachedBitmap Lib "gdiplus" (ByVal hGraphics As Long, ByVal hCachedBitmap As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipDrawClosedCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawClosedCurve2I Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
@@ -1095,10 +1095,10 @@ Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Lo
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal dstCompositingMode As GP_CompositingMode) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
-Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RectF, ByRef dstUnit As GP_Unit) As GP_Result
+'Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RectF, ByRef dstUnit As GP_Unit) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Single, ByRef dstHeight As Single) As GP_Result
-Private Declare Function GdipGetImageDecoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
-Private Declare Function GdipGetImageDecodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
+'Private Declare Function GdipGetImageDecoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
+'Private Declare Function GdipGetImageDecodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
@@ -1216,7 +1216,7 @@ Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Lo
 ' via manifest, and as such, is unavailable to PD until Win 7).  Take care to confirm the availability of these functions
 ' before using them.
 Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
-Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
+'Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
 Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef dstEffect As Long) As GP_Result
 Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal hEffect As Long) As GP_Result
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByRef drawRect As RectF, ByVal hTransformMatrix As Long, ByVal hEffect As Long, ByVal hImageAttributes As Long, ByVal srcUnit As GP_Unit) As GP_Result
@@ -2765,11 +2765,12 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
     
 End Function
 
-'Encountered a multi-page TIFF and you just want to load one page?  No worries; just call this function after the load
-' function completes to free any cached multi-page assets.
-Public Sub MultiPageDataNotWanted()
-    If (m_hMultiPageImage <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
-End Sub
+'Encountered a multi-page TIFF and you just want to load one page?  No worries; just call this
+' function after the load function completes to free any cached multi-page assets.
+' (PD doesn't use this currently; we always load all pages when available.)
+'Public Sub MultiPageDataNotWanted()
+'    If (m_hMultiPageImage <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
+'End Sub
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
 Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As GP_PixelFormat) As Long
@@ -3792,22 +3793,22 @@ End Function
 ' This is that proc.
 '
 'NOTE: this feature is currently disabled due to lack of testing.
-Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrChar As Long) As Long
-    
-    'Pull the GDI+ message into a local string
-    Dim debugString As String
-    'debugString = Strings.StringFromCharPtr(ptrChar, False)
-    debugString = "Unknown GDI+ error was passed to the GDIPlus debug procedure."
-    
-    If (deLevel = GP_DebugEventLevelWarning) Then
-        Debug.Print "GDI+ WARNING: " & debugString
-    ElseIf (deLevel = GP_DebugEventLevelFatal) Then
-        Debug.Print "GDI+ ERROR: " & debugString
-    Else
-        Debug.Print "GDI+ UNKNOWN: " & debugString
-    End If
-    
-End Function
+'Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrChar As Long) As Long
+'
+'    'Pull the GDI+ message into a local string
+'    Dim debugString As String
+'    'debugString = Strings.StringFromCharPtr(ptrChar, False)
+'    debugString = "Unknown GDI+ error was passed to the GDIPlus debug procedure."
+'
+'    If (deLevel = GP_DebugEventLevelWarning) Then
+'        Debug.Print "GDI+ WARNING: " & debugString
+'    ElseIf (deLevel = GP_DebugEventLevelFatal) Then
+'        Debug.Print "GDI+ ERROR: " & debugString
+'    Else
+'        Debug.Print "GDI+ UNKNOWN: " & debugString
+'    End If
+'
+'End Function
 
 Private Sub InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
         
@@ -5237,40 +5238,43 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
 
 End Function
 
-'Debug only: list the decoders available on this system.  Users may have additional decoders installed, besides those
-' offered by default (JPEG, PNG, etc).
-Public Sub DEBUG_ListGdipDecoders()
-
-    Dim numDecoders As Long, sizeEncodersBytes As Long
-    If (GdipGetImageDecodersSize(numDecoders, sizeEncodersBytes) = GP_OK) Then
-        
-        'For reasons I don't fully understand, the sizeEncodersBytes value is often significantly larger
-        ' than the size you'd expect given the number of codecs.  As such, declare our array safely.
-        Dim tmpExampleDec As GP_ImageCodecInfo
-        
-        Dim safeNumEncoders As Long
-        safeNumEncoders = (sizeEncodersBytes \ LenB(tmpExampleDec)) + 1
-        
-        Dim encList() As GP_ImageCodecInfo
-        ReDim encList(0 To safeNumEncoders - 1) As GP_ImageCodecInfo
-        
-        If (GdipGetImageDecoders(numDecoders, sizeEncodersBytes, VarPtr(encList(0))) = GP_OK) Then
-            
-            Debug.Print "Found " & CStr(numDecoders) & " GDI+ decoders on this PC.  The list includes:"
-            Dim i As Long
-            For i = 0 To numDecoders - 1
-                Debug.Print vbTab & CStr(i + 1) & ": " & Strings.StringFromCharPtr(encList(i).IC_CodecName, True)
-            Next i
-        
-        Else
-            Debug.Print "WARNING: GDI+ failed to retrieve decoder list; has the library been initialized correctly?"
-        End If
-    
-    Else
-        Debug.Print "WARNING: GDI+ returned no valid decoders; has the library been initialized correctly?"
-    End If
-    
-End Sub
+'Debug only: list the decoders available on this system.  Users may have additional decoders installed,
+' besides those offered by default (JPEG, PNG, etc).
+'
+'NOTE: as of Win 10, this function is disabled.  Testing shows that it's basically useless; GDI+ extenders
+' don't seem to exist in the wild.  Everyone writes extensions for WIC now (as they should).
+'Public Sub DEBUG_ListGdipDecoders()
+'
+'    Dim numDecoders As Long, sizeEncodersBytes As Long
+'    If (GdipGetImageDecodersSize(numDecoders, sizeEncodersBytes) = GP_OK) Then
+'
+'        'For reasons I don't fully understand, the sizeEncodersBytes value is often significantly larger
+'        ' than the size you'd expect given the number of codecs.  As such, declare our array safely.
+'        Dim tmpExampleDec As GP_ImageCodecInfo
+'
+'        Dim safeNumEncoders As Long
+'        safeNumEncoders = (sizeEncodersBytes \ LenB(tmpExampleDec)) + 1
+'
+'        Dim encList() As GP_ImageCodecInfo
+'        ReDim encList(0 To safeNumEncoders - 1) As GP_ImageCodecInfo
+'
+'        If (GdipGetImageDecoders(numDecoders, sizeEncodersBytes, VarPtr(encList(0))) = GP_OK) Then
+'
+'            Debug.Print "Found " & CStr(numDecoders) & " GDI+ decoders on this PC.  The list includes:"
+'            Dim i As Long
+'            For i = 0 To numDecoders - 1
+'                Debug.Print vbTab & CStr(i + 1) & ": " & Strings.StringFromCharPtr(encList(i).IC_CodecName, True)
+'            Next i
+'
+'        Else
+'            Debug.Print "WARNING: GDI+ failed to retrieve decoder list; has the library been initialized correctly?"
+'        End If
+'
+'    Else
+'        Debug.Print "WARNING: GDI+ returned no valid decoders; has the library been initialized correctly?"
+'    End If
+'
+'End Sub
 
 Public Function GDIPlus_ImageUnlockBits(ByVal hImage As Long, ByRef srcCopyData As GP_BitmapData) As Boolean
     Dim tmpReturn As GP_Result

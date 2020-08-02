@@ -32,12 +32,6 @@ End Enum
 Private Declare Function LoadIconW Lib "user32" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
 Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
-'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
-' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
-' (e.g. ByRef PointArray(0)), while the cPoints parameter is the number of points in the array.  If two points are
-' passed, a special Rect transform may occur on RtL systems; see http://msdn.microsoft.com/en-us/library/dd145046%28v=vs.85%29.aspx
-Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As PointAPI, ByVal cPoints As Long) As Long
-
 'At startup, PD caches a few different UI pens and brushes related to viewport rendering.
 Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
@@ -433,27 +427,6 @@ End Function
 Public Function ConvertImageSizeToCanvasSize(ByVal srcSize As Double, ByRef srcImage As pdImage) As Double
     ConvertImageSizeToCanvasSize = srcSize * Zoom.GetZoomRatioFromIndex(srcImage.GetZoomIndex())
 End Function
-
-'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
-' the screen coordinate space will be used as an intermediary in the conversion.
-Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
-    
-    'This API requires POINTAPI structs
-    Dim tmpPoint As PointAPI
-    
-    With tmpPoint
-        .x = srcX
-        .y = srcY
-    End With
-    
-    'Transform the coordinates
-    MapWindowPoints srcHwnd, dstHwnd, tmpPoint, 1
-    
-    'Report the transformed points back to the user
-    dstX = tmpPoint.x
-    dstY = tmpPoint.y
-    
-End Sub
 
 'Return an arbitrary conversion from image space to canvas space.
 ' An optional image (x, y) can also passed; these will be added to the transform as source-image-space offsets.

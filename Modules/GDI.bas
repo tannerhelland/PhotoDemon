@@ -56,17 +56,17 @@ Private Type GDI_BitmapInfo
     bmiColors(0 To 255) As GDI_RGBQuad
 End Type
 
-Private Enum GDI_PenStyle
-    PS_SOLID = 0
-    PS_DASH = 1
-    PS_DOT = 2
-    PS_DASHDOT = 3
-    PS_DASHDOTDOT = 4
-End Enum
-
-#If False Then
-    Private Const PS_SOLID = 0, PS_DASH = 1, PS_DOT = 2, PS_DASHDOT = 3, PS_DASHDOTDOT = 4
-#End If
+'Private Enum GDI_PenStyle
+'    PS_SOLID = 0
+'    PS_DASH = 1
+'    PS_DOT = 2
+'    PS_DASHDOT = 3
+'    PS_DASHDOTDOT = 4
+'End Enum
+'
+'#If False Then
+'    Private Const PS_SOLID = 0, PS_DASH = 1, PS_DOT = 2, PS_DASHDOT = 3, PS_DASHDOTDOT = 4
+'#End If
 
 Private Const GDI_OBJ_BITMAP As Long = 7&
 Private Const GDI_CBM_INIT As Long = &H4
@@ -76,16 +76,16 @@ Private Declare Function BitBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBitmap Lib "gdi32" (ByVal hDC As Long, ByRef lpInfoHeader As GDI_BitmapInfoHeader, ByVal dwUsage As Long, ByVal ptrToInitBits As Long, ByVal ptrToInitBitmapInfo As Long, ByVal wUsage As Long) As Long
-Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As GDI_PenStyle, ByVal nWidth As Long, ByVal srcColor As Long) As Long
+'Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As GDI_PenStyle, ByVal nWidth As Long, ByVal srcColor As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GdiFlush Lib "gdi32" () As Long
+'Private Declare Function GdiFlush Lib "gdi32" () As Long    'We don't require this right now, but it may be useful in the future
 Private Declare Function GetCurrentObject Lib "gdi32" (ByVal srcDC As Long, ByVal srcObjectType As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal sizeOfBuffer As Long, ByVal ptrToBuffer As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+'Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+'Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+'Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Helper functions from user32
 Private Declare Function FillRect Lib "user32" (ByVal hDstDC As Long, ByVal ptrToRect As Long, ByVal hSrcBrush As Long) As Long
@@ -140,9 +140,10 @@ Public Sub FreeMemoryDC(ByRef srcDC As Long)
     End If
 End Sub
 
-Public Sub ForceGDIFlush()
-    GdiFlush
-End Sub
+'PD doesn't require this right now, but it may be useful in the future
+'Public Sub ForceGDIFlush()
+'    GdiFlush
+'End Sub
 
 'Basic wrappers for rect-filling and rect-tracing via GDI
 Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long, ByVal crColor As Long)

@@ -109,7 +109,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private WithEvents m_Bilateral As pdFxBilateral
+'PD's bilateral filter class can raise progress events, but we don't use them here
+' because we instead update progress as "animation stages"
+Private m_Bilateral As pdFxBilateral
 Attribute m_Bilateral.VB_VarHelpID = -1
 
 'Apply a "comic book" effect to an image

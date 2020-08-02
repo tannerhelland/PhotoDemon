@@ -288,10 +288,11 @@ Public Sub CompareImages(ByRef listOfParameters As String)
     ' a is on the range [-79.276268, 93.544746398926]
     ' b is on the range [-112.0311279296875, 93.392997741699]
     Const labAMin As Double = -79.276268
-    Const labAMax As Double = 93.544746398926
-    Const labBMin As Double = -112.031127929688
-    Const labBMax As Double = 93.392997741699
+    'Const labAMax As Double = 93.544746398926
     Const labAScale As Double = 93.544746398926 + 79.276268 'labAMax + Abs(labAMin)
+    
+    Const labBMin As Double = -112.031127929688
+    'Const labBMax As Double = 93.392997741699
     Const labBScale As Double = 93.392997741699 + 112.031127929688 'labBMax + Abs(labBMin)
     
     Dim labARatio As Double, labBRatio As Double

@@ -122,7 +122,7 @@ Private Const TOKEN_QUERY = &H8
 Private Const SE_PRIVILEGE_ENABLED = &H2
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
  
-Type PROCESSENTRY32
+Private Type PROCESSENTRY32
     dwSize As Long
     cntUsage As Long
     th32ProcessID As Long
@@ -1408,17 +1408,20 @@ Public Sub KillStrandedExifToolInstances()
     
     Dim numProcessesTerminated As Long
     
+    Dim procTarget As String
+    procTarget = "exiftool.exe"
+    
     'Iterate through all running processes, looking for ExifTool instances
     Do While (rProcessFound <> 0)
     
         'Retrieve the EXE name of this process
-        i = InStr(1, uProcess.szExeFile, ChrW$(0))
+        i = InStr(1, uProcess.szExeFile, ChrW$(0), vbBinaryCompare)
         If (i > 1) Then
             
             szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
             
             'If the process name is "exiftool.exe", terminate it
-            If Strings.StringsEqual(Right$(szExename, Len("exiftool.exe")), "exiftool.exe", True) Then
+            If Strings.StringsEqual(Right$(szExename, Len(procTarget)), procTarget, True) Then
                 
                 'Retrieve a handle to the ExifTool instance
                 myProcess = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)

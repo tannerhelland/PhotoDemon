@@ -111,7 +111,6 @@ Private Declare Function CreateRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 A
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObj As Long) As Long
 
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedrawImmediately As Long) As Long
@@ -134,23 +133,6 @@ End Enum
 #End If
 
 Private m_WindowMethod As PD_TransparentWindow
-
-'Used for dialog move/size
-Private Enum PD_MouseEdge
-    me_Normal = 0
-    me_Left = 1
-    me_Right = 2
-    me_Top = 3
-    me_TopLeft = 4
-    me_TopRight = 5
-    me_Bottom = 6
-    me_BottomLeft = 7
-    me_BottomRight = 8
-End Enum
-
-#If False Then
-    Private Const me_Normal = 0, me_Left = 1, me_Right = 2, me_Top = 3, me_TopLeft = 4, me_TopRight = 5, me_Bottom = 6, me_BottomLeft = 7, me_BottomRight = 8
-#End If
 
 'The rectangle (in screen coords) of the window that summoned us (if any);
 ' this is used to position this window the first time it is launched.
@@ -646,7 +628,7 @@ Private Sub CaptureFrameNow()
         If (m_FrameCount > UBound(m_Frames)) Then ReDim Preserve m_Frames(0 To m_FrameCount * 2 - 1) As PD_APNGFrameCapture
         
         '*Immediately* before capture, note the current time
-        Dim capTime As Currency, testTime As Currency
+        Dim capTime As Currency
         capTime = VBHacks.GetHighResTimeInMSEx()
         
         'Capture the frame in question into a pdDIB object; note that we alternate
@@ -659,7 +641,6 @@ Private Sub CaptureFrameNow()
             Set captureTarget = m_captureDIB24
         End If
         
-        Dim cursX As Long, cursY As Long, mbState As Boolean
         ScreenCapture.GetPartialDesktopAsDIB captureTarget, m_CaptureRectScreen, m_ShowCursor, m_ShowClicks
         
         'Before saving this frame, check for duplicate frames.  This is very common during

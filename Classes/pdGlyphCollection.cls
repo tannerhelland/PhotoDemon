@@ -65,11 +65,11 @@ End Type
 
 'Supported shape types inside TrueType and OpenType fonts
 Private Const TT_PRIM_LINE As Long = 1       'Line or polyline primitive
-Private Const TT_PRIM_QSPLINE As Long = 2    'Quadratic Bezier spline
+'Private Const TT_PRIM_QSPLINE As Long = 2    'Quadratic Bezier spline, not used by PD at present because we request a cubic spline
 Private Const TT_PRIM_CSPLINE As Long = 3    'Cubic Bezier spline
 
-'Universal identifier of the TTPOLYGONHEADER struct
-Private Const TT_POLYGON_TYPE As Long = 24
+'Universal identifier of the TTPOLYGONHEADER struct; we treat this as read-only, so we don't need it
+'Private Const TT_POLYGON_TYPE As Long = 24
 
 'This GLYPHMETRICS struct is passed to GetGlyphOutline; it contains basic positioning data, separate from the glyph itself.
 ' Note that all measurements are in *device units*.
@@ -85,12 +85,13 @@ End Type
 Private m_oldFontHandle As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
-'Glyph retrieval.  Per MSDN (https://msdn.microsoft.com/en-us/library/dd144891%28v=vs.85%29.aspx) I don't think there's any
-' difference between the A and W variants, but W is declared for consistency with the rest of PD.
+'Glyph retrieval.  Per MSDN (https://msdn.microsoft.com/en-us/library/dd144891%28v=vs.85%29.aspx),
+' I don't think there's any difference between the A and W variants, but W is declared for consistency
+' with the rest of PD.
 Private Const GGO_BEZIER As Long = 3
 Private Const GGO_GLYPH_INDEX As Long = &H80
 Private Const GGO_UNHINTED As Long = &H100
-Private Const GDI_ERROR As Long = &HFFFF
+'Private Const GDI_ERROR As Long = &HFFFF   'Returned for bitmap retrieval methods; we don't use those
 Private Declare Function GetGlyphOutline Lib "gdi32" Alias "GetGlyphOutlineW" (ByVal hDC As Long, ByVal uChar As Long, ByVal uFormat As Long, ByRef lpgm As GLYPHMETRICS, ByVal cbBuffer As Long, ByVal ptrToBuffer As Long, ByRef lpmat2 As MAT2) As Long
 
 'This type is the minimum amount of data required to properly store and render a given glyph outline.  The pd2DPath instance
@@ -359,29 +360,31 @@ End Function
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
 Private Function GetRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
-    'We could start by retrieving glyph metrics, which are plugged directly into the current glyph entry in the master collection.
-    ' (These metrics are separate from the glyph shape; we use them to control inter-character spacing, among other things.)
+    'We could start by retrieving glyph metrics, which are plugged directly into the current
+    ' glyph entry in the master collection.  (These metrics are separate from the glyph shape;
+    ' we use them to control inter-character spacing, among other things.)
     
     'To grab these, use the following line of code:
     'ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_METRICS, m_glyphoutlines(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
-    'The reason I don't do this is that the metrics will be retrieved anyway by our next call, which requests length of the raw
-    ' glyph buffer.  For performance reasons, we kill two birds with one stone on that call.
+    'The reason I don't do this is that the metrics will be retrieved anyway by our next call,
+    ' which requests length of the raw glyph buffer.  For performance reasons, we kill two birds
+    ' with one stone on that call.
     
-    'Prior to retrieving metrics, set the hinting flag.  Note that hinting is optional, and its presence (or lack thereof)
-    ' has consequences for glyph shape and positioning.
+    'Prior to retrieving metrics, set the hinting flag.  Note that hinting is optional, and its
+    ' presence (or lack thereof) has consequences for glyph shape and positioning.
     Dim formatFlags As Long
     formatFlags = GGO_BEZIER Or GGO_GLYPH_INDEX
     If (Not useHinting) Then formatFlags = formatFlags Or GGO_UNHINTED
     
-    'Next, we want to retrieve the required size of the glyph shape buffer.  FYI, for complex glyphs, this can be fairly large.
-    ' Note also that we explicitly request bezier curve format.  This makes our subsequent parsing much easier, and improves the
-    ' output fidelity of OpenType fonts.
+    'Next, we want to retrieve the required size of the glyph shape buffer.  FYI, for complex glyphs,
+    ' this can be fairly large.  Note also that we explicitly request bezier curve format.
+    ' This makes our subsequent parsing much easier, and improves the output fidelity of OpenType fonts.
     Dim ggoReturn As Long, byteSizeOfBuffer As Long
     ggoReturn = GetGlyphOutline(m_tmpDIB.GetDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, 0, 0, m_IdentityMatrix)
     
     'ggoReturn should be > 0, which tells us the required size of the destination buffer.
-    If ggoReturn <= 0 Then
+    If (ggoReturn <= 0) Then
         
         'If zero is returned, that's okay; this might just be a whitespace character with no corresponding glyph.
         ' Return TRUE; the caller function has logic to deal with this combination of outputs.

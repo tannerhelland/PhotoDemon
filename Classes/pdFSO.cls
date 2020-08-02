@@ -200,7 +200,6 @@ Private Declare Function GetShortPathNameW Lib "kernel32" (ByVal lpLongPath As L
 Private Declare Sub GetSystemInfo Lib "kernel32" (ByRef lpSystemInfo As Win32_System_Info)
 Private Declare Function MapViewOfFile Lib "kernel32" (ByVal hFileMappingObject As Long, ByVal dwDesiredAccess As Long, ByVal dwFileOffsetHigh As Long, ByVal dwFileOffsetLow As Long, ByVal dwNumberOfBytesToMap As Long) As Long
 Private Declare Function MoveFileExW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal dwFlags As Long) As Long
-Private Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingW" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal ptrToNameString As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function ReplaceFileW Lib "kernel32" (ByVal lpReplacedFileName As Long, ByVal lpReplacementFileName As Long, ByVal lpBackupFileName As Long, ByVal dwReplaceFlags As Long, ByVal lpExclude As Long, ByVal lpReserved As Long) As Long
 Private Declare Function SetEndOfFile Lib "kernel32" (ByVal hFile As Long) As Long

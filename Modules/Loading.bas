@@ -370,8 +370,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'GDI+ path
             ElseIf (decoderUsed = id_GDIPlus) Then
             
-                'If we implement a load-time dialog in the future, and the user (for whatever reason) doesn't want
-                ' all pages loaded, call this function to free cached multipage handles:
+                'If we implement a load-time dialog in the future, and the user (for whatever reason)
+                ' doesn't want all pages loaded, call this function to free cached multipage handles.
+                ' (Note that you'll need to uncomment the corresponding function in the GDI_Plus
+                ' module, too.)
                 'GDI_Plus.MultiPageDataNotWanted
                 
                 'Otherwise, assume they want all pages loaded

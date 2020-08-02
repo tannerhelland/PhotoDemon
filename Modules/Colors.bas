@@ -683,54 +683,6 @@ Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef x A
     
 End Sub
 
-'Convert XYZ to RGB, assuming sRGB endpoints.
-Public Sub XYZtoRGB(ByRef x As Double, ByRef y As Double, ByRef z As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long)
-
-    Dim vX As Double, vY As Double, vZ As Double
-    vX = x * 0.01
-    vY = y * 0.01
-    vZ = z * 0.01
-
-    Dim vR As Double, vG As Double, vB As Double
-    vR = vX * 3.2406 + vY * -1.5372 + vZ * -0.4986
-    vG = vX * -0.9689 + vY * 1.8758 + vZ * 0.0415
-    vB = vX * 0.0557 + vY * -0.204 + vZ * 1.057
-    
-    Const ONE_DIV_2p4 As Double = 1# / 2.4
-    
-    If (vR > 0.0031308) Then
-        vR = 1.055 * (vR ^ ONE_DIV_2p4) - 0.055
-    Else
-        vR = 12.92 * vR
-    End If
-    
-    If (vG > 0.0031308) Then
-        vG = 1.055 * (vG ^ ONE_DIV_2p4) - 0.055
-    Else
-        vG = 12.92 * vG
-    End If
-    
-    If (vB > 0.0031308) Then
-        vB = 1.055 * (vB ^ ONE_DIV_2p4) - 0.055
-    Else
-        vB = 12.92 * vB
-    End If
-    
-    r = vR * 255#
-    g = vG * 255#
-    b = vB * 255#
-    
-    'Clamp to [0,255] to prevent output errors.  (XYZ input values are extremely hard to validate,
-    ' especially in a performance-friendly way, so it's easier to just catch failures here.)
-    If (r > 255) Then r = 255
-    If (r < 0) Then r = 0
-    If (g > 255) Then g = 255
-    If (g < 0) Then g = 0
-    If (b > 255) Then b = 255
-    If (b < 0) Then b = 0
-    
-End Sub
-
 'Convert an XYZ color to CIELab.  As with the original XYZ calculation, D65 is assumed.
 ' Formula adopted from http://www.easyrgb.com/index.php?X=MATH&H=07#text7, with minor changes by me (not re-applying D65 values until after
 '  fXYZ has been calculated)

@@ -108,23 +108,6 @@ Public Sub PrepSafeArray(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
 End Sub
 
-'For performance reasons, it is sometimes preferable to access DIB data in 32-bit increments.  Use this function
-' to wrap a Long-type array around a DIB.
-Public Sub PrepSafeArray_Long(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
-    
-    'Populate a relevant SafeArray variable for the supplied DIB
-    With srcSA
-        .cbElements = 4
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcDIB.GetDIBHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcDIB.GetDIBWidth
-        .pvData = srcDIB.GetDIBPointer
-    End With
-    
-End Sub
-
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData,
 ' but to apply it against something other than the current image's active layer.  This function is roughly
 ' equivalent to prepImageData, below, but stripped down and specifically designed for PREVIEWS ONLY.

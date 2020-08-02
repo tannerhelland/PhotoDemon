@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.196</langversion>
+<langversion>1.0.197</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11986,41 +11986,11 @@ I में लोड करें, इस दुर्भावना के �
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>प्रति पृष्ठ एक छवि</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>प्रति पेज कई छवियाँ</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>एक छवि कई पृष्ठों में फैलती है (पोस्टर प्रिंट)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>प्रिंट जॉब का प्रकार</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation># प्रतियां</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>प्रिंट की गुणवत्ता</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>काग़ज़ का आकार</translation>
+<original>copies</original>
+<translation>प्रतियां</translation>
 </phrase>
 
 <phrase>
@@ -12029,44 +11999,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>अगले चरण में, आप विस्तृत लेआउट जानकारी निर्दिष्ट कर सकते हैं (मार्जिन, स्थिति, आदि)</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>2 का चरण 1: बुनियादी प्रिंट सेटिंग्स</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>मसौदा (कम से कम स्याही)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>अच्छा</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>बेहतर</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>सर्वश्रेष्ठ (सबसे स्याही)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>प्रतियां</translation>
+<original>paper size</original>
+<translation>काग़ज़ का आकार</translation>
 </phrase>
 
 <phrase>
@@ -12109,7 +12043,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परिदृश्य</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16083,10 +16017,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>

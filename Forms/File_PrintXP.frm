@@ -469,8 +469,14 @@ Private Sub RebuildPreview()
         DrawPreviewImage picThumb90, True
         
         'Now comes the rotation itself.
-        picThumbFinal.Picture = FreeImage_RotateIOP(picThumb90.Picture, 90)
-        picThumbFinal.Refresh
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromDC picThumb90.hDC, 0, 0, picThumb90.ScaleWidth, picThumb90.ScaleHeight, 32, True
+        
+        Dim dstDIB As pdDIB
+        Set dstDIB = New pdDIB
+        GDI_Plus.GDIPlusRotateFlipDIB tmpDIB, dstDIB, GP_RF_90FlipNone
+        dstDIB.RenderToPictureBox picThumbFinal, False, False, True
         
         'Initiate a redraw of the preview according to the print settings currently specified by the user
         UpdatePrintPreview

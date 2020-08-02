@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3476</langversion>
+<langversion>6.8.3477</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11984,41 +11984,11 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>Jedna slika po stranici</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>Više slika po stranici</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>Jedna slika proširena na više stranica (poster print)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>Vrsta ispisa</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation># Kopija</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>Kvaliteta ispisa</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>Veličina papira</translation>
+<original>copies</original>
+<translation>kopije</translation>
 </phrase>
 
 <phrase>
@@ -12027,44 +11997,8 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>U sljedećem koraku možete navesti detaljne informacije o rasporedu (margine, pozicioniranje itd.)</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>Korak 1 od 2: osnovne postavke ispisa</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>Nacrt (najmanje tinta)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>dobro</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>bolje</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>Najbolje (većina tinte)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>kopije</translation>
+<original>paper size</original>
+<translation>Veličina papira</translation>
 </phrase>
 
 <phrase>
@@ -12107,7 +12041,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>pejzaž</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16082,10 +16016,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>

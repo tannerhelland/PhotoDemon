@@ -315,8 +315,6 @@ Private Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdD
     finalX = (srcDIB.GetDIBWidth - 1) * 4
     finalY = srcDIB.GetDIBHeight - 1
     
-    Dim xStride As Long
-    
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long

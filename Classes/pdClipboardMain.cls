@@ -172,7 +172,7 @@ Attribute m_Clipboard.VB_VarHelpID = -1
 ' (Thank you to LaVolpe for these functions, c/o http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToFirstChar As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+'Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
@@ -190,14 +190,6 @@ Private Type FORMATETC
     dwAspect As Long
     lIndex As Long
     TYMED As Long
-End Type
-
-Private Type DROPFILES
-    pFiles As Long
-    ptX As Long
-    ptY As Long
-    fNC As Long
-    fWide As Long
 End Type
 
 Private Type STGMEDIUM

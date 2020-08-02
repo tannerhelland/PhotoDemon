@@ -125,27 +125,32 @@ Private m_FontSize As Single
 ' characters are in use!
 Private m_Multiline As Boolean
 
-Private Const ES_AUTOHSCROLL = &H80
-Private Const ES_AUTOVSCROLL = &H40
-Private Const ES_CENTER = &H1
-Private Const ES_LEFT = &H0
-Private Const ES_LOWERCASE = &H10
-Private Const ES_MULTILINE = &H4
-Private Const ES_NOHIDESEL = &H100
-Private Const ES_NUMBER = &H2000
-Private Const ES_OEMCONVERT = &H400
-Private Const ES_PASSWORD = &H20
-Private Const ES_READONLY = &H800
-Private Const ES_RIGHT = &H2
-Private Const ES_UPPERCASE = &H8
-Private Const ES_WANTRETURN = &H1000
+Private Enum Win32_EditBoxStyles
+    ES_AUTOHSCROLL = &H80
+    ES_AUTOVSCROLL = &H40
+    ES_CENTER = &H1
+    ES_LEFT = &H0
+    ES_LOWERCASE = &H10
+    ES_MULTILINE = &H4
+    ES_NOHIDESEL = &H100
+    ES_NUMBER = &H2000
+    ES_OEMCONVERT = &H400
+    ES_PASSWORD = &H20
+    ES_READONLY = &H800
+    ES_RIGHT = &H2
+    ES_UPPERCASE = &H8
+    ES_WANTRETURN = &H1000
+End Enum
+
+#If False Then
+    Private Const ES_AUTOHSCROLL = &H80, ES_AUTOVSCROLL = &H40, ES_CENTER = &H1, ES_LEFT = &H0, ES_LOWERCASE = &H10, ES_MULTILINE = &H4, ES_NOHIDESEL = &H100, ES_NUMBER = &H2000, ES_OEMCONVERT = &H400, ES_PASSWORD = &H20, ES_READONLY = &H800, ES_RIGHT = &H2, ES_UPPERCASE = &H8, ES_WANTRETURN = &H1000
+#End If
 
 'Updating the font is done via WM_SETFONT
 Private Const WM_SETFONT = &H30
 Private Declare Function SetBkMode Lib "gdi32" (ByVal targetDC As Long, ByVal nBkMode As Long) As Long
 Private Declare Function SetBkColor Lib "gdi32" (ByVal targetDC As Long, ByVal nBkColor As Long) As Long
 Private Const SBKM_OPAQUE = 2
-Private Const SBKM_TRANSPARENT = 1
 
 'These constants can be used as the second parameter of the ShowWindow API function
 Private Enum ShowWindowOptions
@@ -191,9 +196,7 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As winRect, ByVal bErase As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'Message routing
 Private m_CharCache As Long
@@ -212,7 +215,6 @@ Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_ME
 Private m_EditBoxHwnd As Long
 
 Private Const WM_KEYDOWN As Long = &H100
-Private Const WM_SYSKEYDOWN As Long = &H104
 Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
 Private Const WM_IME_CHAR As Long = &H286
@@ -222,11 +224,9 @@ Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_SETTEXT As Long = &HC
 Private Const WM_COMMAND As Long = &H111
-Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_CTLCOLORSTATIC As Long = &H138
 Private Const WM_DESTROY As Long = &H2
-Private Const WM_GETDLGCODE As Long = &H87
 
 Private Const EN_UPDATE As Long = &H400
 Private Const EM_GETSEL As Long = &HB0
@@ -447,7 +447,7 @@ Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         DestroyEditBox
         
         'Some window style flags vary on user-editable properties; calculate those now
-        Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
+        Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Win32_EditBoxStyles
         flagsWinStyle = WS_VISIBLE Or WS_CHILD
         flagsWinStyleExtended = 0
         flagsEditControl = 0

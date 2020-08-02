@@ -254,9 +254,3 @@ Public Sub ResetCache()
     ReDim m_ImageCache(0) As ImgCacheEntry
     m_NumOfCacheObjects = 0
 End Sub
-
-Public Sub TestCacheOnly()
-    GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, 0, 0, m_ImageCache(0).ImgSpriteSheet.GetDIBWidth, m_ImageCache(0).ImgSpriteSheet.GetDIBHeight, m_ImageCache(0).ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Everything
-    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-End Sub

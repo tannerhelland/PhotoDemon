@@ -245,22 +245,8 @@ Private Type Bitmap_API
    bmBitsPixel As Integer
    bmBits As Long
 End Type
-
-Private Type BLENDFUNCTION
-  BlendOp As Byte
-  BlendFlags As Byte
-  SourceConstantAlpha As Byte
-  AlphaFormat As Byte
-End Type
     
 'GDI32
-
-Private Declare Function GetStretchBltMode Lib "gdi32.dll" ( _
-    ByVal hDC As Long) As Long
-
-Private Declare Function SetStretchBltMode Lib "gdi32.dll" ( _
-    ByVal hDC As Long, _
-    ByVal nStretchMode As Long) As Long
     
 Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
@@ -323,72 +309,14 @@ Private Declare Function GetObjectAPI Lib "gdi32.dll" Alias "GetObjectA" ( _
     ByVal nCount As Long, _
     ByRef lpObject As Any) As Long
     
-Private Declare Function SelectObject Lib "gdi32.dll" ( _
-    ByVal hDC As Long, _
-    ByVal hObject As Long) As Long
-
-Private Declare Function DeleteObject Lib "gdi32.dll" ( _
-    ByVal hObject As Long) As Long
-    
 Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal uObjectType As Long) As Long
 
 Private Const OBJ_BITMAP As Long = 7
 
-'MSIMG32
-Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
-    ByVal hdcDest As Long, _
-    ByVal nXOriginDest As Long, _
-    ByVal nYOriginDest As Long, _
-    ByVal nWidthDest As Long, _
-    ByVal nHeightDest As Long, _
-    ByVal hdcSrc As Long, _
-    ByVal nXOriginSrc As Long, _
-    ByVal nYOriginSrc As Long, _
-    ByVal nWidthSrc As Long, _
-    ByVal nHeightSrc As Long, _
-    ByVal lBlendFunction As Long) As Long
-
-Private Const AC_SRC_OVER = &H0
-Private Const AC_SRC_ALPHA = &H1
-
-Public Enum STRETCH_MODE
-   SM_BLACKONWHITE = 1
-   SM_WHITEONBLACK = 2
-   SM_COLORONCOLOR = 3
-End Enum
-#If False Then
-   Const SM_BLACKONWHITE = 1
-   Const SM_WHITEONBLACK = 2
-   Const SM_COLORONCOLOR = 3
-#End If
-
-Private Const SRCCOPY As Long = &HCC0020
-
-Public Enum RASTER_OPERATOR
-   ROP_SRCCOPY = SRCCOPY
-End Enum
-#If False Then
-   Const ROP_SRCCOPY = SRCCOPY
-#End If
-
 Private Const DIB_RGB_COLORS As Long = 0
 
-Public Enum DRAW_MODE
-   DM_DRAW_DEFAULT = &H0
-   DM_MIRROR_NONE = DM_DRAW_DEFAULT
-   DM_MIRROR_VERTICAL = &H1
-   DM_MIRROR_HORIZONTAL = &H2
-   DM_MIRROR_BOTH = DM_MIRROR_VERTICAL Or DM_MIRROR_HORIZONTAL
-End Enum
-#If False Then
-   Const DM_DRAW_DEFAULT = &H0
-   Const DM_MIRROR_NONE = DM_DRAW_DEFAULT
-   Const DM_MIRROR_VERTICAL = &H1
-   Const DM_MIRROR_HORIZONTAL = &H2
-   Const DM_MIRROR_BOTH = DM_MIRROR_VERTICAL Or DM_MIRROR_HORIZONTAL
-#End If
 
 
 '--------------------------------------------------------------------------------
@@ -1020,141 +948,6 @@ End Enum
    Const FICD_32BPP = &H20
 #End If
 
-Public Enum FREE_IMAGE_ADJUST_MODE
-   AM_STRECH = &H1
-   AM_DEFAULT = AM_STRECH
-   AM_ADJUST_BOTH = AM_STRECH
-   AM_ADJUST_WIDTH = &H2
-   AM_ADJUST_HEIGHT = &H4
-   AM_ADJUST_OPTIMAL_SIZE = &H8
-End Enum
-#If False Then
-   Const AM_STRECH = &H1
-   Const AM_DEFAULT = AM_STRECH
-   Const AM_ADJUST_BOTH = AM_STRECH
-   Const AM_ADJUST_WIDTH = &H2
-   Const AM_ADJUST_HEIGHT = &H4
-   Const AM_ADJUST_OPTIMAL_SIZE = &H8
-#End If
-
-Public Enum FREE_IMAGE_MASK_FLAGS
-   FIMF_MASK_NONE = &H0
-   FIMF_MASK_FULL_TRANSPARENCY = &H1
-   FIMF_MASK_ALPHA_TRANSPARENCY = &H2
-   FIMF_MASK_COLOR_TRANSPARENCY = &H4
-   FIMF_MASK_FORCE_TRANSPARENCY = &H8
-   FIMF_MASK_INVERSE_MASK = &H10
-End Enum
-#If False Then
-   Const FIMF_MASK_NONE = &H0
-   Const FIMF_MASK_FULL_TRANSPARENCY = &H1
-   Const FIMF_MASK_ALPHA_TRANSPARENCY = &H2
-   Const FIMF_MASK_COLOR_TRANSPARENCY = &H4
-   Const FIMF_MASK_FORCE_TRANSPARENCY = &H8
-   Const FIMF_MASK_INVERSE_MASK = &H10
-#End If
-
-Public Enum FREE_IMAGE_COLOR_FORMAT_FLAGS
-   FICFF_COLOR_RGB = &H1
-   FICFF_COLOR_BGR = &H2
-   FICFF_COLOR_PALETTE_INDEX = &H4
-   
-   FICFF_COLOR_HAS_ALPHA = &H100
-   
-   FICFF_COLOR_ARGB = FICFF_COLOR_RGB Or FICFF_COLOR_HAS_ALPHA
-   FICFF_COLOR_ABGR = FICFF_COLOR_BGR Or FICFF_COLOR_HAS_ALPHA
-   
-   FICFF_COLOR_FORMAT_ORDER_MASK = FICFF_COLOR_RGB Or FICFF_COLOR_BGR
-End Enum
-#If False Then
-   Const FICFF_COLOR_RGB = &H1
-   Const FICFF_COLOR_BGR = &H2
-   Const FICFF_COLOR_PALETTE_INDEX = &H4
-   
-   Const FICFF_COLOR_HAS_ALPHA = &H100
-   
-   Const FICFF_COLOR_ARGB = FICFF_COLOR_RGB Or FICFF_COLOR_HAS_ALPHA
-   Const FICFF_COLOR_ABGR = FICFF_COLOR_BGR Or FICFF_COLOR_HAS_ALPHA
-   
-   Const FICFF_COLOR_FORMAT_ORDER_MASK = FICFF_COLOR_RGB Or FICFF_COLOR_BGR
-#End If
-
-Public Enum FREE_IMAGE_MASK_CREATION_OPTION_FLAGS
-   MCOF_CREATE_MASK_IMAGE = &H1
-   MCOF_MODIFY_SOURCE_IMAGE = &H2
-   MCOF_CREATE_AND_MODIFY = MCOF_CREATE_MASK_IMAGE Or MCOF_MODIFY_SOURCE_IMAGE
-End Enum
-#If False Then
-   Const MCOF_CREATE_MASK_IMAGE = &H1
-   Const MCOF_MODIFY_SOURCE_IMAGE = &H2
-   Const MCOF_CREATE_AND_MODIFY = MCOF_CREATE_MASK_IMAGE Or MCOF_MODIFY_SOURCE_IMAGE
-#End If
-
-Public Enum FREE_IMAGE_TRANSPARENCY_STATE_FLAGS
-   FITSF_IGNORE_TRANSPARENCY = &H0
-   FITSF_NONTRANSPARENT = &H1
-   FITSF_TRANSPARENT = &H2
-   FITSF_INCLUDE_ALPHA_TRANSPARENCY = &H4
-End Enum
-#If False Then
-   Const FITSF_IGNORE_TRANSPARENCY = &H0
-   Const FITSF_NONTRANSPARENT = &H1
-   Const FITSF_TRANSPARENT = &H2
-   Const FITSF_INCLUDE_ALPHA_TRANSPARENCY = &H4
-#End If
-
-Public Enum FREE_IMAGE_ICON_TRANSPARENCY_OPTION_FLAGS
-   ITOF_NO_TRANSPARENCY = &H0
-   ITOF_USE_TRANSPARENCY_INFO = &H1
-   ITOF_USE_TRANSPARENCY_INFO_ONLY = ITOF_USE_TRANSPARENCY_INFO
-   ITOF_USE_COLOR_TRANSPARENCY = &H2
-   ITOF_USE_COLOR_TRANSPARENCY_ONLY = ITOF_USE_COLOR_TRANSPARENCY
-   ITOF_USE_TRANSPARENCY_INFO_OR_COLOR = ITOF_USE_TRANSPARENCY_INFO Or ITOF_USE_COLOR_TRANSPARENCY
-   ITOF_USE_DEFAULT_TRANSPARENCY = ITOF_USE_TRANSPARENCY_INFO_OR_COLOR
-   ITOF_USE_COLOR_TOP_LEFT_PIXEL = &H0
-   ITOF_USE_COLOR_FIRST_PIXEL = ITOF_USE_COLOR_TOP_LEFT_PIXEL
-   ITOF_USE_COLOR_TOP_RIGHT_PIXEL = &H20
-   ITOF_USE_COLOR_BOTTOM_LEFT_PIXEL = &H40
-   ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL = &H80
-   ITOF_USE_COLOR_SPECIFIED = &H100
-   ITOF_FORCE_TRANSPARENCY_INFO = &H400
-End Enum
-#If False Then
-   Const ITOF_NO_TRANSPARENCY = &H0
-   Const ITOF_USE_TRANSPARENCY_INFO = &H1
-   Const ITOF_USE_TRANSPARENCY_INFO_ONLY = ITOF_USE_TRANSPARENCY_INFO
-   Const ITOF_USE_COLOR_TRANSPARENCY = &H2
-   Const ITOF_USE_COLOR_TRANSPARENCY_ONLY = ITOF_USE_COLOR_TRANSPARENCY
-   Const ITOF_USE_TRANSPARENCY_INFO_OR_COLOR = ITOF_USE_TRANSPARENCY_INFO Or ITOF_USE_COLOR_TRANSPARENCY
-   Const ITOF_USE_DEFAULT_TRANSPARENCY = ITOF_USE_TRANSPARENCY_INFO_OR_COLOR
-   Const ITOF_USE_COLOR_TOP_LEFT_PIXEL = &H0
-   Const ITOF_USE_COLOR_FIRST_PIXEL = ITOF_USE_COLOR_TOP_LEFT_PIXEL
-   Const ITOF_USE_COLOR_TOP_RIGHT_PIXEL = &H20
-   Const ITOF_USE_COLOR_BOTTOM_LEFT_PIXEL = &H40
-   Const ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL = &H80
-   Const ITOF_USE_COLOR_SPECIFIED = &H100
-   Const ITOF_FORCE_TRANSPARENCY_INFO = &H400
-#End If
-
-Private Const ITOF_USE_COLOR_BITMASK As Long = ITOF_USE_COLOR_TOP_RIGHT_PIXEL Or _
-                                               ITOF_USE_COLOR_BOTTOM_LEFT_PIXEL Or _
-                                               ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL Or _
-                                               ITOF_USE_COLOR_SPECIFIED
-
-'TANNER'S NOTE: this is publicly declared elsewhere in this project, so I've commented it out here
-'Public Type RGBTRIPLE
-'   rgbtBlue As Byte
-'   rgbtGreen As Byte
-'   rgbtRed As Byte
-'End Type
-
-Public Const BI_RGB As Long = 0
-Public Const BI_RLE8 As Long = 1
-Public Const BI_RLE4 As Long = 2
-Public Const BI_BITFIELDS As Long = 3
-Public Const BI_JPEG As Long = 4
-Public Const BI_PNG As Long = 5
-
 Public Type FIICCPROFILE
    Flags As Integer
    Size As Long
@@ -1222,45 +1015,12 @@ Public Type FREE_IMAGE_TAG
    Value As Variant
 End Type
 
-Public Type FreeImageIO
-   read_proc As Long
-   write_proc As Long
-   seek_proc As Long
-   tell_proc As Long
-End Type
-
-Public Type Plugin
-   format_proc As Long
-   description_proc As Long
-   extension_proc As Long
-   regexpr_proc As Long
-   open_proc As Long
-   close_proc As Long
-   pagecount_proc As Long
-   pagecapability_proc As Long
-   load_proc As Long
-   save_proc As Long
-   validate_proc As Long
-   mime_proc As Long
-   supports_export_bpp_proc As Long
-   supports_export_type_proc As Long
-   supports_icc_profiles_proc As Long
-End Type
-
 ' the next structures are only used by derived functions of the
 ' FreeImage 3 VB wrapper
 Public Type RGBTRIPLE
     Red As Byte
     Green As Byte
     Blue As Byte
-End Type
-
-Public Type ScanLineRGBTRIBLE
-   Data() As RGBTRIPLE
-End Type
-
-Public Type ScanLinesRGBTRIBLE
-   Scanline() As ScanLineRGBTRIBLE
 End Type
 
 Private Type SAVEARRAY2D
@@ -1289,7 +1049,7 @@ End Type
 
 ' General functions
 Public Declare Sub FreeImage_Initialise Lib "FreeImage.dll" Alias "_FreeImage_Initialise@4" ( _
-  Optional ByVal LoadLocalPluginsOnly As Long)
+  Optional ByVal loadLocalPluginsOnly As Long)
 
 Public Declare Sub FreeImage_DeInitialise Lib "FreeImage.dll" Alias "_FreeImage_DeInitialise@0" ()
 
@@ -1634,21 +1394,8 @@ Public Declare Sub FreeImage_DestroyICCProfile Lib "FreeImage.dll" Alias "_FreeI
 ' Plugin functions
 Public Declare Function FreeImage_GetFIFCount Lib "FreeImage.dll" Alias "_FreeImage_GetFIFCount@0" () As Long
 
-Public Declare Function FreeImage_SetPluginEnabled Lib "FreeImage.dll" Alias "_FreeImage_SetPluginEnabled@8" ( _
-           ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal Value As Long) As Long
-
-Public Declare Function FreeImage_IsPluginEnabled Lib "FreeImage.dll" Alias "_FreeImage_IsPluginEnabled@4" ( _
-           ByVal Format As FREE_IMAGE_FORMAT) As Long
-
 Public Declare Function FreeImage_GetFIFFromFormat Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFormat@4" ( _
            ByVal Format As String) As FREE_IMAGE_FORMAT
-
-Public Declare Function FreeImage_GetFIFFromMime Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromMime@4" ( _
-           ByVal MimeType As String) As FREE_IMAGE_FORMAT
-
-Private Declare Function FreeImage_GetFIFMimeTypeInt Lib "FreeImage.dll" Alias "_FreeImage_GetFIFMimeType@4" ( _
-           ByVal Format As FREE_IMAGE_FORMAT) As Long
 
 Private Declare Function FreeImage_GetFormatFromFIFInt Lib "FreeImage.dll" Alias "_FreeImage_GetFormatFromFIF@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
@@ -1684,20 +1431,6 @@ Private Declare Function FreeImage_FIFSupportsICCProfilesInt Lib "FreeImage.dll"
            
 Private Declare Function FreeImage_FIFSupportsNoPixelsInt Lib "FreeImage.dll" Alias "_FreeImage_FIFSupportsNoPixels@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
-
-Public Declare Function FreeImage_RegisterLocalPlugin Lib "FreeImage.dll" Alias "_FreeImage_RegisterLocalPlugin@20" ( _
-           ByVal InitProcAddress As Long, _
-  Optional ByVal Format As String, _
-  Optional ByVal Description As String, _
-  Optional ByVal Extension As String, _
-  Optional ByVal RegExpr As String) As FREE_IMAGE_FORMAT
-
-Public Declare Function FreeImage_RegisterExternalPlugin Lib "FreeImage.dll" Alias "_FreeImage_RegisterExternalPlugin@20" ( _
-           ByVal Path As String, _
-  Optional ByVal Format As String, _
-  Optional ByVal Description As String, _
-  Optional ByVal Extension As String, _
-  Optional ByVal RegExpr As String) As FREE_IMAGE_FORMAT
 
 
 ' Multipage functions
@@ -1901,15 +1634,6 @@ Private Declare Function FreeImage_SetMetadataKeyValueInt Lib "FreeImage.dll" Al
            ByVal Key As String, _
            ByVal Tag As String) As Long
 
-
-' metadata helper functions
-Public Declare Function FreeImage_GetMetadataCount Lib "FreeImage.dll" Alias "_FreeImage_GetMetadataCount@8" ( _
-           ByVal Model As Long, _
-           ByVal Bitmap As Long) As Long
-           
-Public Declare Function FreeImage_CloneMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_CloneMetadata@8" ( _
-           ByVal BitmapDst As Long, _
-           ByVal BitmapSrc As Long) As Long
 
 
 ' tag to string conversion functions
@@ -2318,19 +2042,6 @@ Public Function FreeImage_GetFIFDescription(ByVal Format As FREE_IMAGE_FORMAT) A
 
 End Function
 
-
-Public Function FreeImage_GetFIFMimeType(ByVal Format As FREE_IMAGE_FORMAT) As String
-   
-   ' This function returns the result of the 'FreeImage_GetFIFMimeType' function
-   ' as VB String. Read paragraph 2 of the "General notes on implementation
-   ' and design" section to learn more about that technique.
-   
-   ' The parameter 'Format' works according to the FreeImage 3 API documentation.
-   
-   FreeImage_GetFIFMimeType = pGetStringFromPointerA(FreeImage_GetFIFMimeTypeInt(Format))
-   
-End Function
-
 Public Sub FreeImage_GetInfoHeaderEx(ByVal Bitmap As Long, ByVal ptrToBitmapInfoHeader As Long)
 
 Dim lpInfoHeader As Long
@@ -2344,13 +2055,6 @@ Dim lpInfoHeader As Long
       Call CopyMemory(ByVal ptrToBitmapInfoHeader, ByVal lpInfoHeader, 40&)
    End If
 
-End Sub
-
-'Overwrite an existing FI DIB header with our own header copy.  WARNING!  USE WITH EXTREME! CAUTION!
-Public Sub FreeImage_SetInfoHeaderEx(ByVal fi_Handle As Long, ByVal ptrToBitmapInfoHeader As Long)
-    Dim lpInfoHeader As Long
-    lpInfoHeader = FreeImage_GetInfoHeader(fi_Handle)
-    If (lpInfoHeader <> 0) Then Call CopyMemory(ByVal lpInfoHeader, ByVal ptrToBitmapInfoHeader, 40&)
 End Sub
 
 Public Function FreeImage_GetPaletteExLong(ByVal Bitmap As Long) As Long()
@@ -4055,74 +3759,6 @@ Public Function FreeImage_PaintDC(ByVal hDC As Long, _
 
 End Function
 
-Public Function FreeImage_PaintDCEx(ByVal hDC As Long, _
-                                    ByVal Bitmap As Long, _
-                           Optional ByVal xDst As Long, _
-                           Optional ByVal yDst As Long, _
-                           Optional ByVal WidthDst As Long, _
-                           Optional ByVal HeightDst As Long, _
-                           Optional ByVal xSrc As Long, _
-                           Optional ByVal ySrc As Long, _
-                           Optional ByVal WidthSrc As Long, _
-                           Optional ByVal HeightSrc As Long, _
-                           Optional ByVal DrawMode As DRAW_MODE = DM_DRAW_DEFAULT, _
-                           Optional ByVal RasterOperator As RASTER_OPERATOR = ROP_SRCCOPY, _
-                           Optional ByVal StretchMode As STRETCH_MODE = SM_COLORONCOLOR) As Long
-
-Dim eLastStretchMode As STRETCH_MODE
-
-   ' This function draws a FreeImage DIB directly onto a device context (DC). There
-   ' are many (selfexplaining?) parameters that control the visual result.
-   
-   ' The main difference of this function compared to the 'FreeImage_PaintDC' is,
-   ' that this function supports both mirroring and stretching of the image to be
-   ' painted and so, is somewhat slower than 'FreeImage_PaintDC'.
-   
-   If ((hDC <> 0) And (Bitmap <> 0)) Then
-   
-      If (Not FreeImage_HasPixels(Bitmap)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to paint a 'header-only' bitmap.")
-      End If
-      
-      eLastStretchMode = GetStretchBltMode(hDC)
-      Call SetStretchBltMode(hDC, StretchMode)
-      
-      If (WidthSrc = 0) Then
-         WidthSrc = FreeImage_GetWidth(Bitmap)
-      End If
-      If (WidthDst = 0) Then
-         WidthDst = WidthSrc
-      End If
-      
-      If (HeightSrc = 0) Then
-         HeightSrc = FreeImage_GetHeight(Bitmap)
-      End If
-      If (HeightDst = 0) Then
-         HeightDst = HeightSrc
-      End If
-      
-      If (DrawMode And DM_MIRROR_VERTICAL) Then
-         yDst = yDst + HeightDst
-         HeightDst = -HeightDst
-      End If
-     
-      If (DrawMode And DM_MIRROR_HORIZONTAL) Then
-         xDst = xDst + WidthDst
-         WidthDst = -WidthDst
-      End If
-
-      Call StretchDIBits(hDC, xDst, yDst, WidthDst, HeightDst, xSrc, ySrc, WidthSrc, HeightSrc, _
-            FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), DIB_RGB_COLORS, _
-            RasterOperator)
-      
-      ' restore last mode
-      Call SetStretchBltMode(hDC, eLastStretchMode)
-   End If
-
-End Function
-
-
 Public Function FreeImage_GetTransparencyTableEx(ByVal Bitmap As Long) As Byte()
 
 Dim tSA As SAVEARRAY1D
@@ -4207,267 +3843,6 @@ Dim lpSA As Long
 
 End Function
 
-'--------------------------------------------------------------------------------
-' Pixel access functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetBitsEx(ByVal Bitmap As Long) As Byte()
-
-Dim tSA As SAVEARRAY2D
-Dim lpSA As Long
-
-   ' This function returns a two dimensional Byte array containing a DIB's
-   ' data-bits. This is done by wrapping a true VB array around the memory
-   ' block the returned pointer of FreeImage_GetBits() is pointing to. So, the
-   ' array returned provides full read and write acces to the image's data.
-
-   ' To reuse the caller's array variable, this function's result was assigned to,
-   ' before it goes out of scope, the caller's array variable must be destroyed with
-   ' the FreeImage_DestroyLockedArray() function.
-
-   If (Bitmap) Then
-      
-      ' create a proper SAVEARRAY descriptor
-      With tSA
-         .cbElements = 1                           ' size in bytes per array element
-         .cDims = 2                                ' the array has 2 dimensions
-         .cElements1 = FreeImage_GetHeight(Bitmap) ' the number of elements in y direction (height of Bitmap)
-         .cElements2 = FreeImage_GetPitch(Bitmap)  ' the number of elements in x direction (byte width of Bitmap)
-         .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
-                                                   ' so the array can not be modified in size
-                                                   ' or erased; according to Matthew Curland never
-                                                   ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetBits(Bitmap)       ' let the array point to the memory block, the
-                                                   ' FreeImage scanline data pointer points to
-      End With
-      
-      ' allocate memory for an array descriptor
-      ' we cannot use the memory block used by tSA, since it is
-      ' released when tSA goes out of scope, leaving us with an
-      ' array with zeroed descriptor
-      ' we use nearly the same method that VB uses, so VB is able
-      ' to cleanup the array variable and it's descriptor; the
-      ' array data is not touched when cleaning up, since both AUTO
-      ' and FIXEDSIZE flags are set
-      Call SafeArrayAllocDescriptor(2, lpSA)
-      
-      ' copy our own array descriptor over the descriptor allocated
-      ' by SafeArrayAllocDescriptor; lpSA is a pointer to that memory
-      ' location
-      Call CopyMemory(ByVal lpSA, tSA, Len(tSA))
-      
-      ' the implicit variable named like the function is an array
-      ' variable in VB
-      ' make it point to the allocated array descriptor
-      Call CopyMemory(ByVal VarPtrArray(FreeImage_GetBitsEx), lpSA, 4)
-   End If
-
-End Function
-
-
-'--------------------------------------------------------------------------------el a
-' HBitmap conversion functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
-                           Optional ByVal hDC As Long, _
-                           Optional ByVal UnloadSource As Boolean) As Long
-                               
-Dim bReleaseDC As Boolean
-Dim ppvBits As Long
-   
-   ' This function returns an HBitmap created by the CreateDIBSection() function which
-   ' in turn has the same color depth as the original DIB. A reference DC may be provided
-   ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
-   ' specified.
-
-   If (Bitmap) Then
-   
-      If (Not FreeImage_HasPixels(Bitmap)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a bitmap from a 'header-only' bitmap.")
-      End If
-   
-      If (hDC = 0) Then
-         hDC = GetDC(0)
-         bReleaseDC = True
-      End If
-      If (hDC) Then
-         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfo(Bitmap), _
-               DIB_RGB_COLORS, ppvBits, 0, 0)
-         If ((FreeImage_GetBitmap <> 0) And (ppvBits <> 0)) Then
-            Call CopyMemory(ByVal ppvBits, ByVal FreeImage_GetBits(Bitmap), _
-                  FreeImage_GetHeight(Bitmap) * FreeImage_GetPitch(Bitmap))
-         End If
-         If (UnloadSource) Then
-            Call FreeImage_Unload(Bitmap)
-         End If
-         If (bReleaseDC) Then
-            Call ReleaseDC(0, hDC)
-         End If
-      End If
-   End If
-
-End Function
-
-
-Public Function FreeImage_GetBitmapForDevice(ByVal Bitmap As Long, _
-                                    Optional ByVal hDC As Long, _
-                                    Optional ByVal UnloadSource As Boolean) As Long
-                                    
-Dim bReleaseDC As Boolean
-
-   ' This function returns an HBitmap created by the CreateDIBitmap() function which
-   ' in turn has always the same color depth as the reference DC, which may be provided
-   ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
-   ' specified.
-                              
-   If (Bitmap) Then
-   
-      If (Not FreeImage_HasPixels(Bitmap)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a bitmap from a 'header-only' bitmap.")
-      End If
-   
-      If (hDC = 0) Then
-         hDC = GetDC(0)
-         bReleaseDC = True
-      End If
-      If (hDC) Then
-         FreeImage_GetBitmapForDevice = _
-               CreateDIBitmap(hDC, FreeImage_GetInfoHeader(Bitmap), CBM_INIT, _
-                     FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), _
-                           DIB_RGB_COLORS)
-         If (UnloadSource) Then
-            Call FreeImage_Unload(Bitmap)
-         End If
-         If (bReleaseDC) Then
-            Call ReleaseDC(0, hDC)
-         End If
-      End If
-   End If
-
-End Function
-
-'--------------------------------------------------------------------------------
-' OlePicture conversion functions
-'--------------------------------------------------------------------------------
-
-Public Function FreeImage_GetOlePicture(ByVal Bitmap As Long, _
-                               Optional ByVal hDC As Long, _
-                               Optional ByVal UnloadSource As Boolean) As IPicture
-
-Dim hBitmap As Long
-Dim tPicDesc As PictDesc
-Dim tGuid As Guid
-Dim cPictureDisp As IPictureDisp
-
-   ' This function creates a VB Picture object (OlePicture) from a FreeImage DIB.
-   ' The original image need not remain valid nor loaded after the VB Picture
-   ' object has been created.
-   
-   ' The optional parameter 'hDC' determines the device context (DC) used for
-   ' transforming the device independent bitmap (DIB) to a device dependent
-   ' bitmap (DDB). This device context's color depth is responsible for this
-   ' transformation. This parameter may be null or omitted. In that case, the
-   ' windows desktop's device context will be used, what will be the desired
-   ' way in almost any cases.
-   
-   ' The optional 'UnloadSource' parameter is for unloading the original image
-   ' after the OlePicture has been created, so you can easily "switch" from a
-   ' FreeImage DIB to a VB Picture object. There is no need to unload the DIB
-   ' at the caller's site if this argument is True.
-   
-   If (Bitmap) Then
-   
-      If (Not FreeImage_HasPixels(Bitmap)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to create a picture from a 'header-only' bitmap.")
-      End If
-   
-      hBitmap = FreeImage_GetBitmapForDevice(Bitmap, hDC, UnloadSource)
-      If (hBitmap) Then
-         ' fill tPictDesc structure with necessary parts
-         With tPicDesc
-            .cbSizeofStruct = Len(tPicDesc)
-            ' the vbPicTypeBitmap constant is not available in VBA environemnts
-            .picType = 1  'vbPicTypeBitmap
-            .hImage = hBitmap
-         End With
-   
-         ' fill in IDispatch Interface ID
-         With tGuid
-            .Data1 = &H20400
-            .Data4(0) = &HC0
-            .Data4(7) = &H46
-         End With
-   
-         ' create a picture object
-         Call OleCreatePictureIndirect(tPicDesc, tGuid, True, cPictureDisp)
-         Set FreeImage_GetOlePicture = cPictureDisp
-      End If
-   End If
-
-End Function
-
-
-
-Public Function FreeImage_CreateFromOlePicture(ByRef Picture As IPicture) As Long
-
-Dim hBitmap As Long
-Dim tBM As Bitmap_API
-Dim hDIB As Long
-Dim hDC As Long
-Dim lResult As Long
-Dim nColors As Long
-Dim lpInfo As Long
-
-   ' Creates a FreeImage DIB from a VB Picture object (OlePicture). This function
-   ' returns a pointer to the DIB as, for instance, the FreeImage function
-   ' 'FreeImage_Load' does. So, this could be a real replacement for 'FreeImage_Load'
-   ' when working with VB Picture objects.
-
-   If (Not Picture Is Nothing) Then
-      hBitmap = Picture.Handle
-      If (hBitmap) Then
-         lResult = GetObjectAPI(hBitmap, Len(tBM), tBM)
-         If (lResult) Then
-            hDIB = FreeImage_Allocate(tBM.bmWidth, _
-                                      tBM.bmHeight, _
-                                      tBM.bmBitsPixel)
-            If (hDIB) Then
-               ' The GetDIBits function clears the biClrUsed and biClrImportant BitmapINFO
-               ' members (dont't know why). So we save these infos below.
-               ' This is needed for palletized images only.
-               nColors = FreeImage_GetColorsUsed(hDIB)
-            
-               hDC = GetDC(0)
-               lResult = GetDIBits(hDC, hBitmap, 0, _
-                                   FreeImage_GetHeight(hDIB), _
-                                   FreeImage_GetBits(hDIB), _
-                                   FreeImage_GetInfo(hDIB), _
-                                   DIB_RGB_COLORS)
-               If (lResult) Then
-                  FreeImage_CreateFromOlePicture = hDIB
-                  If (nColors) Then
-                     ' restore BitmapINFO members
-                     ' FreeImage_GetInfo(Bitmap)->biClrUsed = nColors;
-                     ' FreeImage_GetInfo(Bitmap)->biClrImportant = nColors;
-                     lpInfo = FreeImage_GetInfo(hDIB)
-                     Call CopyMemory(ByVal lpInfo + 32, nColors, 4)
-                     Call CopyMemory(ByVal lpInfo + 36, nColors, 4)
-                  End If
-               Else
-                  Call FreeImage_Unload(hDIB)
-               End If
-               Call ReleaseDC(0, hDC)
-            End If
-         End If
-      End If
-   End If
-
-End Function
-
 Public Function FreeImage_CreateFromDC(ByVal hDC As Long, _
                               Optional ByRef hBitmap As Long) As Long
 
@@ -4534,91 +3909,6 @@ Dim lpInfo As Long
             Call FreeImage_Unload(hDIB)
          End If
       End If
-   End If
-
-End Function
-
-
-
-Public Function FreeImage_LoadEx(ByVal srcFilename As String, _
-                        Optional ByVal Options As FREE_IMAGE_LOAD_OPTIONS, _
-                        Optional ByVal Width As Variant, _
-                        Optional ByVal Height As Variant, _
-                        Optional ByVal InPercent As Boolean, _
-                        Optional ByVal Filter As FREE_IMAGE_FILTER, _
-                        Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
-
-Const vbInvalidPictureError As Long = 481
-
-   ' The function provides all image formats, the FreeImage library can read. The
-   ' image format is determined from the image file to load, the optional parameter
-   ' 'Format' is an OUT parameter that will contain the image format that has
-   ' been loaded.
-   
-   ' The parameters 'Width', 'Height', 'InPercent' and 'Filter' make it possible
-   ' to "load" the image in a resized version. 'Width', 'Height' specify the desired
-   ' width and height, 'Filter' determines, what image filter should be used
-   ' on the resizing process.
-   
-   ' The parameters 'Width', 'Height', 'InPercent' and 'Filter' map directly to the
-   ' according parameters of the 'FreeImage_RescaleEx' function. So, read the
-   ' documentation of the 'FreeImage_RescaleEx' for a complete understanding of the
-   ' usage of these parameters.
-   
-
-   Format = FreeImage_GetFileTypeU(StrPtr(srcFilename))
-   If (Format <> FIF_UNKNOWN) Then
-      If (FreeImage_FIFSupportsReading(Format)) Then
-         FreeImage_LoadEx = FreeImage_LoadUInt(Format, StrPtr(srcFilename), Options)
-         If (FreeImage_LoadEx) Then
-            
-            If ((Not IsMissing(Width)) Or _
-                (Not IsMissing(Height))) Then
-               FreeImage_LoadEx = FreeImage_RescaleEx(FreeImage_LoadEx, Width, Height, _
-                     InPercent, True, Filter)
-            End If
-         Else
-            Call Err.Raise(vbInvalidPictureError)
-         End If
-      Else
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "FreeImage Library plugin '" & FreeImage_GetFormatFromFIF(Format) & "' " & _
-                        "does not support reading.")
-      End If
-   Else
-      Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                     "The file specified has an unknown image format.")
-   End If
-
-End Function
-
-Public Function LoadPictureEx(Optional ByRef srcFilename As Variant, _
-                              Optional ByRef Options As FREE_IMAGE_LOAD_OPTIONS, _
-                              Optional ByRef Width As Variant, _
-                              Optional ByRef Height As Variant, _
-                              Optional ByRef InPercent As Boolean, _
-                              Optional ByRef Filter As FREE_IMAGE_FILTER, _
-                              Optional ByRef Format As FREE_IMAGE_FORMAT) As IPicture
-                              
-Dim hDIB As Long
-
-   ' This function is an extended version of the VB method 'LoadPicture'. As
-   ' the VB version it takes a filename parameter to load the image and throws
-   ' the same errors in most cases.
-   
-   ' This function now is only a thin wrapper for the FreeImage_LoadEx() wrapper
-   ' function (as compared to releases of this wrapper prior to version 1.8). So,
-   ' have a look at this function's discussion of the parameters.
-   
-   ' However, we do mask out the FILO_LOAD_NOPIXELS load option, since this
-   ' function shall create a VB Picture object, which does not support
-   ' FreeImage's header-only loading option.
-
-
-   If (Not IsMissing(srcFilename)) Then
-      hDIB = FreeImage_LoadEx(srcFilename, (Options And (Not FILO_LOAD_NOPIXELS)), _
-            Width, Height, InPercent, Filter, Format)
-      Set LoadPictureEx = FreeImage_GetOlePicture(hDIB, , True)
    End If
 
 End Function
@@ -4849,44 +4139,6 @@ Public Function FreeImage_CreateMultiBitmapEx(ByVal srcFilename As String, _
 
 End Function
 
-'NOTE FROM TANNER: the original .bas file contained many more OLE picture wrappers,
-' but I have removed them from PhotoDemon's copy for brevity's sake
-
-Public Function FreeImage_RotateIOP(ByRef Picture As IPicture, _
-                                    ByVal Angle As Double, _
-                           Optional ByVal ColorPtr As Long) As IPicture
-
-Dim hDIB As Long
-Dim hDIBNew As Long
-
-   ' IOlePicture based wrapper for FreeImage function FreeImage_Rotate()
-   
-   ' The optional ColorPtr parameter takes a pointer to (e.g. the address of) an
-   ' RGB color value. So, all these assignments are valid for ColorPtr:
-   '
-   'Dim tColor As RGBQUAD
-   'tColor.rgbRed = 255
-   'tColor.rgbGreen = 255
-   'tColor.rgbBlue = 255
-'
-   'ColorPtr = VarPtr(tColor)
-   ' VarPtr(&H33FF80)
-   ' VarPtr(vbWhite) ' However, the VB color constants are in BGR format!
-
-   hDIB = FreeImage_CreateFromOlePicture(Picture)
-   If (hDIB) Then
-      Select Case FreeImage_GetBPP(hDIB)
-      
-      Case 1, 8, 24, 32
-         hDIBNew = FreeImage_Rotate(hDIB, Angle, ByVal ColorPtr)
-         Set FreeImage_RotateIOP = FreeImage_GetOlePicture(hDIBNew, , True)
-         
-      End Select
-      Call FreeImage_Unload(hDIB)
-   End If
-
-End Function
-
 '--------------------------------------------------------------------------------
 ' Public functions to destroy custom safearrays
 '--------------------------------------------------------------------------------
@@ -5061,15 +4313,6 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_DestroyLockedArrayRGBTRIPLE(ByRef Data() As RGBTRIPLE) As Long
-
-   ' This function is a thin wrapper for 'FreeImage_DestroyLockedArrayByPtr'
-   ' for destroying arrays of type 'RGBTRIPLE'.
-   
-   FreeImage_DestroyLockedArrayRGBTRIPLE = FreeImage_DestroyLockedArrayByPtr(VarPtrArray(Data))
-
-End Function
-
 Public Function FreeImage_DestroyLockedArrayRGBQUAD(ByRef Data() As RGBQuad) As Long
 
    ' This function is a thin wrapper for 'FreeImage_DestroyLockedArrayByPtr'
@@ -5208,28 +4451,6 @@ Private Function pDeref(ByVal ptr As Long) As Long
    Call CopyMemory(pDeref, ByVal ptr, 4)
 
 End Function
-
-Private Sub pSwap(ByVal lpSrc As Long, _
-                  ByVal lpDst As Long)
-
-Dim lpTmp As Long
-
-   ' This function swaps two DWORD memory blocks pointed to
-   ' by lpSrc and lpDst, whereby lpSrc and lpDst are actually
-   ' no pointer types but contain the pointer's address.
-   
-   ' in C/C++ this would be:
-   ' void pSwap(int lpSrc, int lpDst) {
-   '   int tmp = *(int*)lpSrc;
-   '   *(int*)lpSrc = *(int*)lpDst;
-   '   *(int*)lpDst = tmp;
-   ' }
-  
-   Call CopyMemory(lpTmp, ByVal lpSrc, 4)
-   Call CopyMemory(ByVal lpSrc, ByVal lpDst, 4)
-   Call CopyMemory(ByVal lpDst, lpTmp, 4)
-
-End Sub
 
 Private Function pGetMemoryBlockPtrFromVariant(ByRef Data As Variant, _
                                       Optional ByRef sizeInBytes As Long, _

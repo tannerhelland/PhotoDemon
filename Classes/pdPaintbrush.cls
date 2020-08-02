@@ -41,8 +41,8 @@ Option Explicit
 Private m_MouseDown As Boolean
 Private Const MOUSE_OOB As Single = -9.99999E+14!
 
-'Current dab dynamics, if any.  (These are not currently calculated.)
-Private m_Dynamics As BrushDynamics
+'Current dab dynamics, if any.  (These are not currently calculated, but will be someday!)
+'Private m_Dynamics As BrushDynamics
 
 'If the current stroke is the first or last stroke, these flags will be set accordingly
 Private m_IsFirstDab As Boolean, m_IsLastDab As Boolean

@@ -199,7 +199,7 @@ Public Sub FxThresholdAlpha(ByVal fxParams As String, Optional ByVal toPreview A
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
     
     'Pass handling off to the dedicated alpha-threshold function

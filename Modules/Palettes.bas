@@ -592,7 +592,7 @@ Public Function GetOptimizedPaletteIncAlpha_LAB(ByRef srcDIB As pdDIB, ByRef dst
     If (numOfColors < 2) Then numOfColors = 2
     
     Dim srcPixels() As Byte, srcSA As SafeArray1D
-    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    Dim srcPixelsLab() As Byte
     
     'Resize the LAB array to the same size as a scanline of the source image
     ReDim srcPixelsLab(0 To srcDIB.GetDIBStride - 1) As Byte
@@ -1085,7 +1085,7 @@ End Function
 Public Function ApplyPaletteToImage_IncAlpha_KDTree_Lab(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
 
     Dim srcPixels() As Byte, tmpSA As SafeArray1D
-    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    Dim srcPixelsLab() As Byte
     
     'Resize the LAB array to the same size as a scanline of the source image
     ReDim srcPixelsLab(0 To dstDIB.GetDIBStride - 1) As Byte
@@ -1897,7 +1897,7 @@ Public Function ApplyPaletteToImage_Dithered_IncAlpha_Lab(ByRef dstDIB As pdDIB,
     
     'Comparisons will be done in LAB color space; resize a LAB array to the same size
     ' as a scanline of the source image (we'll convert lines as we go)
-    Dim srcPixelsLab() As Byte, srcSALab As SafeArray1D
+    Dim srcPixelsLab() As Byte
     ReDim srcPixelsLab(0 To dstDIB.GetDIBStride - 1) As Byte
     
     Dim pxSize As Long

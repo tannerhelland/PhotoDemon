@@ -1345,10 +1345,6 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
                 If (Not FormPrint.Visible) Then Interface.ShowPDDialog vbModal, FormPrint
             End If
             
-            'In the future, the print dialog should be replaced with a new version.  However, this is a monumental task
-            ' and there are any number of bigger priorities at present, so this has been put on hold indefinitely...
-            'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
-            
         End If
         Process_FileMenu = True
             

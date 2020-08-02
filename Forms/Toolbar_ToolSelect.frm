@@ -407,7 +407,8 @@ Private Const WM_NCLBUTTONDOWN As Long = &HA1
 Private Const HTRIGHT As Long = 11
 
 'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.

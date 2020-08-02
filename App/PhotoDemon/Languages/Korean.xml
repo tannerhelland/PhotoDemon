@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.161</langversion>
+<langversion>1.0.162</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11983,41 +11983,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>페이지 당 하나의 이미지</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>페이지 당 여러 이미지</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>한 장의 이미지가 여러 페이지에 걸쳐 인쇄 됨 (포스터 인쇄)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>인쇄 작업 유형</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation>사본 수</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>인쇄 품질</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>용지 크기</translation>
+<original>copies</original>
+<translation>사본들</translation>
 </phrase>
 
 <phrase>
@@ -12026,44 +11996,8 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>다음 단계에서는 자세한 레이아웃 정보 (여백, 위치 지정 등)를 지정할 수 있습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>1 단계 중 2 단계: 기본 인쇄 설정</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>임시 보관함 (최소 잉크)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>좋은</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>...보다 나은</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>최고 (대부분의 잉크)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>사본들</translation>
+<original>paper size</original>
+<translation>용지 크기</translation>
 </phrase>
 
 <phrase>
@@ -12106,7 +12040,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>경치</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16080,10 +16014,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>

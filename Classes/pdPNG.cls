@@ -193,7 +193,7 @@ Private m_apngTrnsAvailable As Boolean
 ' we wait for frames to arrive), we need to flag some positions in the file as we don't know
 ' their values until the animation is complete (e.g. frame count).
 Const INIT_STREAMING_BUFFER As Long = 32
-Private m_lastFrameTime As Currency, m_flagActlPos As Long, m_streamingFrames() As PD_APNGFrame
+Private m_flagActlPos As Long, m_streamingFrames() As PD_APNGFrame
 
 'Similarly, streaming APNGs need to cache various frame references so it can optimize frame
 ' data nicely.  (APNG frames support multiple frame disposal methods, and we have to manually

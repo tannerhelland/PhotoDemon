@@ -436,14 +436,11 @@ End Function
 Private Sub HandleWMActivate(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
     'Figure out if the window is being activated or deactivated.
-    Const WA_INACTIVE As Long = 0
-    Const WA_ACTIVE As Long = 1
-    Const WA_CLICKACTIVE As Long = 2
-    
     Dim activationStatus As Long
     activationStatus = GetLoWord(wParam)
                 
     'This hWnd is being deactivated.  If a hook has been installed, remove it now.
+    Const WA_INACTIVE As Long = 0
     If (activationStatus = WA_INACTIVE) Then
         HandleWMKillFocus
             

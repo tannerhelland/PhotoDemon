@@ -60,7 +60,6 @@ Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
 Private Const WS_EX_WINDOWEDGE As Long = &H100&
 Private Const WS_EX_TOPMOST As Long = &H8&
-Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
 Private Const WS_CHILD As Long = &H40000000
 Private Const WS_POPUP As Long = &H80000000
 Private Const GWL_EXSTYLE As Long = (-20)

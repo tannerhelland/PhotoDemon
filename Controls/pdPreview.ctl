@@ -770,7 +770,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(previewX), Int(previewY), Int(PDMath.Frac(previewX) + finalWidth + 0.99999), Int(PDMath.Frac(previewY) + finalHeight + 0.99999)
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
-        Dim interpMode As GP_InterpolationMode, isZoomedIn As Boolean
+        Dim isZoomedIn As Boolean
         isZoomedIn = (srcWidth < dstWidth) And (srcHeight < dstHeight)
         If isZoomedIn Then
             dstSurface.SetSurfacePixelOffset P2_PO_Half

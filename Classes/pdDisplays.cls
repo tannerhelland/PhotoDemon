@@ -42,7 +42,7 @@ Private Const SM_CYVIRTUALSCREEN As Long = 79
 
 'Current system DPI settings (used with the GetDeviceCaps API)
 Private Const GDC_LOGPIXELSX As Long = 88
-Private Const GDC_LOGPIXELSY As Long = 90
+'Private Const GDC_LOGPIXELSY As Long = 90  'Non-square pixels are not currently supported
 
 Private Const DD_PRIMARY_DEVICE As Long = &H4
 Private Const CCHDEVICENAME As Long = 32
@@ -72,7 +72,6 @@ End Type
 
 'Some display settings are stored in the registry (e.g. EDID).
 Private Declare Function RegCloseKey Lib "advapi32" (ByVal hKey As Long) As Long
-Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExW" (ByVal hKey As Long, ByVal ptrToSubKey As Long, ByVal ulOptions As Long, ByVal samDesired As Long, ByRef phkResult As Long) As Long
 Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW" (ByVal hKey As Long, ByVal lpszValueName As Long, ByVal lpReserved As Long, ByRef lpType As Long, ByVal ptrToData As Long, ByRef lpcbData As Long) As Long
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
@@ -482,7 +481,9 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
                 
                 'Next, we need to iterate compatible device interfaces.  See MSDN for details:
                 ' https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdienumdeviceinterfaces
-                Const ERROR_NO_MORE_ITEMS As Long = &H103&
+                ' GetLastError will return this constant when the list is exhausted:
+                'Const ERROR_NO_MORE_ITEMS As Long = &H103&
+                '...but we just look for function failure (we don't care why, as this isn't a critical code path)
                 Dim tmpInterfaceData As Win32_SP_DEVICE_INTERFACE_DATA
                 tmpInterfaceData.cbSize = LenB(tmpInterfaceData)
                 

@@ -87,8 +87,6 @@ Private Const IID_IFileOpenDialog As String = "{d57c7288-d4ad-4768-be02-9d969532
 Private Const clsID_FileSaveDialog As String = "{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}"
 Private Const IID_IFileSaveDialog As String = "{84bccd23-5fde-4cdb-aea4-af64b83d78ab}"
 Private Const IID_IFileDialog As String = "{42F85136-DB7E-439C-85F1-E4075D135FC8}"
-Private Const IID_IFileDialog2 As String = "{61744fc7-85b5-4791-a9b0-272276309b13}"
-Private Const IID_IFileDialogEvents As String = "{973510db-7d7f-452b-8975-74a85828d354}"
 Private Const IID_IFileDialogCustomize As String = "{8016b7b3-3d49-4504-a0aa-2a37494e606f}"
 Private Const IID_IShellItem As String = "{43826d1e-e718-42ee-bc55-a1e261c37bfe}"
 Private Const IID_IShellItemArray As String = "{B63EA76D-1F85-456F-A19C-48159EFA858B}"
@@ -1315,7 +1313,7 @@ Private Function pvGetIShellItem(Source As Variant) As IUnknown
     If IsObject(Source) Then
         Set pvGetIShellItem = Source
     Else
-        Dim aGuid(0 To 3), pIDL As Long, lPtr As Long
+        Dim aGuid(0 To 3) As Variant, pIDL As Long, lPtr As Long
         IIDFromString StrPtr(IID_IShellItem), VarPtr(aGuid(0))
         If VarType(Source) = vbString Then
             If Left$(Source, 1) = "{" And Right$(Source, 1) = "}" And Len(Source) = 38& Then

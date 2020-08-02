@@ -36,9 +36,9 @@ End Enum
 
 'LibDeflate is zlib-compatible, but it exposes even higher compression levels (12 vs zlib's 9) for
 ' better-but-slower compression.  The default value remains 6; these are all declared in libdeflate.h
-Private Const LIBDEFLATE_MIN_CLEVEL = 1
-Private Const LIBDEFLATE_MAX_CLEVEL = 12
-Private Const LIBDEFLATE_DEFAULT_CLEVEL = 6
+Private Const LIBDEFLATE_MIN_CLEVEL As Long = 1
+Private Const LIBDEFLATE_MAX_CLEVEL As Long = 12
+Private Const LIBDEFLATE_DEFAULT_CLEVEL As Long = 6
 
 'A single library handle is maintained for the life of a class instance; see Initialize and Release functions, below.
 Private m_libDeflateHandle As Long
@@ -53,14 +53,18 @@ Private Declare Function libdeflate_gzip_compress_bound Lib "libdeflate" (ByVal 
 Private Declare Sub libdeflate_free_compressor Lib "libdeflate" (ByVal libdeflate_compressor As Long)
 Private Declare Function libdeflate_alloc_decompressor Lib "libdeflate" () As Long
 Private Declare Function libdeflate_deflate_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
-Private Declare Function libdeflate_deflate_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 Private Declare Function libdeflate_zlib_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
-Private Declare Function libdeflate_zlib_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 Private Declare Function libdeflate_gzip_decompress Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
-Private Declare Function libdeflate_gzip_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 Private Declare Sub libdeflate_free_decompressor Lib "libdeflate" (ByVal libdeflate_decompressor As Long)
 Private Declare Function libdeflate_adler32 Lib "libdeflate" (ByVal adler32 As Long, ByVal ptr_buffer As Long, ByVal len_in_bytes As Long) As Long
 Private Declare Function libdeflate_crc32 Lib "libdeflate" (ByVal crc As Long, ByVal ptr_buffer As Long, ByVal len_in_bytes As Long) As Long
+
+'libdeflate provides _ex versions of all decompress functions, where it simply attempts to decompress
+' until it can't anymore.  PD never uses these are there are strong security implications, and we only
+' decompress in contexts where the decompressed size is known in advance.
+'Private Declare Function libdeflate_deflate_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+'Private Declare Function libdeflate_zlib_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
+'Private Declare Function libdeflate_gzip_decompress_ex Lib "libdeflate" (ByVal libdeflate_decompressor As Long, ByVal ptr_in As Long, ByVal in_nbytes As Long, ByVal ptr_out As Long, ByVal out_nbytes_avail As Long, ByRef actual_in_nbytes_ret As Long, ByRef actual_out_nbytes_ret As Long) As LibDeflate_Result
 
 'Basic init/release functions
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
@@ -83,35 +87,8 @@ Public Sub ReleaseEngine()
     End If
 End Sub
 
-'Actual compression/decompression functions.  Only arrays and pointers are standardized.  It's assumed
-' that users can write simple wrappers for other data types, as necessary.
-Public Function CompressPtrToDstArray(ByRef dstArray() As Byte, ByRef dstCompressedSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1, Optional ByVal dstArrayIsAlreadySized As Boolean = False, Optional ByVal trimCompressedArray As Boolean = False, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib) As Boolean
-
-    ValidateCompressionLevel compressionLevel
-    
-    'Prep the destination array, as necessary
-    If (Not dstArrayIsAlreadySized) Then
-        dstCompressedSizeInBytes = GetWorstCaseSize(constSrcSizeInBytes)
-        ReDim dstArray(0 To dstCompressedSizeInBytes - 1) As Byte
-    End If
-    
-    'Compress the data
-    CompressPtrToDstArray = LibDeflateCompress(VarPtr(dstArray(0)), dstCompressedSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cmpFormat)
-        
-    'If compression was successful, trim the destination array, as requested
-    If trimCompressedArray And CompressPtrToDstArray Then
-        If (UBound(dstArray) <> dstCompressedSizeInBytes - 1) Then ReDim Preserve dstArray(0 To dstCompressedSizeInBytes - 1) As Byte
-    End If
-    
-End Function
-
 Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib) As Boolean
     CompressPtrToPtr = LibDeflateCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cmpFormat)
-End Function
-
-Public Function DecompressPtrToDstArray(ByRef dstArray() As Byte, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal dstArrayIsAlreadySized As Boolean = False, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True) As Boolean
-    If (Not dstArrayIsAlreadySized) Then ReDim dstArray(0 To constDstSizeInBytes - 1) As Byte
-    DecompressPtrToDstArray = LibDeflateDecompress(VarPtr(dstArray(0)), constDstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cmpFormat, allowFallbacks)
 End Function
 
 Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True) As Boolean

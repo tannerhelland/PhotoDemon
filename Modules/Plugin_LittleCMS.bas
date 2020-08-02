@@ -27,11 +27,11 @@ Attribute VB_Name = "LittleCMS"
 
 Option Explicit
 
-Public Type LCMS_XYZ
-    x As Double
-    y As Double
-    z As Double
-End Type
+'Public Type LCMS_XYZ
+'    x As Double
+'    y As Double
+'    z As Double
+'End Type
 
 Public Type LCMS_xyY
     x As Double
@@ -39,24 +39,24 @@ Public Type LCMS_xyY
     YY As Double
 End Type
 
-Public Type LCMS_Lab
-    l As Double
-    a As Double
-    b As Double
-End Type
+'Public Type LCMS_Lab
+'    l As Double
+'    a As Double
+'    b As Double
+'End Type
 
-Public Type LCMS_LCh
-    l As Double
-    c As Double
-    h As Double
-End Type
+'Not all color formats are used at present
+'Public Type LCMS_LCh
+'    l As Double
+'    c As Double
+'    h As Double
+'End Type
 
-Public Type LCMS_JCh
-    j As Double
-    c As Double
-    h As Double
-End Type
-
+'Public Type LCMS_JCh
+'    j As Double
+'    c As Double
+'    h As Double
+'End Type
 
 'LCMS allows you to define custom pixel formatters, but they also provide a large collection of pre-formatted values.
 ' We prefer to use these whenever possible.
@@ -403,12 +403,12 @@ Private Declare Function cmsCreateLab2Profile Lib "lcms2" (ByVal ptrToWhitePoint
 Private Declare Function cmsCreateLab4Profile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long) As Long
 Private Declare Function cmsCreate_sRGBProfile Lib "lcms2" () As Long
 Private Declare Function cmsCreateRGBProfile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal ptrTo3ToneCurves As Long) As Long
-Private Declare Function cmsCreateXYZProfile Lib "lcms2" () As Long
+'Private Declare Function cmsCreateXYZProfile Lib "lcms2" () As Long
 Private Declare Function cmsOpenProfileFromMem Lib "lcms2" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
 Private Declare Function cmsSaveProfileToMem Lib "lcms2" (ByVal srcProfile As Long, ByVal dstPtr As Long, ByRef sizeRequiredInBytes As Long) As Long
 
 'Profile information functions
-Private Declare Function cmsGetEncodedICCversion Lib "lcms2" (ByVal hProfile As Long) As Long
+'Private Declare Function cmsGetEncodedICCversion Lib "lcms2" (ByVal hProfile As Long) As Long
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
 Private Declare Function cmsGetProfileInfo Lib "lcms2" (ByVal hProfile As Long, ByVal srcInfo As LCMS_INFOTYPE, ByVal ptrToLanguageCode As Long, ByVal ptrToCountryCode As Long, ByVal ptrToWCharBuffer As Long, ByVal necessaryBufferSize As Long) As Long
 Private Declare Function cmsGetProfileVersion Lib "lcms2" (ByVal hProfile As Long) As Double
@@ -416,9 +416,9 @@ Private Declare Function cmsGetPCS Lib "lcms2" (ByVal hProfile As Long) As LCMS_
 Private Declare Function cmsGetColorSpace Lib "lcms2" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
 Private Declare Sub cmsSetProfileVersion Lib "lcms2" (ByVal hProfile As Long, ByVal newVersion As Double)
  
-'Tone curve creation/destruction
-Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
-Private Declare Function cmsBuildGamma Lib "lcms2" (ByVal ContextID As Long, ByVal gammaValue As Double) As Long
+'Tone curve creation/destruction.  (Note all are used right now.)
+'Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal contextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
+Private Declare Function cmsBuildGamma Lib "lcms2" (ByVal contextID As Long, ByVal gammaValue As Double) As Long
 Private Declare Sub cmsFreeToneCurve Lib "lcms2" (ByVal srcToneCurve As Long)
 
 'Transform functions
@@ -426,16 +426,17 @@ Private Declare Function cmsCreateTransform Lib "lcms2" (ByVal hInputProfile As 
 Private Declare Function cmsCreateMultiprofileTransform Lib "lcms2" (ByVal ptrToFirstProfile As Long, ByVal numOfProfiles As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
 Private Declare Sub cmsDeleteTransform Lib "lcms2" (ByVal hTransform As Long)
 
-'Color space conversions; any conversion that requires an XYZ WhitePoint can pass null for default D50 values
-Private Declare Sub cmsLab2XYZ Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstXYZ As LCMS_XYZ, ByRef srcLab As LCMS_Lab)
-Private Declare Sub cmsXYZ2Lab Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstLab As LCMS_Lab, ByRef srcXYZ As LCMS_XYZ)
-Private Declare Sub cmsXYZ2xyY Lib "lcms2" (ByRef dstxyY As LCMS_xyY, ByRef srcXYZ As LCMS_XYZ)
-Private Declare Sub cmsxyY2XYZ Lib "lcms2" (ByRef dstXYZ As LCMS_XYZ, ByRef srcxyY As LCMS_xyY)
+'Color space conversions; any conversion that requires an XYZ WhitePoint can pass NULL
+' for default D50 values
+'Private Declare Sub cmsLab2XYZ Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstXYZ As LCMS_XYZ, ByRef srcLab As LCMS_Lab)
+'Private Declare Sub cmsXYZ2Lab Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstLab As LCMS_Lab, ByRef srcXYZ As LCMS_XYZ)
+'Private Declare Sub cmsXYZ2xyY Lib "lcms2" (ByRef dstxyY As LCMS_xyY, ByRef srcXYZ As LCMS_XYZ)
+'Private Declare Sub cmsxyY2XYZ Lib "lcms2" (ByRef dstXYZ As LCMS_XYZ, ByRef srcxyY As LCMS_xyY)
 Private Declare Function cmsWhitePointFromTemp Lib "lcms2" (ByRef dstWhitePointxyY As LCMS_xyY, ByVal srcTemperature As Double) As Long
-Private Declare Function cmsTempFromWhitePoint Lib "lcms2" (ByRef dstTemperature As Double, ByRef srcWhitePointxyY As LCMS_xyY) As Long
+'Private Declare Function cmsTempFromWhitePoint Lib "lcms2" (ByRef dstTemperature As Double, ByRef srcWhitePointxyY As LCMS_xyY) As Long
 
 'Pointers to the constant XYZ/xyY declarations for D50
-Private Declare Function cmsD50_XYZ Lib "lcms2" () As Long
+'Private Declare Function cmsD50_XYZ Lib "lcms2" () As Long
 Private Declare Function cmsD50_xyY Lib "lcms2" () As Long
 
 'Similar internal functions for D65 (which is used by a number of RGB spaces, e.g. Adobe and sRGB)

@@ -19,7 +19,7 @@ Option Explicit
 Private Const CP_UTF8 As Long = 65001   'Fixed constant for UTF-8 "codepage" transformations
 Private Const CRYPT_STRING_BASE64 As Long = 1&
 Private Const CRYPT_STRING_HEXASCII As Long = &H4&
-Private Const CRYPT_STRING_NOCR As Long = &H80000000
+'Private Const CRYPT_STRING_NOCR As Long = &H80000000
 Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
 
@@ -352,14 +352,14 @@ Public Function GetListOfWordsFromString(ByRef srcString As String) As pdStringS
     
 End Function
 
-Public Function SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As String)
+Public Sub SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As String)
     If (LenB(srcCaption) > 0) Then srcCaption = " " & srcCaption
     If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW dstForm.hWnd, srcCaption
     Else
         dstForm.Caption = srcCaption
     End If
-End Function
+End Sub
 
 'Given an arbitrary string, split out all integers into a Long-type array.  PD uses this internally
 ' for parsing arbitrarily formatted human-readable strings, e.g. "32x32 (8-bpp)" will return a

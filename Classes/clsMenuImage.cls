@@ -45,7 +45,6 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoW" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
 Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoW" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
@@ -54,7 +53,6 @@ Private Declare Function GetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LP
 Private Declare Function SetMenuInfo Lib "user32" (ByVal hMenu As Long, ByRef LPCMENUINFO As MENUINFO) As Long
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 'Private Declare Function GetMenuItemID Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
-Private Declare Function CreateIconFromResourceEx Lib "user32" (ByRef presbits As Any, ByVal dwResSize As Long, ByVal fIcon As Long, ByVal dwVer As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal Flags As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
@@ -69,11 +67,6 @@ Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFilename 
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
-Private Declare Function GdipCreateBitmapFromHICON Lib "gdiplus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef LockedBitmapData As BitmapData) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, ByRef Bitmap As Long) As Long
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Long, ByRef MatrixColor As COLORMATRIX, ByRef MatrixGray As Any, ByVal Flags As Long) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
@@ -132,45 +125,11 @@ Private Type DRAWITEMSTRUCT
     itemData As Long
 End Type
 
-Private Type ICONINFO
-    fIcon As Long
-    xHotspot As Long
-    yHotspot As Long
-    hbmMask As Long
-    hbmColor As Long
-End Type
-
-Private Type IconHeader
-    ihReserved As Integer
-    ihType As Integer
-    ihCount As Integer
-End Type
-
-Private Type IconEntry
-    ieWidth As Byte
-    ieHeight As Byte
-    ieColorCount As Byte
-    ieReserved As Byte
-    iePlanes As Integer
-    ieBitCount As Integer
-    ieBytesInRes As Long
-    ieImageOffset As Long
-End Type
-
 Private Type ARGB
     Blue As Byte
     Green As Byte
     Red As Byte
     Alpha As Byte
-End Type
-
-Private Type BitmapData
-    Width As Long
-    Height As Long
-    Stride As Long
-    PixelFormat As Long
-    Scan0 As Long
-    Reserved As Long
 End Type
 
 Private Type BITMAPINFOHEADER
@@ -196,18 +155,8 @@ Private Type COLORMATRIX
     m(0 To 4, 0 To 4) As Single
 End Type
 
-Private Enum ImageLockMode
-    ImageLockModeRead = &H1
-    ImageLockModeWrite = &H2
-    ImageLockModeUserInputBuf = &H4
-End Enum
-
 'Added by Tanner: GDI+ images use premultiplied alpha!
 Private Const PixelFormat32bppPARGB As Long = &HE200B
-Private Const PixelFormat32bppARGB As Long = &H26200A
-Private Const PixelFormat32bppRGB As Long = &H22009
-
-Private Const IconVersion As Long = &H30000
     
 Private Const DIB_RGB_COLORS As Long = 0&
 
@@ -231,9 +180,6 @@ Private Const COLOR_APPWORKSPACE As Long = 12
 Private Const SM_CXMENUCHECK As Long = 71
 Private Const WM_MEASUREITEM As Long = &H2C
 Private Const WM_DRAWITEM As Long = &H2B
-
-'Changed by Tanner: we don't need menu messages, so don't waste time and resources raising this event
-'Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
 Private m_hWnd As Long
 
@@ -688,60 +634,6 @@ Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Lon
     Set IStream = Nothing
     
 LoadImageFromStream_Error:
-
-End Function
-
-Private Function LoadIconFromStream(ByRef bytIcoData() As Byte) As Long
-
-    On Local Error GoTo LoadIconFromStream_Error
-    
-    Dim tIconHeader As IconHeader
-    Dim tIconEntry() As IconEntry
-    Dim MaxBitCount As Long
-    Dim MaxSize As Long
-    Dim Aproximate As Long
-    Dim IconID As Long
-    Dim hIcon As Long
-    Dim i As Long
-  
-    
-    Call CopyMemory(tIconHeader, bytIcoData(0), Len(tIconHeader))
-
-    If tIconHeader.ihCount >= 1 Then
-    
-        ReDim tIconEntry(tIconHeader.ihCount - 1)
-        
-        Call CopyMemory(tIconEntry(0), bytIcoData(Len(tIconHeader)), Len(tIconEntry(0)) * tIconHeader.ihCount)
-        
-        IconID = -1
-           
-        For i = 0 To tIconHeader.ihCount - 1
-            If tIconEntry(i).ieBitCount > MaxBitCount Then MaxBitCount = tIconEntry(i).ieBitCount
-        Next
-
-       
-        For i = 0 To tIconHeader.ihCount - 1
-            If MaxBitCount = tIconEntry(i).ieBitCount Then
-                MaxSize = CLng(tIconEntry(i).ieWidth) + CLng(tIconEntry(i).ieHeight)
-                If MaxSize > Aproximate And MaxSize <= (m_lWidth + m_lHeight) Then
-                    Aproximate = MaxSize
-                    IconID = i
-                End If
-            End If
-        Next
-                   
-        If IconID = -1 Then Exit Function
-       
-        With tIconEntry(IconID)
-            hIcon = CreateIconFromResourceEx(bytIcoData(.ieImageOffset), .ieBytesInRes, 1, IconVersion, m_lWidth, m_lHeight, &H0)
-            If hIcon <> 0 Then
-                LoadIconFromStream = hIcon
-            End If
-        End With
-       
-    End If
-
-LoadIconFromStream_Error:
 
 End Function
 

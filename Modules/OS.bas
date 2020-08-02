@@ -43,8 +43,6 @@ Private Const PROCESS_QUERY_INFORMATION As Long = 1024
 Private Const PROCESS_VM_READ As Long = 16
 Private Const PROCESSOR_ARCHITECTURE_AMD64 As Long = 9        'x64 (AMD or Intel)
 Private Const PROCESSOR_ARCHITECTURE_IA64 As Long = 6         'Intel Itanium Processor Family (IPF)
-Private Const PROCESSOR_ARCHITECTURE_INTEL As Long = 0
-Private Const PROCESSOR_ARCHITECTURE_UNKNOWN As Long = &HFFFF&
 Private Const SHGFP_TYPE_CURRENT As Long = &H0                'current value for user, verify it exists
 Private Const VER_NT_WORKSTATION As Long = &H1&
 
@@ -259,17 +257,6 @@ Private Type OS_SystemInfo
     dwAllocationGranularity       As Long
     wProcessorLevel               As Integer
     wProcessorRevision            As Integer
-End Type
-
-Private Type OS_SystemTime
-    wYear As Integer
-    wMonth As Integer
-    wDayOfWeek As Integer
-    wDay As Integer
-    wHour As Integer
-    wMinute As Integer
-    wSecond As Integer
-    wMilliseconds As Integer
 End Type
 
 Private Type OS_VersionInfoEx

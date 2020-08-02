@@ -186,54 +186,7 @@ Public Type OUTLINETEXTMETRIC
     otmpFullName As Long
 End Type
 
-'Possible charsets for the tmCharSet byte, above
-Public Enum FONT_CHARSETS
-    CS_ANSI = 0
-    CS_DEFAULT = 1
-    CS_SYMBOL = 2
-    CS_MAC = 77
-    CS_SHIFTJIS = 128
-    CS_HANGEUL = 129
-    CS_JOHAB = 130
-    CS_GB2312 = 134
-    CS_CHINESEBIG5 = 136
-    CS_GREEK = 161
-    CS_TURKISH = 162
-    CS_HEBREW = 177
-    CS_ARABIC = 178
-    CS_BALTIC = 186
-    CS_RUSSIAN = 204
-    CS_THAI = 222
-    CS_EASTEUROPE = 238
-    CS_OEM = 255
-End Enum
-
-#If False Then
-    Private Const CS_ANSI = 0, CS_DEFAULT = 1, CS_SYMBOL = 2, CS_MAC = 77, CS_SHIFTJIS = 128, CS_HANGEUL = 129, CS_JOHAB = 130
-    Private Const CS_GB2312 = 134, CS_CHINESEBIG5 = 136, CS_GREEK = 161, CS_TURKISH = 162, CS_HEBREW = 177, CS_ARABIC = 178
-    Private Const CS_BALTIC = 186, CS_RUSSIAN = 204, CS_THAI = 222, CS_EASTEUROPE = 238, CS_OEM = 255
-#End If
-
 'NOTE: several crucial types for this class are listed in the Public_Enums_And_Types module.
-
-'ntmFlags field flags
-Private Const NTM_REGULAR As Long = &H40&
-Private Const NTM_BOLD As Long = &H20&
-Private Const NTM_ITALIC As Long = &H1&
-
-'tmPitchAndFamily flags
-Private Const TMPF_FIXED_PITCH As Long = &H1
-Private Const TMPF_VECTOR As Long = &H2
-Private Const TMPF_DEVICE As Long = &H8
-Private Const TMPF_TRUETYPE As Long = &H4
-
-Private Const ELF_VERSION As Long = 0
-Private Const ELF_CULTURE_LATIN As Long = 0
-
-'EnumFonts Masks
-Private Const RASTER_FONTTYPE As Long = &H1
-Private Const DEVICE_FONTTYPE As Long = &H2
-Private Const TRUETYPE_FONTTYPE As Long = &H4
 
 Private Declare Function EnumFontFamiliesEx Lib "gdi32" Alias "EnumFontFamiliesExW" (ByVal hDC As Long, ByRef lpLogFontW As LOGFONTW, ByVal lpEnumFontFamExProc As Long, ByRef lParam As Any, ByVal dwFlags As Long) As Long
 
@@ -591,6 +544,7 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     If fontUsable Then fontUsable = Strings.StringsNotEqual(Left$(thisFontFace, 1), "@", False)
     
     'For now, we are also ignoring raster fonts, as they create unwanted complications
+    Const RASTER_FONTTYPE As Long = &H1
     If fontUsable Then fontUsable = ((srcFontType And RASTER_FONTTYPE) = 0)
     
     'If this font is a worthy addition, add it now

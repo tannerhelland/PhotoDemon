@@ -103,9 +103,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents lastUsedSettings As pdLastUsedSettings
-Attribute lastUsedSettings.VB_VarHelpID = -1
+'The value of all controls on this form are saved and loaded to file by this class.
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'To avoid nested resize calls, trackers are used
 Private m_ResizeInProgress As Boolean
@@ -347,9 +348,9 @@ Private Sub Form_Load()
     clrHistory.RequestCustomSubclassing WM_PD_PRIMARY_COLOR_APPLIED, True
     
     'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.SetParentForm Me
-    lastUsedSettings.LoadAllControlValues
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues
     
     'Load any relevant user settings
     VerifyPanelUserPrefs True
@@ -509,9 +510,9 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
-        lastUsedSettings.SaveAllControlValues
-        lastUsedSettings.SetParentForm Nothing
+    If Not (m_lastUsedSettings Is Nothing) Then
+        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SetParentForm Nothing
     End If
     
 End Sub

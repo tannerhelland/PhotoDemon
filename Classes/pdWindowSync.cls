@@ -77,15 +77,18 @@ Private Sub Class_Terminate()
     EndSubclassing
 End Sub
 
-'Un-subclassing is normally a simple process, but because this class may subclass multiple windows simultaneously,
-' a more elaborate shutdown process is required (where we unsubclass each window in turn).
+'Un-subclassing is normally a simple process, but because this class may subclass multiple
+' windows simultaneously, a more elaborate shutdown process is required (where we unsubclass
+' each window in turn).
 Private Sub EndSubclassing()
     If (Not m_windowDict Is Nothing) Then
         If (m_windowDict.GetNumOfEntries > 0) Then
             Dim i As Long
             For i = 0 To m_windowDict.GetNumOfEntries - 1
                 VBHacks.StopSubclassing m_windowDict.GetKeyByIndex(i), Me
-                m_windowDict.DeleteEntry m_windowDict.GetKeyByIndex(i)
+                'Normally we'd want to delete an entry after un-subclassing it, but this function is
+                ' only called at class termination, so don't waste time on modifying the dict
+                'm_windowDict.DeleteEntry m_windowDict.GetKeyByIndex(i)
             Next i
         End If
     End If

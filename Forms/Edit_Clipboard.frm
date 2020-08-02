@@ -103,7 +103,8 @@ End Enum
 Private m_OpMode As PD_ClipboardOp
 
 'Remember last-used settings
-Private WithEvents m_Settings As pdLastUsedSettings
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_Settings As pdLastUsedSettings
 Attribute m_Settings.VB_VarHelpID = -1
 
 'The user input from the dialog.  If the user cancels this dialog, default settings will be used.

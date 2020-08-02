@@ -1391,12 +1391,14 @@ Private Sub GetAllMatchingMenuIndices(ByRef menuID As String, ByRef numOfMenus A
     
 End Sub
 
-'Some menus in PD (like the Recent Files menu, or the Tools > Languages menu) are directly modified at run-time.  In PD,
-' it is easiest to wipe these entire menus dynamically, than rebuild them from scratch.
+'Some menus in PD (like the Recent Files menu, or the Tools > Languages menu) are directly
+' modified at run-time.  In PD, it is easier to wipe these entire menus dynamically rather
+' than rebuild them from scratch.
 '
-'IMPORTANT NOTE: to erase an entire submenu, pass ALL_MENU_SUBITEMS as the subMenuID or subSubMenuID, whichever is relevant.
-'                ALL_MENU_SUBITEMS indicates "erase everything that matches the two preceding entries, except for the
-'                top-level menu itself".
+'IMPORTANT NOTE: to erase an entire submenu, pass ALL_MENU_SUBITEMS as the subMenuID or subSubMenuID,
+'                whichever is relevant. ALL_MENU_SUBITEMS indicates "erase everything that matches the
+'                two preceding entries, except for the top-level menu itself".
+'
 'IMPORTANT NOTE: this function will erase all submenus of the selected menu, by design.
 Private Sub EraseMenu(ByVal topMenuID As Long, Optional ByVal subMenuID As Long = IGNORE_MENU_ID, Optional ByVal subSubMenuID As Long = IGNORE_MENU_ID)
     

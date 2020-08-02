@@ -46,7 +46,6 @@ End Type
 
 'Various API calls required for screen capturing and cursor rendering
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByVal ptrToObject As Long) As Long
 
 Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -65,9 +64,6 @@ Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC A
 
 Private Const PW_CLIENTONLY As Long = &H1
 Private Const PW_RENDERFULLCONTENT As Long = &H2    'Win 8.1+ only
-
-'Vista+ only
-Private Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal targetHWnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
 
 Private Type WindowPlacement
     wpLength As Long

@@ -89,7 +89,7 @@ Private m_SystemProfileIndex As Long, m_SystemProfileHash As String
 'Current display index.  This value is automatically refreshed by calls to CheckParentMonitor,
 ' below, and is used to support multimonitor systems.  On some configurations, it may be identical
 ' to m_SystemProfileIndex, above, or m_sRGBIndex, below.
-Private m_CurrentDisplayIndex As Long, m_CurrentDisplayHash As String
+Private m_CurrentDisplayIndex As Long
 
 'sRGB profile index and hash value.  One valid sRGB profile is always loaded into memory, and it is used as a
 ' failsafe when things go horribly wrong (e.g. no system profile is configured, a requested display profile is

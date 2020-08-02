@@ -1201,8 +1201,6 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
     
-    Dim xStride As Long
-    
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long

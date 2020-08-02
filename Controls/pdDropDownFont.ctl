@@ -81,7 +81,6 @@ Private m_popupRectCopy As RectL
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOACTIVATE As Long = &H10
-Private Const SWP_FRAMECHANGED As Long = &H20
 
 'When the popup listbox is raised, we subclass the parent control.  If it is moved or sized or clicked, we automatically
 ' unload the dropdown listview.  (This workaround is necessary for modal dialogs, among other things.)

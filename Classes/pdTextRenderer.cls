@@ -272,7 +272,7 @@ Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstString
 Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As GP_Result
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As GP_Result
-Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RectF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RectF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As GP_Result
+'Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RectF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RectF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As GP_Result
 
 'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As GP_Result
@@ -299,32 +299,38 @@ Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As PointAPI) As Long
 
-'Back color modes (not useful here except during debug mode)
+'Back color modes (PD only uses transparent fonts)
 Private Const FONT_TRANSPARENT As Long = &H1
-Private Const FONT_OPAQUE As Long = &H2
+'Private Const FONT_OPAQUE As Long = &H2
 
 'Formatting constants for DrawText
-Private Const DT_TOP As Long = &H0
-Private Const DT_LEFT As Long = &H0
-Private Const DT_CENTER As Long = &H1
-Private Const DT_RIGHT As Long = &H2
-Private Const DT_VCENTER As Long = &H4
-Private Const DT_BOTTOM As Long = &H8
-Private Const DT_WORDBREAK As Long = &H10
-Private Const DT_SINGLELINE As Long = &H20
-Private Const DT_EXPANDTABS As Long = &H40
-Private Const DT_TABSTOP As Long = &H80
-Private Const DT_NOCLIP As Long = &H100
-Private Const DT_EXTERNALLEADING As Long = &H200
-Private Const DT_CALCRECT As Long = &H400
-Private Const DT_NOPREFIX As Long = &H800
-Private Const DT_INTERNAL As Long = &H1000
-Private Const DT_EDITCONTROL As Long = &H2000
-Private Const DT_PATH_ELLIPSIS As Long = &H4000
-Private Const DT_END_ELLIPSIS As Long = &H8000
-Private Const DT_MODIFYSTRING As Long = &H10000
-Private Const DT_RTLREADING As Long = &H20000
-Private Const DT_WORD_ELLIPSIS As Long = &H40000
+Private Enum Win32_DrawTextConstants
+    DT_TOP = &H0
+    DT_LEFT = &H0
+    DT_CENTER = &H1
+    DT_RIGHT = &H2
+    DT_VCENTER = &H4
+    DT_BOTTOM = &H8
+    DT_WORDBREAK = &H10
+    DT_SINGLELINE = &H20
+    DT_EXPANDTABS = &H40
+    DT_TABSTOP = &H80
+    DT_NOCLIP = &H100
+    DT_EXTERNALLEADING = &H200
+    DT_CALCRECT = &H400
+    DT_NOPREFIX = &H800
+    DT_INTERNAL = &H1000
+    DT_EDITCONTROL = &H2000
+    DT_PATH_ELLIPSIS = &H4000
+    DT_END_ELLIPSIS = &H8000
+    DT_MODIFYSTRING = &H10000
+    DT_RTLREADING = &H20000
+    DT_WORD_ELLIPSIS = &H40000
+End Enum
+
+#If False Then
+    Private Const DT_TOP = &H0, DT_LEFT = &H0, DT_CENTER = &H1, DT_RIGHT = &H2, DT_VCENTER = &H4, DT_BOTTOM = &H8, DT_WORDBREAK = &H10, DT_SINGLELINE = &H20, DT_EXPANDTABS = &H40, DT_TABSTOP = &H80, DT_NOCLIP = &H100, DT_EXTERNALLEADING = &H200, DT_CALCRECT = &H400, DT_NOPREFIX = &H800, DT_INTERNAL = &H1000, DT_EDITCONTROL = &H2000, DT_PATH_ELLIPSIS = &H4000, DT_END_ELLIPSIS = &H8000, DT_MODIFYSTRING = &H10000, DT_RTLREADING = &H20000, DT_WORD_ELLIPSIS = &H40000
+#End If
 
 'The current text-to-be-rendered
 Private m_CurrentText As String
@@ -2198,7 +2204,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
 End Function
 
 'Convert the current alignment flags into DrawText-compatible alignment values
-Private Function GetDrawTextAlignmentFlags() As Long
+Private Function GetDrawTextAlignmentFlags() As Win32_DrawTextConstants
 
     GetDrawTextAlignmentFlags = 0
     

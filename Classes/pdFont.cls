@@ -60,22 +60,6 @@ End Type
 'GDI still takes a legacy charset value as input; this doesn't matter for our purposes, so pass a default value
 Private Const DEFAULT_CHARSET As Long = 1
 
-'Pitch and family constants
-Private Const DEFAULT_PITCH As Long = 0
-Private Const FIXED_PITCH As Long = 1
-Private Const VARIABLE_PITCH As Long = 2
-Private Const FF_DONTCARE As Long = 0    'Any family works
-Private Const FF_ROMAN As Long = 16       'Variable stroke width + serifs
-Private Const FF_SWISS As Long = 32       'Variable stroke width + sans-serif
-Private Const FF_MODERN As Long = 48      'Constant stroke width + serif AND sans-serif
-Private Const FF_SCRIPT As Long = 64
-Private Const FF_DECORATIVE As Long = 80
-
-'Font precision
-Private Const OUT_DEFAULT_PRECIS As Long = 0
-Private Const OUT_CHARACTER_PRECIS As Long = 2
-Private Const OUT_DEVICE_PRECIS As Long = 5
-
 'Transparent font background
 Private Const FONT_TRANSPARENT As Long = &H1
 
@@ -650,9 +634,11 @@ Private Sub Class_Initialize()
         .lfClipPrecision = 0
         .lfQuality = fq_ClearType
         
-        'Ideally, we should allow the caller to specify pitch and family requests.  I may add this in the future.
-        ' For PD's purposes, however, we want to fallback to a variable width, non-serifed font if (for some reason)
-        ' Segoe and Tahoma aren't available on the target machine.
+        'Ideally, we should allow the caller to specify pitch and family requests.  I may add this
+        ' in the future, but for now we want to fallback to a variable width, non-serifed font if
+        ' (for some reason) Segoe and Tahoma aren't available on the target machine.
+        Const VARIABLE_PITCH As Long = 2
+        Const FF_SWISS As Long = 32       'Variable stroke width + sans-serif
         .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
         
         If PDMain.IsProgramRunning() Then

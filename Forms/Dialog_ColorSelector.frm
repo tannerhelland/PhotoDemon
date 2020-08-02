@@ -297,8 +297,9 @@ Private m_suspendParentNotifications As Boolean
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private m_ParentColorSelector As pdColorSelector
 
-'The color selector history is saved and loaded to file by this class
-Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+'The color selector history is saved and loaded to file by this class.
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'The user's answer is returned via this property

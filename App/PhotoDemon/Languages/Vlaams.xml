@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.493</langversion>
+<langversion>6.7.494</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11989,41 +11989,11 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>een afbeelding per pagina</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>meerdere afbeeldingen per pagina</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>een afbeelding verspreid over meerdere pagina's (posterdruk)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>type afdruktaak</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation># exemplaren</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>afdrukkwaliteit</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>papierformaat</translation>
+<original>copies</original>
+<translation>kopieën</translation>
 </phrase>
 
 <phrase>
@@ -12032,44 +12002,8 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>In de volgende stap kan je gedetailleerde layoutinformatie opgeven (marges, positionering, etc)</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>Stap 1 van 2: basisafdrukinstellingen</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>ontwerp (minste inkt)</translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>goede</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>beter</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>beste (meeste inkt)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>kopieën</translation>
+<original>paper size</original>
+<translation>papierformaat</translation>
 </phrase>
 
 <phrase>
@@ -12112,7 +12046,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>liggend</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16087,10 +16021,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5065 phrases. -->
+<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12051 total words. -->
 
 </pdData>
