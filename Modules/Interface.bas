@@ -898,6 +898,9 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     m_ModalDialogActive = True
     
+    'Make sure PD's main form is visible
+    If (FormMain.WindowState = vbMinimized) Then FormMain.WindowState = vbNormal
+    
     'Reset our "last dialog result" tracker.  (We use "ignore" as the "default" value, as it's a value PD never utilizes internally.)
     m_LastShowDialogResult = vbIgnore
     
