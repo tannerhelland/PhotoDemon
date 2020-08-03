@@ -90,18 +90,6 @@ End Enum
     Private Const GP_BLM_Read = &H1, GP_BLM_Write = &H2, GP_BLM_UserInputBuf = &H4
 #End If
 
-Public Enum GP_BrushType        'IMPORTANT NOTE!  This enum is *not* the same as PD's internal 2D brush modes!
-    GP_BT_SolidColor = 0
-    GP_BT_HatchFill = 1
-    GP_BT_TextureFill = 2
-    GP_BT_PathGradient = 3
-    GP_BT_LinearGradient = 4
-End Enum
-
-#If False Then
-    Private Const GP_BT_SolidColor = 0, GP_BT_HatchFill = 1, GP_BT_TextureFill = 2, GP_BT_PathGradient = 3, GP_BT_LinearGradient = 4
-#End If
-
 'Color adjustments are handled internally, at present, so we don't need to expose them to other objects
 Private Enum GP_ColorAdjustType
     GP_CAT_Default = 0
@@ -248,39 +236,6 @@ End Enum
 
 #If False Then
     Private Const GP_FM_Alternate = 0&, GP_FM_Winding = 1&
-#End If
-
-Public Enum GP_ImageFlags
-    GP_IF_None = 0
-    GP_IF_Scalable = &H1&
-    GP_IF_HasAlpha = &H2&
-    GP_IF_HasTranslucent = &H4&
-    GP_IF_PartiallyScalable = &H8&
-    GP_IF_ColorSpaceRGB = &H10&
-    GP_IF_ColorSpaceCMYK = &H20&
-    GP_IF_ColorSpaceGRAY = &H40&
-    GP_IF_ColorSpaceYCBCR = &H80&
-    GP_IF_ColorSpaceYCCK = &H100&
-    GP_IF_HasRealDPI = &H1000&
-    GP_IF_HasRealPixelSize = &H2000&
-    GP_IF_ReadOnly = &H10000
-    GP_IF_Caching = &H20000
-End Enum
-
-#If False Then
-    Private Const GP_IF_None = 0, GP_IF_Scalable = &H1, GP_IF_HasAlpha = &H2, GP_IF_HasTranslucent = &H4, GP_IF_PartiallyScalable = &H8, GP_IF_ColorSpaceRGB = &H10, GP_IF_ColorSpaceCMYK = &H20, GP_IF_ColorSpaceGRAY = &H40, GP_IF_ColorSpaceYCBCR = &H80, GP_IF_ColorSpaceYCCK = &H100, GP_IF_HasRealDPI = &H1000, GP_IF_HasRealPixelSize = &H2000, GP_IF_ReadOnly = &H10000, GP_IF_Caching = &H20000
-#End If
-
-Public Enum GP_ImageFormat
-    GP_IF_BMP = 0
-    GP_IF_GIF = 1
-    GP_IF_JPEG = 2
-    GP_IF_PNG = 3
-    GP_IF_TIFF = 4
-End Enum
-
-#If False Then
-    Private Const GP_IF_BMP = 0, GP_IF_GIF = 1, GP_IF_JPEG = 2, GP_IF_PNG = 3, GP_IF_TIFF = 4
 #End If
 
 Public Enum GP_ImageType

@@ -67,7 +67,6 @@ Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFilename 
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
-Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef Image As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ColorAdjust As Long, ByVal EnableFlag As Long, ByRef MatrixColor As COLORMATRIX, ByRef MatrixGray As Any, ByVal Flags As Long) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal imageattr As Long) As Long
@@ -375,7 +374,6 @@ Friend Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     SetMenuInfo hSubMenu, MI
 End Sub
 
-
 Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
     
     Dim hPen As Long, oldPen As Long
@@ -501,33 +499,9 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     
 End Sub
 
-'Add a menu image from a source file.  All GDI+ formats are supported (PNG, JPEG, etc).
-' MODIFIED BY TANNER: PhotoDemon's internal formats are preferentially tested before rolling over to GDI+.
-Friend Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
-
-    On Local Error GoTo AddImageFromFile_Error
-    
-    Dim hImage As Long
-    
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    If tmpDIB.CreateFromFile(srcFilename) Then
-        GDI_Plus.GetGdipBitmapHandleFromDIB hImage, tmpDIB
-    Else
-        GdipLoadImageFromFile StrPtr(srcFilename), hImage
-    End If
-    
-    If (hImage <> 0) Then AddImageFromFile = pvAddImagen(hImage, bGhosted)
-    
-AddImageFromFile_Error:
-
-End Function
-
 'CREATED BY TANNER: load an image from an existing pdDIB object
 Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Boolean) As Boolean
 
-    On Local Error GoTo AddImageFromDIB_Error
-    
     Dim hImage As Long
     If (Not srcDIB Is Nothing) Then
         
@@ -536,17 +510,12 @@ Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
             AddImageFromDIB = pvAddImagen_Tanner(srcDIB)
         Else
             GDI_Plus.GetGdipBitmapHandleFromDIB hImage, srcDIB
-            If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
+            If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else PDDebug.LogAction "WARNING!  AddImageFromDIB failed; hImage = 0"
         End If
         
     Else
         PDDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
     End If
-    
-    Exit Function
-    
-AddImageFromDIB_Error:
-    PDDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
     
 End Function
 
@@ -620,22 +589,6 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
 
     End If
 End Function
- 
-Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Long) As Boolean
-
-    On Local Error GoTo LoadImageFromStream_Error
-    
-    Dim IStream As IUnknown
-    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(bvData(0)), UBound(bvData) - LBound(bvData) + 1)
-    If Not (IStream Is Nothing) Then
-        If GdipLoadImageFromStream(IStream, hImage) = 0 Then LoadImageFromStream = True
-    End If
-
-    Set IStream = Nothing
-    
-LoadImageFromStream_Error:
-
-End Function
 
 Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
@@ -707,12 +660,6 @@ Private Sub Class_Terminate()
     Me.Clear
 End Sub
 
-Private Function IsArrayDim(ByVal lpArray As Long) As Boolean
-    Dim lAddress As Long
-    Call CopyMemory(lAddress, ByVal lpArray, &H4)
-    IsArrayDim = Not (lAddress = 0)
-End Function
-
 Private Function KeyExists(ByRef sKey As String) As Boolean
     On Error GoTo HandleError:
     Dim tVal As String 'Variant
@@ -727,10 +674,6 @@ HandleError:
 End Function
 
 Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
-    
-    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
-    ' I don't care enough to test it.
-    On Error Resume Next
     
     'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
     ' and once it's done, we'll overwrite the image handling bits with our own code.)
@@ -759,10 +702,6 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
 End Function
 
 Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
-    
-    'This was in the original code; I have no idea if it's actually necessary,
-    ' but since PD is soon moving to its own menu solution, I don't care enough to test it.
-    On Error Resume Next
     
     'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
     ' and once it's done, we'll overwrite the image handling bits with our own code.)
