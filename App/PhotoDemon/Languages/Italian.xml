@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.494</langversion>
+<langversion>6.7.495</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4597,17 +4597,27 @@ Per favore inserisci un valore numerico.</translation>
 <!-- BEGIN text for pdPSD.cls -->
 
 <phrase>
+<original>Group start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 (Channel %2)</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pdPSD.cls contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
 <!-- BEGIN text for pdPSDLayer.cls -->
 
-<!-- pdPSDLayer.cls contains 0 phrases. -->
+<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdPSDLayer.cls-->
 
@@ -16018,10 +16028,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2651</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5065 phrases. -->
-<!-- 2414 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12051 total words. -->
+<!-- As of this build, PhotoDemon contains 5079 phrases. -->
+<!-- 2426 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12055 total words. -->
 
 </pdData>

@@ -15,9 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2020 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 20/June/19
-'Last update: move to a memory-mapped file interface; this improves import and export performance while
-'             still keeping memory usage nice and low!
+'Last updated: 04/August/20
+'Last update: add support for layer groups!  PhotoDemon loads these as blank 1x1 "dummy" layers, but that's
+'             enough for us to safely (and losslessly) round-trip group data from PSD files.  The user can
+'             also add/edit/delete groups using their dummy layers, and PD will write a correct PSD regardless.
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -55,6 +56,18 @@ Option Explicit
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD-adjacent classes have
 ' their own version of this constant.)
 Private Const PSD_DEBUG_VERBOSE As Boolean = False
+
+'Until PD supports layer groups, we have to resort to workarounds for PSD layer group information.
+' When loading layers, PD will automatically handle things like group opacity (by hiding all members
+' of a layer group if said group is invisible), but as for the groups themselves, there are two options.
+' The easiest option is to just ignore the groups and lose them when importing into PD.  The other
+' option is to mimic Paint.NET's PSD plugin and import groups as "dummy" layers.  This gives the user
+' a way to rearrange them (and see them, if nothing else), and we can use a specific naming scheme to
+' ensure we preserve group order at export time.  Toggling these behaviors is controlled by this
+' constant, with a matching bool to track whether an exported image contains layers.  (If it does,
+' we need to modify some writing behavior.)
+Private Const PSD_GROUPS_AS_DUMMY_LAYERS As Boolean = True
+Private m_ExportGroups As Boolean
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -355,6 +368,43 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     '5) All PSD data is big-endian, so you will see a ton of _BE suffixes in stream function calls.
     
     'All good?  Then let's do this!
+    Dim i As Long
+    
+    'Before exporting, we need to run some quick heuristics on exported layer data.  This approach will
+    ' likely change as PD is able to reproduce more Photoshop behavior, but for now, we sometimes need
+    ' to perform weird conversions between PD dat and PSD data.
+    
+    'Scan layer names in the source image for group identifiers.  If we find any, set a module-level
+    ' flag to note that layer groups need to be exported.  (They require additional header information
+    ' and optional chunks.)  Note that group export behavior can be controlled by a module-level constant.
+    m_ExportGroups = False
+    If PSD_GROUPS_AS_DUMMY_LAYERS Then
+        
+        'When importing PSD files, layer groups are stored as "dummy" 1x1 layers with special names.
+        Dim targetStartName As String, targetEndName As String
+        targetStartName = g_Language.TranslateMessage("Group start:")
+        targetEndName = g_Language.TranslateMessage("Group end:")
+        
+        Dim startTargetsFound As Long: startTargetsFound = 0
+        Dim endTargetsFound As Long: endTargetsFound = 0
+        
+        For i = 0 To srcPDImage.GetNumOfLayers - 1
+            If Strings.StringsEqual(Left$(srcPDImage.GetLayerByIndex(i).GetLayerName(), Len(targetStartName)), targetStartName, True) Then
+                startTargetsFound = startTargetsFound + 1
+            Else
+                If Strings.StringsEqual(Left$(srcPDImage.GetLayerByIndex(i).GetLayerName(), Len(targetEndName)), targetEndName, True) Then endTargetsFound = endTargetsFound + 1
+            End If
+        Next i
+        
+        'We will export groups if:
+        ' 1) At least one group is found in the document, and...
+        ' 2) There are the same number of group start markers as group end markers.  (A mismatch in these
+        '    values means the resulting PSD would be malformed, and we *never* want to risk that.)
+        If (startTargetsFound > 0) And (endTargetsFound > 0) Then
+            m_ExportGroups = (startTargetsFound = endTargetsFound)
+        End If
+        
+    End If
     
     'As usual, all writing is handled by a pdStream instance.  Note that we do not request typical
     ' sequential perf-optimized mode - this is because PSDs use a ton of "length" entries that describe
@@ -550,6 +600,13 @@ Private Function ExportStep3a_WriteLayerInfo(ByRef cStream As pdStream, ByRef sr
     ' to write this case, so we only ever write the *actual* layer count.
     cStream.WriteInt_BE srcImage.GetNumOfLayers()
     
+    'If we're gonna try and export layer groups, we need to create some group flags in advance
+    Dim targetStartName As String, targetEndName As String
+    If m_ExportGroups Then
+        targetStartName = g_Language.TranslateMessage("Group start:")
+        targetEndName = g_Language.TranslateMessage("Group end:")
+    End If
+    
     'Next comes a variable-length segment called "layer records".  One of these records exists for each layer.
     ' Because all PSD layer-specific data is managed by a dedicated class, it's easier for us to offload
     ' layer embedding tasks to that same class.  Note that we want the classes to be persistent for the duration
@@ -559,17 +616,39 @@ Private Function ExportStep3a_WriteLayerInfo(ByRef cStream As pdStream, ByRef sr
     Dim tmpPSDLayers() As pdPSDLayer
     ReDim tmpPSDLayers(0 To srcImage.GetNumOfLayers - 1) As pdPSDLayer
     
+    Dim layerGroupTypes() As PSD_LayerGroupState
+    ReDim layerGroupTypes(0 To srcImage.GetNumOfLayers - 1) As PSD_LayerGroupState
+    
     Dim i As Long
     For i = 0 To srcImage.GetNumOfLayers() - 1
+        
         Set tmpPSDLayers(i) = New pdPSDLayer
-        tmpPSDLayers(i).WriteLayerData cStream, srcImage.GetLayerByIndex(i), compressionType, writePSB
+        layerGroupTypes(i) = lgs_None
+        
+        'Are we allowed to write layer groups?  If we are, see if this is a group start/end marker
+        If m_ExportGroups Then
+            If Strings.StringsEqual(Left$(srcImage.GetLayerByIndex(i).GetLayerName(), Len(targetStartName)), targetStartName, True) Then layerGroupTypes(i) = lgs_GroupStartOpen
+            If Strings.StringsEqual(Left$(srcImage.GetLayerByIndex(i).GetLayerName(), Len(targetEndName)), targetEndName, True) Then layerGroupTypes(i) = lgs_GroupEnd
+        End If
+        
+        tmpPSDLayers(i).WriteLayerData cStream, srcImage.GetLayerByIndex(i), compressionType, writePSB, layerGroupTypes(i)
+        
     Next i
     
     'During the previous step, each layer generated a compressed byte stream of each channel's pixel data
     ' (remember: PSDs store channels as planar, not interleaved).  That makes the next step - storing channel
     ' data - trivial, as we can just ask each layer object to dump channel data out to file.
     For i = 0 To srcImage.GetNumOfLayers() - 1
-        tmpPSDLayers(i).WriteChannelData cStream, compressionType, writePSB
+        
+        'Non-group-layers are always written
+        If (layerGroupTypes(i) = lgs_None) Then
+            tmpPSDLayers(i).WriteChannelData cStream, compressionType, writePSB
+        
+        'Group layers just write dummy values (2x4=8)
+        Else
+            cStream.WritePadding 8
+        End If
+        
     Next i
     
     'All writes are complete, which means we can (finally) calculate the size of this segment.
@@ -693,6 +772,37 @@ Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRe
     
     'See above note about image resource block padding
     If ((blockSize And 1) = 1) Then cStream.WriteByte 0
+    
+    'If layer groups will be present in the destination file, we need to write some group indicator blocks now
+    If m_ExportGroups Then
+    
+        'Two blocks are always present if groups are active:
+        ' 1) "Layer groups enabled", and
+        ' 2) "Layer groups info"
+        
+        'These probably have some meaning to Photoshop, but every document I've loaded just uses a string
+        ' of constant numbers for both.  We mimic that behavior here.
+        
+        'Start with group info
+        blockSize = srcImage.GetNumOfLayers * 2     'Unsigned ints
+        WriteImageResourceHeader cStream, &H402, blockSize
+        
+        Dim i As Long
+        For i = 0 To srcImage.GetNumOfLayers - 1
+            cStream.WriteIntU_BE 0
+        Next i
+        
+        'Next, groups enabled
+        blockSize = srcImage.GetNumOfLayers
+        WriteImageResourceHeader cStream, &H430, blockSize
+        For i = 0 To srcImage.GetNumOfLayers - 1
+            cStream.WriteByte 1
+        Next i
+        
+        'See above note about image resource block padding
+        If ((blockSize And 1) = 1) Then cStream.WriteByte 0
+        
+    End If
     
     'All image resource blocks have been written successfully!
     
@@ -904,6 +1014,8 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     Const MAX_GROUP_DEPTH As Long = 10
     Dim groupVisibility() As Boolean
     ReDim groupVisibility(0 To MAX_GROUP_DEPTH - 1) As Boolean
+    Dim groupNames() As String
+    ReDim groupNames(0 To MAX_GROUP_DEPTH - 1) As String
     
     'If any group *above* the current one is invisible, the current layer's visibility flag
     ' gets overriden with the parent group.  This is my preferred behavior as it ensures that
@@ -947,6 +1059,7 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                         tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
                         tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
                         tmpLayer.SetLayerVisibility .GetLayerVisibility()
+                        
                     End With
                 
                 Next j
@@ -985,12 +1098,54 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
         ' flags accordingly.
         Else
             
+            'Layer groups may require a dummy DIB as their backing surface (a blank 1x1 transparent DIB)
+            Dim dummyDIB As pdDIB
+            
             'When a new layer group, increment our group depth counter
             If m_Layers(i).IsLayerGroupStart() Then
-                If (curGroupDepth > UBound(groupVisibility)) Then ReDim Preserve groupVisibility(0 To curGroupDepth * 2 - 1) As Boolean
+            
+                'Add this group's visibility and name to our running collection.  (We track this info
+                ' so we can properly handle complex nested group arrangements.)
+                If (curGroupDepth > UBound(groupVisibility)) Then
+                    ReDim Preserve groupVisibility(0 To curGroupDepth * 2 - 1) As Boolean
+                    ReDim Preserve groupNames(0 To curGroupDepth * 2 - 1) As String
+                End If
+                
                 groupVisibility(curGroupDepth) = m_Layers(i).GetLayerVisibility()
+                groupNames(curGroupDepth) = m_Layers(i).GetLayerName()
+                
                 curGroupVisibility = curGroupVisibility And groupVisibility(curGroupDepth)
+                
+                'PD can optionally create "dummy" layers to represent the group hierarchy.  This is a
+                ' workaround until PD properly supports layer groups.
+                If PSD_GROUPS_AS_DUMMY_LAYERS Then
+                    
+                    'Prep a new "dummy" layer object to represent this group
+                    newLayerID = dstImage.CreateBlankLayer()
+                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                    
+                    If (dummyDIB Is Nothing) Then
+                        Set dummyDIB = New pdDIB
+                        dummyDIB.CreateBlank 1, 1, 32, 0, 0
+                        dummyDIB.SetInitialAlphaPremultiplicationState True
+                    End If
+                    
+                    tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group start:") & " " & m_Layers(i).GetLayerName, dummyDIB, True
+                    
+                    'Fill in any remaining layer properties
+                    With m_Layers(i)
+                        tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
+                        tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                        tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+                    End With
+                
+                    numUsableLayers = numUsableLayers + 1
+                
+                End If
+                
+                'Increment nested group counter
                 curGroupDepth = curGroupDepth + 1
+                
             End If
             
             'Look for the end of the current layer group (if any)
@@ -1016,6 +1171,32 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                             Exit For
                         End If
                     Next gvIndex
+                End If
+                
+                'PD can optionally create "dummy" layers to represent the group hierarchy.  This is a
+                ' workaround until PD properly supports layer groups.
+                If PSD_GROUPS_AS_DUMMY_LAYERS Then
+                    
+                    'Prep a new "dummy" layer object to represent this group
+                    newLayerID = dstImage.CreateBlankLayer()
+                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                    
+                    If (dummyDIB Is Nothing) Then
+                        Set dummyDIB = New pdDIB
+                        dummyDIB.CreateBlank 1, 1, 32, 0, 0
+                    End If
+                    
+                    tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group end:") & " " & groupNames(curGroupDepth), dummyDIB, True
+                    
+                    'Fill in any remaining layer properties
+                    With m_Layers(i)
+                        tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
+                        tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                        tmpLayer.SetLayerVisibility groupVisibility(curGroupDepth)
+                    End With
+                
+                    numUsableLayers = numUsableLayers + 1
+                
                 End If
                 
             End If
@@ -1526,12 +1707,16 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                                 
                             End If
                             
-                        'Group enablement is important for setting layer visibility.  Even though PD
-                        ' doesn't support groups (at present), we still want to hide layers that
-                        ' are part of hidden groups in the PSD.
-                        Case rid_LayerGroupsEnabledID
-                            If (.irDataLength > 0) Then
-                                
+                        'PhotoDemon does "support" round-tripping of layer group data.  (It does this using
+                        ' dummy layers to represent group start/end markers.)  I have no idea what this
+                        ' "Groups Enabled ID" setting does.  In the wild, this value is always zero for
+                        ' each layer in the image.  PD writes out a similar set of zeroes when saving,
+                        ' so we don't actually need to retrieve this data at present (although the code
+                        ' below *will* retrieve it just fine.
+'                        Case rid_LayerGroupsEnabledID
+'
+'                            If (.irDataLength > 0) Then
+'
 '                                Set tmpStream = New pdStream
 '                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
 '
@@ -1546,26 +1731,29 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
 '
 '                                Set tmpStream = Nothing
 '
-                            End If
+'                            End If
                             
-                        Case rid_LayersGroupInfo
-                            
-                            'See above comments on rid_LayerGroupsEnabledID.  This segment doesn't make
-                            ' sense to me, and parsing it on a few test PSDs has shown no useful data
-                            ' from it.  I've left the parsing code in case files turn up "in the wild"
-                            ' where this information actually matters.
-                            If (.irDataLength > 0) Then
+                        'See above comments on rid_LayerGroupsEnabledID.  This segment doesn't make
+                        ' sense to me, and parsing it on a few test PSDs has shown no useful data
+                        ' from it.  I've left the parsing code in case files turn up "in the wild"
+                        ' where this information actually matters.  (Like that chunk, these values
+                        ' always show up as "1" for each layer in the image.  PD writes out a similar
+                        ' chunk at save-time, just in case PS needs it.)
+'                        Case rid_LayersGroupInfo
+'
+'                            If (.irDataLength > 0) Then
 '
 '                                Set tmpStream = New pdStream
 '                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
 '
+'                                Debug.Print "Group info chunk: " & .irDataLength & " bytes total"
 '                                For grpID = 0 To (.irDataLength \ 2) - 1
 '                                    Debug.Print tmpStream.ReadIntUnsigned_BE()
 '                                Next grpID
 '
 '                                Set tmpStream = Nothing
 '
-                            End If
+'                            End If
                             
                     End Select
                     

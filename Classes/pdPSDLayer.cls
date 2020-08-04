@@ -2232,18 +2232,23 @@ Friend Function LoadChannels(ByRef srcStream As pdStream, ByRef warningStack As 
     ' As such, each channel must be loaded independent of other channels in the image.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
+    
         With m_Channels(i)
+            
             .ciCompression = srcStream.ReadInt_BE()
             
-            'The size of this chunk is "size of pixel data + size of compression flag".
-            ' To avoid confusion, calculate a bare "size of pixel data" by subtracting two from
-            ' the net chunk size.
+            'The size of this chunk is "size of pixel data + size of compression flag", with the
+            ' latter value always being two bytes (an unsigned int).  To avoid confusion, we
+            ' pre-calculate the raw "size of pixel data" by subtracting two from the net chunk size.
             .ciDataLength = .ciSizeL - 2
             
-            'It *is* possible to have zero-length layer data (for example, adjustment or effect layers
-            ' may do this).  As such, it's critical to check channel size before attempting to read.
+            'It *is* possible to have zero-length layer data (for example, layer groups and
+            ' adjustment/effect layers can do this).  As such, it's critical to check channel size
+            ' before attempting to retrieve raw channel data.
             If (.ciDataLength > 0) Then srcStream.ReadBytes .ciData, .ciDataLength, True
+            
         End With
+        
     Next i
     
     Exit Function
@@ -2435,22 +2440,30 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     
     'Number of channels in this layer
     m_ChannelCount = srcStream.ReadInt_BE()
-    ReDim m_Channels(0 To m_ChannelCount - 1) As PSD_ChannelInfo
+    If (m_ChannelCount > 0) Then
     
-    'Each channel has its own channel ID and length indicator
-    Dim i As Long
-    For i = 0 To m_ChannelCount - 1
-        m_Channels(i).ciID = srcStream.ReadInt_BE()
-        m_Channels(i).ciSizeL = srcStream.ReadLong_BE()
+        ReDim m_Channels(0 To m_ChannelCount - 1) As PSD_ChannelInfo
         
-        'PSB entries are actually 8-bytes; grab the next byte while we're here, but note that 32-bit limitations
-        ' mean we can still only reasonably use the 4 low bytes of the size.
-        If imageIsPSB Then
-            m_Channels(i).ciSizeH = m_Channels(i).ciSizeL
-            m_Channels(i).ciSizeL = srcStream.ReadLong_BE
-        End If
+        'Each channel has its own channel ID and length indicator
+        Dim i As Long
+        For i = 0 To m_ChannelCount - 1
         
-    Next i
+            m_Channels(i).ciID = srcStream.ReadInt_BE()
+            m_Channels(i).ciSizeL = srcStream.ReadLong_BE()
+            
+            'PSB entries are actually 8-bytes; grab the next byte while we're here, but note that 32-bit limitations
+            ' mean we can still only reasonably use the 4 low bytes of the size.
+            If imageIsPSB Then
+                m_Channels(i).ciSizeH = m_Channels(i).ciSizeL
+                m_Channels(i).ciSizeL = srcStream.ReadLong_BE
+            End If
+                
+            'Random fact: layer group start/end markers will always list 4 RGBA channels,
+            ' with a constant size of 2 bytes per channel (whether PSD or PSB format)
+            
+        Next i
+        
+    End If
     
     'After the channel descriptors comes a blend mode signature, which is great for confirming
     ' that our parser is still aligned correctly.
@@ -2600,8 +2613,9 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
             '4-byte "key": see blend mode keys in <Layer records>.
             If (tmpStream.GetStreamSize >= 12) Then
                 If (tmpStream.ReadString_ASCII(4) = "8BIM") Then
-                    'Next four bytes contain group blend mode.
-                    ' We don't currently retrieve this data.
+                    'Next four bytes contain group blend mode.  We don't currently retrieve this data,
+                    ' but my limited testing has shown that this is always listed as "pass" for
+                    ' "passthrough mode" in the wild.
                 End If
             End If
             
@@ -2986,10 +3000,15 @@ InternalVBError:
     
 End Function
 
-Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False)
+Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False, Optional ByVal layerGroupState As PSD_LayerGroupState = lgs_None)
 
     'Layer records are complicated beasts.  Some of the information we place is fixed; other pieces are not.
     ' I don't have a lot of helpful information other than "review the spec" if you have questions.
+    
+    'Note that group start/end markers are written as semi-normal layer data (presumably for
+    ' backward compatibility with old PS versions).
+    Dim isGroupMarker As Boolean
+    isGroupMarker = (layerGroupState <> lgs_None)
     
     'The first chunk of a layer record is a (mostly) fixed-length segment describing basic layer parameters.
     With srcLayer
@@ -3019,14 +3038,20 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         'Unpremultiply the temporary DIB before continuing, if alpha values are relevant
         If m_LayerHasAlpha Then tmpLayerDIB.SetAlphaPremultiplication False
         
-        'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order
-        cStream.WriteLong_BE layerOffsetY
-        cStream.WriteLong_BE layerOffsetX
-        cStream.WriteLong_BE (layerOffsetY + tmpLayerDIB.GetDIBHeight())
-        cStream.WriteLong_BE (layerOffsetX + tmpLayerDIB.GetDIBWidth())
+        'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order.
+        ' (Note also that layer groups are always written as 0-size rects.)
+        If isGroupMarker Then
+            cStream.WritePadding 16
+        Else
+            cStream.WriteLong_BE layerOffsetY
+            cStream.WriteLong_BE layerOffsetX
+            cStream.WriteLong_BE (layerOffsetY + tmpLayerDIB.GetDIBHeight())
+            cStream.WriteLong_BE (layerOffsetX + tmpLayerDIB.GetDIBWidth())
+        End If
         
-        'Next is number of channels in the layer; PD always writes RGB/A data
-        If m_LayerHasAlpha Then cStream.WriteInt_BE 4 Else cStream.WriteInt_BE 3
+        'Next is number of channels in the layer; PD always writes RGB/A data.
+        ' (Note that this is still true for layer group markers; Adobe always writes them as RGBA data.)
+        If (m_LayerHasAlpha Or isGroupMarker) Then cStream.WriteInt_BE 4 Else cStream.WriteInt_BE 3
         
         'Next is a list of channel information, 6 bytes per channel (so 6*4 for PD)
         ' - 2 bytes: Channel ID
@@ -3036,33 +3061,49 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         ' channel compression.  We may as well handle that now, so we don't have to revisit these numbers later.
         ' (This could be better optimized to ignore the alpha channel if we aren't going to write it to file - TODO!)
         ReDim m_Channels(0 To 3) As PSD_ChannelInfo
-        PrepChannelsForWrite tmpLayerDIB, channelCompression
+        If isGroupMarker Then
         
-        'We can now write channel information for each channel
-        Dim i As Long
-        For i = 0 To 3
+            'Write four dummy RGBA channel ID values, no more or less.  (This matches Photoshop's behavior.)
+            cStream.WriteInt_BE -1
+            cStream.WriteLong_BE 2
+            cStream.WriteInt_BE 0
+            cStream.WriteLong_BE 2
+            cStream.WriteInt_BE 1
+            cStream.WriteLong_BE 2
+            cStream.WriteInt_BE 2
+            cStream.WriteLong_BE 2
+        
+        Else
             
-            'If the layer's alpha channel is irrelevant, don't write it.
-            If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
+            PrepChannelsForWrite tmpLayerDIB, channelCompression, (Not m_LayerHasAlpha)
             
-            'Preface this segment with each channel's ID
-            cStream.WriteInt_BE m_Channels(i).ciID
-            
-            'Note that regardless of compression type, we must add "2" to the length of the compressed channel data,
-            ' because PSDs require that channel data be prefaced with a 2-byte "compression type" indicator.
-            If (channelCompression = ccPackBits) Then
+            'We can now write channel information for each channel
+            Dim i As Long
+            For i = 0 To 3
                 
-                'PackBits requires us to write a separate scanline length table at the start of the channel segment
-                Dim rleSize As Long
-                rleSize = m_Channels(i).ciDataLength + 2
-                If writePSB Then rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 4 Else rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 2
-                cStream.WriteLong_BE rleSize
+                'If the layer's alpha channel is irrelevant, don't write it.
+                If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
                 
-            Else
-                cStream.WriteLong_BE m_Channels(i).ciDataLength + 2
-            End If
+                'Preface this segment with each channel's ID
+                cStream.WriteInt_BE m_Channels(i).ciID
+                
+                'Note that regardless of compression type, we must add "2" to the length of the compressed channel data,
+                ' because PSDs require that channel data be prefaced with a 2-byte "compression type" indicator.
+                If (channelCompression = ccPackBits) Then
+                    
+                    'PackBits requires us to write a separate scanline length table at the start of the channel segment
+                    Dim rleSize As Long
+                    rleSize = m_Channels(i).ciDataLength + 2
+                    If writePSB Then rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 4 Else rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 2
+                    cStream.WriteLong_BE rleSize
+                    
+                Else
+                    cStream.WriteLong_BE m_Channels(i).ciDataLength + 2
+                End If
+                
+            Next i
             
-        Next i
+        End If
         
         'Blend mode signature is hard-coded
         cStream.WriteString_ASCII "8BIM"
@@ -3105,7 +3146,22 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         ' will use this data in a way that makes UTF-8 problematic.
         Dim lName As String, lNameLengthBytes As Long, tmpBytes() As Byte
         lName = .GetLayerName()
-        If (Len(lName) > 0) Then
+        
+        'Layer group start/end markers need additional parsing
+        If isGroupMarker Then
+            
+            Dim groupStartText As String, gstPosition As Long
+            groupStartText = g_Language.TranslateMessage("Group start:")
+            
+            If (layerGroupState = lgs_GroupEnd) Then
+                lName = "</Layer Group>"
+            Else
+                gstPosition = InStr(1, lName, groupStartText, vbBinaryCompare)
+                If (gstPosition > 0) Then lName = Trim$(Right$(lName, Len(lName) - (gstPosition + Len(groupStartText))))
+            End If
+        End If
+        
+        If (LenB(lName) > 0) Then
         
             Strings.UTF8FromString lName, tmpBytes, lNameLengthBytes
             If (lNameLengthBytes > 255) Then lNameLengthBytes = 255
@@ -3124,8 +3180,8 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         'All mandatory layer information has now been written.  We can now write any optional
         ' additional descriptors.  These blocks all use the same general layout.
         
-        'At present, the only optional descriptor we write is a Unicode layer name.
-        If (Len(lName) > 0) Then
+        'One optional descriptor we always write is a Unicode layer name.
+        If (LenB(lName) > 0) Then
         
             'Write a 4-byte hard-coded "start of block" flag
             cStream.WriteString_ASCII "8BIM"
@@ -3142,6 +3198,39 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
             
             'Optional blocks are supposed to be even-padded, but we don't have to worry about this with
             ' Unicode strings (2 bytes per char, remember!)
+            
+        End If
+        
+        'Layer group data is stored as an extra chunk as well
+        If isGroupMarker Then
+            
+            'Write a 4-byte hard-coded "start of block" flag
+            cStream.WriteString_ASCII "8BIM"
+            
+            'Write a 4-byte hard-coded ASCII identifier of the optional block
+            cStream.WriteString_ASCII "lsct"
+            
+            'Write chunk length (this is a fixed magic number at present), 4-bytes for end group markers
+            ' 4 or 12 or 16 for start group markers (we use 16 in PD).
+            If (layerGroupState = lgs_GroupEnd) Then
+                cStream.WriteLong_BE 4
+            Else
+                cStream.WriteLong_BE 16
+            End If
+            
+            'Start and end markers have different magic number values
+            cStream.WriteLong_BE layerGroupState
+            If (layerGroupState = lgs_GroupStartOpen) Or (layerGroupState = lgs_GroupStartClosed) Then
+                
+                'Next, write the standard PSD blend-mode marker, followed by "passthrough" mode
+                ' (this is always used "in the wild" in my limited testing of PSDs with group data).
+                cStream.WriteString_ASCII ("8BIM")
+                cStream.WriteString_ASCII ("pass")
+                
+                'Finally, a "section divider sub-type" where "0 = normal"
+                cStream.WriteLong_BE 0
+                
+            End If
             
         End If
         
@@ -3162,7 +3251,7 @@ End Sub
 
 'Note that this function may be called externally; this is by design, as it is shared by our parent pdPSD class
 ' when writing a composite image copy out to the end of a PSD file
-Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompression As PSD_ChannelCompression)
+Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompression As PSD_ChannelCompression, Optional ByVal skipAlpha As Boolean = False)
     
     'Grab pointers to the layer's image data
     Dim tmpBytes() As Byte, tmpSA As SafeArray1D
@@ -3184,6 +3273,7 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
     ' at the end of a PSD file), so perform a failsafe check for channel count.
     If (m_ChannelCount <= 0) Then
         If (srcLayerDIB.GetDIBColorDepth = 32) Then m_ChannelCount = 4 Else m_ChannelCount = 3
+        If skipAlpha Then m_ChannelCount = 3
         ReDim m_Channels(0 To m_ChannelCount - 1) As PSD_ChannelInfo
     End If
     
