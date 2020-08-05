@@ -100,7 +100,6 @@ Private Declare Function RtlCompareMemory Lib "ntdll" (ByVal ptrSource1 As Long,
 
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 
-Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 Private Declare Sub ReleaseStgMedium Lib "ole32" (ByVal ptrToStgMedium As Long)
 
@@ -112,16 +111,12 @@ Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wM
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
 
-Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
-Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
-
 Private Const CC_STDCALL As Long = 4
 Private Const DVASPECT_CONTENT As Long = 1
 Private Const GMEM_MOVEABLE As Long = &H2&
 Private Const IDataObjVTable_GetData As Long = 12   '12 is an offset to the GetData function (e.g. the 4th VTable entry)
 Private Const SIGN_BIT As Long = &H80000000
 Private Const TYMED_HGLOBAL As Long = 1
-Private Const TYMED_ISTREAM As Long = 4
 Private Const WH_KEYBOARD As Long = 2
 
 'Higher-performance timing functions are also handled by this class.  Note that you *must* initialize the timer engine
@@ -147,12 +142,6 @@ Public Sub AliasArbitraryArray(ByVal source_VarPtrArray As Long, ByVal destinati
     GetMem4 source_VarPtrArray, ByVal destination_VarPtrArray
 End Sub
 
-'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
-' or it will leak memory.  Any arrays aliased this way must be freed via Unalias1DArray or VB will crash.
-Public Sub Alias1DArray_Long(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
-    GetMem4 VarPtrArray(orig1DArray()), ByVal VarPtrArray(new1DArray())
-End Sub
-
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
 Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte)
@@ -160,10 +149,6 @@ Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As 
 End Sub
 
 Public Sub Alias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
-    GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
-End Sub
-
-Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long)
     GetMem4 VarPtrArray(orig2DArray()), ByVal VarPtrArray(new2DArray())
 End Sub
 
@@ -175,12 +160,6 @@ Public Sub UnaliasArbitraryArray(ByVal source_VarPtrArray As Long, ByVal destina
     PutMem4 destination_VarPtrArray, 0&
 End Sub
 
-'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally
-' processed by an Alias21Array_ function.
-Public Sub Unalias1DArray_Long(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
-    PutMem4 VarPtrArray(new1DArray), 0&
-End Sub
-
 'Counterparts to Alias2DArray_ functions, above.  Do NOT call this function on arrays that were not originally
 ' processed by an Alias2DArray_ function.
 Public Sub Unalias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte)
@@ -188,10 +167,6 @@ Public Sub Unalias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() A
 End Sub
 
 Public Sub Unalias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
-    PutMem4 VarPtrArray(new2DArray), 0&
-End Sub
-
-Public Sub Unalias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As Long)
     PutMem4 VarPtrArray(new2DArray), 0&
 End Sub
 
@@ -498,22 +473,6 @@ End Sub
 
 Public Sub UnwrapArrayFromPtr_Float(ByRef dstFloats() As Single)
     PutMem4 VarPtrArray(dstFloats), 0&
-End Sub
-
-Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
-    With dstSA1D
-        .cbElements = 2
-        .cDims = 1
-        .cLocks = 1
-        .lBound = 0
-        .cElements = srcLenInBytes \ 2
-        .pvData = srcPtr
-    End With
-    PutMem4 VarPtrArray(dstInts()), VarPtr(dstSA1D)
-End Sub
-
-Public Sub UnwrapArrayFromPtr_Int(ByRef dstInts() As Integer)
-    PutMem4 VarPtrArray(dstInts), 0&
 End Sub
 
 'Subclassing helper functions follow

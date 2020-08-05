@@ -37,32 +37,34 @@ Attribute VB_Exposed = False
 Option Explicit
 
 
-'All Uniscribe APIs relevant to PD.  Note that we do not use the simplified ScriptString wrappers; they are not powerful enough
-' for the kinds of tasks we tackle.
-Private Declare Function ScriptApplyDigitSubstitution Lib "usp10" (psds As SCRIPT_DIGITSUBSTITUTE, psc As SCRIPT_CONTROL, pss As SCRIPT_STATE) As Long
-Private Declare Function ScriptApplyLogicalWidth Lib "usp10" (piDx() As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, pABC As ABC, piJustify As Long) As Long
+'All Uniscribe APIs relevant to PD.  Note that we do not use the simplified ScriptString wrappers;
+' they are not powerful enough for the kinds of tasks we need tackle.
+' (Currently unused declarations have been commented out to reduce clutter.)
+
+'Private Declare Function ScriptApplyDigitSubstitution Lib "usp10" (psds As SCRIPT_DIGITSUBSTITUTE, psc As SCRIPT_CONTROL, pss As SCRIPT_STATE) As Long
+'Private Declare Function ScriptApplyLogicalWidth Lib "usp10" (piDx() As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, pABC As ABC, piJustify As Long) As Long
 Private Declare Function ScriptBreak Lib "usp10" (ByVal ptrTopwcChars As Long, ByVal cChars As Long, ByVal ptrTopsa As Long, ByVal ptrTopsla As Long) As Long
-Private Declare Function ScriptCPtoX Lib "usp10" (ByVal iCP As Long, ByVal fTrailing As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust As Integer, psva As SCRIPT_VISATTR, piAdvance As Long, psa As SCRIPT_ANALYSIS, piX As Long) As Long
-Private Declare Function ScriptCacheGetHeight Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, tmHeight As Long) As Long
+'Private Declare Function ScriptCacheGetHeight Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, tmHeight As Long) As Long
+'Private Declare Function ScriptCPtoX Lib "usp10" (ByVal iCP As Long, ByVal fTrailing As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust As Integer, psva As SCRIPT_VISATTR, piAdvance As Long, psa As SCRIPT_ANALYSIS, piX As Long) As Long
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
-Private Declare Function ScriptGetCMap Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal pwcInChars As Long, ByVal cChars As Long, ByVal dwFlags As SCRIPT_GET_CMAP_FLAGS, pwOutGlyphs() As Integer) As Long
+'Private Declare Function ScriptGetCMap Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal pwcInChars As Long, ByVal cChars As Long, ByVal dwFlags As SCRIPT_GET_CMAP_FLAGS, pwOutGlyphs() As Integer) As Long
 Private Declare Function ScriptGetFontProperties Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrTosfp As Long) As Long
 Private Declare Function ScriptGetGlyphABCWidth Lib "usp10" (ByVal srcDC As Long, ByVal ptrTopscScriptCache As Long, ByVal wGlyph As Integer, ByVal ptrToABC As Long) As Long
-Private Declare Function ScriptGetLogicalWidths Lib "usp10" (psa As SCRIPT_ANALYSIS, ByVal cChars As Long, ByVal cGlyphs As Long, piGlyphWidth() As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piDx As Long) As Long
-Private Declare Function ScriptGetProperties Lib "usp10" (ppSp As SCRIPT_PROPERTIES, piNumScripts As Long) As Long
-Private Declare Function ScriptIsComplex Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal dwFlags As SCRIPT_IS_COMPLEX_FLAGS) As Long
+'Private Declare Function ScriptGetLogicalWidths Lib "usp10" (psa As SCRIPT_ANALYSIS, ByVal cChars As Long, ByVal cGlyphs As Long, piGlyphWidth() As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piDx As Long) As Long
+'Private Declare Function ScriptGetProperties Lib "usp10" (ppSp As SCRIPT_PROPERTIES, piNumScripts As Long) As Long
+'Private Declare Function ScriptIsComplex Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal dwFlags As SCRIPT_IS_COMPLEX_FLAGS) As Long
 Private Declare Function ScriptItemize Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal cMaxItems As Long, ByVal ptrToScriptControl As Long, ByVal ptrToScriptState As Long, ByVal ptrToPItems As Long, ByRef pcItems As Long) As Long
-Private Declare Function ScriptJustify Lib "usp10" (psva As SCRIPT_VISATTR, piAdvance() As Long, ByVal cGlyphs As Long, ByVal iDx As Long, ByVal iMinKashida As Long, piJustify() As Long) As Long
+'Private Declare Function ScriptJustify Lib "usp10" (psva As SCRIPT_VISATTR, piAdvance() As Long, ByVal cGlyphs As Long, ByVal iDx As Long, ByVal iMinKashida As Long, piJustify() As Long) As Long
 Private Declare Function ScriptLayout Lib "usp10" (ByVal cRuns As Long, ByVal ptrToPBLevel As Long, ByVal ptrToPIVisualToLogical As Long, ByVal ptrToPILogicalToVisual As Long) As Long
 Private Declare Function ScriptPlace Lib "usp10" (ByVal srcDC As Long, ByRef psc As SCRIPT_CACHE, ByVal ptrToIntpwGlyphs As Long, ByVal cGlyphs As Long, ByVal ptrToSVpsva As Long, ByVal ptrTopsa As Long, ByVal ptrToLngpiAdvance As Long, ByVal ptrTopGoffset As Long, ByRef pABC As ABC) As Long
-Private Declare Function ScriptRecordDigitSubstitution Lib "usp10" (ByVal Locale As Long, psds As SCRIPT_DIGITSUBSTITUTE) As Long
+'Private Declare Function ScriptRecordDigitSubstitution Lib "usp10" (ByVal Locale As Long, psds As SCRIPT_DIGITSUBSTITUTE) As Long
 Private Declare Function ScriptShape Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToSApas As Long, ByVal ptrToIntpwOutGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
-Private Declare Function ScriptTextOut Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal x As Long, ByVal y As Long, ByVal fuOptions As Long, lprc As RectL, psa As SCRIPT_ANALYSIS, ByVal pwcReserved As Long, ByVal iReserved As Long, pwGlyphs() As Integer, ByVal cGlyphs As Long, piAdvance() As Long, piJustify As Any, pGoffset As GOFFSET) As Long
-Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, piCP As Long, piTrailing As Long) As Long
+'Private Declare Function ScriptTextOut Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal x As Long, ByVal y As Long, ByVal fuOptions As Long, lprc As RectL, psa As SCRIPT_ANALYSIS, ByVal pwcReserved As Long, ByVal iReserved As Long, pwGlyphs() As Integer, ByVal cGlyphs As Long, piAdvance() As Long, piJustify As Any, pGoffset As GOFFSET) As Long
+'Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, piCP As Long, piTrailing As Long) As Long
 
 'Some Uniscribe features weren't added until Vista; these enable all kinds of neat behavior, but we must call them conditionally
-Private Declare Function ScriptItemizeOpenType Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal cMaxItems As Long, ByVal ptrToScriptControl As Long, ByVal ptrToScriptState As Long, ByVal ptrToPItems As Long, ByVal ptrToPScriptTags As Long, ByRef pcItems As Long) As Long
-Private Declare Function ScriptShapeOpenType Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrToSApas As Long, ByVal otTagScript As Long, ByVal otTagLang As Long, ByVal ptrToRcRangeChars As Long, ByVal ptrToRpRangeProperties As Long, ByVal numOfOTRanges As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToOutputCharProps As Long, ByVal ptrToPWOutGlyphs As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
+'Private Declare Function ScriptItemizeOpenType Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal cMaxItems As Long, ByVal ptrToScriptControl As Long, ByVal ptrToScriptState As Long, ByVal ptrToPItems As Long, ByVal ptrToPScriptTags As Long, ByRef pcItems As Long) As Long
+'Private Declare Function ScriptShapeOpenType Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrToSApas As Long, ByVal otTagScript As Long, ByVal otTagLang As Long, ByVal ptrToRcRangeChars As Long, ByVal ptrToRpRangeProperties As Long, ByVal numOfOTRanges As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToOutputCharProps As Long, ByVal ptrToPWOutGlyphs As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
 
 'For relevant type declarations, look in the Uniscribe_API_Decs module.
 
@@ -143,24 +145,14 @@ Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, B
     
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
-        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
         
-        'Write a 1 flag
         If flagValue Then
-        
-            'Blend the flag with the source Long using OR, which will force the target bit to 1 while preserving the rest of the Long's contents
             copyOfDstLong = copyOfDstLong Or longMask
-        
-        'Write a 0 flag
         Else
-        
-            'Blend the INVERSE flag with the source Long, which will force the target bit to 0 while preserving the rest of the Long's contents
-            copyOfDstLong = copyOfDstLong And Not longMask
-        
+            copyOfDstLong = copyOfDstLong And (Not longMask)
         End If
         
-    Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Sub
@@ -177,14 +169,12 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
     
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
-        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
         GetBitFlag = (CLng(srcLong And longMask) <> 0)
         
         'If you're curious about how this function works (and what it returns), you can uncomment the line below
-        'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
+        'Debug.Print "GetBitFlag: " & srcLong & " : " & longMask & " (" & CStr(GetBitFlag) & ")"
         
-    Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Function

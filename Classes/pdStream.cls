@@ -1344,19 +1344,6 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optio
 
 End Function
 
-'Only works on memory streams at present; file streams present a unique perf problem and I don't need an
-' implementation at present.
-Public Sub SwapEndianness16()
-
-    If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
-        VBHacks.SwapEndianness16 m_MemBuffer
-        
-    ElseIf (m_StreamMode = PD_SM_FileBacked) Or (m_StreamMode = PD_SM_FileMemoryMapped) Then
-        'Unsupported at present
-    End If
-    
-End Sub
-
 'Ensure that (n) bytes are available for a new write.  In PD, we do a lot of writing by raw pointer(s), and this function
 ' lets us ensure that we have enough space available for unprotected copies.
 '

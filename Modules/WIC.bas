@@ -73,16 +73,6 @@ Private Const WINCODEC_SDK_VERSION2 As Long = &H237&
 ' need to be dealt with manually.)
 Private Const S_OK As Long = 0&
 
-'WIC uses GUIDs everywhere; it's easier to copy DEFINE_GUID defs from wincodec.h if we use traditional
-' GUID descriptors and and simply call a wrapper to produce GUIDs as-needed.
-' (e.g. DEFINE_GUID(CLSID_WICImagingFactory,  0xcacaf262, 0x9370, 0x4615, 0xa1, 0x3b, 0x9f, 0x55, 0x39, 0xda, 0x4c, 0xa);)
-Private Type Guid
-    Data1    As Long
-    Data2    As Integer
-    Data3    As Integer
-    Data4(7) As Byte
-End Type
-
 'WIC enums
 Private Enum WICColorContextType
     WICColorContextUninitialized = &H0&
@@ -317,6 +307,7 @@ End Function
 Private Function GUID_ContainerFormatHeif() As Guid
     DEFINE_GUID GUID_ContainerFormatHeif, &HE1E62521, &H6787, &H405B, &HA3, &H39, &H50, &H7, &H15, &HB5, &H76, &H3F
 End Function
+
 'VB6 hacks for standard DEFINE_GUID macros; thank you to Victor Bravo VI for the original versions (http://www.vbforums.com/showthread.php?879695-Anyone-familiar-with-Windows-Imaging-Component-or-odd-IDL-pointer-types-in-general&highlight=Windows+Imaging+Component)
 ' MSDN: https://docs.microsoft.com/en-us/windows-hardware/drivers/kernel/defining-and-exporting-new-guids
 Private Function GUID_NULL() As Guid

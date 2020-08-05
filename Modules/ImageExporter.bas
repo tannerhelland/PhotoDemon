@@ -1803,6 +1803,9 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim useWebOptimizedPath As Boolean
     useWebOptimizedPath = cParams.GetBool("png-web-optimized", False)
     
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    
     'Web-optimized PNGs use their own path, and they supply their own special variables
     If useWebOptimizedPath And (ImageFormats.IsPngQuantEnabled() Or PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG)) Then
     
@@ -1819,10 +1822,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'Quickly dump out a PNG file; we don't need to spend time here finding optimal outputs, as subsequent
         ' optimization passes will find the most appropriate color depth for us.
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 32, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
-        If FreeImage_Save(FIF_PNG, fi_DIB, dstFile, FISO_PNG_Z_BEST_SPEED) Then
-            FreeImage_Unload fi_DIB
+        If (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, 1, , True) < png_Failure) Then
+            Set cPNG = Nothing
             
             'Start with pngquant's lossy optimization, if it's enabled
             If pngLossyEnabled Then
@@ -1840,7 +1841,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportPNG = True
             
         Else
-            ExportDebugMsg "WARNING!  GDI+ failed to save an initial PNG copy.  Subsequent optimizations were not performed."
+            ExportDebugMsg "WARNING!  Failed to save an initial PNG copy.  Subsequent optimizations were not performed."
+            GDIPlusSavePicture srcPDImage, dstFile, P2_FFE_PNG, 32
             ExportPNG = False
         End If
         
@@ -1858,13 +1860,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
         ' and format coverage than either FreeImage or GDI+.
         If (Not imgSavedOK) Then
-            
             PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                
-            Dim cPNG As pdPNG
-            Set cPNG = New pdPNG
             imgSavedOK = (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
-            
         End If
         
         'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,

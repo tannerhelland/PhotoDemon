@@ -51,17 +51,28 @@ Public Const VK_UP As Long = &H26
 Public Const VK_RIGHT As Long = &H27
 Public Const VK_DOWN As Long = &H28
 
-Public Const VK_NUMLOCK As Long = &H90
-Public Const VK_NUMPAD0 As Long = &H60
-Public Const VK_NUMPAD1 As Long = &H61
-Public Const VK_NUMPAD2 As Long = &H62
-Public Const VK_NUMPAD3 As Long = &H63
-Public Const VK_NUMPAD4 As Long = &H64
-Public Const VK_NUMPAD5 As Long = &H65
-Public Const VK_NUMPAD6 As Long = &H66
-Public Const VK_NUMPAD7 As Long = &H67
-Public Const VK_NUMPAD8 As Long = &H68
-Public Const VK_NUMPAD9 As Long = &H69
+'Numeric consts are not currently used
+'Public Const VK_0 As Long = &H30
+'Public Const VK_1 As Long = &H31
+'Public Const VK_2 As Long = &H32
+'Public Const VK_3 As Long = &H33
+'Public Const VK_4 As Long = &H34
+'Public Const VK_5 As Long = &H35
+'Public Const VK_6 As Long = &H36
+'Public Const VK_7 As Long = &H37
+'Public Const VK_8 As Long = &H38
+'Public Const VK_9 As Long = &H39
+'Public Const VK_NUMLOCK As Long = &H90
+'Public Const VK_NUMPAD0 As Long = &H60
+'Public Const VK_NUMPAD1 As Long = &H61
+'Public Const VK_NUMPAD2 As Long = &H62
+'Public Const VK_NUMPAD3 As Long = &H63
+'Public Const VK_NUMPAD4 As Long = &H64
+'Public Const VK_NUMPAD5 As Long = &H65
+'Public Const VK_NUMPAD6 As Long = &H66
+'Public Const VK_NUMPAD7 As Long = &H67
+'Public Const VK_NUMPAD8 As Long = &H68
+'Public Const VK_NUMPAD9 As Long = &H69
 
 Public Const VK_BACK As Long = &H8
 Public Const VK_TAB As Long = &H9
@@ -75,19 +86,8 @@ Public Const VK_PAGEDOWN As Long = &H22
 Public Const VK_END As Long = &H23
 Public Const VK_HOME As Long = &H24
 
-Public Const VK_0 As Long = &H30
-Public Const VK_1 As Long = &H31
-Public Const VK_2 As Long = &H32
-Public Const VK_3 As Long = &H33
-Public Const VK_4 As Long = &H34
-Public Const VK_5 As Long = &H35
-Public Const VK_6 As Long = &H36
-Public Const VK_7 As Long = &H37
-Public Const VK_8 As Long = &H38
-Public Const VK_9 As Long = &H39
-
 Public Const VK_OEM_PLUS As Long = 187   'Locale-inspecific + key
-Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
+'Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
 Public Const VK_OEM_4 As Long = 219      'For the US standard keyboard, the '[{' key.  (Varies internationally.)
 Public Const VK_OEM_6 As Long = 221      'For the US standard keyboard, the ']}' key.  (Varies internationally.)
 

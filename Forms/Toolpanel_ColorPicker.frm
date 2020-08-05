@@ -322,8 +322,9 @@ Private m_SampleDIB As pdDIB
 Private m_PreviewDIB As pdDIB
 
 'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents lastUsedSettings As pdLastUsedSettings
-Attribute lastUsedSettings.VB_VarHelpID = -1
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_LastUsedSettings As pdLastUsedSettings
+Attribute m_LastUsedSettings.VB_VarHelpID = -1
 
 'Mouse interactions will call into this function, supplying the x/y coordinates (in the current image space)
 ' of the current mouse operation.  This function will then translate those coordinates, using the current
@@ -685,9 +686,9 @@ Private Sub Form_Load()
     cboColorSpace(1).ListIndex = cps_HSV
     
     'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.SetParentForm Me
-    lastUsedSettings.LoadAllControlValues
+    Set m_LastUsedSettings = New pdLastUsedSettings
+    m_LastUsedSettings.SetParentForm Me
+    m_LastUsedSettings.LoadAllControlValues
     
     Tools.SetToolBusyState False
     
@@ -696,9 +697,9 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
-        lastUsedSettings.SaveAllControlValues
-        lastUsedSettings.SetParentForm Nothing
+    If Not (m_LastUsedSettings Is Nothing) Then
+        m_LastUsedSettings.SaveAllControlValues
+        m_LastUsedSettings.SetParentForm Nothing
     End If
 
 End Sub

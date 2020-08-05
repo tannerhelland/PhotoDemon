@@ -28,6 +28,13 @@ Public Type winRect
     y2 As Long
 End Type
 
+Public Type Guid
+    Data1 As Long
+    Data2 As Integer
+    Data3 As Integer
+    Data4(0 To 7) As Byte
+End Type
+
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
 ' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
 ' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to

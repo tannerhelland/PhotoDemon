@@ -23,30 +23,32 @@ Attribute VB_Name = "Uniscribe"
 
 Option Explicit
 
-Public Enum GCPCLASS
-    GCPCLASS_LATIN = 1
-    GCPCLASS_ARABIC = 2
-    GCPCLASS_HEBREW = 2
-    GCPCLASS_NEUTRAL = 3
-    GCPCLASS_LOCALNUMBER = 4
-    GCPCLASS_LATINNUMBER = 5
-    GCPCLASS_LATINNUMERICTERMINATOR = 6
-    GCPCLASS_LATINNUMERICSEPARATOR = 7
-    GCPCLASS_NUMERICSEPARATOR = 8
-    GCPCLASS_POSTBOUNDRTL = &H10
-    GCPCLASS_PREBOUNDLTR = &H40
-    GCPCLASS_PREBOUNDRTL = &H80
-    GCPCLASS_POSTBOUNDLTR = &H20
-    GCPGLYPH_LINKAFTER = &H4000
-    GCPGLYPH_LINKBEFORE = &H8000
-End Enum
-
-#If False Then
-    Private Const GCPCLASS_LATIN = 1, GCPCLASS_ARABIC = 2, GCPCLASS_HEBREW = 2, GCPCLASS_NEUTRAL = 3, GCPCLASS_LOCALNUMBER = 4
-    Private Const GCPCLASS_LATINNUMBER = 5, GCPCLASS_LATINNUMERICTERMINATOR = 6, GCPCLASS_LATINNUMERICSEPARATOR = 7, GCPCLASS_NUMERICSEPARATOR = 8
-    Private Const GCPCLASS_POSTBOUNDRTL = &H10, GCPCLASS_PREBOUNDLTR = &H40, GCPCLASS_PREBOUNDRTL = &H80, GCPCLASS_POSTBOUNDLTR = &H20
-    Private Const GCPGLYPH_LINKAFTER = &H4000, GCPGLYPH_LINKBEFORE = &H8000
-#End If
+'Some consts are unused at present, but they are tedious to translate into VB6 format,
+' so I've left them in case they prove useful in the future.
+'Public Enum GCPCLASS
+'    GCPCLASS_LATIN = 1
+'    GCPCLASS_ARABIC = 2
+'    GCPCLASS_HEBREW = 2
+'    GCPCLASS_NEUTRAL = 3
+'    GCPCLASS_LOCALNUMBER = 4
+'    GCPCLASS_LATINNUMBER = 5
+'    GCPCLASS_LATINNUMERICTERMINATOR = 6
+'    GCPCLASS_LATINNUMERICSEPARATOR = 7
+'    GCPCLASS_NUMERICSEPARATOR = 8
+'    GCPCLASS_POSTBOUNDRTL = &H10
+'    GCPCLASS_PREBOUNDLTR = &H40
+'    GCPCLASS_PREBOUNDRTL = &H80
+'    GCPCLASS_POSTBOUNDLTR = &H20
+'    GCPGLYPH_LINKAFTER = &H4000
+'    GCPGLYPH_LINKBEFORE = &H8000
+'End Enum
+'
+'#If False Then
+'    Private Const GCPCLASS_LATIN = 1, GCPCLASS_ARABIC = 2, GCPCLASS_HEBREW = 2, GCPCLASS_NEUTRAL = 3, GCPCLASS_LOCALNUMBER = 4
+'    Private Const GCPCLASS_LATINNUMBER = 5, GCPCLASS_LATINNUMERICTERMINATOR = 6, GCPCLASS_LATINNUMERICSEPARATOR = 7, GCPCLASS_NUMERICSEPARATOR = 8
+'    Private Const GCPCLASS_POSTBOUNDRTL = &H10, GCPCLASS_PREBOUNDLTR = &H40, GCPCLASS_PREBOUNDRTL = &H80, GCPCLASS_POSTBOUNDLTR = &H20
+'    Private Const GCPGLYPH_LINKAFTER = &H4000, GCPGLYPH_LINKBEFORE = &H8000
+'#End If
 
 Public Enum hResult
     S_FALSE = &H1
@@ -61,68 +63,60 @@ End Enum
     Private Const S_FALSE = &H1, S_OK = &H0, E_INVALIDARG = &H80070057, E_OUTOFMEMORY = &H8007000E, E_PENDING = &H8000000A, USP_E_SCRIPT_NOT_IN_FONT = &H80040200
 #End If
 
-Public Enum SCRIPT
-    SCRIPT_UNDEFINED = 0
-End Enum
+'Public Enum SCRIPT_JUSTIFY
+'    SCRIPT_JUSTIFY_NONE = 0
+'    SCRIPT_JUSTIFY_ARABIC_BLANK = 1
+'    SCRIPT_JUSTIFY_CHARACTER = 2
+'    SCRIPT_JUSTIFY_RESERVED1 = 3
+'    SCRIPT_JUSTIFY_BLANK = 4
+'    SCRIPT_JUSTIFY_RESERVED2 = 5
+'    SCRIPT_JUSTIFY_RESERVED3 = 6
+'    SCRIPT_JUSTIFY_ARABIC_NORMAL = 7
+'    SCRIPT_JUSTIFY_ARABIC_KASHIDA = 8
+'    SCRIPT_JUSTIFY_ARABIC_ALEF = 9
+'    SCRIPT_JUSTIFY_ARABIC_HA = 10
+'    SCRIPT_JUSTIFY_ARABIC_RA = 11
+'    SCRIPT_JUSTIFY_ARABIC_BA = 12
+'    SCRIPT_JUSTIFY_ARABIC_BARA = 13
+'    SCRIPT_JUSTIFY_ARABIC_SEEN = 14
+'    SCRIPT_JUSTIFY_RESERVED4 = 15
+'End Enum
+'
+'#If False Then
+'    Private Const SCRIPT_JUSTIFY_NONE = 0, SCRIPT_JUSTIFY_ARABIC_BLANK = 1, SCRIPT_JUSTIFY_CHARACTER = 2, SCRIPT_JUSTIFY_RESERVED1 = 3
+'    Private Const SCRIPT_JUSTIFY_BLANK = 4, SCRIPT_JUSTIFY_RESERVED2 = 5, SCRIPT_JUSTIFY_RESERVED3 = 6, SCRIPT_JUSTIFY_ARABIC_NORMAL = 7
+'    Private Const SCRIPT_JUSTIFY_ARABIC_KASHIDA = 8, SCRIPT_JUSTIFY_ARABIC_ALEF = 9, SCRIPT_JUSTIFY_ARABIC_HA = 10, SCRIPT_JUSTIFY_ARABIC_RA = 11
+'    Private Const SCRIPT_JUSTIFY_ARABIC_BA = 12, SCRIPT_JUSTIFY_ARABIC_BARA = 13, SCRIPT_JUSTIFY_ARABIC_SEEN = 14, SCRIPT_JUSTIFY_RESERVED4 = 15
+'#End If
 
-#If False Then
-    Private Const SCRIPT_UNDEFINED = 0
-#End If
+'Public Enum SCRIPT_IS_COMPLEX_FLAGS
+'    SIC_COMPLEX = 1      ' Treat complex script letters as complex
+'    SIC_ASCIIDIGIT = 2   ' Treat digits U+0030 through U+0039 as complex
+'    SIC_NEUTRAL = 4      ' Treat neutrals as complex
+'End Enum
+'
+'#If False Then
+'    Private Const SIC_COMPLEX = 1, SIC_ASCIIDIGIT = 2, SIC_NEUTRAL = 4
+'#End If
 
-Public Enum SCRIPT_JUSTIFY
-    SCRIPT_JUSTIFY_NONE = 0
-    SCRIPT_JUSTIFY_ARABIC_BLANK = 1
-    SCRIPT_JUSTIFY_CHARACTER = 2
-    SCRIPT_JUSTIFY_RESERVED1 = 3
-    SCRIPT_JUSTIFY_BLANK = 4
-    SCRIPT_JUSTIFY_RESERVED2 = 5
-    SCRIPT_JUSTIFY_RESERVED3 = 6
-    SCRIPT_JUSTIFY_ARABIC_NORMAL = 7
-    SCRIPT_JUSTIFY_ARABIC_KASHIDA = 8
-    SCRIPT_JUSTIFY_ARABIC_ALEF = 9
-    SCRIPT_JUSTIFY_ARABIC_HA = 10
-    SCRIPT_JUSTIFY_ARABIC_RA = 11
-    SCRIPT_JUSTIFY_ARABIC_BA = 12
-    SCRIPT_JUSTIFY_ARABIC_BARA = 13
-    SCRIPT_JUSTIFY_ARABIC_SEEN = 14
-    SCRIPT_JUSTIFY_RESERVED4 = 15
-End Enum
+'Public Enum SCRIPT_DIGITSUBSTITUTE_FLAGS
+'    SCRIPT_DIGITSUBSTITUTE_CONTEXT = 0       ' Substitute to match preceeding letters
+'    SCRIPT_DIGITSUBSTITUTE_NONE = 1          ' No substitution
+'    SCRIPT_DIGITSUBSTITUTE_NATIONAL = 2      ' Substitute with official national digits
+'    SCRIPT_DIGITSUBSTITUTE_TRADITIONAL = 3   ' Substitute with traditional digits of the locale
+'End Enum
+'
+'#If False Then
+'    Private Const SCRIPT_DIGITSUBSTITUTE_CONTEXT = 0, SCRIPT_DIGITSUBSTITUTE_NONE = 1, SCRIPT_DIGITSUBSTITUTE_NATIONAL = 2, SCRIPT_DIGITSUBSTITUTE_TRADITIONAL = 3
+'#End If
 
-#If False Then
-    Private Const SCRIPT_JUSTIFY_NONE = 0, SCRIPT_JUSTIFY_ARABIC_BLANK = 1, SCRIPT_JUSTIFY_CHARACTER = 2, SCRIPT_JUSTIFY_RESERVED1 = 3
-    Private Const SCRIPT_JUSTIFY_BLANK = 4, SCRIPT_JUSTIFY_RESERVED2 = 5, SCRIPT_JUSTIFY_RESERVED3 = 6, SCRIPT_JUSTIFY_ARABIC_NORMAL = 7
-    Private Const SCRIPT_JUSTIFY_ARABIC_KASHIDA = 8, SCRIPT_JUSTIFY_ARABIC_ALEF = 9, SCRIPT_JUSTIFY_ARABIC_HA = 10, SCRIPT_JUSTIFY_ARABIC_RA = 11
-    Private Const SCRIPT_JUSTIFY_ARABIC_BA = 12, SCRIPT_JUSTIFY_ARABIC_BARA = 13, SCRIPT_JUSTIFY_ARABIC_SEEN = 14, SCRIPT_JUSTIFY_RESERVED4 = 15
-#End If
-
-Public Enum SCRIPT_IS_COMPLEX_FLAGS
-    SIC_COMPLEX = 1      ' Treat complex script letters as complex
-    SIC_ASCIIDIGIT = 2   ' Treat digits U+0030 through U+0039 as complex
-    SIC_NEUTRAL = 4      ' Treat neutrals as complex
-End Enum
-
-#If False Then
-    Private Const SIC_COMPLEX = 1, SIC_ASCIIDIGIT = 2, SIC_NEUTRAL = 4
-#End If
-
-Public Enum SCRIPT_DIGITSUBSTITUTE_FLAGS
-    SCRIPT_DIGITSUBSTITUTE_CONTEXT = 0       ' Substitute to match preceeding letters
-    SCRIPT_DIGITSUBSTITUTE_NONE = 1          ' No substitution
-    SCRIPT_DIGITSUBSTITUTE_NATIONAL = 2      ' Substitute with official national digits
-    SCRIPT_DIGITSUBSTITUTE_TRADITIONAL = 3   ' Substitute with traditional digits of the locale
-End Enum
-
-#If False Then
-    Private Const SCRIPT_DIGITSUBSTITUTE_CONTEXT = 0, SCRIPT_DIGITSUBSTITUTE_NONE = 1, SCRIPT_DIGITSUBSTITUTE_NATIONAL = 2, SCRIPT_DIGITSUBSTITUTE_TRADITIONAL = 3
-#End If
-
-Public Enum SCRIPT_GET_CMAP_FLAGS
-    SGCM_RTL = &H1&             ' Return mirrored glyph for mirrorable Unicode codepoints
-End Enum
-
-#If False Then
-    Private Const SGCM_RTL = &H1&             ' Return mirrored glyph for mirrorable Unicode codepoints
-#End If
+'Public Enum SCRIPT_GET_CMAP_FLAGS
+'    SGCM_RTL = &H1&             ' Return mirrored glyph for mirrorable Unicode codepoints
+'End Enum
+'
+'#If False Then
+'    Private Const SGCM_RTL = &H1&             ' Return mirrored glyph for mirrorable Unicode codepoints
+'#End If
 
 'TYPES
 Public Type ABC
@@ -131,20 +125,15 @@ Public Type ABC
     abcC As Long
 End Type
 
-Public Type RECT_SIZE
-    cx As Long
-    cy As Long
-End Type
-
 'For various script types, note the mixed use of Integer and Byte types.  Many of these types use variable-length bitfields
 ' to report boolean data, and listing those bitfields as bytes, explicitly, prevents us from having to deal with messy handling
 ' of sign bits and endianness ordering.
-Public Type SCRIPT_DIGITSUBSTITUTE
-    NationalDigitLanguage As Integer
-    TraditionalDigitLanguage As Integer
-    DigitSubstitute As Byte
-    dwReserved As Long
-End Type
+'Public Type SCRIPT_DIGITSUBSTITUTE
+'    NationalDigitLanguage As Integer
+'    TraditionalDigitLanguage As Integer
+'    DigitSubstitute As Byte
+'    dwReserved As Long
+'End Type
 
 Public Type SCRIPT_CONTROL
     uDefaultLanguage As Integer
@@ -185,14 +174,15 @@ Public Type SCRIPT_FONTPROPERTIES
     iKashidaWidth As Long
 End Type
 
-'WORD OF WARNING: I haven't made use of this struct yet, but it may not work correctly due to VB's automatic alignment of structs along
-' word boundaries.  YOU MUST TEST THIS if using it in an array, with advice to add dummy bytes as padding if alignment issues follow.
-Public Type SCRIPT_PROPERTIES
-    langID As Integer
-    fBitFields1 As Byte
-    fBitFields2 As Byte
-    fBitFields3 As Byte
-End Type
+'WORD OF WARNING: I haven't made use of this struct yet, but it may not work correctly due to
+' VB's automatic alignment of structs along word boundaries.  YOU MUST TEST THIS if using it in
+' an array, with advice to add dummy bytes as padding if alignment issues follow.
+'Public Type SCRIPT_PROPERTIES
+'    langID As Integer
+'    fBitFields1 As Byte
+'    fBitFields2 As Byte
+'    fBitFields3 As Byte
+'End Type
 
 Public Type SCRIPT_ITEM
     iCharPos As Long
@@ -204,12 +194,12 @@ Public Type GOFFSET
     dv As Long
 End Type
 
-Public Type SCRIPT_TABDEF
-    cTabStops As Long
-    iScale As Long
-    pTabStops() As Long
-    iTabOrigin As Long
-End Type
+'Public Type SCRIPT_TABDEF
+'    cTabStops As Long
+'    iScale As Long
+'    pTabStops() As Long
+'    iTabOrigin As Long
+'End Type
 
 'Glyph data used by PhotoDemon.  An array of this custom struct is filled when the caller requests a copy of pdUniscribe's internal data.
 ' A fair amount of work is required to pull data out of the various incredibly complicated Uniscribe structs, so don't request copies of
@@ -238,13 +228,13 @@ Public Type PDGlyphUniscribe
     
 End Type
 
-'When retrieving OpenType tags, it's convenient to reduce the unsigned Longs into a 4-byte struct
-Private Type pdOpenTypeTag
-    byte1 As Byte
-    byte2 As Byte
-    byte3 As Byte
-    byte4 As Byte
-End Type
+'When retrieving OpenType tags, it's convenient to reduce the unsigned Longs into a 4-byte struct.
+'Private Type pdOpenTypeTag
+'    b1 As Byte
+'    b2 As Byte
+'    b3 As Byte
+'    b4 As Byte
+'End Type
 
 'Some Uniscribe API declarations are script-independent.  These are nice for retrieving generic font or glyph information, so we declare
 ' them here (instead of inside the pdUniscribe class).

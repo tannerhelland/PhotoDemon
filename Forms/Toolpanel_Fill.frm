@@ -177,7 +177,8 @@ Option Explicit
 
 
 'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
+Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 Private Sub bsFillStyle_BrushChanged()

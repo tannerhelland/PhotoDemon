@@ -16,14 +16,6 @@ Attribute VB_Name = "Tools_Paint"
 
 Option Explicit
 
-Public Enum PD_BrushSource
-    BS_Color = 0
-End Enum
-
-#If False Then
-    Private Const BS_Color = 0
-#End If
-
 'The current brush engine is stored here.  Note that this value is not correct until a call has been made to
 ' the CreateCurrentBrush() function; this function searches brush attributes and determines which brush engine
 ' to use.
