@@ -777,14 +777,11 @@ Public Sub InvertCurrentSelection()
     Dim progBarCheck As Long
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    Dim selMaskDepth As Long
-    selMaskDepth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
-    
     'After all that work, the Invert code itself is very small and unexciting!
     For y = 0 To maskHeight
         PDImages.GetActiveImage.MainSelection.GetMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
     For x = 0 To maskWidth
-        selMaskData(x) = 255 - selMaskData(x)
+        selMaskData(x) = Not selMaskData(x)
     Next x
         If (y And progBarCheck) = 0 Then SetProgBarVal y
     Next y

@@ -2024,7 +2024,7 @@ Private Sub CreateSelectionMask()
         maskBackColor = RGB(255, 255, 255)
         maskBackOpacity = 255
         maskForeColor = RGB(0, 0, 0)
-        maskForeOpacity = 255
+        maskForeOpacity = 0
     Else
         maskBackColor = RGB(0, 0, 0)
         maskBackOpacity = 0
