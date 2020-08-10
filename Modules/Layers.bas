@@ -56,8 +56,10 @@ Public Sub AddBlankLayer_XML(ByRef processParameters As String)
     Layers.AddBlankLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), cParams.GetLong("layertype", PDL_Image)
 End Sub
 
-'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
-Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As PD_LayerType = PDL_Image)
+'Add a blank 32bpp layer above the specified layer index (typically the currently active layer).
+' RETURNS: layer ID (*not* index!) of the newly created layer.  PD doesn't always make use of this value,
+' but it's there if you need it.
+Public Function AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As PD_LayerType = PDL_Image) As Long
 
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
@@ -90,20 +92,76 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
     
-End Sub
+    AddBlankLayer = newLayerID
+    
+End Function
 
 'XML-based wrapper for AddNewLayer(), below
 Public Sub AddNewLayer_XML(ByRef processParameters As String)
+    
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.SetParamString processParameters
-    With cParams
-        Layers.AddNewLayer .GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
-    End With
+    
+    'NEW (cheat) for 8.0.
+    ' (A better, "proper" implementation of this is TODO post-8.0.)
+    
+    'PD's 8.0 release shipped with a new PSD import/export engine.  When writing the PSD engine,
+    ' I had to make some hard choices about what Photoshop features to support, especially in cases
+    ' where PD doesn't support a direct analog of a PS feature.
+    
+    'One such compromise was layer groups.  PD doesn't support layer groups.  PS does.
+    ' My workaround (inspired by the 3rd-party Paint.NET PSD plugin) is to add "dummy layers"
+    ' as group start/end markers.  These "dummy" layers use a specific naming scheme, and when found,
+    ' PhotoDemon automatically maps them to/from PSD layers at export/import time.  This is a
+    ' temporary solution until PhotoDemon natively supports layer groups.
+    
+    'This implementation obviously creates some annoyances when trying to add layer groups to an
+    ' image destined for cross-support with Photoshop.  As an additional hacky workaround, I've
+    ' modified PD's "Add new layer" wrapper (this function!) so it scans for layer group names when
+    ' adding new layers.  If it finds a group-compatible name, it will automatically add a *pair* of
+    ' group-compatible layers so that you don't have to manually add a second "dummy" layer.
+    Dim useGroupWorkaround As Boolean
+    useGroupWorkaround = False
+    
+    Dim targetStartName As String, targetEndName As String
+    targetStartName = g_Language.TranslateMessage("Group start:")
+    targetEndName = g_Language.TranslateMessage("Group end:")
+    
+    'If the passed layer name starts with "Group start:" or "Group end:", activate the layer
+    ' group workaround.
+    Dim srcLayerName As String, srcLayerNameNoGroup As String
+    srcLayerName = Trim$(cParams.GetString("layername", vbNullString, True))
+    If (LenB(srcLayerName) >= LenB(targetStartName)) Then
+        useGroupWorkaround = Strings.StringsEqual(targetStartName, Left$(srcLayerName, Len(targetStartName)), True)
+        If useGroupWorkaround And (LenB(srcLayerName) > LenB(targetStartName)) Then srcLayerNameNoGroup = Right$(srcLayerName, Len(srcLayerName) - Len(targetStartName))
+    End If
+    If (Not useGroupWorkaround) Then
+        If (LenB(srcLayerName) >= LenB(targetEndName)) Then
+            useGroupWorkaround = Strings.StringsEqual(targetEndName, Left$(srcLayerName, Len(targetEndName)), True)
+            If useGroupWorkaround And (LenB(srcLayerName) > LenB(targetEndName)) Then srcLayerNameNoGroup = Right$(srcLayerName, Len(srcLayerName) - Len(targetEndName))
+        End If
+    End If
+    
+    'If the user supplied a group-compatible name, add *two* layers (one for group start, one for group end)
+    Dim newLayerID As Long
+    If useGroupWorkaround Then
+        With cParams
+            newLayerID = Layers.AddNewLayer(.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), targetStartName & " " & srcLayerNameNoGroup, suspendRedraws:=True)
+            newLayerID = Layers.AddNewLayer(.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), targetEndName & " " & srcLayerNameNoGroup)
+        End With
+    Else
+        With cParams
+            newLayerID = Layers.AddNewLayer(.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername"))
+        End With
+    End If
+    
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerType, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = vbNullString, Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
+' RETURNS: layer ID (*not* index!) of the newly created layer.  PD doesn't always make use of this value,
+' but it's there if you need it.
+Public Function AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerType, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = vbNullString, Optional ByVal initialXOffset As Single = 0!, Optional ByVal initialYOffset As Single = 0!, Optional ByVal suspendRedraws As Boolean = False) As Long
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -239,10 +297,14 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
     End If
     
-End Sub
+    AddNewLayer = newLayerID
+    
+End Function
 
-'Create a new layer from the current composite image, and place it at the top of the layer stack
-Public Sub AddLayerFromVisibleLayers()
+'Create a new layer from the current composite image, and place it at the top of the layer stack.
+' RETURNS: layer ID (*not* index!) of the newly created layer.  PD doesn't always make use of this value,
+' but it's there if you need it.
+Public Function AddLayerFromVisibleLayers() As Long
 
     'Figure out where the top of the layer stack sits
     Dim topLayerIndex As Long
@@ -272,7 +334,9 @@ Public Sub AddLayerFromVisibleLayers()
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
     
-End Sub
+    AddLayerFromVisibleLayers = newLayerID
+    
+End Function
 
 'Load an image file, and add it to the current image as a new layer
 Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX)
@@ -313,8 +377,6 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             Else
                 PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB
             End If
-            
-            'Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
             
             'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
             ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
