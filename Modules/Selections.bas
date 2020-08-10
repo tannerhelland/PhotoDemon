@@ -784,7 +784,7 @@ Public Sub InvertCurrentSelection()
     For y = 0 To maskHeight
         PDImages.GetActiveImage.MainSelection.GetMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
     For x = 0 To maskWidth
-        selMaskData(x) = Not selMaskData(x)
+        selMaskData(x) = 255 - selMaskData(x)
     Next x
         If (y And progBarCheck) = 0 Then SetProgBarVal y
     Next y
