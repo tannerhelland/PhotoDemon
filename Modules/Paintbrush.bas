@@ -54,10 +54,10 @@ Private m_DistPixels As Long, m_BrushSizeInt As Long
 Private m_BrushSpacingCheck As Long
 
 'PD doesn't implement brush dynamics yet, but maybe it will someday...
-Public Type BrushDynamics
-    StrokeAngle As Single
-    StrokeSpeed As Single
-End Type
+'Public Type BrushDynamics
+'    StrokeAngle As Single
+'    StrokeSpeed As Single
+'End Type
 
 'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
 ' The compositor can use this information to only regenerate the compositor cache area that's changed since the
@@ -246,10 +246,10 @@ Private Sub CreateSoftBrushReference_MyPaint()
         m_SrcPenDIB.ResetDIB 0
     End If
     
-    'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
-    ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
-    ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
-    ' setting each byte individually.
+    'Because we are only setting 255 possible different colors (one for each possible opacity,
+    ' while the current color remains constant), this is a great candidate for lookup tables.
+    ' Note that for performance reasons, we're going to do something wacky, and prep our LUT
+    ' as *longs*.  This is (obviously) faster than setting each byte individually.
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     tmpR = Colors.ExtractRed(m_BrushSourceColor)
     tmpG = Colors.ExtractGreen(m_BrushSourceColor)
@@ -274,13 +274,14 @@ Private Sub CreateSoftBrushReference_MyPaint()
     finalX = m_SrcPenDIB.GetDIBWidth - 1
     finalY = m_SrcPenDIB.GetDIBHeight - 1
     
-    'At present, we use a MyPaint-compatible system for calculating brush hardness.  This gives us comparable
-    ' paint behavior against programs like MyPaint (obviously), Krita, and new versions of GIMP.
+    'At present, we use a MyPaint-compatible system for calculating brush hardness.
+    ' This gives us comparable paint behavior against programs like MyPaint (obviously),
+    ' Krita, and new versions of GIMP.
     ' Reference: https://github.com/mypaint/libmypaint/wiki/Using-Brushlib
     Dim brushAspectRatio As Single, brushAngle As Single
     
-    'Some MyPaint-supported features are not currently exposed to the user.  Their hard-coded values appear below,
-    ' and in the future, we may migrate these over to the UI.
+    'Some MyPaint-supported features are not currently exposed to the user.  Their hard-coded
+    ' values appear below, and in the future, we may migrate these over to the UI.
     brushAspectRatio = 1#   '[1, #INF]
     brushAngle = 0#         '[0, 180] in degrees
     

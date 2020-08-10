@@ -72,12 +72,12 @@ Public Declare Sub GetMem2 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstIntege
 Public Declare Sub GetMem2_Ptr Lib "msvbvm60" Alias "GetMem2" (ByVal ptrSrc As Long, ByVal ptrDst2 As Long)
 Public Declare Sub GetMem4 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstValue As Long)
 Public Declare Sub GetMem4_Ptr Lib "msvbvm60" Alias "GetMem4" (ByVal ptrSrc As Long, ByVal ptrDst4 As Long)
-Public Declare Sub GetMem8 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstCurrency As Currency)
+'Public Declare Sub GetMem8 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstCurrency As Currency)
 Public Declare Sub GetMem8_Ptr Lib "msvbvm60" Alias "GetMem8" (ByVal ptrSrc As Long, ByVal ptrDst8 As Long)
 Public Declare Sub PutMem1 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Byte)
 Public Declare Sub PutMem2 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Integer)
 Public Declare Sub PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long)
-Public Declare Sub PutMem8 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Currency)
+'Public Declare Sub PutMem8 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Currency)
 
 Public Const WM_NCDESTROY As Long = &H82&
 
@@ -437,19 +437,20 @@ End Sub
 
 'Make certain the length of the source array is a multiple of 4 before calling;
 ' this function does not attempt to verify otherwise.
-Public Sub SwapEndianness32(ByRef srcData() As Byte)
-    Dim i As Long, tmpValue As Long, tmpIndex As Long
-    For i = 0 To UBound(srcData) Step 4
-        tmpIndex = i + 3
-        tmpValue = srcData(tmpIndex)
-        srcData(tmpIndex) = srcData(i)
-        srcData(i) = tmpValue
-        tmpIndex = i + 2
-        tmpValue = srcData(tmpIndex)
-        srcData(tmpIndex) = srcData(i + 1)
-        srcData(i + 1) = tmpValue
-    Next i
-End Sub
+' (NOTE: this function is currently unused in PD.)
+'Public Sub SwapEndianness32(ByRef srcData() As Byte)
+'    Dim i As Long, tmpValue As Long, tmpIndex As Long
+'    For i = 0 To UBound(srcData) Step 4
+'        tmpIndex = i + 3
+'        tmpValue = srcData(tmpIndex)
+'        srcData(tmpIndex) = srcData(i)
+'        srcData(i) = tmpValue
+'        tmpIndex = i + 2
+'        tmpValue = srcData(tmpIndex)
+'        srcData(tmpIndex) = srcData(i + 1)
+'        srcData(i + 1) = tmpValue
+'    Next i
+'End Sub
 
 'Safe unsigned addition, regardless of compilation options (e.g. compiling to native code with
 ' overflow ignored negates the need for this, but we sometimes use it "just in case").

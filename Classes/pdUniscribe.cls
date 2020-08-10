@@ -132,6 +132,7 @@ Private m_LineBreakPositions() As Long
 
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
+'NOTE: this function is not currently used; it has been commented out to reduce false-positives during code analysis
 'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
 ' is the SIGN BIT for a standard VB Long.
 '
@@ -139,23 +140,23 @@ Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) value of the flag, TRUE for 1, FALSE for 0
 '  3) The Long-type value where you want the flag placed
-Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
-
-    If (flagPosition >= 0) And (flagPosition <= 31) Then
-    
-        'Create a bitmask, using flagPosition to determine bit offset
-        Dim longMask As Long
-        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        
-        If flagValue Then
-            copyOfDstLong = copyOfDstLong Or longMask
-        Else
-            copyOfDstLong = copyOfDstLong And (Not longMask)
-        End If
-        
-    End If
-
-End Sub
+'Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
+'
+'    If (flagPosition >= 0) And (flagPosition <= 31) Then
+'
+'        'Create a bitmask, using flagPosition to determine bit offset
+'        Dim longMask As Long
+'        If (flagPosition < 31) Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+'
+'        If flagValue Then
+'            copyOfDstLong = copyOfDstLong Or longMask
+'        Else
+'            copyOfDstLong = copyOfDstLong And (Not longMask)
+'        End If
+'
+'    End If
+'
+'End Sub
 
 'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
 ' is the SIGN BIT for a standard VB Long.
