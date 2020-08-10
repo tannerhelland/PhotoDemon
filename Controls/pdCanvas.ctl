@@ -563,6 +563,19 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+'Most tools don't respond to double-clicks, but polygon selections follows Photoshop convention
+' (also GIMP, Krita) and close the current polygon selection, if any, on a double-click event.
+Private Sub CanvasView_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
+    ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
+    Dim imgX As Double, imgY As Double
+    DisplayImageCoordinates x, y, PDImages.GetActiveImage(), Me, imgX, imgY
+    
+    If (g_CurrentTool = SELECT_POLYGON) Then Selections.NotifySelectionMouseDblClick Me, imgX, imgY
+    
+End Sub
+
 Private Sub CanvasView_LostFocusAPI()
     m_LMBDown = False
     m_RMBDown = False

@@ -1300,7 +1300,10 @@ End Function
 'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances are referred
 ' to this function.  Initial X/Y values are required.
 Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
-
+    
+    'Reset any existing selection properties
+    PDImages.GetActiveImage.MainSelection.EraseCustomTrackers
+    
     'Activate the attached image's primary selection
     PDImages.GetActiveImage.SetSelectionActive True
     PDImages.GetActiveImage.MainSelection.LockRelease
@@ -1650,6 +1653,34 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
     
 End Sub
 
+'The only selection tool that responds to double-click events is the polygon selection tool.
+' Photoshop convention (mirrored by GIMP, Krita) is to close the polygon on a double-click.
+Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
+    
+    'Polygon selections only
+    If (g_CurrentTool = SELECT_POLYGON) Then
+    
+        'A selection must be in-progress
+        If PDImages.GetActiveImage.IsSelectionActive Then
+        
+            'The selection must *not* be closed yet
+            If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
+            
+                'Close the selection
+                PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                
+                'Redraw the viewport
+                Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                
+            End If
+        
+        End If
+    
+    End If
+
+End Sub
+
 Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
     
     'Handling varies based on the current mouse state, obviously.
@@ -1811,7 +1842,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
             
         
-        'As usual, polygon selections have some special considerations.
+        'As usual, polygon selections require special considerations.
         Case SELECT_POLYGON
         
             'If a selection was being drawn, lock it into place

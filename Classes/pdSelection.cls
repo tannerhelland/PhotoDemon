@@ -366,7 +366,7 @@ Friend Sub InitFromXML(ByVal srcXML As String)
     
     'Start by creating a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types upon request.
-    If (Len(srcXML) <> 0) Then
+    If (LenB(srcXML) <> 0) Then
         
         'Do a quick failsafe check to make sure the passed string differs from our current settings.  If it doesn't,
         ' we can fully skip this step.
@@ -1951,8 +1951,9 @@ Friend Sub EraseCustomTrackers()
     
     m_OverlayIsReady = False
     m_LastOverlayCache = vbNullString
-    m_ViewportOverlay.ResetDIB 0
+    If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     
+    m_IsTransformable = False
     m_IsMaskReady = False
     
 End Sub
@@ -3348,6 +3349,7 @@ Friend Function ReadSelectionFromFile_New(ByRef srcFilename As String, Optional 
     If cPackage.OpenPackage_File(srcFilename, "PDSF") Then
     
         'Reset some of our internal trackers prior to reading the selection data
+        Me.EraseCustomTrackers
         
         'First, note that our mask is not yet ready.  (Masks are generated on-demand, unless this is
         ' a raster selection, in which case we'll load the mask bits directly from the file.)
