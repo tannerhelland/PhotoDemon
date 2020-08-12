@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.1905</langversion>
+<langversion>8.0.2139</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -333,7 +333,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Shifting RGB values</original>
-<translation></translation>
+<translation>调整RGB值</translation>
 </phrase>
 
 <phrase>
@@ -1767,7 +1767,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Threshold alpha</original>
-<translation></translation>
+<translation>alpha 区间</translation>
 </phrase>
 
 <phrase>
@@ -4595,12 +4595,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Group start</original>
-<translation></translation>
+<translation>组开始</translation>
 </phrase>
 
 <phrase>
 <original>Group end</original>
-<translation></translation>
+<translation>组结束</translation>
 </phrase>
 
 <phrase>
@@ -4951,7 +4951,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>original file settings</original>
-<translation></translation>
+<translation>原始文件设置</translation>
 </phrase>
 
 <phrase>
@@ -6117,7 +6117,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Threshold</original>
-<translation></translation>
+<translation>起点</translation>
 </phrase>
 
 <phrase>
@@ -6422,7 +6422,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated screen capture (APNG)</original>
-<translation></translation>
+<translation>动画屏幕录制(APNG)</translation>
 </phrase>
 
 <phrase>
@@ -6432,7 +6432,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Third-party libraries</original>
-<translation></translation>
+<translation>第三方库</translation>
 </phrase>
 
 <phrase>
@@ -6935,7 +6935,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>preserve</original>
-<translation></translation>
+<translation>维持原状</translation>
 </phrase>
 
 <phrase>
@@ -10330,7 +10330,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>luminance only</original>
-<translation></translation>
+<translation>仅亮度</translation>
 </phrase>
 
 <phrase>
@@ -10654,7 +10654,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use Lab color space</original>
-<translation></translation>
+<translation>使用实验室颜色空间</translation>
 </phrase>
 
 <phrase>
@@ -12136,7 +12136,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>%1 options</original>
-<translation></translation>
+<translation>%1 选项</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -15675,12 +15675,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Reset all library options</original>
-<translation></translation>
+<translation>重置所有库选项</translation>
 </phrase>
 
 <phrase>
 <original>third-party library status</original>
-<translation></translation>
+<translation>第三方库状态</translation>
 </phrase>
 
 <phrase>
@@ -15793,127 +15793,127 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>icon purpose</original>
-<translation></translation>
+<translation>图标用途</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp</original>
-<translation></translation>
+<translation>32-bpp</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp</original>
-<translation></translation>
+<translation>24-bpp</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp</original>
-<translation></translation>
+<translation>8-bpp</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp</original>
-<translation></translation>
+<translation>4-bpp</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp</original>
-<translation></translation>
+<translation>1-bpp</translation>
 </phrase>
 
 <phrase>
 <original>128x128</original>
-<translation></translation>
+<translation>128x128</translation>
 </phrase>
 
 <phrase>
 <original>768x768</original>
-<translation></translation>
+<translation>768x768</translation>
 </phrase>
 
 <phrase>
 <original>256x256</original>
-<translation></translation>
+<translation>256x256</translation>
 </phrase>
 
 <phrase>
 <original>512x512</original>
-<translation></translation>
+<translation>512x512</translation>
 </phrase>
 
 <phrase>
 <original>96x96</original>
-<translation></translation>
+<translation>96x96</translation>
 </phrase>
 
 <phrase>
 <original>64x64</original>
-<translation></translation>
+<translation>64x64</translation>
 </phrase>
 
 <phrase>
 <original>48x48</original>
-<translation></translation>
+<translation>48x48</translation>
 </phrase>
 
 <phrase>
 <original>40x40</original>
-<translation></translation>
+<translation>40x40</translation>
 </phrase>
 
 <phrase>
 <original>32x32</original>
-<translation></translation>
+<translation>32x32</translation>
 </phrase>
 
 <phrase>
 <original>24x24</original>
-<translation></translation>
+<translation>24x24</translation>
 </phrase>
 
 <phrase>
 <original>16x16</original>
-<translation></translation>
+<translation>16x16</translation>
 </phrase>
 
 <phrase>
 <original>20x20</original>
-<translation></translation>
+<translation>20x20</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 10</original>
-<translation></translation>
+<translation>app - Windows 10</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows Vista, 7, 8</original>
-<translation></translation>
+<translation>app - Windows Vista, 7, 8</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows XP</original>
-<translation></translation>
+<translation>app - Windows XP</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 95, 98, ME</original>
-<translation></translation>
+<translation>app - Windows 95, 98, ME</translation>
 </phrase>
 
 <phrase>
 <original>web - favicon</original>
-<translation></translation>
+<translation>web - favicon</translation>
 </phrase>
 
 <phrase>
 <original>custom icon</original>
-<translation></translation>
+<translation>自定义图标</translation>
 </phrase>
 
 <phrase>
 <original>use original file settings</original>
-<translation></translation>
+<translation>使用原始文件设置</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -15924,7 +15924,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Converting alpha channel</original>
-<translation></translation>
+<translation>转换alpha通道</translation>
 </phrase>
 
 <!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -15935,32 +15935,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Select capture area</original>
-<translation></translation>
+<translation>选择捕获区域</translation>
 </phrase>
 
 <phrase>
 <original>End recording</original>
-<translation></translation>
+<translation>结束录制</translation>
 </phrase>
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation></translation>
+<translation>%1 秒后开始录制</translation>
 </phrase>
 
 <phrase>
 <original>capture</original>
-<translation></translation>
+<translation>录制</translation>
 </phrase>
 
 <phrase>
 <original>Please wait</original>
-<translation></translation>
+<translation>请稍候</translation>
 </phrase>
 
 <phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
-<translation></translation>
+<translation>正在录制 - %1:%2 @ %3 fps</translation>
 </phrase>
 
 <!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -15971,42 +15971,42 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>recording settings</original>
-<translation></translation>
+<translation>录制设置</translation>
 </phrase>
 
 <phrase>
 <original>target frame rate (fps)</original>
-<translation></translation>
+<translation>目标帧速率（fps）</translation>
 </phrase>
 
 <phrase>
 <original>repeat final animation</original>
-<translation></translation>
+<translation>重复最终动画</translation>
 </phrase>
 
 <phrase>
 <original>record mouse actions</original>
-<translation></translation>
+<translation>记录鼠标动作</translation>
 </phrase>
 
 <phrase>
 <original>countdown before recording (in seconds)</original>
-<translation></translation>
+<translation>录制前倒计时（秒）</translation>
 </phrase>
 
 <phrase>
 <original>file settings</original>
-<translation></translation>
+<translation>文件设置</translation>
 </phrase>
 
 <phrase>
 <original>cursor only</original>
-<translation></translation>
+<translation>仅光标</translation>
 </phrase>
 
 <phrase>
 <original>cursor and clicks</original>
-<translation></translation>
+<translation>光标和单击</translation>
 </phrase>
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->

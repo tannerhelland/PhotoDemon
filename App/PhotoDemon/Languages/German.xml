@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.2097</langversion>
+<langversion>8.0.2138</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4603,12 +4603,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Group start</original>
-<translation></translation>
+<translation>Gruppenstart</translation>
 </phrase>
 
 <phrase>
 <original>Group end</original>
-<translation></translation>
+<translation>Gruppenende</translation>
 </phrase>
 
 <phrase>
@@ -8742,7 +8742,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>language</original>
-<translation>Sprache</translation>
+<translation>Sprache (Language)</translation>
 </phrase>
 
 <phrase>
@@ -14627,17 +14627,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>language name</original>
-<translation>Namen der Sprache</translation>
+<translation>Name der Sprache</translation>
 </phrase>
 
 <phrase>
 <original>country ID</original>
-<translation>ID des Landes</translation>
+<translation>Länder- (Country-) ID</translation>
 </phrase>
 
 <phrase>
 <original>language ID</original>
-<translation>ID der Sprache</translation>
+<translation>Sprach- (Language-) ID</translation>
 </phrase>
 
 <phrase>
@@ -14716,7 +14716,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 (Even though this is an official PhotoDemon language file, you can safely delete it.)</original>
 <translation>Sind Sie sicher, dass Sie %1 löschen wollen?
 
-(Auch wenn dies eine offizielle PhotoDemon-Sprachdatei ist, können Sie diese problemlos löschen.)</translation>
+(Auch wenn dies eine offizielle PhotoDemon-Sprachdatei ist, können Sie diese sicher löschen.)</translation>
 </phrase>
 
 <phrase>
@@ -14858,7 +14858,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>The most important items on this page are the language ID and language name.  If these items are missing or invalid, PhotoDemon won't be able to use the language file.</original>
-<translation>Die wichtigsten Items auf dieser Seite sind die ID und der Namen der Sprache. Wenn diese Items fehlen oder ungültig sind, kann PhotoDemon die Sprachdatei nicht verwenden.</translation>
+<translation>Die wichtigsten Items auf dieser Seite sind die Sprach-ID und der Name der Sprache. Wenn diese Items fehlen oder ungültig sind, kann PhotoDemon die Sprachdatei nicht verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -14883,7 +14883,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im PhotoDemon-Ordner "User Language" erstellt. Dies bedeutet, Sie können das Programm jederzeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
+<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im Benutzersprachen-Ordner von PhotoDemon erstellt. Dies bedeutet, Sie können das Programm jederzeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
 </phrase>
 
 <phrase>
@@ -15627,7 +15627,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>reading not accurate inside IDE</original>
-<translation>Lesen in der IDE nicht genau</translation>
+<translation>Lesen innerhalb IDE nicht genau</translation>
 </phrase>
 
 <phrase>
