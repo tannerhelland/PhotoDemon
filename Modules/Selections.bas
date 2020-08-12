@@ -1502,6 +1502,28 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         Process "Remove selection", , , UNDO_Selection
     End If
     
+    'Enter/return keys: for polygon selections, this will close the current selection
+    If (vkCode = VK_RETURN) And (g_CurrentTool = SELECT_POLYGON) Then
+        
+        'A selection must be in-progress
+        If PDImages.GetActiveImage.IsSelectionActive Then
+        
+            'The selection must *not* be closed yet, but there must be enough points to successfully close it
+            If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
+            
+                'Close the selection
+                PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                
+                'Redraw the viewport
+                Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+                
+            End If
+        
+        End If
+        
+    End If
+    
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
     If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then

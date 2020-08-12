@@ -1646,7 +1646,6 @@ Friend Function AreAllCoordinatesInvalid() As Boolean
             '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
             ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
             'If ((m_SelectionShape = ss_Polygon) And (GetSelectionProperty_Float(sp_PolygonCurvature) <> 0)) Or ((m_SelectionShape = ss_Lasso) And (GetSelectionProperty_Float(sp_SmoothStroke) <> 0)) Then Me.FillBoundsUsingGDIPlus
-            
             If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
@@ -1732,6 +1731,11 @@ Friend Sub RemoveLastPolygonPoint()
     If (m_NumOfPolygonPoints > 1) Then
         m_NumOfPolygonPoints = m_NumOfPolygonPoints - 1
         BackupCurrentSelectionPoints
+        m_ViewportRefReady = False
+        m_OverlayIsReady = False
+        m_LastOverlayCache = vbNullString
+        m_FinalOutlineIsReady = False
+        If (m_NumOfPolygonPoints < 2) Then Set m_FinalOutline = Nothing
     End If
 End Sub
 
@@ -1765,6 +1769,9 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     'Reposition the lasso point index to match
     m_NumOfLassoPoints = newLassoIndex + 1
     If (m_NumOfLassoPoints < 1) Then m_NumOfLassoPoints = 1
+    m_ViewportRefReady = False
+    m_FinalOutlineIsReady = False
+    If (m_NumOfLassoPoints < 2) Then Set m_FinalOutline = Nothing
     
     'Return the new cursor coordinates at this position, then exit
     newCursorX_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).x
@@ -2279,7 +2286,7 @@ Private Sub CreateSelectionMask()
                 polyPath.SetFillRule P2_FR_Winding
                 polyPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, (GetSelectionProperty_Float(sp_PolygonCurvature) > 0#), GetSelectionProperty_Float(sp_PolygonCurvature)
                 
-                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                If ((GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior)) Then
                     PD2D.FillPath dstSurface, foreBrush, polyPath
                     m_Bounds = polyPath.GetPathBoundariesF()
                 Else
@@ -2843,8 +2850,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
     Dim useOutlineRenderingInstead As Boolean
     useOutlineRenderingInstead = (renderType = PDSR_Outline) Or (renderType = PDSR_Ants)
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = (m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
     'If we are not using marching ants, disable the associated ant timer now (as a failsafe; this is typically solved elsewhere,
     ' but better safe than sorry).
@@ -3092,7 +3099,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If (Not useLegacyVectorMode) Then useLegacyVectorMode = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
         
         If useLegacyVectorMode Then
-        
+            
             'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used
             ' and the number of points.
             If (m_SelectionShape = ss_Polygon) Or (m_SelectionShape = ss_Lasso) Then
@@ -3292,6 +3299,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' to detect changes to their rendering mode options.
         m_LastOverlayCache = GenerateArbitraryHash(renderType)
         
+    Else
+        If (Not m_ViewportOverlay Is Nothing) Then m_ViewportOverlay.ResetDIB 0
     End If
     
     'Final task: rendering the final overlay onto the destination viewport.  If rendering and viewport settings haven't
