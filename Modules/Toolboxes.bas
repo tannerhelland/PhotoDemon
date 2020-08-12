@@ -15,9 +15,15 @@ Attribute VB_Name = "Toolboxes"
 
 Option Explicit
 
-Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
+Private Const WS_CHILD As Long = &H40000000
+Private Const WS_POPUP As Long = &H80000000
+Private Const GWL_EXSTYLE As Long = (-20)
+Private Const GWL_STYLE As Long = (-16)
 Private Const SW_HIDE As Long = 0&
 Private Const SW_SHOWNA As Long = 8&
 
@@ -51,6 +57,10 @@ End Enum
 'At present, PD tracks three toolbars in a hard-coded order: the main toolbox (left), the options toolbox (bottom), and the
 ' layer toolbox (right).
 Private m_Toolboxes() As PD_Toolbox_Data
+
+'hWnd and window bits are stored using basic key/value pairs.  We must reset these before exiting the program
+' or VB will crash.
+Private m_WindowBits As pdDictionary
 
 'Before loading any toolboxes, call this sub to populate the initial toolbox data.  Among other thing, this loads the previous toolbox
 ' sizes from the user's preferences file.
@@ -228,6 +238,14 @@ End Sub
 Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long, ByVal parentHwnd As Long)
     
     SetParent toolboxHWnd, parentHwnd
+    
+    'Cache default VB6 window bits (only the first time!), then set new window bits matching the
+    ' parent/child relationship we're about to establish.
+    If (m_WindowBits Is Nothing) Then Set m_WindowBits = New pdDictionary
+    If (Not m_WindowBits.DoesKeyExist(toolboxHWnd)) Then m_WindowBits.AddEntry toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE)
+    SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) Or WS_CHILD
+    SetWindowLong toolboxHWnd, GWL_STYLE, GetWindowLong(toolboxHWnd, GWL_STYLE) And (Not WS_POPUP)
+            
     With m_Toolboxes(toolID)
         
         If (.hWnd <> toolboxHWnd) Then
@@ -378,4 +396,14 @@ Public Sub ResetAllToolboxSettings()
     'Redraw the primary image viewport to reflect our many potential changes
     FormMain.UpdateMainLayout True
 
+End Sub
+
+'Before unloading a toolbox, call this function to unload it.  (If you don't do this, VB will crash!)
+Public Sub ReleaseToolbox(ByVal toolboxHWnd As Long)
+    If (Not m_WindowBits Is Nothing) Then
+        If m_WindowBits.DoesKeyExist(toolboxHWnd) Then
+            SetWindowLong toolboxHWnd, GWL_STYLE, m_WindowBits.GetEntry_Long(toolboxHWnd, GetWindowLong(toolboxHWnd, GWL_STYLE))
+            m_WindowBits.DeleteEntry toolboxHWnd
+        End If
+    End If
 End Sub

@@ -3030,12 +3030,17 @@ Private Sub Form_Unload(Cancel As Integer)
     'With all tool panels unloaded, unload all toolboxes as well
     PDDebug.LogAction "Unloading toolboxes..."
     
+    'Before unloading toolboxes, we need to reset their window bits.  (These window bits get
+    ' toggled by the toolbox module as part of assigning parent/child relationships.)
+    Toolboxes.ReleaseToolbox toolbar_Layers.hWnd
     Unload toolbar_Layers
     Set toolbar_Layers = Nothing
     
+    Toolboxes.ReleaseToolbox toolbar_Options.hWnd
     Unload toolbar_Options
     Set toolbar_Options = Nothing
     
+    Toolboxes.ReleaseToolbox toolbar_Toolbox.hWnd
     Unload toolbar_Toolbox
     Set toolbar_Toolbox = Nothing
     
