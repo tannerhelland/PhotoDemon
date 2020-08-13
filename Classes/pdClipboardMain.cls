@@ -225,6 +225,10 @@ Private Type FILEDESCRIPTOR
     cFileName(0 To 519) As Byte   'MAXPATH wchars
 End Type
 
+'When pasting new layers in a given session, we increment a "paste" counter that we can use
+' to modify layer names - e.g. "clipboard layer 8" for the 8th pasted layer in a session.
+Private m_LayerCounter As Long
+
 Friend Function IsClipboardOpen() As Boolean
     IsClipboardOpen = m_IsClipboardOpen
 End Function
@@ -554,13 +558,14 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
             Dim sTitle As String
             sTitle = g_Language.TranslateMessage("Clipboard Image")
             sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                
+            
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If (Not pasteToThisDIBInstead Is Nothing) Then
                 Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
             Else
                 If srcIsMeantAsLayer Then
-                    Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, False, False
+                    m_LayerCounter = m_LayerCounter + 1
+                    Layers.LoadImageAsNewLayer False, m_StashFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
                 Else
                     Loading.LoadFileAsNewImage m_StashFile, sTitle, False
                 End If
@@ -629,7 +634,8 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                     Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
                 Else
                     If srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
+                        m_LayerCounter = m_LayerCounter + 1
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
@@ -812,7 +818,8 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean, Opt
                     Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                 Else
                     If srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
+                        m_LayerCounter = m_LayerCounter + 1
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
@@ -1135,7 +1142,8 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean, 
                         Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                     Else
                         If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, False, False
+                            m_LayerCounter = m_LayerCounter + 1
+                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, g_Language.TranslateMessage("Clipboard Image") & " " & CStr(m_LayerCounter), False, False
                         Else
                             Loading.LoadFileAsNewImage tmpClipboardFile, sTitle, False
                         End If
