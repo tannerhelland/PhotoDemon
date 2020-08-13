@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.494</langversion>
+<langversion>6.7.492</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3767,17 +3767,17 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Fit width</original>
-<translation>Adapter la largeur</translation>
+<translation>A la Largeur</translation>
 </phrase>
 
 <phrase>
 <original>Fit height</original>
-<translation>Adapter la hauteur</translation>
+<translation>A la Hauteur</translation>
 </phrase>
 
 <phrase>
 <original>Fit image</original>
-<translation>Adapter l'image</translation>
+<translation>A l'image</translation>
 </phrase>
 
 <!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -3905,7 +3905,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Clipboard Image</original>
-<translation>Image dans le Presse-papiers</translation>
+<translation>Image du presse papiers</translation>
 </phrase>
 
 <phrase>
@@ -4598,27 +4598,17 @@ Veuillez entrer une valeur numérique.</translation>
 <!-- BEGIN text for pdPSD.cls -->
 
 <phrase>
-<original>Group start</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>%1 (Channel %2)</original>
 <translation>%1 (Canal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
 <!-- BEGIN text for pdPSDLayer.cls -->
 
-<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdPSDLayer.cls contains 0 phrases. -->
 
 <!-- END text for pdPSDLayer.cls-->
 
@@ -4896,9 +4886,9 @@ Veuillez entrer une valeur numérique.</translation>
 
 You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
-<translation>Faites glisser une image sur cet espace pour commencer le montage. 
+<translation>Faites glisser une image sur cet espace pour la retoucher ou débuter un photomontage. 
 
-Vous pouvez également utiliser le bouton Ouvrir une image sur la gauche, 
+Vous pouvez également cliquer les icones "Nouvelle image" ou "Ouvrir une image" (en haut à gauche), 
 ou bien dans le menu, la commande Fichier > Ouvrir  ou  Fichier > Importation.</translation>
 </phrase>
 
@@ -4956,7 +4946,7 @@ ou bien dans le menu, la commande Fichier > Ouvrir  ou  Fichier > Importation.</
 
 <phrase>
 <original>original file settings</original>
-<translation></translation>
+<translation>parametres originaux du fichier</translation>
 </phrase>
 
 <phrase>
@@ -5001,7 +4991,7 @@ ou bien dans le menu, la commande Fichier > Ouvrir  ou  Fichier > Importation.</
 
 <phrase>
 <original>none</original>
-<translation>aucun</translation>
+<translation>aucune</translation>
 </phrase>
 
 <!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -6427,7 +6417,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Animated screen capture (APNG)</original>
-<translation></translation>
+<translation>Capture d'écran animée (APNG)</translation>
 </phrase>
 
 <phrase>
@@ -6437,7 +6427,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Third-party libraries</original>
-<translation></translation>
+<translation>Bibliothèques tierces</translation>
 </phrase>
 
 <phrase>
@@ -8814,7 +8804,8 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Do not save the image (discard all changes)</original>
-<translation>Ne pas enregistrer l'image (annuler toutes les modifications)</translation>
+<translation>Ne pas enregistrer l'image 
+	(annuler toutes les modifications)</translation>
 </phrase>
 
 <phrase>
@@ -10335,7 +10326,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>luminance only</original>
-<translation></translation>
+<translation>luminance seulement</translation>
 </phrase>
 
 <phrase>
@@ -10659,7 +10650,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use Lab color space</original>
-<translation></translation>
+<translation>utiliser l'espace couleur LAB</translation>
 </phrase>
 
 <phrase>
@@ -11716,7 +11707,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>compression level</original>
-<translation>taux de compression</translation>
+<translation>Taux de compression</translation>
 </phrase>
 
 <!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12000,11 +11991,41 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
+<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
 
 <phrase>
-<original>copies</original>
-<translation>copies</translation>
+<original>one image per page</original>
+<translation>une image par page</translation>
+</phrase>
+
+<phrase>
+<original>multiple images per page</original>
+<translation>plusieurs images par page</translation>
+</phrase>
+
+<phrase>
+<original>one image spread across multiple pages (poster print)</original>
+<translation>une image répartie sur plusieurs pages (impression d'affiche)</translation>
+</phrase>
+
+<phrase>
+<original>type of print job</original>
+<translation>type de travail d'impression</translation>
+</phrase>
+
+<phrase>
+<original># of copies</original>
+<translation># de copies</translation>
+</phrase>
+
+<phrase>
+<original>print quality</original>
+<translation>qualité d'impression</translation>
+</phrase>
+
+<phrase>
+<original>paper size</original>
+<translation>taille de papier</translation>
 </phrase>
 
 <phrase>
@@ -12013,8 +12034,44 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>paper size</original>
-<translation>taille de papier</translation>
+<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
+<translation>Dans l'étape suivante, vous pouvez spécifier des informations de mise en page détaillées (marges, positionnement, etc)</translation>
+</phrase>
+
+<phrase>
+<original>Step 1 of 2: basic print settings</original>
+<translation>Étape 1 de 2: paramètres d'impression de base</translation>
+</phrase>
+
+<phrase>
+<original>draft (least ink)</original>
+<translation>projet (moins d'encre) </translation>
+</phrase>
+
+<phrase>
+<original>good</original>
+<translation>bon</translation>
+</phrase>
+
+<phrase>
+<original>better</original>
+<translation>mieux</translation>
+</phrase>
+
+<phrase>
+<original>best (most ink)</original>
+<translation>meilleur (plus d'encre)</translation>
+</phrase>
+
+<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for File_PrintModern.frm-->
+
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
+
+<phrase>
+<original>copies</original>
+<translation>copies</translation>
 </phrase>
 
 <phrase>
@@ -12057,7 +12114,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>paysage</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -12145,7 +12202,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>%1 options</original>
-<translation></translation>
+<translation>%1 options</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -12258,7 +12315,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>average (65)</original>
-<translation>moyenne (65)</translation>
+<translation>moyen (65)</translation>
 </phrase>
 
 <phrase>
@@ -15335,22 +15392,22 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Highlight checks</original>
-<translation>Contrôles des surbrillances</translation>
+<translation>Damier clair</translation>
 </phrase>
 
 <phrase>
 <original>Midtone checks</original>
-<translation>Contrôles des demi-teinte</translation>
+<translation>Damier mi-teinte</translation>
 </phrase>
 
 <phrase>
 <original>Shadow checks</original>
-<translation>Contrôles d'ombre</translation>
+<translation>Damier sombre</translation>
 </phrase>
 
 <phrase>
 <original>Custom (click boxes to customize)</original>
-<translation>Personnalisé (zones de clic à personnaliser)</translation>
+<translation>Personnalisé (cliquer sur les zones pour les personnaliser)</translation>
 </phrase>
 
 <phrase>
@@ -15526,7 +15583,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Veuillez spécifier un profil de couleur pour chaque moniteur actuellement connecté au système. Notez que le texte entre parenthèses est la carte graphique du moniteur nommé.</translation>
+<translation>Veuillez spécifier un profil de couleur pour chaque moniteur actuellement connecté au système. Entre parenthèses sont les paramètres relatifs à la carte graphique du moniteur nommé.</translation>
 </phrase>
 
 <phrase>
@@ -15703,12 +15760,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Reset all library options</original>
-<translation></translation>
+<translation>Réinitialiser toutes les options de la bibliothèque</translation>
 </phrase>
 
 <phrase>
 <original>third-party library status</original>
-<translation></translation>
+<translation>statut des bibliothèques tierces</translation>
 </phrase>
 
 <phrase>
@@ -15821,127 +15878,127 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>icon purpose</original>
-<translation></translation>
+<translation>Formats intégrés de l'icone</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp</original>
-<translation></translation>
+<translation>32-bpp</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp</original>
-<translation></translation>
+<translation>24-bpp</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp</original>
-<translation></translation>
+<translation>8-bpp</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp</original>
-<translation></translation>
+<translation>4-bpp</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp</original>
-<translation></translation>
+<translation>1-bpp</translation>
 </phrase>
 
 <phrase>
 <original>128x128</original>
-<translation></translation>
+<translation>128x128</translation>
 </phrase>
 
 <phrase>
 <original>768x768</original>
-<translation></translation>
+<translation>768x768</translation>
 </phrase>
 
 <phrase>
 <original>256x256</original>
-<translation></translation>
+<translation>256x256</translation>
 </phrase>
 
 <phrase>
 <original>512x512</original>
-<translation></translation>
+<translation>512x512</translation>
 </phrase>
 
 <phrase>
 <original>96x96</original>
-<translation></translation>
+<translation>96x96</translation>
 </phrase>
 
 <phrase>
 <original>64x64</original>
-<translation></translation>
+<translation>64x64</translation>
 </phrase>
 
 <phrase>
 <original>48x48</original>
-<translation></translation>
+<translation>48x48</translation>
 </phrase>
 
 <phrase>
 <original>40x40</original>
-<translation></translation>
+<translation>40x40</translation>
 </phrase>
 
 <phrase>
 <original>32x32</original>
-<translation></translation>
+<translation>32x32</translation>
 </phrase>
 
 <phrase>
 <original>24x24</original>
-<translation></translation>
+<translation>24x24</translation>
 </phrase>
 
 <phrase>
 <original>16x16</original>
-<translation></translation>
+<translation>16x16</translation>
 </phrase>
 
 <phrase>
 <original>20x20</original>
-<translation></translation>
+<translation>20x20</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 10</original>
-<translation></translation>
+<translation>app - Windows 10</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows Vista, 7, 8</original>
-<translation></translation>
+<translation>app - Windows Vista, 7, 8</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows XP</original>
-<translation></translation>
+<translation>app - Windows XP</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 95, 98, ME</original>
-<translation></translation>
+<translation>app - Windows 95, 98, ME</translation>
 </phrase>
 
 <phrase>
 <original>web - favicon</original>
-<translation></translation>
+<translation>web - favicon</translation>
 </phrase>
 
 <phrase>
 <original>custom icon</original>
-<translation></translation>
+<translation>icone personnalisée</translation>
 </phrase>
 
 <phrase>
 <original>use original file settings</original>
-<translation></translation>
+<translation>utiliser les paramètres originaux du fichier</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -15952,7 +16009,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Converting alpha channel</original>
-<translation></translation>
+<translation>Conversion du canal alpha</translation>
 </phrase>
 
 <!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -15963,32 +16020,32 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Select capture area</original>
-<translation></translation>
+<translation>Sélection de la zone de capture</translation>
 </phrase>
 
 <phrase>
 <original>End recording</original>
-<translation></translation>
+<translation>Fin de l'enregistrement</translation>
 </phrase>
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation></translation>
+<translation>L'enregistrement demarrera dans %1</translation>
 </phrase>
 
 <phrase>
 <original>capture</original>
-<translation></translation>
+<translation>capture</translation>
 </phrase>
 
 <phrase>
 <original>Please wait</original>
-<translation></translation>
+<translation>Attendez svp</translation>
 </phrase>
 
 <phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
-<translation></translation>
+<translation>Enregistrement - %1:%2 @ %3 fps</translation>
 </phrase>
 
 <!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -15999,42 +16056,42 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>recording settings</original>
-<translation></translation>
+<translation>paramètres d'enregistrement</translation>
 </phrase>
 
 <phrase>
 <original>target frame rate (fps)</original>
-<translation></translation>
+<translation>Nombre d'images par seconde de la séquence (fps)</translation>
 </phrase>
 
 <phrase>
 <original>repeat final animation</original>
-<translation></translation>
+<translation>Répétition(s) de l'animation finale</translation>
 </phrase>
 
 <phrase>
 <original>record mouse actions</original>
-<translation></translation>
+<translation>Enregistrer les actions de la souris</translation>
 </phrase>
 
 <phrase>
 <original>countdown before recording (in seconds)</original>
-<translation></translation>
+<translation>Départ d'enregistrement différé de...(en secondes)</translation>
 </phrase>
 
 <phrase>
 <original>file settings</original>
-<translation></translation>
+<translation>paramètres du fichier</translation>
 </phrase>
 
 <phrase>
 <original>cursor only</original>
-<translation></translation>
+<translation>curseur seul</translation>
 </phrase>
 
 <phrase>
 <original>cursor and clicks</original>
-<translation></translation>
+<translation>curseur et clics</translation>
 </phrase>
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -16049,10 +16106,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2426 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12055 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12101 total words. -->
 
 </pdData>
