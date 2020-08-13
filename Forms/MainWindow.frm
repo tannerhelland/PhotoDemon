@@ -2466,7 +2466,22 @@ End Sub
 
 'Light and shadow effect menu
 Private Sub MnuLightShadow_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuLightShadow(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_blacklight"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_crossscreen"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_rainbow"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_sunshine"
+        Case 4
+            'separator
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_dilate"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_erode"
+    End Select
 End Sub
 
 Private Sub MnuPixelate_Click(Index As Integer)
@@ -2498,7 +2513,24 @@ Private Sub mnuRecentMacros_Click(Index As Integer)
 End Sub
 
 Private Sub MnuView_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuView(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "view_fit"
+        Case 1
+            'separator
+        Case 2
+            Menus.ProcessDefaultAction_ByName "view_zoomin"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "view_zoomout"
+        Case 4
+            'zoom-to-value top-level menu
+        Case 5
+            'separator
+        Case 6
+            Menus.ProcessDefaultAction_ByName "view_rulers"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "view_statusbar"
+    End Select
 End Sub
 
 Private Sub MnuWindowToolbox_Click(Index As Integer)
