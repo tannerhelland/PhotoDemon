@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.492</langversion>
+<langversion>6.7.493</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -4598,17 +4598,27 @@ Veuillez entrer une valeur numérique.</translation>
 <!-- BEGIN text for pdPSD.cls -->
 
 <phrase>
+<original>Group start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 (Channel %2)</original>
 <translation>%1 (Canal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pdPSD.cls contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
 <!-- BEGIN text for pdPSDLayer.cls -->
 
-<!-- pdPSDLayer.cls contains 0 phrases. -->
+<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdPSDLayer.cls-->
 
@@ -8805,7 +8815,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <phrase>
 <original>Do not save the image (discard all changes)</original>
 <translation>Ne pas enregistrer l'image 
-	(annuler toutes les modifications)</translation>
+(annuler toutes les modifications)</translation>
 </phrase>
 
 <phrase>
@@ -11991,41 +12001,11 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <!-- END text for File_New.frm-->
 
-<!-- BEGIN text for File_PrintModern.frm (FormPrintNew) -->
+<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
 
 <phrase>
-<original>one image per page</original>
-<translation>une image par page</translation>
-</phrase>
-
-<phrase>
-<original>multiple images per page</original>
-<translation>plusieurs images par page</translation>
-</phrase>
-
-<phrase>
-<original>one image spread across multiple pages (poster print)</original>
-<translation>une image répartie sur plusieurs pages (impression d'affiche)</translation>
-</phrase>
-
-<phrase>
-<original>type of print job</original>
-<translation>type de travail d'impression</translation>
-</phrase>
-
-<phrase>
-<original># of copies</original>
-<translation># de copies</translation>
-</phrase>
-
-<phrase>
-<original>print quality</original>
-<translation>qualité d'impression</translation>
-</phrase>
-
-<phrase>
-<original>paper size</original>
-<translation>taille de papier</translation>
+<original>copies</original>
+<translation>copies</translation>
 </phrase>
 
 <phrase>
@@ -12034,44 +12014,8 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>Dans l'étape suivante, vous pouvez spécifier des informations de mise en page détaillées (marges, positionnement, etc)</translation>
-</phrase>
-
-<phrase>
-<original>Step 1 of 2: basic print settings</original>
-<translation>Étape 1 de 2: paramètres d'impression de base</translation>
-</phrase>
-
-<phrase>
-<original>draft (least ink)</original>
-<translation>projet (moins d'encre) </translation>
-</phrase>
-
-<phrase>
-<original>good</original>
-<translation>bon</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>mieux</translation>
-</phrase>
-
-<phrase>
-<original>best (most ink)</original>
-<translation>meilleur (plus d'encre)</translation>
-</phrase>
-
-<!-- File_PrintModern.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for File_PrintModern.frm-->
-
-<!-- BEGIN text for File_PrintXP.frm (FormPrint) -->
-
-<phrase>
-<original>copies</original>
-<translation>copies</translation>
+<original>paper size</original>
+<translation>taille de papier</translation>
 </phrase>
 
 <phrase>
@@ -12114,7 +12058,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>paysage</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -16106,10 +16050,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2653</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2420 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12101 total words. -->
+<!-- As of this build, PhotoDemon contains 5079 phrases. -->
+<!-- 2426 are duplicates, so only 2653 unique phrases have been written to file. -->
+<!-- These 2653 phrases contain approximately 12055 total words. -->
 
 </pdData>

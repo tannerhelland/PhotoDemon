@@ -2702,7 +2702,19 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
         If .HotKeyName(acceleratorIndex) = "Next_Image" Then PDImages.MoveToNextImage True
         If .HotKeyName(acceleratorIndex) = "Prev_Image" Then PDImages.MoveToNextImage False
-    
+        
+        'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
+        If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_copy" Then
+            Process "Copy from layer", False, , UNDO_Nothing, , True
+            Process "Paste as new layer", False, cParams.GetParamString(), UNDO_Image, , True
+        End If
+        
+        'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
+        If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_cut" Then
+            Process "Cut from layer", False, , UNDO_Nothing, , True
+            Process "Paste as new layer", False, cParams.GetParamString(), UNDO_Image, , True
+        End If
+        
     End With
         
 End Sub

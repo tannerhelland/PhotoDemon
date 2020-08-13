@@ -1295,6 +1295,10 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image", "window_previous", False, True, False, UNDO_Nothing
         
+        'SPECIAL 8.0 COMMANDS - creating menus for these is TODO post-8.0's release
+        .AddAccelerator vbKeyJ, vbCtrlMask, "hk_new_layer_via_copy"
+        .AddAccelerator vbKeyJ, vbShiftMask Or vbCtrlMask, "hk_new_layer_via_cut"
+        
         'Activate hotkey detection
         .ActivateHook
         
