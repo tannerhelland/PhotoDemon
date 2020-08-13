@@ -66,7 +66,7 @@ End Sub
 
 'The parent form must manually request the restoration of all previous values.  We do this to give the parent time
 ' to initialize things like drop-downs and other objects.
-Friend Function LoadAllControlValues() As Boolean
+Friend Function LoadAllControlValues(Optional ByVal customSettingsOnly As Boolean = False) As Boolean
 
     'In previous versions of this control, each instance used a unique presets file inside the /Data/Presets folder.
     ' This was problematic, because unique disk accesses for each main window panel adds up, slowing program launch time.
@@ -84,13 +84,13 @@ Friend Function LoadAllControlValues() As Boolean
     End If
     
     'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
-    ReadXMLSettings
+    ReadXMLSettings customSettingsOnly
     
 End Function
 
-Friend Function SaveAllControlValues() As Boolean
+Friend Function SaveAllControlValues(Optional ByVal customSettingsOnly As Boolean = False) As Boolean
     
-    FillXMLSettings
+    FillXMLSettings customSettingsOnly
     
     If UserPrefs.IsReady Then
         
@@ -115,78 +115,83 @@ End Function
 
 'Fill the m_Params object with the current values of all controls on our parent form.  (Note that some objects (like labels)
 ' do not support last-used settings, by design.)
-Private Sub FillXMLSettings()
+Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False)
     
-    'Iterate through each control on the form.  Check its type, then determine a relevant way of tracking its "value".
-    Dim controlName As String, controlType As String, controlValue As String
-    Dim controlIndex As Long
-    
-    Dim eControl As Object
-    For Each eControl In m_ParentForm.Controls
+    'If a dialog only wants us to store custom settings, skip the automatic control loop
+    If (Not customSettingsOnly) Then
         
-        controlName = eControl.Name
-        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
-        controlType = TypeName(eControl)
-        controlValue = vbNullString
-            
-        'We only want to write out the value property of relevant controls.  Check that list now.
-        Select Case controlType
+        'Iterate through each control on the form.  Check its type, then determine a relevant way of tracking its "value".
+        Dim controlName As String, controlType As String, controlValue As String
+        Dim controlIndex As Long
         
-            'Many PD custom controls have a .Value property
-            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner", "pdTitle", "pdScrollBar", "pdButtonToolbox"
-                controlValue = Str$(eControl.Value)
+        Dim eControl As Object
+        For Each eControl In m_ParentForm.Controls
             
-            'List-type objects have an index
-            Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
-                controlValue = Str$(eControl.ListIndex)
+            controlName = eControl.Name
+            If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            controlType = TypeName(eControl)
+            controlValue = vbNullString
                 
-            'Custom values, including those returned as strings
-            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
-                controlValue = Str$(eControl.Color)
+            'We only want to write out the value property of relevant controls.  Check that list now.
+            Select Case controlType
             
-            Case "pdBrushSelector"
-                controlValue = eControl.Brush
+                'Many PD custom controls have a .Value property
+                Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner", "pdTitle", "pdScrollBar", "pdButtonToolbox"
+                    controlValue = Str$(eControl.Value)
                 
-            Case "pdPenSelector"
-                controlValue = eControl.Pen
+                'List-type objects have an index
+                Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                    controlValue = Str$(eControl.ListIndex)
+                    
+                'Custom values, including those returned as strings
+                Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
+                    controlValue = Str$(eControl.Color)
                 
-            Case "pdGradientSelector"
-                controlValue = eControl.Gradient
+                Case "pdBrushSelector"
+                    controlValue = eControl.Brush
+                    
+                Case "pdPenSelector"
+                    controlValue = eControl.Pen
+                    
+                Case "pdGradientSelector"
+                    controlValue = eControl.Gradient
+                    
+                Case "pdTextBox"
+                    controlValue = eControl.Text
+                    
+                Case "pdResize"
+                    controlValue = eControl.GetCurrentSettingsAsXML()
                 
-            Case "pdTextBox"
-                controlValue = eControl.Text
+                Case "pdHistory"
+                    controlValue = eControl.GetHistoryAsString()
+                    
+                Case "pdPaletteUI"
+                    controlValue = eControl.SerializeToXML()
+                    
+                Case "pdRandomizeUI"
+                    controlValue = eControl.Value
                 
-            Case "pdResize"
-                controlValue = eControl.GetCurrentSettingsAsXML()
+            End Select
             
-            Case "pdHistory"
-                controlValue = eControl.GetHistoryAsString()
-                
-            Case "pdPaletteUI"
-                controlValue = eControl.SerializeToXML()
-                
-            Case "pdRandomizeUI"
-                controlValue = eControl.Value
+            'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
+            If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
             
-        End Select
-        
-        'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
-        If (LenB(controlValue) <> 0) Then controlValue = Trim$(controlValue)
-        
-        'If this control has a valid value property, add it to the XML file
-        If (LenB(controlValue) <> 0) Then
-        
-            'If this control is part of a control array, we need to remember its index as well
-            If (controlIndex >= 0) Then
-                m_Params.UpdateParam controlName & ":" & controlIndex, controlValue
-            Else
-                m_Params.UpdateParam controlName, controlValue
+            'If this control has a valid value property, add it to the XML file
+            If (LenB(controlValue) <> 0) Then
+            
+                'If this control is part of a control array, we need to remember its index as well
+                If (controlIndex >= 0) Then
+                    m_Params.UpdateParam controlName & ":" & controlIndex, controlValue
+                Else
+                    m_Params.UpdateParam controlName, controlValue
+                End If
+                
             End If
             
-        End If
+        Next eControl
         
-    Next eControl
-    
+    End If
+        
     'Reset the custom value tracker (used for dialogs with non-standard UI elements)
     m_numUserPresets = 0
     
@@ -236,82 +241,88 @@ Friend Function RetrievePresetData(ByVal presetName As String, Optional ByVal re
 End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's m_Params object.
-Private Function ReadXMLSettings() As Boolean
+Private Function ReadXMLSettings(Optional ByVal customSettingsOnly As Boolean = False) As Boolean
     
-    'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
-    ' saved preset file.
-    Dim controlName As String, controlType As String, controlValue As String
-    Dim controlIndex As Long
-    
-    Dim eControl As Object
-    For Each eControl In m_ParentForm.Controls
+    'Some dialogs may only want to store custom data.  If that's the case, skip the entire
+    ' automatic settings load loop.
+    If (Not customSettingsOnly) Then
         
-        controlName = eControl.Name
-        If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
-        controlType = TypeName(eControl)
+        'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
+        ' saved preset file.
+        Dim controlName As String, controlType As String, controlValue As String
+        Dim controlIndex As Long
         
-        'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
-        ' controlname:controlindex
-        If (controlIndex >= 0) Then
-            controlValue = m_Params.GetString(controlName & ":" & controlIndex, vbNullString)
-        Else
-            controlValue = m_Params.GetString(controlName, vbNullString)
-        End If
-        
-        If (LenB(controlValue) <> 0) Then
-        
-            'An entry exists!  Assign out its value according to the control type.
-            Select Case controlType
+        Dim eControl As Object
+        For Each eControl In m_ParentForm.Controls
             
-                'Our custom controls all have a .Value property
-                Case "pdSlider", "pdSpinner"
-                    eControl.Value = CDblCustom(controlValue)
-                
-                Case "pdCheckBox", "pdRadioButton", "pdTitle", "pdButtonToolbox"
-                    eControl.Value = CBool(controlValue)
-                    
-                'Lists need to be checked to make sure we have enough entries to propery assign this value
-                Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
-                    If (CLng(controlValue) < eControl.ListCount) Then
-                        If (CLng(controlValue) > 0) Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
-                    Else
-                        If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
-                    End If
-                    
-                'Various PD controls have their own custom "value"-type properties.
-                Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
-                    eControl.Color = CLng(controlValue)
-                    
-                Case "pdBrushSelector"
-                    eControl.Brush = controlValue
-                
-                Case "pdPenSelector"
-                    eControl.Pen = controlValue
-                
-                Case "pdGradientSelector"
-                    eControl.Gradient = controlValue
-                    
-                Case "pdTextBox"
-                    eControl.Text = controlValue
-                    
-                Case "pdResize"
-                    eControl.SetAllSettingsFromXML controlValue
-                    
-                Case "pdHistory"
-                    eControl.SetHistoryFromString controlValue
-                    
-                Case "pdPaletteUI"
-                    eControl.CreateFromXML controlValue
-                    
-                Case "pdRandomizeUI"
-                    eControl.Value = controlValue
+            controlName = eControl.Name
+            If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            controlType = TypeName(eControl)
             
-            End Select
-
-        End If
-        
-    Next eControl
+            'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
+            ' controlname:controlindex
+            If (controlIndex >= 0) Then
+                controlValue = m_Params.GetString(controlName & ":" & controlIndex, vbNullString)
+            Else
+                controlValue = m_Params.GetString(controlName, vbNullString)
+            End If
+            
+            If (LenB(controlValue) <> 0) Then
+            
+                'An entry exists!  Assign out its value according to the control type.
+                Select Case controlType
+                
+                    'Our custom controls all have a .Value property
+                    Case "pdSlider", "pdSpinner"
+                        eControl.Value = CDblCustom(controlValue)
+                    
+                    Case "pdCheckBox", "pdRadioButton", "pdTitle", "pdButtonToolbox"
+                        eControl.Value = CBool(controlValue)
+                        
+                    'Lists need to be checked to make sure we have enough entries to propery assign this value
+                    Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                        If (CLng(controlValue) < eControl.ListCount) Then
+                            If (CLng(controlValue) > 0) Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
+                        Else
+                            If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
+                        End If
+                        
+                    'Various PD controls have their own custom "value"-type properties.
+                    Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
+                        eControl.Color = CLng(controlValue)
+                        
+                    Case "pdBrushSelector"
+                        eControl.Brush = controlValue
+                    
+                    Case "pdPenSelector"
+                        eControl.Pen = controlValue
+                    
+                    Case "pdGradientSelector"
+                        eControl.Gradient = controlValue
+                        
+                    Case "pdTextBox"
+                        eControl.Text = controlValue
+                        
+                    Case "pdResize"
+                        eControl.SetAllSettingsFromXML controlValue
+                        
+                    Case "pdHistory"
+                        eControl.SetHistoryFromString controlValue
+                        
+                    Case "pdPaletteUI"
+                        eControl.CreateFromXML controlValue
+                        
+                    Case "pdRandomizeUI"
+                        eControl.Value = controlValue
+                
+                End Select
     
+            End If
+            
+        Next eControl
+        
+    End If
+        
     'Allow the user to retrieve any of their custom preset data from the file
     RaiseEvent ReadCustomPresetData
     

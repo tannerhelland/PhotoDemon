@@ -298,9 +298,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2020 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 09/April/18
-'Last update: synchronize viewport-specific settings against the new MoveTool module, which manages
-'             direct interactions with the viewport.
+'Last updated: 13/August/20
+'Last update: manually save some tool settings between sessions (e.g. those settings not
+'             tied to an active layer's properties)
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -313,8 +313,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'The value of all controls on this form are saved and loaded to file by this class
-' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
-Private m_lastUsedSettings As pdLastUsedSettings
+Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'Two sub-panels are available on the "move options" panel
@@ -495,9 +494,9 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     'NOTE: this is currently disabled, as all settings on this form are synched to the active layer
-    'Set m_lastUsedSettings = New pdLastUsedSettings
-    'm_lastUsedSettings.SetParentForm Me
-    'm_lastUsedSettings.LoadAllControlValues
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues True
     
     Tools.SetToolBusyState False
     
@@ -507,9 +506,36 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
     If (Not m_lastUsedSettings Is Nothing) Then
-        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SaveAllControlValues True
         m_lastUsedSettings.SetParentForm Nothing
     End If
+    
+End Sub
+
+'Because this tool synchronizes the vast majority of its properties to the active layer
+' in the current image, we do *not* automatically save all settings for this tool.
+' Instead, we custom-save only the settings we absolutely want.
+Private Sub m_LastUsedSettings_AddCustomPresetData()
+
+    With m_lastUsedSettings
+        .AddPresetData "move-size-auto-activate", chkAutoActivateLayer.Value
+        .AddPresetData "move-size-ignore-transparent", chkIgnoreTransparent.Value
+        .AddPresetData "move-size-show-layer-borders", chkLayerBorder.Value
+        .AddPresetData "move-size-show-resize-nodes", chkLayerNodes.Value
+        .AddPresetData "move-size-show-rotate-nodes", chkRotateNode.Value
+    End With
+
+End Sub
+
+Private Sub m_LastUsedSettings_ReadCustomPresetData()
+
+    With m_lastUsedSettings
+        chkAutoActivateLayer.Value = .RetrievePresetData("move-size-auto-activate", True)
+        chkIgnoreTransparent.Value = .RetrievePresetData("move-size-ignore-transparent", True)
+        chkLayerBorder.Value = .RetrievePresetData("move-size-show-layer-borders", True)
+        chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
+        chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
+    End With
     
 End Sub
 
