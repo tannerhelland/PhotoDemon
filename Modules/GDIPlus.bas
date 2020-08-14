@@ -3073,8 +3073,8 @@ Public Function GetGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
 
 End Function
 
-'I'm not sure whether a pure GDI+ solution or a manual solution is faster, but because the manual solution guarantees the
-' smallest possible rect (unlike GDI+), I'm going with it for now.
+'I'm not sure whether a pure GDI+ solution or a manual solution is faster, but because the manual solution
+' guarantees the smallest possible rect (unlike GDI+), I'm going with it for now.
 Public Function IntersectRectF(ByRef dstRect As RectF, ByRef srcRect1 As RectF, ByRef srcRect2 As RectF) As Boolean
 
     With dstRect

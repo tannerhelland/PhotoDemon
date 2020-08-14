@@ -256,7 +256,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
             selectionIsPureRectangle = (.GetSelectionShape = ss_Rectangle)
             
             If selectionIsPureRectangle Then
-                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#)
+                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0!)
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Area) = sa_Interior)
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Smoothing) = es_None)
             End If
@@ -281,9 +281,14 @@ Public Sub CropToSelection_XML(ByRef processParameters As String)
     Filters_Transform.CropToSelection -1, cParams.GetBool("nondestructive", False)
 End Sub
 
-'Crop the image to the current selection.  To crop only a single layer, specify a target layer index.
-' (Optionally, full-image crops can be applied non-destructively, by simply modifying layer offsets and
-'  image dimensions.  Single layers cannot be modified non-destructively, unfortunately.)
+'Crop the image to the current selection.
+' - To crop only a single layer, specify a target layer index.
+' - Optionally, full-image crops on multilayer images can sometimes be applied non-destructively
+'   (for example, rectangular crops that meet certain criteria - e.g. no feathering - can be
+'   performed by simply modifying layer offsets and image dimensions.)
+' - When performing a single-layer crop, always performs it destructively.  This could potentially
+'   be revisited for single-layer images, but generally speaking, there are advantages to forcibly
+'   shrinking image size (e.g. reduced memory) so we resort to destructive cropping instead.
 Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optional ByVal applyNonDestructively As Boolean = False)
     
     On Error GoTo CropProblem
@@ -334,12 +339,15 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         
         'That's all there is to it!
     
-    'A complex shape is in use, or only a single layer is being cropped.  Crop using per-pixel raster mask analysis.
+    'A complex shape is in use, or only a single layer is being cropped.
+    ' Crop using per-pixel raster mask analysis.
     Else
     
-        'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
-        ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
-        ' selections, this will always result in an image with some transparent regions.
+        'NOTE: historically, the entire rectangular bounding region of the selection was
+        ' included in the crop.  (This is GIMP's behavior.)  I now fully crop the image,
+        ' which means that for non-square selections, all unselected pixels are set to
+        ' transparent.  For non-square selections, this will always result in an image
+        ' with some transparent regions.
         
         'Images will be processed into a temporary DIB
         Dim tmpDIB As pdDIB
@@ -385,103 +393,148 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         SetProgBarMax numLayersToCrop * imgWidth
         progBarCheck = ProgressBars.FindBestProgBarValue()
         
+        'New layer rects will be assigned based on the union of the crop rect and each layer's
+        ' original rect.  (Note that complex crop shapes - e.g. circles - will do additional
+        ' per-pixel work inside the new boundary rect.)
+        Dim origLayerRect As RectF, newLayerRect As RectF
+        
         'Iterate through each layer, cropping them in turn
         For i = startLayerIndex To endLayerIndex
         
             'Update the progress bar counter for this layer
             progBarOffsetX = i * imgWidth
-        
+            
             'Retrieve a pointer to the layer of interest
             Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
             
-            'Null-pad the layer
-            tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+            'Cache a copy of the layer's current boundary rect.  (We'll refer to this layer
+            ' to determine ideal layer offsets inside the newly cropped image.)
+            tmpLayerRef.GetLayerBoundaryRect origLayerRect
             
-            'Create a temporary layer at the relevant size of the selection, and retrieve a pointer to its pixel data
-            If (tmpDIB.GetDIBWidth <> selectionWidth) Or (tmpDIB.GetDIBHeight <> selectionHeight) Then
-                tmpDIB.CreateBlank selectionWidth, selectionHeight, 32, 0, 0
-            Else
-                tmpDIB.ResetDIB 0
-            End If
+            'Make sure this layer overlaps at least partially with the selection.  If it doesn't,
+            ' we can skip per-pixel processing entirely
+            If GDI_Plus.IntersectRectF(newLayerRect, origLayerRect, selBounds) Then
             
-            tmpDIB.WrapArrayAroundDIB dstImageData, dstSA
-            tmpLayerRef.layerDIB.WrapArrayAroundDIB srcImageData, srcSA
-            
-            Dim selMaskDepth As Long
-            selMaskDepth = (PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
-            
-            Dim selSafeX As Long, selSafeY As Long
-            selSafeX = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 4
-            selSafeY = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
-            
-            'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
-            ' of the selection), copying them to the destination as necessary.
-            For x = 0 To selectionWidth - 1
-                dstQuickX = x * 4
-                srcQuickX = (leftOffset + x) * 4
-                selQuickX = (leftOffset + x) * selMaskDepth
-            For y = 0 To selectionHeight - 1
-            
-                srcQuickY = topOffset + y
-                If (selQuickX < selSafeX) And (srcQuickY < selSafeY) Then
-                thisAlpha = selData(selQuickX, srcQuickY)
+                'This layer intersects the selection region.
+                
+                'Start by null-padding the layer to the full size of the current image.
+                ' (This greatly simplifies handling of layers with active non-destructive transforms.)
+                tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+                
+                'Create a temporary layer at the relevant size of the selection, and retrieve a pointer to its pixel data
+                If (tmpDIB.GetDIBWidth <> selectionWidth) Or (tmpDIB.GetDIBHeight <> selectionHeight) Then
+                    tmpDIB.CreateBlank selectionWidth, selectionHeight, 32, 0, 0
                 Else
-                PDDebug.LogAction "WARNING!  OOB!  " & CStr(selQuickX \ 4) & ", " & srcQuickY
+                    tmpDIB.ResetDIB 0
                 End If
                 
-                If (thisAlpha > 0) Then
+                tmpDIB.WrapArrayAroundDIB dstImageData, dstSA
+                tmpLayerRef.layerDIB.WrapArrayAroundDIB srcImageData, srcSA
                 
-                    'Check the image's alpha value.  If it's zero, we have no reason to process it further
-                    origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
+                Dim selMaskDepth As Long
+                selMaskDepth = (PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
+                
+                Dim selSafeX As Long, selSafeY As Long
+                selSafeX = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 4
+                selSafeY = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
+                
+                'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
+                ' of the selection), copying them to the destination as necessary.
+                For x = 0 To selectionWidth - 1
+                    dstQuickX = x * 4
+                    srcQuickX = (leftOffset + x) * 4
+                    selQuickX = (leftOffset + x) * selMaskDepth
+                For y = 0 To selectionHeight - 1
+                
+                    srcQuickY = topOffset + y
+                    thisAlpha = 0
+                    If (selQuickX < selSafeX) And (srcQuickY < selSafeY) Then thisAlpha = selData(selQuickX, srcQuickY)
                     
-                    If (origAlpha > 0) Then
+                    If (thisAlpha > 0) Then
+                    
+                        'Check the image's alpha value.  If it's zero, we have no reason to process it further
+                        origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
                         
-                        'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
-                        ' we premultiply alpha, after all!)
-                        b = srcImageData(srcQuickX, srcQuickY)
-                        g = srcImageData(srcQuickX + 1, srcQuickY)
-                        r = srcImageData(srcQuickX + 2, srcQuickY)
-                        
-                        'Calculate a new multiplier, based on the strength of the selection at this location
-                        blendAlpha = thisAlpha * ONE_DIVIDED_BY_255
-                        
-                        'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                        dstImageData(dstQuickX, y) = b * blendAlpha
-                        dstImageData(dstQuickX + 1, y) = g * blendAlpha
-                        dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                        
-                        'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
-                        ' the original alpha value, and the selection mask value at this location.
-                        dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                        If (origAlpha > 0) Then
+                            
+                            'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
+                            ' we premultiply alpha, after all!)
+                            b = srcImageData(srcQuickX, srcQuickY)
+                            g = srcImageData(srcQuickX + 1, srcQuickY)
+                            r = srcImageData(srcQuickX + 2, srcQuickY)
+                            
+                            'Calculate a new multiplier, based on the strength of the selection at this location
+                            blendAlpha = thisAlpha * ONE_DIVIDED_BY_255
+                            
+                            'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                            dstImageData(dstQuickX, y) = b * blendAlpha
+                            dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                            dstImageData(dstQuickX + 2, y) = r * blendAlpha
+                            
+                            'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                            ' the original alpha value, and the selection mask value at this location.
+                            dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                            
+                        End If
                         
                     End If
                     
+                Next y
+                    If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal (progBarOffsetX + x)
+                Next x
+                
+                tmpDIB.UnwrapArrayFromDIB dstImageData
+                tmpLayerRef.layerDIB.UnwrapArrayFromDIB srcImageData
+                
+                'Premultiply alpha (as always)
+                tmpDIB.SetInitialAlphaPremultiplicationState True
+                
+                'Crop out the intersecting rect between the original layer boundaries and the
+                ' selection's boundaries, then assign that intersecting rect's pixels to the
+                ' target layer
+                Dim tmpUnionDIB As pdDIB
+                If (tmpUnionDIB Is Nothing) Then Set tmpUnionDIB = New pdDIB
+                tmpUnionDIB.CreateBlank newLayerRect.Width, newLayerRect.Height, 32, 0, 0
+                tmpUnionDIB.SetInitialAlphaPremultiplicationState True
+                GDI.BitBltWrapper tmpUnionDIB.GetDIBDC, 0, 0, newLayerRect.Width, newLayerRect.Height, tmpDIB.GetDIBDC, newLayerRect.Left - selBounds.Left, newLayerRect.Top - selBounds.Top, vbSrcCopy
+                
+                tmpLayerRef.layerDIB.CreateFromExistingDIB tmpUnionDIB
+                
+                'Update the layer's offsets to match.  Note that how we do this changes
+                ' depending on whether we're cropping the entire image (in which case
+                ' the selection's top/left will be the new image top/left) vs cropping
+                ' a single layer in the existing image.
+                If (targetLayerIndex = -1) Then
+                    tmpLayerRef.SetLayerOffsetX newLayerRect.Left - selBounds.Left
+                    tmpLayerRef.SetLayerOffsetY newLayerRect.Top - selBounds.Top
+                Else
+                    tmpLayerRef.SetLayerOffsetX newLayerRect.Left
+                    tmpLayerRef.SetLayerOffsetY newLayerRect.Top
                 End If
-                
-            Next y
-                If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal (progBarOffsetX + x)
-            Next x
             
-            tmpDIB.UnwrapArrayFromDIB dstImageData
-            tmpLayerRef.layerDIB.UnwrapArrayFromDIB srcImageData
-            
-            'Replace the current layer DIB with our destination one.
-            tmpDIB.SetInitialAlphaPremultiplicationState True
-            tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
-            
-            'Update the layer offsets, if any.  Note that the exact approach to this varies by crop type; for single-layer crops,
-            ' we need to manually update the offsets (as they aren't guaranteed to be at (0, 0), like they are for a
-            ' full-image crop).
-            If (targetLayerIndex = -1) Then
-            
-                'Remove any null-padding from the layer
-                tmpLayerRef.CropNullPaddedLayer
-                
+            'This layer does *not* intersect the newly cropped image.  I'm not entirely
+            ' sure what the best option is here - ideally we'd probably just delete the
+            ' damn layer (since it now exists entirely off-image), but because that
+            ' could have problematic knock-on effects, let's instead just replace it
+            ' with a fully transparent DIB at the current selection size.
             Else
                 
-                'Manually update layer offsets to point at the selection's top-left point
-                tmpLayerRef.SetLayerOffsetX selBounds.Left
-                tmpLayerRef.SetLayerOffsetY selBounds.Top
+                'Start by resetting all non-destructive layer transforms.
+                ' (This is a nop if the layer hasn't been transformed non-destructively.)
+                tmpLayerRef.MakeCanvasTransformsPermanent
+                
+                'Next, create a blank layer at the size of the current selection
+                tmpLayerRef.layerDIB.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
+                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
+                
+                'Reset layer offsets to match
+                If (targetLayerIndex = -1) Then
+                    tmpLayerRef.SetLayerOffsetX 0
+                    tmpLayerRef.SetLayerOffsetY 0
+                Else
+                    tmpLayerRef.SetLayerOffsetX selBounds.Left
+                    tmpLayerRef.SetLayerOffsetY selBounds.Top
+                End If
                 
             End If
             
@@ -496,29 +549,31 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         PDImages.GetActiveImage.MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
         
     End If
-        
-    'From here, we do some generic clean-up that's identical for both destructive and non-destructive modes.
-    ' (But generally speaking, only relevant when all layers are being cropped.)
+    
+    'From here, we do some generic clean-up that's identical for both destructive
+    ' and non-destructive modes. (But generally speaking, it's only relevant when
+    ' *all* layers are being cropped.)
     
     'For a full-image crop, the selection is potentially out of sync with the new image size.
     ' Forcibly clear it.
     If (targetLayerIndex = -1) Then Selections.RemoveCurrentSelection False
     
-    'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline (as the image size
-    ' may have changed).
+    'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline
+    ' (as the image size may have changed).
     If (targetLayerIndex = -1) Then
         
-        'For non-destructive crops, we can't use "Fit Canvas to All Layers", as it will resize the image boundaries
-        ' to encompass the selection we just cropped!  As such, we have to manually apply the new boundaries, then
-        ' manually redraw the viewport.
+        'For non-destructive crops, we can't use "Fit Canvas to All Layers", as it will resize
+        ' the image boundaries to encompass the selection we just cropped!  As such, we have to
+        ' manually apply the new boundaries, then manually redraw the viewport.
         If applyNonDestructively Then
             PDImages.GetActiveImage.UpdateSize False, selectionWidth, selectionHeight
             Interface.DisplaySize PDImages.GetActiveImage()
             Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
-        'Because the selection boundaries are not guaranteed to be the new image boundaries (as the selection can
-        ' lie partially off-image, or it can be comprised of complicated border outlines), simply shrink the image
-        ' boundaries to match whatever the current union of all layer boundaries are.
+        'Because the selection boundaries are not guaranteed to be the new image boundaries
+        ' (as the selection can lie partially off-image, or it can be comprised of complicated
+        ' border outlines), simply shrink the image boundaries to match whatever the current
+        ' union of all layer boundaries are.
         Else
             Filters_Transform.MenuFitCanvasToAllLayers
         End If
