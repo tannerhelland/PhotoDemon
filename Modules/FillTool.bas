@@ -54,6 +54,10 @@ Private m_FillCursor As pdDIB
 ' onto the target vector layer).  This value is set during mouse_down, and reset on mouse_up.
 Private m_TempDIBInUse As Boolean
 
+'If the user clicks somewhere invalid, this flag will be set to TRUE on _MouseDown.
+' On _MouseUp, we check it before committing fill results.
+Private m_FillCanceled As Boolean
+
 'Before attempting to set flood fill properties, call this sub to ensure the m_FloodFill object exists.
 ' (It returns TRUE if m_FloodFill exists.)
 Private Function EnsureFillerExists() As Boolean
@@ -100,9 +104,8 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         
         'Before proceeding, validate the click position.  Unlike paintbrush strokes, fill start points must lie on the
         ' underlying image/layer (depending on the current sampling mode).
-        Dim allowedToFill As Boolean
         If m_FillSampleMerged Then
-            allowedToFill = PDMath.IsPointInRectF(fillStartX, fillStartY, PDImages.GetActiveImage.GetBoundaryRectF)
+            m_FillCanceled = Not PDMath.IsPointInRectF(fillStartX, fillStartY, PDImages.GetActiveImage.GetBoundaryRectF)
         Else
             
             Dim tmpRectF As RectF
@@ -112,11 +115,11 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
                 .Width = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
                 .Height = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
             End With
-            allowedToFill = PDMath.IsPointInRectF(fillStartX, fillStartY, tmpRectF)
+            m_FillCanceled = Not PDMath.IsPointInRectF(fillStartX, fillStartY, tmpRectF)
             
         End If
         
-        If (Not allowedToFill) Then Exit Sub
+        If m_FillCanceled Then Exit Sub
         
         'We are allowed to perform a fill.  Notify the central "color history" manager of the color currently
         ' being used (so it can be added to the dynamic color history list).
@@ -300,6 +303,13 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     
     'If the user is releasing the mouse, commit the fill results permanently
     If (Not mouseButtonDown) And oldMouseState Then
+        
+        'Make sure the fill event wasn't canceled (this happens if the user clicks off
+        ' the active image/layer with matching fill settings)
+        If m_FillCanceled Then
+            m_FillCanceled = False
+            Exit Sub
+        End If
         
         If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
             Tools_Fill.CommitFillResults False, , curFillParams
