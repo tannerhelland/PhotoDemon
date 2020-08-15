@@ -1726,6 +1726,13 @@ Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX 
 
 End Sub
 
+Public Sub NotifySelectionMouseLeave(ByRef srcCanvas As pdCanvas)
+
+    'When the polygon selection tool is being used, redraw the canvas when the mouse leaves
+    If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
+
+End Sub
+
 Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
     
     'Handling varies based on the current mouse state, obviously.
@@ -1792,6 +1799,8 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
         If (selPOI <> PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI(False)) Then
             PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI selPOI
             Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
+        Else
+            If (g_CurrentTool = SELECT_POLYGON) Then If (g_CurrentTool = SELECT_POLYGON) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
         End If
         
     End If

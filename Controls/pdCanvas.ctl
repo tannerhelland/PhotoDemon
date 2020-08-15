@@ -945,6 +945,8 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     Select Case g_CurrentTool
         Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+            Selections.NotifySelectionMouseLeave Me
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely

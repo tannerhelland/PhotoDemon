@@ -2631,6 +2631,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 Dim polyX As Double, polyY As Double
                 
                 If (m_SelectionShape = ss_Polygon) Then
+                    
                     For i = 0 To m_NumOfPolygonPoints - 1
                         
                         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, polyX, polyY
@@ -2652,6 +2653,52 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         End If
                         
                     Next i
+                    
+                    'After drawing all polygon points, we lastly want to draw a dotted line to
+                    ' the current mouse position.
+                    If dstCanvas.IsMouseOverCanvas And (m_NumOfPolygonPoints > 0) And (Not Me.GetPolygonClosedState()) Then
+                        
+                        'Remove antialiasing to match the default polygon renderer
+                        cSurface.SetSurfaceAntialiasing P2_AA_None
+                        
+                        Dim canvasMouseX As Long, canvasMouseY As Long
+                        canvasMouseX = dstCanvas.GetLastMouseX()
+                        canvasMouseY = dstCanvas.GetLastMouseY()
+                        
+                        Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
+                        Set cBlackPen = New pd2DPen
+                        cBlackPen.SetPenColor vbBlack
+                        cBlackPen.SetPenWidth 1!
+                        
+                        Set cDottedPen = New pd2DPen
+                        cDottedPen.SetPenWidth 1!
+                        cDottedPen.SetPenColor vbWhite
+                        cDottedPen.CreatePen
+                        cDottedPen.SetPenStyle P2_DS_Custom
+                        cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
+                        cDottedPen.SetPenDashOffset m_AntDashOffset
+                        
+                        PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, canvasMouseX, canvasMouseY
+                        PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, canvasMouseX, canvasMouseY
+                        
+                        'Note that - by design - the standard selection renderer does not render
+                        ' polygon lines until there are at least 3 points in the selection, as that's
+                        ' the minimum required for a valid polygon (which the underlying renderer
+                        ' requires as it actually renders the polygon, then scans boundaries).
+                        
+                        'To make the transition from 2 points to 3 point less jarring, we manually
+                        ' render the first line segment when there are just 2 points in the polygon.
+                        If (m_NumOfPolygonPoints = 2) Then
+                            
+                            Dim tmpX As Double, tmpY As Double
+                            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(0).x, m_PolygonPoints(0).y, tmpX, tmpY
+                            PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, tmpX, tmpY
+                            PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, tmpX, tmpY
+                        
+                        End If
+                        
+                    End If
+                    
                 End If
             
             End If
@@ -3276,10 +3323,10 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
             Set cBlackPen = New pd2DPen
             cBlackPen.SetPenColor vbBlack
-            cBlackPen.SetPenWidth 1#
+            cBlackPen.SetPenWidth 1!
             
             Set cDottedPen = New pd2DPen
-            cDottedPen.SetPenWidth 1#
+            cDottedPen.SetPenWidth 1!
             cDottedPen.SetPenColor vbWhite
             cDottedPen.CreatePen
             cDottedPen.SetPenStyle P2_DS_Custom
