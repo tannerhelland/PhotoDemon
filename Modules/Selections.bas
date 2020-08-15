@@ -47,6 +47,17 @@ End Enum
 Private m_CurSelectionMode As PD_SelectionRender, m_SelHighlightColor As Long, m_SelHighlightOpacity As Single
 Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
 
+'A double-click event can be used to close the current polygon selection.  Unfortunately, this can
+' have the (funny?) side-effect of removing the active selection, because the first click of the
+' double-click causes a point to be created, but the second click causes that point to be removed
+' and instead the polygon gets closed.  HOWEVER, on the subsequent _MouseUp, the click detector
+' notices the _MouseUp potentially occurring *not* over the selection, and it erases the current
+' selection accordingly.
+'
+'To avoid this debacle, we set a flag on the double-click event, and free it on the subsequent
+' _MouseUp.
+Private m_DblClickOccurred As Boolean
+
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
 ' returnValue variable.
@@ -1503,7 +1514,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     End If
     
     'Enter/return keys: for polygon selections, this will close the current selection
-    If (vkCode = VK_RETURN) And (g_CurrentTool = SELECT_POLYGON) Then
+    If ((vkCode = VK_RETURN) Or (vkCode = VK_SPACE)) And (g_CurrentTool = SELECT_POLYGON) Then
         
         'A selection must be in-progress
         If PDImages.GetActiveImage.IsSelectionActive Then
@@ -1514,6 +1525,9 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
                 'Close the selection
                 PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
                 PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                
+                'Fully process the selection (important when recording macros!)
+                Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                 
                 'Redraw the viewport
                 Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
@@ -1526,7 +1540,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
-    If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
+    If (vkCode = VK_BACK) And ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
         
         markEventHandled = True
         
@@ -1562,7 +1576,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
-        
+    
     'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
     ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -1684,10 +1698,22 @@ Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX 
         
             'The selection must *not* be closed yet
             If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
-            
-                'Close the selection
+                
+                'Set a flag to note that a double-click just occurred.  (See notes at the
+                ' top of this module for details.)
+                m_DblClickOccurred = True
+                
+                'Remove the last point (the point created by the first click of this
+                ' double-click event), but *only* if there are enough valid points
+                ' to create a polygon selection without it!
+                If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 3) Then PDImages.GetActiveImage.MainSelection.RemoveLastPolygonPoint
+                
+                'Close the selection and make the first point the active one
                 PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
                 PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
+                
+                'Fully process the selection (important when recording macros!)
+                Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                 
                 'Redraw the viewport
                 Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
@@ -1773,6 +1799,12 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
 End Sub
 
 Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
+    
+    'If a double-click just occurred, reset the flag and exit - do NOT process this click further
+    If m_DblClickOccurred Then
+        m_DblClickOccurred = False
+        Exit Sub
+    End If
     
     Dim eraseThisSelection As Boolean
     

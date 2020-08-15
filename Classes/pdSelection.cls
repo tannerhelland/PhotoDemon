@@ -1735,6 +1735,7 @@ Friend Sub RemoveLastPolygonPoint()
         m_OverlayIsReady = False
         m_LastOverlayCache = vbNullString
         m_FinalOutlineIsReady = False
+        m_IsMaskReady = False
         If (m_NumOfPolygonPoints < 2) Then Set m_FinalOutline = Nothing
     End If
 End Sub
@@ -1771,6 +1772,7 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     If (m_NumOfLassoPoints < 1) Then m_NumOfLassoPoints = 1
     m_ViewportRefReady = False
     m_FinalOutlineIsReady = False
+    m_IsMaskReady = False
     If (m_NumOfLassoPoints < 2) Then Set m_FinalOutline = Nothing
     
     'Return the new cursor coordinates at this position, then exit
