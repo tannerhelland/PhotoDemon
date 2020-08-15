@@ -140,12 +140,16 @@ Friend Sub SetSearchMode(ByVal newSearchMode As PD_FloodSearch)
     m_SearchMode = newSearchMode
 End Sub
 
+'Tolerance is returned on a [0, 100] scale.
 Friend Function GetTolerance() As Double
     GetTolerance = m_Tolerance
 End Function
 
+'Tolerance is set on a [0, 100] scale.
 Friend Sub SetTolerance(ByVal newTolerance As Double)
     m_Tolerance = newTolerance
+    If (m_Tolerance > 100#) Then m_Tolerance = 100#
+    If (m_Tolerance < 0#) Then m_Tolerance = 0#
 End Sub
 
 'Initiate a flood fill operation.  This class doesn't actually fill anything; what it does is fill a 32-bpp destination DIB
@@ -326,30 +330,30 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     Select Case m_CompareMode
     
         Case pdfc_Color
-            modifiedTolerance = m_Tolerance * 3
+            modifiedTolerance = m_Tolerance * 2.55
+            modifiedTolerance = (modifiedTolerance * modifiedTolerance) * 3
         
         'Composite results do not require a base value.  They are independently processed against the reference
         ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
         ' by 4, to avoid the need for a divide function in the inner loop
         Case pdfc_Composite
-            modifiedTolerance = m_Tolerance * 4
+            modifiedTolerance = m_Tolerance * 2.55
+            modifiedTolerance = (modifiedTolerance * modifiedTolerance) * 4
             
-        'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
-        ' tolerance range to [0, 1000] instead of [0, 255.0]
         Case pdfc_Luminance
-            modifiedTolerance = m_Tolerance * 1000
+            modifiedTolerance = m_Tolerance * 2550
             
         Case pdfc_Red
-            modifiedTolerance = m_Tolerance
+            modifiedTolerance = m_Tolerance * 2.55
             
         Case pdfc_Green
-            modifiedTolerance = m_Tolerance
+            modifiedTolerance = m_Tolerance * 2.55
             
         Case pdfc_Blue
-            modifiedTolerance = m_Tolerance
+            modifiedTolerance = m_Tolerance * 2.55
             
         Case pdfc_Alpha
-            modifiedTolerance = m_Tolerance
+            modifiedTolerance = m_Tolerance * 2.55
     
     End Select
     
@@ -440,10 +444,17 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         'Compare this pixel against the reference
         Select Case m_CompareMode
             Case pdfc_Color
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                r = (r - refR)
+                g = (g - refG)
+                b = (b - refB)
+                thisValue = r * r + g * g + b * b
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             Case pdfc_Composite
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                r = (r - refR)
+                g = (g - refG)
+                b = (b - refB)
+                a = (a - refA)
+                thisValue = r * r + g * g + b * b + a * a
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             Case pdfc_Luminance
                 l = 213 * r + 715 * g + 72 * b
@@ -485,10 +496,17 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     'Compare this pixel against the reference
                     Select Case m_CompareMode
                         Case pdfc_Color
-                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                            r = (r - refR)
+                            g = (g - refG)
+                            b = (b - refB)
+                            thisValue = r * r + g * g + b * b
                             isWithinTolerance = (thisValue <= modifiedTolerance)
                         Case pdfc_Composite
-                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                            r = (r - refR)
+                            g = (g - refG)
+                            b = (b - refB)
+                            a = (a - refA)
+                            thisValue = r * r + g * g + b * b + a * a
                             isWithinTolerance = (thisValue <= modifiedTolerance)
                         Case pdfc_Luminance
                             l = 213 * r + 715 * g + 72 * b
@@ -536,10 +554,17 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     'Compare this pixel against the reference
                     Select Case m_CompareMode
                         Case pdfc_Color
-                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                            r = (r - refR)
+                            g = (g - refG)
+                            b = (b - refB)
+                            thisValue = r * r + g * g + b * b
                             isWithinTolerance = (thisValue <= modifiedTolerance)
                         Case pdfc_Composite
-                            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                            r = (r - refR)
+                            g = (g - refG)
+                            b = (b - refB)
+                            a = (a - refA)
+                            thisValue = r * r + g * g + b * b + a * a
                             isWithinTolerance = (thisValue <= modifiedTolerance)
                         Case pdfc_Luminance
                             l = 213 * r + 715 * g + 72 * b
@@ -672,27 +697,27 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
         'Composite results do not require a base value, as they are independently processed against the reference
         ' RGBA values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
         ' by 4, to avoid the need for a divide function in the inner loop
-        modifiedTolerance = m_Tolerance * 4
+        modifiedTolerance = m_Tolerance * 2.55
+        modifiedTolerance = (modifiedTolerance * modifiedTolerance) * 3
             
     ElseIf (m_CompareMode = pdfc_Color) Then
-        modifiedTolerance = m_Tolerance * 3
+        modifiedTolerance = m_Tolerance * 2.55
+        modifiedTolerance = (modifiedTolerance * modifiedTolerance) * 4
         
     ElseIf (m_CompareMode = pdfc_Luminance) Then
-        'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
-        ' tolerance range to [0, 1000] instead of [0, 255.0]
-        modifiedTolerance = m_Tolerance * 1000
+        modifiedTolerance = m_Tolerance * 2550
             
     ElseIf (m_CompareMode = pdfc_Red) Then
-        modifiedTolerance = m_Tolerance
+        modifiedTolerance = m_Tolerance * 2.55
             
     ElseIf (m_CompareMode = pdfc_Green) Then
-        modifiedTolerance = m_Tolerance
+        modifiedTolerance = m_Tolerance * 2.55
             
     ElseIf (m_CompareMode = pdfc_Blue) Then
-        modifiedTolerance = m_Tolerance
+        modifiedTolerance = m_Tolerance * 2.55
             
     ElseIf (m_CompareMode = pdfc_Alpha) Then
-        modifiedTolerance = m_Tolerance
+        modifiedTolerance = m_Tolerance * 2.55
     
     End If
     
@@ -715,11 +740,18 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
         Select Case m_CompareMode
         
             Case pdfc_Color
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                r = (r - refR)
+                g = (g - refG)
+                b = (b - refB)
+                thisValue = r * r + g * g + b * b
                 isWithinTolerance = (thisValue <= modifiedTolerance)
                 
             Case pdfc_Composite
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                r = (r - refR)
+                g = (g - refG)
+                b = (b - refB)
+                a = (a - refA)
+                thisValue = r * r + g * g + b * b + a * a
                 isWithinTolerance = (thisValue <= modifiedTolerance)
             
             Case pdfc_Luminance

@@ -118,8 +118,11 @@ Begin VB.Form toolpanel_Fill
       _ExtentY        =   1191
       Caption         =   "tolerance"
       FontSizeCaption =   10
-      Max             =   255
+      Max             =   100
       SigDigits       =   1
+      ScaleStyle      =   1
+      Value           =   15
+      DefaultValue    =   15
    End
    Begin PhotoDemon.pdButtonStripVertical btsFillMerge 
       Height          =   1305

@@ -617,8 +617,11 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   1191
          Caption         =   "tolerance"
          FontSizeCaption =   10
-         Max             =   255
+         Max             =   100
          SigDigits       =   1
+         ScaleStyle      =   1
+         Value           =   15
+         DefaultValue    =   15
       End
       Begin PhotoDemon.pdButtonStrip btsWandMerge 
          Height          =   1185
