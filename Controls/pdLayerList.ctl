@@ -47,11 +47,12 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Layer List  control
+'PhotoDemon Layer List control
 'Copyright 2016-2020 by Tanner Helland
 'Created: 18/September/15
-'Last updated: 18/September/15
-'Last update: wrap the pdLayerListInner object with this control
+'Last updated: 16/August/20
+'Last update: set scroll bar SmallChange property based on 1/2 height of items in the layer list box;
+'             this makes for much faster scrolling when click-holding scroll up/down
 '
 'Unicode-compatible layer list box replacement.  Refer to the pdLayerListInner sub-control for additional
 ' details; it handles most the heavy lifting for this control.  (This control instance's only job is
@@ -181,8 +182,8 @@ Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     If (vScroll.Visible <> scrollVisible) Then vScroll.Visible = scrollVisible
     
     If (newMax >= 0) Then vScroll.Max = newMax
-    'TODO!
-    'vScroll.LargeChange = lbView.GetDefaultItemHeight
+    vScroll.LargeChange = lbView.GetListItemHeight()
+    vScroll.SmallChange = lbView.GetListItemHeight() / 2
     vScroll.Value = lbView.ScrollValue
     
     UpdateControlLayout

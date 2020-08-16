@@ -42,22 +42,23 @@ Attribute VB_Exposed = False
 'PhotoDemon Layer Listbox (inner portion only)
 'Copyright 2014-2020 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 13/February/17
-'Last update: fix layer name edit box's initial size when the layer name is a null string
+'Last updated: 16/August/20
+'Last update: whole bunch of minor UI and UX improvements; see https://github.com/tannerhelland/PhotoDemon/issues/311
 '
-'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
-' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
-' anything but labels) to the critical (no Unicode support).
+'In a surprise to precisely no one, PhotoDemon has many unique UI/UX needs - needs that the
+' intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize"
+' property for anything but labels) to the critical (no Unicode support).
 '
-'As such, I've created many of my own UCs for the program.  All are owner-drawn, with the goal of maintaining
-' visual fidelity across the program, while also enabling key features like Unicode support.
+'As such, I've created many of my own UCs for the program.  All are owner-drawn, with the
+' goal of maintaining visual fidelity across the program, while also enabling key features
+' like Unicode support.
 '
 'A few notes on this layer listbox control, specifically:
 '
 ' 1) This control bares no relation to pdListBox, for better or worse.
 ' 2) High DPI settings are handled automatically.
 ' 3) A hand cursor is automatically applied, and clicks are returned via the Click event.
-' 4) Coloration is automatically handled by PD's internal theming engine.
+' 4) Color decisions are automatically handled by PD's internal theming engine.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -126,7 +127,7 @@ Private m_ThumbWidth As Long, m_ThumbHeight As Long
 'Height of each layer content block.  Note that this is effectively a "magic number", in pixels, representing the
 ' height of each layer block in the layer selection UI.  This number will be dynamically resized per the current
 ' screen DPI by the "RedrawLayerList" and "RenderLayerBlock" functions.
-Private Const LAYER_BLOCK_HEIGHT As Long = 42&
+Private Const LAYER_BLOCK_HEIGHT As Long = 40&
 
 'I don't want thumbnails to fill the full height of their blocks, so a border is automatically applied to each
 ' side of the thumbnail.  (Like all other interface elements, it is dynamically modified for DPI as necessary.)
@@ -857,12 +858,72 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 End Sub
 
+'Call to retrieve current list item height, in pixels.  (Our parent control needs this for
+' setting a good .SmallChange value for the accompanying scrollbar.)
+Public Function GetListItemHeight() As Long
+    GetListItemHeight = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+End Function
+
 'External functions can request a redraw of the layer box by calling this function.  (This is necessary
 ' whenever layers are added, deleted, re-ordered, etc.)  If the action requires us to rebuild our thumbnail
 ' cache (because we switched images, maybe) make sure to clarify that via the matching parameter.
 Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
+    
+    'Redraws happen in multiple steps.
+    
+    'First, before doing anything else, update layer thumbnails when requested.
+    ' (This step affects all subsequent steps, because it will re-calculate things like the
+    ' size of the underlying list, if the number of layers in the image has changed.)
     If refreshThumbnailCache Then CacheLayerThumbnails layerID
+    
+    'Next, we need to make sure the currently selected layer is visible on-screen.
+    EnsureActiveLayerIsVisible
+    
+    'Finally, we need to redraw the back buffer to reflect any changes from previous steps.
     RedrawBackBuffer
+    
+End Sub
+
+Private Sub EnsureActiveLayerIsVisible()
+
+    'This step is only necessary if a scrollbar is required to navigate the layer list,
+    ' which in turn only matters if this is a multi-layer image.
+    If PDImages.IsImageActive() Then
+    If (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
+    If Me.IsScrollbarRequiredForHeight(Me.GetHeight()) Then
+        
+        'We potentially need to adjust the current scroll bar position.
+        
+        'Start by figuring out where the currently active layer is positioned.
+        Dim activeLayerIndex As Long
+        activeLayerIndex = (PDImages.GetActiveImage.GetNumOfLayers - PDImages.GetActiveImage.GetActiveLayerIndex) - 1   '0-based
+        
+        Dim BLOCKHEIGHT As Long
+        BLOCKHEIGHT = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+        
+        Dim yCurrent As Long
+        yCurrent = activeLayerIndex * BLOCKHEIGHT - m_ScrollValue
+        
+        'If the current layer lies *above* 0, reposition it to 0.
+        If (yCurrent < 0) Then
+            m_ScrollValue = activeLayerIndex * BLOCKHEIGHT
+            RaiseEvent ScrollValueChanged(m_ScrollValue)
+            Exit Sub
+        End If
+        
+        'If it lies below the bottom boundary of the list (in pixels), scroll down accordingly
+        Dim bottomOfControl As Long
+        bottomOfControl = (Me.GetHeight - 3) - BLOCKHEIGHT
+        If (yCurrent > bottomOfControl) Then
+            m_ScrollValue = activeLayerIndex * BLOCKHEIGHT - bottomOfControl
+            RaiseEvent ScrollValueChanged(m_ScrollValue)
+            Exit Sub
+        End If
+        
+    End If
+    End If
+    End If
+
 End Sub
 
 'Re-cache all thumbnails for all layers in the current image.  This is required when the user switches to a new image,
@@ -882,8 +943,8 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
             Dim tmpDIB As pdDIB
             Dim i As Long
             
-            'A layer ID was provided.  Search our thumbnail collection for this layer ID.  If we have an entry for it,
-            ' update the thumbnail to match.
+            'A layer ID was provided.  Search our thumbnail collection for this layer ID.
+            ' If we have an entry for it, update the thumbnail to match.
             If (layerID >= 0) And (m_NumOfThumbnails > 0) Then
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
@@ -896,8 +957,9 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                 Next i
             End If
             
-            'If we failed to find the requested layer in our collection (or if our collection is currently empty),
-            ' rebuild our entire thumbnail collection from scratch.
+            'If we failed to find the requested layer in our collection (or if our collection
+            ' is currently empty, or if *all* thumbnails need to be modified), then we need to
+            ' tackle the uglier task of rebuilding our entire thumbnail collection from scratch.
             If (Not layerUpdateSuccessful) Then
                 
                 'Retrieve the number of layers in the current image and prepare the thumbnail cache
@@ -1059,7 +1121,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
             itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
             itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
             itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
-                
+            
             fontColorSelected = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, False)
             fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
             fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
@@ -1098,6 +1160,11 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
                         If (layerIsHovered) Then layerHoverIndex = layerIndex
                         layerIsSelected = (tmpLayerRef.GetLayerID = PDImages.GetActiveImage.GetActiveLayerID)
                         If (layerIsSelected) Then layerSelectedIndex = layerIndex
+                        
+                        'If the user is currently dragging this layer into a new position, we want to indent
+                        ' it horizontally by an arbitrary pixel amount; this makes it more obvious that its
+                        ' current state is "abnormal".
+                        If (m_LayerRearrangingMode And layerIsSelected) Then offsetX = offsetX + (HORIZONTAL_ITEM_PADDING * 6)
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
                         ' layout decisions.
@@ -1263,9 +1330,10 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
         'End zero-layer mode check
         End If
         
-        'Last of all, render the listbox border.  Note that we actually draw *two* borders.  The actual border,
-        ' which is slightly inset from the list box boundaries, then a second border - pure background color,
-        ' erasing any item rendering that may have fallen outside the clipping area.
+        'Last of all, render the listbox border.  Note that we actually draw *two* borders.
+        ' The actual border, which is slightly inset from the list box boundaries, then a
+        ' second border - pure background color, erasing any item rendering that may have
+        ' fallen outside the clipping area.
         Dim borderWidth As Single, borderColor As Long
         If (listHasFocus And Not zeroLayers) Then borderWidth = 3! Else borderWidth = 1!
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus And (Not zeroLayers))
@@ -1349,7 +1417,7 @@ Private Function UpdateLayerScrollbarVisibility() As Boolean
         End If
     Else
         If (m_ScrollMax <> (maxBoxSize - m_ListRect.Height)) Then
-            m_ScrollMax = (maxBoxSize - m_ListRect.Height)
+            m_ScrollMax = (maxBoxSize - m_ListRect.Height) + 1
             RaiseEvent ScrollMaxChanged(m_ScrollMax)
             RedrawBackBuffer
             UpdateLayerScrollbarVisibility = True

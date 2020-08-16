@@ -64,9 +64,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control really only needs one event raised - Scroll.  The "eventIsCritical" parameter can optionally be tested;
-' it returns FALSE for events that would be considered a "scroll" by VB (e.g. click-dragging), which you could theoretically
-' ignore if you were worried about performance.  If eventIsCritical is TRUE, however, you must respond to the event.
+'This control really only needs one event raised - Scroll.  The "eventIsCritical" parameter can
+' optionally be tested; it returns FALSE for events that would be considered a "scroll" by VB
+' (e.g. click-dragging), which you could theoretically ignore if you were worried about performance.
+' If eventIsCritical is TRUE, however, you *must* respond to the event.
 Public Event Scroll(ByVal eventIsCritical As Boolean)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
@@ -80,9 +81,10 @@ Private m_MouseInsideUC As Boolean
 'The scrollbar's orientation is cached at creation time, in case subsequent functions need it
 Private m_OrientationHorizontal As Boolean
 
-'Current scroll bar values, range, etc.  Note that by design, this scroll bar does not support a "small change" property.
-' The small change value is automatically calculated based on the current significant digit setting.
-Private m_Value As Double, m_Min As Double, m_Max As Double, m_LargeChange As Double
+'Current scroll bar values, range, etc.  Note that the "small change" property is not used as
+' a raw value - instead, it is modified based on the current significant digit setting.
+' (Specifically, "1" maps to "1" when significant digits is 0, "0.1" when significant digits is 1, etc.)
+Private m_Value As Double, m_Min As Double, m_Max As Double, m_SmallChange As Double, m_LargeChange As Double
 
 'The number of significant digits for this control.  0 means integer values.
 Private m_SignificantDigits As Long
@@ -199,8 +201,6 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     RedrawBackBuffer
 End Property
 
-'Only a LargeChange value is provided; SmallChange is handled automatically by the scroll bar, depending on the SigDigits
-' property (e.g. "one" significant digit means the SmallChange is .1 increments, "two" significant digits = .01, etc)
 Public Property Get LargeChange() As Long
     LargeChange = m_LargeChange
 End Property
@@ -287,6 +287,15 @@ End Property
 Public Property Let SigDigits(ByVal newValue As Long)
     m_SignificantDigits = newValue
     PropertyChanged "SigDigits"
+End Property
+
+Public Property Get SmallChange() As Long
+    SmallChange = m_SmallChange
+End Property
+
+Public Property Let SmallChange(ByVal newValue As Long)
+    m_SmallChange = newValue
+    PropertyChanged "SmallChange"
 End Property
 
 'Value supports floating-point or integer values, but it is always stored and returned as a Double-type.  PD will automatically
@@ -804,6 +813,7 @@ Private Sub UserControl_InitProperties()
     Value = 0
     LargeChange = 1
     SigDigits = 0
+    SmallChange = 1
     OrientationHorizontal = False
     VisualStyle = SBVS_Standard
 End Sub
@@ -815,6 +825,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         m_Max = .ReadProperty("Max", 10)
         Value = .ReadProperty("Value", 0)
         LargeChange = .ReadProperty("LargeChange", 1)
+        SmallChange = .ReadProperty("SmallChange", 1)
         SigDigits = .ReadProperty("SignificantDigits", 0)
         m_OrientationHorizontal = .ReadProperty("OrientationHorizontal", False)
         m_VisualStyle = .ReadProperty("VisualStyle", SBVS_Standard)
@@ -829,6 +840,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Max", m_Max, 10
         .WriteProperty "Value", m_Value, 0
         .WriteProperty "LargeChange", m_LargeChange, 1
+        .WriteProperty "SmallChange", m_SmallChange, 1
         .WriteProperty "SignificantDigits", m_SignificantDigits, 0
         .WriteProperty "OrientationHorizontal", m_OrientationHorizontal, False
         .WriteProperty "VisualStyle", m_VisualStyle, SBVS_Standard
@@ -850,7 +862,7 @@ Private Sub MoveValueUp(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value + m_LargeChange
     Else
-        Value = m_Value + (1# / (10# ^ m_SignificantDigits))
+        Value = m_Value + (m_SmallChange / (10# ^ m_SignificantDigits))
     End If
 End Sub
 
@@ -859,7 +871,7 @@ Private Sub MoveValueDown(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value - m_LargeChange
     Else
-        Value = m_Value - (1# / (10# ^ m_SignificantDigits))
+        Value = m_Value - (m_SmallChange / (10# ^ m_SignificantDigits))
     End If
 End Sub
 
