@@ -668,8 +668,8 @@ End Sub
 ' If intensive processing occurred while the slider was being used, this ensures that the mouse location at its
 ' exact point of release is correctly rendered.
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    m_MouseDown = False
     If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
+        m_MouseDown = False
         Value = GetCustomPositionValue(x)
         RaiseEvent FinalChange
     End If

@@ -236,6 +236,17 @@ Private Sub sldFrame_Change()
     End If
 End Sub
 
+'On "final" update (e.g. when the mouse is released), update the active layer to match
+' the selected frame.  (Importantly, note that this is *non-destructive behavior* -
+' i.e. Undo/Redo data is NOT generated.)
+Private Sub sldFrame_FinalChange()
+    If m_Animated And (Not m_DoNotUpdate) And (Not PDImages.GetActiveImage Is Nothing) Then
+        If (sldFrame.Value <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
+            Layers.SetActiveLayerByIndex sldFrame.Value, True, True
+        End If
+    End If
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub

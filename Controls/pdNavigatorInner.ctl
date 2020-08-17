@@ -454,6 +454,25 @@ Private Sub UpdateControlLayout()
             UpdateAnimationSettings tmpImage, m_Timer.GetCurrentFrame(), True
         End If
         
+    'If we don't need to update actual frames visually, we may still need to update our running list
+    ' of animation settings (e.g. frame times, which can change due to layer name changes).
+    Else
+    
+        If m_Animated And (Not tmpImage Is Nothing) And (Not m_Timer Is Nothing) Then
+            
+            'See if the active layer's frame time has changed from the value we have stored
+            Dim potentialNewTime As Long
+            potentialNewTime = Animation.GetFrameTimeFromLayerName(tmpImage.GetActiveLayer.GetLayerName())
+            
+            Dim alIndex As Long
+            alIndex = tmpImage.GetActiveLayerIndex
+            If (m_Frames(alIndex).afFrameDelayMS <> potentialNewTime) Then
+                m_Frames(alIndex).afFrameDelayMS = potentialNewTime
+                m_Timer.NotifyFrameTime potentialNewTime, alIndex
+            End If
+            
+        End If
+    
     End If
     
     m_LastThumbWidth = thumbWidth

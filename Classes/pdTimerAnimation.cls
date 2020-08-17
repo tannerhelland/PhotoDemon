@@ -148,8 +148,8 @@ End Sub
 
 Private Sub m_Timer_Timer()
 
-    'Failsafe check for "still animating".  (Remember that WM_TIMER messages are low-priority; they may
-    ' stack up as other messages are processed.)
+    'Failsafe check for "still animating".  (Remember that WM_TIMER messages are low-priority;
+    ' they may stack up as other messages are processed.)
     If (Not m_Timer.IsActive) Then Exit Sub
     
     'Failsafe check for frame count
