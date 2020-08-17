@@ -15,9 +15,10 @@ Attribute VB_Exposed = False
 'File > Open Recent List Manager
 'Copyright 2005-2020 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
-'Last updated: 11/September/17
-'Last update: Rewrote class from scratch as a standalone instance, to enable optimizations that aren't easily
-'             accomplished otherwise (especially regarding maintenance of image thumbnails).
+'Last updated: 17/August/20
+'Last update: when adding a file to the Recent Files list, callers can now provide a bare DIB instead
+'             of a full pdImage object; this is used by the Record APNG tool to pass a thumbnail of
+'             a just-recorded file.
 '
 'PhotoDemon's File > Open Recent menu supports some neat features, like large thumbnail icons on Vista+.
 ' This class is responsible for maintaining the full list of file paths and thumbnails for that menu.
@@ -355,9 +356,14 @@ Private Sub WriteAllThumbnails()
     
 End Sub
 
-'Add another file to the MRU list.  Optionally, the associated thumbnail can also be updated.  If the passed source image is non-null,
-' the thumbnail will be updated automatically.
-Friend Sub AddFileToList(ByRef srcFile As String, Optional ByRef srcImage As pdImage = Nothing)
+'Add another file to the MRU list.
+' Optionally, a source for a thumbnail image can also be updated.  The source can be...
+' - a pdImage object, or
+' - an arbitrary pdDIB object
+'
+'Please supply one or the other so that the File > Open > Recent files list looks right.
+' (If both are passed, the pdImage object will be preferentially used.)
+Friend Sub AddFileToList(ByRef srcFile As String, Optional ByRef srcImage As pdImage = Nothing, Optional ByRef srcDIB As pdDIB = Nothing)
     
     'The filename is sometimes passed directly from system dialogs, which means it may contain nulls.
     ' (NOTE: because PD now uses its own custom-built wrappers, this is no longer a concern, but I've left it in case
@@ -421,11 +427,16 @@ Friend Sub AddFileToList(ByRef srcFile As String, Optional ByRef srcImage As pdI
         .fullThumbPathAndFilename = UserPrefs.GetIconPath & .hashedFilename & ".pdtmp"
         
         'Request a thumbnail
-        Set .imgThumbnail = New pdDIB
-        srcImage.RequestThumbnail .imgThumbnail, IIf(OS.IsVistaOrLater, 64, 16)
+        If (Not srcImage Is Nothing) Then
+            Set .imgThumbnail = New pdDIB
+            srcImage.RequestThumbnail .imgThumbnail, IIf(OS.IsVistaOrLater, 64, 16)
+        ElseIf (Not srcDIB Is Nothing) Then
+            Set .imgThumbnail = New pdDIB
+            srcDIB.GetThumbnail .imgThumbnail, IIf(OS.IsVistaOrLater, 64, 16)
+        End If
         
-        'Note that the image *has* changed this session; this guarantees we will write its thumbnail out to file
-        ' when the program closes
+        'Note that the image *has* changed this session; this guarantees we will write its
+        ' thumbnail out to file when the program closes
         .hasChangedThisSession = True
         
     End With

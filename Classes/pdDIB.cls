@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2020 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 25/March/20
-'Last update: manually create and manage our own memory-mapped file handle for backing pixel bytes
+'Last updated: 17/August/20
+'Last update: new .GetThumbnail function; I'm tired of writing external wrappers for this behavior!
 '
 'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
 ' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
@@ -278,6 +278,40 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
     End If
 
 End Function
+
+'Return a "thumbnail" of the DIB.  The returned DIB will always be 32-bpp, with transparent padding
+' to ensure a square thumbnail size.
+Friend Sub GetThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbSize As Long = 64)
+    
+    'Determine the thumbnail's actual width and height, and any x and y offset necessary to
+    ' preserve the aspect ratio and center the image on the thumbnail.
+    Dim thumbWidth As Long, thumbHeight As Long, thumbLeft As Single, thumbTop As Single
+    PDMath.ConvertAspectRatio Me.GetDIBWidth, Me.GetDIBHeight, thumbSize, thumbSize, thumbWidth, thumbHeight
+    
+    'If the image is wider than it is tall, center the thumbnail vertically
+    If (thumbWidth > thumbHeight) Then
+        thumbLeft = 0!
+        thumbTop = (thumbSize - thumbHeight) * 0.5
+    
+    '...otherwise, center it horizontally
+    Else
+        thumbTop = 0!
+        thumbLeft = (thumbSize - thumbWidth) * 0.5
+    End If
+    
+    'Prep the destination thumbnail
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+    If (dstThumbnailDIB.GetDIBWidth <> thumbSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbSize) Or (dstThumbnailDIB.GetDIBWidth = 0) Then
+        dstThumbnailDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
+    Else
+        dstThumbnailDIB.ResetDIB 0
+    End If
+    
+    'Paint the thumbnail into place
+    GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, Me, 0!, 0!, Me.GetDIBWidth, Me.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
+    dstThumbnailDIB.SetInitialAlphaPremultiplicationState Me.GetAlphaPremultiplication()
+    
+End Sub
 
 'Convenience functions for wrapping an array around this DIB's bits.
 ' You *must* call the Unwrap function prior to the array falling out of scope, or VB will crash.

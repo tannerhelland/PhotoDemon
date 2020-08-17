@@ -467,7 +467,10 @@ Private Sub Capture_Stop()
                     'Extract this frame into the capture DIB, then immediately free its compressed memory
                     Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
                     If m_Cancel Then GoTo EndImmediately
-                    Erase m_Frames(i).frameData
+                    
+                    '(Note that we deliberately do *not* free the first frame - we want to save it
+                    ' to generate a file thumbnail before exiting.)
+                    If (i <> 0) Then Erase m_Frames(i).frameData
                     
                     'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
                     If (m_captureDIB32 Is Nothing) Then
@@ -499,6 +502,26 @@ EndImmediately:
             If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
             Set m_PNG = Nothing
             If m_Cancel Then Files.FileDeleteIfExists m_DstFilename
+            
+            'Add this image to PD's recent files list, which greatly simplifies the process of
+            ' re-opening it for further edits.
+            If (Not m_Cancel) Then
+                
+                'Re-extract this frame's pixel data
+                Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(0).frameSizeOrig, VarPtr(m_Frames(0).frameData(0)), m_Frames(0).frameSizeCompressed, cf_Lz4
+                
+                'Convert it to 32-bpp with a solid alpha channel
+                If (Not m_captureDIB32 Is Nothing) Then
+                    GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+                    m_captureDIB32.ForceNewAlpha 255
+                End If
+                
+                g_RecentFiles.AddFileToList m_DstFilename, Nothing, m_captureDIB32
+                
+            End If
+            
+            'Free the memory used by the first frame (now that we've generated a thumbnail)
+            Erase m_Frames(0).frameData
             
             'Note that the save was successful
             lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
