@@ -675,6 +675,14 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
     End If
 End Sub
 
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    If (scrollAmount > 0#) Then
+        Value = Value + GetIncrementAmount
+    ElseIf (scrollAmount < 0#) Then
+        Value = Value - GetIncrementAmount
+    End If
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub

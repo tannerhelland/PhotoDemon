@@ -719,6 +719,14 @@ Private Sub m_EditBox_Resize()
     If (Not m_InternalResizeState) And PDMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    If (scrollAmount < 0) Then
+        MoveValueUp
+    ElseIf (scrollAmount > 0) Then
+        MoveValueDown
+    End If
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
