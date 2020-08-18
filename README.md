@@ -1,8 +1,8 @@
 ## Download
 
-| Nightly (8.0b) | Stable (7.0.1) | Source code |
+| Stable (7.0.1) | Nightly (8.0b) | Source code |
 | :------------: | :------------: | :---------: |
-| [![Download nightly](https://img.shields.io/badge/download--nightly-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [![Download stable](https://img.shields.io/badge/download--stable-PhotoDemon--7.0.1-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [![Download source](https://img.shields.io/badge/download--source-PhotoDemon--8.0a-brightgreen?style=flat-square)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
+| [Download (.zip, 12 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
 ## About PhotoDemon 8.0-beta
 
