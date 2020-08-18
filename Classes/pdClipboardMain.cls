@@ -493,6 +493,9 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
         If srcIsMeantAsLayer And (pasteToThisDIBInstead Is Nothing) Then
             
             'Check the param string; if it was raised by a hotkey, check for a cursor position.
+            Dim positionedAlready As Boolean
+            positionedAlready = False
+            
             If cParams.GetBool("from-hotkey", False, True) Then
             
                 'This request was initiated via hotkey.  Look for mouse positions; these will be in
@@ -514,11 +517,38 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
                     PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(imgX + 0.5)
                     PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY Int(imgY + 0.5)
                     
-                    'Notify the parent image, then render the new image to screen
+                    'Notify the parent image of the change
                     PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+                    positionedAlready = True
                     
                 End If
             
+            End If
+            
+            'If we didn't position the layer in a previous step, the newly pasted layer will default
+            ' to the top-left corner of the current viewport (or (0, 0), if the viewport's corner is
+            ' outside image boundaries).  To increase the chance of positioning the new layer in a
+            ' "useful" location, look for an active selection.  If we find one, position this layer
+            ' to the selection's top-left corner - this makes copy+paste operations produce
+            ' identically position segments of the image, which is likely more useful than just
+            ' dumping the newly pasted layer elsewhere.
+            If (Not positionedAlready) And PDImages.GetActiveImage.IsSelectionActive Then
+                
+                If PDImages.GetActiveImage.MainSelection.IsLockedIn() Then
+                
+                    Dim selRect As RectF
+                    selRect = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
+                    
+                    'Apply to the layer
+                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX Int(selRect.Left + 0.5)
+                    PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY Int(selRect.Top + 0.5)
+                    
+                    'Notify the parent image of the change
+                    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+                    positionedAlready = True
+                    
+                End If
+                
             End If
             
             'Render the new image to screen
