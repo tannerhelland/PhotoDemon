@@ -2565,6 +2565,8 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         Drawing2D.QuickCreatePairOfUIPens cPenBaseNormal, cPenTopNormal, False
         If (curPOI <> poi_Undefined) Then Drawing2D.QuickCreatePairOfUIPens cPenBaseHighlight, cPenTopHighlight, True
         
+        Dim cBrushFill As pd2DBrush
+        
         'If the current selection supports "resize by corner node", we want to handle that case now.
         If Me.DoesShapeSupportCornerResize() Then
         
@@ -2639,10 +2641,8 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         
                         'If this is the initial point in a polygon selection, fill it to help orient the user
                         If (i = 0) And (Not m_PolygonClosed) Then
-                            Dim cBrushFill As pd2DBrush
-                            Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 75#
+                            Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 67!
                             PD2D.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
-                            Set cBrushFill = Nothing
                         End If
                         
                         If (i = curPOI) Then
@@ -2707,8 +2707,16 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         ' the starting point of the lasso with a circle.
         If (m_SelectionShape = ss_Lasso) And (Not Me.GetLassoClosedState()) And (m_NumOfLassoPoints > 0) Then
             Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(0).x, m_LassoPoints(0).y, tmpX, tmpY
+            
+            'If this is the initial point in a polygon selection, fill it to help orient the user
+            If (i = 0) And (Not m_PolygonClosed) Then
+                Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 67!
+                PD2D.FillCircleF cSurface, cBrushFill, tmpX, tmpY, circRadius
+            End If
+            
             PD2D.DrawCircleF cSurface, cPenBaseNormal, tmpX, tmpY, circRadius
             PD2D.DrawCircleF cSurface, cPenTopNormal, tmpX, tmpY, circRadius
+            
         End If
         
         'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
