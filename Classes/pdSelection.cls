@@ -2552,7 +2552,11 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         curPOI = m_CurrentPOI
         
         Dim i As Long
+        Dim tmpX As Double, tmpY As Double
         
+        Dim circRadius As Single
+        circRadius = 7!
+            
         'pd2D is used for all rendering.  Note that a "highlight" pen is only created if a POI is currently in use
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True, dstCanvas.hWnd
@@ -2603,9 +2607,6 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         
         'If the current selection also supports custom points of interest, let's draw those next
         If Me.DoesShapeSupportCustomPOIs() Then
-            
-            Dim circRadius As Single
-            circRadius = 7#
             
             'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
             If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
@@ -2689,12 +2690,9 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         'To make the transition from 2 points to 3 point less jarring, we manually
                         ' render the first line segment when there are just 2 points in the polygon.
                         If (m_NumOfPolygonPoints = 2) Then
-                            
-                            Dim tmpX As Double, tmpY As Double
                             Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(0).x, m_PolygonPoints(0).y, tmpX, tmpY
                             PD2D.DrawLineF cSurface, cBlackPen, polyX, polyY, tmpX, tmpY
                             PD2D.DrawLineF cSurface, cDottedPen, polyX, polyY, tmpX, tmpY
-                        
                         End If
                         
                     End If
@@ -2703,6 +2701,14 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             
             End If
             
+        End If
+        
+        'Finally, for lasso selections, if the lasso is currently being drawn, we want to highlight
+        ' the starting point of the lasso with a circle.
+        If (m_SelectionShape = ss_Lasso) And (Not Me.GetLassoClosedState()) And (m_NumOfLassoPoints > 0) Then
+            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(0).x, m_LassoPoints(0).y, tmpX, tmpY
+            PD2D.DrawCircleF cSurface, cPenBaseNormal, tmpX, tmpY, circRadius
+            PD2D.DrawCircleF cSurface, cPenTopNormal, tmpX, tmpY, circRadius
         End If
         
         'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
@@ -3135,14 +3141,16 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If (m_FinalOutline Is Nothing) Then Set m_FinalOutline = New pd2DPath Else m_FinalOutline.ResetPath
         
         'PD supports two different paths for populating an "outline path":
-        ' 1) 99% of the time, we want to perform a manual outline scan of the selection mask (scaled and zoomed to
-        '    match the current viewport).  This works for any selection tool, regardless of shape, feathering, or other
-        '    esoteric settings, which makes it universally awesome.
+        ' 1) 99% of the time, we want to perform a manual outline scan of the selection mask
+        '    (scaled and zoomed to match the current viewport).  This works for any selection tool,
+        '    regardless of shape, feathering, or other esoteric settings, which makes it universally
+        '    awesome.
         '
-        ' 2) As always, there is an exception, however: when rendering a lasso or polygon selection, if the selection has
-        '    *not yet been completed*, we want to simply render the current selection outline "as-is" - this is important for
-        '    conveying to the user that the selection itself is still "under construction".  For this, we use a separate,
-        '    dedicated rendering function based on the current in-progress polygon or lasso points.
+        ' 2) As always, there is an exception, however: when rendering a lasso or polygon selection,
+        '    if the selection has *not yet been completed*, we want to simply render the current
+        '    selection outline "as-is" - this is important for conveying that the selection itself is
+        '    still "under construction".  For this, we use a separate, dedicated rendering function
+        '    based on the current in-progress polygon or lasso points.
         Dim useLegacyVectorMode As Boolean
         useLegacyVectorMode = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
         If (Not useLegacyVectorMode) Then useLegacyVectorMode = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
@@ -3175,6 +3183,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                         
                         tmpViewportSpace(i).x = tmpX
                         tmpViewportSpace(i).y = tmpY
+                        
                     Next i
                     
                     'Add the converted shape to the path object
