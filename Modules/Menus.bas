@@ -1641,29 +1641,29 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
             Process "Fade", True
             
         Case "edit_cut"
-            Process "Cut", False, , UNDO_Image, , True
+            Process "Cut", False, , UNDO_Image
         
         'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.
         ' If, however, no selection is active, we will delete the entire layer.  That requires a backup
         ' of the full layer stack.
         Case "edit_cutlayer"
             If PDImages.GetActiveImage.IsSelectionActive Then
-                Process "Cut from layer", False, , UNDO_Layer, , True
+                Process "Cut from layer", False, , UNDO_Layer
             Else
-                Process "Cut from layer", False, , UNDO_Image, , True
+                Process "Cut from layer", False, , UNDO_Image
             End If
             
         Case "edit_copy"
-            Process "Copy", False, , UNDO_Nothing, , False
+            Process "Copy", False, , UNDO_Nothing
             
         Case "edit_copylayer"
-            Process "Copy from layer", False, , UNDO_Nothing, , False
+            Process "Copy from layer", False, , UNDO_Nothing
             
         Case "edit_pasteasimage"
             Process "Paste as new image", False, , UNDO_Nothing, , False
             
         Case "edit_pasteaslayer"
-            Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
+            Process "Paste as new layer", False, , UNDO_Image_VectorSafe
         
         'The cut/copy/paste special menus allow the user to specify the format used for cut/copy/paste
         Case "edit_specialcut"
