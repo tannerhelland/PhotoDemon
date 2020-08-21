@@ -1,10 +1,10 @@
 ## Download
 
-| Stable (7.0.1) | Nightly (8.0-RC) | Source code |
-| :------------: | :------------: | :---------: |
-| [Download (.zip, 12 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
+| Stable (8.0) | Nightly (8.2-a) | Source code |
+| :----------: | :-------------: | :---------: |
+| [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
-## About PhotoDemon 8.0-RC (release candidate)
+## About PhotoDemon 8.0
 
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
@@ -18,9 +18,9 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  You can even run run it from a USB stick, SD card, or portable drive.
 
-PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than twenty languages.
+PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
 You can support PhotoDemon's ongoing development [through Patreon](https://www.patreon.com/photodemon) or [with a one-time donation](https://photodemon.org/donate/).
 
@@ -44,10 +44,10 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Pro-grade features and tools
 * Extensive file format support, including Adobe Photoshop images (PSD) and all major camera RAW formats
 * Color-managed workflow, including full support for embedded ICC profiles
-* Non-destructive editing for select features, including resizing, rotation, and common adjustments
-* 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, straighten, shear, zoom
+* Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
+* On-canvas tools: digital paintbrushes, clone and pattern brushes, interactive gradients, and more
 * Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, Wratten filters, and many more
-* Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, green screen, lens diffraction, vignetting, and many more
+* Filters and effects: perspective correction, edge detection, noise removal, real-time content-aware blur, unsharp masking, green screen, lens diffraction, vignetting, and many more
 * More than 200 tools are provided in the current build.
 
 ### Limitations
@@ -58,15 +58,17 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-PhotoDemon 8.0 is almost ready for release!  For a full list of changes since 7.0, [read the announcement at photodemon.org](https://photodemon.org/2020/07/28/photodemon-8-0-beta).
+PhotoDemon 8.0 just released, so nightly builds don't have much to report (yet)!  For a full list of changes since the previous release, [read the announcement at photodemon.org](https://photodemon.org/2020/07/28/photodemon-8-0-beta).
 
-For even more details, consult [the commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
+For even more details, consult [the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
 
 ## Contributing
 
-PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like in-depth updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
+Ongoing PhotoDemon development is made possible by donations from users like you!
 
-I am also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  Thank you!
+My [Patreon campaign](https://www.patreon.com/photodemon) is one way to donate. Donating through Patreon comes with extra benefits, like in-depth updates on new PhotoDemon features. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
+
+I am also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  **Thank you!**
 
 If you can contribute in other ways (language translations, bug reports, pull requests, etc), please [create a new issue at GitHub](https://github.com/tannerhelland/PhotoDemon/issues).  A full list of (wonderful!) contributors is available in [AUTHORS.md](https://github.com/tannerhelland/PhotoDemon/blob/master/AUTHORS.md).
 
