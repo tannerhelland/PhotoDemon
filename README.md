@@ -2,7 +2,7 @@
 
 | Stable (8.0) | Nightly (8.2-a) | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v7.0.1/PhotoDemon_7.0.1.zip) | [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
+| [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v8.0/PhotoDemon-8.0.zip) | [Download (.zip, 14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
 ## About PhotoDemon 8.0
 
@@ -18,7 +18,7 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  You can even run run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  It runs just fine from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -42,7 +42,7 @@ Complex editing actions can be recorded as macros (similar to Office software). 
 Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop images (PSD) and all major camera RAW formats
+* Extensive file format support, including Adobe Photoshop (PSD) images and all major camera RAW formats
 * Color-managed workflow, including full support for embedded ICC profiles
 * Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
 * On-canvas tools: digital paintbrushes, clone and pattern brushes, interactive gradients, and more
@@ -58,9 +58,9 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-PhotoDemon 8.0 just released, so nightly builds don't have much to report (yet)!  For a full list of changes since the previous release, [read the announcement at photodemon.org](https://photodemon.org/2020/07/28/photodemon-8-0-beta).
+PhotoDemon 8.0 just released, so nightly builds don't have much to report (yet)!  
 
-For even more details, consult [the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
+For a detailed list of recent changes, [check the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
 
 ## Contributing
 
