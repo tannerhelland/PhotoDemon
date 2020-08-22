@@ -30,6 +30,25 @@ Begin VB.Form toolpanel_ColorPicker
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsSampleMerged 
+      Height          =   465
+      Left            =   240
+      TabIndex        =   5
+      Top             =   915
+      Width           =   2940
+      _ExtentX        =   5186
+      _ExtentY        =   820
+   End
+   Begin PhotoDemon.pdCheckBox chkAfter 
+      Height          =   375
+      Left            =   4650
+      TabIndex        =   4
+      Top             =   1035
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   661
+      Caption         =   "after clicking, return to previous tool"
+   End
    Begin VB.PictureBox picSample 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -40,7 +59,7 @@ Begin VB.Form toolpanel_ColorPicker
       ScaleHeight     =   87
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   63
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   60
       Width           =   975
    End
@@ -48,7 +67,7 @@ Begin VB.Form toolpanel_ColorPicker
       Height          =   255
       Index           =   0
       Left            =   6480
-      Top             =   30
+      Top             =   105
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -58,8 +77,8 @@ Begin VB.Form toolpanel_ColorPicker
       Height          =   375
       Index           =   0
       Left            =   4680
-      TabIndex        =   2
-      Top             =   390
+      TabIndex        =   1
+      Top             =   60
       Width           =   1575
       _ExtentX        =   2778
       _ExtentY        =   661
@@ -78,21 +97,11 @@ Begin VB.Form toolpanel_ColorPicker
       ScaleStyle      =   1
       NotchPosition   =   2
    End
-   Begin PhotoDemon.pdCheckBox chkSampleMerged 
-      Height          =   375
-      Left            =   135
-      TabIndex        =   1
-      Top             =   930
-      Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   450
-      Caption         =   "sample all layers"
-   End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   1
-      Left            =   6480
-      Top             =   390
+      Left            =   8400
+      Top             =   105
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -101,8 +110,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   2
-      Left            =   6480
-      Top             =   750
+      Left            =   10320
+      Top             =   105
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -111,8 +120,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   3
-      Left            =   6480
-      Top             =   1110
+      Left            =   12240
+      Top             =   105
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -122,51 +131,55 @@ Begin VB.Form toolpanel_ColorPicker
       Height          =   255
       Index           =   0
       Left            =   7560
-      Top             =   30
+      Top             =   105
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   1
-      Left            =   7560
-      Top             =   390
+      Left            =   9480
+      Top             =   105
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   2
-      Left            =   7560
-      Top             =   750
+      Left            =   11400
+      Top             =   105
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   3
-      Left            =   7560
-      Top             =   1110
+      Left            =   13320
+      Top             =   105
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   4
-      Left            =   10560
-      Top             =   30
+      Left            =   6480
+      Top             =   585
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -175,9 +188,9 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdDropDown cboColorSpace 
       Height          =   375
       Index           =   1
-      Left            =   8760
-      TabIndex        =   4
-      Top             =   390
+      Left            =   4680
+      TabIndex        =   3
+      Top             =   540
       Width           =   1575
       _ExtentX        =   2778
       _ExtentY        =   661
@@ -185,8 +198,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   5
-      Left            =   10560
-      Top             =   390
+      Left            =   8400
+      Top             =   585
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -195,8 +208,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   6
-      Left            =   10560
-      Top             =   750
+      Left            =   10320
+      Top             =   585
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -205,8 +218,8 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   255
       Index           =   7
-      Left            =   10560
-      Top             =   1110
+      Left            =   12240
+      Top             =   585
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   450
@@ -215,46 +228,50 @@ Begin VB.Form toolpanel_ColorPicker
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   4
-      Left            =   11640
-      Top             =   30
+      Left            =   7560
+      Top             =   585
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   5
-      Left            =   11640
-      Top             =   390
+      Left            =   9480
+      Top             =   585
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   6
-      Left            =   11640
-      Top             =   750
+      Left            =   11400
+      Top             =   585
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblValue 
       Height          =   255
       Index           =   7
-      Left            =   11640
-      Top             =   1110
+      Left            =   13320
+      Top             =   585
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   450
       Alignment       =   1
       Caption         =   "0"
+      FontBold        =   -1  'True
    End
 End
 Attribute VB_Name = "toolpanel_ColorPicker"
@@ -323,8 +340,8 @@ Private m_PreviewDIB As pdDIB
 
 'The value of all controls on this form are saved and loaded to file by this class
 ' (Normally this is declared WithEvents, but this dialog doesn't require custom settings behavior.)
-Private m_LastUsedSettings As pdLastUsedSettings
-Attribute m_LastUsedSettings.VB_VarHelpID = -1
+Private m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'Mouse interactions will call into this function, supplying the x/y coordinates (in the current image space)
 ' of the current mouse operation.  This function will then translate those coordinates, using the current
@@ -352,7 +369,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     If (Not m_NoColorAvailable) Then
     
         'Grab a color from the correct source.
-        If chkSampleMerged.Value And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
+        If (btsSampleMerged.ListIndex <> 0) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
             
             'Before proceeding, ensure the mouse pointer lies within the image.
             If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > PDImages.GetActiveImage.Width) Or (m_ImgY > PDImages.GetActiveImage.Height) Then
@@ -472,6 +489,10 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     'Update the display as necessary
     If (Not m_NoColorAvailable) Or (initColorAvailable <> m_NoColorAvailable) Then UpdateUIText
     
+End Sub
+
+Public Sub NotifyMouseReleased()
+    If chkAfter.Value And (g_PreviousTool <> TOOL_UNDEFINED) Then toolbar_Toolbox.SelectNewTool g_PreviousTool
 End Sub
 
 'Find the average color value of the pixels in the (already prepared) m_SampleDIB object.
@@ -685,10 +706,14 @@ Private Sub Form_Load()
     cboColorSpace(0).ListIndex = cps_RGBA
     cboColorSpace(1).ListIndex = cps_HSV
     
+    btsSampleMerged.AddItem "layer", 0
+    btsSampleMerged.AddItem "image", 1
+    btsSampleMerged.ListIndex = 0
+    
     'Load any last-used settings for this form
-    Set m_LastUsedSettings = New pdLastUsedSettings
-    m_LastUsedSettings.SetParentForm Me
-    m_LastUsedSettings.LoadAllControlValues
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues
     
     Tools.SetToolBusyState False
     
@@ -697,9 +722,9 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    If Not (m_LastUsedSettings Is Nothing) Then
-        m_LastUsedSettings.SaveAllControlValues
-        m_LastUsedSettings.SetParentForm Nothing
+    If Not (m_lastUsedSettings Is Nothing) Then
+        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SetParentForm Nothing
     End If
 
 End Sub

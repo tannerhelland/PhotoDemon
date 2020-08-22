@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.437</langversion>
+<langversion>6.6.438</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -968,6 +968,16 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
+<original>Group start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Basic text layer</original>
 <translation></translation>
 </phrase>
@@ -1077,7 +1087,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Halaman 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3414,13 +3424,13 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Lepaskan butang tetikus untuk melengkapkan pilihan lasso</translation>
+<original>Create selection</original>
+<translation>membuat pilihan</translation>
 </phrase>
 
 <phrase>
-<original>Create selection</original>
-<translation>membuat pilihan</translation>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Lepaskan butang tetikus untuk melengkapkan pilihan lasso</translation>
 </phrase>
 
 <phrase>
@@ -3438,7 +3448,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 41 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -3938,7 +3948,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Gambar Yang Di Impor</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 30 phrases. 22 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -4088,6 +4098,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdICCProfile.cls contains 0 phrases. -->
 
 <!-- END text for pdICCProfile.cls-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- BEGIN text for pdImage.cls -->
 
@@ -4603,21 +4619,11 @@ Please masukkan nilai berangka.</translation>
 <!-- BEGIN text for pdPSD.cls -->
 
 <phrase>
-<original>Group start</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>%1 (Channel %2)</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -4728,6 +4734,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdTimerAnimation.cls contains 0 phrases. -->
 
 <!-- END text for pdTimerAnimation.cls-->
+
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -6707,7 +6719,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 361 phrases. 166 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
+<!-- MainWindow.frm contains 363 phrases. 168 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7065,6 +7077,22 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
+<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
+
+<phrase>
+<original>strength</original>
+<translation>kekuatan</translation>
+</phrase>
+
+<phrase>
+<original>Engaging hipsters to perform sepia conversion</original>
+<translation>hipsters Terlibat untuk melaksanakan penukaran sepia</translation>
+</phrase>
+
+<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Color_Sepia.frm-->
+
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
@@ -7090,11 +7118,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <phrase>
 <original>cooler</original>
 <translation>lebih dingin</translation>
-</phrase>
-
-<phrase>
-<original>strength</original>
-<translation>kekuatan</translation>
 </phrase>
 
 <phrase>
@@ -7127,7 +7150,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>maju</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -12182,6 +12205,137 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for File_Save_ICO.frm (dialog_ExportICO) -->
+
+<phrase>
+<original>icon purpose</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>128x128</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>768x768</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>256x256</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>512x512</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>96x96</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>64x64</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>48x48</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>40x40</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32x32</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24x24</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>16x16</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>20x20</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 10</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows Vista, 7, 8</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows XP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 95, 98, ME</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>web - favicon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom icon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use original file settings</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+
+<!-- END text for File_Save_ICO.frm-->
+
 <!-- BEGIN text for File_Save_JP2.frm (dialog_ExportJP2) -->
 
 <phrase>
@@ -13419,6 +13573,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
+
+<phrase>
+<original>Converting alpha channel</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Layer_Transparency_Threshold.frm-->
+
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
 <!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
@@ -13927,6 +14092,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
 
 <phrase>
+<original>after clicking, return to previous tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>sample radius</original>
 <translation>radius sampel</translation>
 </phrase>
@@ -13942,11 +14112,21 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>layer</original>
+<translation>lapisan</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>imej</translation>
+</phrase>
+
+<phrase>
 <original>n/a</original>
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 43 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
@@ -13999,16 +14179,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>imej</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>lapisan</translation>
-</phrase>
-
-<phrase>
 <original>contiguous</original>
 <translation>berdampingan</translation>
 </phrase>
@@ -14038,7 +14208,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Opsi ini mengontrol bagaimana piksel dianalisis saat menambahkannya ke isi.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Fill.frm-->
 
@@ -15787,165 +15957,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
-
-<phrase>
-<original>Engaging hipsters to perform sepia conversion</original>
-<translation>hipsters Terlibat untuk melaksanakan penukaran sepia</translation>
-</phrase>
-
-<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Adjustments_Color_Sepia.frm-->
-
-<!-- BEGIN text for pdICO.cls -->
-
-<!-- pdICO.cls contains 0 phrases. -->
-
-<!-- END text for pdICO.cls-->
-
-<!-- BEGIN text for File_Save_ICO.frm (dialog_ExportICO) -->
-
-<phrase>
-<original>icon purpose</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>32-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>24-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>8-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>128x128</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>768x768</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>256x256</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>512x512</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>96x96</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>64x64</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>48x48</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>40x40</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>32x32</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>24x24</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>16x16</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>20x20</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows 10</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows Vista, 7, 8</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows XP</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows 95, 98, ME</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>web - favicon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>custom icon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use original file settings</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
-
-<!-- END text for File_Save_ICO.frm-->
-
-<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
-
-<phrase>
-<original>Converting alpha channel</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Layer_Transparency_Threshold.frm-->
-
 <!-- BEGIN text for Tools_ScreenVideo.frm (FormRecordAPNG) -->
 
 <phrase>
@@ -16028,18 +16039,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
-<!-- BEGIN text for pdTimerCountdown.cls -->
-
-<!-- pdTimerCountdown.cls contains 0 phrases. -->
-
-<!-- END text for pdTimerCountdown.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2426 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12055 total words. -->
+<!-- As of this build, PhotoDemon contains 5097 phrases. -->
+<!-- 2443 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12061 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.173</langversion>
+<langversion>7.0.174</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -962,6 +962,16 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
+<original>Group start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Group end</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Basic text layer</original>
 <translation></translation>
 </phrase>
@@ -1071,7 +1081,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>Strona 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3392,13 +3402,13 @@ W międzyczasie spróbuj zapisywania obrazu w alternatywnym formacie. Można ró
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Zwolnij przycisk myszy, aby zakończyć wybór lasso</translation>
+<original>Create selection</original>
+<translation>Utwórz wybór</translation>
 </phrase>
 
 <phrase>
-<original>Create selection</original>
-<translation>Utwórz wybór</translation>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Zwolnij przycisk myszy, aby zakończyć wybór lasso</translation>
 </phrase>
 
 <phrase>
@@ -3416,7 +3426,7 @@ W międzyczasie spróbuj zapisywania obrazu w alternatywnym formacie. Można ró
 <translation>Kliknij na pierwszy punkt, aby zakończyć wybór wielokąta</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 41 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -3916,7 +3926,7 @@ Please enter a numeric value.</original>
 <translation>importowane zdjęcia</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 30 phrases. 22 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -4066,6 +4076,12 @@ Please enter a numeric value.</original>
 <!-- pdICCProfile.cls contains 0 phrases. -->
 
 <!-- END text for pdICCProfile.cls-->
+
+<!-- BEGIN text for pdICO.cls -->
+
+<!-- pdICO.cls contains 0 phrases. -->
+
+<!-- END text for pdICO.cls-->
 
 <!-- BEGIN text for pdImage.cls -->
 
@@ -4581,21 +4597,11 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdPSD.cls -->
 
 <phrase>
-<original>Group start</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Group end</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>%1 (Channel %2)</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -4706,6 +4712,12 @@ Please enter a numeric value.</original>
 <!-- pdTimerAnimation.cls contains 0 phrases. -->
 
 <!-- END text for pdTimerAnimation.cls-->
+
+<!-- BEGIN text for pdTimerCountdown.cls -->
+
+<!-- pdTimerCountdown.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerCountdown.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -6682,7 +6694,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 361 phrases. 166 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
+<!-- MainWindow.frm contains 363 phrases. 168 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7040,6 +7052,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <!-- END text for Adjustments_Color_ReplaceColor.frm-->
 
+<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
+
+<phrase>
+<original>strength</original>
+<translation>natężenie</translation>
+</phrase>
+
+<phrase>
+<original>Engaging hipsters to perform sepia conversion</original>
+<translation>Atrakcyjna awangarda do wykonania konwersji sepii</translation>
+</phrase>
+
+<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Color_Sepia.frm-->
+
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
@@ -7065,11 +7093,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>cooler</original>
 <translation>chłodny</translation>
-</phrase>
-
-<phrase>
-<original>strength</original>
-<translation>natężenie</translation>
 </phrase>
 
 <phrase>
@@ -7102,7 +7125,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>zaawansowane</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -12156,6 +12179,137 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for File_Save_ICO.frm (dialog_ExportICO) -->
+
+<phrase>
+<original>icon purpose</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1-bpp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>128x128</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>768x768</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>256x256</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>512x512</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>96x96</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>64x64</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>48x48</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>40x40</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32x32</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24x24</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>16x16</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>20x20</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 10</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows Vista, 7, 8</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows XP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>app - Windows 95, 98, ME</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>web - favicon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom icon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use original file settings</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+
+<!-- END text for File_Save_ICO.frm-->
+
 <!-- BEGIN text for File_Save_JP2.frm (dialog_ExportJP2) -->
 
 <phrase>
@@ -13393,6 +13547,17 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
+
+<phrase>
+<original>Converting alpha channel</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Layer_Transparency_Threshold.frm-->
+
 <!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
 
 <!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
@@ -13901,6 +14066,11 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <!-- BEGIN text for Toolpanel_ColorPicker.frm (toolpanel_ColorPicker) -->
 
 <phrase>
+<original>after clicking, return to previous tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>sample radius</original>
 <translation>promień próbki</translation>
 </phrase>
@@ -13916,11 +14086,21 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
+<original>layer</original>
+<translation>warstwa</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>obraz</translation>
+</phrase>
+
+<phrase>
 <original>n/a</original>
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 43 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
@@ -13973,16 +14153,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>obraz</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>warstwa</translation>
-</phrase>
-
-<phrase>
 <original>contiguous</original>
 <translation>przyległy</translation>
 </phrase>
@@ -14012,7 +14182,7 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <translation>Ta opcja określa, w jaki sposób piksele są analizowane podczas dodawania ich do wypełnienia.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 3 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Fill.frm-->
 
@@ -15757,165 +15927,6 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Adjustments_Color_Sepia.frm (FormSepia) -->
-
-<phrase>
-<original>Engaging hipsters to perform sepia conversion</original>
-<translation>Atrakcyjna awangarda do wykonania konwersji sepii</translation>
-</phrase>
-
-<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Adjustments_Color_Sepia.frm-->
-
-<!-- BEGIN text for pdICO.cls -->
-
-<!-- pdICO.cls contains 0 phrases. -->
-
-<!-- END text for pdICO.cls-->
-
-<!-- BEGIN text for File_Save_ICO.frm (dialog_ExportICO) -->
-
-<phrase>
-<original>icon purpose</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>32-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>24-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>8-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>128x128</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>768x768</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>256x256</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>512x512</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>96x96</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>64x64</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>48x48</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>40x40</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>32x32</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>24x24</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>16x16</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>20x20</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows 10</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows Vista, 7, 8</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows XP</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>app - Windows 95, 98, ME</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>web - favicon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>custom icon</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use original file settings</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
-
-<!-- END text for File_Save_ICO.frm-->
-
-<!-- BEGIN text for Layer_Transparency_Threshold.frm (FormThresholdAlpha) -->
-
-<phrase>
-<original>Converting alpha channel</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Layer_Transparency_Threshold.frm-->
-
 <!-- BEGIN text for Tools_ScreenVideo.frm (FormRecordAPNG) -->
 
 <phrase>
@@ -15998,18 +16009,12 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- END text for Tools_ScreenVideoPrefs.frm-->
 
-<!-- BEGIN text for pdTimerCountdown.cls -->
-
-<!-- pdTimerCountdown.cls contains 0 phrases. -->
-
-<!-- END text for pdTimerCountdown.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2653</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2426 are duplicates, so only 2653 unique phrases have been written to file. -->
-<!-- These 2653 phrases contain approximately 12055 total words. -->
+<!-- As of this build, PhotoDemon contains 5097 phrases. -->
+<!-- 2443 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12061 total words. -->
 
 </pdData>

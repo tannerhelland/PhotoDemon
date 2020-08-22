@@ -627,7 +627,7 @@ Private Sub Form_Load()
     Set m_MouseEvents = New pdInputMouse
     m_MouseEvents.AddInputTracker Me.hWnd
         
-    g_PreviousTool = -1
+    g_PreviousTool = TOOL_UNDEFINED
     g_CurrentTool = UserPrefs.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
     
     'Note that we don't actually reflow the interface here; that will happen later, when the form's previous size and

@@ -40,6 +40,7 @@ End Type
 ' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
 ' double-check everything!)
 Public Enum PDTools
+    TOOL_UNDEFINED = -1
     NAV_DRAG = 0
     NAV_MOVE = 1
     COLOR_PICKER = 2
@@ -61,7 +62,7 @@ Public Enum PDTools
 End Enum
 
 #If False Then
-    Private Const NAV_DRAG = 0, NAV_MOVE = 1, COLOR_PICKER = 2, ND_MEASURE = 3
+    Private Const TOOL_UNDEFINED = -1, NAV_DRAG = 0, NAV_MOVE = 1, COLOR_PICKER = 2, ND_MEASURE = 3
     Private Const SELECT_RECT = 4, SELECT_CIRC = 5, SELECT_LINE = 6, SELECT_POLYGON = 7, SELECT_LASSO = 8, SELECT_WAND = 9
     Private Const TEXT_BASIC = 10, TEXT_ADVANCED = 11
     Private Const PAINT_PENCIL = 12, PAINT_SOFTBRUSH = 13, PAINT_ERASER = 14, PAINT_CLONE = 15, PAINT_FILL = 16, PAINT_GRADIENT = 17

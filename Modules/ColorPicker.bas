@@ -42,6 +42,10 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     ' It will handle any required on-screen updates.
     toolpanel_ColorPicker.NotifyCanvasXY m_MouseDown, m_MouseX, m_MouseY, srcCanvas
     
+    'If the mouse button was just released, give the color-picker a special notification;
+    ' this may prompt it to change to the previous tool (depending on user settings)
+    If isLastStroke Then toolpanel_ColorPicker.NotifyMouseReleased
+    
 End Sub
 
 'Render a relevant fill cursor outline to the canvas, using the stored mouse coordinates as the cursor's position
