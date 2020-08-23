@@ -3029,47 +3029,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
     PDDebug.LogAction vbNullString, PDM_Mem_Report
     PDDebug.LogAction "Unloading tool panels..."
-    
-    'Now that toolpanels are loaded/unloaded on-demand, we don't need to manually unload them at shutdown.
-    ' Instead, just unload the *active* one (which we can infer from the active tool).
-    g_WindowManager.DeactivateToolPanel
-    If (g_CurrentTool = NAV_MOVE) Then
-        Unload toolpanel_MoveSize
-        Set toolpanel_MoveSize = Nothing
-    ElseIf (g_CurrentTool = COLOR_PICKER) Then
-        Unload toolpanel_ColorPicker
-        Set toolpanel_ColorPicker = Nothing
-    ElseIf (g_CurrentTool = ND_MEASURE) Then
-        Unload toolpanel_Measure
-        Set toolpanel_Measure = Nothing
-    ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
-        Unload toolpanel_Selections
-        Set toolpanel_Selections = Nothing
-    ElseIf (g_CurrentTool = TEXT_BASIC) Then
-        Unload toolpanel_TextBasic
-        Set toolpanel_TextBasic = Nothing
-    ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
-        Unload toolpanel_TextAdvanced
-        Set toolpanel_TextAdvanced = Nothing
-    ElseIf (g_CurrentTool = PAINT_PENCIL) Then
-        Unload toolpanel_Pencil
-        Set toolpanel_Pencil = Nothing
-    ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
-        Unload toolpanel_Paintbrush
-        Set toolpanel_Paintbrush = Nothing
-    ElseIf (g_CurrentTool = PAINT_ERASER) Then
-        Unload toolpanel_Eraser
-        Set toolpanel_Eraser = Nothing
-    ElseIf (g_CurrentTool = PAINT_CLONE) Then
-        Unload toolpanel_Clone
-        Set toolpanel_Clone = Nothing
-    ElseIf (g_CurrentTool = PAINT_FILL) Then
-        Unload toolpanel_Fill
-        Set toolpanel_Fill = Nothing
-    ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
-        Unload toolpanel_Gradient
-        Set toolpanel_Gradient = Nothing
-    End If
+    toolbar_Toolbox.FreeAllToolpanels
     
     'With all tool panels unloaded, unload all toolboxes as well
     PDDebug.LogAction "Unloading toolboxes..."

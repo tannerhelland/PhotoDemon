@@ -465,7 +465,7 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 ' with the buttons on *this* form).
 Private Type ToolPanelTracker
     PanelHWnd As Long
-    IsPanelLoaded As Boolean
+    PanelWasLoaded As Boolean
 End Type
 
 Private m_NumOfPanels As Long
@@ -1064,6 +1064,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         toolbar_Options.NotifyChildPanelHWnd 0
     Else
         toolbar_Options.NotifyChildPanelHWnd m_Panels(m_ActiveToolPanel).PanelHWnd
+        m_Panels(m_ActiveToolPanel).PanelWasLoaded = True
     End If
         
     'If a selection tool is active, we also need activate a specific subpanel.  (All selection tools share the same
@@ -1145,59 +1146,6 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
                     m_Panels(i).PanelHWnd = 0
                 End If
                 
-                'Unload the panel form to free up resources
-                Select Case i
-                
-                    Case TP_MoveSize
-                        Unload toolpanel_MoveSize
-                        Set toolpanel_MoveSize = Nothing
-    
-                    Case TP_ColorPicker
-                        Unload toolpanel_ColorPicker
-                        Set toolpanel_ColorPicker = Nothing
-                        
-                    Case TP_Measure
-                        Unload toolpanel_Measure
-                        Set toolpanel_Measure = Nothing
-    
-                    Case TP_Selections
-                        Unload toolpanel_Selections
-                        Set toolpanel_Selections = Nothing
-        
-                    Case TP_Text
-                        Unload toolpanel_TextBasic
-                        Set toolpanel_TextBasic = Nothing
-        
-                    Case TP_Typography
-                        Unload toolpanel_TextAdvanced
-                        Set toolpanel_TextAdvanced = Nothing
-        
-                    Case TP_Pencil
-                        Unload toolpanel_Pencil
-                        Set toolpanel_Pencil = Nothing
-        
-                    Case TP_Paintbrush
-                        Unload toolpanel_Paintbrush
-                        Set toolpanel_Paintbrush = Nothing
-                        
-                    Case TP_Eraser
-                        Unload toolpanel_Eraser
-                        Set toolpanel_Eraser = Nothing
-                        
-                    Case TP_Clone
-                        Unload toolpanel_Clone
-                        Set toolpanel_Clone = Nothing
-                    
-                    Case TP_Fill
-                        Unload toolpanel_Fill
-                        Set toolpanel_Fill = Nothing
-                        
-                    Case TP_Gradient
-                        Unload toolpanel_Gradient
-                        Set toolpanel_Gradient = Nothing
-                        
-                End Select
-                
             End If
             
         Next i
@@ -1231,6 +1179,10 @@ Private Sub cmdTools_Click(Index As Integer)
     
     End If
     
+End Sub
+
+Private Sub ttlCategories_Click(Index As Integer, ByVal newState As Boolean)
+    ReflowToolboxLayout
 End Sub
 
 'Used to change the visibility of category labels.  When disabled, the button layout is reflowed into a continuous
@@ -1504,6 +1456,68 @@ Public Sub GetListOfToolNamesAndActions(ByRef dstNames As pdStringStack, ByRef d
     dstActions.CloneStack m_ToolActions
 End Sub
 
-Private Sub ttlCategories_Click(Index As Integer, ByVal newState As Boolean)
-    ReflowToolboxLayout
+'You *must* call this function before shutdown.  This function will forcibly free cached toolbox windows.
+Public Sub FreeAllToolpanels()
+    
+    'The active toolpanel (if one exists) has had its window bits manually modified so that we can
+    ' embed it at the bottom of the main window.  Make certain those window bits are reset before
+    ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
+    ' encounters unexpected window bits, especially WS_CHILD).
+    g_WindowManager.DeactivateToolPanel
+    
+    'Make sure our internal toolbox collection actually exists before attempting to iterate it
+    If (m_NumOfPanels = 0) Then Exit Sub
+    
+    'Free any toolboxes that were loaded this session
+    Dim i As PD_ToolPanels
+    For i = 0 To NUM_OF_TOOL_PANELS - 1
+        
+        'If we loaded this panel during this session, unload it manually now
+        If m_Panels(i).PanelWasLoaded Then
+        
+            Select Case i
+                Case TP_MoveSize
+                    Unload toolpanel_MoveSize
+                    Set toolpanel_MoveSize = Nothing
+                Case TP_ColorPicker
+                    Unload toolpanel_ColorPicker
+                    Set toolpanel_ColorPicker = Nothing
+                Case TP_Measure
+                    Unload toolpanel_Measure
+                    Set toolpanel_Measure = Nothing
+                Case TP_Selections
+                    Unload toolpanel_Selections
+                    Set toolpanel_Selections = Nothing
+                Case TP_Text
+                    Unload toolpanel_TextBasic
+                    Set toolpanel_TextBasic = Nothing
+                Case TP_Typography
+                    Unload toolpanel_TextAdvanced
+                    Set toolpanel_TextAdvanced = Nothing
+                Case TP_Pencil
+                    Unload toolpanel_Pencil
+                    Set toolpanel_Pencil = Nothing
+                Case TP_Paintbrush
+                    Unload toolpanel_Paintbrush
+                    Set toolpanel_Paintbrush = Nothing
+                Case TP_Eraser
+                    Unload toolpanel_Eraser
+                    Set toolpanel_Eraser = Nothing
+                Case TP_Clone
+                    Unload toolpanel_Clone
+                    Set toolpanel_Clone = Nothing
+                Case TP_Fill
+                    Unload toolpanel_Fill
+                    Set toolpanel_Fill = Nothing
+                Case TP_Gradient
+                    Unload toolpanel_Gradient
+                    Set toolpanel_Gradient = Nothing
+            End Select
+            
+            m_Panels(i).PanelWasLoaded = False
+            
+        End If
+        
+    Next i
+    
 End Sub
