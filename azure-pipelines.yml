@@ -51,7 +51,7 @@ steps:
   - task: GithubRelease@1
     displayName: 'Remove release `PhotoDemon-nightly` on github.com'
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
-    continueOnError: false
+    continueOnError: true
     inputs:
       githubConnection: 'GitHub'
       repositoryName: 'tannerhelland/PhotoDemon'
