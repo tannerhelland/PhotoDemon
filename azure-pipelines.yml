@@ -19,6 +19,7 @@ steps:
       contents: |
         Donate to PhotoDemon.url
         AUTHORS.md
+        INSTALL.md
         LICENSE.md
         README.md
         PhotoDemon.exe
@@ -38,34 +39,40 @@ steps:
       rootFolderOrFile: '$(Build.BinariesDirectory)'
       archiveFile: '$(Build.ArtifactStagingDirectory)/PhotoDemon-nightly.zip' 
       includeRootFolder: false
+      replaceExistingArchive: true
   
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact PhotoDemon'
     inputs:
       pathToPublish: '$(Build.BinariesDirectory)'
-      artifactName: PhotoDemon
+      artifactName: 'PhotoDemon'
+      parallel: true
 
-  - task: GithubRelease@0
+  - task: GithubRelease@1
     displayName: 'Remove release `PhotoDemon-nightly` on github.com'
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
-    continueOnError: true
+    continueOnError: false
     inputs:
       githubConnection: 'GitHub'
-      repositoryName: tannerhelland/PhotoDemon
-      action: delete
-      tag: PhotoDemon-nightly
+      repositoryName: 'tannerhelland/PhotoDemon'
+      action: 'delete'
+      tag: 'PhotoDemon-nightly'
   
-  - task: GithubRelease@0
+  - task: GithubRelease@1
     displayName: 'Create release `PhotoDemon-nightly` on github.com'
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull')))
     inputs:
-      githubConnection: 'GitHub'
-      repositoryName: tannerhelland/PhotoDemon
-      action: create
-      tagSource: manual
-      tag: PhotoDemon-nightly
+      gitHubConnection: 'GitHub'
+      repositoryName: 'tannerhelland/PhotoDemon'
+      action: 'create'
+      tagSource: 'userSpecifiedTag'
+      tag: 'PhotoDemon-nightly'
       title: 'PhotoDemon nightly build'
       assets: $(Build.ArtifactStagingDirectory)/*
-      addChangeLog: true
-      compareWith: lastFullRelease
+      assetUploadMode: 'delete'
       isPreRelease: true
+      releaseNotesSource: 'inline'
+      releaseNotesInline: 'This release was automatically built from PhotoDemon''s current source code.  It may contain serious bugs.  Use at your own risk.'
+      addChangeLog: true
+      changeLogType: 'commitBased'
+      changeLogCompareToRelease: 'lastFullRelease'
