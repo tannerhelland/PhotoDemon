@@ -58,6 +58,21 @@ Private m_CustomToolMarker As Long
 ' central resource manager).
 Private m_HighResMouseInputAllowed As Boolean
 
+'While using paint tools, the user can use the ALT key to temporarily swap to the color picker tool.
+' When the ALT key is released, PhotoDemon will automatically active their original tool.  Because
+' this requires cross-tool communication, this module needs to store the relevant tracker.
+Private m_PaintToolAltState As Boolean
+
+'Get/Set the "alternate" state for a paint tool (typically triggered by pressing ALT)
+Public Function GetToolAltState() As Boolean
+    GetToolAltState = m_PaintToolAltState
+End Function
+
+Public Sub SetToolAltState(ByVal newState As Boolean)
+    m_PaintToolAltState = newState
+End Sub
+
+'Get/Set tool "busy" state; when a tool is busy, many operations are suspended for performance reasons
 Public Function GetToolBusyState() As Boolean
     GetToolBusyState = m_ToolIsBusy
 End Function

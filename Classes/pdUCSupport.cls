@@ -60,8 +60,8 @@ Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTa
 
 Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-'API technique for drawing a focus rectangle; used only for designer mode (see the GetBackBufferDC method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
 'This class subclasses a *lot* of things.  Some are handled by this class itself; others use dedicated single-purpose
 ' support classes.
@@ -1185,6 +1185,10 @@ End Function
 
 Friend Function GetControlHeight() As Long
     If PDMain.IsProgramRunning() Then GetControlHeight = m_MoveSize.GetHeight Else GetControlHeight = m_Height
+End Function
+
+Friend Function IsKeyDown(ByVal vkCode As Long) As Boolean
+    IsKeyDown = GetAsyncKeyState(vkCode) And &H8000
 End Function
 
 Friend Function IsMouseInside() As Boolean

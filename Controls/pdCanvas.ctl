@@ -130,8 +130,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2020 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 30/May/19
-'Last update: replace image tabstrip right-click menu with pdPopupMenu; now it's Unicode-aware (finally!)
+'Last updated: 24/April/20
+'Last update: universal solution for switching to the color picker tool when ALT is pressed while using a paint tool
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -696,6 +696,25 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If Me.IsCanvasInteractionAllowed() Then
         
+        'If a paint tool is currently active, and the user presses the ALT key (but *no other*
+        ' key modifiers), we will silently switch to the color picker.
+        Dim tmpIsPaintTool As Boolean
+        tmpIsPaintTool = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
+        If (tmpIsPaintTool And (Not Tools.GetToolAltState()) And (vkCode = VK_ALT) And (Not ucSupport.IsKeyDown(VK_CONTROL)) And (Not ucSupport.IsKeyDown(VK_SHIFT))) Then
+            
+            Tools.SetToolAltState True
+            toolbar_Toolbox.SelectNewTool COLOR_PICKER
+            
+            'Now, something weird: we need to eat this keypress so that Windows doesn't
+            ' steal focus and give it to the menu bar.  When we do this, however, PD's central
+            ' hotkey handler won't be able to update its tracker for Alt key state (which is
+            ' important for handling rapid keypresses, hence why we can't use async key
+            ' state detection) - so we must manually notify the hotkey tracker of the state change.
+            markEventHandled = True
+            FormMain.HotkeyManager.NotifyAltKeystateChange True
+            
+        End If
+        
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
                     
@@ -708,23 +727,22 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 Selections.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
-            Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+            Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
+            
+                'First, notify the correct module
+                If (g_CurrentTool = PAINT_PENCIL) Then
+                    Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
+                    Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_CLONE) Then
+                    Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
+                    Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                End If
+                
+                'Then, update the cursor to reflect any changes
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
-            Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-            
-            Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-            
-            'Same goes for gradient tools
-            Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-            
         End Select
         
     End If
@@ -738,31 +756,43 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If IsCanvasInteractionAllowed() Then
         
+        'If the color picker is currently in-use, and it was activated using the ALT key,
+        ' we need to restore the user's original tool.
+        If (g_CurrentTool = COLOR_PICKER) And Tools.GetToolAltState() And (vkCode = VK_ALT) Then
+            
+            Tools.SetToolAltState False
+            toolbar_Toolbox.SelectNewTool g_PreviousTool
+            
+            'See detailed notes on these next two lines in the matching _KeyDown statement
+            markEventHandled = True
+            FormMain.HotkeyManager.NotifyAltKeystateChange False
+            
+        End If
+        
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
-        
+            
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
-            Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+            Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
+                
+                'First, notify the correct module
+                If (g_CurrentTool = PAINT_PENCIL) Then
+                    Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
+                    Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_CLONE) Then
+                    Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
+                    Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                End If
+                
+                'Finally, update the canvas cursor to reflect any changes
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
-            Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-                
-            Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-                
-            'Same goes for gradient tools
-            Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
-                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-            
         End Select
         
     End If

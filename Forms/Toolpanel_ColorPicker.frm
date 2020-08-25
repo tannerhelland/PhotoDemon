@@ -492,7 +492,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
 End Sub
 
 Public Sub NotifyMouseReleased()
-    If chkAfter.Value And (g_PreviousTool <> TOOL_UNDEFINED) Then toolbar_Toolbox.SelectNewTool g_PreviousTool
+    If chkAfter.Value And (g_PreviousTool <> TOOL_UNDEFINED) And (Not Tools.GetToolAltState()) Then toolbar_Toolbox.SelectNewTool g_PreviousTool
 End Sub
 
 'Find the average color value of the pixels in the (already prepared) m_SampleDIB object.

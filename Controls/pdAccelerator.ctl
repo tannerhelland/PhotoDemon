@@ -345,6 +345,14 @@ Public Sub ResetKeyStates()
     m_ShiftDown = False
 End Sub
 
+'With some keys (e.g. ALT), PD's main canvas sometimes has to "eat" a keypress to prevent the system
+' from doing something unwanted with it (e.g. stealing focus and giving it to the menu bar).  When this
+' happens, that window *must* notify us of the new key state, because we won't be able to track it
+' (since the window "ate" it).
+Public Sub NotifyAltKeystateChange(ByVal newState As Boolean)
+    m_AltDown = newState
+End Sub
+
 'Add a new accelerator key combination to the collection.  A ton of PD-specific functionality is included in this function, so let me break it down.
 ' - "isProcessorString": if TRUE, hotKeyName is assumed to a be a string meant for PD's central processor.  It will be directly passed
 '    to the processor there when that hotkey is used.
