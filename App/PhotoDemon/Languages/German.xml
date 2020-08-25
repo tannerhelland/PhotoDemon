@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.0.2139</langversion>
+<langversion>8.2.004</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -605,7 +605,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Das FreeImage Interface-Plug-in (FreeImage.dll) wurde nach Programminitialisierung als fehlend markiert oder deaktiviert.
+<translation>Das FreeImage Interface-Plug-in (FreeImage.dll) wurde bei der Programminitialisierung als fehlend markiert oder deaktiviert.
 
 Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (Download unter http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
@@ -1255,7 +1255,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sitzung aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
 
-(Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
+(Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
 
 <phrase>
@@ -2690,7 +2690,7 @@ Bitte stellen Sie sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit 
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
-<translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde nach Programminitialisierung als fehlend markiert.
+<translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde bei der Programminitialisierung als fehlend markiert.
 
 Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
@@ -3704,7 +3704,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Software-Updater wird initialisiert (dieses Feature kann über das Menü "Tools > Optionen" deaktiviert werden)</translation>
+<translation>Software-Updater wird initialisiert (dieses Feature kann über das Menü "Extras > Optionen" deaktiviert werden)</translation>
 </phrase>
 
 <phrase>
@@ -5196,7 +5196,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Zuvor gespeicherte Presets können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neues Preset speichern, indem Sie rechts auf den Button "Preset speichern" klicken.</translation>
+<translation>Zuvor gespeicherte Presets können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neues Preset speichern, durch Klick auf den Button "Preset speichern" rechts.</translation>
 </phrase>
 
 <!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -9245,7 +9245,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, indem Sie in das Vorschaufenster klicken.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster.</translation>
 </phrase>
 
 <phrase>
@@ -9656,7 +9656,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>Sie können auch eine Mittelposition festlegen, indem Sie in das Vorschaufenster klicken</translation>
+<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster</translation>
 </phrase>
 
 <phrase>
@@ -11449,7 +11449,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Tools > Makros > Neues Makro aufzeichnen" verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Extras > Makros > Neues Makro aufzeichnen" verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -11524,7 +11524,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien nach dem Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
+<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien beim Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
 </phrase>
 
 <phrase>
@@ -11544,7 +11544,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie abbrechen möchten, werden alle verarbeiteten Bilder trotzdem im Ausgabeordner vorhanden sein, sodass Sie diese manuell entfernen müssen.</translation>
+<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie abbrechen möchten, werden alle verarbeiteten Bilder trotzdem im Ausgabeordner vorhanden sein, so müssen Sie diese manuell entfernen.</translation>
 </phrase>
 
 <phrase>
@@ -12049,7 +12049,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsdialoge zum Drucken erscheinen.)</translation>
+<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsbildschirme zum Drucken erscheinen.)</translation>
 </phrase>
 
 <phrase>
@@ -13839,7 +13839,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>Der Befehl "Speichern unter" bietet Ihnen immer einen Dialog an, sodass Sie einen neuen Dateinamen, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren können.</translation>
+<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf, so können Sie einen neuen Dateinamen, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
 </phrase>
 
 <phrase>
@@ -14091,7 +14091,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>after clicking, return to previous tool</original>
-<translation></translation>
+<translation>Nach Klick zu vorherigem Tool zurückkehren</translation>
 </phrase>
 
 <phrase>
@@ -15008,7 +15008,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Upon clicking Next, the selected file will automatically be validated and parsed.  Depending on the number of translations present, this process may take a few seconds.</original>
-<translation>Nach einem Klick auf "Weiter" wird die ausgewählte Datei automatisch validiert und geparst. In Abhängig- keit von der Anzahl der vorhanden- en Übersetzungen kann dieser Prozess einige Sekunden dauern.</translation>
+<translation>Beim Klick auf "Weiter" wird die ausgewählte Datei automatisch validiert und geparst. In Abhängigkeit von der Anzahl der vorhandenen Übersetzungen kann dieser Prozess einige Sekunden dauern.</translation>
 </phrase>
 
 <phrase>
@@ -15038,7 +15038,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)</original>
-<translation>(HINWEIS: An dieser Seite vorgenommene Änderungen werden nur dann autom. gespeichert, wenn Sie auf den Button "Weiter" oder "Zurück" klicken.)</translation>
+<translation>(HINWEIS: An dieser Seite vorgenommene Änderungen werden nicht autom. gespeichert, sofern Sie nicht auf den Button "Weiter" oder "Zurück" klicken.)</translation>
 </phrase>
 
 <phrase>
@@ -15599,12 +15599,12 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>the last image format I used in the "Save As" screen</original>
-<translation>Das letzte Bildformat, das ich im Dialog "Speichern unter" verwendet habe</translation>
+<translation>Das letzte Bildformat, das ich im Screen "Speichern unter" verwendet habe</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
 </phrase>
 
 <phrase>
@@ -15694,7 +15694,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klick auf diesen Button, um den Dialog "Nach Farbprofil suchen" anzuzeigen.</translation>
+<translation>Klick auf diesen Button, um den Dialog "Nach Farbprofil durchsuchen" aufzurufen.</translation>
 </phrase>
 
 <phrase>
