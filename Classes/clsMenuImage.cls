@@ -679,8 +679,8 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     HandleMeasureItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Dim MIS As MEASUREITEMSTRUCT
-    CopyMemoryStrict VarPtr(MIS), lParam, Len(MIS)
-
+    CopyMemoryStrict VarPtr(MIS), lParam, LenB(MIS)
+    
     If (MIS.ctlType = ODT_MENU) Then
 
         If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
@@ -691,7 +691,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&
         End If
         
-        CopyMemoryStrict lParam, VarPtr(MIS), Len(MIS)
+        CopyMemoryStrict lParam, VarPtr(MIS), LenB(MIS)
         HandleMeasureItem = 1
         
     End If
@@ -711,7 +711,7 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     Dim lLeft As Long
     Dim MI As MENUINFO
     
-    CopyMemoryStrict VarPtr(DIS), lParam, Len(DIS)
+    CopyMemoryStrict VarPtr(DIS), lParam, LenB(DIS)
 
     If (DIS.ctlType = ODT_MENU) Then
     
@@ -737,8 +737,9 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
         End If
         
         'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled
-        ' and non-hovered menu entries for users of the "classic theme"
-        If Not (m_ClassicThemeWorkaround And isDisabled) Then
+        ' and non-hovered menu entries for users of the "classic theme"; we also need to check for key
+        ' existence as images only exist for some menu items.
+        If (Not (m_ClassicThemeWorkaround And isDisabled)) And KeyExists(DIS.hWndItem & "-" & DIS.itemID) Then
             DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), isDisabled
         End If
         
