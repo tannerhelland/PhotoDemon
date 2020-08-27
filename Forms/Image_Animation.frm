@@ -1,0 +1,738 @@
+VERSION 5.00
+Begin VB.Form FormAnimation 
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   BorderStyle     =   5  'Sizable ToolWindow
+   Caption         =   " Animation options"
+   ClientHeight    =   7230
+   ClientLeft      =   120
+   ClientTop       =   360
+   ClientWidth     =   12060
+   DrawStyle       =   5  'Transparent
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   HasDC           =   0   'False
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   482
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   804
+   ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsAnimated 
+      Height          =   975
+      Left            =   120
+      TabIndex        =   8
+      Top             =   120
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1720
+      Caption         =   "animation enabled for this image"
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Index           =   1
+      Left            =   5880
+      Top             =   120
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   661
+      Caption         =   "preview"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdButtonStrip btsLoop 
+      Height          =   975
+      Left            =   120
+      TabIndex        =   5
+      Top             =   1200
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1720
+      Caption         =   "repeat"
+   End
+   Begin PhotoDemon.pdButtonToolbox btnPlay 
+      Height          =   375
+      Index           =   0
+      Left            =   5880
+      TabIndex        =   2
+      Top             =   6000
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdSliderStandalone sldFrame 
+      Height          =   375
+      Left            =   6360
+      TabIndex        =   1
+      Top             =   6000
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdPictureBox picPreview 
+      Height          =   5295
+      Left            =   5880
+      Top             =   600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   9340
+   End
+   Begin PhotoDemon.pdCommandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   6480
+      Width           =   12060
+      _ExtentX        =   21273
+      _ExtentY        =   1323
+   End
+   Begin PhotoDemon.pdButtonToolbox btnPlay 
+      Height          =   375
+      Index           =   1
+      Left            =   11400
+      TabIndex        =   3
+      Top             =   6000
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdSlider sldLoop 
+      Height          =   735
+      Left            =   480
+      TabIndex        =   4
+      Top             =   2280
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1296
+      Caption         =   "repeat count"
+      FontSizeCaption =   10
+      Min             =   1
+      Max             =   65535
+      ScaleStyle      =   2
+      Value           =   1
+      DefaultValue    =   1
+   End
+   Begin PhotoDemon.pdButtonStrip btsFrameTimes 
+      Height          =   975
+      Left            =   120
+      TabIndex        =   6
+      Top             =   3120
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1720
+      Caption         =   "animation speed"
+   End
+   Begin PhotoDemon.pdSlider sldFrameTime 
+      Height          =   735
+      Left            =   480
+      TabIndex        =   7
+      Top             =   4200
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1296
+      FontSizeCaption =   10
+      Max             =   100000
+      ScaleStyle      =   1
+      ScaleExponent   =   4
+      Value           =   100
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
+End
+Attribute VB_Name = "FormAnimation"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'***************************************************************************
+'Animated PNG export dialog
+'Copyright 2012-2020 by Tanner Helland
+'Created: 26/August/19
+'Last updated: 06/September/19
+'Last update: separate from original animated GIF export dialog, as the two exporters have different needs
+'
+'In v8.0, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
+' export parameters to the user.
+'
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
+'
+'***************************************************************************
+
+Option Explicit
+
+'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
+' the dialog from the batch process dialog, as no image is associated with that preview.
+Private m_SrcImage As pdImage
+
+'To avoid circular updates on animation state changes, we use this tracker
+Private m_DoNotUpdate As Boolean
+
+'A dedicated animation timer is used; it auto-corrects for frame time variations during rendering
+Private WithEvents m_Timer As pdTimerAnimation
+Attribute m_Timer.VB_VarHelpID = -1
+
+'Window size is tracked via subclassing (so we can enforce min width/height)
+Private WithEvents m_WindowSize As pdWindowSize
+Attribute m_WindowSize.VB_VarHelpID = -1
+
+'Animation frames are stored in a spritesheet control, but to simplify display, we also cache a bunch
+' of frame-related details.
+Private Type PD_AnimationFrame
+    
+    'DIB parameters
+    afThumbKey As Long
+    afWidth As Long
+    afHeight As Long
+    
+    'Metadata
+    afFrameDelayOrig As Long
+    
+    'At present, all animation frames default to the same size.  This may change in the future.
+    afOffsetX As Single
+    afOffsetY As Single
+    
+End Type
+
+Private m_Thumbs As pdSpriteSheet
+Private m_Frames() As PD_AnimationFrame
+Private m_FrameCount As Long
+Private m_AniThumbBounds As RectF
+Private m_FrameTimesUndefined As Boolean
+
+'Animation updates are rendered to a temporary DIB, which is then forwarded to the preview window
+Private m_AniFrame As pdDIB
+
+'Because reflowing the UI is energy-intensive, it can be manually suspended until all UI elements
+' are in place.
+Private m_AllowReflow As Boolean, m_DisplayWaitingMsg As Boolean
+
+Private Sub btnPlay_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Play/pause
+        Case 0
+            
+            If btnPlay(Index).Value Then
+                
+                'Reset the current animation frame, as necessary
+                If (m_Timer.GetCurrentFrame() >= m_FrameCount - 1) Then m_Timer.SetCurrentFrame 0
+                
+                'Relay animation settings to the animation timer
+                RelayAnimationSettings
+                
+                'The animation timer handles the rest!
+                m_Timer.StartTimer
+                
+            Else
+                m_Timer.StopTimer
+            End If
+                
+        '1x/repeat
+        Case 1
+            m_Timer.SetRepeat btnPlay(Index).Value
+    
+    End Select
+
+End Sub
+
+Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
+    NotifyNewFrameTimes
+    ReflowInterface
+End Sub
+
+Private Sub btsLoop_Click(ByVal buttonIndex As Long)
+    ReflowInterface
+End Sub
+
+Private Sub cmdBar_CancelClick()
+    m_Timer.StopTimer
+    'm_UserDialogAnswer = vbCancel
+    'Me.Visible = False
+End Sub
+
+Private Sub cmdBar_OKClick()
+    m_Timer.StopTimer
+    'TODO: process changes
+    'm_FormatParamString = GetExportParamString
+    'm_MetadataParamString = mtdManager.GetMetadataSettings
+    'm_UserDialogAnswer = vbOK
+    'Me.Visible = False
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+
+    'If a source image exists, preferentially use its animation loop setting
+    If (Not m_SrcImage Is Nothing) Then
+        If m_SrcImage.ImgStorage.DoesKeyExist("animation-loop-count") Then SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
+    End If
+    
+    'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
+    ' default to a "fixed" frame time suggestion
+    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+    
+End Sub
+
+'Not required at present; may change if the dialog gains lossy (?) options
+Private Sub cmdBar_RequestPreviewUpdate()
+    'UpdatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    
+    'If a source image exists, synchronize output settings to match whatever its original animation
+    ' settings were (if any)
+    If (Not m_SrcImage Is Nothing) Then
+        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
+        
+    'Otherwise, default to reasonable values
+    Else
+        SyncLoopButton 1
+    End If
+    
+    'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
+    ' default to a "fixed" frame time suggestion
+    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Prevent UI reflows until we've initialized certain UI elements
+    m_AllowReflow = False
+    
+    'Make sure our animation objects exist
+    Set m_Thumbs = New pdSpriteSheet
+    Set m_Timer = New pdTimerAnimation
+    
+    'Initialize a window size tracker
+    Set m_WindowSize = New pdWindowSize
+    m_WindowSize.AttachToHWnd Me.hWnd, True, True
+    
+    'Prep any UI elements
+    btsAnimated.AddItem "no", 0
+    btsAnimated.AddItem "yes", 1
+    btsAnimated.ListIndex = 0
+    cmdBar.RequestPresetNoLoad btsAnimated
+    
+    btsLoop.AddItem "none", 0
+    btsLoop.AddItem "forever", 1
+    btsLoop.AddItem "custom", 2
+    btsLoop.ListIndex = 0
+    
+    btsFrameTimes.AddItem "fixed", 0
+    btsFrameTimes.AddItem "pull from layer names", 1
+    btsFrameTimes.ListIndex = 0
+    
+    'Prep a preview (if any)
+    Set m_SrcImage = PDImages.GetActiveImage
+    If (Not m_SrcImage Is Nothing) Then
+        
+        'Synchronize UI settings to current image state
+        If m_SrcImage.IsAnimated() Then btsAnimated.ListIndex = 1
+        
+        'Get loop behavior
+        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
+        If (btsLoop.ListIndex = 1) Then btnPlay(1).Value = True
+        m_Timer.SetRepeat btnPlay(1).Value
+        
+    End If
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    UpdateAgainstCurrentTheme
+    
+    'With theming handled, reflow the interface one final time before displaying the window
+    m_AllowReflow = True
+    ReflowInterface
+    
+    'Update animation frames (so the user can preview them!)
+    If (Not m_SrcImage Is Nothing) Then UpdateAnimationSettings
+    
+    'Render the first frame of the animation
+    RenderAnimationFrame
+    
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    Set m_SrcImage = Nothing
+    ReleaseFormTheming Me
+End Sub
+
+Private Sub SyncLoopButton(ByVal loopAmount As Long)
+    If (loopAmount = 0) Then
+        btsLoop.ListIndex = 1
+    ElseIf (loopAmount >= 2) Then
+        btsLoop.ListIndex = 2
+        sldLoop.Value = loopAmount
+    Else
+        btsLoop.ListIndex = 0
+    End If
+    ReflowInterface
+End Sub
+
+Private Function GetExportParamString() As String
+
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    
+    'The loop setting is a little weird.  0 = loop infinitely, 1 = loop once, 2+ = loop that many times exactly
+    If (btsLoop.ListIndex = 0) Then
+        cParams.AddParam "animation-loop-count", 1
+    ElseIf (btsLoop.ListIndex = 1) Then
+        cParams.AddParam "animation-loop-count", 0
+    Else
+        cParams.AddParam "animation-loop-count", CLng(sldLoop.Value + 1)
+    End If
+    
+    cParams.AddParam "use-fixed-frame-delay", (btsFrameTimes.ListIndex = 0)
+    cParams.AddParam "frame-delay-default", sldFrameTime.Value
+    
+    GetExportParamString = cParams.GetParamString
+    
+End Function
+
+'Load button icons and other various UI bits
+Private Sub UpdateAgainstCurrentTheme()
+    
+    'Play and pause icons are generated at run-time, using the current UI accent color
+    Dim btnIconSize As Long
+    btnIconSize = btnPlay(0).GetWidth - Interface.FixDPI(4)
+    
+    Dim icoPlay As pdDIB
+    Set icoPlay = Interface.GetRuntimeUIDIB(pdri_Play, btnIconSize)
+    
+    Dim icoPause As pdDIB
+    Set icoPause = Interface.GetRuntimeUIDIB(pdri_Pause, btnIconSize)
+    
+    'Assign the icons
+    btnPlay(0).AssignImage vbNullString, icoPlay
+    btnPlay(0).AssignImage_Pressed vbNullString, icoPause
+    
+    'The 1x/repeat icons use prerendered graphics
+    btnIconSize = btnIconSize - 4
+    Dim tmpDIB As pdDIB
+    If g_Resources.LoadImageResource("1x", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage vbNullString, tmpDIB
+    If g_Resources.LoadImageResource("infinity", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage_Pressed vbNullString, tmpDIB
+    
+    'Add a special note to this particular 1x/repeat button, pointing out that it does
+    ' *not* rely on the neighboring looping setting.  (I have mixed feelings about the
+    ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
+    ' animation as a loop without actually committing to it... idk, I may revisit.)
+    Dim tTitle As String, tText As String
+    tTitle = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    tText = g_Language.TranslateMessage("This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.")
+    btnPlay(1).AssignTooltip tText, tTitle
+    
+End Sub
+
+Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
+
+    'Render the current frame
+    RenderAnimationFrame
+    
+    'Synchronize the scrubber
+    m_DoNotUpdate = True
+    sldFrame.Value = idxFrame
+    m_DoNotUpdate = False
+    
+End Sub
+
+'Call at dialog initiation to produce a collection of animation thumbnails (and associated metadata,
+' like frame delay times)
+Private Sub UpdateAnimationSettings()
+    
+    If (m_SrcImage Is Nothing) Then Exit Sub
+
+    'Suspend automatic control-based updates while we get everything synchronized
+    m_DoNotUpdate = True
+    
+    'Load all animation frames.
+    m_FrameCount = m_SrcImage.GetNumOfLayers
+    ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
+    
+    m_Thumbs.ResetCache
+    m_Timer.NotifyFrameCount m_FrameCount
+    
+    sldFrame.Max = m_FrameCount - 1
+    
+    'In animation files, we currently assume all frames are the same size as the image itself,
+    ' because this is how PD pre-processes them.  (This may change in the future.)
+    Dim bWidth As Long, bHeight As Long
+    bWidth = picPreview.GetWidth - 2
+    bHeight = picPreview.GetHeight - 2
+    
+    'Figure out what size to use for the animation thumbnails
+    Dim thumbSize As Long
+    Dim thumbImageWidth As Long, thumbImageHeight As Long
+    PDMath.ConvertAspectRatio m_SrcImage.Width, m_SrcImage.Height, bWidth, bHeight, thumbImageWidth, thumbImageHeight
+    
+    'Ensure the thumb isn't larger than the actual image
+    If (thumbImageWidth > m_SrcImage.Width) Or (thumbImageHeight > m_SrcImage.Height) Then
+        thumbImageWidth = m_SrcImage.Width
+        thumbImageHeight = m_SrcImage.Height
+    End If
+    
+    'Use the larger dimension to construct the thumb.  (For simplicity, thumbs are always square.)
+    If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
+    
+    'Prepare our temporary animation buffer; we don't use it here, but it makes sense to initialize it
+    ' to the required size now
+    If (m_AniFrame Is Nothing) Then Set m_AniFrame = New pdDIB
+    m_AniFrame.CreateBlank thumbSize, thumbSize, 32, 0, 0
+    
+    Dim xThumb As Long, yThumb As Long
+    xThumb = Int((bWidth * 0.5) - (thumbSize * 0.5) + 0.5)
+    yThumb = Int((bHeight * 0.5) - (thumbSize * 0.5) + 0.5)
+    
+    'Store the boundary rect of where the thumb will actually appear; we need this for rendering
+    ' a transparency checkerboard
+    With m_AniThumbBounds
+        .Left = Int((thumbSize - thumbImageWidth) \ 2)
+        .Top = Int((thumbSize - thumbImageHeight) \ 2)
+        .Width = thumbImageWidth
+        .Height = thumbImageHeight
+    End With
+    
+    'Before generating our preview images, we need to figure out how many frames we
+    ' can fit on a shared spritesheet.  (We use sheets to cut down on resource usage;
+    ' otherwise we'll end up producing a horrifying number of GDI objects.)  The key
+    ' here is that we don't want sheets to grow too large; if they're huge, they risk
+    ' not being generated at all.
+    
+    'For now, I use a (conservative?) upper limit of ~24mb per sheet
+    Dim sheetSizeLimit As Long
+    sheetSizeLimit = 24000000
+    
+    Dim numFramesPerSheet As Long
+    numFramesPerSheet = sheetSizeLimit / (thumbSize * thumbSize * 4)
+    If (numFramesPerSheet < 2) Then numFramesPerSheet = 2
+    m_Thumbs.SetMaxSpritesInColumn numFramesPerSheet
+    Debug.Print numFramesPerSheet, thumbSize
+    Dim numZeroFrameDelays As Long
+    
+    'Load all thumbnails
+    Dim i As Long, tmpDIB As pdDIB
+    For i = 0 To m_FrameCount - 1
+        
+        'Retrieve an updated thumbnail
+        If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
+        
+        m_Frames(i).afWidth = thumbSize
+        m_Frames(i).afHeight = thumbSize
+        m_Frames(i).afOffsetX = xThumb
+        m_Frames(i).afOffsetY = yThumb
+        
+        m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, thumbSize, False, VarPtr(m_AniThumbBounds)
+        m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
+        
+        'Retrieve layer frame times and relay them to the animation object
+        m_Frames(i).afFrameDelayOrig = Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0)
+        If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
+        
+    Next i
+    
+    'If one or more valid frame time amounts were discovered, default to "pull frame times from
+    ' layer names" - otherwise, default to a fixed delay for *all* frames.
+    m_FrameTimesUndefined = (numZeroFrameDelays = m_FrameCount)
+    
+    'Relay frame times to the animator
+    NotifyNewFrameTimes
+    
+    m_DoNotUpdate = False
+    
+    'Render the first frame of the animation
+    RenderAnimationFrame
+    
+End Sub
+
+Private Sub RelayAnimationSettings()
+    m_Timer.NotifyFrameCount m_FrameCount
+    NotifyNewFrameTimes
+End Sub
+
+'Render the current animation frame
+Private Sub RenderAnimationFrame()
+    
+    If m_DoNotUpdate Then Exit Sub
+    If (m_AniFrame Is Nothing) Then Exit Sub
+    
+    Dim idxFrame As Long
+    idxFrame = m_Timer.GetCurrentFrame()
+    
+    'Make sure the frame request is valid; if it isn't, exit immediately
+    If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
+        
+        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+        m_AniFrame.ResetDIB 0
+        
+        'Paint a checkerboard background only over the relevant image region, followed by the frame itself
+        With m_Frames(idxFrame)
+            
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, m_AniThumbBounds.Left, m_AniThumbBounds.Top, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , False, True
+            
+            'Make sure we have the necessary image in the spritesheet cache
+            If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
+                m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, 0, 0, m_Frames(idxFrame).afThumbKey
+            End If
+            
+        End With
+        
+        'Paint the final result to the screen, as relevant
+        picPreview.CopyDIB m_AniFrame, False, True, True, True
+        
+    'If our frame counter is invalid, end all animations
+    Else
+        m_Timer.StopTimer
+    End If
+        
+End Sub
+
+Private Sub m_Timer_EndOfAnimation()
+
+    m_DoNotUpdate = True
+    If btnPlay(0).Value Then btnPlay(0).Value = False
+    sldFrame.Value = m_Timer.GetCurrentFrame()
+    m_DoNotUpdate = False
+    
+End Sub
+
+Private Sub m_WindowSize_WindowMaxMinRequested(minWidth As Long, minHeight As Long, maxWidth As Long, maxHeight As Long)
+    minWidth = (btsAnimated.GetLeft + btsAnimated.GetWidth) * 2
+    minHeight = Interface.FixDPI(480)
+End Sub
+
+Private Sub m_WindowSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    ReflowInterface False
+End Sub
+
+Private Sub m_WindowSize_WindowResizeFinal(ByVal newWidth As Long, ByVal newHeight As Long)
+    m_DisplayWaitingMsg = False
+    ReflowInterface True
+End Sub
+
+Private Sub m_WindowSize_WindowResizeInitial()
+    m_DisplayWaitingMsg = True
+End Sub
+
+Private Sub sldFrame_Change()
+    If (Not m_DoNotUpdate) Then
+        m_Timer.StopTimer
+        m_Timer.SetCurrentFrame sldFrame.Value
+    End If
+End Sub
+
+Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False)
+        
+    If (Not m_AllowReflow) Then Exit Sub
+        
+    'Handle the left side of the interface first
+    Dim yPadding As Long, yPaddingTitle As Long
+    yPadding = Interface.FixDPI(8)
+    yPaddingTitle = Interface.FixDPI(12)
+    
+    Dim yOffset As Long
+    yOffset = btsAnimated.GetTop + btsAnimated.GetHeight + yPadding
+    
+    'If this image doesn't support animation, hide most UI elements
+    If (btsAnimated.ListIndex = 0) Then
+        btsLoop.Visible = False
+        sldLoop.Visible = False
+        btsFrameTimes.Visible = False
+        sldFrameTime.Visible = False
+        picPreview.PaintText "previews disabled", 12, True
+        btnPlay(0).Visible = False
+        btnPlay(1).Visible = False
+        sldFrame.Visible = False
+    
+    'If this image *does* support animation, we need to enable and reflow all controls
+    Else
+    
+        btsLoop.SetTop yOffset
+        yOffset = yOffset + btsLoop.GetHeight + yPadding
+        
+        sldLoop.Visible = (btsLoop.ListIndex = 2)
+        If sldLoop.Visible Then
+            sldLoop.SetTop yOffset
+            yOffset = yOffset + sldLoop.GetHeight + yPaddingTitle
+        Else
+            yOffset = yOffset - yPadding + yPaddingTitle
+        End If
+    
+        btsFrameTimes.SetTop yOffset
+        yOffset = yOffset + btsFrameTimes.GetHeight + yPadding
+        
+        If (btsFrameTimes.ListIndex = 0) Then
+            sldFrameTime.Caption = g_Language.TranslateMessage("frame time (in ms)")
+        ElseIf (btsFrameTimes.ListIndex = 1) Then
+            sldFrameTime.Caption = g_Language.TranslateMessage("frame time for undefined layers (in ms)")
+        End If
+        
+        sldFrameTime.SetTop yOffset
+        yOffset = yOffset + sldFrameTime.GetHeight + yPaddingTitle
+        
+    End If
+    
+    'With the left side complete, we can now move to the right side.  Importantly, if the width of
+    ' the right side changes, we need to rebuild our animation preview to match.
+    
+    'Start with the top label
+    Dim myWidth As Long, myHeight As Long
+    If (Not g_WindowManager Is Nothing) Then
+        myWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+        myHeight = g_WindowManager.GetClientHeight(Me.hWnd)
+    Else
+        myWidth = Me.ScaleWidth
+        myHeight = Me.ScaleHeight
+    End If
+    
+    lblTitle(1).SetWidth myWidth - lblTitle(1).GetLeft
+    
+    'Next, set the *bottom* playback controls
+    btnPlay(0).SetTop myHeight - cmdBar.GetHeight - yPadding - btnPlay(0).GetHeight
+    btnPlay(1).SetPosition myWidth - yPadding - btnPlay(1).GetWidth, btnPlay(0).GetTop
+    sldFrame.SetPositionAndSize btnPlay(0).GetLeft + btnPlay(0).GetWidth + yPadding, btnPlay(0).GetTop, (btnPlay(1).GetLeft - (btnPlay(0).GetLeft + btnPlay(0).GetWidth)) - (yPadding * 2), sldFrame.GetHeight
+    
+    'Stretch the preview box to fit between the top label and bottom playback controls
+    picPreview.SetSize lblTitle(1).GetWidth - yPadding, (btnPlay(0).GetTop - picPreview.GetTop) - (yPadding * 2)
+    
+    'We may need to generate new animation settings.  This is resource-intensive, so only
+    ' do it when the preview area size changes
+    If updateAnimationToo Then UpdateAnimationSettings
+    If m_DisplayWaitingMsg Then picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
+    
+End Sub
+
+Private Sub sldFrameTime_Change()
+    NotifyNewFrameTimes
+End Sub
+
+Private Sub NotifyNewFrameTimes()
+    
+    Dim useFixedTime As Boolean, fixedTimeMS As Long
+    useFixedTime = (btsFrameTimes.ListIndex = 0)
+    fixedTimeMS = sldFrameTime.Value
+    
+    Dim i As Long
+    For i = 0 To m_FrameCount - 1
+        If (m_Frames(i).afFrameDelayOrig = 0) Or useFixedTime Then
+            m_Timer.NotifyFrameTime fixedTimeMS, i
+        Else
+            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
+        End If
+    Next i
+    
+End Sub
