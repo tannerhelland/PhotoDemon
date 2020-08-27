@@ -79,15 +79,17 @@ End Sub
 Friend Function ContainsString(ByRef srcString As String, Optional ByVal ignoreCase As Boolean = False) As Long
 
     ContainsString = -1
-    If (m_NumOfStrings = 0) Then Exit Function
+    If (m_NumOfStrings > 0) Then
     
-    Dim i As Long
-    For i = 0 To m_NumOfStrings - 1
-        If Strings.StringsEqual(srcString, m_Strings(i), ignoreCase) Then
-            ContainsString = i
-            Exit Function
-        End If
-    Next i
+        Dim i As Long
+        For i = 0 To m_NumOfStrings - 1
+            If Strings.StringsEqual(srcString, m_Strings(i), ignoreCase) Then
+                ContainsString = i
+                Exit For
+            End If
+        Next i
+        
+    End If
 
 End Function
 

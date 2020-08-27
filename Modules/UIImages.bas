@@ -3,8 +3,14 @@ Attribute VB_Name = "UIImages"
 'PhotoDemon Central UI image cache
 'Copyright 2018-2020 by Tanner Helland
 'Created: 13/July/18
-'Last updated: 13/July/18
-'Last update: initial build
+'Last updated: 27/August/20
+'Last update: remove ResetCache function; this was causing issues if the user loaded the theme dialog,
+'             made changes, then *canceled* the dialog (because the icon cache was being cleared,
+'             but UI elements were detecting an identical theme to their previous render and were thus
+'             skipping icon reloading steps).  Instead, duplicate icons are intelligently located and
+'             updated in-place.  If the theme dialog is canceled, indices still point to valid
+'             locations in the icon table, and no extra work is required on our end regardless of
+'             whether the user accepts or cancels the theme dialog.
 '
 'PhotoDemon uses a *lot* of UI images.  The amount of GDI objects required for these surfaces is
 ' substantial, and we can greatly reduce requirements by using something akin to "sprite sheets",
@@ -34,17 +40,17 @@ Private Const MAX_SPRITES_IN_COLUMN As Long = 8
 
 'Individual cache object.  This module manages a one-dimensional array of these headers.
 Private Type ImgCacheEntry
-    SpriteWidth As Long
-    SpriteHeight As Long
-    NumImages As Long
+    spriteWidth As Long
+    spriteHeight As Long
+    numImages As Long
     ImgSpriteSheet As pdDIB
-    SpriteNames As pdStringStack
+    spriteNames As pdStringStack
 End Type
 
 'Cheap way to "fake" integer access inside a long
 Private Type FakeDWord
-    WordOne As Integer
-    WordTwo As Integer
+    wordOne As Integer
+    wordTwo As Integer
 End Type
 
 'The actual cache.  Resized dynamically as additional images are added.
@@ -62,10 +68,17 @@ Private m_NumOfCacheObjects As Long
 '
 'RETURNS: non-zero value if successful; zero if the function fails.
 Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String) As Long
-
+    
     'Failsafe checks
-    If (srcDIB Is Nothing) Then Exit Function
-    If (LenB(uniqueImageName) = 0) Then Exit Function
+    If (srcDIB Is Nothing) Then
+        PDDebug.LogAction "WARNING!  UIImages.AddImage was passed a null DIB"
+        Exit Function
+    End If
+    
+    If (LenB(uniqueImageName) = 0) Then
+        PDDebug.LogAction "WARNING!  UIImages.AddImage was passed a zero-length DIB name"
+        Exit Function
+    End If
     
     Dim i As Long
     
@@ -82,8 +95,8 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
         
         'Look for a cache with matching dimensions
         For i = 0 To m_NumOfCacheObjects - 1
-            If (m_ImageCache(i).SpriteWidth = targetWidth) Then
-                If (m_ImageCache(i).SpriteHeight = targetHeight) Then
+            If (m_ImageCache(i).spriteWidth = targetWidth) Then
+                If (m_ImageCache(i).spriteHeight = targetHeight) Then
                     targetIndex = i
                     Exit For
                 End If
@@ -101,27 +114,28 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     ' new image to it.
     If (targetIndex >= 0) Then
         
+        Dim targetRow As Long, targetColumn As Long
+        
         'Before adding this sprite, perform a quick check for duplicate IDs.  If one is found,
         ' return the existing sprite instead of adding it anew.
-        targetID = m_ImageCache(targetIndex).SpriteNames.ContainsString(uniqueImageName, True) + 1
+        targetID = m_ImageCache(targetIndex).spriteNames.ContainsString(uniqueImageName, True) + 1
         
         If (targetID = 0) Then
         
             'We have an existing sprite sheet with dimensions identical to this one!  Figure out
             ' if we need to resize the sprite sheet to account for another addition to it.
-            Dim targetRow As Long, targetColumn As Long
-            GetNumRowsColumns targetIndex, m_ImageCache(targetIndex).NumImages, targetRow, targetColumn
+            GetNumRowsColumns targetIndex, m_ImageCache(targetIndex).numImages, targetRow, targetColumn
             
             'If this sprite sheet is still only one-column tall, we may need to resize it vertically
             Dim newDibRequired As Boolean
             With m_ImageCache(targetIndex)
             
                 If (targetColumn = 0) Then
-                    newDibRequired = ((targetRow + 1) * .SpriteHeight) > .ImgSpriteSheet.GetDIBHeight
+                    newDibRequired = ((targetRow + 1) * .spriteHeight) > .ImgSpriteSheet.GetDIBHeight
                 
                 'Otherwise, we may need to resize it horizontally
                 Else
-                    newDibRequired = ((targetColumn + 1) * .SpriteWidth) > .ImgSpriteSheet.GetDIBWidth
+                    newDibRequired = ((targetColumn + 1) * .spriteWidth) > .ImgSpriteSheet.GetDIBWidth
                 End If
             
             End With
@@ -134,14 +148,14 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
                     Dim tmpDIB As pdDIB
                     Set tmpDIB = New pdDIB
                     If (targetColumn = 0) Then
-                        tmpDIB.CreateBlank .SpriteWidth, .SpriteHeight * (.NumImages + 1), 32, 0, 0
+                        tmpDIB.CreateBlank .spriteWidth, .spriteHeight * (.numImages + 1), 32, 0, 0
                         tmpDIB.SetInitialAlphaPremultiplicationState True
-                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .SpriteWidth, .ImgSpriteSheet.GetDIBHeight, .ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
+                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .spriteWidth, .ImgSpriteSheet.GetDIBHeight, .ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
                         Set .ImgSpriteSheet = tmpDIB
                     Else
                         
                         'When adding a new column to a DIB, we *leave* the DIB at its maximum row size
-                        tmpDIB.CreateBlank .SpriteWidth * (targetColumn + 1), .ImgSpriteSheet.GetDIBHeight, 32, 0, 0
+                        tmpDIB.CreateBlank .spriteWidth * (targetColumn + 1), .ImgSpriteSheet.GetDIBHeight, 32, 0, 0
                         tmpDIB.SetInitialAlphaPremultiplicationState True
                         GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .ImgSpriteSheet.GetDIBWidth, .ImgSpriteSheet.GetDIBHeight, .ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
                         Set .ImgSpriteSheet = tmpDIB
@@ -154,15 +168,23 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             
             'Paint the new DIB into place, and update all target references to reflect the correct index
             With m_ImageCache(targetIndex)
-                GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .spriteWidth, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
                 .ImgSpriteSheet.FreeFromDC
-                .NumImages = .NumImages + 1
-                targetID = .NumImages
-                .SpriteNames.AddString uniqueImageName
+                .numImages = .numImages + 1
+                targetID = .numImages
+                .spriteNames.AddString uniqueImageName
             End With
-            
+        
+        'Duplicate entries are okay!  These can occur after the user changes the UI theme from
+        ' e.g. color to monochrome icons; all icons already exist, but they need to be updated
+        ' with their new monochrome equivalents.  To accomplish this, we just want to update
+        ' the image in-place with whatever new version we've been passed.
         Else
-            'Duplicate entry found; that's okay - reuse it as-is!
+            With m_ImageCache(targetIndex)
+                GetNumRowsColumns targetIndex, targetID - 1, targetRow, targetColumn
+                GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .spriteWidth, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                .ImgSpriteSheet.FreeFromDC
+            End With
         End If
             
     'If we didn't find a matching spritesheet, we must create a new one
@@ -177,10 +199,10 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
         'Prep a generic header
         With m_ImageCache(m_NumOfCacheObjects)
             
-            .SpriteWidth = targetWidth
-            .SpriteHeight = targetHeight
-            .NumImages = 1
-            targetID = .NumImages
+            .spriteWidth = targetWidth
+            .spriteHeight = targetHeight
+            .numImages = 1
+            targetID = .numImages
             
             'Create the first sprite sheet entry
             Set .ImgSpriteSheet = New pdDIB
@@ -188,8 +210,8 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             .ImgSpriteSheet.FreeFromDC
             
             'Add this sprite's name to the collection
-            Set .SpriteNames = New pdStringStack
-            .SpriteNames.AddString uniqueImageName
+            Set .spriteNames = New pdStringStack
+            .spriteNames.AddString uniqueImageName
             
         End With
         
@@ -205,8 +227,8 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     '   - 1st 2-bytes: index into the cache
     '   - 2nd 2-bytes: index into that cache object's spritesheet
     Dim tmpDWord As FakeDWord
-    tmpDWord.WordOne = targetIndex
-    tmpDWord.WordTwo = targetID
+    tmpDWord.wordOne = targetIndex
+    tmpDWord.wordTwo = targetID
     
     CopyMemoryStrict VarPtr(AddImage), VarPtr(tmpDWord), 4
     
@@ -219,12 +241,15 @@ Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
 
     'Resolve the image ID into a target index and image number
     Dim targetIndex As Long, imgNumber As Long, tmpDWord As FakeDWord
-    CopyMemoryStrict VarPtr(tmpDWord), VarPtr(srcImgID), 4
-    targetIndex = tmpDWord.WordOne
-    imgNumber = tmpDWord.WordTwo - 1
+    PutMem4 VarPtr(tmpDWord), srcImgID
+    targetIndex = tmpDWord.wordOne
+    imgNumber = tmpDWord.wordTwo - 1
     
     'Failsafe checks
-    If (targetIndex > UBound(m_ImageCache)) Then Exit Function
+    If (targetIndex > UBound(m_ImageCache)) Then
+        PDDebug.LogAction "WARNING!  Failed to resolve index into UI image cache."
+        Exit Function
+    End If
     
     'Resolve the image number into a sprite row and column
     Dim targetRow As Long, targetColumn As Long
@@ -233,7 +258,7 @@ Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
     'Paint the result!
     If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
         With m_ImageCache(targetIndex)
-            .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
+            .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .spriteWidth, .spriteHeight, targetColumn * .spriteWidth, targetRow * .spriteHeight, .spriteWidth, .spriteHeight
             .ImgSpriteSheet.FreeFromDC
         End With
     Else
@@ -246,11 +271,4 @@ End Function
 Private Sub GetNumRowsColumns(ByVal srcCacheIndex As Long, ByVal srcImageIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long)
     dstRow = srcImageIndex Mod MAX_SPRITES_IN_COLUMN
     dstColumn = srcImageIndex \ MAX_SPRITES_IN_COLUMN
-End Sub
-
-'Fully reset the cache.  NOTE: this will invalidate all previously returned handles, so you *must*
-' re-add any required images to the cache.
-Public Sub ResetCache()
-    ReDim m_ImageCache(0) As ImgCacheEntry
-    m_NumOfCacheObjects = 0
 End Sub

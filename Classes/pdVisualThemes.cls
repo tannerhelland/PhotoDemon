@@ -403,10 +403,6 @@ Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
         If (LenB(accentName) <> 0) Then UserPrefs.WritePreference "Themes", "CurrentAccent", accentName
     End If
     
-    'Whenever we apply a new theme, we need to forcibly reset any cached UI images, as they will likely
-    ' need to be redrawn.
-    UIImages.ResetCache
-        
 End Function
 
 Friend Function GetCurrentThemeClass() As PD_THEME_CLASS
@@ -497,7 +493,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             CacheUniversalColors
             
             'Generate a unique "ID" for this theme; individual controls use this to know if they need to re-theme or not
-            If (Len(overrideColorDefinitionFilename) <> 0) Then
+            If (LenB(overrideColorDefinitionFilename) <> 0) Then
                 m_CurrentThemeID = themeFilename & "-" & overrideColorDefinitionFilename
             Else
                 m_CurrentThemeID = themeFilename

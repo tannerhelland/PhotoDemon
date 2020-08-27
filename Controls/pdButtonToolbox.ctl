@@ -400,9 +400,9 @@ Private Sub GenerateVariantButtonImages(ByRef srcDIB As pdDIB, ByRef origImageNa
     'Premultiply the target DIB, then add it to the central cache
     tmpDIB.SetAlphaPremultiplication True, True
     If thisIsSpecialPressedImage Then
-        m_SpriteHandles(st_HoverPressed) = UIImages.AddImage(tmpDIB, origImageName & "-hover")
+        m_SpriteHandles(st_HoverPressed) = UIImages.AddImage(tmpDIB, origImageName & "-h-p")
     Else
-        m_SpriteHandles(st_Hover) = UIImages.AddImage(tmpDIB, origImageName & "-hover")
+        m_SpriteHandles(st_Hover) = UIImages.AddImage(tmpDIB, origImageName & "-h")
     End If
     
     tmpDIB.ResetDIB 0
@@ -438,9 +438,9 @@ Private Sub GenerateVariantButtonImages(ByRef srcDIB As pdDIB, ByRef origImageNa
     'As before, premultiply alpha, then add the image to PD's central cache
     tmpDIB.SetAlphaPremultiplication True, True
     If thisIsSpecialPressedImage Then
-        m_SpriteHandles(st_DisabledPressed) = UIImages.AddImage(tmpDIB, origImageName & "-disabled")
+        m_SpriteHandles(st_DisabledPressed) = UIImages.AddImage(tmpDIB, origImageName & "-d-p")
     Else
-        m_SpriteHandles(st_Disabled) = UIImages.AddImage(tmpDIB, origImageName & "-disabled")
+        m_SpriteHandles(st_Disabled) = UIImages.AddImage(tmpDIB, origImageName & "-d")
     End If
     
 End Sub
