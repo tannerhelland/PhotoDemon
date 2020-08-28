@@ -180,6 +180,11 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
     
 End Sub
 
+'For fast notifications of frame time changes, use this simplified wrapper.
+Public Sub NotifyFrameTimeChange(ByVal layerIndex As Long, ByVal newFrameTimeInMS As Long)
+    nvgMain.NotifyFrameTimeChange layerIndex, newFrameTimeInMS
+End Sub
+
 Public Sub NotifyStopAnimations()
     nvgMain.EndAnimations
 End Sub

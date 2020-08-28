@@ -100,8 +100,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2020 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 23/August/17
-'Last update: add automatic handling for Enter/Esc keypresses from child controls
+'Last updated: 26/August/20
+'Last update: parent windows can now manually opt out of automatic p/resets for specific controls
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -231,6 +231,11 @@ Private m_Presets As pdToolPreset
 
 'Individual preset values are parsed using PD's high-performance XML parser
 Private m_Params As pdSerialize
+
+'The caller may not want us to auto-load certain values.  That's fine.  They'll notify us
+' of any controls they do *not* want loaded via a dedicated function, and we'll store all
+' flagged control IDs here.
+Private m_NoLoadList As pdStringStack
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -376,6 +381,23 @@ End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+'If you want to request that this control does *NOT* load presets for a given control,
+' you must call this function during Form_Load (or somewhere else prior to preset loading)
+' and pass any objects that you do *not* want loaded.
+Public Sub RequestPresetNoLoad(ByRef srcObject As Object)
+    
+    'Generate a name for this control using the same schema we use for preset storage
+    Dim controlName As String, controlIndex As Long
+    controlName = srcObject.Name
+    If VBHacks.InControlArray(srcObject) Then controlIndex = srcObject.Index Else controlIndex = -1
+    If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
+    
+    'Store the name
+    If (m_NoLoadList Is Nothing) Then Set m_NoLoadList = New pdStringStack
+    m_NoLoadList.AddString controlName
+    
 End Sub
 
 'When a preset is selected from the drop-down, load it.  Note that we change the combo box .ListIndex when adding a new preset;
@@ -651,7 +673,7 @@ End Sub
 
 'RESET button
 Private Sub ResetSettings()
-
+    
     'Disable previews
     m_allowPreviews = False
     
@@ -672,65 +694,81 @@ Private Sub ResetSettings()
     Dim optButtonHasBeenSet As Boolean
     optButtonHasBeenSet = False
     
+    Dim controlName As String, controlIndex As Long
+    
     'Iterate through each control on the form.  Check its type, then write out its relevant "value" property.
     Dim eControl As Object
     For Each eControl In Parent.Controls
         
-        controlType = TypeName(eControl)
-            
-        'How we reset a control is dependent on its type (obviously).
-        Select Case controlType
+        'If the caller has requested that we don't load certain presets, that same behavior
+        ' extends to auto-resets.
+        Dim okToLoad As Boolean: okToLoad = True
+        If (Not m_NoLoadList Is Nothing) Then
+            controlName = eControl.Name
+            If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
+            If (Not m_NoLoadList Is Nothing) Then okToLoad = (m_NoLoadList.ContainsString(controlName, True) < 0)
+        End If
         
-            'Custom PD numeric controls support a built-in RESET property
-            Case "pdSlider", "pdSpinner"
-                eControl.Reset
+        If okToLoad Then
+            
+            controlType = TypeName(eControl)
                 
-            'Color pickers are turned white
-            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
-                eControl.Color = RGB(255, 255, 255)
+            'How we reset a control is dependent on its type (obviously).
+            Select Case controlType
             
-            'Check boxes are always checked
-            Case "pdCheckBox"
-                eControl.Value = True
-            
-            'The first option button on the page is selected
-            Case "pdRadioButton"
-                If (Not optButtonHasBeenSet) Then
+                'Custom PD numeric controls support a built-in RESET property
+                Case "pdSlider", "pdSpinner"
+                    eControl.Reset
+                    
+                'Color pickers are turned white
+                Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
+                    eControl.Color = RGB(255, 255, 255)
+                
+                'Check boxes are always checked
+                Case "pdCheckBox"
                     eControl.Value = True
-                    optButtonHasBeenSet = True
-                End If
                 
-            'Button strips are set to their first entry
-            Case "pdButtonStrip"
-                If (Not eControl.DontAutoReset) Then eControl.ListIndex = 0
+                'The first option button on the page is selected
+                Case "pdRadioButton"
+                    If (Not optButtonHasBeenSet) Then
+                        eControl.Value = True
+                        optButtonHasBeenSet = True
+                    End If
+                    
+                'Button strips are set to their first entry
+                Case "pdButtonStrip"
+                    If (Not eControl.DontAutoReset) Then eControl.ListIndex = 0
+                
+                Case "pdButtonStripVertical"
+                    eControl.ListIndex = 0
+                
+                'Scroll bars obey the same rules as other numeric controls
+                Case "HScrollBar", "VScrollBar"
+                    If (eControl.Min <= 0) Then eControl.Value = 0 Else eControl.Value = eControl.Min
+                    
+                'List boxes and combo boxes are set to their first entry
+                Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"
+                
+                    'Make sure the combo box is not the preset box on this command button!
+                    If (eControl.hWnd <> cboPreset.hWnd) Then eControl.ListIndex = 0
+                    
+                'PD's font combo box is reset to the current system font
+                Case "pdDropDownFont"
+                    eControl.ListIndex = eControl.ListIndexByString(Fonts.GetUIFontName())
+                
+                'Text boxes are set to 0
+                Case "TextBox", "pdTextBox"
+                    eControl.Text = "0"
+                    
+                'More modern PD controls have built-in reset functionality
+                Case "pdMetadataExport", "pdRandomizeUI"
+                    eControl.Reset
+                    
+            End Select
             
-            Case "pdButtonStripVertical"
-                eControl.ListIndex = 0
+        End If
             
-            'Scroll bars obey the same rules as other numeric controls
-            Case "HScrollBar", "VScrollBar"
-                If (eControl.Min <= 0) Then eControl.Value = 0 Else eControl.Value = eControl.Min
-                
-            'List boxes and combo boxes are set to their first entry
-            Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"
-            
-                'Make sure the combo box is not the preset box on this command button!
-                If (eControl.hWnd <> cboPreset.hWnd) Then eControl.ListIndex = 0
-                
-            'PD's font combo box is reset to the current system font
-            Case "pdDropDownFont"
-                eControl.ListIndex = eControl.ListIndexByString(Fonts.GetUIFontName())
-            
-            'Text boxes are set to 0
-            Case "TextBox", "pdTextBox"
-                eControl.Text = "0"
-                
-            'More modern PD controls have built-in reset functionality
-            Case "pdMetadataExport", "pdRandomizeUI"
-                eControl.Reset
-                
-        End Select
-        
     Next eControl
     
     RaiseEvent ResetClick
@@ -1141,8 +1179,11 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
                 If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
                 If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
                 
+                Dim okToLoad As Boolean: okToLoad = True
+                If (Not m_NoLoadList Is Nothing) Then okToLoad = Not m_NoLoadList.ContainsString(controlName, True)
+                
                 'See if a preset exists for this control and this particular preset
-                If m_Params.GetStringEx(controlName, controlValue) Then
+                If (okToLoad And m_Params.GetStringEx(controlName, controlValue)) Then
                     
                     'A value for this control exists, and it has been retrieved into controlValue.  We sort handling of this value
                     ' by control type, as different controls require different input values (bool, int, etc).

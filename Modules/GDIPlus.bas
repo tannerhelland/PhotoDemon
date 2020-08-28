@@ -2702,6 +2702,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 
                 Dim cFrame As Long
                 For cFrame = 0 To m_FrameCount - 1
+                    targetImage.GetLayerByIndex(cFrame).SetLayerFrameTimeInMS m_FrameTimes(cFrame)
                     targetImage.GetLayerByIndex(cFrame).SetLayerName targetImage.GetLayerByIndex(cFrame).GetLayerName & " (" & CStr(m_FrameTimes(cFrame)) & "ms)"
                 Next cFrame
                 

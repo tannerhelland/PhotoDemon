@@ -1017,6 +1017,40 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
 
 End Function
 
+'Shorter version of shlwapi's StrFromTimeIntervalW, function;
+' returns time as "XX:YY" instead of "XX min YY sec" to avoid localization complexities.
+Public Function StrFromTimeInMS(ByVal timeInMS As Long, Optional ByVal allowFractionalSeconds As Boolean = False) As String
+    
+    'We don't need ms precision
+    Dim timeAsFloat As Single
+    timeAsFloat = CSng(timeInMS) / 1000!
+    If (Not allowFractionalSeconds) Then timeAsFloat = Int(timeAsFloat)
+    
+    Dim tmHours As Long, tmMinutes As Long, tmSeconds As Single
+    tmHours = Int((timeAsFloat / 60!) / 60!)
+    timeAsFloat = timeAsFloat - (tmHours * 60 * 60)
+    
+    tmMinutes = Int(timeAsFloat / 60!)
+    timeAsFloat = timeAsFloat - (tmMinutes * 60)
+    
+    tmSeconds = timeAsFloat
+    
+    If (tmHours > 0) Then StrFromTimeInMS = Format$(tmHours, "00") & ":"
+    If (tmMinutes > 0) Then StrFromTimeInMS = StrFromTimeInMS & Format$(tmMinutes, "00") & ":"
+    
+    If allowFractionalSeconds Then
+        StrFromTimeInMS = StrFromTimeInMS & Format$(tmSeconds, "00.00#")
+    Else
+        StrFromTimeInMS = StrFromTimeInMS & Format$(Int(tmSeconds), "00")
+    End If
+    
+    'Time is self-explanatory when minutes and/or hours are present, but it's a more nebulous
+    ' unit "at-a-glance" when it's just seconds.  Since we already have a localized string for
+    ' seconds, append it as necessary.
+    If (tmHours = 0) And (tmMinutes = 0) Then StrFromTimeInMS = StrFromTimeInMS & " " & g_Language.TranslateMessage("seconds")
+    
+End Function
+
 'When passing file and path strings among API calls, they often have to be pre-initialized to some arbitrary buffer length
 ' (typically MAX_PATH).  When finished, the string needs to be resized to remove any null chars.  Use this function to do so.
 Public Function TrimNull(ByRef origString As String) As String

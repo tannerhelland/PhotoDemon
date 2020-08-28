@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3479</langversion>
+<langversion>6.8.3480</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1566,6 +1566,11 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
+<original>Animation settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Compare images</original>
 <translation></translation>
 </phrase>
@@ -2480,7 +2485,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Rensa senaste makro listan</translation>
 </phrase>
 
-<!-- Menus.bas contains 260 phrases. 30 were duplicates of existing phrases, so only 230 new phrases were written to file. -->
+<!-- Menus.bas contains 261 phrases. 30 were duplicates of existing phrases, so only 231 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3444,7 +3449,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 
 <!-- BEGIN text for Strings.bas -->
 
-<!-- Strings.bas contains 0 phrases. -->
+<!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Strings.bas-->
 
@@ -5390,11 +5395,16 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Current frame: %1</original>
+<original>Current frame: %1 of %2</original>
 <translation></translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>%1 of %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdNavigator.ctl-->
 
@@ -5964,6 +5974,11 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Flip vertical</original>
 <translation>Flip vertikal</translation>
+</phrase>
+
+<phrase>
+<original>Animation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6709,7 +6724,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Språk ändrats.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 363 phrases. 168 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
+<!-- MainWindow.frm contains 364 phrases. 168 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12829,6 +12844,27 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <!-- END text for Help_About.frm-->
 
+<!-- BEGIN text for Image_Animation.frm (FormAnimation) -->
+
+<phrase>
+<original>Animation options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>animation enabled for this image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>waiting</original>
+<translation></translation>
+</phrase>
+
+<!-- Image_Animation.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Image_Animation.frm-->
+
 <!-- BEGIN text for Image_CanvasSize.frm (FormCanvasSize) -->
 
 <phrase>
@@ -16030,10 +16066,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2660</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5097 phrases. -->
-<!-- 2443 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12061 total words. -->
+<!-- As of this build, PhotoDemon contains 5127 phrases. -->
+<!-- 2467 are duplicates, so only 2660 unique phrases have been written to file. -->
+<!-- These 2660 phrases contain approximately 12074 total words. -->
 
 </pdData>

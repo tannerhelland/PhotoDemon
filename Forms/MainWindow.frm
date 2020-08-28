@@ -384,12 +384,16 @@ Begin VB.Form FormMain
          Index           =   18
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Compare..."
+         Caption         =   "Animation..."
          Index           =   19
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "Compare..."
          Index           =   20
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   21
          Begin VB.Menu MnuMetadata 
             Caption         =   "Edit metadata..."
             Index           =   0
@@ -3405,8 +3409,10 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 18
             'separator
         Case 19
-            Menus.ProcessDefaultAction_ByName "image_compare"
+            Menus.ProcessDefaultAction_ByName "image_animation"
         Case 20
+            Menus.ProcessDefaultAction_ByName "image_compare"
+        Case 21
             'Metadata top-level
     End Select
 

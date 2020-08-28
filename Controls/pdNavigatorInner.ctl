@@ -246,13 +246,21 @@ Public Function GetCurrentFrame() As Long
     GetCurrentFrame = m_Timer.GetCurrentFrame()
 End Function
 
+Public Function GetFrameCount() As Long
+    GetFrameCount = m_FrameCount
+End Function
+
+Public Function GetFrameTimeInMS(ByVal frameIndex As Long) As Long
+    If (frameIndex >= 0) And (frameIndex < m_FrameCount) Then GetFrameTimeInMS = m_Frames(frameIndex).afFrameDelayMS
+End Function
+
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Skip overlays while animating (the animator responds to clicks, instead)
     If (m_Timer.IsActive) Then Exit Sub
     
-    If (Button And pdLeftButton) <> 0 Then
+    If ((Button And pdLeftButton) <> 0) Then
         If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
     
@@ -298,11 +306,13 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 'Outside callers can modify the currently active frame using this slider.
-Public Sub ChangeActiveFrame(ByVal newFrameIndex As Long)
+Public Sub ChangeActiveFrame(ByVal newFrameIndex As Long, Optional ByVal forceAnimationUpdate As Boolean = False)
     If (newFrameIndex <> m_Timer.GetCurrentFrame()) Then
         m_Timer.StopTimer
         UpdateAnimationSettings PDImages.GetActiveImage, newFrameIndex
         m_Timer.SetCurrentFrame newFrameIndex
+    Else
+        If forceAnimationUpdate Then UpdateAnimationSettings PDImages.GetActiveImage
     End If
 End Sub
 
@@ -609,7 +619,7 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
             End If
             
             'Retrieve layer frame times and relay them to the animation object
-            m_Frames(i).afFrameDelayMS = Animation.GetFrameTimeFromLayerName(srcImage.GetLayerByIndex(i).GetLayerName())
+            m_Frames(i).afFrameDelayMS = srcImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
             m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
             
         Next i
@@ -793,6 +803,12 @@ Private Sub RenderAnimationFrame()
         
     End If
         
+End Sub
+
+'For fast notifications of frame time changes, use this simplified wrapper.
+Public Sub NotifyFrameTimeChange(ByVal layerIndex As Long, ByVal newFrameTimeInMS As Long)
+    m_Frames(layerIndex).afFrameDelayMS = newFrameTimeInMS
+    m_Timer.NotifyFrameTime newFrameTimeInMS, layerIndex
 End Sub
 
 'Call this when a new thumbnail needs to be set.  The class will reset its thumb DIB to match its current size, then raise

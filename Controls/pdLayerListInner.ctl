@@ -312,7 +312,34 @@ Private Sub txtLayerName_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As L
         'Set the active layer name, then hide the text box
         PDImages.GetActiveImage.GetActiveLayer.SetLayerName txtLayerName.Text
         
-        'If the user changed the name, set an Undo/Redo point now
+        'Fun fact: as of v8.0, PhotoDemon can "hide" animation frame data right inside
+        ' a layer's name (e.g. Frame 1 (100 ms)).  This provides a convenient way for the
+        ' user to tweak frame time settings in e.g. an animated GIF without popping into a
+        ' separate screen.
+        
+        'But this brings new complexities.  In particular, if the user changes a layer's
+        ' name, they may actually be changing the frame time for that layer.  We need to
+        ' look for any changes potentially related to frame time, and update them accordingly.
+        If PDImages.GetActiveImage.IsAnimated Then
+        
+            'Look for frame time changes
+            Dim newFrameTime As Long, oldFrameTime As Long
+            newFrameTime = Animation.GetFrameTimeFromLayerName(PDImages.GetActiveImage.GetActiveLayer.GetLayerName())
+            oldFrameTime = PDImages.GetActiveImage.GetActiveLayer.GetLayerFrameTimeInMS()
+            
+            'If we parsed a viable frame time from the layer name, store it immediately
+            If (newFrameTime >= 0) And (newFrameTime <> oldFrameTime) Then
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerFrameTimeInMS newFrameTime
+            End If
+            
+            'If frame time was changed, we need to notify the animation window of the change
+            layerpanel_Navigator.NotifyFrameTimeChange PDImages.GetActiveImage.GetActiveLayerIndex, newFrameTime
+        
+        End If
+        
+        'If the user changed the name, set an Undo/Redo point now.
+        ' (Note that this also catches frame time changes, as the user can't change
+        ' layer frame time without *also* changing layer name.)
         If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, PDImages.GetActiveImage.GetActiveLayer.GetLayerName
         
         'Re-enable hotkeys now that editing is finished

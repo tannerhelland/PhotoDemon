@@ -15,8 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon spritesheet cache
 'Copyright 2018-2020 by Tanner Helland
 'Created: 13/July/18
-'Last updated: 30/August/19
-'Last update: allow the user to update images in-place when calling AddImage with an existing ID
+'Last updated: 26/August/20
+'Last update: refactor cache to allow for multiple sheets per size; sheet limits are now
+'             calculated on the fly, using a max memory size (as opposed to a max number
+'             of images per sheet).
 '
 'When storing large amounts of small images, it is more resource- and performance-friendly
 ' to stick the images in dedicated spritesheets.
@@ -34,26 +36,28 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This value can be set by the caller (it defaults to DEFAULT_MAX_SPRITES_IN_COLUMN),
-' but it is VERY IMPORTANT to note that it SHOULD NOT BE CHANGED AFTER ONE OR MORE
-' IMAGES HAVE BEEN LOADED.  Images are just indices into the sprite list, and changing
-' the max column size wrecks existing indices - so don't attempt this.
+'This value can be set by the caller (it defaults to a multiple of sprite size and
+' max memory per sheet), but it is VERY IMPORTANT to note that it SHOULD NOT BE CHANGED
+' AFTER ONE OR MORE IMAGES HAVE BEEN LOADED.  Images are just indices into a sprite list,
+' and changing the max column size wrecks existing indices - so don't attempt this.
 Private m_MaxSpritesInColumn As Long
-Private Const DEFAULT_MAX_SPRITES_IN_COLUMN As Long = 16
+Private Const DEFAULT_MAX_SIZE_OF_SHEET As Long = 8000000  'Entirely arbitrary value; smaller may be better for some use-cases?
+Private Const MAX_IMAGES_PER_SHEET As Long = 32     'Again, entirely arbitrary; designed to minimize excessive allocations
 
 'Individual cache object.  This module manages a one-dimensional array of these headers.
 Private Type ImgCacheEntry
-    SpriteWidth As Long
-    SpriteHeight As Long
-    NumImages As Long
-    ImgSpriteSheet As pdDIB
-    SpriteNames As pdStringStack
+    spriteWidth As Long
+    spriteHeight As Long
+    numImages As Long
+    numSheets As Long
+    imgSpriteSheets() As pdDIB
+    spriteNames As pdStringStack
 End Type
 
-'Cheap way to "fake" integer access inside a long
+'Cheap way to "fake" integer access inside a long (and keep VB happy)
 Private Type FakeDWord
-    WordOne As Integer
-    WordTwo As Integer
+    wordOne As Integer
+    wordTwo As Integer
 End Type
 
 'The actual cache.  Resized dynamically as additional images are added.
@@ -81,7 +85,14 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     Dim targetWidth As Long, targetHeight As Long
     targetWidth = srcDIB.GetDIBWidth
     targetHeight = srcDIB.GetDIBHeight
-        
+    
+    'If we haven't calculated a max spritesheet size, now is the time to do so
+    If (m_MaxSpritesInColumn = 0) Then
+        m_MaxSpritesInColumn = DEFAULT_MAX_SIZE_OF_SHEET \ (targetWidth * targetHeight * 4)
+        If (m_MaxSpritesInColumn < 2) Then m_MaxSpritesInColumn = 2
+        If (m_MaxSpritesInColumn > MAX_IMAGES_PER_SHEET) Then m_MaxSpritesInColumn = MAX_IMAGES_PER_SHEET
+    End If
+    
     'Our first task is finding a matching spritesheet - specifically, a spritesheet where the sprites
     ' have the same dimensions as this image.
     Dim targetIndex As Long
@@ -91,8 +102,8 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
         
         'Look for a cache with matching dimensions
         For i = 0 To m_NumOfCacheObjects - 1
-            If (m_ImageCache(i).SpriteWidth = targetWidth) Then
-                If (m_ImageCache(i).SpriteHeight = targetHeight) Then
+            If (m_ImageCache(i).spriteWidth = targetWidth) Then
+                If (m_ImageCache(i).spriteHeight = targetHeight) Then
                     targetIndex = i
                     Exit For
                 End If
@@ -106,69 +117,73 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     Dim targetID As Long
     targetID = -1
     
+    '(Inside our target index, we may also need to find a target "sheet"; very large sheets
+    ' may produce multiple smaller columns.)
+    Dim targetSheet As Long
+    targetSheet = 0
+    
     'If we found a sprite sheet that matches our target size, we just need to append this
     ' new image to it.
     If (targetIndex >= 0) Then
         
         'Before adding this sprite, perform a quick check for duplicate IDs.  If one is found,
         ' return the existing sprite instead of adding it anew.
-        targetID = m_ImageCache(targetIndex).SpriteNames.ContainsString(uniqueImageName, True) + 1
-        
+        targetID = m_ImageCache(targetIndex).spriteNames.ContainsString(uniqueImageName, True) + 1
         If (targetID = 0) Then
         
-            'We have an existing sprite sheet with dimensions identical to this one!  Figure out
-            ' if we need to resize the sprite sheet to account for another addition to it.
+            'We have an existing sprite sheet with dimensions identical to this one, and it
+            ' doesn't already contain a sprite with this name!  Figure out if we need to resize
+            ' the target sprite sheet, or add another sheet entirely.
             Dim targetRow As Long, targetColumn As Long
-            GetNumRowsColumns m_ImageCache(targetIndex).NumImages, targetRow, targetColumn
+            GetNumRowsColumns m_ImageCache(targetIndex).numImages, targetRow, targetColumn
             
-            'If this sprite sheet is still only one-column tall, we may need to resize it vertically
-            Dim newDibRequired As Boolean
+            'Two circumstances require us to create a new DIB:
+            ' 1) The current sheet is not tall enough to hold this DIB.  Sheets are resized
+            '    using a standard power-of-2 strategy, until they exceed the maximum number
+            '    of images allowed in a sheet.
+            ' 2) This image belongs in a new DIB, and that DIB doesn't exist yet.
             With m_ImageCache(targetIndex)
-            
-                If (targetColumn = 0) Then
-                    newDibRequired = ((targetRow + 1) * .SpriteHeight) > .ImgSpriteSheet.GetDIBHeight
                 
-                'Otherwise, we may need to resize it horizontally
-                Else
-                    newDibRequired = ((targetColumn + 1) * .SpriteWidth) > .ImgSpriteSheet.GetDIBWidth
-                End If
-            
-            End With
-            
-            'If a new sprite sheet is required, create one now
-            If newDibRequired Then
-                
-                With m_ImageCache(targetIndex)
+                'First, see if a new sheet is required.  (This occurs when we've filled the current
+                ' sheet to its max-sprites-allowed value.)
+                If (targetColumn >= .numSheets) Then
+                    ReDim Preserve .imgSpriteSheets(0 To .numSheets) As pdDIB
+                    Set .imgSpriteSheets(.numSheets) = New pdDIB
+                    .imgSpriteSheets(.numSheets).CreateBlank .spriteWidth, .spriteHeight, 32, 0, 0
+                    .imgSpriteSheets(.numSheets).SetInitialAlphaPremultiplicationState True
+                    .numSheets = .numSheets + 1
                     
-                    Dim tmpDIB As pdDIB
-                    Set tmpDIB = New pdDIB
-                    If (targetColumn = 0) Then
-                        tmpDIB.CreateBlank .SpriteWidth, .SpriteHeight * (.NumImages + 1), 32, 0, 0
-                        tmpDIB.SetInitialAlphaPremultiplicationState True
-                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .SpriteWidth, .ImgSpriteSheet.GetDIBHeight, .ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
-                        Set .ImgSpriteSheet = tmpDIB
-                    Else
+                'If a sheet already exists for the target column, check to ensure the column is
+                ' large enough to hold it.
+                Else
+                    
+                    If (((targetRow + 1) * .spriteHeight) >= .imgSpriteSheets(targetColumn).GetDIBHeight) Then
+                    
+                        'The target column needs to be enlarged.  Figure out a new height, but do *not*
+                        ' exceed that max height.
+                        Dim newRowCount As Long
+                        newRowCount = (targetRow * 2 - 1)
+                        If (newRowCount > m_MaxSpritesInColumn - 1) Then newRowCount = m_MaxSpritesInColumn - 1
                         
-                        'When adding a new column to a DIB, we *leave* the DIB at its maximum row size
-                        tmpDIB.CreateBlank .SpriteWidth * (targetColumn + 1), .ImgSpriteSheet.GetDIBHeight, 32, 0, 0
+                        Dim tmpDIB As pdDIB
+                        Set tmpDIB = New pdDIB
+                        tmpDIB.CreateBlank .spriteWidth, .spriteHeight * (newRowCount + 1), 32, 0, 0
                         tmpDIB.SetInitialAlphaPremultiplicationState True
-                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .ImgSpriteSheet.GetDIBWidth, .ImgSpriteSheet.GetDIBHeight, .ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
-                        Set .ImgSpriteSheet = tmpDIB
+                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .spriteWidth, .imgSpriteSheets(targetColumn).GetDIBHeight, .imgSpriteSheets(targetColumn).GetDIBDC, 0, 0, vbSrcCopy
+                        Set .imgSpriteSheets(targetColumn) = tmpDIB
                         
                     End If
                     
-                End With
+                End If
             
-            End If
-            
-            'Paint the new DIB into place, and update all target references to reflect the correct index
-            With m_ImageCache(targetIndex)
-                GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
-                .ImgSpriteSheet.FreeFromDC
+                'Paint the new DIB into place, and update all target references to reflect the correct index
+                GDI.BitBltWrapper .imgSpriteSheets(targetColumn).GetDIBDC, 0, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                .imgSpriteSheets(targetColumn).FreeFromDC
                 srcDIB.FreeFromDC
-                .NumImages = .NumImages + 1
-                targetID = .NumImages
-                .SpriteNames.AddString uniqueImageName
+                .numImages = .numImages + 1
+                targetID = .numImages
+                .spriteNames.AddString uniqueImageName
+                
             End With
             
         Else
@@ -181,8 +196,8 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             If GetRowColumnPos(imgID, targetIndex, targetRow, targetColumn) Then
                 
                 With m_ImageCache(targetIndex)
-                    GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
-                    .ImgSpriteSheet.FreeFromDC
+                    GDI.BitBltWrapper .imgSpriteSheets(targetColumn).GetDIBDC, 0, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    .imgSpriteSheets(targetColumn).FreeFromDC
                     srcDIB.FreeFromDC
                 End With
                 
@@ -202,19 +217,22 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
         'Prep a generic header
         With m_ImageCache(m_NumOfCacheObjects)
             
-            .SpriteWidth = targetWidth
-            .SpriteHeight = targetHeight
-            .NumImages = 1
-            targetID = .NumImages
+            .spriteWidth = targetWidth
+            .spriteHeight = targetHeight
+            .numImages = 1
+            targetID = .numImages
+            .numSheets = 1
+            targetSheet = 0
             
             'Create the first sprite sheet entry
-            Set .ImgSpriteSheet = New pdDIB
-            .ImgSpriteSheet.CreateFromExistingDIB srcDIB
-            .ImgSpriteSheet.FreeFromDC
+            ReDim .imgSpriteSheets(0) As pdDIB
+            Set .imgSpriteSheets(0) = New pdDIB
+            .imgSpriteSheets(0).CreateFromExistingDIB srcDIB
+            .imgSpriteSheets(0).FreeFromDC
             
             'Add this sprite's name to the collection
-            Set .SpriteNames = New pdStringStack
-            .SpriteNames.AddString uniqueImageName
+            Set .spriteNames = New pdStringStack
+            .spriteNames.AddString uniqueImageName
             
         End With
         
@@ -232,7 +250,7 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     AddImage = GetCombinedIndexAndID(targetIndex, targetID)
     
     'Finally, free the target sprite sheet from its DC; the DC will automatically be re-created as necessary
-    m_ImageCache(targetIndex).ImgSpriteSheet.FreeFromDC
+    m_ImageCache(targetIndex).imgSpriteSheets(targetSheet).FreeFromDC
     
 End Function
 
@@ -245,7 +263,7 @@ Friend Function DoesImageExist(ByRef srcImageName As String) As Boolean
         'Look for a cache with matching dimensions
         Dim i As Long
         For i = 0 To m_NumOfCacheObjects - 1
-            If (m_ImageCache(i).SpriteNames.ContainsString(srcImageName, False) >= 0) Then
+            If (m_ImageCache(i).spriteNames.ContainsString(srcImageName, False) >= 0) Then
                 DoesImageExist = True
                 Exit Function
             End If
@@ -257,8 +275,8 @@ End Function
 
 Private Function GetCombinedIndexAndID(ByVal targetIndex As Long, ByVal targetID As Long) As Long
     Dim tmpDWord As FakeDWord
-    tmpDWord.WordOne = targetIndex
-    tmpDWord.WordTwo = targetID
+    tmpDWord.wordOne = targetIndex
+    tmpDWord.wordTwo = targetID
     GetMem4 VarPtr(tmpDWord), GetCombinedIndexAndID
 End Function
 
@@ -269,10 +287,10 @@ Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
     If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
         
         'Paint the result!
-        If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
             With m_ImageCache(targetIndex)
-                .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, customAlpha
-                .ImgSpriteSheet.FreeFromDC
+                .imgSpriteSheets(targetColumn).AlphaBlendToDCEx dstDC, dstX, dstY, .spriteWidth, .spriteHeight, 0, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, customAlpha
+                .imgSpriteSheets(targetColumn).FreeFromDC
             End With
         Else
             PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
@@ -290,10 +308,10 @@ Friend Function StretchBltCachedImage(ByRef dstDIB As pdDIB, ByVal x1 As Single,
     If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
         
         'Paint the result!
-        If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
             With m_ImageCache(targetIndex)
-                GDI_Plus.GDIPlus_StretchBlt dstDIB, x1, y1, dstWidth, dstHeight, .ImgSpriteSheet, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, newAlpha, interpolationType, useThisDestinationDCInstead, disableEdgeFix, isZoomedIn, dstCopyIsOkay
-                .ImgSpriteSheet.FreeFromDC
+                GDI_Plus.GDIPlus_StretchBlt dstDIB, x1, y1, dstWidth, dstHeight, .imgSpriteSheets(targetColumn), 0!, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, newAlpha, interpolationType, useThisDestinationDCInstead, disableEdgeFix, isZoomedIn, dstCopyIsOkay
+                .imgSpriteSheets(targetColumn).FreeFromDC
             End With
         Else
             PDDebug.LogAction "WARNING!  UIImages.StretchBltCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
@@ -309,8 +327,8 @@ Private Function GetRowColumnPos(ByVal srcImgID As Long, ByRef dstIndex As Long,
     
     Dim imgNumber As Long, tmpDWord As FakeDWord
     CopyMemoryStrict VarPtr(tmpDWord), VarPtr(srcImgID), 4
-    dstIndex = tmpDWord.WordOne
-    imgNumber = tmpDWord.WordTwo - 1
+    dstIndex = tmpDWord.wordOne
+    imgNumber = tmpDWord.wordTwo - 1
     
     'Failsafe checks
     If (dstIndex > UBound(m_ImageCache)) Then
@@ -345,5 +363,5 @@ Friend Sub SetMaxSpritesInColumn(ByVal newMax As Long)
 End Sub
 
 Private Sub Class_Initialize()
-    m_MaxSpritesInColumn = DEFAULT_MAX_SPRITES_IN_COLUMN
+    m_MaxSpritesInColumn = 0
 End Sub

@@ -239,13 +239,14 @@ Public Sub InitializeMenus()
     AddMenuItem "Merge visible layers", "image_mergevisible", 2, 16, , "generic_visible"
     AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
     AddMenuItem "-", "0", 2, 18
-    AddMenuItem "Compare...", "image_compare", 2, 19
-    AddMenuItem "Metadata", "image_metadata", 2, 20
-        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 20, 0, "image_metadata"
-        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 20, 1
-        AddMenuItem "-", "-", 2, 20, 2
-        AddMenuItem "Count unique colors", "image_countcolors", 2, 20, 3
-        AddMenuItem "Map photo location...", "image_maplocation", 2, 20, 4, "image_maplocation"
+    AddMenuItem "Animation...", "image_animation", 2, 19, , "animation"
+    AddMenuItem "Compare...", "image_compare", 2, 20
+    AddMenuItem "Metadata", "image_metadata", 2, 21
+        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 21, 0, "image_metadata"
+        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 21, 1
+        AddMenuItem "-", "-", 2, 21, 2
+        AddMenuItem "Count unique colors", "image_countcolors", 2, 21, 3
+        AddMenuItem "Map photo location...", "image_maplocation", 2, 21, 4, "image_maplocation"
     
     'Layer menu
     AddMenuItem "&Layer", "layer_top", 3
@@ -1745,6 +1746,9 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
             
         Case "image_flatten"
             Process "Flatten image", True
+        
+        Case "image_animation"
+            Process "Animation settings", True
         
         Case "image_compare"
             Process "Compare images", True

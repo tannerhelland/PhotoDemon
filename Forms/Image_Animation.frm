@@ -140,6 +140,7 @@ Begin VB.Form FormAnimation
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1296
+      Caption         =   "animation speed"
       FontSizeCaption =   10
       Max             =   100000
       ScaleStyle      =   1
@@ -156,14 +157,21 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Animated PNG export dialog
-'Copyright 2012-2020 by Tanner Helland
+'Animation settings dialog
+'Copyright 2019-2020 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 06/September/19
-'Last update: separate from original animated GIF export dialog, as the two exporters have different needs
+'Last updated: 27/August/20
+'Last update: split off from the animation export dialogs, which already cover a lot of these tasks
+'             but require the user to export a new file to make the changes!
 '
-'In v8.0, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
-' export parameters to the user.
+'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  This dialog exposes relevant
+' animation settings to the user, including allowing them to turn multilayer non-animated images into
+' animated ones (or vice-versa).
+'
+'Significantly, it also offers a large, resizable canvas for previewing animations.
+'
+'TODO: remember window size.  I don't have a nice, centralized way to do this at present, but once I
+' do, I'll make sure this dialog remembers its position when closed!
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -475,7 +483,6 @@ Private Sub UpdateAnimationSettings()
     bHeight = picPreview.GetHeight - 2
     
     'Figure out what size to use for the animation thumbnails
-    Dim thumbSize As Long
     Dim thumbImageWidth As Long, thumbImageHeight As Long
     PDMath.ConvertAspectRatio m_SrcImage.Width, m_SrcImage.Height, bWidth, bHeight, thumbImageWidth, thumbImageHeight
     
@@ -485,23 +492,20 @@ Private Sub UpdateAnimationSettings()
         thumbImageHeight = m_SrcImage.Height
     End If
     
-    'Use the larger dimension to construct the thumb.  (For simplicity, thumbs are always square.)
-    If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
-    
     'Prepare our temporary animation buffer; we don't use it here, but it makes sense to initialize it
     ' to the required size now
     If (m_AniFrame Is Nothing) Then Set m_AniFrame = New pdDIB
-    m_AniFrame.CreateBlank thumbSize, thumbSize, 32, 0, 0
+    m_AniFrame.CreateBlank bWidth, bHeight, 32, 0, 0
     
     Dim xThumb As Long, yThumb As Long
-    xThumb = Int((bWidth * 0.5) - (thumbSize * 0.5) + 0.5)
-    yThumb = Int((bHeight * 0.5) - (thumbSize * 0.5) + 0.5)
+    xThumb = 0
+    yThumb = 0
     
     'Store the boundary rect of where the thumb will actually appear; we need this for rendering
     ' a transparency checkerboard
     With m_AniThumbBounds
-        .Left = Int((thumbSize - thumbImageWidth) \ 2)
-        .Top = Int((thumbSize - thumbImageHeight) \ 2)
+        .Left = 0
+        .Top = 0
         .Width = thumbImageWidth
         .Height = thumbImageHeight
     End With
@@ -512,15 +516,15 @@ Private Sub UpdateAnimationSettings()
     ' here is that we don't want sheets to grow too large; if they're huge, they risk
     ' not being generated at all.
     
-    'For now, I use a (conservative?) upper limit of ~24mb per sheet
+    'For now, I use a (conservative?) upper limit of ~16mb per sheet (2x1920x1080x4)
     Dim sheetSizeLimit As Long
-    sheetSizeLimit = 24000000
+    sheetSizeLimit = 16777216
     
     Dim numFramesPerSheet As Long
-    numFramesPerSheet = sheetSizeLimit / (thumbSize * thumbSize * 4)
+    numFramesPerSheet = sheetSizeLimit / (thumbImageWidth * thumbImageHeight * 4)
     If (numFramesPerSheet < 2) Then numFramesPerSheet = 2
     m_Thumbs.SetMaxSpritesInColumn numFramesPerSheet
-    Debug.Print numFramesPerSheet, thumbSize
+    
     Dim numZeroFrameDelays As Long
     
     'Load all thumbnails
@@ -529,18 +533,18 @@ Private Sub UpdateAnimationSettings()
         
         'Retrieve an updated thumbnail
         If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-        tmpDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
+        tmpDIB.CreateBlank thumbImageWidth, thumbImageHeight, 32, 0, 0
         
-        m_Frames(i).afWidth = thumbSize
-        m_Frames(i).afHeight = thumbSize
+        m_Frames(i).afWidth = thumbImageWidth
+        m_Frames(i).afHeight = thumbImageHeight
         m_Frames(i).afOffsetX = xThumb
         m_Frames(i).afOffsetY = yThumb
         
-        m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, thumbSize, False, VarPtr(m_AniThumbBounds)
-        m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
+        m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, PDMath.Max2Int(thumbImageWidth, thumbImageHeight), False, VarPtr(m_AniThumbBounds)
+        m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbImageWidth))
         
         'Retrieve layer frame times and relay them to the animation object
-        m_Frames(i).afFrameDelayOrig = Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0)
+        m_Frames(i).afFrameDelayOrig = m_SrcImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
         If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
         
     Next i
@@ -573,6 +577,15 @@ Private Sub RenderAnimationFrame()
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()
     
+    'We need to calculate x/y offsets relative to the current preview area
+    Dim bWidth As Long, bHeight As Long
+    bWidth = picPreview.GetWidth - 2
+    bHeight = picPreview.GetHeight - 2
+    
+    Dim xOffset As Long, yOffset As Long
+    xOffset = (bWidth - m_AniThumbBounds.Width) \ 2
+    yOffset = (bHeight - m_AniThumbBounds.Height) \ 2
+    
     'Make sure the frame request is valid; if it isn't, exit immediately
     If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
         
@@ -582,11 +595,11 @@ Private Sub RenderAnimationFrame()
         'Paint a checkerboard background only over the relevant image region, followed by the frame itself
         With m_Frames(idxFrame)
             
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, m_AniThumbBounds.Left, m_AniThumbBounds.Top, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , False, True
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
             
             'Make sure we have the necessary image in the spritesheet cache
             If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
-                m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, 0, 0, m_Frames(idxFrame).afThumbKey
+                m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey
             End If
             
         End With

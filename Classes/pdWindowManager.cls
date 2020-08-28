@@ -801,7 +801,7 @@ Private Function HandleMinMaxMessage(ByVal hWnd As Long, ByVal wParam As Long, B
     HandleMinMaxMessage = False
     
     'lParam contains a pointer to the window's rect location.  Retrieve it now.
-    If (lParam <> 0) Then CopyMemoryStrict VarPtr(m_tmpMinMax), lParam, Len(m_tmpMinMax)
+    If (lParam <> 0) Then CopyMemoryStrict VarPtr(m_tmpMinMax), lParam, LenB(m_tmpMinMax)
     
     'Iterate through all the windows we're handling min/max data for, and when we find the correct one, supply its min/max
     ' values to the parent handler.

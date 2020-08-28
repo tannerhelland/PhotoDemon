@@ -491,12 +491,12 @@ End Sub
 '
 'If the layer ID is significant, it can also be passed.  If supplied, it will be checked against the previous layer ID, and an Undo
 ' will be generated only if the two values match.
-Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
+Public Function FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericProperty, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1) As Boolean
     
     'Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'Ignore all requests if no images are loaded
-    If (Not PDImages.IsImageActive()) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Function
     
     'See if the new setting value differs.  If it does, we need to issue a Process.Processor request to ensure the Undo/Redo chain
     ' is properly updated.  (As a side-effect, this also allows non-destructive actions to be tagged during macro recording.)
@@ -512,9 +512,12 @@ Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericPro
         
         MiniProcess_NDFXOnly "Modify layer", , cParams.GetParamString(), UNDO_LayerHeader, , , prevGenericLayerID
         
+        'Return TRUE in case the caller is interested in whether we changed state or not
+        FlagFinalNDFXState_Generic = True
+        
     End If
     
-End Sub
+End Function
 
 'When a control tied to a non-destructive text effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
@@ -2112,6 +2115,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'Flatten image
     ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
+        Process_ImageMenu = True
+    
+    'Modify animation settings
+    ElseIf Strings.StringsEqual(processID, "Animation settings", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAnimation
         Process_ImageMenu = True
     
     'Compare two images/layers

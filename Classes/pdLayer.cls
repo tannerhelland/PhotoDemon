@@ -15,27 +15,31 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2020 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 01/December/16
-'Last update: start migrating ICC profile stuff from pdDIB to pdLayer (and the ColorManagement module)
+'Last updated: 25/August/20
+'Last update: start storing frame time as a persistent setting (instead of relying solely on layer name)
 '
-'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
-' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
+'Once upon a time, the pdLayer class was simply a pixel array wrapper.  Once PhotoDemon grew into
+' a full layer-based photo editor, however, it became necessary to separate Layer-specific functions
+' from generic pixel array functions.
 '
-'The current pdLayer class is a comprehensive wrapper for all types of PhotoDemon layers.  All layers share a few
-' key components: position, blend mode, etc, and all (except adjustment layers) are expected to provide a copy of
-' the layer's contents in DIB format.  The main viewport renderer doesn't care how this DIB is created - e.g.
-' whether it comes from text or images or something fancy like vector rendering - it just cares that the DIB is
-' present and appropriately sized for its contents.
+'The current pdLayer class is a comprehensive wrapper for all types of PhotoDemon layers.
+' All layers share some key components, like offsets and blend mode, and all raster layers (and some
+' vector layers - I know, it's confusing) also provide a copy of the layer's contents in pdDIB format.
+' The main viewport renderer doesn't care how layer raster data is created - e.g. whether it comes
+' from text or pixel arrays or something fancy like vector rendering - it just cares that the
+' associated pdDIB object is present and appropriately sized for its contents.
 '
-'Because layers interact heavily with PDI files (PhotoDemon's custom file format), each layer must be capable of
-' writing its relevant header data into an XML string, and recreating itself from such a string if necessary.
-' Layer DIB data is always handled separately, as some layer types may need to recreate their DIBs on-the-fly.
+'Because layers interact heavily with PDI files (PhotoDemon's custom file format), each layer must
+' be capable of serializing all meaningful properties to XML, and recreating itself from such an XML
+' packet when requested.  Layer pixel data is always handled separately, as some layer types may need
+' to recreate their raster contents on-the-fly (e.g. rasterizing text layers).
 '
-'Layer blend modes are declared here, but the actual blending of layers happens in the pdCompositor class.  This was
-' done to enable the blending of arbitrary DIBs not attached to layers, and to simplify this class (which is
-' already quite large).  Note also that pdLayer objects have no knowledge of their parent pdImage object.  If
-' interaction with the parent object is important, functions will explicitly request a pdImage reference as part
-' of their function parameters.
+'Layer blend modes are declared here, but the actual blending of layers happens inside the
+' pdCompositor class.  This was done to enable the blending of arbitrary DIBs not attached to layers,
+' and to simplify this class (which is already quite large).  Note also that pdLayer objects have no
+' knowledge of their parent pdImage object, by design.  If interaction with the parent object is
+' required, functions will explicitly request a pdImage reference as part of their function
+' parameters, and you are always guaranteed that the reference will only be used locally.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -79,6 +83,7 @@ Private Type PD_LayerData
     l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
     l_Visibility As Boolean             'Layer visibility
+    l_FrameTimeInMS As Long             'Frame time, in MS; relevant only for images flagged as animated
 End Type
 
 'Local instance of layer data for this layer
@@ -104,11 +109,12 @@ Public Enum PD_LayerGenericProperty
     pgp_AlphaMode = 14
     pgp_RotateCenterX = 15
     pgp_RotateCenterY = 16
+    pgp_FrameTime = 17
 End Enum
 
 #If False Then
     Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
-    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16
+    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16, pgp_FrameTime = 17
 #End If
 
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
@@ -557,6 +563,16 @@ Friend Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     
 End Sub
 
+'Get/set layer frame time, always in MS.  This data is only useful to PD under certain circumstances
+' (e.g. if the parent image is flagged as "animated").
+Friend Function GetLayerFrameTimeInMS() As Long
+    GetLayerFrameTimeInMS = myLayerData.l_FrameTimeInMS
+End Function
+
+Friend Sub SetLayerFrameTimeInMS(ByVal newTime As Long)
+    myLayerData.l_FrameTimeInMS = newTime
+End Sub
+
 'Get/set non-destructive resize algorithm.  Note that there are two GET functions:
 ' - One that uses PD's internal PD_LayerResizeQuality enum
 ' - One that converts the internal PD_LayerResizeQuality value into a GDI+ resize constant
@@ -640,7 +656,10 @@ Friend Function GetGenericLayerProperty(ByVal desiredProperty As PD_LayerGeneric
         
         Case pgp_RotateCenterY
             GetGenericLayerProperty = myLayerData.l_RotateCenterY
-            
+        
+        Case pgp_FrameTime
+            GetGenericLayerProperty = myLayerData.l_FrameTimeInMS
+        
         Case Else
             GetGenericLayerProperty = 0
     
@@ -699,6 +718,9 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PD_LayerGenericPrope
         
         Case pgp_RotateCenterY
             If (myLayerData.l_RotateCenterY <> CDbl(newValue)) Then myLayerData.l_RotateCenterY = CDbl(newValue)
+        
+        Case pgp_FrameTime
+            myLayerData.l_FrameTimeInMS = CLng(newValue)
         
     End Select
     
@@ -1199,6 +1221,7 @@ Private Sub Class_Initialize()
         .l_ShearX = 0
         .l_ShearY = 0
         .l_AlphaMode = AM_Normal
+        .l_FrameTimeInMS = 0
     End With
     
     With myVectorData
@@ -1298,6 +1321,7 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_RotateCenterX = xmlEngine.GetDouble("rotation-center-x", 0.5, True)
             .l_RotateCenterY = xmlEngine.GetDouble("rotation-center-y", 0.5, True)
             .l_ResizeQuality = Layers.GetLayerResizeIDFromString(xmlEngine.GetString("sample-quality", Layers.GetLayerResizeStringFromID(LRQ_Bilinear), True))
+            .l_FrameTimeInMS = xmlEngine.GetLong("frame-time-ms", 0, True)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank surface
@@ -1415,6 +1439,7 @@ Friend Function GetLayerHeaderAsXML() As String
         xmlEngine.AddParam "rotation-center-x", .l_RotateCenterX, True, True
         xmlEngine.AddParam "rotation-center-y", .l_RotateCenterY, True, True
         xmlEngine.AddParam "sample-quality", Layers.GetLayerResizeStringFromID(.l_ResizeQuality), True, True
+        xmlEngine.AddParam "frame-time-ms", .l_FrameTimeInMS, True, True
     End With
     
     'Next, write out enough information for us to reconstruct the underlying pixel data for this layer
@@ -1548,6 +1573,7 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
         .l_ShearX = 0#
         .l_ShearY = 0#
         .l_AlphaMode = AM_Normal
+        .l_FrameTimeInMS = 0
     End With
     
     'Reset any vector-specific data
@@ -1606,6 +1632,7 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_ShearX = srcLayer.GetLayerShearX()
         .l_ShearY = srcLayer.GetLayerShearY()
         .l_AlphaMode = srcLayer.GetLayerAlphaMode()
+        .l_FrameTimeInMS = srcLayer.GetLayerFrameTimeInMS()
     End With
     
     'Copy the source layer's DIB, if one exists.
@@ -2001,9 +2028,6 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
     RequestThumbnail_ImageCoords = False
     If (srcImage Is Nothing) Then Exit Function
     
-    'Is the current thumbnail dirty?  If so, regenerate it.
-    'If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentLayerThumbSize) Then UpdateInternalThumbnail thumbnailSize
-    
     'We now need to figure out where the hell to position the layer inside the new DIB.  Rather than use manual
     ' coordinate calculations, we're simply going to use a transformation matrix.
     Dim cTransform As pd2DTransform
@@ -2049,6 +2073,17 @@ Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef 
                 .Width = thumbWidth
                 .Height = thumbHeight
             End With
+        End If
+        
+        'In this branch, we can perform another optimization.  If this layer is the same size as
+        ' the target image (extremely common for photos, animations, etc), and this layer doesn't have
+        ' any active affine transforms, we can simply paint it as-is directly into the target rect.
+        ' This saves us a lot of time, and we can use a special paint operation with edge-fixes for
+        ' some GDI+ weaknesses.
+        If (Me.GetLayerWidth = srcImage.Width) And (Me.GetLayerHeight = srcImage.Height) And (Not Me.AffineTransformsActive(True)) Then
+            GDI_Plus.GDIPlus_StretchBlt dstThumbnail, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, Me.layerDIB, 0, 0, Me.GetLayerWidth, Me.GetLayerHeight, interpolationType:=GP_IM_Bilinear, dstCopyIsOkay:=True
+            RequestThumbnail_ImageCoords = True
+            Exit Function
         End If
         
     End If

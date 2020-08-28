@@ -224,7 +224,8 @@ Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single
         sldFrame.Min = 0
         sldFrame.Max = PDImages.GetActiveImage.GetNumOfLayers - 1
         m_DoNotUpdate = False
-        navInner.ChangeActiveFrame sldFrame.Value
+        navInner.ChangeActiveFrame sldFrame.Value, True
+        UpdateSliderTooltip
     End If
     
 End Sub
@@ -327,8 +328,13 @@ Private Sub UserControl_Resize()
     If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
-'Call this when a new thumbnail needs to be set.  The class will reset its thumb DIB to match its current size, then raise
-' a RequestUpdatedThumbnail function.
+'For fast notifications of frame time changes, use this simplified wrapper.
+Public Sub NotifyFrameTimeChange(ByVal layerIndex As Long, ByVal newFrameTimeInMS As Long)
+    navInner.NotifyFrameTimeChange layerIndex, newFrameTimeInMS
+End Sub
+
+'Call this when a new thumbnail needs to be set.  The class will reset its thumb DIB to match its
+' current size, then raise a RequestUpdatedThumbnail function.
 Public Sub NotifyNewThumbNeeded()
     navInner.NotifyNewThumbNeeded
 End Sub
@@ -442,12 +448,33 @@ Private Sub UpdateButtonTooltips()
     
 End Sub
 
+'The slider control for animations displays a (rather comprehensive) tooltip.  Not all information
+' in the tooltip is cached; instead, we generate it on-demand.
 Private Sub UpdateSliderTooltip()
+    
     If (Not g_Language Is Nothing) And PDImages.IsImageActive And m_Animated Then
-        Dim frameToolText As String
-        frameToolText = g_Language.TranslateMessage("Current frame: %1", PDImages.GetActiveImage.GetLayerByIndex(sldFrame.Value).GetLayerName)
-        sldFrame.AssignTooltip frameToolText
+        
+        Dim numFrames As Long, curFrame As Long
+        numFrames = navInner.GetFrameCount
+        curFrame = navInner.GetCurrentFrame
+        
+        Dim totalTime As Long, curFrameTime As Long
+        Dim i As Long
+        For i = 0 To numFrames - 1
+            totalTime = totalTime + navInner.GetFrameTimeInMS(i)
+            If (i < curFrame) Then curFrameTime = totalTime
+        Next i
+        
+        Dim frameToolText As pdString
+        Set frameToolText = New pdString
+        frameToolText.Append g_Language.TranslateMessage("Current frame: %1 of %2", curFrame + 1, numFrames)
+        frameToolText.Append ", "
+        frameToolText.Append g_Language.TranslateMessage("%1 of %2", Strings.StrFromTimeInMS(curFrameTime, True), Strings.StrFromTimeInMS(totalTime, True))
+        
+        sldFrame.AssignTooltip frameToolText.ToString()
+        
     End If
+    
 End Sub
 
 'Some button icons on this page are created dynamically at run-time

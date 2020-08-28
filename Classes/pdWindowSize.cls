@@ -15,12 +15,15 @@ Attribute VB_Exposed = False
 'PhotoDemon DPI-Aware Window Resize class
 'Copyright 2015-2020 by Tanner Helland
 'Created: 23/September/15 (but built from many parts existing earlier)
-'Last updated: 06/February/17
-'Last update: migrate to safer subclassing technique
+'Last updated: 26/August/20
+'Last update: add optional support for handling min/max messages; this will be important when I finally
+'             tackle resizeable effect dialogs.
 '
-'Because VB is only partially DPI-aware, each unique user control has to do a ton of specialized work to support
-' resize and move events under non-standard DPI values.  To reduce the amount of redundant code copied between UCs,
-' this parent class is used.  It provides replacement move/size functions that rely on WAPI for correct behavior.
+'Because native VB6 is only partially DPI-aware, each unique user control has to do a bunch
+' of specialized work to support resize and move events under non-standard DPI values.
+'
+'To reduce the amount of redundant code copied between UCs, this parent class is used.
+' It provides replacement move/size functions that rely on WAPI for correct behavior.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -32,6 +35,9 @@ Option Explicit
 'This class can optionally raise events for move/size actions, but you must enable subclassing in the main Attach() function.
 Public Event WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
 Public Event WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+Public Event WindowResizeInitial()  'Sent just once, when interactive resizing begins; good for suspending automatic redraws
+Public Event WindowResizeFinal(ByVal newWidth As Long, ByVal newHeight As Long) 'Sent just once, after interactive resizing finishes; good for performing intensive functions
+Public Event WindowMaxMinRequested(ByRef minWidth As Long, ByRef minHeight As Long, ByRef maxWidth As Long, ByRef maxHeight As Long)
 
 'Various window interaction APIs
 Private Enum SWP_FLAGS
@@ -56,8 +62,25 @@ Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Lo
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 
 'Optional window messages to subclass
+Private Const WM_ENTERSIZEMOVE As Long = &H231
+Private Const WM_EXITSIZEMOVE As Long = &H232
 Private Const WM_MOVE As Long = &H3
 Private Const WM_SIZE As Long = &H5
+Private Const WM_GETMINMAXINFO As Long = &H24
+
+'This is the API struct used by WM_GETMINMAXINFO
+Private Type POINTL
+    x As Long
+    y As Long
+End Type
+
+Private Type MINMAXINFO
+    Reserved As POINTL
+    MaxSize As POINTL
+    maxPosition As POINTL
+    MinTrackSize As POINTL
+    MaxTrackSize As POINTL
+End Type
 
 'Subclassing is optional; if active, this class will be non-nothing.
 Implements ISubclass
@@ -66,15 +89,21 @@ Private m_SubclassActive As Boolean
 'hWnd attached to this class instance; use it for all API interactions
 Private m_hWnd As Long
 
-'Rect that contains the position/dimensions of the tracked hWnd.  It will be automatically updated on size/move events,
-' or you can optionally call the UpdateWinRect function to do it yourself.  Note that per GetWindowRect functionality,
-' all dimensions are in *screen coords*.
+'Rect that contains the position/dimensions of the tracked hWnd.  It will be automatically
+' updated on size/move events, or you can optionally call the UpdateWinRect function to do
+' it yourself.  Note that per GetWindowRect functionality, all dimensions are in *screen coords*.
 Private m_WindowRect As winRect
 
-'Prior to doing anything with this class, you need to attach it to an hWnd.  For UCs, this will simply be UserControl.hWnd.
-' This class can optionally subclass API size/move events, and raise corresponding events, allowing us to completely
-' bypass VB's faulty handling.
-Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
+'If (optional) max/min tracking is active, this will be set to TRUE, and the associated struct
+' will be passed to the user for modification.
+Private m_SubclassMaxMin As Boolean, m_tmpMinMax As MINMAXINFO
+
+'Prior to doing anything with this class, you need to attach it to an hWnd.
+' (For UCs, this will simply be UserControl.hWnd.)
+'
+'This class can optionally subclass API size/move events, including max/min window size requests,
+' and raise corresponding events, allowing us to completely bypass VB's faulty handling.
+Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False, Optional ByVal subclassMaxMinToo As Boolean = False)
     
     If PDMain.IsProgramRunning() Then
     
@@ -89,6 +118,7 @@ Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
             'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
             m_SubclassActive = subclassMoveSizeEvents
             If m_SubclassActive Then VBHacks.StartSubclassing m_hWnd, Me
+            m_SubclassMaxMin = subclassMaxMinToo
             
             'Cache an initial set of window dimensions
             UpdateWinRect
@@ -206,19 +236,41 @@ End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
-    If (uiMsg = WM_SIZE) Then
+    If (uiMsg = WM_ENTERSIZEMOVE) Then
+        RaiseEvent WindowResizeInitial
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    ElseIf (uiMsg = WM_EXITSIZEMOVE) Then
+        UpdateWinRect
+        RaiseEvent WindowResizeFinal(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+    ElseIf (uiMsg = WM_SIZE) Then
         UpdateWinRect
         RaiseEvent WindowResize(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)
-    
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
     ElseIf (uiMsg = WM_MOVE) Then
         UpdateWinRect
         RaiseEvent WindowMove(m_WindowRect.x1, m_WindowRect.y1)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    ElseIf ((uiMsg = WM_GETMINMAXINFO) And m_SubclassMaxMin) Then
+        
+        'lParam contains a pointer to the window's rect location.  Retrieve it now.
+        If (lParam <> 0) Then CopyMemoryStrict VarPtr(m_tmpMinMax), lParam, LenB(m_tmpMinMax)
+        RaiseEvent WindowMaxMinRequested(m_tmpMinMax.MinTrackSize.x, m_tmpMinMax.MinTrackSize.y, m_tmpMinMax.MaxTrackSize.x, m_tmpMinMax.MaxTrackSize.y)
+        
+        'Copy the struct back into place, and return 0 *without* calling DefWindowProc
+        CopyMemoryStrict lParam, VarPtr(m_tmpMinMax), LenB(m_tmpMinMax)
+        ISubclass_WindowMsg = 0
     
     ElseIf (uiMsg = WM_NCDESTROY) Then
         EndSubclassing
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
+    Else
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
     
-    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
-
 End Function

@@ -1770,7 +1770,8 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         
         'Also, write out an offset x/y (if any) and append frame time
         With dstImage.GetLayerByID(newLayerID)
-            .SetLayerName .GetLayerName & " (" & CStr(m_Chunks(m_fcTLIndices(curFrame)).GetFrameDelayMS) & "ms)"
+            .SetLayerFrameTimeInMS m_Chunks(m_fcTLIndices(curFrame)).GetFrameDelayMS
+            .SetLayerName .GetLayerName & " (" & CStr(.GetLayerFrameTimeInMS()) & "ms)"
             .SetLayerOffsetX 0&
             .SetLayerOffsetY 0&
             .NotifyOfDestructiveChanges
