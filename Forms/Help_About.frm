@@ -386,6 +386,7 @@ Private Sub Form_Load()
     GenerateContributor "Raj Chaudhuri", "https://github.com/rajch"
     GenerateContributor "Robert Rayment", "http://rrprogs.com/"
     GenerateContributor "Roy K (rk)"
+    GenerateContributor "Ryszard Cwenar"
     GenerateContributor "Shishi"
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"

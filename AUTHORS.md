@@ -94,6 +94,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Raj Chaudhuri](https://github.com/rajch)
 * [Robert Rayment](http://rrprogs.com/)
 * Roy K (rk)
+* Ryszard Cwenar
 * Shishi
 * [Steve McMahon](http://www.vbaccelerator.com/home/VB/index.asp)
 * [Tom Loos](http://www.designedbyinstinct.com)
