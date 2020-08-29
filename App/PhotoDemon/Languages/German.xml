@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.2.5</langversion>
+<langversion>8.2.19</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1574,7 +1574,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Animation settings</original>
-<translation></translation>
+<translation>Animationseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -3225,7 +3225,7 @@ Beschreibung: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat die Bug-Bericht-Webseite automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Bug-Bericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
+<translation>PhotoDemon hat die Bug-Bericht-Webseite automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Bug-Bericht" aus. Beantworten Sie die Fragen so gut Sie können und beziehen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
 
 Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</translation>
 </phrase>
@@ -5405,12 +5405,12 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation></translation>
+<translation>Aktuelles Frame: %1 von %2</translation>
 </phrase>
 
 <phrase>
 <original>%1 of %2</original>
-<translation></translation>
+<translation>%1 von %2</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -5988,7 +5988,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Animation</original>
-<translation></translation>
+<translation>Animation</translation>
 </phrase>
 
 <phrase>
@@ -8714,7 +8714,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Waiting for tone mapping instructions</original>
-<translation>Auf Instruktionen für Tone-Mapping wird gewartet</translation>
+<translation>Warten auf Tone-Mapping-Instruktionen</translation>
 </phrase>
 
 <phrase>
@@ -11052,7 +11052,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>include subfolders</original>
-<translation>Unterordner einschließen</translation>
+<translation>Unterordner einbeziehen</translation>
 </phrase>
 
 <phrase>
@@ -11464,7 +11464,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Extras > Makros > Neues Makro aufzeichnen" verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann irgendeine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Extras > Makros > Neues Makro aufzeichnen" verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -11941,7 +11941,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Waiting for user input</original>
-<translation>Auf Benutzereingabe wird gewartet</translation>
+<translation>Warten auf Benutzereingabe</translation>
 </phrase>
 
 <!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
@@ -11957,7 +11957,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>include window decorations</original>
-<translation>Fensterdekorationen einschließen</translation>
+<translation>Fensterdekorationen einbeziehen</translation>
 </phrase>
 
 <phrase>
@@ -12857,17 +12857,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Animation options</original>
-<translation></translation>
+<translation>Animationsoptionen</translation>
 </phrase>
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation></translation>
+<translation>Animation aktiviert für dieses Bild</translation>
 </phrase>
 
 <phrase>
 <original>waiting</original>
-<translation></translation>
+<translation>Warten</translation>
 </phrase>
 
 <!-- Image_Animation.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -15134,7 +15134,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>waiting for Google Translate</original>
-<translation>Auf Google Translate wird gewartet</translation>
+<translation>Warten auf Google Translate</translation>
 </phrase>
 
 <phrase>
@@ -15190,7 +15190,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation>WARNUNG: Dies ist kein gültiges Makro. Sie müssen mindestens eine Aktion hinzufügen, die das Bild modifiziert.</translation>
+<translation>WARNUNG: Dies ist kein gültiges Makro. Sie müssen mindestens eine Aktion einbeziehen, die das Bild modifiziert.</translation>
 </phrase>
 
 <phrase>
@@ -15396,7 +15396,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Optionen für Tone-Mapping beim Importieren von HDR- oder RAW-Bildern anzeigen</translation>
+<translation>Tone-Mapping-Optionen beim Import von HDR- oder RAW-Bildern anzeigen</translation>
 </phrase>
 
 <phrase>

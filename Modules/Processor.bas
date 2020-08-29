@@ -2119,7 +2119,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     
     'Modify animation settings
     ElseIf Strings.StringsEqual(processID, "Animation settings", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormAnimation
+        If raiseDialog Then ShowPDDialog vbModal, FormAnimation Else FormAnimation.ApplyAnimationChanges processParameters
         Process_ImageMenu = True
     
     'Compare two images/layers
