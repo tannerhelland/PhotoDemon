@@ -254,7 +254,15 @@ Private Sub btnPlay_Click(Index As Integer)
 End Sub
 
 Private Sub btsAnimated_Click(ByVal buttonIndex As Long)
+    
+    'Stop any running animations when "animated?" is switched to FALSE
+    If (btsAnimated.ListIndex = 0) Then
+        If btnPlay(0).Value Then btnPlay(0).Value = False
+        If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
+    End If
+    
     ReflowInterface (btsAnimated.ListIndex = 1)
+    
 End Sub
 
 Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
@@ -316,8 +324,12 @@ Private Sub Form_Load()
     'Prevent UI reflows until we've initialized certain UI elements
     m_AllowReflow = False
     
-    'Cache a reference to the currently active main pdImage object
+    'Cache a reference to the currently active main pdImage object, and determine whether it's
+    ' flagged as animated.  (This property affects the way we initialize almost all UI elements.)
     Set m_SrcImage = PDImages.GetActiveImage
+    
+    Dim isImgAnimated As Boolean
+    If (Not m_SrcImage Is Nothing) Then isImgAnimated = m_SrcImage.IsAnimated()
     
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
@@ -344,24 +356,20 @@ Private Sub Form_Load()
     btsLoop.AddItem "forever", 1
     btsLoop.AddItem "custom", 2
     btsLoop.ListIndex = 0
-    If (Not m_SrcImage Is Nothing) Then
+    If isImgAnimated Then
         
-        If m_SrcImage.IsAnimated Then
-            
-            cmdBar.RequestPresetNoLoad btsLoop
-            
-            Dim curImageLoopSetting As Long
-            curImageLoopSetting = m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 0)
-            If (curImageLoopSetting = 0) Then
-                btsLoop.ListIndex = 1
-            ElseIf (curImageLoopSetting = 1) Then
-                btsLoop.ListIndex = 0
-            Else
-                btsLoop.ListIndex = 2
-                cmdBar.RequestPresetNoLoad sldLoop
-                sldLoop.Value = curImageLoopSetting - 1
-            End If
+        cmdBar.RequestPresetNoLoad btsLoop
         
+        Dim curImageLoopSetting As Long
+        curImageLoopSetting = m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 0)
+        If (curImageLoopSetting = 0) Then
+            btsLoop.ListIndex = 1
+        ElseIf (curImageLoopSetting = 1) Then
+            btsLoop.ListIndex = 0
+        Else
+            btsLoop.ListIndex = 2
+            cmdBar.RequestPresetNoLoad sldLoop
+            sldLoop.Value = curImageLoopSetting - 1
         End If
         
     End If
@@ -371,12 +379,35 @@ Private Sub Form_Load()
     btsFrameTimes.AddItem "fixed", 0
     btsFrameTimes.AddItem "pull from layer names", 1
     btsFrameTimes.ListIndex = 0
+    If isImgAnimated Then
+        
+        cmdBar.RequestPresetNoLoad btsFrameTimes
+        
+        'Figure out if the image already has valid frame rates assigned to at least one frame.
+        ' If it doesn't, we'll default to a single fixed frame rate for the entire animation;
+        ' otherwise, we'll assume most layers have valid frame data, and we'll default to existing
+        ' layer framerate data.  (Note that this setting still exposes a "default value for
+        ' missing frame times" option.)
+        Dim validFramesFound As Boolean
+        validFramesFound = False
+        
+        Dim i As Long
+        For i = 0 To m_SrcImage.GetNumOfLayers - 1
+            If (Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0) <> 0) Then
+                validFramesFound = True
+                Exit For
+            End If
+        Next i
+        
+        If validFramesFound Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+        
+    End If
     
     'Prep a preview (if any)
     If (Not m_SrcImage Is Nothing) Then
         
         'Synchronize UI settings to current image state
-        If m_SrcImage.IsAnimated() Then btsAnimated.ListIndex = 1
+        If isImgAnimated Then btsAnimated.ListIndex = 1
         
         'Get loop behavior
         SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)

@@ -3,9 +3,8 @@ Attribute VB_Name = "Animation"
 'Animation Functions
 'Copyright 2019-2020 by Tanner Helland
 'Created: 20/August/19
-'Last updated: 20/August/19
-'Last update: migrate animation code from animated GIF engine to here, since we're going to reuse bits of
-'             it for animated PNGs.
+'Last updated: 30/August/20
+'Last update: new function for (reliably?) replacing an existing layer-name-frame-time with a new value
 '
 'PhotoDemon was never meant to be an animation editor, but repeat user requests for animated GIF handling
 ' led to a rudimentary set of import/export/playback features.
@@ -21,7 +20,7 @@ Option Explicit
 
 Public Function GetFrameTimeFromLayerName(ByRef srcLayerName As String, Optional ByVal defaultTimeIfMissing As Long = 100) As Long
     
-    'Default to 100 ms, per convention
+    'Default to the user's requested default value; if we find a valid value, it will replace this one
     GetFrameTimeFromLayerName = defaultTimeIfMissing
     
     'Look for a trailing parenthesis
