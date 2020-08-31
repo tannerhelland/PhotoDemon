@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 26/December/19
-'Last update: add read support for HEIC/HEIF images (write support is TBD)
+'Last updated: 30/August/20
+'Last update: update this module to track animated image support as a special case
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -183,14 +183,16 @@ End Function
 'Generate a list of available import formats
 Public Sub GenerateInputFormats()
 
-    'Prepare a list of possible INPUT formats based on the plugins available to us.
-    ' (These format lists are automatically trimmed after plugin status has been assessed;
-    '  the arbitrary upper limit of "50" would only need to be revisited if we greatly
-    '  expand format support in the future.)
-    ReDim inputExtensions(0 To 50) As String
-    ReDim inputDescriptions(0 To 50) As String
-    ReDim inputPDIFs(0 To 50) As PD_IMAGE_FORMAT
-
+    'Prepare a list of possible INPUT formats based on the 3rd-party libraries available at run-time.
+    
+    '(These format lists are automatically trimmed after library status is evaluated.
+    ' The arbitrary upper limit of "50" only needs to be revisited if I greatly expand
+    ' format support in the future!)
+    Const MAX_NUM_INPUT_FORMATS As Long = 50
+    ReDim inputExtensions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
+    ReDim inputDescriptions(0 To MAX_NUM_INPUT_FORMATS - 1) As String
+    ReDim inputPDIFs(0 To MAX_NUM_INPUT_FORMATS - 1) As PD_IMAGE_FORMAT
+    
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
 
     'Always start with an "All Compatible Images" option
@@ -357,16 +359,17 @@ End Sub
 'Generate a list of available export formats
 Public Sub GenerateOutputFormats()
 
-    ReDim outputExtensions(0 To 50) As String
-    ReDim outputDescriptions(0 To 50) As String
-    ReDim outputPDIFs(0 To 50) As PD_IMAGE_FORMAT
-
+    Const MAX_NUM_OUTPUT_FORMATS As Long = 50
+    ReDim outputExtensions(0 To MAX_NUM_OUTPUT_FORMATS - 1) As String
+    ReDim outputDescriptions(0 To MAX_NUM_OUTPUT_FORMATS - 1) As String
+    ReDim outputPDIFs(0 To MAX_NUM_OUTPUT_FORMATS - 1) As PD_IMAGE_FORMAT
+    
     'Formats must be added in alphabetical order, as this class has no "sort" functionality.
     
-    'If a given export format requires a matching plugin or system library, make sure to
-    ' check availability of said library BEFORE adding support for that format.
+    'If a given export format requires a matching 3rd-party or non-standard system library,
+    ' you *must* ensure availability of said library BEFORE adding support for that format.
     
-    'Start by effectively setting the location tracker to "0"
+    'Start by effectively setting the location tracker to "0".
     ' (Beyond this point, it will be automatically updated.)
     m_curFormatIndex = -1
 
@@ -427,7 +430,7 @@ Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionLi
     
     'Add the corresponding FIF
     outputPDIFs(m_curFormatIndex) = correspondingPDIF
-            
+    
 End Sub
 
 'Given a PDIF (PhotoDemon image format constant), return the default extension.
@@ -676,6 +679,16 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         
     End Select
     
+End Function
+
+'Given an output PDIF, return a BOOLEAN specifying whether the export format supports animation.
+Public Function IsAnimationSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+    Select Case outputPDIF
+        Case PDIF_GIF, PDIF_PNG
+            IsAnimationSupported = True
+        Case Else
+            IsAnimationSupported = False
+    End Select
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.

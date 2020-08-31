@@ -347,8 +347,8 @@ Private Sub Form_Load()
     '"Is image animated" always defaults to current main image state
     btsAnimated.AddItem "no", 0
     btsAnimated.AddItem "yes", 1
-    btsAnimated.ListIndex = 0
     cmdBar.RequestPresetNoLoad btsAnimated
+    If isImgAnimated Then btsAnimated.ListIndex = 1 Else btsAnimated.ListIndex = 0
     
     'Loop count is initialized to current image loop count IF current image is animated;
     ' last-used setting otherwise.
@@ -357,25 +357,12 @@ Private Sub Form_Load()
     btsLoop.AddItem "custom", 2
     btsLoop.ListIndex = 0
     If isImgAnimated Then
-        
         cmdBar.RequestPresetNoLoad btsLoop
-        
-        Dim curImageLoopSetting As Long
-        curImageLoopSetting = m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 0)
-        If (curImageLoopSetting = 0) Then
-            btsLoop.ListIndex = 1
-        ElseIf (curImageLoopSetting = 1) Then
-            btsLoop.ListIndex = 0
-        Else
-            btsLoop.ListIndex = 2
-            cmdBar.RequestPresetNoLoad sldLoop
-            sldLoop.Value = curImageLoopSetting - 1
-        End If
-        
+        cmdBar.RequestPresetNoLoad sldLoop
+        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
     End If
     
-    'TODO: heuristics on frame rate.  If all frames are 0, or image is not animated,
-    ' default to "fixed" frame rate.  Otherwise, try to use layer names.
+    'Frame times requires heuristics which are a little more convoluted
     btsFrameTimes.AddItem "fixed", 0
     btsFrameTimes.AddItem "pull from layer names", 1
     btsFrameTimes.ListIndex = 0
@@ -403,17 +390,10 @@ Private Sub Form_Load()
         
     End If
     
-    'Prep a preview (if any)
+    'Default "infinite loop playback button" to current image state
     If (Not m_SrcImage Is Nothing) Then
-        
-        'Synchronize UI settings to current image state
-        If isImgAnimated Then btsAnimated.ListIndex = 1
-        
-        'Get loop behavior
-        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
         If (btsLoop.ListIndex = 1) Then btnPlay(1).Value = True
         m_Timer.SetRepeat btnPlay(1).Value
-        
     End If
     
     'Apply translations and visual themes
@@ -424,7 +404,7 @@ Private Sub Form_Load()
     m_AllowReflow = True
     ReflowInterface
     
-    'Update animation frames (so the user can preview them!)
+    'Update animation frames (so the user can preview them)
     If (Not m_SrcImage Is Nothing) Then UpdateAnimationSettings
     
     'Render the first frame of the animation

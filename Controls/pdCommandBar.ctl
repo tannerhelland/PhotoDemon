@@ -1180,7 +1180,7 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
                 If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
                 
                 Dim okToLoad As Boolean: okToLoad = True
-                If (Not m_NoLoadList Is Nothing) Then okToLoad = Not m_NoLoadList.ContainsString(controlName, True)
+                If (Not m_NoLoadList Is Nothing) Then okToLoad = (m_NoLoadList.ContainsString(controlName, True) < 0)
                 
                 'See if a preset exists for this control and this particular preset
                 If (okToLoad And m_Params.GetStringEx(controlName, controlValue)) Then

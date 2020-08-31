@@ -59,10 +59,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     Dim saveFormat As PD_IMAGE_FORMAT
     saveFormat = srcImage.GetCurrentFileFormat
     
-    'Retrieve a string representation as well; settings related to this format may be stored inside the pdImage's settings dictionary
-    Dim saveExtension As String
-    saveExtension = UCase$(ImageFormats.GetExtensionFromPDIF(saveFormat))
-    
     Dim dictEntry As String
     
     'The first major task this function deals with is save prompts.  The formula for showing these is hierarchical:
@@ -89,13 +85,14 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             If (Not forceOptionsDialog) Then
             
                 'See if the user has already seen this dialog...
-                dictEntry = "HasSeenExportDialog" & saveExtension
+                dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
                 needToDisplayDialog = Not srcImage.ImgStorage.GetEntry_Boolean(dictEntry, False)
                 
-                'If the user has seen a dialog, we'll perform one last failsafe check.  Make sure that the exported format's
-                ' parameter string exists; if it doesn't, we need to prompt them again.
-                dictEntry = "ExportParams" & saveExtension
-                If (Not needToDisplayDialog) And (Len(srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
+                'If the user has seen a dialog, we'll perform one last failsafe check.  Make sure that the
+                ' exported format's parameter string exists; if it doesn't, we need to prompt them again.
+                ' (This ensures that the user sees at least *1* save settings dialog per session, per format.)
+                dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
+                If (Not needToDisplayDialog) And (LenB(srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
                     PDDebug.LogAction "WARNING!  PhotoDemon_SaveImage found an image where HasSeenExportDialog = TRUE, but ExportParams = null.  Fix this!"
                     needToDisplayDialog = True
                 End If
@@ -134,7 +131,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         End If
         
     Else
-        dictEntry = "ExportParams" & saveExtension
+        dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
         saveParameters = srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)
         metadataParameters = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
     End If
@@ -152,7 +149,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
     ' the "EndSaveProcess" function to release the UI lock.
     BeginSaveProcess
-    Message "Saving %1 file...", saveExtension
+    Message "Saving %1 file...", UCase$(ImageFormats.GetExtensionFromPDIF(saveFormat))
     
     'If the image is being saved to a layered format (like multipage TIFF), various parts of the export engine may
     ' want to inject useful information into the finished file (e.g. ExifTool can append things like page names).
@@ -165,12 +162,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         
         'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
         ' can use these instead of querying the user again.
-        dictEntry = "ExportParams" & saveExtension
+        dictEntry = GetExportDictFlag("ExportParams", saveFormat, srcImage)
         srcImage.ImgStorage.AddEntry dictEntry, saveParameters
         
         'If a dialog was displayed, note that as well
-        If (needToDisplayDialog) Then
-            dictEntry = "HasSeenExportDialog" & saveExtension
+        If needToDisplayDialog Then
+            dictEntry = GetExportDictFlag("HasSeenExportDialog", saveFormat, srcImage)
             srcImage.ImgStorage.AddEntry dictEntry, True
         End If
         
@@ -246,11 +243,6 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
     ' is the return value of this function.)
     Dim saveSuccessful As Boolean: saveSuccessful = False
     
-    'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
-    ' the "EndSaveProcess" function to release the UI lock.
-    'BeginSaveProcess
-    'Message "Saving %1 file...", saveExtension
-    
     'If the image is being saved to a layered format (like multipage TIFF), various parts of the export engine may
     ' want to inject useful information into the finished file (e.g. ExifTool can append things like page names).
     ' Mark the outgoing file now.
@@ -298,6 +290,13 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
     
 End Function
 
+Private Function GetExportDictFlag(ByRef categoryName As String, ByVal dstFileFormat As PD_IMAGE_FORMAT, ByRef srcImage As pdImage) As String
+    GetExportDictFlag = categoryName & ImageFormats.GetExtensionFromPDIF(dstFileFormat)
+    If ImageFormats.IsExportDialogSupported(dstFileFormat) Then
+        If srcImage.IsAnimated Then GetExportDictFlag = GetExportDictFlag & "-animated"
+    End If
+End Function
+
 Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
     
     Dim saveIsMultipage As Boolean: saveIsMultipage = False
@@ -306,7 +305,9 @@ Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDI
     Set cParams = New pdSerialize
     cParams.SetParamString saveParameters
     
-    'TIFF is currently the only image format that supports multipage export
+    'TIFF is currently the only image format that supports multipage export as an option.
+    ' (For all other formats, it is handled automatically, e.g. animated GIFs are rerouted to the
+    ' animation exporter, PSDs are written as multi-layer files, etc.)
     If (outputPDIF = PDIF_TIFF) Then
     
         'The format parameter string contains the multipage indicator, if any.  (Default is to write a single-page TIFF.)
@@ -334,7 +335,11 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_GIF
-                GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If srcImage.IsAnimated Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedGIF(srcImage, dstParamString, dstMetadataString) = vbOK)
+                Else
+                    GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                End If
             
             Case PDIF_ICO
                 GetExportParamsFromDialog = (Dialogs.PromptICOSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
@@ -349,7 +354,11 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
         
             Case PDIF_PNG
-                GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If srcImage.IsAnimated Then
+                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
+                Else
+                    GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                End If
                 
             Case PDIF_PNM
                 GetExportParamsFromDialog = (Dialogs.PromptPNMSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
@@ -393,7 +402,11 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_GIF
-            ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
+            If srcImage.IsAnimated Then
+                ExportToSpecificFormat = ImageExporter.ExportGIF_Animated(srcImage, dstPath, saveParameters, metadataParameters)
+            Else
+                ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
+            End If
             
         Case PDIF_HDR
             ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters, metadataParameters)
@@ -413,12 +426,15 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_ORA
             ExportToSpecificFormat = ImageExporter.ExportORA(srcImage, dstPath, saveParameters, metadataParameters)
         
-        'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
         Case PDIF_PDI
             ExportToSpecificFormat = Saving.SavePDI_Image(srcImage, dstPath, False, cf_Zstd, cf_Zstd, False, True, Compression.GetDefaultCompressionLevel(cf_Zstd))
                         
         Case PDIF_PNG
-            ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
+            If srcImage.IsAnimated Then
+                ExportToSpecificFormat = ImageExporter.ExportPNG_Animated(srcImage, dstPath, saveParameters, metadataParameters)
+            Else
+                ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
+            End If
         
         Case PDIF_PNM
             ExportToSpecificFormat = ImageExporter.ExportPNM(srcImage, dstPath, saveParameters, metadataParameters)
