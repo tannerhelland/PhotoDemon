@@ -2280,8 +2280,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     
     'Toggle active layer visibility
     ElseIf Strings.StringsEqual(processID, "Toggle layer visibility", True) Then
-        PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+        Layers.ToggleLayerVisibility cParams.GetLong("layerindex")
         Process_LayerMenu = True
     
     'Show or hide just the active layer

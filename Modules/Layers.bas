@@ -636,6 +636,12 @@ Public Sub MakeJustOneLayerVisible(ByVal dLayerIndex As Long)
     
 End Sub
 
+'Toggle visibility of a target layer (e.g. visible will be made invisible, invisible made visible)
+Public Sub ToggleLayerVisibility(ByVal dLayerIndex As Long)
+    PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).SetLayerVisibility Not PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).GetLayerVisibility()
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, dLayerIndex
+End Sub
+
 'XML-based wrapper for DuplicateLayerByIndex(), below
 Public Sub DuplicateLayerByIndex_XML(ByRef processParameters As String)
     Dim cParams As pdSerialize

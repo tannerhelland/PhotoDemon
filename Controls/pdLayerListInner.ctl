@@ -181,6 +181,12 @@ Private WithEvents m_FlashTimer As pdTimer
 Attribute m_FlashTimer.VB_VarHelpID = -1
 Private m_FlashCount As Long, m_FlashTimeElapsed As Long, m_FlashLength As Long
 
+'Normally, we want to ensure the currently selected layer is forcibly made visible on-screen.
+' In rare circumstances, however, (like toggling visibility via this box), we want to suspend
+' this behavior.  Set this toggle to prevent auto-positioning, but you *must* remember to
+' reset it to FALSE when you're done!
+Private m_SuspendAutoShowActiveLayer As Boolean
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_LayerListInner
 End Function
@@ -461,53 +467,92 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     Dim clickedLayer As Long
     clickedLayer = GetLayerAtPosition(x, y)
     
+    'Basic validation checks
     If (clickedLayer >= 0) Then
+    If PDImages.IsImageActive() Then
         
-        If PDImages.IsImageActive() Then
-        
-            If ((Button And pdLeftButton) <> 0) Then
+        'Left button
+        If ((Button And pdLeftButton) <> 0) Then
+            
+            'Check the clicked position against a series of rects, each rect representing a
+            ' unique area of the layer box (with different allowed interactions).
+            
+            'Has the user clicked a visibility rectangle?
+            If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
                 
-                'If the user has initiated an action, this value will be set to TRUE.  We don't currently make use of it,
-                ' but it could prove helpful in the future (for optimizing redraws, for example).
-                Dim actionInitiated As Boolean
-                actionInitiated = False
+                'When toggling visibility, we want to suspend this control's default behavior
+                ' of forcing the currently active layer on-screen.
+                m_SuspendAutoShowActiveLayer = True
                 
-                'Check the clicked position against a series of rects, each one representing a unique interaction.
+                'Look for a modifier key being down.  Alt/Shift/Ctrl can be used to ONLY
+                ' show the current layer.
                 
-                'Has the user clicked a visibility rectangle?
-                If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
-                    Layers.SetLayerVisibilityByIndex clickedLayer, Not PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerVisibility, True
-                    actionInitiated = True
-                
-                'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
-                ' the active layer.
+                'No modifiers; toggle visibility of only the clicked layer.
+                ' (Note that we explicitly request the "ImageHeader" Undo type - this is because
+                ' the undo engine only supports "LayerHeader" changes for the *currently active layer*,
+                ' which may or may not be the one getting its visibility toggled.)
+                If (Shift = 0) Then
+                    Process "Toggle layer visibility", False, BuildParamList("layerindex", clickedLayer), UNDO_ImageHeader
+                    
+                'One or more modifiers
                 Else
-                
-                    'See if the clicked layer differs from the current active layer
-                    If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
-                        Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
-                        Layers.SetActiveLayerByIndex clickedLayer, False
-                        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                    
+                    'See if any other layers are visible *besides* the clicked layer
+                    Dim otherLayersVisible As Boolean
+                    otherLayersVisible = False
+                    
+                    Dim i As Long
+                    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                        If (i <> clickedLayer) Then
+                            otherLayersVisible = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility()
+                            If otherLayersVisible Then Exit For
+                        End If
+                    Next i
+                    
+                    'If one or more other layer are visible, turn all of them off and make only the
+                    ' current layer visible.
+                    If otherLayersVisible Then
+                        Process "Show only this layer", False, BuildParamList("layerindex", clickedLayer), UNDO_ImageHeader
+                        
+                    'If all other layers in the image are invisible, make *all* layers visible.
+                    Else
+                        Process "Show all layers", False, vbNullString, UNDO_ImageHeader
                     End If
                     
                 End If
                 
-                'Redraw the layer box to represent any changes from this interaction.
-                ' NOTE: this is not currently necessary, as all interactions automatically force a redraw on their own.
-                'RedrawLayerBox
-                
-            ElseIf ((Button And pdRightButton) <> 0) Then
+                'Before exiting, reset the "show active layer on-screen automatically" flag
+                m_SuspendAutoShowActiveLayer = False
             
-                'Note the clicked layer index; we'll need this if the user chooses to do something to this layer
-                m_RightClickIndex = clickedLayer
-                
-                'Display the popup menu; it will raise additional events, as necessary
-                ShowLayerPopupMenu x, y
+            'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+            ' the active layer.
+            Else
+            
+                'See if the clicked layer differs from the current active layer
+                If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
+                    Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
+                    Layers.SetActiveLayerByIndex clickedLayer, False
+                    Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                End If
                 
             End If
-                        
-        End If
+            
+            'Redraw the layer box to represent any changes from this interaction.
+            ' NOTE: this is not currently necessary, as all interactions automatically force a redraw on their own.
+            'RedrawLayerBox
+            
+        ElseIf ((Button And pdRightButton) <> 0) Then
         
+            'Note the clicked layer index; we'll need this if the user chooses to do something to this layer
+            m_RightClickIndex = clickedLayer
+            
+            'Display the popup menu; it will raise additional events, as necessary
+            ShowLayerPopupMenu x, y
+            
+        End If
+                        
+    'End failsafe checks
+    End If
     End If
     
 End Sub
@@ -904,7 +949,7 @@ Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True,
     If refreshThumbnailCache Then CacheLayerThumbnails layerID
     
     'Next, we need to make sure the currently selected layer is visible on-screen.
-    EnsureActiveLayerIsVisible
+    If (Not m_SuspendAutoShowActiveLayer) Then EnsureActiveLayerIsVisible
     
     'Finally, we need to redraw the back buffer to reflect any changes from previous steps.
     RedrawBackBuffer
