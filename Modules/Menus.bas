@@ -199,18 +199,19 @@ Public Sub InitializeMenus()
     AddMenuItem "Repeat", "edit_repeat", 1, 4, , "edit_repeat"
     AddMenuItem "Fade...", "edit_fade", 1, 5
     AddMenuItem "-", "-", 1, 6
-    AddMenuItem "Cu&t", "edit_cut", 1, 7, , "edit_cut"
-    AddMenuItem "Cut from layer", "edit_cutlayer", 1, 8
-    AddMenuItem "&Copy", "edit_copy", 1, 9, , "edit_copy"
-    AddMenuItem "Copy from layer", "edit_copylayer", 1, 10
-    AddMenuItem "&Paste as new image", "edit_pasteasimage", 1, 11, , "edit_paste"
-    AddMenuItem "Paste as new layer", "edit_pasteaslayer", 1, 12
-    AddMenuItem "Special", "edit_specialtop", 1, 13
-    AddMenuItem "Cut special...", "edit_specialcut", 1, 13, 0, "edit_cut"
-    AddMenuItem "Copy special...", "edit_specialcopy", 1, 13, 1, "edit_copy"
-    AddMenuItem "Paste special...", "edit_specialpaste", 1, 13, 2, "edit_paste"
-    AddMenuItem "-", "-", 1, 14
-    AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 15
+    AddMenuItem "Cu&t", "edit_cutlayer", 1, 7, , "edit_cut"
+    AddMenuItem "Cut merged", "edit_cutmerged", 1, 8
+    AddMenuItem "&Copy", "edit_copylayer", 1, 9, , "edit_copy"
+    AddMenuItem "Copy merged", "edit_copymerged", 1, 10
+    AddMenuItem "Paste", "edit_pasteaslayer", 1, 11, , "edit_paste"
+    AddMenuItem "Paste to cursor", "edit_pastetocursor", 1, 12
+    AddMenuItem "&Paste to new image", "edit_pasteasimage", 1, 13
+    AddMenuItem "Special", "edit_specialtop", 1, 14
+    AddMenuItem "Cut special...", "edit_specialcut", 1, 14, 0, "edit_cut"
+    AddMenuItem "Copy special...", "edit_specialcopy", 1, 14, 1, "edit_copy"
+    AddMenuItem "Paste special...", "edit_specialpaste", 1, 14, 2, "edit_paste"
+    AddMenuItem "-", "-", 1, 15
+    AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 16
     
     'Image Menu
     AddMenuItem "&Image", "image_top", 2
@@ -1192,15 +1193,15 @@ Public Sub InitializeAllHotkeys()
         
         .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
         
-        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cut", True, True, False, UNDO_Image
-        
+        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cutlayer", True, True, False, UNDO_Image
         'This "cut from layer" hotkey combination is used as "crop to selection" in other software; as such,
         ' I am suspending this instance for now.
         '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", "edit_cutlayer", True, True, False, UNDO_Layer
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copy", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", "edit_copylayer", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", "edit_pasteaslayer", True, False, False, UNDO_Image_VectorSafe
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", "edit_copylayer", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", "edit_copymerged", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste", "edit_pasteaslayer", True, False, False, UNDO_Image_VectorSafe
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbAltMask, "Paste to cursor", "edit_pastetocursor", True, True, False, UNDO_Image_VectorSafe
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste to new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
         
         'Image menu
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_Nothing
@@ -1551,7 +1552,7 @@ Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
         
         Case "file_import"
             Case "file_import_paste"
-                Process "Paste as new image", False, , UNDO_Nothing, , False
+                Process "Paste to new image", False, , UNDO_Nothing, , False
                 
             Case "file_import_scanner"
                 Process "Scan image", True
@@ -1640,32 +1641,35 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
             
         Case "edit_fade"
             Process "Fade", True
-            
-        Case "edit_cut"
-            Process "Cut", False, , UNDO_Image
         
         'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.
         ' If, however, no selection is active, we will delete the entire layer.  That requires a backup
         ' of the full layer stack.
         Case "edit_cutlayer"
             If PDImages.GetActiveImage.IsSelectionActive Then
-                Process "Cut from layer", False, , UNDO_Layer
+                Process "Cut", False, , UNDO_Layer
             Else
-                Process "Cut from layer", False, , UNDO_Image
+                Process "Cut", False, , UNDO_Image
             End If
-            
-        Case "edit_copy"
-            Process "Copy", False, , UNDO_Nothing
+        
+        Case "edit_cutmerged"
+            Process "Cut merged", False, , UNDO_Image
             
         Case "edit_copylayer"
-            Process "Copy from layer", False, , UNDO_Nothing
+            Process "Copy", False, , UNDO_Nothing
             
-        Case "edit_pasteasimage"
-            Process "Paste as new image", False, , UNDO_Nothing, , False
+        Case "edit_copymerged"
+            Process "Copy merged", False, , UNDO_Nothing
             
         Case "edit_pasteaslayer"
-            Process "Paste as new layer", False, , UNDO_Image_VectorSafe
-        
+            Process "Paste", False, , UNDO_Image_VectorSafe
+            
+        Case "edit_pastetocursor"
+            Process "Paste to cursor", False, , UNDO_Image_VectorSafe
+            
+        Case "edit_pasteasimage"
+            Process "Paste to new image", False, , UNDO_Nothing, , False
+            
         'The cut/copy/paste special menus allow the user to specify the format used for cut/copy/paste
         Case "edit_specialcut"
             Process "Cut special", True
@@ -1792,7 +1796,7 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 Process "Duplicate Layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_addfromclipboard"
-                Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
+                Process "Paste", False, , UNDO_Image_VectorSafe
                 
             Case "layer_addfromfile"
                 Process "New layer from file", True

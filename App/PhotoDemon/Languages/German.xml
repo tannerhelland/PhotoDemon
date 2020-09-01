@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.2.19</langversion>
+<langversion>8.2.20</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1373,8 +1373,8 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
-<original>Paste as new image</original>
-<translation>Als neues Bild einfügen</translation>
+<original>Paste to new image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1473,18 +1473,23 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
-<original>Cut from layer</original>
-<translation>Aus Layer ausschneiden</translation>
+<original>Cut merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Aus Layer kopieren</translation>
+<original>Copy merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Paste as new layer</original>
-<translation>Als neuen Layer einfügen</translation>
+<original>Paste</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paste to cursor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2492,7 +2497,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 261 phrases. 30 were duplicates of existing phrases, so only 231 new phrases were written to file. -->
+<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5322,7 +5327,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 <translation>Layer neu anordnen</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -5897,8 +5902,8 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>&Paste as new image</original>
-<translation>Als neues Bild &einfügen</translation>
+<original>&Paste</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6734,7 +6739,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 364 phrases. 168 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12870,7 +12875,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Warten</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Animation.frm-->
 
@@ -16075,10 +16080,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2660</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2467 are duplicates, so only 2660 unique phrases have been written to file. -->
-<!-- These 2660 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5133 phrases. -->
+<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 12069 total words. -->
 
 </pdData>

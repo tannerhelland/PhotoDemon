@@ -1429,34 +1429,43 @@ Private Function Process_EditMenu(ByRef processID As String, Optional raiseDialo
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
-    
+        
     ElseIf Strings.StringsEqual(processID, "Fade", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormFadeLast Else FormFadeLast.fxFadeLastAction processParameters
         Process_EditMenu = True
-            
+        
     ElseIf Strings.StringsEqual(processID, "Cut", True) Then
+        g_Clipboard.ClipboardCut False
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Cut merged", True) Then
         g_Clipboard.ClipboardCut True
         Process_EditMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Cut from layer", True) Then
-        g_Clipboard.ClipboardCut False
-        Process_EditMenu = True
-            
     ElseIf Strings.StringsEqual(processID, "Copy", True) Then
-        g_Clipboard.ClipboardCopy True
-        Process_EditMenu = True
-            
-    ElseIf Strings.StringsEqual(processID, "Copy from layer", True) Then
         g_Clipboard.ClipboardCopy False
         Process_EditMenu = True
-            
-    ElseIf Strings.StringsEqual(processID, "Paste as new image", True) Then
-        g_Clipboard.ClipboardPaste False
+        
+    ElseIf Strings.StringsEqual(processID, "Copy merged", True) Then
+        g_Clipboard.ClipboardCopy True
+        Process_EditMenu = True
+    
+    'Note the active image check; if no images are loaded, "Paste" gets silently rerouted to
+    ' PD's "Paste to new image" handler.  (Note also that we deliberately do *not* pass process
+    ' parameters to the function; those parameters contain cursor x/y position, if any - and if
+    ' the paste function receives them, it will perform a "paste to cursor" op instead.)
+    ElseIf Strings.StringsEqual(processID, "Paste", True) Then
+        g_Clipboard.ClipboardPaste PDImages.IsImageActive()
+        Process_EditMenu = True
+    
+    '"Paste to cursor" is identical to "paste", except we ensure process parameters get passed
+    ' so the paste function can retrieve cursor position (and position the new layer accordingly)
+    ElseIf Strings.StringsEqual(processID, "Paste to cursor", True) Then
+        g_Clipboard.ClipboardPaste PDImages.IsImageActive(), , processParameters
         Process_EditMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Paste as new layer", True) Then
-        'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
-        g_Clipboard.ClipboardPaste PDImages.IsImageActive(), , processParameters
+    ElseIf Strings.StringsEqual(processID, "Paste to new image", True) Or Strings.StringsEqual(processID, "Paste as new image", True) Then
+        g_Clipboard.ClipboardPaste False
         Process_EditMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Cut special", True) Then

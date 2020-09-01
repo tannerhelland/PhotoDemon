@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.497</langversion>
+<langversion>6.7.498</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1371,8 +1371,8 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Paste as new image</original>
-<translation>Incolla come nuova immagine</translation>
+<original>Paste to new image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1471,18 +1471,23 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Cut from layer</original>
-<translation>Taglia dal livello</translation>
+<original>Cut merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Copia dal livello</translation>
+<original>Copy merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Paste as new layer</original>
-<translation>Incolla come nuovo livello</translation>
+<original>Paste</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paste to cursor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2490,7 +2495,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Lista recente macro Cancella</translation>
 </phrase>
 
-<!-- Menus.bas contains 261 phrases. 30 were duplicates of existing phrases, so only 231 new phrases were written to file. -->
+<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5317,7 +5322,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Riorganizza i livelli</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -5891,8 +5896,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Paste as new image</original>
-<translation>&Incolla come nuova immagine</translation>
+<original>&Paste</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6728,7 +6733,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 364 phrases. 168 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12865,7 +12870,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Animation.frm-->
 
@@ -16069,10 +16074,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2660</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2467 are duplicates, so only 2660 unique phrases have been written to file. -->
-<!-- These 2660 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5133 phrases. -->
+<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 12069 total words. -->
 
 </pdData>

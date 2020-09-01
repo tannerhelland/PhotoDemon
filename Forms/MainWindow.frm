@@ -236,7 +236,7 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cut from layer"
+         Caption         =   "Cut merged"
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
@@ -244,20 +244,24 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Copy from layer"
+         Caption         =   "Copy merged"
          Index           =   10
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new image"
+         Caption         =   "&Paste"
          Index           =   11
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste as new layer"
+         Caption         =   "Paste to cursor"
          Index           =   12
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Special"
+         Caption         =   "Paste to new image"
          Index           =   13
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "Special"
+         Index           =   14
          Begin VB.Menu MnuEditSpecial 
             Caption         =   "Cut special..."
             Index           =   0
@@ -274,11 +278,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "-"
-         Index           =   14
+         Index           =   15
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "&Empty clipboard"
-         Index           =   15
+         Index           =   16
       End
    End
    Begin VB.Menu MnuImageTop 
@@ -2742,13 +2746,13 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
         If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_copy" Then
             g_Clipboard.ClipboardCopy False, False, pdcf_InternalPD
-            Process "Paste as new layer", False, cParams.GetParamString(), UNDO_Image, , True
+            Process "Paste", False, cParams.GetParamString(), UNDO_Image, , True
         End If
         
         'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
         If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_cut" Then
             g_Clipboard.ClipboardCut False, pdcf_InternalPD
-            Process "Paste as new layer", False, cParams.GetParamString(), UNDO_Image, , True
+            Process "Paste", False, cParams.GetParamString(), UNDO_Image, , True
         End If
         
     End With
@@ -3215,30 +3219,33 @@ Private Sub MnuEdit_Click(Index As Integer)
             'separator
         
         Case 7
-            Menus.ProcessDefaultAction_ByName "edit_cut"
-        
-        Case 8
             Menus.ProcessDefaultAction_ByName "edit_cutlayer"
         
-        Case 9
-            Menus.ProcessDefaultAction_ByName "edit_copy"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "edit_cutmerged"
             
-        Case 10
+        Case 9
             Menus.ProcessDefaultAction_ByName "edit_copylayer"
             
+        Case 10
+            Menus.ProcessDefaultAction_ByName "edit_copymerged"
+            
         Case 11
+            Menus.ProcessDefaultAction_ByName "edit_pasteaslayer"
+        
+        Case 12
+            Menus.ProcessDefaultAction_ByName "edit_pastetocursor"
+        
+        Case 13
             Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
             
-        Case 12
-            Menus.ProcessDefaultAction_ByName "edit_pasteaslayer"
-            
-        Case 13
+        Case 14
             'Top-level "cut/copy/paste special"
             
-        Case 14
+        Case 15
             'separator
             
-        Case 15
+        Case 16
             Menus.ProcessDefaultAction_ByName "edit_emptyclipboard"
     
     End Select

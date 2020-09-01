@@ -682,11 +682,12 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Copy (menu item only)
         Case PDUI_EditCopyCut
-            Menus.SetMenuEnabled "edit_copy", newState
             Menus.SetMenuEnabled "edit_copylayer", newState
-            Menus.SetMenuEnabled "edit_cut", newState
+            Menus.SetMenuEnabled "edit_copymerged", newState
             Menus.SetMenuEnabled "edit_cutlayer", newState
+            Menus.SetMenuEnabled "edit_cutmerged", newState
             Menus.SetMenuEnabled "edit_pasteaslayer", newState
+            Menus.SetMenuEnabled "edit_pastetocursor", newState
             Menus.SetMenuEnabled "edit_specialcopy", newState
             Menus.SetMenuEnabled "edit_specialcut", newState
             

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.293</langversion>
+<langversion>1.0.294</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1370,8 +1370,8 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Paste as new image</original>
-<translation>Вметни како нова слика</translation>
+<original>Paste to new image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1470,18 +1470,23 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Cut from layer</original>
-<translation>Намали од слој</translation>
+<original>Cut merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Копија од слојот</translation>
+<original>Copy merged</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Paste as new layer</original>
-<translation>Вметни како нов слој</translation>
+<original>Paste</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paste to cursor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2489,7 +2494,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 261 phrases. 30 were duplicates of existing phrases, so only 231 new phrases were written to file. -->
+<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5317,7 +5322,7 @@ or the File > Open and File > Import menus.</original>
 <translation>Преуредување слоеви</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -5891,8 +5896,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Paste as new image</original>
-<translation>Вметни како нова слика</translation>
+<original>&Paste</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6728,7 +6733,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 364 phrases. 168 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12866,7 +12871,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 24 phrases. 21 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Animation.frm-->
 
@@ -16071,10 +16076,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2660</phrasecount>
+<phrasecount>2661</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2467 are duplicates, so only 2660 unique phrases have been written to file. -->
-<!-- These 2660 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5133 phrases. -->
+<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
+<!-- These 2661 phrases contain approximately 12069 total words. -->
 
 </pdData>
