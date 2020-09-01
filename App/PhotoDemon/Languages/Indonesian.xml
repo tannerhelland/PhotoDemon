@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.440</langversion>
+<langversion>6.6.441</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1621,6 +1621,16 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Layer via copy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer via cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>hapus layar</translation>
 </phrase>
@@ -2500,7 +2510,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
+<!-- Menus.bas contains 264 phrases. 30 were duplicates of existing phrases, so only 234 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -16082,10 +16092,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5133 phrases. -->
-<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12069 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2472 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12075 total words. -->
 
 </pdData>

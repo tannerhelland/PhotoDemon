@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.294</langversion>
+<langversion>1.0.295</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1615,6 +1615,16 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Layer via copy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer via cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>Избриши слој</translation>
 </phrase>
@@ -2494,7 +2504,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
+<!-- Menus.bas contains 264 phrases. 30 were duplicates of existing phrases, so only 234 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -16076,10 +16086,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5133 phrases. -->
-<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12069 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2472 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12075 total words. -->
 
 </pdData>

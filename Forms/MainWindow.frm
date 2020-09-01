@@ -453,6 +453,18 @@ Begin VB.Form FormMain
             Caption         =   "From visible layers"
             Index           =   6
          End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "-"
+            Index           =   7
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "Layer via copy"
+            Index           =   8
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "Layer via cut"
+            Index           =   9
+         End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Delete"
@@ -2349,6 +2361,12 @@ Private Sub MnuLayerNew_Click(Index As Integer)
             Menus.ProcessDefaultAction_ByName "layer_addfromfile"
         Case 6
             Menus.ProcessDefaultAction_ByName "layer_addfromvisiblelayers"
+        Case 7
+            '(separator)
+        Case 8
+            Menus.ProcessDefaultAction_ByName "layer_addviacopy"
+        Case 9
+            Menus.ProcessDefaultAction_ByName "layer_addviacut"
     End Select
 End Sub
 
@@ -2742,18 +2760,6 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
         If .HotKeyName(acceleratorIndex) = "Next_Image" Then PDImages.MoveToNextImage True
         If .HotKeyName(acceleratorIndex) = "Prev_Image" Then PDImages.MoveToNextImage False
-        
-        'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
-        If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_copy" Then
-            g_Clipboard.ClipboardCopy False, False, pdcf_InternalPD
-            Process "Paste", False, cParams.GetParamString(), UNDO_Image, , True
-        End If
-        
-        'Added in 8.0 but not exposed via menu (yet) - adding to the Layer > New menu is TODO!
-        If .HotKeyName(acceleratorIndex) = "hk_new_layer_via_cut" Then
-            g_Clipboard.ClipboardCut False, pdcf_InternalPD
-            Process "Paste", False, cParams.GetParamString(), UNDO_Image, , True
-        End If
         
     End With
         

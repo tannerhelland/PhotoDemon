@@ -364,6 +364,8 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
         
         m_Clipboard.ClipboardClose
         
+    Else
+        PDDebug.LogAction "WARNING!  pdClipboardMain.ClipboardCopy couldn't open the clipboard!"
     End If
     
     'Unlock the UI
@@ -1675,6 +1677,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
             If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive() Then
                 PDImages.GetActiveImage.GetActiveLayer.GetAffineTransformedDIB m_ClipboardDIB, 0, 0
             Else
+                If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
                 m_ClipboardDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.layerDIB
             End If
         End If
@@ -1688,14 +1691,19 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     If (LenB(m_StashFile) = 0) Then m_StashFile = UserPrefs.GetTempPath() & "cbStash.tmpdib"
     
     PDDebug.LogAction "Writing clipboard stash now..."
+    If (Not m_ClipboardDIB Is Nothing) Then
     
-    'Dump the temporary DIB to file
-    m_ClipboardDIB.WriteToFile m_StashFile, cf_Lz4
-    
-    'Erase the temporary DIB
-    m_ClipboardDIB.EraseDIB
-    
-    PDDebug.LogAction "Clipboard stashed successfully."
+        'Dump the temporary DIB to file
+        m_ClipboardDIB.WriteToFile m_StashFile, cf_Lz4
+        
+        'Erase the temporary DIB
+        m_ClipboardDIB.EraseDIB
+        
+        PDDebug.LogAction "Clipboard stashed successfully."
+        
+    Else
+        PDDebug.LogAction "WARNING!  pdClipboardMain.StashClipboardData was passed an empty DIB"
+    End If
     
 End Sub
 
@@ -1743,7 +1751,7 @@ Friend Sub RenderAllClipboardFormatsManually()
     If UnstashClipboardData() Then
     
         'Validate the DIB, just to be safe
-        If Not (m_ClipboardDIB Is Nothing) Then
+        If (Not m_ClipboardDIB Is Nothing) Then
             If (m_ClipboardDIB.GetDIBHandle <> 0) And (m_ClipboardDIB.GetDIBWidth <> 0) And (m_ClipboardDIB.GetDIBHeight <> 0) Then
                 okayToProceed = True
             End If
@@ -1859,7 +1867,11 @@ End Sub
 Private Sub RenderClipboard_PNG()
     
     On Error GoTo RenderClipboardPNG_Failure
-                
+    If (m_ClipboardDIB Is Nothing) Then
+        PDDebug.LogAction "WARNING!  RenderClipboard_BITMAP() failed; DIB empty"
+        Exit Sub
+    End If
+    
     'The stashed DIB will likely have premultiplied alpha.  Un-premultiply it now.
     If m_ClipboardDIB.GetAlphaPremultiplication() Then m_ClipboardDIB.SetAlphaPremultiplication False
     
@@ -1895,6 +1907,10 @@ End Sub
 Private Sub RenderClipboard_BITMAP()
     
     On Error GoTo RenderClipboardBITMAP_Failure
+    If (m_ClipboardDIB Is Nothing) Then
+        PDDebug.LogAction "WARNING!  RenderClipboard_BITMAP() failed; DIB empty"
+        Exit Sub
+    End If
     
     'Get a handle to the current desktop, and create a compatible clipboard device context in it
     Dim desktopHWnd As Long, tmpDC As Long
@@ -1977,6 +1993,10 @@ End Sub
 Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     
     On Error GoTo RenderClipboardDIB_Failure
+    If (m_ClipboardDIB Is Nothing) Then
+        PDDebug.LogAction "WARNING!  RenderClipboard_DIB() failed; DIB empty"
+        Exit Sub
+    End If
     
     If useV5Header Then
         PDDebug.LogAction "Clipboard copy update: allocating global memory for DIBv5 object..."

@@ -2229,6 +2229,14 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Layers.AddLayerFromVisibleLayers
         Process_LayerMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Layer via copy", True) Then
+        Layers.AddLayerViaCopy
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Layer via cut", True) Then
+        Layers.AddLayerViaCut
+        Process_LayerMenu = True
+        
     'Remove layers from an image
     ElseIf Strings.StringsEqual(processID, "Delete layer", True) Then
         Layers.DeleteLayer_XML processParameters

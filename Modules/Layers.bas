@@ -338,6 +338,16 @@ Public Function AddLayerFromVisibleLayers() As Long
     
 End Function
 
+Public Sub AddLayerViaCopy()
+    g_Clipboard.ClipboardCopy False, False, pdcf_InternalPD
+    g_Clipboard.ClipboardPaste True
+End Sub
+
+Public Sub AddLayerViaCut()
+    g_Clipboard.ClipboardCut False, pdcf_InternalPD
+    g_Clipboard.ClipboardPaste True
+End Sub
+
 'Load an image file, and add it to the current image as a new layer
 Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX)
 

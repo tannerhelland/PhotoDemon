@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.2142</langversion>
+<langversion>8.0.2143</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1611,6 +1611,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Layer via copy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer via cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>删除层</translation>
 </phrase>
@@ -2490,7 +2500,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 262 phrases. 30 were duplicates of existing phrases, so only 232 new phrases were written to file. -->
+<!-- Menus.bas contains 264 phrases. 30 were duplicates of existing phrases, so only 234 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -16067,10 +16077,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2661</phrasecount>
+<phrasecount>2663</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5133 phrases. -->
-<!-- 2472 are duplicates, so only 2661 unique phrases have been written to file. -->
-<!-- These 2661 phrases contain approximately 12069 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2472 are duplicates, so only 2663 unique phrases have been written to file. -->
+<!-- These 2663 phrases contain approximately 12075 total words. -->
 
 </pdData>

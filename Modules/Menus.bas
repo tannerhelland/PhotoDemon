@@ -259,6 +259,9 @@ Public Sub InitializeMenus()
         AddMenuItem "From clipboard", "layer_addfromclipboard", 3, 0, 4, "edit_paste"
         AddMenuItem "From file...", "layer_addfromfile", 3, 0, 5, "file_open"
         AddMenuItem "From visible layers", "layer_addfromvisiblelayers", 3, 0, 6
+        AddMenuItem "-", "-", 3, 0, 7
+        AddMenuItem "Layer via copy", "layer_addviacopy", 3, 0, 8, "edit_copy"
+        AddMenuItem "Layer via cut", "layer_addviacut", 3, 0, 9, "edit_cut"
     AddMenuItem "Delete", "layer_delete", 3, 1
         AddMenuItem "Current layer", "layer_deletecurrent", 3, 1, 0, "generic_trash"
         AddMenuItem "Hidden layers", "layer_deletehidden", 3, 1, 1, "generic_invisible"
@@ -1216,6 +1219,8 @@ Public Sub InitializeAllHotkeys()
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
+        .AddAccelerator vbKeyJ, vbCtrlMask, "Layer via copy", "layer_addviacopy", True, True, False, UNDO_Image_VectorSafe
+        .AddAccelerator vbKeyJ, vbCtrlMask Or vbShiftMask, "Layer via cut", "layer_addviacut", True, True, False, UNDO_Image
         .AddAccelerator vbKeyPageUp, vbCtrlMask Or vbAltMask, "Go to top layer", "layer_gotop", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, True, False, UNDO_Nothing
@@ -1296,10 +1301,6 @@ Public Sub InitializeAllHotkeys()
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image", "window_previous", False, True, False, UNDO_Nothing
-        
-        'SPECIAL 8.0 COMMANDS - creating menus for these is TODO post-8.0's release
-        .AddAccelerator vbKeyJ, vbCtrlMask, "hk_new_layer_via_copy"
-        .AddAccelerator vbKeyJ, vbShiftMask Or vbCtrlMask, "hk_new_layer_via_cut"
         
         'Activate hotkey detection
         .ActivateHook
@@ -1803,6 +1804,12 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 
             Case "layer_addfromvisiblelayers"
                 Process "New layer from visible layers", False, , UNDO_Image_VectorSafe
+                
+            Case "layer_addviacopy"
+                Process "Layer via copy", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+                
+            Case "layer_addviacut"
+                Process "Layer via cut", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
                 
         Case "layer_delete"
             Case "layer_deletecurrent"
