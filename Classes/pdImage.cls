@@ -1328,17 +1328,39 @@ Private Sub Class_Terminate()
 End Sub
 
 'Pass a given layer's DIB into a new DIB, but pad it against null pixels so that it is the same size as the image.
-' This may cause cropping if the layer currently lies off the image - this is a known "issue", though I haven't quite made up my
-' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
-' the workflow implications.
-' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
+' Note that this is a very fast operation for normal layers, but if affine transforms are active, PD has to do a
+' lot more work (and significantly more memory will be required).
 Friend Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
-    dstDIB.CreateBlank Width, Height, 32, 0
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank Me.Width, Me.Height, 32, 0
     
-    'Copy the source layer into the blank DIB
-    GDI.BitBltWrapper dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+    'Two branches: one for normal layers, another for affine-transformed ones.
+    If imgLayers(srcLayerIndex).AffineTransformsActive(True) Then
+    
+        'A temporary DIB is required to handle the intermediate copy of the source layer.
+        ' (This could be optimized away, but it's a non-trivial optimization depending on the complexity
+        ' of the source layer.)
+        Dim tmpDIB As pdDIB, xOffset As Long, yOffset As Long
+        If imgLayers(srcLayerIndex).GetAffineTransformedDIB(tmpDIB, xOffset, yOffset) Then
+        
+            'Paint the transformed DIB into position
+            GDI.BitBltWrapper dstDIB.GetDIBDC, xOffset, yOffset, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+        
+        'The entire layer lies off-image, meaning there's nothing to paint.
+        ' (Fortunately, the target DIB is already blank, so we don't need to do anything!)
+        Else
+        
+        End If
+    
+    'Normal layers are very simple: create the destination DIB and paint us directly into position.
+    Else
+        GDI.BitBltWrapper dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+    End If
+    
+    'The target DIB will *always* be premultiplied
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 

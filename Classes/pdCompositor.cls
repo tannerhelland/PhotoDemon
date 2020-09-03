@@ -247,7 +247,7 @@ Friend Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             
             'Ask the layer to give us a copy of its transformed DIB
             Dim xOffsetLong As Long, yOffsetLong As Long
-            topLayer.GetAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong, 0, 0
+            topLayer.GetAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong
             
             'Calculate new offsets, using the x/y returned by that function (which may be slightly modified in order to preserve subpixel positioning)
             xOffset = xOffsetLong - finalRect.Left
