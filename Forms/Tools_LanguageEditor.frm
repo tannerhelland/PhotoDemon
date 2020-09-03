@@ -414,7 +414,7 @@ Begin VB.Form FormLanguageEditor
          Width           =   6600
          _ExtentX        =   11642
          _ExtentY        =   582
-         Caption         =   "automatically estimate missing translations (via Google Translate)"
+         Caption         =   "use an online service to estimate missing translations"
       End
       Begin PhotoDemon.pdCheckBox chkShortcut 
          Height          =   330
@@ -554,7 +554,7 @@ Private m_xmlLoaded As Boolean
 Private m_WizardPage As Long
 
 'A Google Translate interface, which we use to auto-populate missing translations
-Private m_AutoTranslate As clsGoogleTranslate
+Private m_AutoTranslate As clsAutoLocalize
 
 'An XML engine is used to parse and update the actual language file contents
 Private m_XMLEngine As pdXML
@@ -651,7 +651,8 @@ Private Sub cmdAutoTranslate_Click()
             If InStr(1, srcPhrase, "&", vbBinaryCompare) Then srcPhrase = Replace$(srcPhrase, "&", vbNullString, , , vbBinaryCompare)
             
             'Request a translation from Google
-            retString = m_AutoTranslate.GetGoogleTranslation(srcPhrase)
+            'retString = m_AutoTranslate.GetGoogleTranslation(srcPhrase)
+            retString = m_AutoTranslate.GetDeepLTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation
             If (LenB(retString) <> 0) Then
@@ -1101,7 +1102,7 @@ Private Sub Form_Load()
     cboPhraseFilter.ListIndex = 0
     
     'Initialize the Google Translate interface
-    Set m_AutoTranslate = New clsGoogleTranslate
+    Set m_AutoTranslate = New clsAutoLocalize
     m_AutoTranslate.SetSrcLanguage "en"
     
     'Apply translations and visual styles
@@ -1195,12 +1196,16 @@ Private Sub lstPhrases_Click()
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
         
         If chkGoogleTranslate.Value Then
-            txtTranslation = g_Language.TranslateMessage("waiting for Google Translate...")
+            txtTranslation = g_Language.TranslateMessage("waiting...")
             
             'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before
             ' assigning new text.
             Dim retString As String
-            retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            
+            'Google translate changed their page layout again; try DeepL instead
+            'retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            retString = m_AutoTranslate.GetDeepLTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            
             If (LenB(retString) <> 0) Then
                 txtTranslation = vbNullString
                 txtTranslation = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
