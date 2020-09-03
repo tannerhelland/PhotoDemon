@@ -687,7 +687,7 @@ End Sub
 'If the user clicks the preview window (for some reason), it'll trigger a redraw.
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     If (btsAnimated.ListIndex = 0) Then
-        picPreview.PaintText "previews disabled", 12, True
+        picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 12, True
     Else
         RenderAnimationFrame
     End If

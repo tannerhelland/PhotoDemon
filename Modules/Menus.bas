@@ -205,7 +205,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Copy merged", "edit_copymerged", 1, 10
     AddMenuItem "Paste", "edit_pasteaslayer", 1, 11, , "edit_paste"
     AddMenuItem "Paste to cursor", "edit_pastetocursor", 1, 12
-    AddMenuItem "&Paste to new image", "edit_pasteasimage", 1, 13
+    AddMenuItem "Paste to new image", "edit_pasteasimage", 1, 13
     AddMenuItem "Special", "edit_specialtop", 1, 14
     AddMenuItem "Cut special...", "edit_specialcut", 1, 14, 0, "edit_cut"
     AddMenuItem "Copy special...", "edit_specialcopy", 1, 14, 1, "edit_copy"
