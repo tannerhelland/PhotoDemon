@@ -34,7 +34,7 @@ Begin VB.Form FormBatchWizard
       Width           =   2700
       _ExtentX        =   4763
       _ExtentY        =   1085
-      Caption         =   "&Previous"
+      Caption         =   "Previous"
       Enabled         =   0   'False
    End
    Begin PhotoDemon.pdButton cmdNext 
@@ -45,7 +45,7 @@ Begin VB.Form FormBatchWizard
       Width           =   2700
       _ExtentX        =   4763
       _ExtentY        =   1085
-      Caption         =   "&Next"
+      Caption         =   "Next"
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
@@ -55,7 +55,7 @@ Begin VB.Form FormBatchWizard
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   1085
-      Caption         =   "&Cancel"
+      Caption         =   "Cancel"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   6705

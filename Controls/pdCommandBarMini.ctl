@@ -31,7 +31,7 @@ Begin VB.UserControl pdCommandBarMini
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      Caption         =   "&OK"
+      Caption         =   "OK"
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   510
@@ -41,7 +41,7 @@ Begin VB.UserControl pdCommandBarMini
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      Caption         =   "&Cancel"
+      Caption         =   "Cancel"
    End
 End
 Attribute VB_Name = "pdCommandBarMini"

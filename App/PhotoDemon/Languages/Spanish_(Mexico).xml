@@ -6,14 +6,12 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.2</langversion>
+<langversion>8.0.7</langversion>
 <langstatus>completo</langstatus>
 
 <author>DeepL and Plinio C Garcia</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
-
-
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -207,7 +205,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Desafortunadamente, esta PC no tiene suficiente memoria para crear un &</translation>
+<translation>Desafortunadamente, esta PC no tiene suficiente memoria para crear un </translation>
 </phrase>
 
 <phrase>
@@ -288,7 +286,7 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <phrase>
 <original>Total colors: %1</original>
-<translation>Colores totales: &</translation>
+<translation>Colores totales: </translation>
 </phrase>
 
 <phrase>
@@ -884,12 +882,12 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation>Icono (&</translation>
+<translation>Icono (</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation>Icono (&</translation>
+<translation>Icono (</translation>
 </phrase>
 
 <phrase>
@@ -906,7 +904,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation>Advertencia - archivo no encontrado: &</translation>
+<translation>Advertencia - archivo no encontrado: </translation>
 </phrase>
 
 <phrase>
@@ -925,14 +923,14 @@ If esta imagen se encontraba originalmente en un medio extraíble (DVD, unidad U
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation>Advertencia - archivo bloqueado: &</translation>
+<translation>Advertencia - archivo bloqueado: </translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation>Desafortunadamente, el archivo '&</translation>
+<translation>Desafortunadamente, el archivo '</translation>
 </phrase>
 
 <phrase>
@@ -958,7 +956,7 @@ Please close this file in any other running programs, then try again.</original>
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
 <translation>Desafortunadamente, PhotoDemon no pudo cargar la siguiente imagen: 
 
-&</translation>
+</translation>
 </phrase>
 
 <phrase>
@@ -973,7 +971,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -983,7 +981,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
 <translation>Desafortunadamente, PhotoDemon no pudo cargar las siguientes imágenes: 
 
-&</translation>
+</translation>
 </phrase>
 
 <phrase>
@@ -2921,7 +2919,7 @@ Description: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon ha abierto automáticamente la página web de informes de errores para ti.  Por favor, haga clic en el botón "Nuevo número", y luego seleccione "Informe de errores".  Responde a las preguntas lo mejor que puedas, y por favor incluye el siguiente número de error en algún lugar de tu informe: &</translation>
+<translation>PhotoDemon ha abierto automáticamente la página web de informes de errores para ti.  Por favor, haga clic en el botón "Nuevo número", y luego seleccione "Informe de errores".  Responde a las preguntas lo mejor que puedas, y por favor incluye el siguiente número de error en algún lugar de tu informe: </translation>
 </phrase>
 
 <phrase>
@@ -3772,7 +3770,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>%1 (Channel %2)</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3812,7 +3810,7 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Open location in E&xplorer</original>
+<original>Open location in Explorer</original>
 <translation>Abrir ubicación en el Explorador</translation>
 </phrase>
 
@@ -4032,13 +4030,13 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
+<original>OK</original>
+<translation>OK</translation>
 </phrase>
 
 <phrase>
-<original>&Cancel</original>
-<translation>&Cancelar</translation>
+<original>Cancel</original>
+<translation>Cancelar</translation>
 </phrase>
 
 <phrase>
@@ -4199,12 +4197,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation>Marco actual: &</translation>
+<translation>Marco actual: </translation>
 </phrase>
 
 <phrase>
 <original>%1 of %2</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4390,7 +4388,7 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>PhotoDemon doesn't understand the expression: %1</original>
-<translation>PhotoDemon no entiende la expresión: &</translation>
+<translation>PhotoDemon no entiende la expresión: </translation>
 </phrase>
 
 <!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4438,27 +4436,22 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&File</original>
+<original>File</original>
 <translation>Archivo</translation>
 </phrase>
 
 <phrase>
-<original>&New</original>
+<original>New</original>
 <translation>Nuevo</translation>
 </phrase>
 
 <phrase>
-<original>&Open</original>
-<translation>Abrir</translation>
-</phrase>
-
-<phrase>
-<original>Open &recent</original>
+<original>Open recent</original>
 <translation>Abrir reciente</translation>
 </phrase>
 
 <phrase>
-<original>&Import</original>
+<original>Import</original>
 <translation>Importación</translation>
 </phrase>
 
@@ -4488,23 +4481,8 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>Cerrar</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Guardar</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
+<original>Save copy (lossless)</original>
 <translation> copia (sin pérdida)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Guardar como</translation>
 </phrase>
 
 <phrase>
@@ -4533,7 +4511,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Batch operations</original>
+<original>Batch operations</original>
 <translation>Operaciones por lotes</translation>
 </phrase>
 
@@ -4548,43 +4526,13 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Print</original>
-<translation>Imprimir</translation>
-</phrase>
-
-<phrase>
-<original>E&xit</original>
+<original>Exit</original>
 <translation>Salir</translation>
 </phrase>
 
 <phrase>
-<original>&Edit</original>
+<original>Edit</original>
 <translation>Edición</translation>
-</phrase>
-
-<phrase>
-<original>&Undo</original>
-<translation>Deshacer</translation>
-</phrase>
-
-<phrase>
-<original>&Redo</original>
-<translation>Rehacer</translation>
-</phrase>
-
-<phrase>
-<original>Cu&t</original>
-<translation>Cortar</translation>
-</phrase>
-
-<phrase>
-<original>&Copy</original>
-<translation>Copiar</translation>
-</phrase>
-
-<phrase>
-<original>&Paste</original>
-<translation>Pegar</translation>
 </phrase>
 
 <phrase>
@@ -4593,17 +4541,12 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Empty clipboard</original>
-<translation>Sujetapapeles vacío</translation>
-</phrase>
-
-<phrase>
-<original>&Image</original>
+<original>Image</original>
 <translation>Imagen</translation>
 </phrase>
 
 <phrase>
-<original>&Duplicate</original>
+<original>Duplicate</original>
 <translation>Duplicar</translation>
 </phrase>
 
@@ -4698,7 +4641,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Layer</original>
+<original>Layer</original>
 <translation>capa</translation>
 </phrase>
 
@@ -4873,7 +4816,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Select</original>
+<original>Select</original>
 <translation>Seleccionar</translation>
 </phrase>
 
@@ -4923,7 +4866,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Adjustments</original>
+<original>Adjustments</original>
 <translation>Ajustes</translation>
 </phrase>
 
@@ -4988,7 +4931,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Effe&cts</original>
+<original>Effects</original>
 <translation>Efectos</translation>
 </phrase>
 
@@ -5093,7 +5036,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Tools</original>
+<original>Tools</original>
 <translation>Herramientas</translation>
 </phrase>
 
@@ -5183,23 +5126,13 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&View</original>
+<original>View</original>
 <translation>Vista</translation>
 </phrase>
 
 <phrase>
-<original>&Fit image on screen</original>
+<original>Fit image on screen</original>
 <translation>Adaptar la imagen en la pantalla</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>zoom in</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Alejamiento</translation>
 </phrase>
 
 <phrase>
@@ -5223,7 +5156,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Window</original>
+<original>Window</original>
 <translation>Ventanas</translation>
 </phrase>
 
@@ -5313,7 +5246,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Help</original>
+<original>Help</original>
 <translation>Ayuda</translation>
 </phrase>
 
@@ -5328,7 +5261,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Check for &updates</original>
+<original>Check for updates</original>
 <translation>Buscar actualizaciones</translation>
 </phrase>
 
@@ -5338,7 +5271,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&Visit PhotoDemon website</original>
+<original>Visit PhotoDemon website</original>
 <translation>Visita el sitio web de PhotoDemon</translation>
 </phrase>
 
@@ -5353,7 +5286,7 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>&About</original>
+<original>About</original>
 <translation>Acerca De</translation>
 </phrase>
 
@@ -5420,7 +5353,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6553,7 +6486,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Applying final red-eye corrections (%1 of %2)</original>
-<translation>Aplicando las últimas correcciones de ojos rojos (&</translation>
+<translation>Aplicando las últimas correcciones de ojos rojos (</translation>
 </phrase>
 
 <!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -6658,7 +6591,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation>paletas en este archivo (&</translation>
+<translation>paletas en este archivo (</translation>
 </phrase>
 
 <phrase>
@@ -6815,12 +6748,12 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>&Yes</original>
+<original>Yes</original>
 <translation>Sí</translation>
 </phrase>
 
 <phrase>
-<original>&No</original>
+<original>No</original>
 <translation>No</translation>
 </phrase>
 
@@ -6960,7 +6893,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Un gradiente con el nombre "&".</translation>
+<translation>Un gradiente con el nombre "".</translation>
 </phrase>
 
 <phrase>
@@ -7000,7 +6933,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation>Desafortunadamente, el archivo de gradientes "&</translation>
+<translation>Desafortunadamente, el archivo de gradientes "</translation>
 </phrase>
 
 <phrase>
@@ -7050,7 +6983,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Su colección de gradientes se almacena en el "&".</translation>
+<translation>Su colección de gradientes se almacena en el "".</translation>
 </phrase>
 
 <phrase>
@@ -7107,27 +7040,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<phrase>
-<original>OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Cancelar</translation>
-</phrase>
-
-<phrase>
-<original>No</original>
-<translation>No</translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation>Sí</translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -7355,7 +7268,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Translation by %1</original>
-<translation>Traducción de &</translation>
+<translation>Traducción de </translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -7564,7 +7477,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>layer: %1</original>
-<translation>capa: &</translation>
+<translation>capa: </translation>
 </phrase>
 
 <phrase>
@@ -7957,7 +7870,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>standard deviation (%1)</original>
-<translation>desviación estándar (&</translation>
+<translation>desviación estándar (</translation>
 </phrase>
 
 <phrase>
@@ -9023,7 +8936,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>%1 (%2 colors)</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9317,7 +9230,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9343,12 +9256,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>&Previous</original>
+<original>Previous</original>
 <translation>anterior</translation>
 </phrase>
 
 <phrase>
-<original>&Next</original>
+<original>Next</original>
 <translation>próximo</translation>
 </phrase>
 
@@ -9642,11 +9555,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Next</original>
-<translation>próximo</translation>
-</phrase>
-
-<phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>Bienvenido al asistente de lotes de PhotoDemon. Esta herramienta se puede utilizar para editar varias imágenes a la vez, en lo que se llama un "proceso por lotes".</translation>
 </phrase>
@@ -9842,11 +9750,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Exit</original>
-<translation>salida</translation>
-</phrase>
-
-<phrase>
 <original>%1 files were successfully processed!</original>
 <translation> %1 archivos fueron procesados ??con éxito!</translation>
 </phrase>
@@ -9858,7 +9761,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>Estimated time remaining: %1:%2</original>
-<translation>Tiempo estimado restante: &</translation>
+<translation>Tiempo estimado restante: </translation>
 </phrase>
 
 <phrase>
@@ -9866,7 +9769,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>Animation export options</original>
@@ -10347,7 +10250,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>%1 options</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -10821,7 +10724,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation>Estos ajustes de optimización de pérdidas redujeron el tamaño del archivo en &</translation>
+<translation>Estos ajustes de optimización de pérdidas redujeron el tamaño del archivo en </translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 48 phrases. 19 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
@@ -10923,11 +10826,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>About</original>
-<translation>Acerca De</translation>
-</phrase>
-
-<phrase>
 <original>Contributors</original>
 <translation>Colaboradores</translation>
 </phrase>
@@ -10967,7 +10865,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>(¡También puedes convertirte en mecenas! Haz clic aquí para saber más.)</translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Animation options</original>
@@ -11030,7 +10928,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>difference between %1 and %2</original>
-<translation>diferencia entre &</translation>
+<translation>diferencia entre </translation>
 </phrase>
 
 <phrase>
@@ -11139,7 +11037,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11225,16 +11123,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
 <translation>Las etiquetas "inferidas" son valores hipotéticos inferidos de otros metadatos.  No están incrustados como metadatos tradicionales.</translation>
-</phrase>
-
-<phrase>
-<original>(" & strID & ") " & strValu</original>
-<translation>(" strID ") " strValu</translation>
-</phrase>
-
-<phrase>
-<original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation>(".Tagvalue ") ".TagValueFriendl</translation>
 </phrase>
 
 <phrase>
@@ -11324,25 +11212,25 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>%1 characters max</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>list of %1, one entry per line</original>
-<translation>lista de &</translation>
+<translation>lista de </translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11764,17 +11652,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<phrase>
-<original>Tools</original>
-<translation>instrumentos</translation>
-</phrase>
-
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>File</original>
-<translation>expediente</translation>
-</phrase>
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -11913,7 +11791,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation>Tecla de atajo: &</translation>
+<translation>Tecla de atajo: </translation>
 </phrase>
 
 <phrase>
@@ -12081,7 +11959,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Herramienta de cubo de pintura</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 39 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>source settings</original>
@@ -12984,7 +12862,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>&Save and Exit</original>
+<original>Save and Exit</original>
 <translation>Guardar y Salir</translation>
 </phrase>
 
@@ -13888,7 +13766,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrase>
 <original>%1 summary</original>
-<translation>&</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13955,7 +13833,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation>La grabación comenzará en &</translation>
+<translation>La grabación comenzará en </translation>
 </phrase>
 
 <phrase>
@@ -14019,10 +13897,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2639</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5137 phrases. -->
-<!-- 2474 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
+<!-- These 2639 phrases contain approximately 12040 total words. -->
 
 </pdData>

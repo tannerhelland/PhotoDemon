@@ -6,14 +6,12 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.2145</langversion>
+<langversion>8.0.2150</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
-
-
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -3811,8 +3809,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Open location in E&xplorer</original>
-<translation>&X 在浏览器中打开位置</translation>
+<original>Open location in Explorer</original>
+<translation>在浏览器中打开位置</translation>
 </phrase>
 
 <phrase>
@@ -4030,13 +4028,13 @@ or the File > Open and File > Import menus.</original>
 <!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>&OK</original>
-<translation>&O 确定</translation>
+<original>OK</original>
+<translation>确定</translation>
 </phrase>
 
 <phrase>
-<original>&Cancel</original>
-<translation>&C 取消</translation>
+<original>Cancel</original>
+<translation>取消</translation>
 </phrase>
 
 <phrase>
@@ -4436,28 +4434,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&File</original>
-<translation>&F 文件</translation>
+<original>File</original>
+<translation>文件</translation>
 </phrase>
 
 <phrase>
-<original>&New</original>
-<translation>&N 新建</translation>
+<original>New</original>
+<translation>新建</translation>
 </phrase>
 
 <phrase>
-<original>&Open</original>
-<translation>&O 打开</translation>
+<original>Open recent</original>
+<translation>打开历史记录</translation>
 </phrase>
 
 <phrase>
-<original>Open &recent</original>
-<translation>&R 打开历史记录</translation>
-</phrase>
-
-<phrase>
-<original>&Import</original>
-<translation>&I 导入</translation>
+<original>Import</original>
+<translation>导入</translation>
 </phrase>
 
 <phrase>
@@ -4486,23 +4479,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>&C 关闭</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>&S 保存</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
+<original>Save copy (lossless)</original>
 <translation>保存副本（无损）</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>&A 另存为</translation>
 </phrase>
 
 <phrase>
@@ -4531,8 +4509,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Batch operations</original>
-<translation>&B 批处理操作</translation>
+<original>Batch operations</original>
+<translation>批处理操作</translation>
 </phrase>
 
 <phrase>
@@ -4546,43 +4524,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Print</original>
-<translation>&P 打印</translation>
+<original>Exit</original>
+<translation>退出</translation>
 </phrase>
 
 <phrase>
-<original>E&xit</original>
-<translation>&X 退出</translation>
-</phrase>
-
-<phrase>
-<original>&Edit</original>
-<translation>&E 编辑</translation>
-</phrase>
-
-<phrase>
-<original>&Undo</original>
-<translation>&U 撤消</translation>
-</phrase>
-
-<phrase>
-<original>&Redo</original>
-<translation>&R 重做</translation>
-</phrase>
-
-<phrase>
-<original>Cu&t</original>
-<translation>&T 剪切</translation>
-</phrase>
-
-<phrase>
-<original>&Copy</original>
-<translation>&C 复制</translation>
-</phrase>
-
-<phrase>
-<original>&Paste</original>
-<translation></translation>
+<original>Edit</original>
+<translation>编辑</translation>
 </phrase>
 
 <phrase>
@@ -4591,17 +4539,12 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Empty clipboard</original>
-<translation>&E 清空剪切板</translation>
+<original>Image</original>
+<translation>图像</translation>
 </phrase>
 
 <phrase>
-<original>&Image</original>
-<translation>&I 图像</translation>
-</phrase>
-
-<phrase>
-<original>&Duplicate</original>
+<original>Duplicate</original>
 <translation>副本</translation>
 </phrase>
 
@@ -4696,8 +4639,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Layer</original>
-<translation>&L 层</translation>
+<original>Layer</original>
+<translation>层</translation>
 </phrase>
 
 <phrase>
@@ -4871,8 +4814,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Select</original>
-<translation>&S 选择</translation>
+<original>Select</original>
+<translation>选择</translation>
 </phrase>
 
 <phrase>
@@ -4921,8 +4864,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Adjustments</original>
-<translation>&A 调整</translation>
+<original>Adjustments</original>
+<translation>调整</translation>
 </phrase>
 
 <phrase>
@@ -4986,8 +4929,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Effe&cts</original>
-<translation>&C 效果</translation>
+<original>Effects</original>
+<translation>效果</translation>
 </phrase>
 
 <phrase>
@@ -5091,8 +5034,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Tools</original>
-<translation>&T 工具</translation>
+<original>Tools</original>
+<translation>工具</translation>
 </phrase>
 
 <phrase>
@@ -5181,23 +5124,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&View</original>
-<translation>&V 显示</translation>
+<original>View</original>
+<translation>显示</translation>
 </phrase>
 
 <phrase>
-<original>&Fit image on screen</original>
-<translation>&F 填充图像到屏幕大小</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>&I 放大</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>&O 缩小</translation>
+<original>Fit image on screen</original>
+<translation>填充图像到屏幕大小</translation>
 </phrase>
 
 <phrase>
@@ -5221,8 +5154,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Window</original>
-<translation>&W 窗口</translation>
+<original>Window</original>
+<translation>窗口</translation>
 </phrase>
 
 <phrase>
@@ -5311,8 +5244,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Help</original>
-<translation>&H 帮助</translation>
+<original>Help</original>
+<translation>帮助</translation>
 </phrase>
 
 <phrase>
@@ -5326,8 +5259,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Check for &updates</original>
-<translation>&U 检查更新</translation>
+<original>Check for updates</original>
+<translation>检查更新</translation>
 </phrase>
 
 <phrase>
@@ -5336,8 +5269,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Visit PhotoDemon website</original>
-<translation>&V 访问PhotoDemon网站</translation>
+<original>Visit PhotoDemon website</original>
+<translation>访问PhotoDemon网站</translation>
 </phrase>
 
 <phrase>
@@ -5351,8 +5284,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&About</original>
-<translation>&A 关于</translation>
+<original>About</original>
+<translation>关于</translation>
 </phrase>
 
 <phrase>
@@ -5417,7 +5350,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6812,13 +6745,13 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>&Yes</original>
-<translation>&Y 是</translation>
+<original>Yes</original>
+<translation>是</translation>
 </phrase>
 
 <phrase>
-<original>&No</original>
-<translation>&N 否</translation>
+<original>No</original>
+<translation>否</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -7104,27 +7037,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<phrase>
-<original>OK</original>
-<translation>确定</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>取消</translation>
-</phrase>
-
-<phrase>
-<original>No</original>
-<translation>No</translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation>Yes</translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -9342,13 +9255,13 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>&Previous</original>
-<translation>&P 上一步</translation>
+<original>Previous</original>
+<translation>上一步</translation>
 </phrase>
 
 <phrase>
-<original>&Next</original>
-<translation>&N 下一步</translation>
+<original>Next</original>
+<translation>下一步</translation>
 </phrase>
 
 <phrase>
@@ -9640,11 +9553,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Next</original>
-<translation>下一步</translation>
-</phrase>
-
-<phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>欢迎 PhotoDemon 批处理向导。这个工具可以用来同时编辑多个图像，这就是所谓的“批处理”。</translation>
 </phrase>
@@ -9840,11 +9748,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Exit</original>
-<translation>退出</translation>
-</phrase>
-
-<phrase>
 <original>%1 files were successfully processed!</original>
 <translation>%1 个文件处理成功。</translation>
 </phrase>
@@ -9864,7 +9767,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>Animation export options</original>
@@ -10921,11 +10824,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>About</original>
-<translation>关于</translation>
-</phrase>
-
-<phrase>
 <original>Contributors</original>
 <translation>贡献者</translation>
 </phrase>
@@ -10965,7 +10863,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>（您也可以成为赞助人！点击此处了解更多信息。）</translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Animation options</original>
@@ -11226,16 +11124,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>(" & strID & ") " & strValu</original>
-<translation>(" & strID & ") " & strValu</translation>
-</phrase>
-
-<phrase>
-<original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation>(" & .TagValue & ") " & .TagValueFriendl</translation>
-</phrase>
-
-<phrase>
 <original>tag restrictions</original>
 <translation>标签的限制</translation>
 </phrase>
@@ -11340,7 +11228,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>每行 %1，一个条目列表</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11762,17 +11650,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<phrase>
-<original>Tools</original>
-<translation>工具</translation>
-</phrase>
-
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>File</original>
-<translation>文件</translation>
-</phrase>
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12079,7 +11957,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>油漆桶工具</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 39 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>source settings</original>
@@ -12742,7 +12620,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Delete selected language file</original>
-<translation>&D 删除语言文件</translation>
+<translation>删除语言文件</translation>
 </phrase>
 
 <phrase>
@@ -12980,8 +12858,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>&Save and Exit</original>
-<translation>&S 保存退出</translation>
+<original>Save and Exit</original>
+<translation>保存退出</translation>
 </phrase>
 
 <phrase>
@@ -14013,10 +13891,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2639</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5137 phrases. -->
-<!-- 2474 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
+<!-- These 2639 phrases contain approximately 12040 total words. -->
 
 </pdData>

@@ -6,14 +6,12 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.501</langversion>
+<langversion>6.7.506</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
-
-
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -3814,7 +3812,7 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
-<original>Open location in E&xplorer</original>
+<original>Open location in Explorer</original>
 <translation>Aprire posizione in Explorer</translation>
 </phrase>
 
@@ -4034,13 +4032,13 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
+<original>OK</original>
+<translation>OK</translation>
 </phrase>
 
 <phrase>
-<original>&Cancel</original>
-<translation>&Annulla</translation>
+<original>Cancel</original>
+<translation>Annulla</translation>
 </phrase>
 
 <phrase>
@@ -4439,28 +4437,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&File</original>
-<translation>&File</translation>
+<original>File</original>
+<translation>File</translation>
 </phrase>
 
 <phrase>
-<original>&New</original>
-<translation>&Nuovo</translation>
+<original>New</original>
+<translation>Nuovo</translation>
 </phrase>
 
 <phrase>
-<original>&Open</original>
-<translation>&Apri</translation>
+<original>Open recent</original>
+<translation>Apri Recenti</translation>
 </phrase>
 
 <phrase>
-<original>Open &recent</original>
-<translation>Apri &Recenti</translation>
-</phrase>
-
-<phrase>
-<original>&Import</original>
-<translation>&Importa</translation>
+<original>Import</original>
+<translation>Importa</translation>
 </phrase>
 
 <phrase>
@@ -4489,23 +4482,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>&Chiudi</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>&Salva</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Sa&lva una copia (senza perdite)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Salva con &nome</translation>
+<original>Save copy (lossless)</original>
+<translation>Salva una copia (senza perdite)</translation>
 </phrase>
 
 <phrase>
@@ -4534,7 +4512,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Batch operations</original>
+<original>Batch operations</original>
 <translation>Operazioni batch</translation>
 </phrase>
 
@@ -4549,43 +4527,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Print</original>
-<translation>Stam&pa</translation>
+<original>Exit</original>
+<translation>Esci</translation>
 </phrase>
 
 <phrase>
-<original>E&xit</original>
-<translation>E&sci</translation>
-</phrase>
-
-<phrase>
-<original>&Edit</original>
-<translation>&Modifica</translation>
-</phrase>
-
-<phrase>
-<original>&Undo</original>
-<translation>A&nnulla</translation>
-</phrase>
-
-<phrase>
-<original>&Redo</original>
-<translation>&Ripeti</translation>
-</phrase>
-
-<phrase>
-<original>Cu&t</original>
-<translation>&Taglia</translation>
-</phrase>
-
-<phrase>
-<original>&Copy</original>
-<translation>&Copia</translation>
-</phrase>
-
-<phrase>
-<original>&Paste</original>
-<translation></translation>
+<original>Edit</original>
+<translation>Modifica</translation>
 </phrase>
 
 <phrase>
@@ -4594,18 +4542,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Empty clipboard</original>
-<translation>&Svuota gli appunti</translation>
+<original>Image</original>
+<translation>Immagine</translation>
 </phrase>
 
 <phrase>
-<original>&Image</original>
-<translation>&Immagine</translation>
-</phrase>
-
-<phrase>
-<original>&Duplicate</original>
-<translation>&Duplica</translation>
+<original>Duplicate</original>
+<translation>Duplica</translation>
 </phrase>
 
 <phrase>
@@ -4699,8 +4642,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Layer</original>
-<translation>&Livello</translation>
+<original>Layer</original>
+<translation>Livello</translation>
 </phrase>
 
 <phrase>
@@ -4874,8 +4817,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Select</original>
-<translation>&Seleziona</translation>
+<original>Select</original>
+<translation>Seleziona</translation>
 </phrase>
 
 <phrase>
@@ -4924,8 +4867,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Adjustments</original>
-<translation>Regol&azioni</translation>
+<original>Adjustments</original>
+<translation>Regolazioni</translation>
 </phrase>
 
 <phrase>
@@ -4989,8 +4932,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Effe&cts</original>
-<translation>Effe&tti</translation>
+<original>Effects</original>
+<translation>Effetti</translation>
 </phrase>
 
 <phrase>
@@ -5094,8 +5037,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Tools</original>
-<translation>&Utilità</translation>
+<original>Tools</original>
+<translation>Utilità</translation>
 </phrase>
 
 <phrase>
@@ -5184,23 +5127,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&View</original>
-<translation>&Visualizza</translation>
+<original>View</original>
+<translation>Visualizza</translation>
 </phrase>
 
 <phrase>
-<original>&Fit image on screen</original>
-<translation>&Adatta l'immagine allo schermo</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Zoom &avanti</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Zoom i&ndietro</translation>
+<original>Fit image on screen</original>
+<translation>Adatta l'immagine allo schermo</translation>
 </phrase>
 
 <phrase>
@@ -5224,8 +5157,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Window</original>
-<translation>&Finestra</translation>
+<original>Window</original>
+<translation>Finestra</translation>
 </phrase>
 
 <phrase>
@@ -5314,8 +5247,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Help</original>
-<translation>&Aiuto</translation>
+<original>Help</original>
+<translation>Aiuto</translation>
 </phrase>
 
 <phrase>
@@ -5329,8 +5262,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Check for &updates</original>
-<translation>Con&trollo aggioramenti</translation>
+<original>Check for updates</original>
+<translation>Controllo aggioramenti</translation>
 </phrase>
 
 <phrase>
@@ -5339,7 +5272,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Visit PhotoDemon website</original>
+<original>Visit PhotoDemon website</original>
 <translation>Visita il sito Web PhotoDemon</translation>
 </phrase>
 
@@ -5354,7 +5287,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&About</original>
+<original>About</original>
 <translation>Di</translation>
 </phrase>
 
@@ -5421,7 +5354,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6816,12 +6749,12 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>&Yes</original>
+<original>Yes</original>
 <translation>Sì</translation>
 </phrase>
 
 <phrase>
-<original>&No</original>
+<original>No</original>
 <translation>No</translation>
 </phrase>
 
@@ -7108,27 +7041,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<phrase>
-<original>OK</original>
-<translation>Ok</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Annulla</translation>
-</phrase>
-
-<phrase>
-<original>No</original>
-<translation>No</translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation>Sì</translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -9345,13 +9258,13 @@ VBCRLI file danneggiati sono stati salvati nella cartella di destinazione. I fil
 </phrase>
 
 <phrase>
-<original>&Previous</original>
-<translation>&Precedente</translation>
+<original>Previous</original>
+<translation>Precedente</translation>
 </phrase>
 
 <phrase>
-<original>&Next</original>
-<translation>&Successivo</translation>
+<original>Next</original>
+<translation>Successivo</translation>
 </phrase>
 
 <phrase>
@@ -9644,11 +9557,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Next</original>
-<translation>Successivo</translation>
-</phrase>
-
-<phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>Benvenuti nel processo automatico di PhotoDemon.  Questo strumento può essere utilizzato per modificare più immagini contemporaneamente, in quello che viene chiamato un "processo automatico".</translation>
 </phrase>
@@ -9844,11 +9752,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Exit</original>
-<translation>Esci</translation>
-</phrase>
-
-<phrase>
 <original>%1 files were successfully processed!</original>
 <translation>%1 file sono stati processati con successo!</translation>
 </phrase>
@@ -9868,7 +9771,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Tempo stimato rimanente</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>Animation export options</original>
@@ -10925,11 +10828,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>About</original>
-<translation>Di</translation>
-</phrase>
-
-<phrase>
 <original>Contributors</original>
 <translation>Contributori</translation>
 </phrase>
@@ -10969,7 +10867,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Animation options</original>
@@ -11230,16 +11128,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>(" & strID & ") " & strValu</original>
-<translation>("Strid") "strValu</translation>
-</phrase>
-
-<phrase>
-<original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation>(".Tagvalue") ". TagValueFriendl</translation>
-</phrase>
-
-<phrase>
 <original>tag restrictions</original>
 <translation>restrizioni sui tag</translation>
 </phrase>
@@ -11344,7 +11232,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>elenco di %1, una voce per riga</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11766,17 +11654,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<phrase>
-<original>Tools</original>
-<translation>Utilità</translation>
-</phrase>
-
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>File</original>
-<translation>File</translation>
-</phrase>
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12083,7 +11961,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 39 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>source settings</original>
@@ -12986,8 +12864,8 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>&Save and Exit</original>
-<translation>&Salva e Esci</translation>
+<original>Save and Exit</original>
+<translation>Salva e Esci</translation>
 </phrase>
 
 <phrase>
@@ -14020,10 +13898,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2639</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5137 phrases. -->
-<!-- 2474 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
+<!-- These 2639 phrases contain approximately 12040 total words. -->
 
 </pdData>

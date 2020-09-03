@@ -154,11 +154,11 @@ Private m_CommonMenuText() As String
 Public Sub InitializeMenus()
     
     'File Menu
-    AddMenuItem "&File", "file_top", 0
-    AddMenuItem "&New...", "file_new", 0, 0, , "file_new"
-    AddMenuItem "&Open...", "file_open", 0, 1, , "file_open"
-    AddMenuItem "Open &recent", "file_openrecent", 0, 2
-    AddMenuItem "&Import", "file_import", 0, 3
+    AddMenuItem "File", "file_top", 0
+    AddMenuItem "New...", "file_new", 0, 0, , "file_new"
+    AddMenuItem "Open...", "file_open", 0, 1, , "file_open"
+    AddMenuItem "Open recent", "file_openrecent", 0, 2
+    AddMenuItem "Import", "file_import", 0, 3
         AddMenuItem "From clipboard", "file_import_paste", 0, 3, 0, "file_importclipboard"
         AddMenuItem "-", "-", 0, 3, 1
         AddMenuItem "From scanner or camera...", "file_import_scanner", 0, 3, 2, "file_importscanner"
@@ -168,12 +168,12 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 0, 3, 6
         AddMenuItem "Screenshot...", "file_import_screenshot", 0, 3, 7, "file_importscreen"
     AddMenuItem "-", "-", 0, 4
-    AddMenuItem "&Close", "file_close", 0, 5, , "file_close"
+    AddMenuItem "Close", "file_close", 0, 5, , "file_close"
     AddMenuItem "Close all", "file_closeall", 0, 6
     AddMenuItem "-", "-", 0, 7
-    AddMenuItem "&Save", "file_save", 0, 8, , "file_save"
-    AddMenuItem "Save copy (&lossless)", "file_savecopy", 0, 9, , "file_savedup"
-    AddMenuItem "Save &as...", "file_saveas", 0, 10, , "file_saveas"
+    AddMenuItem "Save", "file_save", 0, 8, , "file_save"
+    AddMenuItem "Save copy (lossless)", "file_savecopy", 0, 9, , "file_savedup"
+    AddMenuItem "Save as...", "file_saveas", 0, 10, , "file_saveas"
     AddMenuItem "Revert", "file_revert", 0, 11
     AddMenuItem "Export", "file_export", 0, 12
         AddMenuItem "Animated GIF...", "file_export_animatedgif", 0, 12, 0
@@ -182,26 +182,26 @@ Public Sub InitializeMenus()
         AddMenuItem "Color profile...", "file_export_colorprofile", 0, 12, 3
         AddMenuItem "Palette...", "file_export_palette", 0, 12, 4
     AddMenuItem "-", "-", 0, 13
-    AddMenuItem "&Batch operations", "file_batch", 0, 14
+    AddMenuItem "Batch operations", "file_batch", 0, 14
         AddMenuItem "Process...", "file_batch_process", 0, 14, 0, "file_batch"
         AddMenuItem "Repair...", "file_batch_repair", 0, 14, 1, "file_repair"
     AddMenuItem "-", "-", 0, 15
-    AddMenuItem "&Print...", "file_print", 0, 16, , "file_print"
+    AddMenuItem "Print...", "file_print", 0, 16, , "file_print"
     AddMenuItem "-", "-", 0, 17
-    AddMenuItem "E&xit", "file_quit", 0, 18
+    AddMenuItem "Exit", "file_quit", 0, 18
     
     'Edit menu
-    AddMenuItem "&Edit", "edit_top", 1
-    AddMenuItem "&Undo", "edit_undo", 1, 0, , "edit_undo"
-    AddMenuItem "&Redo", "edit_redo", 1, 1, , "edit_redo"
+    AddMenuItem "Edit", "edit_top", 1
+    AddMenuItem "Undo", "edit_undo", 1, 0, , "edit_undo"
+    AddMenuItem "Redo", "edit_redo", 1, 1, , "edit_redo"
     AddMenuItem "Undo history...", "edit_history", 1, 2, , "edit_history"
     AddMenuItem "-", "-", 1, 3
     AddMenuItem "Repeat", "edit_repeat", 1, 4, , "edit_repeat"
     AddMenuItem "Fade...", "edit_fade", 1, 5
     AddMenuItem "-", "-", 1, 6
-    AddMenuItem "Cu&t", "edit_cutlayer", 1, 7, , "edit_cut"
+    AddMenuItem "Cut", "edit_cutlayer", 1, 7, , "edit_cut"
     AddMenuItem "Cut merged", "edit_cutmerged", 1, 8
-    AddMenuItem "&Copy", "edit_copylayer", 1, 9, , "edit_copy"
+    AddMenuItem "Copy", "edit_copylayer", 1, 9, , "edit_copy"
     AddMenuItem "Copy merged", "edit_copymerged", 1, 10
     AddMenuItem "Paste", "edit_pasteaslayer", 1, 11, , "edit_paste"
     AddMenuItem "Paste to cursor", "edit_pastetocursor", 1, 12
@@ -211,11 +211,11 @@ Public Sub InitializeMenus()
     AddMenuItem "Copy special...", "edit_specialcopy", 1, 14, 1, "edit_copy"
     AddMenuItem "Paste special...", "edit_specialpaste", 1, 14, 2, "edit_paste"
     AddMenuItem "-", "-", 1, 15
-    AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 16
+    AddMenuItem "Empty clipboard", "edit_emptyclipboard", 1, 16
     
     'Image Menu
-    AddMenuItem "&Image", "image_top", 2
-    AddMenuItem "&Duplicate", "image_duplicate", 2, 0, , "edit_copy"
+    AddMenuItem "Image", "image_top", 2
+    AddMenuItem "Duplicate", "image_duplicate", 2, 0, , "edit_copy"
     AddMenuItem "-", "-", 2, 1
     AddMenuItem "Resize...", "image_resize", 2, 2, , "image_resize"
     AddMenuItem "Content-aware resize...", "image_contentawareresize", 2, 3
@@ -250,7 +250,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Map photo location...", "image_maplocation", 2, 21, 4, "image_maplocation"
     
     'Layer menu
-    AddMenuItem "&Layer", "layer_top", 3
+    AddMenuItem "Layer", "layer_top", 3
     AddMenuItem "Add", "layer_add", 3, 0
         AddMenuItem "Basic layer...", "layer_addbasic", 3, 0, 0
         AddMenuItem "Blank layer", "layer_addblank", 3, 0, 1
@@ -329,7 +329,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Other open images into this image (as layers)...", "layer_splitimagestolayers", 3, 15, 3
     
     'Select Menu
-    AddMenuItem "&Select", "select_top", 4
+    AddMenuItem "Select", "select_top", 4
     AddMenuItem "All", "select_all", 4, 0, , "select_all"
     AddMenuItem "None", "select_none", 4, 1, , "select_none"
     AddMenuItem "Invert", "select_invert", 4, 2
@@ -349,7 +349,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Selection mask as image...", "select_exportmask", 4, 14, 1
         
     'Adjustments Menu
-    AddMenuItem "&Adjustments", "adj_top", 5
+    AddMenuItem "Adjustments", "adj_top", 5
     AddMenuItem "Auto correct", "adj_autocorrect", 5, 0
     AddMenuItem "Auto enhance", "adj_autoenhance", 5, 1
     AddMenuItem "-", "-", 5, 2
@@ -410,7 +410,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 5, 18, 1
         
     'Effects (Filters) Menu
-    AddMenuItem "Effe&cts", "effects_top", 6
+    AddMenuItem "Effects", "effects_top", 6
     AddMenuItem "Artistic", "effects_artistic", 6, 0
         AddMenuItem "Colored pencil...", "effects_colorpencil", 6, 0, 0
         AddMenuItem "Comic book...", "effects_comicbook", 6, 0, 1
@@ -510,7 +510,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Custom filter...", "effects_customfilter", 6, 13
     
     'Tools Menu
-    AddMenuItem "&Tools", "tools_top", 7
+    AddMenuItem "Tools", "tools_top", 7
     AddMenuItem "Language", "tools_language", 7, 0, , "tools_language"
     AddMenuItem "Language editor...", "tools_languageeditor", 7, 1
     AddMenuItem "-", "-", 7, 2
@@ -542,11 +542,11 @@ Public Sub InitializeMenus()
     End If
     
     'View Menu
-    AddMenuItem "&View", "view_top", 8
-    AddMenuItem "&Fit image on screen", "view_fit", 8, 0, , "zoom_fit"
+    AddMenuItem "View", "view_top", 8
+    AddMenuItem "Fit image on screen", "view_fit", 8, 0, , "zoom_fit"
     AddMenuItem "-", "-", 8, 1
-    AddMenuItem "Zoom &in", "view_zoomin", 8, 2, , "zoom_in"
-    AddMenuItem "Zoom &out", "view_zoomout", 8, 3, , "zoom_out"
+    AddMenuItem "Zoom in", "view_zoomin", 8, 2, , "zoom_in"
+    AddMenuItem "Zoom out", "view_zoomout", 8, 3, , "zoom_out"
     AddMenuItem "Zoom to value", "view_zoomtop", 8, 4
         AddMenuItem "16:1 (1600%)", "zoom_16_1", 8, 4, 0
         AddMenuItem "8:1 (800%)", "zoom_8_1", 8, 4, 1
@@ -562,7 +562,7 @@ Public Sub InitializeMenus()
     AddMenuItem "Show status bar", "view_statusbar", 8, 7
     
     'Window Menu
-    AddMenuItem "&Window", "window_top", 9
+    AddMenuItem "Window", "window_top", 9
     AddMenuItem "Toolbox", "window_toolbox", 9, 0
         AddMenuItem "Display toolbox", "window_displaytoolbox", 9, 0, 0
         AddMenuItem "-", "-", 9, 0, 1
@@ -590,18 +590,18 @@ Public Sub InitializeMenus()
     AddMenuItem "Previous image", "window_previous", 9, 8, , "generic_previous"
     
     'Help Menu
-    AddMenuItem "&Help", "help_top", 10
+    AddMenuItem "Help", "help_top", 10
     AddMenuItem "Support us on Patreon...", "help_patreon", 10, 0, , "help_heart"
     AddMenuItem "Support us with a one-time donation...", "help_donate", 10, 1, , "help_heart"
     AddMenuItem "-", "-", 10, 2
-    AddMenuItem "Check for &updates...", "help_checkupdates", 10, 3, , "help_update"
+    AddMenuItem "Check for updates...", "help_checkupdates", 10, 3, , "help_update"
     AddMenuItem "Submit bug report or feedback...", "help_reportbug", 10, 4, , "help_reportbug"
     AddMenuItem "-", "-", 10, 5
-    AddMenuItem "&Visit PhotoDemon website...", "help_website", 10, 6, , "help_website"
+    AddMenuItem "Visit PhotoDemon website...", "help_website", 10, 6, , "help_website"
     AddMenuItem "Download PhotoDemon source code...", "help_sourcecode", 10, 7, , "help_github"
     AddMenuItem "Read license and terms of use...", "help_license", 10, 8, , "help_license"
     AddMenuItem "-", "-", 10, 9
-    AddMenuItem "&About...", "help_about", 10, 10, , "help_about"
+    AddMenuItem "About...", "help_about", 10, 10, , "help_about"
     
     'After all menu items have been added, we need to manually go through and fill the "has children" boolean
     ' for each menu entry.  (This is important because we use it when producing a searchable list of menu items,

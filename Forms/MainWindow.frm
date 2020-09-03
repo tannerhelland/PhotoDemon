@@ -48,17 +48,17 @@ Begin VB.Form FormMain
       _ExtentY        =   873
    End
    Begin VB.Menu MnuFileTop 
-      Caption         =   "&File"
+      Caption         =   "File"
       Begin VB.Menu MnuFile 
-         Caption         =   "&New..."
+         Caption         =   "New..."
          Index           =   0
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Open..."
+         Caption         =   "Open..."
          Index           =   1
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Open &recent"
+         Caption         =   "Open recent"
          Index           =   2
          Begin VB.Menu MnuRecDocs 
             Caption         =   "Empty"
@@ -76,7 +76,7 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Import"
+         Caption         =   "Import"
          Index           =   3
          Begin VB.Menu MnuFileImport 
             Caption         =   "From clipboard"
@@ -116,7 +116,7 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Close"
+         Caption         =   "Close"
          Index           =   5
       End
       Begin VB.Menu MnuFile 
@@ -128,15 +128,15 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Save"
+         Caption         =   "Save"
          Index           =   8
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Save copy (&lossless)"
+         Caption         =   "Save copy (lossless)"
          Index           =   9
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Save &as..."
+         Caption         =   "Save as..."
          Index           =   10
       End
       Begin VB.Menu MnuFile 
@@ -172,7 +172,7 @@ Begin VB.Form FormMain
          Index           =   13
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Batch operations"
+         Caption         =   "Batch operations"
          Index           =   14
          Begin VB.Menu MnuBatch 
             Caption         =   "Process..."
@@ -188,7 +188,7 @@ Begin VB.Form FormMain
          Index           =   15
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Print..."
+         Caption         =   "Print..."
          Index           =   16
       End
       Begin VB.Menu MnuFile 
@@ -196,18 +196,18 @@ Begin VB.Form FormMain
          Index           =   17
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "E&xit"
+         Caption         =   "Exit"
          Index           =   18
       End
    End
    Begin VB.Menu MnuEditTop 
-      Caption         =   "&Edit"
+      Caption         =   "Edit"
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Undo"
+         Caption         =   "Undo"
          Index           =   0
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Redo"
+         Caption         =   "Redo"
          Index           =   1
       End
       Begin VB.Menu MnuEdit 
@@ -232,7 +232,7 @@ Begin VB.Form FormMain
          Index           =   6
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cu&t"
+         Caption         =   "Cut"
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
@@ -240,7 +240,7 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy"
+         Caption         =   "Copy"
          Index           =   9
       End
       Begin VB.Menu MnuEdit 
@@ -248,7 +248,7 @@ Begin VB.Form FormMain
          Index           =   10
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste"
+         Caption         =   "Paste"
          Index           =   11
       End
       Begin VB.Menu MnuEdit 
@@ -281,14 +281,14 @@ Begin VB.Form FormMain
          Index           =   15
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "Empty clipboard"
          Index           =   16
       End
    End
    Begin VB.Menu MnuImageTop 
-      Caption         =   "&Image"
+      Caption         =   "Image"
       Begin VB.Menu MnuImage 
-         Caption         =   "&Duplicate"
+         Caption         =   "Duplicate"
          Index           =   0
       End
       Begin VB.Menu MnuImage 
@@ -421,7 +421,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuLayerTop 
-      Caption         =   "&Layer"
+      Caption         =   "Layer"
       Begin VB.Menu MnuLayer 
          Caption         =   "Add"
          Index           =   0
@@ -729,7 +729,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuSelectTop 
-      Caption         =   "&Select"
+      Caption         =   "Select"
       Begin VB.Menu MnuSelect 
          Caption         =   "All"
          Index           =   0
@@ -800,7 +800,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuAdjustmentsTop 
-      Caption         =   "&Adjustments"
+      Caption         =   "Adjustments"
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Auto correct"
          Index           =   0
@@ -1035,7 +1035,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuEffectsTop 
-      Caption         =   "Effe&cts"
+      Caption         =   "Effects"
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Artistic"
          Index           =   0
@@ -1426,7 +1426,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuTools 
-      Caption         =   "&Tools"
+      Caption         =   "Tools"
       Begin VB.Menu MnuTool 
          Caption         =   "Language"
          Index           =   0
@@ -1542,9 +1542,9 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuViewTop 
-      Caption         =   "&View"
+      Caption         =   "View"
       Begin VB.Menu MnuView 
-         Caption         =   "&Fit image on screen"
+         Caption         =   "Fit image on screen"
          Index           =   0
       End
       Begin VB.Menu MnuView 
@@ -1552,11 +1552,11 @@ Begin VB.Form FormMain
          Index           =   1
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom &in"
+         Caption         =   "Zoom in"
          Index           =   2
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom &out"
+         Caption         =   "Zoom out"
          Index           =   3
       End
       Begin VB.Menu MnuView 
@@ -1613,7 +1613,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuWindowTop 
-      Caption         =   "&Window"
+      Caption         =   "Window"
       Begin VB.Menu MnuWindow 
          Caption         =   "Toolbox"
          Index           =   0
@@ -1717,7 +1717,7 @@ Begin VB.Form FormMain
       End
    End
    Begin VB.Menu MnuHelpTop 
-      Caption         =   "&Help"
+      Caption         =   "Help"
       Begin VB.Menu MnuHelp 
          Caption         =   "Support us on Patreon..."
          Index           =   0
@@ -1731,7 +1731,7 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Check for &updates..."
+         Caption         =   "Check for updates..."
          Index           =   3
       End
       Begin VB.Menu MnuHelp 
@@ -1743,7 +1743,7 @@ Begin VB.Form FormMain
          Index           =   5
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&Visit PhotoDemon website..."
+         Caption         =   "Visit PhotoDemon website..."
          Index           =   6
       End
       Begin VB.Menu MnuHelp 
@@ -1759,7 +1759,7 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&About..."
+         Caption         =   "About..."
          Index           =   10
       End
    End

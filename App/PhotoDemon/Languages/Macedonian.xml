@@ -6,14 +6,12 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.297</langversion>
+<langversion>1.0.302</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
-
-
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -3814,7 +3812,7 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Open location in E&xplorer</original>
+<original>Open location in Explorer</original>
 <translation>Отвори локација во Explorer</translation>
 </phrase>
 
@@ -4034,12 +4032,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>&OK</original>
+<original>OK</original>
 <translation>добро</translation>
 </phrase>
 
 <phrase>
-<original>&Cancel</original>
+<original>Cancel</original>
 <translation>Откажи</translation>
 </phrase>
 
@@ -4439,27 +4437,22 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&File</original>
+<original>File</original>
 <translation>датотека</translation>
 </phrase>
 
 <phrase>
-<original>&New</original>
+<original>New</original>
 <translation>нови</translation>
 </phrase>
 
 <phrase>
-<original>&Open</original>
-<translation>Отворено</translation>
-</phrase>
-
-<phrase>
-<original>Open &recent</original>
+<original>Open recent</original>
 <translation>Отвори последните</translation>
 </phrase>
 
 <phrase>
-<original>&Import</original>
+<original>Import</original>
 <translation>увоз</translation>
 </phrase>
 
@@ -4489,23 +4482,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>Затвори</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Зачувај</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
+<original>Save copy (lossless)</original>
 <translation>Зачувај копија (lossless)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Зачувај како</translation>
 </phrase>
 
 <phrase>
@@ -4534,7 +4512,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Batch operations</original>
+<original>Batch operations</original>
 <translation>серија на операции</translation>
 </phrase>
 
@@ -4549,43 +4527,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Print</original>
-<translation>Печати</translation>
-</phrase>
-
-<phrase>
-<original>E&xit</original>
+<original>Exit</original>
 <translation>излез</translation>
 </phrase>
 
 <phrase>
-<original>&Edit</original>
+<original>Edit</original>
 <translation>Уредување</translation>
-</phrase>
-
-<phrase>
-<original>&Undo</original>
-<translation>вратите</translation>
-</phrase>
-
-<phrase>
-<original>&Redo</original>
-<translation>повтори</translation>
-</phrase>
-
-<phrase>
-<original>Cu&t</original>
-<translation>Намали</translation>
-</phrase>
-
-<phrase>
-<original>&Copy</original>
-<translation>копија</translation>
-</phrase>
-
-<phrase>
-<original>&Paste</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -4594,17 +4542,12 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Empty clipboard</original>
-<translation>Испразни таблата со исечоци</translation>
-</phrase>
-
-<phrase>
-<original>&Image</original>
+<original>Image</original>
 <translation>слика</translation>
 </phrase>
 
 <phrase>
-<original>&Duplicate</original>
+<original>Duplicate</original>
 <translation>Дупликат</translation>
 </phrase>
 
@@ -4699,7 +4642,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Layer</original>
+<original>Layer</original>
 <translation>Слој</translation>
 </phrase>
 
@@ -4874,7 +4817,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Select</original>
+<original>Select</original>
 <translation>изберете</translation>
 </phrase>
 
@@ -4924,7 +4867,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Adjustments</original>
+<original>Adjustments</original>
 <translation>прилагодувања</translation>
 </phrase>
 
@@ -4989,7 +4932,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Effe&cts</original>
+<original>Effects</original>
 <translation>ефекти</translation>
 </phrase>
 
@@ -5094,7 +5037,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Tools</original>
+<original>Tools</original>
 <translation>алатки</translation>
 </phrase>
 
@@ -5184,23 +5127,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&View</original>
+<original>View</original>
 <translation>Види</translation>
 </phrase>
 
 <phrase>
-<original>&Fit image on screen</original>
+<original>Fit image on screen</original>
 <translation>Одговара на сликата на екранот</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Зумирај</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>одзумирате</translation>
 </phrase>
 
 <phrase>
@@ -5224,7 +5157,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Window</original>
+<original>Window</original>
 <translation>прозорец</translation>
 </phrase>
 
@@ -5314,7 +5247,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Help</original>
+<original>Help</original>
 <translation>помогне</translation>
 </phrase>
 
@@ -5329,7 +5262,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Check for &updates</original>
+<original>Check for updates</original>
 <translation>Провери за надградби</translation>
 </phrase>
 
@@ -5339,7 +5272,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Visit PhotoDemon website</original>
+<original>Visit PhotoDemon website</original>
 <translation>Посетете веб-страница на PhotoDemon</translation>
 </phrase>
 
@@ -5354,7 +5287,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&About</original>
+<original>About</original>
 <translation>За</translation>
 </phrase>
 
@@ -5421,7 +5354,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6816,12 +6749,12 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>&Yes</original>
+<original>Yes</original>
 <translation>Да</translation>
 </phrase>
 
 <phrase>
-<original>&No</original>
+<original>No</original>
 <translation>Не</translation>
 </phrase>
 
@@ -7108,27 +7041,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<phrase>
-<original>OK</original>
-<translation>добро</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Откажи</translation>
-</phrase>
-
-<phrase>
-<original>No</original>
-<translation>Не</translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation>Да</translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -9346,12 +9259,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>&Previous</original>
+<original>Previous</original>
 <translation>Претходно</translation>
 </phrase>
 
 <phrase>
-<original>&Next</original>
+<original>Next</original>
 <translation>Следна</translation>
 </phrase>
 
@@ -9645,11 +9558,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Next</original>
-<translation>Следна</translation>
-</phrase>
-
-<phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>Добредојдовте во волшебникот серија Фото демонот. Оваа алатка може да се користи за уредување на повеќе слики одеднаш, во она што се нарекува "серија процес".</translation>
 </phrase>
@@ -9845,11 +9753,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Exit</original>
-<translation>излез</translation>
-</phrase>
-
-<phrase>
 <original>%1 files were successfully processed!</original>
 <translation> %1 фајлови беа успешно обработени!</translation>
 </phrase>
@@ -9869,7 +9772,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>Animation export options</original>
@@ -10926,11 +10829,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>About</original>
-<translation>За</translation>
-</phrase>
-
-<phrase>
 <original>Contributors</original>
 <translation>Соработници</translation>
 </phrase>
@@ -10970,7 +10868,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Animation options</original>
@@ -11231,16 +11129,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>(" & strID & ") " & strValu</original>
-<translation>("StrID") "strValu</translation>
-</phrase>
-
-<phrase>
-<original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation>(".TagValue") ".TagValueFriendl</translation>
-</phrase>
-
-<phrase>
 <original>tag restrictions</original>
 <translation>ограничувања таг</translation>
 </phrase>
@@ -11345,7 +11233,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Списокот на %1, една влез на линија</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11767,17 +11655,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<phrase>
-<original>Tools</original>
-<translation>алатки</translation>
-</phrase>
-
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>File</original>
-<translation>датотека</translation>
-</phrase>
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12084,7 +11962,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 39 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>source settings</original>
@@ -12987,7 +12865,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>&Save and Exit</original>
+<original>Save and Exit</original>
 <translation>Зачувај и излез</translation>
 </phrase>
 
@@ -14022,10 +13900,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2639</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5137 phrases. -->
-<!-- 2474 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
+<!-- These 2639 phrases contain approximately 12040 total words. -->
 
 </pdData>

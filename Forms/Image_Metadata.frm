@@ -1096,7 +1096,7 @@ Private Sub UpdateTagView()
                         targetValue = LCase$(.TagValueFriendly)
                     End If
                     
-                    Dim strID As String, strValue As String
+                    Dim strID As String, strValue As String, strValueModified As String
                     
                     Dim i As Long
                     For i = 0 To .DB_StackValues.GetNumOfStrings - 1
@@ -1110,7 +1110,8 @@ Private Sub UpdateTagView()
                         If Strings.StringsEqual(strID, strValue, False) Then
                             lstValue.AddItem strValue
                         Else
-                            lstValue.AddItem "(" & strID & ") " & strValue
+                            strValueModified = "(" & strID & ") " & strValue
+                            lstValue.AddItem strValueModified
                         End If
                         
                         'Next, we want to figure out what .ListIndex value to set.  Typically, this is the tag's initial value,
@@ -1133,7 +1134,8 @@ Private Sub UpdateTagView()
                     'If a matching list index is *not* found, add the current value (whatever it is) to the list in the
                     ' final position.
                     If (Not listIndexFound) Then
-                        lstValue.AddItem "(" & .TagValue & ") " & .TagValueFriendly
+                        strValueModified = "(" & .TagValue & ") " & .TagValueFriendly
+                        lstValue.AddItem strValueModified
                         lstValue.ListIndex = (lstValue.ListCount - 1)
                     Else
                         lstValue.ListIndex = newListIndex

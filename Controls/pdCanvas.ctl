@@ -2117,7 +2117,7 @@ Private Sub BuildPopupMenu()
         .AddMenuItem "-"
         
         'Open in Explorer only works if the image is currently on-disk
-        .AddMenuItem g_Language.TranslateMessage("Open location in E&xplorer"), (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
+        .AddMenuItem g_Language.TranslateMessage("Open location in Explorer"), (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
         
         .AddMenuItem "-"
         .AddMenuItem Menus.GetCaptionFromName("file_close")

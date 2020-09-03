@@ -34,7 +34,7 @@ Begin VB.Form FormLanguageEditor
       Width           =   1725
       _ExtentX        =   3043
       _ExtentY        =   1085
-      Caption         =   "&Previous"
+      Caption         =   "Previous"
    End
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
@@ -44,7 +44,7 @@ Begin VB.Form FormLanguageEditor
       Width           =   1725
       _ExtentX        =   3043
       _ExtentY        =   1085
-      Caption         =   "&Next"
+      Caption         =   "Next"
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
@@ -54,7 +54,7 @@ Begin VB.Form FormLanguageEditor
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   1085
-      Caption         =   "&Cancel"
+      Caption         =   "Cancel"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   7320
@@ -1038,9 +1038,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
     If (m_WizardPage = picContainer.Count - 1) Then
-        cmdNext.Caption = g_Language.TranslateMessage("&Save and Exit")
+        cmdNext.Caption = g_Language.TranslateMessage("Save and Exit")
     Else
-        cmdNext.Caption = g_Language.TranslateMessage("&Next")
+        cmdNext.Caption = g_Language.TranslateMessage("Next")
     End If
     
     'Finally, change the top title caption and left-hand help text to match the current step

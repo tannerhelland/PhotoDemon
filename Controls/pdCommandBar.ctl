@@ -30,7 +30,7 @@ Begin VB.UserControl pdCommandBar
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      Caption         =   "&OK"
+      Caption         =   "OK"
       UseCustomBackgroundColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
@@ -81,13 +81,13 @@ Begin VB.UserControl pdCommandBar
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   510
-      Left            =   8070
+      Left            =   8160
       TabIndex        =   1
       Top             =   120
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
-      Caption         =   "&Cancel"
+      Caption         =   "Cancel"
       UseCustomBackgroundColor=   -1  'True
    End
 End

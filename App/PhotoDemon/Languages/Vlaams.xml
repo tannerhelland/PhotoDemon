@@ -6,14 +6,12 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.501</langversion>
+<langversion>6.7.506</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
-
-
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -3815,8 +3813,8 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>Open location in E&xplorer</original>
-<translation>Open locatie in E&xplorer</translation>
+<original>Open location in Explorer</original>
+<translation>Open locatie in Explorer</translation>
 </phrase>
 
 <phrase>
@@ -4035,13 +4033,13 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
+<original>OK</original>
+<translation>OK</translation>
 </phrase>
 
 <phrase>
-<original>&Cancel</original>
-<translation>&Annuleren</translation>
+<original>Cancel</original>
+<translation>Annuleren</translation>
 </phrase>
 
 <phrase>
@@ -4440,28 +4438,23 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&File</original>
-<translation>&Bestand</translation>
+<original>File</original>
+<translation>Bestand</translation>
 </phrase>
 
 <phrase>
-<original>&New</original>
-<translation>&Nieuw</translation>
+<original>New</original>
+<translation>Nieuw</translation>
 </phrase>
 
 <phrase>
-<original>&Open</original>
-<translation>&Openen</translation>
+<original>Open recent</original>
+<translation>Open Recente</translation>
 </phrase>
 
 <phrase>
-<original>Open &recent</original>
-<translation>Open &Recente</translation>
-</phrase>
-
-<phrase>
-<original>&Import</original>
-<translation>&Importeren</translation>
+<original>Import</original>
+<translation>Importeren</translation>
 </phrase>
 
 <phrase>
@@ -4490,23 +4483,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>&Sluiten</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>&Opslaan</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Bewaar exemplaar Save (& verliesloos)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Opslaan &Als</translation>
+<original>Save copy (lossless)</original>
+<translation>Bewaar exemplaar Save ( verliesloos)</translation>
 </phrase>
 
 <phrase>
@@ -4535,7 +4513,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Batch operations</original>
+<original>Batch operations</original>
 <translation>Batch operaties</translation>
 </phrase>
 
@@ -4550,43 +4528,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Print</original>
-<translation>&Afdrukken</translation>
+<original>Exit</original>
+<translation>Afsluiten</translation>
 </phrase>
 
 <phrase>
-<original>E&xit</original>
-<translation>A&fsluiten</translation>
-</phrase>
-
-<phrase>
-<original>&Edit</original>
-<translation>B&ewerken</translation>
-</phrase>
-
-<phrase>
-<original>&Undo</original>
-<translation>&Ongedaan maken</translation>
-</phrase>
-
-<phrase>
-<original>&Redo</original>
-<translation>Op&nieuw</translation>
-</phrase>
-
-<phrase>
-<original>Cu&t</original>
-<translation>Knippen</translation>
-</phrase>
-
-<phrase>
-<original>&Copy</original>
-<translation>Kopiëren</translation>
-</phrase>
-
-<phrase>
-<original>&Paste</original>
-<translation></translation>
+<original>Edit</original>
+<translation>Bewerken</translation>
 </phrase>
 
 <phrase>
@@ -4595,18 +4543,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Empty clipboard</original>
-<translation>&Ledigen klembord</translation>
+<original>Image</original>
+<translation>Afbeelding</translation>
 </phrase>
 
 <phrase>
-<original>&Image</original>
-<translation>&Afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>&Duplicate</original>
-<translation>&Dupliceren</translation>
+<original>Duplicate</original>
+<translation>Dupliceren</translation>
 </phrase>
 
 <phrase>
@@ -4700,8 +4643,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Layer</original>
-<translation>&Laag</translation>
+<original>Layer</original>
+<translation>Laag</translation>
 </phrase>
 
 <phrase>
@@ -4875,8 +4818,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Select</original>
-<translation>&Selecteer</translation>
+<original>Select</original>
+<translation>Selecteer</translation>
 </phrase>
 
 <phrase>
@@ -4925,8 +4868,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Adjustments</original>
-<translation>&Aanpassingen</translation>
+<original>Adjustments</original>
+<translation>Aanpassingen</translation>
 </phrase>
 
 <phrase>
@@ -4990,8 +4933,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Effe&cts</original>
-<translation>Effe&cten</translation>
+<original>Effects</original>
+<translation>Effecten</translation>
 </phrase>
 
 <phrase>
@@ -5095,8 +5038,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Tools</original>
-<translation>&Gereedschappen</translation>
+<original>Tools</original>
+<translation>Gereedschappen</translation>
 </phrase>
 
 <phrase>
@@ -5185,23 +5128,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&View</original>
-<translation>&Beeld</translation>
+<original>View</original>
+<translation>Beeld</translation>
 </phrase>
 
 <phrase>
-<original>&Fit image on screen</original>
-<translation>&Afbeelding aanpassen aan scherm</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Zoom &In</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Zoom &uit</translation>
+<original>Fit image on screen</original>
+<translation>Afbeelding aanpassen aan scherm</translation>
 </phrase>
 
 <phrase>
@@ -5225,8 +5158,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Window</original>
-<translation>&Venster</translation>
+<original>Window</original>
+<translation>Venster</translation>
 </phrase>
 
 <phrase>
@@ -5315,8 +5248,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Help</original>
-<translation>&Help</translation>
+<original>Help</original>
+<translation>Help</translation>
 </phrase>
 
 <phrase>
@@ -5330,8 +5263,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Check for &updates</original>
-<translation>Controleren op &updates</translation>
+<original>Check for updates</original>
+<translation>Controleren op updates</translation>
 </phrase>
 
 <phrase>
@@ -5340,8 +5273,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&Visit PhotoDemon website</original>
-<translation>&Bezoek PhotoDemon website</translation>
+<original>Visit PhotoDemon website</original>
+<translation>Bezoek PhotoDemon website</translation>
 </phrase>
 
 <phrase>
@@ -5355,8 +5288,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>&About</original>
-<translation>&Over</translation>
+<original>About</original>
+<translation>Over</translation>
 </phrase>
 
 <phrase>
@@ -5422,7 +5355,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 169 were duplicates of existing phrases, so only 196 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6817,13 +6750,13 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
-<original>&Yes</original>
-<translation>&Ja</translation>
+<original>Yes</original>
+<translation>Ja</translation>
 </phrase>
 
 <phrase>
-<original>&No</original>
-<translation>&Nee</translation>
+<original>No</original>
+<translation>Nee</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -7109,27 +7042,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<phrase>
-<original>OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation>Annuleren</translation>
-</phrase>
-
-<phrase>
-<original>No</original>
-<translation>Nee</translation>
-</phrase>
-
-<phrase>
-<original>Yes</original>
-<translation>Ja</translation>
-</phrase>
-
-<!-- Dialog_MsgBox.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -9347,13 +9260,13 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 </phrase>
 
 <phrase>
-<original>&Previous</original>
-<translation>V&orige</translation>
+<original>Previous</original>
+<translation>Vorige</translation>
 </phrase>
 
 <phrase>
-<original>&Next</original>
-<translation>&Volgende</translation>
+<original>Next</original>
+<translation>Volgende</translation>
 </phrase>
 
 <phrase>
@@ -9646,11 +9559,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>Next</original>
-<translation>Volgende</translation>
-</phrase>
-
-<phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>Welkom bij de batch wizard van PhotoDemon. Dit gereedschap kan gebruikt worden om meerdere afbeeldingen in 1 keer te verwerken in wat men een "Batch proces" noemt.</translation>
 </phrase>
@@ -9846,11 +9754,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>Exit</original>
-<translation>Einde</translation>
-</phrase>
-
-<phrase>
 <original>%1 files were successfully processed!</original>
 <translation> %1 bestanden zijn succesvol verwerkt!</translation>
 </phrase>
@@ -9870,7 +9773,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Geschatte resterende tijd</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>Animation export options</original>
@@ -10927,11 +10830,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>About</original>
-<translation>Over</translation>
-</phrase>
-
-<phrase>
 <original>Contributors</original>
 <translation>Medewerkers</translation>
 </phrase>
@@ -10971,7 +10869,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Animation options</original>
@@ -11232,16 +11130,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>(" & strID & ") " & strValu</original>
-<translation>(" & strID & ") " & strValu</translation>
-</phrase>
-
-<phrase>
-<original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation>(" & .TagValue & ") " & .TagValueFriendl</translation>
-</phrase>
-
-<phrase>
 <original>tag restrictions</original>
 <translation>tag restricties</translation>
 </phrase>
@@ -11346,7 +11234,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>lijst van %1, één voorkomen per lijn</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 69 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11768,17 +11656,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<phrase>
-<original>Tools</original>
-<translation>Gereedschappen</translation>
-</phrase>
-
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>File</original>
-<translation>Bestand</translation>
-</phrase>
+<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12085,7 +11963,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 101 phrases. 39 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 101 phrases. 40 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>source settings</original>
@@ -12988,8 +12866,8 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>&Save and Exit</original>
-<translation>&Opslaan en verlaten</translation>
+<original>Save and Exit</original>
+<translation>Opslaan en verlaten</translation>
 </phrase>
 
 <phrase>
@@ -14023,10 +13901,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2663</phrasecount>
+<phrasecount>2639</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5137 phrases. -->
-<!-- 2474 are duplicates, so only 2663 unique phrases have been written to file. -->
-<!-- These 2663 phrases contain approximately 12074 total words. -->
+<!-- As of this build, PhotoDemon contains 5135 phrases. -->
+<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
+<!-- These 2639 phrases contain approximately 12040 total words. -->
 
 </pdData>

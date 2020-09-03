@@ -43,7 +43,7 @@ Begin VB.Form dialog_GenericMemory
       Width           =   6780
       _ExtentX        =   11959
       _ExtentY        =   1085
-      Caption         =   "&Yes"
+      Caption         =   "Yes"
    End
    Begin PhotoDemon.pdCheckBox chkRemember 
       Height          =   330
@@ -75,7 +75,7 @@ Begin VB.Form dialog_GenericMemory
       Width           =   6780
       _ExtentX        =   11959
       _ExtentY        =   1296
-      Caption         =   "&No"
+      Caption         =   "No"
    End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
@@ -86,7 +86,7 @@ Begin VB.Form dialog_GenericMemory
       Width           =   6780
       _ExtentX        =   11959
       _ExtentY        =   1296
-      Caption         =   "&Cancel"
+      Caption         =   "Cancel"
    End
 End
 Attribute VB_Name = "dialog_GenericMemory"
