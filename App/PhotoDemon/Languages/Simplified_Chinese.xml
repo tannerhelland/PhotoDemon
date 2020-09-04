@@ -1959,7 +1959,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Poke</original>
-<translation>Poke</translation>
+<translation>拨开</translation>
 </phrase>
 
 <phrase>
@@ -2931,7 +2931,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 <phrase>
 <original>Saving %1 file</original>
-<translation>正在保有 %1 </translation>
+<translation>正在保有 %1</translation>
 </phrase>
 
 <phrase>
@@ -2954,7 +2954,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Saving %1 image</original>
-<translation>正在保存图像 %1 </translation>
+<translation>正在保存图像 %1</translation>
 </phrase>
 
 <phrase>
@@ -10966,7 +10966,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation>据估算，这些图像相似度为 %1% </translation>
+<translation>据估算，这些图像相似度为 %1%</translation>
 </phrase>
 
 <phrase>

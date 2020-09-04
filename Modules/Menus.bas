@@ -33,8 +33,9 @@ Private Type PD_MenuEntry
     me_ResImage As String                 'Name of this menu's image, as stored in PD's central resource file
     me_TextEn As String                   'Text of this menu, in English
     me_TextTranslated As String           'Text of this menu, as translated by the current language
-    me_TextFinal As String                'Final on-screen appearance of the text, with translations and accelerator
-    me_TextSearchable As String           'Localized string for search results.  Uses "TopMenu > ChildMenu > MyMenuName" format.
+    me_TextWithMnemonics As String        'Text of this menu, translated, with a mnemonic char (&) added
+    me_TextFinal As String                'Final on-screen appearance of the text, with translations, mnemonics, and accelerator (if any)
+    me_TextSearchable As String           'Localized string for search results.  Uses "TopMenu > ChildMenu > MyMenuName" format.  No mnemonics or hotkey.
     me_HasChildren As Boolean             'Is this a non-clickable menu (e.g. it only exists to open a child menu?)
     me_DoNotIncludeInSearch As Boolean    'If TRUE, this menu will not appear in search results.  (Used for checkbox menus.)
 End Type
@@ -126,7 +127,9 @@ Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
+Private Declare Function IsCharAlphaW Lib "user32" (ByVal wChar As Integer) As Long
 Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
+Private Declare Function VkKeyScanW Lib "user32" (ByVal wChar As Integer) As Integer
 
 'Primary menu collection
 Private m_Menus() As PD_MenuEntry
@@ -759,67 +762,68 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     
     Dim i As Long
     
+    'Next, translate menu captions from English to the currently active language
     If g_Language.TranslationActive Then
         
         For i = 0 To m_NumOfMenus - 1
-        
+            
+            'Ignoring separators and null-length captions, localize the current English caption
             With m_Menus(i)
-                
-                'Ignore separator entries, obviously
                 If (.me_Name <> "-") Then
-                
-                    'Update the actual caption text
                     If (LenB(.me_TextEn) <> 0) Then
-                    
                         .me_TextTranslated = g_Language.TranslateMessage(.me_TextEn)
-                    
-                        'Update the appended hotkey text, if any
-                        If (.me_HotKeyCode <> 0) Then
-                            .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
-                            .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
-                        Else
-                            .me_TextFinal = .me_TextTranslated
-                        End If
-                        
-                    Else
-                        .me_TextTranslated = vbNullString
-                        .me_TextFinal = vbNullString
                     End If
-                    
-                Else
-                    .me_TextFinal = vbNullString
                 End If
-                    
             End With
             
         Next i
-        
+    
+    'English is active.  Simply mirror the English text to the localized field.
     Else
-    
         For i = 0 To m_NumOfMenus - 1
-        
             With m_Menus(i)
-            
                 If (.me_Name <> "-") Then
-                
-                    .me_TextTranslated = .me_TextEn
-                    
+                    If (LenB(.me_TextEn) <> 0) Then .me_TextTranslated = .me_TextEn
+                End If
+            End With
+        Next i
+    End If
+    
+    'Mnemonics need to be recalculated after caption changes
+    DetermineMnemonics
+    
+    'Generate localized text for all hotkeys
+    For i = 0 To m_NumOfMenus - 1
+        With m_Menus(i)
+            If (.me_Name <> "-") Then
+                If (LenB(.me_TextEn) <> 0) Then
+                    If (.me_HotKeyCode <> 0) Then .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
+                End If
+            End If
+        End With
+    Next i
+    
+    'For non-separator, non-zero-length menus, combine caption, mnemonics, and hotkeys (if any)
+    ' into a single, final, display-ready string
+    For i = 0 To m_NumOfMenus - 1
+    
+        With m_Menus(i)
+            If (.me_Name <> "-") Then
+                If (LenB(.me_TextEn) <> 0) Then
                     If (.me_HotKeyCode <> 0) Then
-                        .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
-                        .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
+                        .me_TextFinal = .me_TextWithMnemonics & vbTab & .me_HotKeyTextTranslated
                     Else
-                        .me_TextFinal = .me_TextTranslated
+                        .me_TextFinal = .me_TextWithMnemonics
                     End If
-                    
                 Else
                     .me_TextFinal = vbNullString
                 End If
-                
-            End With
-            
-        Next i
-    
-    End If
+            Else
+                .me_TextFinal = vbNullString
+            End If
+        End With
+        
+    Next i
     
     'With all menu captions updated, we now need to relay those changes to the underlying API menu struct
     For i = 0 To m_NumOfMenus - 1
@@ -841,10 +845,10 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
                 
                 lastLvl2Index = .me_SubMenu
                 If (.me_SubMenu = MENU_NONE) Then
-                    mnuNameLvl1 = Replace$(.me_TextTranslated, "&", vbNullString)
+                    mnuNameLvl1 = .me_TextTranslated
                     mnuNameLvl2 = vbNullString
                 Else
-                    mnuNameLvl2 = Replace$(.me_TextTranslated, "&", vbNullString)
+                    mnuNameLvl2 = .me_TextTranslated
                 End If
             
             'This menu does not have children, meaning it's clickable.
@@ -862,7 +866,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
                     'Append first- and second-level menu names, if any
                     If (LenB(mnuNameLvl1) <> 0) Then mnuNameFinal = mnuNameLvl1 & " > "
                     If (LenB(mnuNameLvl2) <> 0) Then mnuNameFinal = mnuNameFinal & mnuNameLvl2 & " > "
-                    mnuNameFinal = mnuNameFinal & Replace$(.me_TextTranslated, "&", vbNullString)
+                    mnuNameFinal = mnuNameFinal & .me_TextTranslated
                     .me_TextSearchable = mnuNameFinal
                     
                 Else
@@ -883,6 +887,321 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     If redrawMenuBar Then DrawMenuBar FormMain.hWnd
     
 End Sub
+
+'Automatically determine new mnemonics for *all* menu captions.
+Private Sub DetermineMnemonics()
+    
+    'Mnemonics use a (somewhat convoluted) automatic generation strategy, roughly akin to the way
+    ' humans would manually create mnemonics.
+    
+    'First, recognize that all mnemonic decisions are made among sibling menus.  Child menus (and menus
+    ' with a different parent) can and will reuse mnemonic characters.
+    
+    'Mnemonics are calculated as follows:
+    '1) Ignore all non-alpha characters.  (Punctuation, numbers, whitespace are never used for mnemonics.)
+    '2) If the language uses wide chars, use the original English text for the mnemonic search.
+    '   (Otherwise, use localized text.)
+    '3) If the first letter of the caption is unused, use that as the mnemonic.
+    '4) If the caption is multi-word, start from the first letter of the *last* word in the caption
+    '   and work backward. If you find an unused first-letter, use that as the mnemonic.
+    '5) If the above strategies fail, start searching linearly through the caption until you either...
+    '   - Find an unused letter (use that).
+    '   - No letters match (no mnemonic for this entry).
+    
+    'If you were a true masochist, you could devise a way to shuffle around previous mnemonics to try
+    ' and find a mnemonic for *all* captions, but PD isn't that insane.  The above steps make for a
+    ' good effort that covers 99% of cases, and requires 0 effort on my part (or on volunteer
+    ' translator's parts).
+    
+    'For each level (top, child-1, child-2), we must maintain a list of string characters that have
+    ' already been used as mnemonics; duplicates obviously aren't valid.
+    Dim mnLvl0 As String, mnLvl1 As String, mnLvl2 As String, mnTarget As String, lastLvl2Index As Long
+    Dim mnChar As String, mnCandidate As String, srcString As String
+    Dim noKeys As Boolean
+    
+    Dim mnPos As Long
+    mnPos = 0
+    
+    Dim i As Long, j As Long
+    For i = 0 To m_NumOfMenus - 1
+        
+        'Reset mnemonic index
+        mnPos = 0
+        
+        With m_Menus(i)
+            
+            'By default, set the mnemonic text to match the translated text.
+            ' (If we can't find a valid mnemonic char, we just want to use the
+            ' localized text as-is.)
+            .me_TextWithMnemonics = .me_TextTranslated
+            
+            'First, we need to establish hierarchy for this menu item.  When we move *up* a level,
+            ' we can erase the mnenomics list for the previous depth.
+            
+            'First, determine menu depth; this affects which target string we'll use for
+            ' checking already-used mnemonics.
+            If (.me_SubMenu = MENU_NONE) Then
+                mnTarget = mnLvl0
+                mnLvl1 = vbNullString
+                mnLvl2 = vbNullString
+            ElseIf (.me_SubSubMenu = MENU_NONE) Then
+                mnTarget = mnLvl1
+                mnLvl2 = vbNullString
+            Else
+                mnTarget = mnLvl2
+            End If
+            
+            'With depth correctly set, we now want to skip any separator or null-length menus
+            If (.me_TextEn = "-") Or (LenB(.me_TextEn) = 0) Then GoTo NextMenuEntry
+            
+            'Erase our current mnemonic candidate.
+            mnChar = vbNullString
+            
+            'We're now going to repeat a series of tests.
+            
+            'First, we want to test to see if *any* characters in the string are alphabetical.
+            ' (If they're not, this menu isn't a candidate for mnemonics.)
+            srcString = .me_TextTranslated
+            If (Not AtLeastOneAlphabetic(srcString)) Then GoTo NextMenuEntry
+            
+            'At least one character in the string is alphabetical.  Next, we want to see if
+            ' *any* characters in the string map to a keyboard key.  If they don't, this is
+            ' likely a Unicode string from a language like Chinese.
+            noKeys = (Not AtLeastOnePhysicalKey(srcString))
+            
+            'If this is a string with no characters that map to physical keys, we actually want
+            ' to use the *original English text* as our mnemonic.
+            If noKeys Then
+                srcString = .me_TextEn
+                If (Not AtLeastOneAlphabetic(srcString)) Then GoTo NextMenuEntry
+            End If
+            
+            'We now know which string to test for mnemonics.
+            
+            'We're now going to repeat the above test on each character in the target string,
+            ' using a (somewhat?) specialized strategy.
+            
+            'First, we always want to test the first character in the string.  It's the best
+            ' candidate for a mnemonic, assuming that char is available at this menu level.
+            If (IsMnemonicCandidate(srcString, 1) And IsMnemonicCharAvailable(mnTarget, srcString, 1)) Then
+                mnPos = 1
+                GoTo PlaceMnemonicMarker
+            End If
+            
+            'If we're still here, the first character in this caption is already being used by one
+            ' of our sibling menus.
+            
+            'Next, see if this caption is multi-word.  If it is, we want to check the first letter
+            ' of other words in the caption.
+            If (InStr(1, srcString, " ", vbBinaryCompare) <> 0) Then
+                
+                'This is a multi-word caption.  Split the text into words.
+                Dim listOfWords() As String
+                listOfWords = Split(srcString, " ")
+                
+                Dim curWord As Long, prevWords As Long
+                For curWord = UBound(listOfWords) To LBound(listOfWords) Step -1
+                    
+                    If (LenB(listOfWords(curWord)) > 0) Then
+                        
+                        'Find the first letter in this "word" and check it against our mnemonic list
+                        For j = 1 To Len(listOfWords(curWord))
+                            If IsMnemonicCandidate(listOfWords(curWord), j) Then
+                                
+                                'This is an alphabetic character that maps to a physical keyboard key.
+                                ' Check it against our current mnemonic list - and IMPORTANTLY -
+                                ' IF IT FAILS, do *not* check this word further.  (Instead, skip to
+                                ' the first letter of the *next* word.)
+                                If IsMnemonicCharAvailable(mnTarget, listOfWords(curWord), j) Then
+                                    
+                                    'We have the position of this character relative to the start of this word,
+                                    ' but we need the position relative to the start of the *original* string.
+                                    ' Add up the length of all preceding words, and assume one space between
+                                    ' each of them.  (This assumption may not technically be valid if a
+                                    ' translator inserts multiple spaces somewhere... I'm not sure what to
+                                    ' do in that case.)
+                                    mnPos = 0
+                                    For prevWords = LBound(listOfWords) To curWord - 1
+                                        mnPos = mnPos + Len(listOfWords(prevWords)) + 1
+                                    Next prevWords
+                                    mnPos = mnPos + j
+                                    GoTo PlaceMnemonicMarker
+                                Else
+                                    GoTo NextWord
+                                End If
+                                
+                            End If
+
+                        Next j
+                        
+                    End If
+NextWord:
+                Next curWord
+            
+            End If
+            
+            'Continue searching through the string, looking for an unused character.
+            If (Len(srcString) >= 2) Then
+                For j = 2 To Len(srcString)
+                    If IsMnemonicCandidate(srcString, j) Then
+                        If IsMnemonicCharAvailable(mnTarget, srcString, j) Then
+                            mnPos = j
+                            GoTo PlaceMnemonicMarker
+                        End If
+                    End If
+                Next j
+            End If
+            
+PlaceMnemonicMarker:
+
+            'If a valid mnemonic index was found, mark the corresponding character with
+            ' a leading ampersand (unless the string is e.g. Chinese, in which case we
+            ' append the character to the end of the string, inside parentheses)
+            If (mnPos > 0) Then
+                
+                'Check for e.g. Chinese strings
+                If noKeys Then
+                    
+                    'Append the original English character to the end of the localized string
+                    ' (if ellipses aren't used, or immediately before the ellipsis)
+                    mnChar = Mid$(.me_TextEn, mnPos, 1)
+                    Dim posEllipsis As Long
+                    posEllipsis = InStr(1, .me_TextTranslated, "...", vbBinaryCompare)
+                    If (posEllipsis = 0) Then
+                        .me_TextWithMnemonics = .me_TextTranslated & "(&" & UCase$(mnChar) & ")"
+                    Else
+                        .me_TextWithMnemonics = Left$(.me_TextTranslated, posEllipsis - 1) & "(&" & UCase$(mnChar) & ")" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
+                    End If
+                    
+                'Place the marker directly inside the localized caption
+                Else
+                    mnChar = Mid$(.me_TextTranslated, mnPos, 1)
+                    If (mnPos > 1) Then
+                        .me_TextWithMnemonics = Left$(.me_TextTranslated, mnPos - 1) & "&" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
+                    Else
+                        .me_TextWithMnemonics = "&" & .me_TextTranslated
+                    End If
+                End If
+                
+                'Append the mnemonics character to our running tracker, so we don't reuse it
+                mnChar = LCase$(mnChar)
+                If (.me_SubMenu = MENU_NONE) Then
+                    mnLvl0 = mnLvl0 & mnChar
+                ElseIf (.me_SubSubMenu = MENU_NONE) Then
+                    mnLvl1 = mnLvl1 & mnChar
+                Else
+                    mnLvl2 = mnLvl2 & mnChar
+                End If
+                
+            End If
+            
+        End With
+
+NextMenuEntry:
+
+    Next i
+
+End Sub
+
+'Returns TRUE if at least one character in the string is alphabetic
+Private Function AtLeastOneAlphabetic(ByRef srcString As String) As Boolean
+    
+    AtLeastOneAlphabetic = False
+    
+    If (LenB(srcString) > 0) Then
+    
+        Dim i As Long
+        For i = 1 To Len(srcString)
+            AtLeastOneAlphabetic = (IsCharAlphaW(AscW(Mid$(srcString, i, 1))) <> 0)
+            If AtLeastOneAlphabetic Then Exit Function
+        Next i
+        
+    End If
+    
+End Function
+
+'Returns TRUE if at least one character in the string maps to a physical keyboard key
+Private Function AtLeastOnePhysicalKey(ByRef srcString As String) As Boolean
+
+    AtLeastOnePhysicalKey = False
+    
+    If (LenB(srcString) > 0) Then
+    
+        Dim i As Long
+        For i = 1 To Len(srcString)
+            
+            'Only check alphabetic keys (e.g. "..." maps to a physical key, but isn't valid for this purpose)
+            If (IsCharAlphaW(AscW(Mid$(srcString, i, 1))) <> 0) Then
+                AtLeastOnePhysicalKey = (VkKeyScanW(AscW(Mid$(srcString, i, 1))) <> &HFFFF)
+                If AtLeastOnePhysicalKey Then Exit Function
+            End If
+            
+        Next i
+        
+    End If
+    
+End Function
+
+'Returns TRUE if the character at position [charIndex] is...
+' 1) Alpha (non-numeric, punctuation, whitespace, etc)
+' 2) Maps to a hardware key
+Private Function IsMnemonicCandidate(ByRef srcString As String, ByVal charIndex As Long) As Boolean
+    
+    IsMnemonicCandidate = False
+    On Error GoTo CharFail
+    
+    If (charIndex > 0) And (charIndex <= Len(srcString)) Then
+        
+        Dim testChar As String
+        testChar = Mid$(srcString, charIndex, 1)
+        
+        'Test for alphabetic characters (no punctuation or numbers)
+        If (IsCharAlphaW(AscW(testChar)) <> 0) Then
+            
+            'See if the character maps to a virtual key; per MSDN (https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-vkkeyscanw):
+            ' "If the function finds no key that translates to the passed character code,
+            '  both the low-order and high-order bytes contain –1."
+            IsMnemonicCandidate = (VkKeyScanW(AscW(testChar)) <> &HFFFF)
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+CharFail:
+    IsMnemonicCandidate = False
+    
+End Function
+
+'Returns TRUE if the character at index targetCharIndex of srcString does *not* appear in the
+' character list passed via srcCharList (which must be maintained in LCASE state for fast compares).
+Private Function IsMnemonicCharAvailable(ByRef srcCharList As String, ByRef srcString As String, ByVal targetCharIndex As Long) As Boolean
+    
+    IsMnemonicCharAvailable = True
+    
+    On Error GoTo BadCharIndex
+    
+    If (LenB(srcCharList) > 0) Then
+        
+        Dim targetChar As String
+        targetChar = LCase$(Mid$(srcString, targetCharIndex, 1))
+        
+        Dim i As Long
+        For i = 1 To Len(srcCharList)
+            IsMnemonicCharAvailable = (InStr(1, srcCharList, targetChar, vbBinaryCompare) = 0)
+            If (Not IsMnemonicCharAvailable) Then Exit Function
+        Next i
+        
+    End If
+    
+    Exit Function
+    
+BadCharIndex:
+    PDDebug.LogAction "WARNING!  Menus.IsMnemonicCharAvailable was passed a bad char index"
+    IsMnemonicCharAvailable = False
+    
+End Function
 
 'Given a menu name, return the corresponding menu caption (localized, with accelerator)
 Public Function GetCaptionFromName(ByRef mnuName As String, Optional ByVal returnTranslation As Boolean = True) As String
@@ -1278,9 +1597,12 @@ Public Sub InitializeAllHotkeys()
         'KeyCode 190 = >.  (two keys to the right of the M letter key)
         .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", "tools_playmacro", True, True, True, UNDO_Nothing
         
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
+        'Previously, Alt+Enter was used for preferences; I dislike this, however, as holding down the Alt-key
+        ' is useful for keyboard navigation of menus (via mnemonics), and if you use Enter to select a menu
+        ' item, this accelerator overrides your menu click.  Photoshop uses Ctrl+K - maybe we should
+        ' investigate that as an option?  TODO!
+        '.AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
         .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_3rdpartylibs", False, False, True, UNDO_Nothing
-        
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_Nothing
