@@ -1185,7 +1185,7 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
     Dim mnTarget As String, doThisItem As Boolean
     Dim noKeys As Boolean
     
-    Dim mnPos As Long, mnChar As String, newCaption As String
+    Dim mnPos As Long, mnChar As String, newText As String
     mnPos = 0
     
     Dim i As Long, j As Long
@@ -1239,26 +1239,26 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
                             Dim posEllipsis As Long
                             posEllipsis = InStr(1, .me_TextTranslated, "...", vbBinaryCompare)
                             If (posEllipsis = 0) Then
-                                newCaption = .me_TextTranslated & "(&" & UCase$(mnChar) & ")"
+                                newText = .me_TextTranslated & "(&" & UCase$(mnChar) & ")"
                             Else
-                                newCaption = Left$(.me_TextTranslated, posEllipsis - 1) & "(&" & UCase$(mnChar) & ")" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
+                                newText = Left$(.me_TextTranslated, posEllipsis - 1) & "(&" & UCase$(mnChar) & ")" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
                             End If
                             
                         'Place the marker directly inside the localized caption
                         Else
                             mnChar = Mid$(.me_TextTranslated, mnPos, 1)
                             If (mnPos > 1) Then
-                                newCaption = Left$(.me_TextTranslated, mnPos - 1) & "&" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
+                                newText = Left$(.me_TextTranslated, mnPos - 1) & "&" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
                             Else
-                                newCaption = "&" & .me_TextTranslated
+                                newText = "&" & .me_TextTranslated
                             End If
                         End If
                         
                         'If this menu's caption changed as a result of the new mnemonic, add this
                         ' menu index to the passed stack.
-                        If Strings.StringsNotEqual(.me_TextWithMnemonics, newCaption, False) Then
+                        If Strings.StringsNotEqual(.me_TextWithMnemonics, newText, False) Then
                             dstStack.AddInt i
-                            .me_TextWithMnemonics = newCaption
+                            .me_TextWithMnemonics = newText
                         End If
                         
                         'Append the mnemonics character to our running tracker, so we don't reuse it
@@ -3259,7 +3259,6 @@ Public Sub UpdateSpecialMenu_Language(ByVal numOfLanguages As Long, ByRef availa
     Else
         InternalMenuWarning "UpdateSpecialMenu_Language", "null hMenu"
     End If
-    
     
 End Sub
 

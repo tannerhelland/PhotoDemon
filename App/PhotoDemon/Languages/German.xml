@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.1.41</langversion>
+<langversion>8.2.48</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2419,7 +2419,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 Please make sure the device is turned on and ready for use.</original>
 <translation>Der ausgewählte Scanner oder die ausgewählte Digitalkamera reagieren nicht.
 
-Bitte stellen Sie sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit ist.</translation>
+Bitte stellen Sie sicher, dass das Gerät eingeschaltet und bereit für die Nutzung ist.</translation>
 </phrase>
 
 <phrase>
@@ -2468,7 +2468,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Bitte stellen Sie sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Bitte stellen Sie sicher, dass Ihr Scanner eingeschaltet und bereit für die Nutzung ist.</translation>
 </phrase>
 
 <phrase>
@@ -4131,7 +4131,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Sobald dieses Bild auf dem Laufwerk gespeichert worden ist, wird sein Dateiname hier erscheinen.</translation>
+<translation>Sobald dieses Bild auf der Festplatte gespeichert worden ist, wird dessen Dateiname hier erscheinen.</translation>
 </phrase>
 
 <phrase>
@@ -4141,7 +4141,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Fahren Sie über ein Bild-Thumbnail (Miniaturansicht), um seinen Namen und aktuellen Dateiort zu sehen.</translation>
+<translation>Fahren Sie über ein Bild-Thumbnail (Miniaturansicht), um dessen Namen und aktuellen Dateiort zu sehen.</translation>
 </phrase>
 
 <!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -9623,7 +9623,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert wer- den, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -10024,7 +10024,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Bitte beachten und respektieren Sie die Copyrights, wenn Sie Bilder herunterladen. Auch wenn ein Bild online verfügbar ist, kann es zum Gebrauch außerhalb einer spezifischen Website nicht lizenziert sein. Dankeschön!</translation>
+<translation>Bitte beachten und respektieren Sie die Copyrights, wenn Sie Bilder herunterladen. Selbst wenn ein Bild online verfügbar ist, kann es möglicherweise für die Nutzung außerhalb einer spezifischen Website nicht lizenziert sein. Dankeschön!</translation>
 </phrase>
 
 <phrase>
@@ -10145,7 +10145,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation>%1 konnte das Bild nicht drucken. Bitte stellen Sie sicher, dass der spezifizierte Drucker (%2) eingeschaltet und zum Drucken bereit ist.</translation>
+<translation>%1 konnte das Bild nicht drucken. Bitte stellen Sie sicher, dass der spezifizierte Drucker (%2) eingeschaltet und bereit zum Drucken ist.</translation>
 </phrase>
 
 <phrase>
@@ -12639,7 +12639,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>edit an existing language file</original>
-<translation>Eine bestehende Sprachdatei bearbeiten</translation>
+<translation>Eine vorhandene Sprachdatei bearbeiten</translation>
 </phrase>
 
 <phrase>
@@ -12764,7 +12764,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die bestehende Arbeit ist autom. gespeichert worden.</translation>
+<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die vorhandene Arbeit ist autom. gespeichert worden.</translation>
 </phrase>
 
 <phrase>
@@ -12885,17 +12885,17 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>This tool allows you to create and edit PhotoDemon language files.</original>
-<translation>Dieses Tool erlaubt Ihnen, Sprachdateien für PhotoDemon zu erstellen und zu bearbeiten.</translation>
+<translation>Dieses Tool ermöglicht Ihnen, Sprachdateien für PhotoDemon zu erstellen und zu bearbeiten.</translation>
 </phrase>
 
 <phrase>
 <original>Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.</original>
-<translation>Bitte beginnen Sie, indem Sie eine Basis-Sprachdatei auswählen. Auch wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, haben Sie die Möglichkeit, jede der vor- handenen Übersetzungen zu bear- beiten sowie möglicherweise feh- lende Übersetzungen hinzuzufügen.</translation>
+<translation>Bitte beginnen Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, werden Sie in der Lage sein, jegliche vorhandene Übersetzungen zu bearbeiten sowie Übersetzungen hinzuzufügen, die eventuell fehlen.</translation>
 </phrase>
 
 <phrase>
 <original>This page also allows you to delete unused language files.  Note that there is no Undo when deleting language files, so please be careful!</original>
-<translation>Diese Seite erlaubt Ihnen auch, ungenutzte Sprachdateien zu löschen. Beachten Sie, dass sich die Löschung von Sprachdateien nicht rückgängig machen lässt, also bitte vorsichtig sein!</translation>
+<translation>Diese Seite ermöglicht Ihnen auch, ungenutzte Sprachdateien zu löschen. Beachten Sie, dass es beim Löschen von Sprachdateien kein Rückgängigmachen (Undo) gibt, so seien Sie bitte vorsichtig!</translation>
 </phrase>
 
 <phrase>
@@ -12925,7 +12925,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.</original>
-<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, tren- nen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer bestehenden Sprachdatei basiert, beziehen Sie bitte den Name des Original-Autors mit ein.</translation>
+<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, tren- nen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer vorhandenen Sprachdatei basiert, beziehen Sie bitte den Name des Original-Autors mit ein.</translation>
 </phrase>
 
 <phrase>
@@ -12940,7 +12940,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>This final step allows you to edit existing translations, and add missing ones.</original>
-<translation>Dieser letzte Schritt erlaubt Ihnen, vorhandene Übersetzungen zu bearbeiten und fehlende hinzuzufügen.</translation>
+<translation>Dieser letzte Schritt ermöglicht Ihnen, vorhandene Übersetzungen zu bearbeiten und fehlende hinzuzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -13398,7 +13398,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Wenn ein Bild transparente Bereiche aufweist, wird typischerweise "hinter" dem Bild ein Schachbrett angezeigt. Dieses Feld ermöglicht Ihnen, die Farben des Schachbrett zu ändern.</translation>
+<translation>Wenn ein Bild transparente Bereiche aufweist, wird typischerweise "hinter" dem Bild ein Schachbrett angezeigt. Dieses Feld ermöglicht es Ihnen, die Farben des Schachbrett zu ändern.</translation>
 </phrase>
 
 <phrase>
@@ -13428,7 +13428,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. Dieses Feld ermöglicht Ihnen, die Größe des Schachbrett zu ändern.</translation>
+<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. Dieses Feld ermöglicht es Ihnen, die Größe des Schachbrett zu ändern.</translation>
 </phrase>
 
 <phrase>
@@ -13443,7 +13443,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann doppelte Einträge (Duplikate) automatisch für Sie lösen.</translation>
+<translation>Ältere Kameras und Fotobearbeitungssoftware können möglicherweise Metadaten nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann doppelte Einträge (Duplikate) automatisch für Sie lösen.</translation>
 </phrase>
 
 <phrase>
@@ -13463,7 +13463,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also falsch angezeigt werden, können Sie probieren, das Feature zur autom. Rotation zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie probieren, das Feature zur autom. Rotation zu deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -13483,7 +13483,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
 </phrase>
 
 <phrase>
@@ -13558,7 +13558,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Diese Einstellung ist für die meisten Benutzer die beste Wahl. Wenn Sie keine Idee davon haben, was Farbmanagement heißt, verwenden Sie diese Einstellung. Wenn Sie via Windows-Systemsteuerung ein Anzeigeprofil korrekt konfiguriert haben, verwenden Sie ebenfalls diese Einstellung.</translation>
+<translation>Diese Einstellung ist für die meisten Benutzer die beste Wahl. Wenn Sie keine Idee davon haben, was Farbmanagement heißt, verwenden Sie diese Einstellung. Wenn Sie ein Anzeigeprofil via der Windows-Systemsteuerung korrekt konfiguriert haben, verwenden Sie auch diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -13633,7 +13633,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht.  Dies erlaubt Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht.  Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -13661,7 +13661,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
+<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann möglicherweise die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
 </phrase>
 
 <phrase>
@@ -13686,7 +13686,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Dieser Button setzt alle Einstellungen von PhotoDemon zurück. Wenn sich das Programm unerwartet verhält, kann dies das Problem möglicherweise lösen.</translation>
+<translation>Dieser Button setzt alle Einstellungen von PhotoDemon zurück. Wenn sich das Programm unerwartet verhält, kann dies das Problem eventuell lösen.</translation>
 </phrase>
 
 <phrase>
