@@ -6,10 +6,10 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.9</langversion>
+<langversion>8.0.11</langversion>
 <langstatus>completo</langstatus>
 
-<author>DeepL and Plinio C Garcia</author>
+<author>Plinio C Garcia (with help from DeepL.com)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -106,7 +106,7 @@
 
 <phrase>
 <original>Paste special</original>
-<translation>Pegamento especial</translation>
+<translation>Pegar especial</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -1396,12 +1396,12 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 
 <phrase>
 <original>Layer via copy</original>
-<translation>Capa a través de la copia</translation>
+<translation>Capa vía copiar</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation>Capa a través del corte</translation>
+<translation>Capa vía cortar</translation>
 </phrase>
 
 <phrase>
@@ -2362,28 +2362,8 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
-<original>Floyd-Steinberg</original>
-<translation>Floyd-Steinberg</translation>
-</phrase>
-
-<phrase>
 <original>Jarvis, Judice, and Ninke</original>
 <translation>Jarvis, Judice y Ninke</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
 </phrase>
 
 <phrase>
@@ -2401,7 +2381,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2569,12 +2549,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <translation>licencia zLib</translation>
 </phrase>
 
-<phrase>
-<original>GNU GPLv3</original>
-<translation>GPLv3 de GNU</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3175,7 +3150,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>Sello de clonación</translation>
+<translation>Tampón de clonar</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3189,7 +3164,7 @@ Please válida Introduzca un valor numérico.</translation>
 
 <phrase>
 <original>Gradient tool</original>
-<translation>Herramienta de gradiente</translation>
+<translation>Herramienta degradado</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4202,7 +4177,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>%1 of %2</original>
-<translation></translation>
+<translation>%1 de %2</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -5142,12 +5117,12 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>1:1 (actual size, 100%)</original>
-<translation>01:01 (tamaño real, 100%)</translation>
+<translation>1:1 (tamaño real, 100%)</translation>
 </phrase>
 
 <phrase>
 <original>Show rulers</original>
-<translation>Mostrar a los gobernantes</translation>
+<translation>Mostrar reglas</translation>
 </phrase>
 
 <phrase>
@@ -5167,32 +5142,32 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Display toolbox</original>
-<translation>Display caja de herramientas</translation>
+<translation>Mostrar caja de herramientas</translation>
 </phrase>
 
 <phrase>
 <original>Display tool category titles</original>
-<translation>Títulos de categoría de herramientas de visualización</translation>
+<translation>Mostrar títulos en categorías de herramientas</translation>
 </phrase>
 
 <phrase>
 <original>Small buttons</original>
-<translation>botones pequeños</translation>
+<translation>Botones pequeños</translation>
 </phrase>
 
 <phrase>
 <original>Normal buttons</original>
-<translation>botones normales</translation>
+<translation>Botones normales</translation>
 </phrase>
 
 <phrase>
 <original>Large buttons</original>
-<translation>botones grandes</translation>
+<translation>Botones grandes</translation>
 </phrase>
 
 <phrase>
 <original>Tool options</original>
-<translation>opciones de la herramienta</translation>
+<translation>Opciones de la herramienta</translation>
 </phrase>
 
 <phrase>
@@ -5202,12 +5177,12 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Image tabstrip</original>
-<translation>tabstrip Imagen</translation>
+<translation>Pestañas de imagen</translation>
 </phrase>
 
 <phrase>
 <original>Always show</original>
-<translation>mostrar siempre</translation>
+<translation>Mostrar siempre</translation>
 </phrase>
 
 <phrase>
@@ -5252,7 +5227,7 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Support us on Patreon</original>
-<translation>Apóyanos en Patreón</translation>
+<translation>Apóyanos en Patreon</translation>
 </phrase>
 
 <phrase>
@@ -7436,22 +7411,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Mapa De Bits</translation>
 </phrase>
 
-<phrase>
-<original>DIB</original>
-<translation>DIB</translation>
-</phrase>
-
-<phrase>
-<original>DIB v5</original>
-<translation>DIB v5</translation>
-</phrase>
-
-<phrase>
-<original>PNG</original>
-<translation>PNG</translation>
-</phrase>
-
-<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -7888,12 +7848,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>difusión anisotrópica (Alvarez-Mazorra)</translation>
 </phrase>
 
-<phrase>
-<original>IIR (Deriche)</original>
-<translation>IIR (Deriche)</translation>
-</phrase>
-
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying Kuwahara filter</original>
@@ -8760,22 +8715,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>simple</translation>
 </phrase>
 
-<phrase>
-<original>Perlin</original>
-<translation>Perlin</translation>
-</phrase>
-
-<phrase>
-<original>Simplex</original>
-<translation>Simplex</translation>
-</phrase>
-
-<phrase>
-<original>OpenSimplex</original>
-<translation>OpenSimplex</translation>
-</phrase>
-
-<!-- Effects_Render_Clouds.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>length</original>
@@ -8856,7 +8796,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>use Lab color space</original>
-<translation>usar el espacio de color del laboratorio</translation>
+<translation>usar el espacio de color LAB</translation>
 </phrase>
 
 <phrase>
@@ -10308,66 +10248,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>128x128</original>
-<translation>128x128</translation>
-</phrase>
-
-<phrase>
-<original>768x768</original>
-<translation>768x768</translation>
-</phrase>
-
-<phrase>
-<original>256x256</original>
-<translation>256x256</translation>
-</phrase>
-
-<phrase>
-<original>512x512</original>
-<translation>512x512</translation>
-</phrase>
-
-<phrase>
-<original>96x96</original>
-<translation>96x96</translation>
-</phrase>
-
-<phrase>
-<original>64x64</original>
-<translation>64x64</translation>
-</phrase>
-
-<phrase>
-<original>48x48</original>
-<translation>48x48</translation>
-</phrase>
-
-<phrase>
-<original>40x40</original>
-<translation>40x40</translation>
-</phrase>
-
-<phrase>
-<original>32x32</original>
-<translation>32x32</translation>
-</phrase>
-
-<phrase>
-<original>24x24</original>
-<translation>24x24</translation>
-</phrase>
-
-<phrase>
-<original>16x16</original>
-<translation>16x16</translation>
-</phrase>
-
-<phrase>
-<original>20x20</original>
-<translation>20x20</translation>
-</phrase>
-
-<phrase>
 <original>app - Windows 10</original>
 <translation>app - Windows 10</translation>
 </phrase>
@@ -10402,7 +10282,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>usar la configuración del archivo original</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10739,12 +10619,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>maximizar la compatibilidad</translation>
 </phrase>
 
-<phrase>
-<original>PackBits</original>
-<translation>PackBits</translation>
-</phrase>
-
-<!-- File_Save_PSD.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -10771,27 +10646,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>multipágina (una página por capa)</translation>
 </phrase>
 
-<phrase>
-<original>LZW</original>
-<translation>LZW</translation>
-</phrase>
-
-<phrase>
-<original>ZIP</original>
-<translation>ZIP</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 4</original>
-<translation>CCITT Fax 4</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 3</original>
-<translation>CCITT Fax 3</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- File_Save_WebP.frm contains 12 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -10937,11 +10792,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Lab</original>
-<translation>Laboratorio</translation>
-</phrase>
-
-<phrase>
 <original>Peak signal-to-noise ratio (PSNR) between these images</original>
 <translation>El pico de la relación señal-ruido (PSNR) entre estas imágenes</translation>
 </phrase>
@@ -10976,7 +10826,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Comparación de imágenes</translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -11273,16 +11123,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Mitchell-Netravali</original>
-<translation>Mitchell-Netravali</translation>
-</phrase>
-
-<phrase>
-<original>Catmull-Rom</original>
-<translation>Catmull-Rom</translation>
-</phrase>
-
-<phrase>
 <original>Sinc (Lanczos 3-lobe)</original>
 <translation>Sinc (Lanczos 3 lóbulos)</translation>
 </phrase>
@@ -11322,7 +11162,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>capa de cambio de tamaño</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11637,7 +11477,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>search</original>
-<translation>busca en</translation>
+<translation>busca</translation>
 </phrase>
 
 <phrase>
@@ -11871,12 +11711,12 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>Gradient</original>
-<translation>Gradiente</translation>
+<translation>Degradado</translation>
 </phrase>
 
 <phrase>
 <original>Hand tool</original>
-<translation>Herramienta de mano</translation>
+<translation>Desplazamiento</translation>
 </phrase>
 
 <phrase>
@@ -11951,7 +11791,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation>Herramienta de sellado de clones</translation>
+<translation>Herramienta de tampón de clonar</translation>
 </phrase>
 
 <phrase>
@@ -13897,10 +13737,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2639</phrasecount>
+<phrasecount>2607</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5135 phrases. -->
-<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
-<!-- These 2639 phrases contain approximately 12040 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2493 are duplicates, so only 2607 unique phrases have been written to file. -->
+<!-- These 2607 phrases contain approximately 12018 total words. -->
 
 </pdData>

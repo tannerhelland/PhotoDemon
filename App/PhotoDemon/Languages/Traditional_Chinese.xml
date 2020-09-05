@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.178</langversion>
+<langversion>7.0.180</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -2342,27 +2342,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Floyd-Steinberg</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Jarvis, Judice, and Ninke</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
 <translation></translation>
 </phrase>
 
@@ -2381,7 +2361,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2545,12 +2525,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>zLib 授權</translation>
 </phrase>
 
-<phrase>
-<original>GNU GPLv3</original>
-<translation>GNU GPLv3</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -7398,22 +7373,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>DIB</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIB v5</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PNG</original>
-<translation></translation>
-</phrase>
-
-<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -7850,12 +7810,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>IIR (Deriche)</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Blur_GaussianBlur.frm contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying Kuwahara filter</original>
@@ -8722,22 +8677,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Perlin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Simplex</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OpenSimplex</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Render_Clouds.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>length</original>
@@ -10264,66 +10204,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>128x128</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>768x768</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>256x256</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>512x512</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>96x96</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>64x64</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>48x48</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>40x40</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>32x32</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>24x24</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>16x16</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>20x20</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>app - Windows 10</original>
 <translation></translation>
 </phrase>
@@ -10358,7 +10238,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 31 phrases. 6 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10695,12 +10575,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>PackBits</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PSD.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -10727,27 +10602,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>多頁 (每一圖層一頁)</translation>
 </phrase>
 
-<phrase>
-<original>LZW</original>
-<translation>LZW</translation>
-</phrase>
-
-<phrase>
-<original>ZIP</original>
-<translation>ZIP</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 4</original>
-<translation>CCITT Fax 4</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 3</original>
-<translation>CCITT Fax 3</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- File_Save_WebP.frm contains 12 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -10893,11 +10748,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Lab</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Peak signal-to-noise ratio (PSNR) between these images</original>
 <translation></translation>
 </phrase>
@@ -10932,7 +10782,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -11229,16 +11079,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Mitchell-Netravali</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Catmull-Rom</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Sinc (Lanczos 3-lobe)</original>
 <translation></translation>
 </phrase>
@@ -11278,7 +11118,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -13845,10 +13685,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2639</phrasecount>
+<phrasecount>2607</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5135 phrases. -->
-<!-- 2496 are duplicates, so only 2639 unique phrases have been written to file. -->
-<!-- These 2639 phrases contain approximately 12040 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2493 are duplicates, so only 2607 unique phrases have been written to file. -->
+<!-- These 2607 phrases contain approximately 12018 total words. -->
 
 </pdData>

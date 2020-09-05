@@ -192,7 +192,7 @@ RetryTranslation:
         Else
             m_lastTranslation = origHTML
         End If
-        Debug.Print origHTML
+        
         'Return any characters we removed before translation
         If (InStr(origHTML, "%25") <> 0) Then origHTML = Replace$(origHTML, "%25", "%", , , vbBinaryCompare)
         If (InStr(origHTML, "%20") <> 0) Then origHTML = Replace$(origHTML, "%20", " ", , , vbBinaryCompare)

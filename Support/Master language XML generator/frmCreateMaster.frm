@@ -663,8 +663,8 @@ Private Sub cmdMerge_Click()
         
         'Use pdXML to write out a UTF-8 encoded XML file
         m_NewLanguageText = Replace$(m_NewLanguageText, "&", vbNullString)
-        m_XML.loadXMLFromString m_NewLanguageText
-        m_XML.writeXMLToFile m_OldLanguagePath, True
+        m_XML.LoadXMLFromString m_NewLanguageText
+        m_XML.WriteXMLToFile m_OldLanguagePath, True
         
     End If
     
@@ -715,16 +715,17 @@ End Function
 ' NOTE: this function will always return the first occurence of the specified tag, starting at the specified search position.
 ' If the tag is not found, a blank string will be returned.
 Private Function GetTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
-
+    
+    GetTextBetweenTags = vbNullString
+    
     Dim tagStart As Long, tagEnd As Long
     tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbBinaryCompare)
     
     'If the tag was found in the file, we also need to find the closing tag.
     If (tagStart > 0) Then
     
-        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbBinaryCompare)
-        
         'If the closing tag exists, return everything between that and the opening tag
+        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbBinaryCompare)
         If (tagEnd > tagStart) Then
             
             'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
@@ -739,8 +740,6 @@ Private Function GetTextBetweenTags(ByRef fileText As String, ByRef fTag As Stri
             GetTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
         End If
         
-    Else
-        GetTextBetweenTags = vbNullString
     End If
 
 End Function
@@ -852,7 +851,7 @@ Private Sub cmdMergeAll_Click()
                 End If
             
                 'Find the next occurrence of a <phrase> tag
-                sPos = InStr(sPos + 1, m_MasterText, PHRASE_START)
+                sPos = InStr(sPos + 1, m_MasterText, PHRASE_START, vbBinaryCompare)
                 
                 If (Not m_SilentMode) Then
                     If (phrasesProcessed And 127) = 0 Then
@@ -881,8 +880,8 @@ Private Sub cmdMergeAll_Click()
                 End If
                 
                 'Use pdXML to write out a UTF-8 encoded XML file
-                m_XML.loadXMLFromString m_NewLanguageText
-                m_XML.writeXMLToFile m_OldLanguagePath, True
+                m_XML.LoadXMLFromString m_NewLanguageText
+                m_XML.WriteXMLToFile m_OldLanguagePath, True
                 
             End If
             
@@ -1005,8 +1004,8 @@ Private Sub cmdProcess_Click()
     If (newFileLen <> oldFileLen) Then
         
         'Use pdXML to write a UTF-8 encoded text file
-        m_XML.loadXMLFromString m_outputText.ToString()
-        m_XML.writeXMLToFile outputFile, True
+        m_XML.LoadXMLFromString m_outputText.ToString()
+        m_XML.WriteXMLToFile outputFile, True
         
         cmdProcess.Caption = "Processing complete!"
         
@@ -1849,7 +1848,7 @@ Private Sub cmdSelectVBP_Click()
     'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
     'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
     '    lblVBP = "Active VBP: " & m_VBPFile
-    '    m_VBPPath = getDirectory(m_VBPFile)
+    '    m_VBPPath = GetDirectory(m_VBPFile)
     'Else
     '    Exit Sub
     'End If
@@ -1922,7 +1921,7 @@ Private Sub cmdSelectVBP_Click()
 End Sub
 
 'Given a full file name, remove everything but the directory structure
-Private Function GetDirectory(ByVal sString As String) As String
+Private Function GetDirectory(ByRef sString As String) As String
     
     Dim x As Long
     
@@ -1939,8 +1938,8 @@ End Function
 Private Function GetFileAsString(ByVal fName As String) As String
            
     'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
-    If m_XML.loadXMLFile(fName) Then
-        GetFileAsString = m_XML.returnCurrentXMLString(True)
+    If m_XML.LoadXMLFile(fName) Then
+        GetFileAsString = m_XML.ReturnCurrentXMLString(True)
         
     Else
         
@@ -1991,8 +1990,8 @@ Private Function CountWordsInString(ByVal srcString As String) As Long
 
 End Function
 
-'VB's IsNumeric function can't detect percentage text (e.g. "100%").  PhotoDemon includes text like this, but I don't want such
-' text translated - so manually check for it and reject such text if found.
+'VB's IsNumeric function can't detect percentage text (e.g. "100%").  PhotoDemon includes text like this,
+' but I don't want that text translated - so manually check for and reject it.
 Private Function IsNumericPercentage(ByVal srcString As String) As Boolean
 
     srcString = Trim$(srcString)
@@ -2010,7 +2009,7 @@ Private Function IsNumericPercentage(ByVal srcString As String) As Boolean
 End Function
 
 'URLs shouldn't be translated.  Check for them and reject as necessary.
-Private Function IsURL(ByVal srcString As String) As Boolean
+Private Function IsURL(ByRef srcString As String) As Boolean
     IsURL = (Left$(srcString, 6) = "ftp") Or (Left$(srcString, 7) = "http")
 End Function
 
@@ -2023,7 +2022,10 @@ Private Sub Form_Load()
     ReDim m_Blacklist(0) As String
     m_numOfBlacklistEntries = 0
     
-    AddBlacklist "PhotoDemon by Tanner Helland - www.tannerhelland.com"
+    AddBlacklist "*"
+    AddBlacklist "("
+    AddBlacklist ")"
+    AddBlacklist ","
     AddBlacklist "(X, Y)"
     AddBlacklist "16:1 (1600%)"
     AddBlacklist "8:1 (800%)"
@@ -2033,25 +2035,52 @@ Private Sub Form_Load()
     AddBlacklist "1:4 (25%)"
     AddBlacklist "1:8 (12.5%)"
     AddBlacklist "1:16 (6.25%)"
-    AddBlacklist "PNGQuant 2.1.1"
-    AddBlacklist "EZTwain 1.18"
-    AddBlacklist "FreeImage 3.16.0"
-    AddBlacklist "ExifTool 9.62"
+    AddBlacklist "GNU GPLv3"
     AddBlacklist "X.X"
     AddBlacklist "XX.XX.XX"
-    AddBlacklist "PNGQuant"
-    AddBlacklist "EZTwain"
-    AddBlacklist "FreeImage"
-    AddBlacklist "ExifTool"
     AddBlacklist "tannerhelland.com/contact"
     AddBlacklist "photodemon.org/about/contact"
     AddBlacklist "photodemon.org/about/contact/"
+    AddBlacklist "PhotoDemon by Tanner Helland - www.tannerhelland.com"
     AddBlacklist "HTML / CSS"
     AddBlacklist "while it downloads."
-    AddBlacklist "*"
-    AddBlacklist "("
-    AddBlacklist ")"
-    AddBlacklist ","
+    AddBlacklist "16x16"
+    AddBlacklist "20x20"
+    AddBlacklist "24x24"
+    AddBlacklist "32x32"
+    AddBlacklist "40x40"
+    AddBlacklist "48x48"
+    AddBlacklist "64x64"
+    AddBlacklist "96x96"
+    AddBlacklist "128x128"
+    AddBlacklist "256x256"
+    AddBlacklist "512x512"
+    AddBlacklist "768x768"
+    AddBlacklist "PackBits"
+    AddBlacklist "LZW"
+    AddBlacklist "ZIP"
+    AddBlacklist "CCITT Fax 4"
+    AddBlacklist "CCITT Fax 3"
+    AddBlacklist "L*"
+    AddBlacklist "a*"
+    AddBlacklist "b*"
+    AddBlacklist "Mitchell-Netravali"
+    AddBlacklist "Catmull-Rom"
+    AddBlacklist "Floyd-Steinberg"
+    AddBlacklist "Stucki"
+    AddBlacklist "Burkes"
+    AddBlacklist "Sierra-3"
+    AddBlacklist "DIB"
+    AddBlacklist "DIB v5"
+    AddBlacklist "PNG"
+    AddBlacklist "IIR (Deriche)"
+    AddBlacklist "Perlin"
+    AddBlacklist "Simplex"
+    AddBlacklist "OpenSimplex"
+    AddBlacklist "Lab"
+    AddBlacklist "L*"
+    AddBlacklist "a*"
+    AddBlacklist "b*"
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String
@@ -2085,22 +2114,21 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub AddBlacklist(ByVal blString As String)
-
-    m_Blacklist(m_numOfBlacklistEntries) = blString
+Private Sub AddBlacklist(ByRef blString As String)
+    m_Blacklist(m_numOfBlacklistEntries) = LCase$(blString)
     m_numOfBlacklistEntries = m_numOfBlacklistEntries + 1
     ReDim Preserve m_Blacklist(0 To m_numOfBlacklistEntries) As String
-
 End Sub
 
 Private Function IsBlacklisted(ByVal blString As String) As Boolean
 
     IsBlacklisted = False
+    blString = LCase$(blString)
     
     'Search the blacklist for this string.  If it is found, immediately return TRUE.
     Dim i As Long
     For i = 0 To m_numOfBlacklistEntries - 1
-        If StrComp(blString, m_Blacklist(i), vbTextCompare) = 0 Then
+        If (StrComp(blString, m_Blacklist(i), vbBinaryCompare) = 0) Then
             IsBlacklisted = True
             Exit Function
         End If
@@ -2108,12 +2136,12 @@ Private Function IsBlacklisted(ByVal blString As String) As Boolean
 
 End Function
 
-'Used to roughly estimate if a string is purely alphabetical (this project uses it to check if a statement is a "word" or not).
+'Used to roughly estimate if a string is purely alphabetical
+' (this project uses it to check if a statement is a "word" or not).
 Private Function IsAlpha(ByRef srcString As String) As Boolean
     
-    Dim charID As Byte
-   
     IsAlpha = True
+    Dim charID As Byte
     
     Dim i As Long
     For i = 1 To Len(srcString)
@@ -2123,7 +2151,7 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
         If ((charID < 65) Or (charID > 90)) Then
         
             'Next, if the length of the source string is greater than one, check to see if this is a hyphenated or punctuated word
-            If Len(srcString) > 1 Then
+            If (Len(srcString) > 1) Then
                 
                 'Allow certain punctuation to still count as "alphabetical"
                 If Not ((charID = 33) Or (charID = 34) Or (charID = 38) Or (charID = 40) Or (charID = 41) Or (charID = 44) Or (charID = 45) Or (charID = 46) Or (charID = 58) Or (charID = 59) Or (charID = 63) Or (charID = 64) Or (charID = 96)) Then
