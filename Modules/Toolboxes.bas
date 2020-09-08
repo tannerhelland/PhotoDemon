@@ -22,7 +22,6 @@ Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVa
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 Private Const WS_CHILD As Long = &H40000000
 Private Const WS_POPUP As Long = &H80000000
-Private Const GWL_EXSTYLE As Long = (-20)
 Private Const GWL_STYLE As Long = (-16)
 Private Const SW_HIDE As Long = 0&
 Private Const SW_SHOWNA As Long = 8&

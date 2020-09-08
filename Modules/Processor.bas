@@ -427,7 +427,7 @@ MainErrHandler:
     ElseIf (Err.Number = 53) Then
         On Error GoTo 0
         addInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
-        Message "File not found."
+        Message "File not found"
         mType = vbExclamation Or vbOKOnly
         
     'Unknown error
@@ -615,11 +615,13 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
         Debug.Print "WARNING!  Unknown processID submitted to MiniProcess_NDFXOnly().  Fix it!"
     End If
     
+    tmpProcData.pcID = processID
+    
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
     PDDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     
-    'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
-    ' as well as the image tab-bar.
+    'If the image has been modified and we are not performing a batch conversion (disabled to save speed!),
+    ' redraw form and taskbar icons, as well as the image tab-bar.
     If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And PDImages.IsImageActive() Then
         Interface.NotifyImageChanged
         IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
@@ -752,10 +754,10 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
             GetNameOfTextAction = g_Language.TranslateMessage("font (color)")
         
         Case ptp_FontFace
-            GetNameOfTextAction = g_Language.TranslateMessage("font (face)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font face")
         
         Case ptp_FontSize
-            GetNameOfTextAction = g_Language.TranslateMessage("font (size)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font size")
         
         Case ptp_FontSizeUnit
             GetNameOfTextAction = g_Language.TranslateMessage("font (size unit)")
@@ -779,10 +781,10 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
             GetNameOfTextAction = g_Language.TranslateMessage("vertical alignment")
         
         Case ptp_TextAntialiasing
-            GetNameOfTextAction = g_Language.TranslateMessage("antialiasing")
+            GetNameOfTextAction = g_Language.TranslateMessage("antialiased")
         
         Case ptp_TextContrast
-            GetNameOfTextAction = g_Language.TranslateMessage("antialiasing clarity")
+            GetNameOfTextAction = g_Language.TranslateMessage("clarity")
             
         Case ptp_RenderingEngine
             GetNameOfTextAction = g_Language.TranslateMessage("text type")
@@ -988,8 +990,8 @@ Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raise
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Resize", processID, True)
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Content-aware image resize", processID, True)
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Canvas size", processID, True)
-            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas to layer", processID, True)
-            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas to all layers", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas to active layer", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas around all layers", processID, True)
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Trim empty borders", processID, True)
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate image 90 clockwise", processID, True)
             removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate 90 clockwise", processID, True)
@@ -1750,7 +1752,8 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     ElseIf Strings.StringsEqual(processID, "Anisotropic diffusion", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormAnisotropic Else FormAnisotropic.ApplyAnisotropicDiffusion processParameters
         Process_EffectsMenu = True
-        
+    
+    'Legacy support only; this has been superceded by the new surface blur tool
     ElseIf Strings.StringsEqual(processID, "Bilateral smoothing", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
         Process_EffectsMenu = True
@@ -2070,11 +2073,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         If raiseDialog Then ShowPDDialog vbModal, FormCanvasSize Else FormCanvasSize.ResizeCanvas processParameters
         Process_ImageMenu = True
             
-    ElseIf Strings.StringsEqual(processID, "Fit canvas to layer", True) Then
+    ElseIf Strings.StringsEqual(processID, "Fit canvas to active layer", True) Then
         Filters_Transform.FitCanvasToLayer_XML processParameters
         Process_ImageMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Fit canvas to all layers", True) Then
+    ElseIf Strings.StringsEqual(processID, "Fit canvas around all layers", True) Then
         Filters_Transform.MenuFitCanvasToAllLayers
         Process_ImageMenu = True
     
@@ -2127,7 +2130,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Process_ImageMenu = True
     
     'Modify animation settings
-    ElseIf Strings.StringsEqual(processID, "Animation settings", True) Then
+    ElseIf Strings.StringsEqual(processID, "Animation options", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormAnimation Else FormAnimation.ApplyAnimationChanges processParameters
         Process_ImageMenu = True
     
@@ -2146,7 +2149,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         ExifTool.RemoveAllMetadata PDImages.GetActiveImage()
         Process_ImageMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Count image colors", True) Then
+    ElseIf Strings.StringsEqual(processID, "Count unique colors", True) Then
         Filters_Miscellaneous.MenuCountColors
         Process_ImageMenu = True
         

@@ -142,7 +142,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim sFile As String
         
         Dim cdFilter As String
-        cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
+        cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
         cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
         
         Dim cdTitle As String
@@ -207,7 +207,7 @@ Public Sub SaveSelectionToFile()
     Dim sFile As String
     
     Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
+    cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
@@ -772,7 +772,7 @@ Public Sub InvertCurrentSelection()
     PDImages.GetActiveImage.MainSelection.LockRelease
     PDImages.GetActiveImage.SetSelectionActive False
         
-    Message "Inverting selection..."
+    Message "Inverting..."
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long

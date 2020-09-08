@@ -85,6 +85,6 @@ Public Sub MenuCountColors()
     Set cTree = Nothing
     
     Message "Total colors: %1", numColorsRGB
-    PDMsgBox "This image contains %1 unique colors (RGB)." & vbCrLf & vbCrLf & "This image contains %2 unique color + opacity values (RGBA).", vbOKOnly Or vbInformation, "Count image colors", numColorsRGB, numColorsRGBA
+    PDMsgBox "This image contains %1 unique colors (RGB)." & vbCrLf & vbCrLf & "This image contains %2 unique color + opacity values (RGBA).", vbOKOnly Or vbInformation, "Count unique colors", numColorsRGB, numColorsRGBA
     
 End Sub

@@ -61,7 +61,7 @@ Begin VB.Form FormMain
          Caption         =   "Open recent"
          Index           =   2
          Begin VB.Menu MnuRecDocs 
-            Caption         =   "Empty"
+            Caption         =   "empty"
             Enabled         =   0   'False
             Index           =   0
          End
@@ -1344,7 +1344,7 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuSharpen 
-            Caption         =   "Unsharp masking..."
+            Caption         =   "Unsharp mask..."
             Index           =   1
          End
       End
@@ -1481,7 +1481,7 @@ Begin VB.Form FormMain
          Caption         =   "Recent macros"
          Index           =   7
          Begin VB.Menu MnuRecentMacros 
-            Caption         =   "Empty"
+            Caption         =   "empty"
             Enabled         =   0   'False
             Index           =   0
          End

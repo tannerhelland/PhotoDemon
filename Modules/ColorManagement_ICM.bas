@@ -869,7 +869,7 @@ Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal
         Set cdFilter = New pdString
         Set cdFilterExtensions = New pdString
         
-        cdFilter.Append g_Language.TranslateMessage("ICC Profile") & " (.icc, .icm)|*.icc,*.icm"
+        cdFilter.Append g_Language.TranslateMessage("ICC profile") & " (.icc, .icm)|*.icc,*.icm"
         cdFilterExtensions.Append "icc"
         
         Dim cdIndex As Long

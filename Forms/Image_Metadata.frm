@@ -1293,14 +1293,14 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
     Select Case srcMetadata.DB_DataTypeStrict
     
         Case MD_int8s
-            strResult = g_Language.TranslateMessage("integers only [-127 to 127]")
+            strResult = g_Language.TranslateMessage("integers only [%1 to %2]", -127, 127)
             If countPresent Then strResult = CStr(countValue) & " x " & strResult
         Case MD_int8u
-            strResult = g_Language.TranslateMessage("integers only [0 to 255]")
+            strResult = g_Language.TranslateMessage("integers only [%1 to %2]", 0, 255)
         Case MD_int16s
-            strResult = g_Language.TranslateMessage("integers only [-32,768 to 32,767]")
+            strResult = g_Language.TranslateMessage("integers only [%1 to %2]", -32768, 32767)
         Case MD_int16u
-            strResult = g_Language.TranslateMessage("integers only [0 to 65,535]")
+            strResult = g_Language.TranslateMessage("integers only [%1 to %2]", 0, 65535)
         Case MD_int32s
             strResult = g_Language.TranslateMessage("integers only")
         Case MD_int32u

@@ -564,7 +564,7 @@ Public Function LoadPDI_SingleLayer(ByRef pdiPath As String, ByRef dstLayer As p
     Exit Function
     
 LoadLayerFromPDIFail:
-    Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  LoadLayerFromPDI() canceled."
+    Message "An error has occurred (#%1 - %2).  PDI load abandoned.", Err.Number, Err.Description
     LoadPDI_SingleLayer = False
     Exit Function
 

@@ -1260,7 +1260,7 @@ Private Sub cmdColorProfilePath_Click()
     
     'Prepare a common dialog filter list with extensions of known profile types
     Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("ICC Profiles") & " (.icc, .icm)|*.icc;*.icm"
+    cdFilter = g_Language.TranslateMessage("ICC profile") & " (.icc, .icm)|*.icc;*.icm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String

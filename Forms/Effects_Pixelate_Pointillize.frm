@@ -120,7 +120,7 @@ Begin VB.Form FormPointillize
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   1508
-      Caption         =   "color variation"
+      Caption         =   "color variance"
       Max             =   100
       Value           =   30
       GradientColorRight=   1703935

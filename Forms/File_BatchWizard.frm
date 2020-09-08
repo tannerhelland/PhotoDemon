@@ -65,7 +65,7 @@ Begin VB.Form FormBatchWizard
       Width           =   2940
       _ExtentX        =   5186
       _ExtentY        =   11827
-      Caption         =   "(text populated at run-time)"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End
@@ -778,7 +778,7 @@ Private Sub chkEnablePreview_Click()
     'If the user is disabling previews, clear the picture box and display a notice
     Else
         Dim strToPrint As String
-        strToPrint = g_Language.TranslateMessage("Previews disabled")
+        strToPrint = g_Language.TranslateMessage("previews disabled")
         picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
         picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
         picPreview.Print strToPrint

@@ -3,7 +3,7 @@ Begin VB.Form dialog_ExportAnimatedGIF
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Animation export options"
+   Caption         =   " Animation options"
    ClientHeight    =   7230
    ClientLeft      =   45
    ClientTop       =   285

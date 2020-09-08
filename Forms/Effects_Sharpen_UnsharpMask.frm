@@ -3,7 +3,7 @@ Begin VB.Form FormUnsharpMask
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Unsharp masking"
+   Caption         =   " Unsharp mask"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

@@ -238,11 +238,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsDepthRGB.AddItem "32-bpp XRGB (X8-R8-G8-B8)", 0
     btsDepthRGB.AddItem "24-bpp RGB (R8-G8-B8)", 1
     btsDepthRGB.AddItem "16-bpp (R5-G6-B5)", 2
-    btsDepthRGB.AddItem "8-bpp (indexed)", 3
+    btsDepthRGB.AddItem "8-bpp", 3
     
-    btsDepthGrayscale.AddItem "8-bpp (256 shades)", 0
-    btsDepthGrayscale.AddItem "4-bpp (16 shades)", 1
-    btsDepthGrayscale.AddItem "1-bpp (monochrome)", 2
+    btsDepthGrayscale.AddItem "8-bpp", 0
+    btsDepthGrayscale.AddItem "4-bpp", 1
+    btsDepthGrayscale.AddItem "1-bpp", 2
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage

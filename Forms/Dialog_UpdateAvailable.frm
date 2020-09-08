@@ -57,7 +57,7 @@ Begin VB.Form FormUpdateNotify
       _ExtentX        =   14340
       _ExtentY        =   503
       Alignment       =   2
-      Caption         =   "(text populated at run-time)"
+      Caption         =   ""
       FontSize        =   11
    End
    Begin PhotoDemon.pdLabel lblUpdate 
@@ -67,6 +67,7 @@ Begin VB.Form FormUpdateNotify
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   1296
+      Caption         =   ""
       FontSize        =   11
       Layout          =   1
    End

@@ -2274,7 +2274,7 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByRef warnin
     m_Opacity = 255
     m_Clipping = 0
     m_Visible = True
-    m_LayerNameANSI = "Background"      'TODO: figure out what this should *actually* be - do PSDs store a name elsewhere?
+    m_LayerNameANSI = "background"      'TODO: figure out what this should *actually* be - do PSDs store a name elsewhere?
     
     'Set channel data to match the parent image
     m_ChannelCount = imgNumChannels

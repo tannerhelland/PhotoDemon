@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.3</langversion>
+<langversion>8.0.6</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -43,7 +43,7 @@
 <!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>ICC Profile</original>
+<original>ICC profile</original>
 <translation>Profilo ICC</translation>
 </phrase>
 
@@ -134,7 +134,7 @@
 </phrase>
 
 <phrase>
-<original>This image does not contain any metadata.</original>
+<original>This image does not contain metadata.</original>
 <translation>Questa immagine non contiene metadati.</translation>
 </phrase>
 
@@ -194,8 +194,8 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation>Sfondo</translation>
+<original>background</original>
+<translation>sfondo</translation>
 </phrase>
 
 <phrase>
@@ -226,8 +226,8 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Inverting the image</original>
-<translation>Inversione dell'immagine</translation>
+<original>Inverting</original>
+<translation>Inversione</translation>
 </phrase>
 
 <phrase>
@@ -238,11 +238,6 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <phrase>
 <original>Calculating film negative values</original>
 <translation>Calcolo dei valori per il negativo della pellicola</translation>
-</phrase>
-
-<phrase>
-<original>Inverting image hue</original>
-<translation>Inversione della tinta nell'immagine</translation>
 </phrase>
 
 <phrase>
@@ -260,7 +255,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation>Auto-amplificazione del colore e dell'illuminazione</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -299,8 +294,8 @@ Questa immagine contiene %2 valori unici di colore + opacità (RGBA).</translati
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Conteggio dei colori nell'immagine</translation>
+<original>Count unique colors</original>
+<translation>Conta i colori unici</translation>
 </phrase>
 
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -461,12 +456,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Si è verificato un errore (#%1 - %2).  Caricamento PDI abbandonato.</translation>
 </phrase>
 
-<phrase>
-<original>An error has occurred (#</original>
-<translation>Si è verificato un errore (#</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -1300,13 +1290,13 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Fit canvas to layer</original>
-<translation>Adatta la tela al livello</translation>
+<original>Fit canvas to active layer</original>
+<translation>Adatta la tela al livello attivo</translation>
 </phrase>
 
 <phrase>
-<original>Fit canvas to all layers</original>
-<translation>Adatta la tela a tutti i livelli</translation>
+<original>Fit canvas around all layers</original>
+<translation>Adatta la tela attorno a tutti i livelli</translation>
 </phrase>
 
 <phrase>
@@ -1360,8 +1350,8 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Animation settings</original>
-<translation>Impostazioni dell'animazione</translation>
+<original>Animation options</original>
+<translation>Opzioni di animazione</translation>
 </phrase>
 
 <phrase>
@@ -2280,8 +2270,8 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
-<original>Empty</original>
-<translation>Svuota</translation>
+<original>empty</original>
+<translation>vuota</translation>
 </phrase>
 
 <phrase>
@@ -2602,11 +2592,6 @@ Per favore, riporta questo bug tramite il menù Guida -> Invia Rapporto sul Bug.
 </phrase>
 
 <phrase>
-<original>File not found.</original>
-<translation>File non trovato.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -2730,13 +2715,13 @@ Descrizione: %2
 </phrase>
 
 <phrase>
-<original>font (face)</original>
-<translation>faccia (faccia)</translation>
+<original>font face</original>
+<translation>faccia del carattere</translation>
 </phrase>
 
 <phrase>
-<original>font (size)</original>
-<translation>Tipo di carattere (dimensione)</translation>
+<original>font size</original>
+<translation>dimensione del carattere</translation>
 </phrase>
 
 <phrase>
@@ -2775,13 +2760,13 @@ Descrizione: %2
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>antialiasing</translation>
+<original>antialiased</original>
+<translation>antialiasato</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing clarity</original>
-<translation>chiarezza antialiasing</translation>
+<original>clarity</original>
+<translation>chiarezza</translation>
 </phrase>
 
 <phrase>
@@ -2817,11 +2802,6 @@ Descrizione: %2
 <phrase>
 <original>outline style</original>
 <translation>stile di contorno</translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>sfondo</translation>
 </phrase>
 
 <phrase>
@@ -2908,7 +2888,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Istruzioni sul rapporto del bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2978,7 +2958,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>PhotoDemon Selection</original>
+<original>PhotoDemon selection</original>
 <translation>Selezione di PhotoDemon</translation>
 </phrase>
 
@@ -3030,16 +3010,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <phrase>
 <original>Export selection as image</original>
 <translation>Selezione Esporta come immagine</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon selection</original>
-<translation>Selezione di PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Inverting selection</original>
-<translation>Inversione della selezione</translation>
 </phrase>
 
 <phrase>
@@ -3107,7 +3077,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Clicca sul primo punto per completare la selezione del poligono</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 41 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4046,18 +4016,8 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Reset</original>
-<translation>Reset</translation>
-</phrase>
-
-<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>Seleziona casualmente le nuove impostazioni per questo strumento.  Questo è utile per studiare come diverse impostazioni influenzano l'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Randomize</original>
-<translation>Casualizza</translation>
 </phrase>
 
 <phrase>
@@ -4066,16 +4026,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Save preset</original>
-<translation>Salva l'impostazione predefinita</translation>
-</phrase>
-
-<phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
 <translation>Le preimpostazioni precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva Preimpostazioni sulla destra.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4160,16 +4115,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>This image does not contain metadata.</original>
-<translation>Questa immagine non contiene metadati.</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>Impostazioni specifiche per JPEG</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4541,16 +4491,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit canvas to active layer</original>
-<translation>Adatta la tela al livello attivo</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas around all layers</original>
-<translation>Adatta la tela attorno a tutti i livelli</translation>
-</phrase>
-
-<phrase>
 <original>Crop to selection</original>
 <translation>Ritaglia la selezione</translation>
 </phrase>
@@ -4608,11 +4548,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadati</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>Conta i colori unici</translation>
 </phrase>
 
 <phrase>
@@ -4996,11 +4931,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Unsharp masking</original>
-<translation>Togli la maschera di sfumatura</translation>
-</phrase>
-
-<phrase>
 <original>Stylize</original>
 <translation>Stilizza</translation>
 </phrase>
@@ -5333,7 +5263,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 186 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6745,8 +6675,8 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>please wait</original>
-<translation>si prega di attendere</translation>
+<original>Please wait</original>
+<translation>Si prega di attendere</translation>
 </phrase>
 
 <!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -7160,16 +7090,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>Drago</original>
-<translation>Drago</translation>
-</phrase>
-
-<phrase>
-<original>Reinhard</original>
-<translation>Reinhard</translation>
-</phrase>
-
-<phrase>
 <original>visible spectrum</original>
 <translation>spettro visibile</translation>
 </phrase>
@@ -7179,7 +7099,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>spettro completo</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -7350,11 +7270,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>(text populated at run-time)</original>
-<translation>(testo popolato durante l'esecuzione)</translation>
-</phrase>
-
-<phrase>
 <original>Keep working</original>
 <translation>Continua a lavorare</translation>
 </phrase>
@@ -7394,7 +7309,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicare l'aggiornamento in un secondo momento</translation>
 </phrase>
 
-<!-- Dialog_UpdateAvailable.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>use merged image</original>
@@ -8230,36 +8145,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>Hilite</original>
-<translation>Evidenzia</translation>
-</phrase>
-
-<phrase>
-<original>Laplacian</original>
-<translation>Laplaciano</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon</original>
-<translation>PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt</original>
-<translation>Prewitt</translation>
-</phrase>
-
-<phrase>
 <original>Roberts cross</original>
 <translation>Roberts incrociato</translation>
 </phrase>
 
-<phrase>
-<original>Sobel</original>
-<translation>Sobel</translation>
-</phrase>
-
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use black background</original>
@@ -8276,7 +8166,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Tracciatura del bordo nell'immagine con un pennello virtuale</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8513,12 +8403,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione di sfocatura della superficie</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>Levigatura bilaterale</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8694,16 +8579,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>color variation</original>
-<translation>variazione di colore</translation>
-</phrase>
-
-<phrase>
 <original>Splattering canvas with paint</original>
 <translation>Tela splattering con vernice</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -9090,16 +8970,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>empty</original>
-<translation>vuota</translation>
-</phrase>
-
-<phrase>
 <original>rays of light</original>
 <translation>raggi di luce</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Batch repair</original>
@@ -9397,8 +9272,8 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 </phrase>
 
 <phrase>
-<original>Previews disabled</original>
-<translation>Anteprima disabilitata</translation>
+<original>previews disabled</original>
+<translation>Anteprime disabilitate</translation>
 </phrase>
 
 <phrase>
@@ -9720,12 +9595,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Tempo stimato rimanente</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
-
-<phrase>
-<original>Animation export options</original>
-<translation>Opzioni di esportazione dell'animazione</translation>
-</phrase>
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -9792,7 +9662,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>tempo limite per livelli non definiti (in ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -10180,23 +10050,18 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>8-bpp (indexed)</original>
-<translation>8-bpp (indicizzato)</translation>
+<original>8-bpp</original>
+<translation>8-bpp</translation>
 </phrase>
 
 <phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-bpp (256 tonalità)</translation>
+<original>4-bpp</original>
+<translation>4-bpp</translation>
 </phrase>
 
 <phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-bpp (16 tonalità)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1-bpp (monocromatico)</translation>
+<original>1-bpp</original>
+<translation>1-bpp</translation>
 </phrase>
 
 <phrase>
@@ -10204,7 +10069,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>%1 opzioni</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10244,21 +10109,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>8-bpp</original>
-<translation>8-bpp</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp</original>
-<translation>4-bpp</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp</original>
-<translation>1-bpp</translation>
-</phrase>
-
-<phrase>
 <original>app - Windows 10</original>
 <translation>app - Windows 10</translation>
 </phrase>
@@ -10293,7 +10143,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>utilizzare le impostazioni del file originale</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10731,12 +10581,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>(Puoi diventare anche tu un mecenate! Clicca qui per saperne di più).</translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<phrase>
-<original>Animation options</original>
-<translation>Opzioni di animazione</translation>
-</phrase>
+<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>animation enabled for this image</original>
@@ -10744,16 +10589,11 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>previews disabled</original>
-<translation>Anteprime disabilitate</translation>
-</phrase>
-
-<phrase>
 <original>waiting</original>
 <translation>in attesa</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 23 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 27 phrases. 25 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -10785,11 +10625,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <phrase>
 <original>generate difference map as a new layer</original>
 <translation>generare la mappa delle differenze come nuovo livello</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing images</original>
-<translation>Analisi delle immagini</translation>
 </phrase>
 
 <phrase>
@@ -10837,7 +10672,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Confronto di immagini</translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -11002,23 +10837,13 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>integers only [-127 to 127]</original>
-<translation>solo numeri interi [-127 a 127]</translation>
+<original>integers only [%1 to %2]</original>
+<translation>solo numeri interi [%1 a %2]/translation>
 </phrase>
 
 <phrase>
-<original>integers only [0 to 255]</original>
-<translation>solo numeri interi [0 a 255]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [-32,768 to 32,767]</original>
-<translation>solo numeri interi [-32.768 a 32.767]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [0 to 65,535]</original>
-<translation>solo numeri interi [0 a 65.535]</translation>
+<original>integers only</original>
+<translation>solo numeri interi</translation>
 </phrase>
 
 <phrase>
@@ -11091,7 +10916,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>elenco di %1, una voce per riga</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11104,38 +10929,28 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Automatic</original>
-<translation>Automatico</translation>
+<original>nearest-neighbor</original>
+<translation>il vicino più vicino</translation>
 </phrase>
 
 <phrase>
-<original>Nearest Neighbor</original>
-<translation>Più vicino</translation>
+<original>bilinear</original>
+<translation>bilineare</translation>
 </phrase>
 
 <phrase>
-<original>Bilinear</original>
-<translation>Bilineare</translation>
+<original>bilinear (optimized for downsizing)</original>
+<translation>bilineare (ottimizzato per il downsizing)</translation>
 </phrase>
 
 <phrase>
-<original>Bilinear (optimized for downsizing)</original>
-<translation>Bilineare (ottimizzato per il downsizing)</translation>
+<original>bicubic</original>
+<translation>bicubico</translation>
 </phrase>
 
 <phrase>
-<original>Bicubic</original>
-<translation>Bicubico</translation>
-</phrase>
-
-<phrase>
-<original>Bicubic (optimized for downsizing)</original>
-<translation>Bicubico (ottimizzato per il downsizing)</translation>
-</phrase>
-
-<phrase>
-<original>Sinc (Lanczos 3-lobe)</original>
-<translation>Sinc (Lanczos 3-lobe)</translation>
+<original>bicubic (optimized for downsizing)</original>
+<translation>bicubic (ottimizzato per il downsizing)</translation>
 </phrase>
 
 <phrase>
@@ -11173,7 +10988,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Ridimensionamento del livello</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11196,21 +11011,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>il vicino più vicino</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>bilineare</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>bicubico</translation>
-</phrase>
-
-<phrase>
 <original>fill with color</original>
 <translation>riempire di colore</translation>
 </phrase>
@@ -11225,7 +11025,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Ruota il livello</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -11452,32 +11252,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Opzioni della selezione</translation>
 </phrase>
 
-<phrase>
-<original>grow radius</original>
-<translation>raggio di crescita</translation>
-</phrase>
-
-<phrase>
-<original>shrink radius</original>
-<translation>raggio di restringimento</translation>
-</phrase>
-
-<phrase>
-<original>border radius</original>
-<translation>bordo del raggio</translation>
-</phrase>
-
-<phrase>
-<original>feather radius</original>
-<translation>raggio di sfumatura</translation>
-</phrase>
-
-<phrase>
-<original>sharpen radius</original>
-<translation>affila il raggio</translation>
-</phrase>
-
-<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>version %1</original>
@@ -11919,11 +11694,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>antialiased</original>
-<translation>antialiasato</translation>
-</phrase>
-
-<phrase>
 <original>area</original>
 <translation>area</translation>
 </phrase>
@@ -11978,7 +11748,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Questa opzione controlla come i pixel vengono analizzati quando vengono aggiunti al riempimento.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>linear</original>
@@ -12119,12 +11889,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Rendere permanenti le trasformazioni dello livello di corrente (dimensione, angolo e taglio).  Questa azione non è mai richiesta, ma se la resa del viewport è lenta, può migliorare le prestazioni.</translation>
 </phrase>
 
-<phrase>
-<original>Nearest neighbor</original>
-<translation>Vicino più vicino</translation>
-</phrase>
-
-<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -12278,23 +12043,13 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <phrase>
-<original>font face</original>
-<translation>faccia del carattere</translation>
-</phrase>
-
-<phrase>
-<original>font size</original>
-<translation>dimensione del carattere</translation>
-</phrase>
-
-<phrase>
 <original>font style</original>
 <translation>stile font</translation>
 </phrase>
 
 <phrase>
-<original>clarity</original>
-<translation>chiarezza</translation>
+<original>antialiasing</original>
+<translation>antialiasing</translation>
 </phrase>
 
 <phrase>
@@ -12332,7 +12087,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Clicca qui per convertire questo livello in testo di base.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12857,7 +12612,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>salvato automaticamente su</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 128 phrases. 53 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 127 phrases. 52 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -12872,11 +12627,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>last action</original>
 <translation>ultima azione</translation>
-</phrase>
-
-<phrase>
-<original>* current image state in the main window</original>
-<translation>* stato attuale dell'immagine nella finestra principale</translation>
 </phrase>
 
 <phrase>
@@ -12899,7 +12649,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>La macro finale conterrà %1 azione(i).</translation>
 </phrase>
 
-<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon Options</original>
@@ -13174,11 +12924,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>Preferences updated.</original>
 <translation>Preferenze aggiornate.</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>Profili ICC</translation>
 </phrase>
 
 <phrase>
@@ -13573,7 +13318,7 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 <translation>Questa nuova posizione temporanea della cartella non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 48 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13693,16 +13438,11 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 </phrase>
 
 <phrase>
-<original>Please wait</original>
-<translation>Si prega di attendere</translation>
-</phrase>
-
-<phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
 <translation>Registrazione - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>recording settings</original>
@@ -13748,10 +13488,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2607</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2493 are duplicates, so only 2607 unique phrases have been written to file. -->
-<!-- These 2607 phrases contain approximately 12018 total words. -->
+<!-- As of this build, PhotoDemon contains 5080 phrases. -->
+<!-- 2526 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11902 total words. -->
 
 </pdData>

@@ -602,26 +602,6 @@ Public Sub SetLayerVisibility_AllLayers(Optional ByVal isLayerVisible As Boolean
     
 End Sub
 
-'Set layer visibility.  Note that the layer's visibility state must be explicitly noted, e.g. there is no "toggle" option.
-Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisibility As Boolean, Optional ByVal alsoRedrawViewport As Boolean = False)
-    
-    'Store the new visibility setting in the parent pdImage object
-    PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).SetLayerVisibility layerVisibility
-    
-    'Notify the parent image of the change
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, dLayerIndex
-    
-    'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.NotifyLayerChange PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).GetLayerID
-    
-    'Synchronize the interface to the new image
-    SyncInterfaceToCurrentImage
-    
-    'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
-End Sub
-
 'Make only one layer visible; all others will be hidden
 Public Sub MakeJustOneLayerHidden(ByVal dLayerIndex As Long)
     

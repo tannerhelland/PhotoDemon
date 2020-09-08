@@ -481,9 +481,9 @@ Private Sub Form_Load()
     
     cboLayerResizeQuality.SetAutomaticRedraws False
     cboLayerResizeQuality.Clear
-    cboLayerResizeQuality.AddItem "Nearest neighbor", 0
-    cboLayerResizeQuality.AddItem "Bilinear", 1
-    cboLayerResizeQuality.AddItem "Bicubic", 2
+    cboLayerResizeQuality.AddItem "nearest-neighbor", 0
+    cboLayerResizeQuality.AddItem "bilinear", 1
+    cboLayerResizeQuality.AddItem "bicubic", 2
     cboLayerResizeQuality.SetAutomaticRedraws True
     cboLayerResizeQuality.ListIndex = 1
     

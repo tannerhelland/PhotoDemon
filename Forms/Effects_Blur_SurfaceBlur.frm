@@ -179,7 +179,7 @@ Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toP
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smoothing", , GetLocalParamString(), UNDO_Layer
+    Process "Surface blur", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

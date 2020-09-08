@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.0.2154</langversion>
+<langversion>8.2.53</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -43,7 +43,7 @@
 <!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>ICC Profile</original>
+<original>ICC profile</original>
 <translation>ICC配置文件</translation>
 </phrase>
 
@@ -134,8 +134,8 @@
 </phrase>
 
 <phrase>
-<original>This image does not contain any metadata.</original>
-<translation>该映像不包含任何元数据。</translation>
+<original>This image does not contain metadata.</original>
+<translation>此图像不包含元数据。</translation>
 </phrase>
 
 <!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -193,8 +193,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation>背景</translation>
+<original>background</original>
+<translation>背景：</translation>
 </phrase>
 
 <phrase>
@@ -225,7 +225,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Inverting the image</original>
+<original>Inverting</original>
 <translation>反转图像</translation>
 </phrase>
 
@@ -237,11 +237,6 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <phrase>
 <original>Calculating film negative values</original>
 <translation>计算负值</translation>
-</phrase>
-
-<phrase>
-<original>Inverting image hue</original>
-<translation>反转图像的色调</translation>
 </phrase>
 
 <phrase>
@@ -259,7 +254,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>自动增强色彩和照明</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -297,8 +292,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>图像的颜色数</translation>
+<original>Count unique colors</original>
+<translation>统计特别颜色</translation>
 </phrase>
 
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -459,12 +454,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>发生一个错误（#%1 - 2%）。 取消打开PDI</translation>
 </phrase>
 
-<phrase>
-<original>An error has occurred (#</original>
-<translation>已发生错误（#</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -1149,7 +1139,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Paste to new image</original>
-<translation></translation>
+<translation>粘贴到新图像</translation>
 </phrase>
 
 <phrase>
@@ -1249,22 +1239,22 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Cut merged</original>
-<translation></translation>
+<translation>剪切合并</translation>
 </phrase>
 
 <phrase>
 <original>Copy merged</original>
-<translation></translation>
+<translation>复制合并</translation>
 </phrase>
 
 <phrase>
 <original>Paste</original>
-<translation></translation>
+<translation>粘贴</translation>
 </phrase>
 
 <phrase>
 <original>Paste to cursor</original>
-<translation></translation>
+<translation>粘贴为光标</translation>
 </phrase>
 
 <phrase>
@@ -1293,13 +1283,13 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Fit canvas to layer</original>
-<translation>适合画布到层</translation>
+<original>Fit canvas to active layer</original>
+<translation>画布适合到当前层</translation>
 </phrase>
 
 <phrase>
-<original>Fit canvas to all layers</original>
-<translation>画布适合到所有层</translation>
+<original>Fit canvas around all layers</original>
+<translation>适合画布到所有层</translation>
 </phrase>
 
 <phrase>
@@ -1353,8 +1343,8 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Animation settings</original>
-<translation></translation>
+<original>Animation options</original>
+<translation>动画选项</translation>
 </phrase>
 
 <phrase>
@@ -1394,12 +1384,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Layer via copy</original>
-<translation></translation>
+<translation>通过复制的图层;</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation></translation>
+<translation>通过剪切的图层</translation>
 </phrase>
 
 <phrase>
@@ -1959,7 +1949,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Poke</original>
-<translation>拨开</translation>
+<translation>Poke</translation>
 </phrase>
 
 <phrase>
@@ -2273,7 +2263,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Empty</original>
+<original>empty</original>
 <translation>空</translation>
 </phrase>
 
@@ -2595,11 +2585,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>File not found.</original>
-<translation>文件未找到</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -2724,13 +2709,13 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>font (face)</original>
-<translation>字体(样式)</translation>
+<original>font face</original>
+<translation>字型</translation>
 </phrase>
 
 <phrase>
-<original>font (size)</original>
-<translation>字体(大小)</translation>
+<original>font size</original>
+<translation>字体大小</translation>
 </phrase>
 
 <phrase>
@@ -2769,13 +2754,13 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>抗锯齿</translation>
+<original>antialiased</original>
+<translation>反锯齿</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing clarity</original>
-<translation>抗锯齿清晰</translation>
+<original>clarity</original>
+<translation>清晰</translation>
 </phrase>
 
 <phrase>
@@ -2811,11 +2796,6 @@ Description: %2
 <phrase>
 <original>outline style</original>
 <translation>外形风格</translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>背景：</translation>
 </phrase>
 
 <phrase>
@@ -2902,11 +2882,11 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>错误报告的说明</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
-<translation>正在保有 %1</translation>
+<translation>正在保有 %1 </translation>
 </phrase>
 
 <phrase>
@@ -2929,7 +2909,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Saving %1 image</original>
-<translation>正在保存图像 %1</translation>
+<translation>正在保存图像 %1 </translation>
 </phrase>
 
 <phrase>
@@ -2972,7 +2952,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>PhotoDemon Selection</original>
+<original>PhotoDemon selection</original>
 <translation>PhotoDemon选择</translation>
 </phrase>
 
@@ -3024,16 +3004,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <phrase>
 <original>Export selection as image</original>
 <translation>图像输出选择</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon selection</original>
-<translation>PhotoDemon选择</translation>
-</phrase>
-
-<phrase>
-<original>Inverting selection</original>
-<translation>反向选择</translation>
 </phrase>
 
 <phrase>
@@ -3101,7 +3071,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>点击第一个点完成多边形选择</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 41 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3785,7 +3755,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Open location in Explorer</original>
-<translation>在浏览器中打开位置</translation>
+<translation>在资源管理器中打开位置</translation>
 </phrase>
 
 <phrase>
@@ -4038,18 +4008,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Reset</original>
-<translation>重置</translation>
-</phrase>
-
-<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>随机选择该工具的新的设置。这有助于探索如何不同的设置会影响图像。</translation>
-</phrase>
-
-<phrase>
-<original>Randomize</original>
-<translation>随机</translation>
 </phrase>
 
 <phrase>
@@ -4058,16 +4018,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Save preset</original>
-<translation>保存预置</translation>
-</phrase>
-
-<phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
 <translation>以前保存的预设可以选择在这里。你可以保存当前设置为一个新的预设通过单击“保存预设右边的按钮。</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4152,16 +4107,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>This image does not contain metadata.</original>
-<translation>此图像不包含元数据。</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG特定设置</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4170,12 +4120,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation></translation>
+<translation>当前帧： %1 / %2</translation>
 </phrase>
 
 <phrase>
 <original>%1 of %2</original>
-<translation></translation>
+<translation>%1 / %2</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4520,7 +4470,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Duplicate</original>
-<translation>副本</translation>
+<translation>重复</translation>
 </phrase>
 
 <phrase>
@@ -4531,16 +4481,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Content-aware resize</original>
 <translation>内容识别调整</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to active layer</original>
-<translation>画布适合到当前层</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas around all layers</original>
-<translation>适合画布到所有层</translation>
 </phrase>
 
 <phrase>
@@ -4590,7 +4530,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animation</original>
-<translation></translation>
+<translation>动画</translation>
 </phrase>
 
 <phrase>
@@ -4601,11 +4541,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>元数据</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>统计特别颜色</translation>
 </phrase>
 
 <phrase>
@@ -4840,7 +4775,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Adjustments</original>
-<translation>调整</translation>
+<translation>图像调整</translation>
 </phrase>
 
 <phrase>
@@ -4905,7 +4840,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Effects</original>
-<translation>效果</translation>
+<translation>特效</translation>
 </phrase>
 
 <phrase>
@@ -4986,11 +4921,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Render</original>
 <translation>渲染</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp masking</original>
-<translation>反锐化掩模</translation>
 </phrase>
 
 <phrase>
@@ -5100,12 +5030,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>View</original>
-<translation>显示</translation>
+<translation>视图</translation>
 </phrase>
 
 <phrase>
 <original>Fit image on screen</original>
-<translation>填充图像到屏幕大小</translation>
+<translation>适应图像到屏幕</translation>
 </phrase>
 
 <phrase>
@@ -5325,7 +5255,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 186 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6721,12 +6651,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Yes</original>
-<translation>是</translation>
+<translation>Yes</translation>
 </phrase>
 
 <phrase>
 <original>No</original>
-<translation>否</translation>
+<translation>No</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -6737,8 +6667,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>please wait</original>
-<translation>请稍等</translation>
+<original>Please wait</original>
+<translation>请稍候</translation>
 </phrase>
 
 <!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -7152,16 +7082,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Drago</original>
-<translation>反色</translation>
-</phrase>
-
-<phrase>
-<original>Reinhard</original>
-<translation>混合曝光</translation>
-</phrase>
-
-<phrase>
 <original>visible spectrum</original>
 <translation>可见光谱</translation>
 </phrase>
@@ -7171,7 +7091,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>全谱</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -7343,11 +7263,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>(text populated at run-time)</original>
-<translation>（文字填充在运行时）</translation>
-</phrase>
-
-<phrase>
 <original>Keep working</original>
 <translation>保持工作</translation>
 </phrase>
@@ -7387,7 +7302,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>稍后更新</translation>
 </phrase>
 
-<!-- Dialog_UpdateAvailable.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>use merged image</original>
@@ -8223,36 +8138,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Hilite</original>
-<translation>Hilite</translation>
-</phrase>
-
-<phrase>
-<original>Laplacian</original>
-<translation>拉普拉斯</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon</original>
-<translation>PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt</original>
-<translation>普鲁伊特</translation>
-</phrase>
-
-<phrase>
 <original>Roberts cross</original>
 <translation>罗伯茨交叉</translation>
 </phrase>
 
-<phrase>
-<original>Sobel</original>
-<translation>索贝尔</translation>
-</phrase>
-
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use black background</original>
@@ -8269,7 +8159,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>跟踪图像与虚拟的画笔边缘</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8506,12 +8396,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>应用表面模糊</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>双边滤波算法</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8687,16 +8572,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>color variation</original>
-<translation>颜色变化</translation>
-</phrase>
-
-<phrase>
 <original>Splattering canvas with paint</original>
 <translation>用油漆喷满画布</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -9083,16 +8963,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>empty</original>
-<translation>空</translation>
-</phrase>
-
-<phrase>
 <original>rays of light</original>
 <translation>光线</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Batch repair</original>
@@ -9196,7 +9071,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Previous</original>
-<translation>上一步</translation>
+<translation>上一个</translation>
 </phrase>
 
 <phrase>
@@ -9385,8 +9260,8 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>Previews disabled</original>
-<translation>关闭预览</translation>
+<original>previews disabled</original>
+<translation>预览已禁用</translation>
 </phrase>
 
 <phrase>
@@ -9707,12 +9582,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
-
-<phrase>
-<original>Animation export options</original>
-<translation>动画导出选项</translation>
-</phrase>
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -9779,7 +9649,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>未定义图层的帧时间（以毫秒为单位）</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -10165,23 +10035,18 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>8-bpp (indexed)</original>
-<translation>8位色（索引）</translation>
+<original>8-bpp</original>
+<translation>8-bpp</translation>
 </phrase>
 
 <phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8位色（256级）</translation>
+<original>4-bpp</original>
+<translation>4-bpp</translation>
 </phrase>
 
 <phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4位色（16级）</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1位色（黑白）</translation>
+<original>1-bpp</original>
+<translation>1-bpp</translation>
 </phrase>
 
 <phrase>
@@ -10189,7 +10054,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>%1 选项</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10229,21 +10094,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>8-bpp</original>
-<translation>8-bpp</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp</original>
-<translation>4-bpp</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp</original>
-<translation>1-bpp</translation>
-</phrase>
-
-<phrase>
 <original>app - Windows 10</original>
 <translation>app - Windows 10</translation>
 </phrase>
@@ -10278,7 +10128,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>使用原始文件设置</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10718,29 +10568,19 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>（您也可以成为赞助人！点击此处了解更多信息。）</translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<phrase>
-<original>Animation options</original>
-<translation></translation>
-</phrase>
+<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>previews disabled</original>
-<translation></translation>
+<translation>已为此图像启用动画</translation>
 </phrase>
 
 <phrase>
 <original>waiting</original>
-<translation></translation>
+<translation>等待</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 23 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 27 phrases. 25 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -10772,11 +10612,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>generate difference map as a new layer</original>
 <translation>生成差异图作为新图层</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing images</original>
-<translation>分析图像</translation>
 </phrase>
 
 <phrase>
@@ -10816,7 +10651,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>As a rough estimate, these images are %1% similar.</original>
-<translation>据估算，这些图像相似度为 %1%</translation>
+<translation>据估算，这些图像相似度为 %1% </translation>
 </phrase>
 
 <phrase>
@@ -10824,7 +10659,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>图像比较</translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -10989,23 +10824,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>integers only [-127 to 127]</original>
-<translation>只有整数[-127到127]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [0 to 255]</original>
-<translation>只有整数[0至255]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [-32,768 to 32,767]</original>
-<translation>只有整数[-32,768到32,767]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [0 to 65,535]</original>
-<translation>只有整数[0到65,535]</translation>
+<original>integers only [%1 to %2]</original>
+<translation>只有整数[%1到%2]</translation>
 </phrase>
 
 <phrase>
@@ -11078,7 +10898,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>每行 %1，一个条目列表</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11091,38 +10911,28 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Automatic</original>
-<translation>自动</translation>
+<original>nearest-neighbor</original>
+<translation>近邻取样</translation>
 </phrase>
 
 <phrase>
-<original>Nearest Neighbor</original>
-<translation>Nearest Neighbor</translation>
-</phrase>
-
-<phrase>
-<original>Bilinear</original>
+<original>bilinear</original>
 <translation>双线性</translation>
 </phrase>
 
 <phrase>
-<original>Bilinear (optimized for downsizing)</original>
+<original>bilinear (optimized for downsizing)</original>
 <translation>双线性（针对缩小尺寸进行了优化）</translation>
 </phrase>
 
 <phrase>
-<original>Bicubic</original>
-<translation>双立方</translation>
+<original>bicubic</original>
+<translation>双三次插值</translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (optimized for downsizing)</original>
+<original>bicubic (optimized for downsizing)</original>
 <translation>双立方体（针对缩小尺寸进行了优化）</translation>
-</phrase>
-
-<phrase>
-<original>Sinc (Lanczos 3-lobe)</original>
-<translation>Sinc (Lanczos 3-lobe)</translation>
 </phrase>
 
 <phrase>
@@ -11160,7 +10970,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>调整层大小</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11183,21 +10993,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>近邻取样</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>双线性</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>双三次插值</translation>
-</phrase>
-
-<phrase>
 <original>fill with color</original>
 <translation>填充颜色</translation>
 </phrase>
@@ -11212,7 +11007,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>旋转层</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -11439,32 +11234,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>选择选项</translation>
 </phrase>
 
-<phrase>
-<original>grow radius</original>
-<translation>增长半径</translation>
-</phrase>
-
-<phrase>
-<original>shrink radius</original>
-<translation>缩小半径</translation>
-</phrase>
-
-<phrase>
-<original>border radius</original>
-<translation>边界半径</translation>
-</phrase>
-
-<phrase>
-<original>feather radius</original>
-<translation>羽化半径</translation>
-</phrase>
-
-<phrase>
-<original>sharpen radius</original>
-<translation>锐化半径</translation>
-</phrase>
-
-<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>version %1</original>
@@ -11858,7 +11628,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>after clicking, return to previous tool</original>
-<translation></translation>
+<translation>单击后，返回到上一个工具</translation>
 </phrase>
 
 <phrase>
@@ -11903,11 +11673,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>fill source</original>
 <translation>补源</translation>
-</phrase>
-
-<phrase>
-<original>antialiased</original>
-<translation>反锯齿</translation>
 </phrase>
 
 <phrase>
@@ -11965,7 +11730,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>此选项控制添加像素到填充时如何分析像素。</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>linear</original>
@@ -12106,12 +11871,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>使当前图层变换（大小，角度和剪切）永久性的。这个动作是从来没有必需的，但如果视渲染是呆滞，它可以提高性能。</translation>
 </phrase>
 
-<phrase>
-<original>Nearest neighbor</original>
-<translation>邻近</translation>
-</phrase>
-
-<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -12265,23 +12025,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <phrase>
-<original>font face</original>
-<translation>字型</translation>
-</phrase>
-
-<phrase>
-<original>font size</original>
-<translation>字体大小</translation>
-</phrase>
-
-<phrase>
 <original>font style</original>
 <translation>字体样式</translation>
 </phrase>
 
 <phrase>
-<original>clarity</original>
-<translation>清晰</translation>
+<original>antialiasing</original>
+<translation>抗锯齿</translation>
 </phrase>
 
 <phrase>
@@ -12319,7 +12069,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>单击此处将此层转换为基本文本。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12540,7 +12290,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>use an online service to estimate missing translations</original>
-<translation></translation>
+<translation>使用在线服务来自动翻译缺失的词语</translation>
 </phrase>
 
 <phrase>
@@ -12699,7 +12449,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Save and Exit</original>
-<translation>保存退出</translation>
+<translation>保存并退出</translation>
 </phrase>
 
 <phrase>
@@ -12842,7 +12592,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>自动保存于</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 128 phrases. 53 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 127 phrases. 52 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -12857,11 +12607,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>last action</original>
 <translation>最后一个功能</translation>
-</phrase>
-
-<phrase>
-<original>* current image state in the main window</original>
-<translation>*主窗口中的当前图像状态</translation>
 </phrase>
 
 <phrase>
@@ -12884,7 +12629,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>您的最终宏将包含 %1 个操作。</translation>
 </phrase>
 
-<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon Options</original>
@@ -13159,11 +12904,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>Preferences updated.</original>
 <translation>更新选项。</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>ICC配置文件</translation>
 </phrase>
 
 <phrase>
@@ -13556,7 +13296,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 48 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13676,16 +13416,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>Please wait</original>
-<translation>请稍候</translation>
-</phrase>
-
-<phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
 <translation>正在录制 - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>recording settings</original>
@@ -13731,10 +13466,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2607</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2493 are duplicates, so only 2607 unique phrases have been written to file. -->
-<!-- These 2607 phrases contain approximately 12018 total words. -->
+<!-- As of this build, PhotoDemon contains 5080 phrases. -->
+<!-- 2526 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11902 total words. -->
 
 </pdData>

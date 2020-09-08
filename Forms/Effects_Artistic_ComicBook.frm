@@ -175,7 +175,7 @@ Public Sub fxComicBook(ByVal effectParams As String, Optional ByVal toPreview As
     'We now need to obtain the underlying color-smudged version of the source image
     If (colorSmudge > 0) Then
         
-        'Use PD's excellent bilateral smoothing function to handle color smudging.
+        'Use PD's excellent bilateral filter to handle color smudging.
         Dim i As Long
         For i = 0 To colorStrength
             

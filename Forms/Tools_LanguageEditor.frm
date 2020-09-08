@@ -63,7 +63,7 @@ Begin VB.Form FormLanguageEditor
       Width           =   3135
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "(text populated at run-time)"
+      Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
    End

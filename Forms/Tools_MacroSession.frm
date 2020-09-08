@@ -77,7 +77,7 @@ Begin VB.Form FormMacroSession
       Width           =   8895
       _ExtentX        =   15690
       _ExtentY        =   450
-      Caption         =   "* current image state in the main window"
+      Caption         =   "* current image state"
       FontItalic      =   -1  'True
    End
 End

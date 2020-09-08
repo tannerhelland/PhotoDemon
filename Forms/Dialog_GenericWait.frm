@@ -45,7 +45,7 @@ Begin VB.Form FormWait
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   2
-      Caption         =   "please wait"
+      Caption         =   "Please wait"
       FontBold        =   -1  'True
       FontSize        =   12
       ForeColor       =   9437184

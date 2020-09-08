@@ -468,7 +468,7 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String) As B
     
         'Assign the newly created DIB to the layer object
         tmpDIB.SetInitialAlphaPremultiplicationState True
-        newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Background"), tmpDIB
+        newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("background"), tmpDIB
         
         'Update the pdImage container to be the same size as its (newly created) base layer
         newImage.UpdateSize

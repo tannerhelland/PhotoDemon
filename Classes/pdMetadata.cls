@@ -704,7 +704,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
 
     'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
     ' a single "ICC Profile" group.
-    If InStr(1, groupNameCheck, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC Profile")
+    If InStr(1, groupNameCheck, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC profile")
     
     'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  We'll display names for a few of the most
     ' common XMP groups, while everything else gets condensed under an "XMP (misc)" heading.

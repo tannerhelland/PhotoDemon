@@ -160,7 +160,7 @@ Private m_OpenImageIDs As pdStack
 'Compare two arbitrary layers from two arbitrary images.  All settings must be encoded in a param string.
 Public Sub CompareImages(ByRef listOfParameters As String)
     
-    Message "Analyzing images..."
+    Message "Analyzing image..."
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize

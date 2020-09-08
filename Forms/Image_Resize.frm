@@ -208,18 +208,18 @@ Private Sub Form_Load()
     'Populate the dropdowns with all available resampling algorithms.
     cboResample.SetAutomaticRedraws False
     cboResample.Clear
-    cboResample.AddItem "Automatic"
-    cboResample.AddItem "Nearest Neighbor"
-    cboResample.AddItem "Bilinear"
-    cboResample.AddItem "Bilinear (optimized for downsizing)"
-    cboResample.AddItem "Bicubic"
-    cboResample.AddItem "Bicubic (optimized for downsizing)"
+    cboResample.AddItem "automatic"
+    cboResample.AddItem "nearest-neighbor"
+    cboResample.AddItem "bilinear"
+    cboResample.AddItem "bilinear (optimized for downsizing)"
+    cboResample.AddItem "bicubic"
+    cboResample.AddItem "bicubic (optimized for downsizing)"
     
     'Some resample algorithms currently lean on the FreeImage library
     If ImageFormats.IsFreeImageEnabled() Then
         cboResample.AddItem "Mitchell-Netravali"
         cboResample.AddItem "Catmull-Rom"
-        cboResample.AddItem "Sinc (Lanczos 3-lobe)"
+        cboResample.AddItem "Sinc (Lanczos)"
     End If
     cboResample.ListIndex = 0
     cboResample.SetAutomaticRedraws True, True

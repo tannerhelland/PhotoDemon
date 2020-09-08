@@ -101,23 +101,23 @@ Public Sub ShowDialog(ByVal typeOfDialog As PD_SelectionDialog)
     
         Case pdsd_Grow
             titleText = g_Language.TranslateMessage("Grow selection")
-            sliderText = g_Language.TranslateMessage("grow radius")
+            sliderText = g_Language.TranslateMessage("radius")
         
         Case pdsd_Shrink
             titleText = g_Language.TranslateMessage("Shrink selection")
-            sliderText = g_Language.TranslateMessage("shrink radius")
+            sliderText = g_Language.TranslateMessage("radius")
         
         Case pdsd_Border
             titleText = g_Language.TranslateMessage("Border selection")
-            sliderText = g_Language.TranslateMessage("border radius")
+            sliderText = g_Language.TranslateMessage("radius")
         
         Case pdsd_Feather
             titleText = g_Language.TranslateMessage("Feather selection")
-            sliderText = g_Language.TranslateMessage("feather radius")
+            sliderText = g_Language.TranslateMessage("radius")
         
         Case pdsd_Sharpen
             titleText = g_Language.TranslateMessage("Sharpen selection")
-            sliderText = g_Language.TranslateMessage("sharpen radius")
+            sliderText = g_Language.TranslateMessage("radius")
     
     End Select
     

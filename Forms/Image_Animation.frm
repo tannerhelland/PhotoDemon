@@ -284,7 +284,7 @@ Private Sub cmdBar_OKClick()
     m_Timer.StopTimer
     
     'Process changes
-    Process "Animation settings", , GetLocalParamString(), UNDO_Image_VectorSafe
+    Process "Animation options", , GetLocalParamString(), UNDO_Image_VectorSafe
     
 End Sub
 

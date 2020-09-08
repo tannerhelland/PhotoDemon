@@ -562,7 +562,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     ' (as the image size may have changed).
     If (targetLayerIndex = -1) Then
         
-        'For non-destructive crops, we can't use "Fit Canvas to All Layers", as it will resize
+        'For non-destructive crops, we can't use "Fit canvas around all layers", as it will resize
         ' the image boundaries to encompass the selection we just cropped!  As such, we have to
         ' manually apply the new boundaries, then manually redraw the viewport.
         If applyNonDestructively Then

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.306</langversion>
+<langversion>1.0.308</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -43,7 +43,7 @@
 <!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
-<original>ICC Profile</original>
+<original>ICC profile</original>
 <translation>ICC профил</translation>
 </phrase>
 
@@ -134,8 +134,8 @@
 </phrase>
 
 <phrase>
-<original>This image does not contain any metadata.</original>
-<translation>Оваа слика не содржи никакви метаподатоци.</translation>
+<original>This image does not contain metadata.</original>
+<translation>Оваа слика не содржи метаподатоци.</translation>
 </phrase>
 
 <!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -193,7 +193,7 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Background</original>
+<original>background</original>
 <translation>позадина</translation>
 </phrase>
 
@@ -225,8 +225,8 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Inverting the image</original>
-<translation>Инверзија на сликата</translation>
+<original>Inverting</original>
+<translation>Инверзија</translation>
 </phrase>
 
 <phrase>
@@ -237,11 +237,6 @@ If проблемот продолжи, ве молиме да го пријав
 <phrase>
 <original>Calculating film negative values</original>
 <translation>Пресметување филм негативни вредности</translation>
-</phrase>
-
-<phrase>
-<original>Inverting image hue</original>
-<translation>Превртувањето на боја на сликата</translation>
 </phrase>
 
 <phrase>
@@ -259,7 +254,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation></translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -296,8 +291,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Count image colors</original>
-<translation>Грофот боите на сликата</translation>
+<original>Count unique colors</original>
+<translation>Грофот уникатни бои</translation>
 </phrase>
 
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -458,12 +453,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Се појави грешка ( %1 - 2%). ПИО товар напуштени.</translation>
 </phrase>
 
-<phrase>
-<original>An error has occurred (#</original>
-<translation>Се појави грешка (#</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -1297,13 +1287,13 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Fit canvas to layer</original>
-<translation>Fit платно слој</translation>
+<original>Fit canvas to active layer</original>
+<translation>Fit платно активен слој</translation>
 </phrase>
 
 <phrase>
-<original>Fit canvas to all layers</original>
-<translation>Fit платно на сите слоеви</translation>
+<original>Fit canvas around all layers</original>
+<translation>Fit платно низ сите слоеви</translation>
 </phrase>
 
 <phrase>
@@ -1357,8 +1347,8 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Animation settings</original>
-<translation></translation>
+<original>Animation options</original>
+<translation>Опции за анимација</translation>
 </phrase>
 
 <phrase>
@@ -2277,8 +2267,8 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Empty</original>
-<translation>Испразни</translation>
+<original>empty</original>
+<translation>празна</translation>
 </phrase>
 
 <phrase>
@@ -2599,11 +2589,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>File not found.</original>
-<translation>Документот не е пронајден.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -2728,13 +2713,13 @@ Error број %
 </phrase>
 
 <phrase>
-<original>font (face)</original>
-<translation>фонт (лице)</translation>
+<original>font face</original>
+<translation>фонт лице</translation>
 </phrase>
 
 <phrase>
-<original>font (size)</original>
-<translation>големина на фонтот)</translation>
+<original>font size</original>
+<translation>големина на фонтот</translation>
 </phrase>
 
 <phrase>
@@ -2773,13 +2758,13 @@ Error број %
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>анти aliasing</translation>
+<original>antialiased</original>
+<translation>antialiased</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing clarity</original>
-<translation>анти јасност aliasing</translation>
+<original>clarity</original>
+<translation>јасност</translation>
 </phrase>
 
 <phrase>
@@ -2815,11 +2800,6 @@ Error број %
 <phrase>
 <original>outline style</original>
 <translation>преглед стил</translation>
-</phrase>
-
-<phrase>
-<original>background</original>
-<translation>позадина</translation>
 </phrase>
 
 <phrase>
@@ -2904,7 +2884,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2974,8 +2954,8 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>PhotoDemon Selection</original>
-<translation>Избор PhotoDemon</translation>
+<original>PhotoDemon selection</original>
+<translation>избор PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -3026,16 +3006,6 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <phrase>
 <original>Export selection as image</original>
 <translation>избор на извозот, како на сликата</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon selection</original>
-<translation>избор PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Inverting selection</original>
-<translation>превртувањето на избор</translation>
 </phrase>
 
 <phrase>
@@ -3103,7 +3073,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 41 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4042,18 +4012,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Reset</original>
-<translation>Ресетирај</translation>
-</phrase>
-
-<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>Случајно изберете новите поставувања за оваа алатка. Ова е корисно за истражување на тоа како различни поставувања ќе имаат ефект на сликата.</translation>
-</phrase>
-
-<phrase>
-<original>Randomize</original>
-<translation>randomize</translation>
 </phrase>
 
 <phrase>
@@ -4062,16 +4022,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Save preset</original>
-<translation>Зачувај дефиниција</translation>
-</phrase>
-
-<phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
 <translation>Претходно зачувана мемории може да биде избран тука. Можете да ги снимите тековните поставувања како нова дефиниција со кликнување на копчето Зачувај Дефинирајте на десната страна.</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCommandBar.ctl contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4156,16 +4111,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>This image does not contain metadata.</original>
-<translation>Оваа слика не содржи метаподатоци.</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG-специфични подесувања</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -4537,16 +4487,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit canvas to active layer</original>
-<translation>Fit платно активен слој</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas around all layers</original>
-<translation>Fit платно низ сите слоеви</translation>
-</phrase>
-
-<phrase>
 <original>Crop to selection</original>
 <translation>Култура за избор</translation>
 </phrase>
@@ -4604,11 +4544,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>метаподатоци</translation>
-</phrase>
-
-<phrase>
-<original>Count unique colors</original>
-<translation>Грофот уникатни бои</translation>
 </phrase>
 
 <phrase>
@@ -4992,11 +4927,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Unsharp masking</original>
-<translation>Unsharp маскирање</translation>
-</phrase>
-
-<phrase>
 <original>Stylize</original>
 <translation>стилизирам</translation>
 </phrase>
@@ -5329,7 +5259,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 182 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 365 phrases. 186 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6741,7 +6671,7 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>please wait</original>
+<original>Please wait</original>
 <translation>Ве молам почекајте</translation>
 </phrase>
 
@@ -7156,16 +7086,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Drago</original>
-<translation>Драго</translation>
-</phrase>
-
-<phrase>
-<original>Reinhard</original>
-<translation>Рајнхард</translation>
-</phrase>
-
-<phrase>
 <original>visible spectrum</original>
 <translation>видливиот спектар</translation>
 </phrase>
@@ -7175,7 +7095,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>целиот спектар</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -7346,11 +7266,6 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>(text populated at run-time)</original>
-<translation>(Текст населени во времето на извршување)</translation>
-</phrase>
-
-<phrase>
 <original>Keep working</original>
 <translation>Продолжи да работиш</translation>
 </phrase>
@@ -7390,7 +7305,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Спроведување на ажурирање подоцна</translation>
 </phrase>
 
-<!-- Dialog_UpdateAvailable.frm contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>use merged image</original>
@@ -8226,36 +8141,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>Hilite</original>
-<translation>Hilite</translation>
-</phrase>
-
-<phrase>
-<original>Laplacian</original>
-<translation>Laplacian</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon</original>
-<translation>PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt</original>
-<translation>Prewitt</translation>
-</phrase>
-
-<phrase>
 <original>Roberts cross</original>
 <translation>Робертс крос</translation>
 </phrase>
 
-<phrase>
-<original>Sobel</original>
-<translation>Sobel</translation>
-</phrase>
-
-<!-- Effects_Edge_EnhanceEdges.frm contains 31 phrases. 12 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use black background</original>
@@ -8272,7 +8162,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>По трагите на сликата рабовите со виртуелен четка</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 30 phrases. 27 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8509,12 +8399,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Примена на површински заматување</translation>
 </phrase>
 
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>билатералните мазнење</translation>
-</phrase>
-
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8690,16 +8575,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>color variation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Splattering canvas with paint</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -9086,16 +8966,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>empty</original>
-<translation>празна</translation>
-</phrase>
-
-<phrase>
 <original>rays of light</original>
 <translation>зраците на светлината</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Batch repair</original>
@@ -9389,7 +9264,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>Previews disabled</original>
+<original>previews disabled</original>
 <translation>оневозможени прегледи</translation>
 </phrase>
 
@@ -9712,12 +9587,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 73 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
-
-<phrase>
-<original>Animation export options</original>
-<translation></translation>
-</phrase>
+<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -9784,7 +9654,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -10172,23 +10042,18 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (индексирани)</translation>
+<original>8-bpp</original>
+<translation>8-м</translation>
 </phrase>
 
 <phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-м (256 нијанси)</translation>
+<original>4-bpp</original>
+<translation>4-м</translation>
 </phrase>
 
 <phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-м (16 нијанси)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (црно-бело)</translation>
+<original>1-bpp</original>
+<translation>1-м</translation>
 </phrase>
 
 <phrase>
@@ -10196,7 +10061,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10236,21 +10101,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>8-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1-bpp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>app - Windows 10</original>
 <translation></translation>
 </phrase>
@@ -10285,7 +10135,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -10723,20 +10573,10 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<phrase>
-<original>Animation options</original>
-<translation></translation>
-</phrase>
+<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>previews disabled</original>
 <translation></translation>
 </phrase>
 
@@ -10745,7 +10585,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 23 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 27 phrases. 25 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -10776,11 +10616,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <phrase>
 <original>generate difference map as a new layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Analyzing images</original>
 <translation></translation>
 </phrase>
 
@@ -10829,7 +10664,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Image_Compare.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -10994,23 +10829,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>integers only [-127 to 127]</original>
-<translation>само цели броеви [-127 до 127]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [0 to 255]</original>
-<translation>само цели броеви [0 до 255]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [-32,768 to 32,767]</original>
-<translation>само цели броеви [-32.768 до 32.767]</translation>
-</phrase>
-
-<phrase>
-<original>integers only [0 to 65,535]</original>
-<translation>само цели броеви [0 до 65.535]</translation>
+<original>integers only [%1 to %2]</original>
+<translation>само цели броеви [%1 до %2]</translation>
 </phrase>
 
 <phrase>
@@ -11083,7 +10903,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Списокот на %1, една влез на линија</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 69 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
@@ -11096,38 +10916,28 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Automatic</original>
-<translation></translation>
+<original>nearest-neighbor</original>
+<translation>Најблиската-сосед</translation>
 </phrase>
 
 <phrase>
-<original>Nearest Neighbor</original>
-<translation>најблизок сосед</translation>
-</phrase>
-
-<phrase>
-<original>Bilinear</original>
+<original>bilinear</original>
 <translation>билинеарна</translation>
 </phrase>
 
 <phrase>
-<original>Bilinear (optimized for downsizing)</original>
-<translation></translation>
+<original>bilinear (optimized for downsizing)</original>
+<translation>билинеарна (оптимизирана за намалување)</translation>
 </phrase>
 
 <phrase>
-<original>Bicubic</original>
-<translation>Bicubic</translation>
+<original>bicubic</original>
+<translation>бибубски</translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (optimized for downsizing)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Sinc (Lanczos 3-lobe)</original>
-<translation>Sinc (Lanczos3 лобус)</translation>
+<original>bicubic (optimized for downsizing)</original>
+<translation>бибубски (оптимизиран за намалување)</translation>
 </phrase>
 
 <phrase>
@@ -11165,7 +10975,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>менување на големината на слој</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11188,21 +10998,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>Најблиската-сосед</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>билинеарна</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>bicubic</translation>
-</phrase>
-
-<phrase>
 <original>fill with color</original>
 <translation>пополни со боја</translation>
 </phrase>
@@ -11217,7 +11012,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Ротација слој</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -11444,32 +11239,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>можности за избирање</translation>
 </phrase>
 
-<phrase>
-<original>grow radius</original>
-<translation>расте радиус</translation>
-</phrase>
-
-<phrase>
-<original>shrink radius</original>
-<translation>се намали радиус</translation>
-</phrase>
-
-<phrase>
-<original>border radius</original>
-<translation>радиус граница</translation>
-</phrase>
-
-<phrase>
-<original>feather radius</original>
-<translation>радиус пердув</translation>
-</phrase>
-
-<phrase>
-<original>sharpen radius</original>
-<translation>изостри радиус</translation>
-</phrase>
-
-<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>version %1</original>
@@ -11911,11 +11681,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>antialiased</original>
-<translation>antialiased</translation>
-</phrase>
-
-<phrase>
 <original>area</original>
 <translation>област</translation>
 </phrase>
@@ -11970,7 +11735,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Оваа опција контролира како се анализираат пикселите при додавање на нив до пополнување.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Toolpanel_Fill.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>linear</original>
@@ -12111,12 +11876,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Направете тековната преобразува слој (големина, агол, и смолкнување) трајна. Оваа акција не е потребно, но ако гледиштето рендерирање е бавен, тоа може да се подобри перформанси.</translation>
 </phrase>
 
-<phrase>
-<original>Nearest neighbor</original>
-<translation>најблизок сосед</translation>
-</phrase>
-
-<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -12270,23 +12030,13 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <phrase>
-<original>font face</original>
-<translation>фонт лице</translation>
-</phrase>
-
-<phrase>
-<original>font size</original>
-<translation>големина на фонтот</translation>
-</phrase>
-
-<phrase>
 <original>font style</original>
 <translation>стил на фонтот</translation>
 </phrase>
 
 <phrase>
-<original>clarity</original>
-<translation>јасност</translation>
+<original>antialiasing</original>
+<translation>анти aliasing</translation>
 </phrase>
 
 <phrase>
@@ -12324,7 +12074,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 10 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12849,7 +12599,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Автоматско зачувување на</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 128 phrases. 53 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 127 phrases. 52 were duplicates of existing phrases, so only 75 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -12863,11 +12613,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>last action</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>* current image state in the main window</original>
 <translation></translation>
 </phrase>
 
@@ -12891,7 +12636,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation></translation>
 </phrase>
 
-<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon Options</original>
@@ -13166,11 +12911,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>Preferences updated.</original>
 <translation>Параметри се ажурира.</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>ICC профили</translation>
 </phrase>
 
 <phrase>
@@ -13565,7 +13305,7 @@ If сеуште изберете да го исклучите ажурирања
 <translation>Оваа нова локација привремена папка нема да се случи се додека не рестартирам програмата.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 47 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 48 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13685,16 +13425,11 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
-<original>Please wait</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Recording - %1:%2 @ %3 fps</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>recording settings</original>
@@ -13740,10 +13475,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2607</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2493 are duplicates, so only 2607 unique phrases have been written to file. -->
-<!-- These 2607 phrases contain approximately 12018 total words. -->
+<!-- As of this build, PhotoDemon contains 5080 phrases. -->
+<!-- 2526 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11902 total words. -->
 
 </pdData>

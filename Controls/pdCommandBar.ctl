@@ -1414,9 +1414,9 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         ' they are not, and they just add visual clutter.
         'cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
         'cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
-        cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
-        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
-        cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
+        cmdAction(0).AssignTooltip "Reset all settings to their default values."
+        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image."
+        cmdAction(2).AssignTooltip "Save the current settings as a new preset."
         cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new

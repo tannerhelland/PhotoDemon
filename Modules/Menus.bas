@@ -491,7 +491,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Fibers...", "effects_fibers", 6, 8, 1
     AddMenuItem "Sharpen", "effects_sharpentop", 6, 9
         AddMenuItem "Sharpen...", "effects_sharpen", 6, 9, 0
-        AddMenuItem "Unsharp masking...", "effects_unsharp", 6, 9, 1
+        AddMenuItem "Unsharp mask...", "effects_unsharp", 6, 9, 1
     AddMenuItem "Stylize", "effects_stylize", 6, 10
         AddMenuItem "Antique...", "effects_antique", 6, 10, 0
         AddMenuItem "Diffuse...", "effects_diffuse", 6, 10, 1
@@ -1188,7 +1188,7 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
     Dim mnPos As Long, mnChar As String, newText As String
     mnPos = 0
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To m_NumOfMenus - 1
         
         'Ignore any separator or null-length menus, regardless of hierarchy
@@ -2211,10 +2211,10 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
             Process "Canvas size", True
             
         Case "image_fittolayer"
-            Process "Fit canvas to layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Fit canvas to active layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
             
         Case "image_fitalllayers"
-            Process "Fit canvas to all layers", False, , UNDO_ImageHeader
+            Process "Fit canvas around all layers", False, , UNDO_ImageHeader
             
         Case "image_crop"
             Process "Crop", True
@@ -2251,7 +2251,7 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
             Process "Flatten image", True
         
         Case "image_animation"
-            Process "Animation settings", True
+            Process "Animation options", True
         
         Case "image_compare"
             Process "Compare images", True
@@ -2264,7 +2264,7 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
                 Process "Remove all metadata", False, , UNDO_ImageHeader
                 
             Case "image_countcolors"
-                Process "Count image colors", True
+                Process "Count unique colors", True
                 
             Case "image_maplocation"
                 Web.MapImageLocation
@@ -3307,7 +3307,7 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             ' case of an empty list.
             If listIsEmpty Then
                 
-                tmpString = g_Language.TranslateMessage("Empty")
+                tmpString = g_Language.TranslateMessage("empty")
                 tmpMii.dwTypeData = StrPtr(tmpString)
                 SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
                 
@@ -3379,7 +3379,7 @@ Public Sub UpdateSpecialMenu_RecentMacros()
             ' case of an empty list.
             If listIsEmpty Then
                 
-                tmpString = g_Language.TranslateMessage("Empty")
+                tmpString = g_Language.TranslateMessage("empty")
                 tmpMii.dwTypeData = StrPtr(tmpString)
                 SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
                 

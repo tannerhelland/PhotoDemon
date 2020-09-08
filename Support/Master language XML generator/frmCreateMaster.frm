@@ -2041,7 +2041,6 @@ Private Sub Form_Load()
     AddBlacklist "tannerhelland.com/contact"
     AddBlacklist "photodemon.org/about/contact"
     AddBlacklist "photodemon.org/about/contact/"
-    AddBlacklist "PhotoDemon by Tanner Helland - www.tannerhelland.com"
     AddBlacklist "HTML / CSS"
     AddBlacklist "while it downloads."
     AddBlacklist "16x16"
@@ -2066,6 +2065,7 @@ Private Sub Form_Load()
     AddBlacklist "b*"
     AddBlacklist "Mitchell-Netravali"
     AddBlacklist "Catmull-Rom"
+    AddBlacklist "Sinc (Lanczos)"
     AddBlacklist "Floyd-Steinberg"
     AddBlacklist "Stucki"
     AddBlacklist "Burkes"
@@ -2081,13 +2081,20 @@ Private Sub Form_Load()
     AddBlacklist "L*"
     AddBlacklist "a*"
     AddBlacklist "b*"
+    AddBlacklist "PhotoDemon"
+    AddBlacklist "Hilite"
+    AddBlacklist "Laplacian"
+    AddBlacklist "Prewitt"
+    AddBlacklist "Sobel"
+    AddBlacklist "Reinhard"
+    AddBlacklist "Drago"
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String
     chkCommandLine = Command$
     
-    If LenB(Trim$(chkCommandLine)) <> 0 Then
-        If InStr(1, chkCommandLine, "-s", vbTextCompare) Then m_SilentMode = True Else m_SilentMode = False
+    If (LenB(Trim$(chkCommandLine)) <> 0) Then
+        m_SilentMode = (InStr(1, chkCommandLine, "-s", vbTextCompare) <> 0)
     End If
     
     'If silent mode is activated, automatically "click" the relevant button
@@ -2102,9 +2109,11 @@ Private Sub Form_Load()
         'Forcibly merge all translation files with the latest English text
         Call cmdMergeAll_Click
         
-        'Update the master langupdate.XML file, and generate new compressed language copies in their dedicated upload folders
-        'NOTE: as of 23 October 2017 (just prior to 7.0's release), this feature has been disabled.  PD no longer attempts to
-        ' patch language files separately, which greatly simplifies the core program's update code and network access requirements.
+        'Update the master langupdate.XML file, and generate new compressed language copies in their
+        ' dedicated upload folders
+        'NOTE: as of 23 October 2017 (just prior to 7.0's release), this feature has been disabled.
+        ' PD no longer attempts to patch language files separately, which greatly simplifies the core
+        ' program's update code and network access requirements.
         'Call cmdLangVersions_Click
         
         'If the program is running in silent mode, unload it now

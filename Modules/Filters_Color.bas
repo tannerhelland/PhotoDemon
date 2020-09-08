@@ -56,7 +56,7 @@ End Sub
 'Invert an image
 Public Sub MenuInvert()
         
-    Message "Inverting the image..."
+    Message "Inverting..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
@@ -231,7 +231,7 @@ End Sub
 'Invert the hue of an image
 Public Sub MenuInvertHue()
 
-    Message "Inverting image hue..."
+    Message "Inverting..."
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D
