@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "CanvasView" User Control (e.g. the primary component of pdCanvas)
 'Copyright 2002-2020 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 16/February/16
-'Last update: migrate the main view portions of pdCanvas into this control, which will greatly simplify paint tool integration
+'Last updated: 10/September/20
+'Last update: change the way canvas background color is handled; it is now directly exposed via Tools > Options
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -98,22 +98,6 @@ Private m_LastMouseX As Long, m_LastMouseY As Long
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
-
-'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
-' or internal control settings.  The list is updated by calling the UpdateColorList function.
-' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
-'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
-'  class, rather than treating every imaginable variant as a separate constant.)
-Private Enum PDCANVAS_COLOR_LIST
-    [_First] = 0
-    PDC_Background = 0
-    [_Last] = 0
-    [_Count] = 1
-End Enum
-
-'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
-' without worrying about the details locally.
-Private m_Colors As pdThemeColors
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_CanvasView
@@ -198,65 +182,11 @@ End Sub
 'Erase the current canvas.  If no images are loaded (which is really the only time this function should be called,
 ' we'll render the generic "please load an image" icon onto the background.
 Public Sub ClearCanvas()
-    
+
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDC_Background))
+    bufferDC = ucSupport.GetBackBufferDC(True, UserPrefs.GetCanvasColor())
     If (bufferDC = 0) Then Exit Sub
-    
-    Dim bWidth As Long, bHeight As Long
-    bWidth = ucSupport.GetBackBufferWidth
-    bHeight = ucSupport.GetBackBufferHeight
-        
-    'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (Not PDImages.IsImageActive()) And PDMain.IsProgramRunning() Then
-        
-        Dim placeholderImageSize As Long
-        placeholderImageSize = 256
-        
-        Dim iconLoadAnImage As pdDIB
-        LoadResourceToDIB "generic_imageplaceholder", iconLoadAnImage, placeholderImageSize, placeholderImageSize
-
-        Dim notifyFont As pdFont
-        Set notifyFont = New pdFont
-        notifyFont.SetFontFace Fonts.GetUIFontName()
-
-        'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
-        If (Not g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then notifyFont.SetFontSize 13 Else notifyFont.SetFontSize 14
-        Else
-            notifyFont.SetFontSize 14
-        End If
-
-        notifyFont.SetFontBold False
-        notifyFont.SetFontColor RGB(41, 43, 54)
-        notifyFont.SetTextAlignment vbCenter
-
-        'Create the font and attach it to our temporary DIB's DC
-        notifyFont.CreateFontObject
-        notifyFont.AttachToDC bufferDC
-
-        If (Not iconLoadAnImage Is Nothing) Then
-
-            Dim modifiedHeight As Long
-            modifiedHeight = bHeight + (iconLoadAnImage.GetDIBHeight / 2) + FixDPI(24)
-
-            Dim loadImageMessage As String
-            If Not (g_Language Is Nothing) Then
-                loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
-            End If
-            notifyFont.DrawCenteredText loadImageMessage, bWidth, modifiedHeight
-
-            'Just above the text instructions, add a generic image icon
-            iconLoadAnImage.AlphaBlendToDC bufferDC, 255, (bWidth - iconLoadAnImage.GetDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.GetDIBHeight) - FixDPI(20)
-            
-        End If
-
-        notifyFont.ReleaseFromDC
-        Set notifyFont = Nothing
-        Set iconLoadAnImage = Nothing
-        
-    End If
     
     ucSupport.RequestRepaint
     
@@ -474,12 +404,6 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True, True
     ucSupport.SpecifyRequiredKeys VK_SHIFT, VK_ALT, VK_CONTROL, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
     
-    'Prep the color manager and load default colors
-    Set m_Colors = New pdThemeColors
-    Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
-    m_Colors.InitializeColorList "PDCanvas", colorCount
-    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
-    
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there, or even better, stop being lazy
@@ -534,17 +458,10 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     
 End Sub
 
-'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
-' step must also be called if/when PD's visual theme settings change.
-Private Sub UpdateColorList()
-    m_Colors.LoadThemeColor PDC_Background, "Background", IDE_GRAY
-End Sub
-
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
-        UpdateColorList
-        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        UserControl.BackColor = UserPrefs.GetCanvasColor()
         If (PDImages.GetNumOpenImages() = 0) Then Me.ClearCanvas
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage

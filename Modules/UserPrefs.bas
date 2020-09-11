@@ -3,23 +3,25 @@ Attribute VB_Name = "UserPrefs"
 'PhotoDemon User Preferences Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 07/March/18
-'Last update: migrate from class to module as part of a broader preferences overhaul
+'Last updated: 10/September/20
+'Last update: treat canvas color as a dedicated preference, instead of a UI theme property
 '
-'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
-' with persistent user settings.
+'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
+' persistent user settings.
 '
-'By default, user settings are stored in an XML file in the \Data\ subfolder.  This class will generate a default
-' settings file on first run.
+'By default, user settings are stored in an XML-ish file in the \Data\ subfolder.  This class will
+' generate a default settings file on first run.
 '
-'Because the settings XML file may receive new settings with each new version, all setting interaction functions
-' require the caller to specify a default value, which will be used if the requested setting does not exist in the
-' XML file.  Also note that if code attempts to write a setting, but that setting name or section does not exist,
-' it will automatically be appended as a "new" setting at the end of its respective section.
+'Because the settings XML file may receive new settings with each new version, all setting
+' interaction functions require the caller to specify a default value, which will be used if
+' the requested setting does not exist in the XML.  Also note that if code attempts to write a
+' setting, but that setting name or section does not exist, it will automatically be appended as a
+' "new" setting at the end of its respective section.
 '
-'Finally, outside functions should *never* interact with PD's central XML settings file directly.  Always pass
-' read/writes through this class.  I cannot guarantee that the XML format or style will remain consistent
-' between versions, but as long as you use the wrapping functions in this class, settings will be handled correctly.
+'Finally, outside functions should *never* interact with the central XML settings file directly.
+' Always pass read/writes through this class.  I cannot guarantee that the XML format or style
+' will be consistent between versions, but as long as you use the wrapping functions in this class,
+' settings will always behave correctly.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -68,6 +70,7 @@ Private m_XMLEngine As pdXML
 'Some preferences are used in performance-sensitive areas.  These preferences are cached internally to improve responsiveness.
 ' Outside callers can retrieve them via their dedicated functions.
 Private m_ThumbnailPerformance As PD_PerformanceSetting, m_ThumbnailInterpolation As GP_InterpolationMode
+Private m_CanvasColor As Long
 
 Public Enum PD_DebugLogBehavior
     dbg_Auto = 0
@@ -92,6 +95,14 @@ Private m_XMLPresets As pdXML, m_MasterPresetFile As String
 Private m_NonPortableModeActive As Boolean
 
 'Helper functions for performance-sensitive preferences.
+Public Function GetCanvasColor() As Long
+    GetCanvasColor = m_CanvasColor
+End Function
+
+Public Sub SetCanvasColor(ByVal newColor As Long)
+    m_CanvasColor = newColor
+End Sub
+
 Public Function GetThumbnailInterpolationPref() As GP_InterpolationMode
     GetThumbnailInterpolationPref = m_ThumbnailInterpolation
 End Function
@@ -549,6 +560,7 @@ Public Sub LoadUserSettings()
         
         m_GenerateDebugLogs = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
+        m_CanvasColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Interface", "CanvasColor", "#a0a0a0"))
         
         'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
         ' want to override PD's default font object.
@@ -648,6 +660,7 @@ Private Sub CreateNewPreferencesFile()
             .WriteTag "MRUCaptionLength", "0"
             .WriteTag "RecentFilesLimit", "10"
             .WriteTag "WindowCaptionLength", "0"
+            .WriteTag "CanvasColor", "#a0a0a0"
         .CloseTag "Interface"
         .WriteBlankLine
         

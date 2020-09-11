@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.1</langversion>
+<langversion>8.0.3</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3742,6 +3742,16 @@ Geef een numerieke waarde.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>Open image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(geeft tekst hier op)</translation>
 </phrase>
@@ -3776,20 +3786,7 @@ Geef een numerieke waarde.</translation>
 <translation>Centreer de afbeelding binnenin de viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Sleep een afbeelding naar deze ruimte om te beginnen editeren.
-
-Je kan ook gebruik maken van de Open knop Afbeelding aan de linkerkant, 
-of de Bestand > Openen en Bestand > Import menu's.</translation>
-</phrase>
-
-<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -12650,88 +12647,18 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>high-resolution mouse input</original>
-<translation>hoge-resolutie muisinvoer</translation>
+<original>title bar text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reset all program settings</original>
-<translation>Reset alle programma instellingen</translation>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>memory usage will be displayed here</original>
-<translation>geheugengebruik zal hier worden weergegeven</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>geheugen diagnostiek</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>tijdelijke bestandslocatie</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>begin opnieuw</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>map met app-instellingen</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>debug-logs genereren</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer opgevuld in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatisch controleren op updates</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>toestaan updates van deze tracks</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>updateopties</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts</original>
-<translation>recent gebruikte bestand-snelkoppelingen</translation>
-</phrase>
-
-<phrase>
-<original>main window title bar text</original>
-<translation>titelbalktekst hoofdscherm</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>maximum aantal recente bestanden</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lijst recente bestanden</translation>
+<original>recent files</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12747,6 +12674,16 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>transparency checkerboard colors</original>
 <translation>transparantie dambordkleuren</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12910,6 +12847,71 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>high-resolution mouse input</original>
+<translation>hoge-resolutie muisinvoer</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Reset alle programma instellingen</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>geheugengebruik zal hier worden weergegeven</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>geheugen diagnostiek</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>tijdelijke bestandslocatie</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>begin opnieuw</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>map met app-instellingen</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>debug-logs genereren</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer opgevuld in run-time)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatisch controleren op updates</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>toestaan updates van deze tracks</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>updateopties</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>Voorkeuren voor opslaan</translation>
 </phrase>
@@ -12939,13 +12941,43 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
-<original>compact - image names only</original>
-<translation>compact - enkel afbeeldingsnamen</translation>
+<original>Interface</original>
+<translation>Interface</translation>
 </phrase>
 
 <phrase>
-<original>descriptive - full image locations, including folder(s)</original>
-<translation>beschrijvende - volledige afbeeldingslocaties, inclusief map(en)</translation>
+<original>Loading</original>
+<translation>Laden</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Prestaties</translation>
+</phrase>
+
+<phrase>
+<original>Color management</original>
+<translation>Kleurbeheer</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Updates</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Geavanceerd</translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13011,11 +13043,6 @@ Weet je zeker dat je door wilt gaan?</translation>
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
 <translation>Als een afbeelding transparante gebieden heeft, wordt een dambord typisch weergegeven "achter" de afbeelding. Dit vak laat u toe de dambordgrootte te wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>feature disabled due to missing plugin</original>
-<translation>functie uitgeschakeld door ontbrekende insteekmodule</translation>
 </phrase>
 
 <phrase>
@@ -13124,13 +13151,13 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
-<original>Primary monitor</original>
-<translation>Primaire monitor</translation>
+<original>Primary display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Secondary monitor</original>
-<translation>Secundaire monotor</translation>
+<original>Secondary display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13257,11 +13284,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
-<original>reading not accurate inside IDE</original>
-<translation>lezen niet nauwkeurig binnen IDE</translation>
-</phrase>
-
-<phrase>
 <original>Click to select a new temporary folder.</original>
 <translation>Klik om een nieuwe tijdelijke map te selecteren.</translation>
 </phrase>
@@ -13269,36 +13291,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
 <translation>Met deze knop worden alle instellingen van PhotoDemon gereset.  Als het programma zich onverwacht gedraagt, kan dit het probleem oplossen.</translation>
-</phrase>
-
-<phrase>
-<original>Interface</original>
-<translation>Interface</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Laden</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Prestaties</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>Kleurbeheer</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Updates</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Geavanceerd</translation>
 </phrase>
 
 <phrase>
@@ -13311,7 +13303,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 48 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13483,8 +13475,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5080 phrases. -->
-<!-- 2526 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11902 total words. -->
+<!-- As of this build, PhotoDemon contains 5079 phrases. -->
+<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11870 total words. -->
 
 </pdData>

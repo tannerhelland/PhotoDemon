@@ -30,7 +30,7 @@ Begin VB.Form FormOptions
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   31
+      TabIndex        =   29
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -39,11 +39,623 @@ Begin VB.Form FormOptions
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   27
+      TabIndex        =   25
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
       _ExtentY        =   11774
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   0
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdColorSelector csCanvasColor 
+         Height          =   375
+         Left            =   3840
+         TabIndex        =   39
+         Top             =   360
+         Width           =   2175
+         _ExtentX        =   3836
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButtonStrip btsTitleText 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   37
+         Top             =   810
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   1720
+         Caption         =   "title bar text:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdSpinner tudRecentFiles 
+         Height          =   345
+         Left            =   3840
+         TabIndex        =   3
+         Top             =   2400
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         DefaultValue    =   10
+         Min             =   1
+         Max             =   32
+         Value           =   10
+      End
+      Begin PhotoDemon.pdLabel lblRecentFileCount 
+         Height          =   240
+         Left            =   120
+         Top             =   2430
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   423
+         Caption         =   "maximum number of recent files to remember: "
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   13
+         Left            =   0
+         Top             =   2040
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "recent files"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   14
+         Left            =   0
+         Top             =   0
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "main window"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
+         Height          =   810
+         Left            =   180
+         TabIndex        =   2
+         Top             =   5370
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1429
+         Caption         =   "transparency checkerboard size:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboAlphaCheck 
+         Height          =   795
+         Left            =   180
+         TabIndex        =   4
+         Top             =   4500
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1402
+         Caption         =   "transparency checkerboard colors:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdColorSelector csAlphaOne 
+         Height          =   435
+         Left            =   6240
+         TabIndex        =   5
+         Top             =   4830
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdColorSelector csAlphaTwo 
+         Height          =   435
+         Left            =   7320
+         TabIndex        =   6
+         Top             =   4830
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   4080
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "transparency"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdButtonStrip btsMRUStyle 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   38
+         Top             =   2850
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   1508
+         Caption         =   "recent file menu text:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblCanvasColor 
+         Height          =   240
+         Left            =   120
+         Top             =   420
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   423
+         Caption         =   "canvas background color:"
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   4
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
+         Index           =   0
+         Left            =   240
+         TabIndex        =   11
+         Top             =   4080
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   556
+         Caption         =   "use black point compensation"
+      End
+      Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
+         Height          =   735
+         Left            =   180
+         TabIndex        =   36
+         Top             =   3240
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   1296
+         Caption         =   "display rendering intent:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButton cmdColorProfilePath 
+         Height          =   375
+         Left            =   7380
+         TabIndex        =   26
+         Top             =   2760
+         Width           =   810
+         _ExtentX        =   1429
+         _ExtentY        =   661
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdDropDown cboDisplays 
+         Height          =   690
+         Left            =   780
+         TabIndex        =   7
+         Top             =   1590
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   1217
+         Caption         =   "available displays:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdTextBox txtColorProfilePath 
+         Height          =   315
+         Left            =   900
+         TabIndex        =   8
+         Top             =   2790
+         Width           =   6375
+         _ExtentX        =   11245
+         _ExtentY        =   556
+         Text            =   "(none)"
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   0
+         Left            =   180
+         TabIndex        =   9
+         Top             =   480
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "turn off display color management"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   1
+         Left            =   180
+         TabIndex        =   10
+         Top             =   840
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use the current system profiles for each display"
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   2
+         Left            =   780
+         Top             =   2430
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   503
+         Caption         =   "color profile for this display:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "display policies"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   2
+         Left            =   180
+         TabIndex        =   35
+         Top             =   1200
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use custom profiles for each display"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   2
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   12
+         Top             =   360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "when closing images, warn me me about unsaved changes"
+      End
+      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   13
+         Top             =   1455
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboSaveBehavior 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   14
+         Top             =   4125
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when ""Save"" is used:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         Top             =   2490
+         Width           =   8265
+         _ExtentX        =   14579
+         _ExtentY        =   503
+         Caption         =   "metadata"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   6
+         Left            =   0
+         Top             =   3645
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "save behavior: overwrite vs make a copy"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   7
+         Left            =   0
+         Top             =   0
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "closing unsaved images"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   8
+         Left            =   0
+         Top             =   990
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "default file format when saving"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataListPD 
+         Height          =   375
+         Left            =   180
+         TabIndex        =   34
+         Top             =   3000
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "list PhotoDemon as the last-used editing software"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   1
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkToneMapping 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   15
+         Top             =   360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "display tone mapping options when importing HDR and RAW images"
+      End
+      Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   16
+         Top             =   3360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "obey auto-rotate instructions inside image files"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   9
+         Left            =   0
+         Top             =   3000
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "orientation"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   10
+         Left            =   0
+         Top             =   0
+         Width           =   8115
+         _ExtentX        =   14314
+         _ExtentY        =   503
+         Caption         =   "high-dynamic range (HDR) images"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   12
+         Left            =   0
+         Top             =   960
+         Width           =   8265
+         _ExtentX        =   14579
+         _ExtentY        =   503
+         Caption         =   "metadata"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataBinary 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   30
+         Top             =   2400
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "forcibly extract binary-type tags as Base64 (slow)"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   31
+         Top             =   1680
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "estimate original JPEG quality settings"
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   32
+         Top             =   2040
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "extract unknown tags"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   33
+         Top             =   1320
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "automatically hide duplicate tags"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   3
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdSlider sltUndoCompression 
+         Height          =   765
+         Left            =   180
+         TabIndex        =   17
+         Top             =   4170
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   873
+         Caption         =   "compress undo/redo data at the following level:"
+         FontSizeCaption =   10
+         Max             =   9
+         SliderTrackStyle=   1
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.pdDropDown cboPerformance 
+         Height          =   690
+         Index           =   0
+         Left            =   180
+         TabIndex        =   18
+         Top             =   360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   1217
+         Caption         =   "when decorating interface elements:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboPerformance 
+         Height          =   690
+         Index           =   1
+         Left            =   180
+         TabIndex        =   19
+         Top             =   1620
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   1217
+         Caption         =   "when generating image and layer thumbnail images:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboPerformance 
+         Height          =   690
+         Index           =   2
+         Left            =   180
+         TabIndex        =   20
+         Top             =   2850
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   1217
+         Caption         =   "when rendering the image canvas:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   16
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "interface"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblPNGCompression 
+         Height          =   240
+         Index           =   3
+         Left            =   300
+         Top             =   5040
+         Width           =   3465
+         _ExtentX        =   6112
+         _ExtentY        =   503
+         Caption         =   "no compression (fastest)"
+         FontSize        =   8
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblPNGCompression 
+         Height          =   240
+         Index           =   2
+         Left            =   3960
+         Top             =   5040
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "maximum compression (slowest)"
+         FontSize        =   8
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   18
+         Left            =   0
+         Top             =   3780
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "undo/redo"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   15
+         Left            =   0
+         Top             =   1260
+         Width           =   8130
+         _ExtentX        =   14340
+         _ExtentY        =   503
+         Caption         =   "thumbnails"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   17
+         Left            =   0
+         Top             =   2490
+         Width           =   8115
+         _ExtentX        =   14314
+         _ExtentY        =   503
+         Caption         =   "viewport"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6720
@@ -66,7 +678,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   30
+         TabIndex        =   28
          Top             =   4665
          Width           =   7935
          _ExtentX        =   13996
@@ -76,7 +688,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   29
+         TabIndex        =   27
          Top             =   5775
          Width           =   525
          _ExtentX        =   926
@@ -86,7 +698,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   21
          Top             =   5850
          Width           =   7335
          _ExtentX        =   12938
@@ -186,7 +798,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdButtonStrip btsDebug 
          Height          =   975
          Left            =   0
-         TabIndex        =   3
+         TabIndex        =   1
          Top             =   780
          Width           =   8175
          _ExtentX        =   14420
@@ -217,7 +829,7 @@ Begin VB.Form FormOptions
          Height          =   735
          Index           =   0
          Left            =   180
-         TabIndex        =   24
+         TabIndex        =   22
          Top             =   480
          Width           =   7935
          _ExtentX        =   13996
@@ -229,7 +841,7 @@ Begin VB.Form FormOptions
          Height          =   735
          Index           =   1
          Left            =   180
-         TabIndex        =   25
+         TabIndex        =   23
          Top             =   1350
          Width           =   7935
          _ExtentX        =   13996
@@ -253,604 +865,12 @@ Begin VB.Form FormOptions
          Height          =   330
          Index           =   0
          Left            =   180
-         TabIndex        =   26
+         TabIndex        =   24
          Top             =   2400
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   582
          Caption         =   "notify me when an update is ready"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   0
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdDropDown cboMRUStyle 
-         Height          =   810
-         Left            =   180
-         TabIndex        =   1
-         Top             =   1800
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   1429
-         Caption         =   "recently used file shortcuts:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboTitleText 
-         Height          =   810
-         Left            =   180
-         TabIndex        =   2
-         Top             =   360
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   1429
-         Caption         =   "main window title bar text:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSpinner tudRecentFiles 
-         Height          =   345
-         Left            =   3840
-         TabIndex        =   5
-         Top             =   2640
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-         DefaultValue    =   10
-         Min             =   1
-         Max             =   32
-         Value           =   10
-      End
-      Begin PhotoDemon.pdLabel lblRecentFileCount 
-         Height          =   240
-         Left            =   180
-         Top             =   2670
-         Width           =   3480
-         _ExtentX        =   6138
-         _ExtentY        =   423
-         Caption         =   "maximum number of recent file entries: "
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   13
-         Left            =   0
-         Top             =   1440
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "recent files list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   14
-         Left            =   0
-         Top             =   0
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "main window"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
-         Height          =   810
-         Left            =   180
-         TabIndex        =   4
-         Top             =   4530
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1429
-         Caption         =   "transparency checkerboard size:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboAlphaCheck 
-         Height          =   795
-         Left            =   180
-         TabIndex        =   6
-         Top             =   3660
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1402
-         Caption         =   "transparency checkerboard colors:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdColorSelector csAlphaOne 
-         Height          =   435
-         Left            =   6240
-         TabIndex        =   7
-         Top             =   3990
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-         ShowMainWindowColor=   0   'False
-      End
-      Begin PhotoDemon.pdColorSelector csAlphaTwo 
-         Height          =   435
-         Left            =   7320
-         TabIndex        =   8
-         Top             =   3990
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-         ShowMainWindowColor=   0   'False
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   3240
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "transparency"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   4
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdCheckBox chkColorManagement 
-         Height          =   315
-         Index           =   0
-         Left            =   240
-         TabIndex        =   13
-         Top             =   4080
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   556
-         Caption         =   "use black point compensation"
-      End
-      Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
-         Height          =   735
-         Left            =   180
-         TabIndex        =   38
-         Top             =   3240
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   1296
-         Caption         =   "display rendering intent:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdButton cmdColorProfilePath 
-         Height          =   375
-         Left            =   7380
-         TabIndex        =   28
-         Top             =   2760
-         Width           =   810
-         _ExtentX        =   1429
-         _ExtentY        =   661
-         Caption         =   "..."
-      End
-      Begin PhotoDemon.pdDropDown cboMonitors 
-         Height          =   690
-         Left            =   780
-         TabIndex        =   9
-         Top             =   1590
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   1217
-         Caption         =   "available displays:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdTextBox txtColorProfilePath 
-         Height          =   315
-         Left            =   900
-         TabIndex        =   10
-         Top             =   2790
-         Width           =   6375
-         _ExtentX        =   11245
-         _ExtentY        =   556
-         Text            =   "(none)"
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   0
-         Left            =   180
-         TabIndex        =   11
-         Top             =   480
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "turn off display color management"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   1
-         Left            =   180
-         TabIndex        =   12
-         Top             =   840
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use the current system profiles for each display"
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   2
-         Left            =   780
-         Top             =   2430
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   503
-         Caption         =   "color profile for this display:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "display policies"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   2
-         Left            =   180
-         TabIndex        =   37
-         Top             =   1200
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use custom profiles for each display"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   2
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   14
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "when closing images, warn me me about unsaved changes"
-      End
-      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
-         Height          =   690
-         Left            =   180
-         TabIndex        =   15
-         Top             =   1455
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboSaveBehavior 
-         Height          =   690
-         Left            =   180
-         TabIndex        =   16
-         Top             =   4125
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "when ""Save"" is used:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   2490
-         Width           =   8265
-         _ExtentX        =   14579
-         _ExtentY        =   503
-         Caption         =   "metadata"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   3645
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "save behavior: overwrite vs make a copy"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   7
-         Left            =   0
-         Top             =   0
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "closing unsaved images"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   8
-         Left            =   0
-         Top             =   990
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "default file format when saving"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataListPD 
-         Height          =   375
-         Left            =   180
-         TabIndex        =   36
-         Top             =   3000
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "list PhotoDemon as the last-used editing software"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   1
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdCheckBox chkToneMapping 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   17
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "display tone mapping options when importing HDR and RAW images"
-      End
-      Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   18
-         Top             =   3360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "obey auto-rotate instructions inside image files"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   9
-         Left            =   0
-         Top             =   3000
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "orientation"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   10
-         Left            =   0
-         Top             =   0
-         Width           =   8115
-         _ExtentX        =   14314
-         _ExtentY        =   503
-         Caption         =   "high-dynamic range (HDR) images"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   12
-         Left            =   0
-         Top             =   960
-         Width           =   8265
-         _ExtentX        =   14579
-         _ExtentY        =   503
-         Caption         =   "metadata"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataBinary 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   32
-         Top             =   2400
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "forcibly extract binary-type tags as Base64 (slow)"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   33
-         Top             =   1680
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "estimate original JPEG quality settings"
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   34
-         Top             =   2040
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "extract unknown tags"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   35
-         Top             =   1320
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically hide duplicate tags"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   3
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdSlider sltUndoCompression 
-         Height          =   765
-         Left            =   180
-         TabIndex        =   19
-         Top             =   4170
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   873
-         Caption         =   "compress undo/redo data at the following level:"
-         FontSizeCaption =   10
-         Max             =   9
-         SliderTrackStyle=   1
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.pdDropDown cboPerformance 
-         Height          =   690
-         Index           =   0
-         Left            =   180
-         TabIndex        =   20
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   1217
-         Caption         =   "when decorating interface elements:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboPerformance 
-         Height          =   690
-         Index           =   1
-         Left            =   180
-         TabIndex        =   21
-         Top             =   1620
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   1217
-         Caption         =   "when generating image and layer thumbnail images:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboPerformance 
-         Height          =   690
-         Index           =   2
-         Left            =   180
-         TabIndex        =   22
-         Top             =   2850
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   1217
-         Caption         =   "when rendering the image canvas:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   16
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "interface"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPNGCompression 
-         Height          =   240
-         Index           =   3
-         Left            =   300
-         Top             =   5040
-         Width           =   3465
-         _ExtentX        =   6112
-         _ExtentY        =   503
-         Caption         =   "no compression (fastest)"
-         FontSize        =   8
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPNGCompression 
-         Height          =   240
-         Index           =   2
-         Left            =   3960
-         Top             =   5040
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "maximum compression (slowest)"
-         FontSize        =   8
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   18
-         Left            =   0
-         Top             =   3780
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "undo/redo"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   15
-         Left            =   0
-         Top             =   1260
-         Width           =   8130
-         _ExtentX        =   14340
-         _ExtentY        =   503
-         Caption         =   "thumbnails"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   17
-         Left            =   0
-         Top             =   2490
-         Width           =   8115
-         _ExtentX        =   14314
-         _ExtentY        =   503
-         Caption         =   "viewport"
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
 End
@@ -881,26 +901,18 @@ Option Explicit
 'Used to see if the user physically clicked a combo box, or if VB selected it on its own
 Private m_userInitiatedColorSelection As Boolean, m_userInitiatedAlphaSelection As Boolean
 
+'When the preferences category is changed, only display the controls in that category
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
-
-    'When the preferences category is changed, only display the controls in that category
     Dim catID As Long
     For catID = 0 To btsvCategory.ListCount - 1
-        
-        If (catID = buttonIndex) Then
-            picContainer(catID).Visible = True
-        Else
-            picContainer(catID).Visible = False
-        End If
-        
+        picContainer(catID).Visible = (catID = buttonIndex)
     Next catID
-
 End Sub
 
 'Alpha channel checkerboard selection; change the color selectors to match
 Private Sub cboAlphaCheck_Click()
 
-    'Only respond to user-generated events
+    'Only respond to user-generated events (e.g. do *not* trigger during form initialization)
     If m_userInitiatedAlphaSelection Then
 
         m_userInitiatedAlphaSelection = False
@@ -938,7 +950,7 @@ End Sub
 
 'Whenever the Color and Transparency -> Color Management -> Monitor combo box is changed, load the relevant color profile
 ' path from the preferences file (if one exists)
-Private Sub cboMonitors_Click()
+Private Sub cboDisplays_Click()
 
     'One of the difficulties with tracking multiple monitors is that the user can attach/detach them at will.
     
@@ -953,17 +965,17 @@ Private Sub cboMonitors_Click()
     'In 7.0, this system was upgraded to use monitor serial numbers, and only fall back to the HMONITOR
     ' if a serial number (or EDID) doesn't exist.
     
-    Dim uniqueMonitorID As String
-    If (Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then
-        uniqueMonitorID = g_Displays.Displays(cboMonitors.ListIndex).GetUniqueDescriptor
+    Dim uniqueDisplayID As String
+    If (Not g_Displays.Displays(cboDisplays.ListIndex) Is Nothing) Then
+        uniqueDisplayID = g_Displays.Displays(cboDisplays.ListIndex).GetUniqueDescriptor
         Dim tmpXML As pdXML
         Set tmpXML = New pdXML
-        uniqueMonitorID = tmpXML.GetXMLSafeTagName(uniqueMonitorID)
+        uniqueDisplayID = tmpXML.GetXMLSafeTagName(uniqueDisplayID)
     End If
     
     'Use that to retrieve a stored color profile (if any)
     Dim profilePath As String
-    profilePath = UserPrefs.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, "(none)")
+    profilePath = UserPrefs.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueDisplayID, "(none)")
     
     'If the returned value is "(none)", translate that into the user's language before displaying; otherwise, display
     ' whatever path we retrieved.
@@ -1018,211 +1030,128 @@ Private Sub cmdBarMini_OKClick()
     
     '***************************************************************************
     
-    'BEGIN Interface preferences
-        
-        'START/END image window caption length
-            UserPrefs.SetPref_Long "Interface", "Window Caption Length", cboTitleText.ListIndex
-        
-        Dim mruNeedsToBeRebuilt As Boolean
-        mruNeedsToBeRebuilt = False
-        
-        'START MRU caption length
-        
-            'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If (cboMRUStyle.ListIndex <> UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
-            UserPrefs.SetPref_Long "Interface", "MRU Caption Length", cboMRUStyle.ListIndex
-            
-        'END MRU caption length
-        
-        'START maximum MRU count
-            Dim newMaxRecentFiles As Long
-            
-            'Validate the user's supplied recent file limit
-            If tudRecentFiles.IsValid Then
-                newMaxRecentFiles = tudRecentFiles.Value
-            Else
-                newMaxRecentFiles = 10
-            End If
-            
-            'If the max number of recent files has changed, update the MRU list to match
-            If (newMaxRecentFiles <> UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)) Then mruNeedsToBeRebuilt = True
-            UserPrefs.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
-            
-        'END maximum MRU count
-        
-        'If any MRUs need to be rebuilt, do so now
-        If mruNeedsToBeRebuilt Then
-            g_RecentFiles.NotifyMaxLimitChanged
-            g_RecentMacros.MRU_NotifyNewMaxLimit
-        End If
-        
-        'START alpha checkerboard colors
-            UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
-            UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
-            UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
-        'END alpha checkerboard colors
-            
-        'START alpha checkerboard size
-            UserPrefs.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
-            Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
-        'END alpha checkerboard size
+    'Interface preferences
+    UserPrefs.SetPref_Long "Interface", "Window Caption Length", btsTitleText.ListIndex
+    UserPrefs.SetPref_String "Interface", "Canvas Color", Colors.GetHexStringFromRGB(csCanvasColor.Color)
+    UserPrefs.SetCanvasColor csCanvasColor.Color
     
-    'END Interface preferences
+    'Changes to the recent files list (including count and how it's displayed) may require us to
+    ' trigger a full rebuild of the menu
+    Dim mruNeedsToBeRebuilt As Boolean
+    mruNeedsToBeRebuilt = (btsMRUStyle.ListIndex <> UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0))
+    UserPrefs.SetPref_Long "Interface", "MRU Caption Length", btsMRUStyle.ListIndex
     
-    '***************************************************************************
+    Dim newMaxRecentFiles As Long
+    If tudRecentFiles.IsValid Then newMaxRecentFiles = tudRecentFiles.Value Else newMaxRecentFiles = 10
+    If (Not mruNeedsToBeRebuilt) Then mruNeedsToBeRebuilt = (newMaxRecentFiles <> UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10))
+    UserPrefs.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
     
+    'If any MRUs need to be rebuilt, do so now
+    If mruNeedsToBeRebuilt Then
+        g_RecentFiles.NotifyMaxLimitChanged
+        g_RecentMacros.MRU_NotifyNewMaxLimit
+    End If
+    
+    UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
+    UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
+    UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
+    
+    UserPrefs.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
+    Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
+    
+    'Loading preferences
     SetProgBarVal 2
     
-    'BEGIN Loading preferences
+    UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
     
-        'START/END automatically tone-map HDR images
-            UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
-            
-        'START metadata behavior at load-time
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", chkMetadataDuplicates.Value
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", chkMetadataJPEG.Value
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", chkMetadataBinary.Value
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", chkMetadataUnknown.Value
-        'END metadata behavior at load-time
-        
-        'START/END EXIF auto-rotation
-            UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", chkLoadingOrientation.Value
-        
+    UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", chkMetadataDuplicates.Value
+    UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", chkMetadataJPEG.Value
+    UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", chkMetadataBinary.Value
+    UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", chkMetadataUnknown.Value
     
-    'END Loading preferences
+    UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", chkLoadingOrientation.Value
     
-    '***************************************************************************
-    
+    'Saving preferences
     SetProgBarVal 3
     
-    'BEGIN Saving preferences
+    g_ConfirmClosingUnsaved = chkConfirmUnsaved.Value
+    UserPrefs.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
-        'START prompt on unsaved images
-            g_ConfirmClosingUnsaved = chkConfirmUnsaved.Value
-            UserPrefs.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
+    If g_ConfirmClosingUnsaved Then
+        toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
+    Else
+        toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
+    End If
     
-            If g_ConfirmClosingUnsaved Then
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
-            Else
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
-            End If
-        'END prompt on unsaved images
-        
-        'START/END metadata-related options
-            UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
-        
-        'START/END Save behavior (overwrite or copy)
-            UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
-        
-        'START/END "Save As" dialog's suggested file format
-            UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
+    UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
+    UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
+    UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
     
-    'END Saving preferences
-        
-    '***************************************************************************
-    
+    'Performance preferences.  (Note that many of these are specially cached, for obvious perf reasons.)
     SetProgBarVal 4
     
-    'START Performance preferences
-        
-        'START/END interface decoration performance
-            UserPrefs.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(0).ListIndex
-            g_InterfacePerformance = cboPerformance(0).ListIndex
-        
-        'START/END thumbnail render performance
-            UserPrefs.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
-            UserPrefs.SetThumbnailPerformancePref cboPerformance(1).ListIndex
-        
-        'START/END viewport render performance
-            UserPrefs.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(2).ListIndex
-            g_ViewportPerformance = cboPerformance(2).ListIndex
-            
-        'START/END undo/redo data compression
-            UserPrefs.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
-            g_UndoCompressionLevel = sltUndoCompression.Value
+    UserPrefs.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(0).ListIndex
+    g_InterfacePerformance = cboPerformance(0).ListIndex
     
-    'END Performance preferences
+    UserPrefs.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
+    UserPrefs.SetThumbnailPerformancePref cboPerformance(1).ListIndex
     
-    '***************************************************************************
+    UserPrefs.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(2).ListIndex
+    g_ViewportPerformance = cboPerformance(2).ListIndex
     
+    UserPrefs.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
+    g_UndoCompressionLevel = sltUndoCompression.Value
+    
+    'Color-management preferences
     SetProgBarVal 5
     
-    'START Color Management preferences
-
-        'START use system color profile
-            If optColorManagement(0).Value Then
-                ColorManagement.SetDisplayColorManagementPreference DCM_NoManagement
-            ElseIf optColorManagement(1).Value Then
-                ColorManagement.SetDisplayColorManagementPreference DCM_SystemProfile
-            Else
-                ColorManagement.SetDisplayColorManagementPreference DCM_CustomProfile
-            End If
-            
-            ColorManagement.SetDisplayBPC chkColorManagement(0).Value
-            ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
-            
-            'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
-            CacheDisplayCMMData
-            ColorManagement.CheckParentMonitor False, True
-        'END use system color profile
-        
-    'END Color Management preferences
+    If optColorManagement(0).Value Then
+        ColorManagement.SetDisplayColorManagementPreference DCM_NoManagement
+    ElseIf optColorManagement(1).Value Then
+        ColorManagement.SetDisplayColorManagementPreference DCM_SystemProfile
+    Else
+        ColorManagement.SetDisplayColorManagementPreference DCM_CustomProfile
+    End If
     
-    '***************************************************************************
+    ColorManagement.SetDisplayBPC chkColorManagement(0).Value
+    ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
     
+    'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
+    CacheDisplayCMMData
+    ColorManagement.CheckParentMonitor False, True
+    
+    'Update preferences
     SetProgBarVal 6
     
-    'BEGIN Update preferences
-        
-        'START/END update frequency
-            UserPrefs.SetPref_Long "Updates", "Update Frequency", cboUpdates(0).ListIndex
-        
-        'START/END update track
-            UserPrefs.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
-            
-        'START/END update notifications
-            UserPrefs.SetPref_Boolean "Updates", "Update Notifications", chkUpdates(0).Value
+    UserPrefs.SetPref_Long "Updates", "Update Frequency", cboUpdates(0).ListIndex
+    UserPrefs.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
+    UserPrefs.SetPref_Boolean "Updates", "Update Notifications", chkUpdates(0).Value
     
-    'END Update preferences
-    
-    '***************************************************************************
-    
+    'Advanced preferences
     SetProgBarVal 7
     
-    'BEGIN Advanced preferences
-    
-        'START generate debug logs
-            
-            'First, see if the user has changed the debug log preference
-            If (UserPrefs.GetDebugLogPreference <> btsDebug.ListIndex) Then
-                
-                'The user has changed the current setting.  Make a note of whether debug logs are currently being generated.
-                ' (If this behavior changes, we may need to create and/or terminate the debugger.)
-                Dim curLogBehavior As Boolean
-                curLogBehavior = UserPrefs.GenerateDebugLogs()
-                
-                'Store the new preference
-                UserPrefs.SetDebugLogPreference btsDebug.ListIndex
-                
-                'Invoke and/or terminate the current debugger, as necessary
-                If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
-                    If UserPrefs.GenerateDebugLogs Then PDDebug.StartDebugger True, , False Else PDDebug.TerminateDebugger False
-                End If
-                
-            End If
-            
-        'END generate debug logs
-            
-        'START/END store the temporary path (but only if it's changed)
-            If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)
+    'First, see if the user has changed the debug log preference
+    If (UserPrefs.GetDebugLogPreference <> btsDebug.ListIndex) Then
         
-        'START/END high-resolution mouse input
-            If (btsMouseHighRes.ListIndex = 1) Then UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", True Else UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", False
-            Tools.SetToolSetting_HighResMouse (btsMouseHighRes.ListIndex = 1)
+        'The user has changed the current setting.  Make a note of whether debug logs are currently being generated.
+        ' (If this behavior changes, we may need to create and/or terminate the debugger.)
+        Dim curLogBehavior As Boolean
+        curLogBehavior = UserPrefs.GenerateDebugLogs()
         
-    'END Advanced preferences
+        'Store the new preference
+        UserPrefs.SetDebugLogPreference btsDebug.ListIndex
+        
+        'Invoke and/or terminate the current debugger, as necessary
+        If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
+            If UserPrefs.GenerateDebugLogs Then PDDebug.StartDebugger True, , False Else PDDebug.TerminateDebugger False
+        End If
+        
+    End If
     
-    '***************************************************************************
+    If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)
+    
+    If (btsMouseHighRes.ListIndex = 1) Then UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", True Else UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", False
+    Tools.SetToolSetting_HighResMouse (btsMouseHighRes.ListIndex = 1)
     
     'Forcibly write a copy of the preference data out to file
     UserPrefs.ForceWriteToFile
@@ -1232,7 +1161,9 @@ Private Sub cmdBarMini_OKClick()
     'Because some preferences affect the program's interface, redraw the active image.
     FormMain.Enabled = True
     FormMain.UpdateMainLayout
-        
+    FormMain.MainCanvas(0).UpdateAgainstCurrentTheme FormMain.hWnd, True
+    If PDImages.IsImageActive Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    
     'TODO: color management changes need to be propagated here; otherwise, they won't trigger until the program is restarted.
     
     SetProgBarVal 0
@@ -1282,8 +1213,8 @@ Private Sub cmdColorProfilePath_Click()
         txtColorProfilePath = sFile
         
         Dim uniqueMonID As String
-        If (Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then
-            uniqueMonID = g_Displays.Displays(cboMonitors.ListIndex).GetUniqueDescriptor
+        If (Not g_Displays.Displays(cboDisplays.ListIndex) Is Nothing) Then
+            uniqueMonID = g_Displays.Displays(cboDisplays.ListIndex).GetUniqueDescriptor
             Dim tmpXML As pdXML
             Set tmpXML = New pdXML
             uniqueMonID = tmpXML.GetXMLSafeTagName(uniqueMonID)
@@ -1324,368 +1255,68 @@ Private Sub cmdReset_Click()
 End Sub
 
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
-Private Sub CmdTmpPath_Click()
+Private Sub cmdTmpPath_Click()
     Dim tString As String
     tString = Files.PathBrowseDialog(Me.hWnd, UserPrefs.GetTempPath)
-    If (Len(tString) <> 0) Then txtTempPath.Text = Files.PathAddBackslash(tString)
+    If (LenB(tString) <> 0) Then txtTempPath.Text = Files.PathAddBackslash(tString)
 End Sub
 
-'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
+'Load all relevant values from the user's preferences file, and populate corresponding UI elements
+' with those settings
 Private Sub LoadAllPreferences()
     
-    'For the sake of order, we will load preferences by category.  (They can be loaded in any order without consequence,
-    ' but there are MANY preferences, so maintaining some kind of order is helpful.)
+    'Preferences can be loaded in any order (without consequence), but due to the size of PD's
+    ' settings list, I try to keep them ordered by category.
     
-    'Note also that many tooltips are manually populated throughout this section.  This is done for translation
-    ' purposes; the tooltips themselves are sometimes too long to fit inside a traditional VB control, so the
-    ' IDE dumps them to a separate custom .frx resource file where they are difficult to extract. Rather than
-    ' mess with that, I manually add the tooltips here so that the automatic translation engine can easily find
-    ' all tooltip text.
+    'Interface preferences
+    btsTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
+    csCanvasColor.Color = UserPrefs.GetCanvasColor()
+    tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
+    btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
+    m_userInitiatedAlphaSelection = False
+    cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
+    csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
+    csAlphaTwo.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
+    m_userInitiatedAlphaSelection = True
+    cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
     
-    '***************************************************************************
+    'Loading preferences
+    chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
+    chkMetadataDuplicates.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True)
+    chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
+    chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
+    chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
+    chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
     
-    'START Interface preferences
-        
-        'START image window caption length
-            cboTitleText.Clear
-            cboTitleText.AddItem "compact - image names only", 0
-            cboTitleText.AddItem "descriptive - full image locations, including folder(s)", 1
-            cboTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
-            cboTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
-        'END image window caption length
-                
-        'START Recent file max count
-            lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
-            tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + FixDPI(6)
-            tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
-        'END
-        
-        'START MRU caption length
-            cboMRUStyle.Clear
-            cboMRUStyle.AddItem "compact - image names only", 0
-            cboMRUStyle.AddItem "descriptive - full image locations, including folder(s)", 1
-            cboMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
-            cboMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
-        'END MRU caption length
-        
-        'START alpha-channel checkerboard rendering
-            m_userInitiatedAlphaSelection = False
-            cboAlphaCheck.Clear
-            cboAlphaCheck.AddItem "Highlight checks", 0
-            cboAlphaCheck.AddItem "Midtone checks", 1
-            cboAlphaCheck.AddItem "Shadow checks", 2
-            cboAlphaCheck.AddItem "Custom (click boxes to customize)", 3
-            
-            cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
-            
-            csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
-            csAlphaTwo.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
-            
-            cboAlphaCheck.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
-            csAlphaOne.AssignTooltip "Click to change the first checkerboard background color for alpha channels"
-            csAlphaTwo.AssignTooltip "Click to change the second checkerboard background color for alpha channels"
-            
-            m_userInitiatedAlphaSelection = True
-        'END alpha-channel checkerboard rendering
-        
-        'START alpha-channel checkerboard size
-            cboAlphaCheckSize.Clear
-            cboAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
-            cboAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
-            cboAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
-            
-            cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
-            
-            cboAlphaCheckSize.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
-        'END alpha-channel checkerboard size
-        
-    'END Interface preferences
+    'Saving preferences
+    chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
+    cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
+    cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
+    chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
     
-    '***************************************************************************
+    'Performance preferences
+    cboPerformance(0).ListIndex = g_InterfacePerformance
+    cboPerformance(1).ListIndex = UserPrefs.GetThumbnailPerformancePref()
+    cboPerformance(2).ListIndex = g_ViewportPerformance
+    sltUndoCompression.Value = g_UndoCompressionLevel
     
-    'START Loading preferences
+    'Color-management preferences
+    optColorManagement(ColorManagement.GetDisplayColorManagementPreference()).Value = True
+    chkColorManagement(0).Value = ColorManagement.GetDisplayBPC()
+    cboDisplayRenderIntent.ListIndex = ColorManagement.GetDisplayRenderingIntentPref()
+    ' (note: monitor display preferences are also here, but they are retrieved auto-magically
+    '  when the display dropdown listindex changes)
     
-        'START tone-mapping HDR images at load time
-            chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
-            chkToneMapping.Enabled = ImageFormats.IsFreeImageEnabled
-            If (Not ImageFormats.IsFreeImageEnabled) Then chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
-            chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
-        'END tone-mapping HDR images at load time
-        
-        'START metadata behavior at load-time
-            chkMetadataDuplicates.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True)
-            chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
-            chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
-            chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
-            chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
-            chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
-            chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
-            chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
-        'END metadata behavior at load-time
-        
-        'START auto-rotate according to EXIF data
-            chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
-            chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
-        'END auto-rotate according to EXIF data
-        
+    'Update preferences
+    cboUpdates(0).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+    cboUpdates(1).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Track", ut_Beta)
+    chkUpdates(0).Value = UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True)
     
-    'END Loading preferences
-    
-    '***************************************************************************
-    
-    'START Saving preferences
-    
-        'START/END prompt about unsaved images
-            chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
-            chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
-            
-        'START suggested save as format
-            cboDefaultSaveFormat.Clear
-            cboDefaultSaveFormat.AddItem "the current file format of the image being saved", 0
-            cboDefaultSaveFormat.AddItem "the last image format I used in the ""Save As"" screen", 1
-            cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
-            
-            cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
-        'END suggested save as format
-        
-        'START overwrite vs copy when saving
-            cboSaveBehavior.Clear
-            cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0
-            cboSaveBehavior.AddItem "save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
-            cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
-            
-            cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
-        'END overwrite vs copy when saving
-               
-        'START/END embed PD as the last-used program
-            chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
-            chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
-        
-    'END Saving preferences
-    
-    '***************************************************************************
-    
-    'START Performance preferences
-        
-        'We can shortcut a bit of initialization here by populating all quality drop-downs with the same values.
-        Dim i As Long
-        
-        For i = 0 To cboPerformance.UBound
-            cboPerformance(i).Clear
-            cboPerformance(i).AddItem "maximize quality", 0
-            cboPerformance(i).AddItem "balance performance and quality", 1
-            cboPerformance(i).AddItem "maximize performance", 2
-        Next i
-        
-        'START Interface decorations performance
-            cboPerformance(0).ListIndex = g_InterfacePerformance
-            cboPerformance(0).AssignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
-        'END Interface decorations performance
-        
-        'START Thumbnail rendering performance
-            cboPerformance(1).ListIndex = UserPrefs.GetThumbnailPerformancePref()
-            cboPerformance(1).AssignTooltip "PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance."
-        'END Thumbnail rendering performance
-        
-        'START Viewport rendering performance
-            cboPerformance(2).ListIndex = g_ViewportPerformance
-            cboPerformance(2).AssignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
-        'END Viewport rendering performance
-        
-        'START Undo data compression
-            sltUndoCompression.AssignTooltip "Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited."
-            sltUndoCompression.Value = g_UndoCompressionLevel
-        'END Undo data compression
-        
-    'END Performance preferences
-    
-    '***************************************************************************
-    
-    'START Color Management preferences
-            
-        'Set the various buttons and dropdown according to the user's current display profile preference
-        optColorManagement(ColorManagement.GetDisplayColorManagementPreference()).Value = True
-        chkColorManagement(0).Value = ColorManagement.GetDisplayBPC()
-        Interface.PopulateRenderingIntentDropDown cboDisplayRenderIntent, ColorManagement.GetDisplayRenderingIntentPref()
-        
-        'Load a list of all available monitors
-        cboMonitors.Clear
-        
-        Dim mainMonitor As String, secondaryMonitor As String
-        mainMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
-        secondaryMonitor = g_Language.TranslateMessage("Secondary monitor") & ": "
-        
-        Dim primaryIndex As Long, monitorEntry As String
-        
-        If (g_Displays.GetDisplayCount > 0) Then
-            
-            For i = 0 To g_Displays.GetDisplayCount - 1
-            
-                monitorEntry = vbNullString
-                
-                'Explicitly label the primary monitor
-                If g_Displays.Displays(i).IsPrimary Then
-                    monitorEntry = mainMonitor
-                    primaryIndex = i
-                Else
-                    monitorEntry = secondaryMonitor
-                End If
-                
-                'Add the monitor's physical size
-                monitorEntry = monitorEntry & g_Displays.Displays(i).GetMonitorSizeAsString
-                
-                'Add the monitor's name
-                monitorEntry = monitorEntry & " " & g_Displays.Displays(i).GetBestMonitorName
-                
-                'Add the monitor's native resolution
-                monitorEntry = monitorEntry & " (" & g_Displays.Displays(i).GetMonitorResolutionAsString & ")"
-                                
-                'Display this monitor in the list
-                cboMonitors.AddItem monitorEntry, i
-                
-            Next i
-            
-        Else
-            primaryIndex = 0
-            cboMonitors.AddItem "Unknown display", 0
-        End If
-        
-        'Display the primary monitor by default; this will also trigger a load of the matching
-        ' custom profile, if one exists.
-        cboMonitors.ListIndex = primaryIndex
-        
-        'Add tooltips to all color-profile-related controls
-        optColorManagement(0).AssignTooltip "Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting."
-        optColorManagement(1).AssignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
-        optColorManagement(2).AssignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
-        
-        cboMonitors.AssignTooltip "Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor."
-        cmdColorProfilePath.AssignTooltip "Click this button to bring up a ""browse for color profile"" dialog."
-        
-        cboDisplayRenderIntent.AssignTooltip "If you do not know what this setting controls, set it to ""Perceptual"".  Perceptual rendering intent is the best choice for most users."
-        chkColorManagement(0).AssignTooltip "BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON."
-        
-    'END Color and Transparency preferences
-    
-    '***************************************************************************
-    
-    'START Update preferences
-    
-        'START update frequency
-            cboUpdates(0).Clear
-            cboUpdates(0).AddItem "each session", 0
-            cboUpdates(0).AddItem "weekly", 1
-            cboUpdates(0).AddItem "monthly", 2
-            cboUpdates(0).AddItem "never (not recommended)", 3
-            
-            'Old versions of PD used a binary check/don't check preference.  To respect users who set the "don't check" preference in a
-            ' previous version, automatically convert that preference to the new "never (not recommended)" value.
-            If UserPrefs.DoesValueExist("Updates", "CheckForUpdates") Then
-                
-                If (Not UserPrefs.GetPref_Boolean("Updates", "CheckForUpdates", True)) Then
-                    
-                    'Write a matching preference in the new format.
-                    UserPrefs.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
-                    
-                    'Overwrite the old preference, so it doesn't trigger again
-                    UserPrefs.SetPref_Boolean "Updates", "CheckForUpdates", True
-                    
-                End If
-                
-            End If
-            
-            'Retrieve the current preference
-            cboUpdates(0).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
-            cboUpdates(0).AssignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
-        'END update frequency
-        
-        'START update track
-            cboUpdates(1).Clear
-            cboUpdates(1).AddItem "stable releases", 0
-            cboUpdates(1).AddItem "stable and beta releases", 1
-            cboUpdates(1).AddItem "stable, beta, and developer releases", 2
-            
-            'Retrieve the current preference
-            cboUpdates(1).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Track", ut_Beta)
-            cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
-        'END update track
-        
-        'START notify when updates are ready for patching
-            chkUpdates(0).Value = UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True)
-            chkUpdates(0).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
-        'END notify when updates are ready for patching
-        
-        'START explanation of update options
-        
-            'In normal (portable) mode, I like to provide a short explanation of how automatic updates work.
-            ' In non-portable mode, however, we don't have write access to our own folder (because the user
-            ' probably stuck us in an access-restricted folder).  When this happens, we disable all update
-            ' options and use the explanation label to explain "why".
-            If UserPrefs.IsNonPortableModeActive() Then
-            
-                'This is a non-portable install.  Disable all update controls, then explain why.
-                For i = cboUpdates.lBound() To cboUpdates.UBound()
-                    cboUpdates(i).Enabled = False
-                Next i
-                
-                For i = chkUpdates.lBound() To chkUpdates.UBound()
-                    chkUpdates(i).Enabled = False
-                Next i
-                
-                lblExplanation.Caption = g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads." & vbCrLf & vbCrLf & "(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)")
-                
-            'This is a normal (portable) install.  Populate the network access disclaimer in the "Update" panel.
-            Else
-                lblExplanation.Caption = g_Language.TranslateMessage("The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.")
-            End If
-            
-        'END explanation of update options
-    
-    'END Update preferences
-    
-    '***************************************************************************
-    
-    'START Advanced preferences
-        
-        'Display the current program settings folder.  (This is normally a subfolder inside the PD folder,
-        ' unless the user has done something dumb like install us to a restricted folder.)
-        lblSettingsFolder.Caption = UserPrefs.GetDataPath()
-        
-        'By default, debug logs are only generated in developer and beta builds.
-        ' As of v8.0, this behavior can be forcibly toggled in production builds as well.
-        btsDebug.AddItem "auto", 0
-        btsDebug.AddItem "no", 1
-        btsDebug.AddItem "yes", 2
-        btsDebug.ListIndex = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
-        btsDebug.AssignTooltip "In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem."
-        
-        'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
-        ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
-        btsMouseHighRes.AddItem "off", 0
-        btsMouseHighRes.AddItem "on", 1
-        btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
-        If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
-        
-        'Display what we know about PD's memory usage
-        lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsage(), "###,###,###,###") & " K"
-        lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsage(True), "###,###,###,###") & " K"
-        If (Not OS.IsProgramCompiled) Then
-            lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
-            lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
-        End If
-            
-        'Display the current temporary file path
-        txtTempPath.Text = UserPrefs.GetTempPath
-        cmdTmpPath.AssignTooltip "Click to select a new temporary folder."
-        
-        'Clarify the behavior of the "reset" button
-        cmdReset.AssignTooltip "This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem."
-        
-    'END Advanced preferences
-    
-    '***************************************************************************
-    
-    'All preference controls are now initialized with the matching value stored in the preferences file
+    'Advanced preferences
+    lblSettingsFolder.Caption = UserPrefs.GetDataPath()
+    btsDebug.ListIndex = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
+    If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
+    txtTempPath.Text = UserPrefs.GetTempPath
     
 End Sub
 
@@ -1715,9 +1346,6 @@ Private Sub Form_Load()
     
     Dim i As Long
     
-    'Populate all controls with the corresponding values from the preferences file
-    If PDMain.IsProgramRunning() Then LoadAllPreferences
-    
     'Prep the category button strip
     With btsvCategory
         
@@ -1732,7 +1360,7 @@ Private Sub Form_Load()
         
         'Next, add images to each button
         Dim prefButtonSize As Long
-        prefButtonSize = FixDPI(32)
+        prefButtonSize = Interface.FixDPI(32)
         .AssignImageToItem 0, "pref_interface", , prefButtonSize, prefButtonSize
         .AssignImageToItem 1, "pref_loading", , prefButtonSize, prefButtonSize
         .AssignImageToItem 2, "pref_saving", , prefButtonSize, prefButtonSize
@@ -1743,12 +1371,200 @@ Private Sub Form_Load()
         
     End With
     
-    'Hide all category panels (the proper one will be activated in a moment)
+    'Hide all category panels (the proper one will be activated after prefs are loaded)
     For i = 0 To picContainer.Count - 1
         picContainer(i).Visible = False
     Next i
     
-    'Activate the last preferences panel that the user looked at
+    'Interface prefs
+    btsTitleText.AddItem "compact (filename only)", 0
+    btsTitleText.AddItem "verbose (filename and path)", 1
+    btsTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
+    
+    lblCanvasColor.Caption = g_Language.TranslateMessage("canvas background color: ")
+    csCanvasColor.SetLeft lblCanvasColor.GetLeft + lblCanvasColor.GetWidth + Interface.FixDPI(8)
+    csCanvasColor.SetWidth (btsTitleText.GetLeft + btsTitleText.GetWidth) - (csCanvasColor.GetLeft)
+    
+    lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent files to remember: ")
+    tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + Interface.FixDPI(8)
+    
+    btsMRUStyle.AddItem "compact (filename only)", 0
+    btsMRUStyle.AddItem "verbose (filename and path)", 1
+    btsMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
+    
+    m_userInitiatedAlphaSelection = False
+    cboAlphaCheck.Clear
+    cboAlphaCheck.AddItem "Highlight checks", 0
+    cboAlphaCheck.AddItem "Midtone checks", 1
+    cboAlphaCheck.AddItem "Shadow checks", 2
+    cboAlphaCheck.AddItem "Custom (click boxes to customize)", 3
+    cboAlphaCheck.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
+    csAlphaOne.AssignTooltip "Click to change the first checkerboard background color for alpha channels"
+    csAlphaTwo.AssignTooltip "Click to change the second checkerboard background color for alpha channels"
+    m_userInitiatedAlphaSelection = True
+    
+    cboAlphaCheckSize.Clear
+    cboAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
+    cboAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
+    cboAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
+    cboAlphaCheckSize.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
+    
+    'Loading prefs
+    chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
+    chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
+    chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
+    chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
+    chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
+    chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
+        
+    'Saving prefs
+    chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
+    
+    cboDefaultSaveFormat.Clear
+    cboDefaultSaveFormat.AddItem "the current file format of the image being saved", 0
+    cboDefaultSaveFormat.AddItem "the last image format I used in the ""Save As"" screen", 1
+    cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
+    
+    cboSaveBehavior.Clear
+    cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0
+    cboSaveBehavior.AddItem "save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
+    cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
+    
+    chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
+        
+    'Perf prefs
+    For i = 0 To cboPerformance.UBound
+        cboPerformance(i).Clear
+        cboPerformance(i).AddItem "maximize quality", 0
+        cboPerformance(i).AddItem "balance performance and quality", 1
+        cboPerformance(i).AddItem "maximize performance", 2
+    Next i
+        
+    cboPerformance(0).AssignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
+    cboPerformance(1).AssignTooltip "PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance."
+    cboPerformance(2).AssignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
+    sltUndoCompression.AssignTooltip "Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited."
+    
+    'Color-management prefs
+    Interface.PopulateRenderingIntentDropDown cboDisplayRenderIntent, ColorManagement.GetDisplayRenderingIntentPref()
+    
+    'Load a list of all available displays
+    cboDisplays.Clear
+    
+    Dim mainDisplay As String, secondaryDisplay As String
+    mainDisplay = g_Language.TranslateMessage("Primary display:")
+    secondaryDisplay = g_Language.TranslateMessage("Secondary display:")
+    
+    Dim primaryIndex As Long, displayEntry As String
+    If (g_Displays.GetDisplayCount > 0) Then
+        
+        For i = 0 To g_Displays.GetDisplayCount - 1
+        
+            displayEntry = vbNullString
+            
+            'Explicitly label the primary monitor
+            If g_Displays.Displays(i).IsPrimary Then
+                displayEntry = mainDisplay
+                primaryIndex = i
+            Else
+                displayEntry = secondaryDisplay
+            End If
+            
+            'Add the monitor's physical size
+            displayEntry = displayEntry & g_Displays.Displays(i).GetMonitorSizeAsString
+            
+            'Add the monitor's name
+            displayEntry = displayEntry & " " & g_Displays.Displays(i).GetBestMonitorName
+            
+            'Add the monitor's native resolution
+            displayEntry = displayEntry & " (" & g_Displays.Displays(i).GetMonitorResolutionAsString & ")"
+                            
+            'Display this monitor in the list
+            cboDisplays.AddItem displayEntry, i
+            
+        Next i
+        
+    Else
+        primaryIndex = 0
+        cboDisplays.AddItem "Unknown display", 0
+    End If
+    
+    'Display the primary monitor by default; this will also trigger a load of the matching
+    ' custom profile, if one exists.
+    cboDisplays.ListIndex = primaryIndex
+    
+    optColorManagement(0).AssignTooltip "Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting."
+    optColorManagement(1).AssignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
+    optColorManagement(2).AssignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
+    
+    cboDisplays.AssignTooltip "Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor."
+    cmdColorProfilePath.AssignTooltip "Click this button to bring up a ""browse for color profile"" dialog."
+    
+    cboDisplayRenderIntent.AssignTooltip "If you do not know what this setting controls, set it to ""Perceptual"".  Perceptual rendering intent is the best choice for most users."
+    chkColorManagement(0).AssignTooltip "BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON."
+        
+    'Update preferences
+    cboUpdates(0).Clear
+    cboUpdates(0).AddItem "each session", 0
+    cboUpdates(0).AddItem "weekly", 1
+    cboUpdates(0).AddItem "monthly", 2
+    cboUpdates(0).AddItem "never (not recommended)", 3
+    cboUpdates(0).AssignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
+    
+    cboUpdates(1).Clear
+    cboUpdates(1).AddItem "stable releases", 0
+    cboUpdates(1).AddItem "stable and beta releases", 1
+    cboUpdates(1).AddItem "stable, beta, and developer releases", 2
+    cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
+    
+    chkUpdates(0).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
+    
+    'In normal (portable) mode, I like to provide a short explanation of how automatic updates work.
+    ' In non-portable mode, however, we don't have write access to our own folder (because the user
+    ' probably stuck us in an access-restricted folder).  When this happens, we disable all update
+    ' options and use the explanation label to explain "why".
+    If UserPrefs.IsNonPortableModeActive() Then
+    
+        'This is a non-portable install.  Disable all update controls, then explain why.
+        For i = cboUpdates.lBound() To cboUpdates.UBound()
+            cboUpdates(i).Enabled = False
+        Next i
+        
+        For i = chkUpdates.lBound() To chkUpdates.UBound()
+            chkUpdates(i).Enabled = False
+        Next i
+        
+        lblExplanation.Caption = g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads." & vbCrLf & vbCrLf & "(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)")
+        
+    'This is a normal (portable) install.  Populate the network access disclaimer in the "Update" panel.
+    Else
+        lblExplanation.Caption = g_Language.TranslateMessage("The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.")
+    End If
+            
+    'Advanced preferences
+    lblSettingsFolder.Caption = UserPrefs.GetDataPath()
+    
+    btsDebug.AddItem "auto", 0
+    btsDebug.AddItem "no", 1
+    btsDebug.AddItem "yes", 2
+    btsDebug.AssignTooltip "In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem."
+    
+    'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
+    ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
+    btsMouseHighRes.AddItem "off", 0
+    btsMouseHighRes.AddItem "on", 1
+    btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
+    
+    lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsage(), "###,###,###,###") & " K"
+    lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsage(True), "###,###,###,###") & " K"
+    
+    cmdTmpPath.AssignTooltip "Click to select a new temporary folder."
+    cmdReset.AssignTooltip "This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem."
+    
+    'With all controls initialized, we can now assign them their corresponding values from the preferences file
+    If PDMain.IsProgramRunning() Then LoadAllPreferences
+    
+    'Finally, activate the last preferences panel that the user looked at
     Dim activePanel As Long
     activePanel = UserPrefs.GetPref_Long("Core", "Last Preferences Page", 0)
     If (activePanel > picContainer.UBound) Then activePanel = picContainer.UBound

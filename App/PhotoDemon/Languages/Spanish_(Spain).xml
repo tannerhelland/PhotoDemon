@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.13</langversion>
+<langversion>8.0.15</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -3747,6 +3747,16 @@ Por favor, introduzca un valor numérico válido.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>Open image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(Introducir texto aquí)</translation>
 </phrase>
@@ -3781,20 +3791,7 @@ Por favor, introduzca un valor numérico válido.</translation>
 <translation>Centrar la imagen en el área de edición</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Para editar una imagen, arrastre el archivo y suéltelo en esta área.
-
-Alternativamente, puede usar Vd. el botón "Abrir imagen" del panel 
-izquierdo o, bajo el menú "Archivo", los comandos "Abrir" o "Importar".</translation>
-</phrase>
-
-<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -12655,88 +12652,18 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 </phrase>
 
 <phrase>
-<original>high-resolution mouse input</original>
-<translation>Ratón de alta resolución</translation>
+<original>title bar text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reset all program settings</original>
-<translation>Restablecer todas las configuraciones del programa</translation>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>memory usage will be displayed here</original>
-<translation>El uso de memoria aparecerá aquí</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Diagnósticos de memoria</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Ubicación de archivo temporal</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>Comenzar de nuevo</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>Carpeta de configuración de la aplicación</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>generar registros de depuración</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Descargo de responsabilidad cumplimentado en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Comprobar actualizaciones automáticamente</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Permitir actualizaciones de estas ubicaciones</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Opciones de actualización</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Notificarme cuándo está lista una actualización</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts</original>
-<translation>Atajos de archivo usados recientemente</translation>
-</phrase>
-
-<phrase>
-<original>main window title bar text</original>
-<translation>Texto de la barra de título de la ventana principal</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Número máximo de entradas de archivos recientes</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Lista de archivos recientes</translation>
+<original>recent files</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12752,6 +12679,16 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 <phrase>
 <original>transparency checkerboard colors</original>
 <translation>Colores del damero de transparencia</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12915,6 +12852,71 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 </phrase>
 
 <phrase>
+<original>high-resolution mouse input</original>
+<translation>Ratón de alta resolución</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Restablecer todas las configuraciones del programa</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>El uso de memoria aparecerá aquí</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Diagnósticos de memoria</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Ubicación de archivo temporal</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>Comenzar de nuevo</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>Carpeta de configuración de la aplicación</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>generar registros de depuración</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Descargo de responsabilidad cumplimentado en tiempo de ejecución)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Comprobar actualizaciones automáticamente</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Permitir actualizaciones de estas ubicaciones</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Opciones de actualización</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Notificarme cuándo está lista una actualización</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>Guardando preferencias</translation>
 </phrase>
@@ -12944,13 +12946,43 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact - image names only</original>
-<translation>Compacto: Solo nombres de imagen</translation>
+<original>Interface</original>
+<translation>Interfaz</translation>
 </phrase>
 
 <phrase>
-<original>descriptive - full image locations, including folder(s)</original>
-<translation>Descriptivo: Rutas de imágenes completas, incluídas las carpetas</translation>
+<original>Loading</original>
+<translation>Cargando</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Rendimiento</translation>
+</phrase>
+
+<phrase>
+<original>Color management</original>
+<translation>Gestión del color</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Actualizaciones</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Avanzado</translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13016,11 +13048,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
 <translation>Cuando una imagen tiene áreas transparentes, se muestra un damero "detrás" de la imagen. Este cuadro le permite cambiar el tamaño del damero.</translation>
-</phrase>
-
-<phrase>
-<original>feature disabled due to missing plugin</original>
-<translation>Función desactivada debido a que falta la extensión</translation>
 </phrase>
 
 <phrase>
@@ -13129,13 +13156,13 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Primary monitor</original>
-<translation>Monitor principal</translation>
+<original>Primary display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Secondary monitor</original>
-<translation>Monitor secundario</translation>
+<original>Secondary display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13262,11 +13289,6 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 </phrase>
 
 <phrase>
-<original>reading not accurate inside IDE</original>
-<translation>Lectura imprecisa dentro de IDE</translation>
-</phrase>
-
-<phrase>
 <original>Click to select a new temporary folder.</original>
 <translation>Haz clic para seleccionar una nueva carpeta temporal.</translation>
 </phrase>
@@ -13274,36 +13296,6 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
 <translation>Este botón restablece todos los ajustes de PhotoDemon.  Si el programa se comporta de forma inesperada, esto puede resolver el problema.</translation>
-</phrase>
-
-<phrase>
-<original>Interface</original>
-<translation>Interfaz</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Cargando</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Rendimiento</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>Gestión del color</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Actualizaciones</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Avanzado</translation>
 </phrase>
 
 <phrase>
@@ -13316,7 +13308,7 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation>Esta nueva ubicación de la carpeta temporal no surtirá efecto hasta que reinicie el programa.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 179 phrases. 48 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13488,8 +13480,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5080 phrases. -->
-<!-- 2526 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11902 total words. -->
+<!-- As of this build, PhotoDemon contains 5079 phrases. -->
+<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11870 total words. -->
 
 </pdData>

@@ -307,7 +307,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         End With
         
         'We also need to wipe the back buffer
-        GDI_Plus.GDIPlusFillDIBRect srcImage.CanvasBuffer, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
+        GDI_Plus.GDIPlusFillDIBRect srcImage.CanvasBuffer, 0, 0, srcImage.CanvasBuffer.GetDIBWidth, srcImage.CanvasBuffer.GetDIBHeight, UserPrefs.GetCanvasColor(), 255, GP_CM_SourceCopy
         
         'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
         ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
