@@ -425,9 +425,12 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
     'Make sure the source DIB isn't empty
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
-        'Create a local array and point it at the pixel data we want to operate on
-        Dim imageData() As Byte, tmpSA As SafeArray2D
+        'Create a local array and point it at the pixel data we want to operate on.
+        ' CRITICALLY, this function *must* support both 32-bit and 24-bit DIBs, because the
+        ' PNG exporter uses it to produce grayscale maps.
+        Dim imageData() As Byte, tmpSA As SafeArray2D, bytesPerPixel As Long
         srcDIB.WrapArrayAroundDIB imageData, tmpSA
+        If (srcDIB.GetDIBColorDepth = 32) Then bytesPerPixel = 4 Else bytesPerPixel = 3
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -449,7 +452,6 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
         
         'Build a look-up table for our custom grayscale conversion results
         Dim gLookup(0 To 255) As Byte
-        
         For x = 0 To 255
             grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
             If (grayVal > 255) Then grayVal = 255
@@ -461,7 +463,7 @@ Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray()
         For x = initX To finalX
                 
             'Get the source pixel color values
-            xStride = x * 4
+            xStride = x * bytesPerPixel
             b = imageData(xStride, y)
             g = imageData(xStride + 1, y)
             r = imageData(xStride + 2, y)
