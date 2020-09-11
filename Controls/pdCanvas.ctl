@@ -24,6 +24,51 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdContainer pnlNoImages 
+      Height          =   3135
+      Left            =   6240
+      Top             =   2160
+      Visible         =   0   'False
+      Width           =   3255
+      _ExtentX        =   1720
+      _ExtentY        =   1720
+      Begin PhotoDemon.pdButton cmdStart 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         TabIndex        =   9
+         Top             =   120
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
+         Caption         =   "New image..."
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdStart 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         TabIndex        =   10
+         Top             =   720
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
+         Caption         =   "Open image..."
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdStart 
+         Height          =   495
+         Index           =   2
+         Left            =   120
+         TabIndex        =   11
+         Top             =   1320
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
+         Caption         =   "Import from clipboard..."
+         FontSize        =   12
+      End
+   End
    Begin PhotoDemon.pdProgressBar mainProgBar 
       Height          =   255
       Left            =   360
@@ -244,11 +289,10 @@ Attribute ucSupport.VB_VarHelpID = -1
 '  class, rather than treating every imaginable variant as a separate constant.)
 Private Enum PDCANVAS_COLOR_LIST
     [_First] = 0
-    PDC_Background = 0
-    PDC_StatusBar = 1
-    PDC_SpecialButtonBackground = 2
-    [_Last] = 2
-    [_Count] = 3
+    PDC_StatusBar = 0
+    PDC_SpecialButtonBackground = 1
+    [_Last] = 1
+    [_Count] = 2
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -323,7 +367,7 @@ Public Sub ClearCanvas()
     SetScrollVisibility pdo_Horizontal, PDImages.IsImageActive()
     SetScrollVisibility pdo_Vertical, PDImages.IsImageActive()
     
-    'With appropriate elements shown/hidden, we can now
+    'With appropriate elements shown/hidden, we can now align everything
     Me.AlignCanvasView
     
 End Sub
@@ -581,6 +625,19 @@ Private Sub CanvasView_LostFocusAPI()
     m_RMBDown = False
 End Sub
 
+Private Sub cmdStart_Click(Index As Integer)
+
+    'Some indices are hard-coded, others are contingent on current user settings (like recent files)
+    If (Index = 0) Then
+        Menus.ProcessDefaultAction_ByName "file_new"
+    ElseIf (Index = 1) Then
+        Menus.ProcessDefaultAction_ByName "file_open"
+    ElseIf (Index = 2) Then
+        Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
+    End If
+
+End Sub
+
 Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
 
     Select Case mnuIndex
@@ -635,6 +692,29 @@ Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCap
     
     End Select
 
+End Sub
+
+Private Sub pnlNoImages_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If (Not g_AllowDragAndDrop) Then Exit Sub
+    
+    'Use the external function (in the clipboard handler, as the code is roughly identical to
+    ' clipboard pasting) to load the OLE source.
+    g_Clipboard.LoadImageFromDragDrop Data, Effect, False
+    
+End Sub
+
+Private Sub pnlNoImages_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+
+    'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
+    ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
+        Effect = vbDropEffectCopy And Effect
+    Else
+        Effect = vbDropEffectNone
+    End If
+    
 End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
@@ -1512,7 +1592,7 @@ Private Sub FillStatusBarRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
 End Sub
 
 Public Sub AlignCanvasView()
-        
+    
     'Prevent recursive redraws by putting the entire UC into "resize mode"; while in this mode, we ignore anything that
     ' attempts to auto-initiate a canvas realignment request.
     If m_InternalResize Then Exit Sub
@@ -1592,6 +1672,10 @@ Public Sub AlignCanvasView()
         If ((cvWidth > 0) And (cvHeight > 0)) Then CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
     End If
     
+    'The "no images loaded" panel always gets moved into the *same* position, but with a border
+    ' around the outside.
+    pnlNoImages.SetPositionAndSize cvLeft, cvTop, (cvWidth - cvLeft), (cvHeight - cvTop)
+    
     '...Followed by the scrollbars
     If (hScroll.GetLeft <> hScrollLeft) Or (hScroll.GetTop <> hScrollTop) Or (hScroll.GetWidth <> cvWidth) Then
         If (cvWidth > 0) Then hScroll.SetPositionAndSize hScrollLeft, hScrollTop, cvWidth, hScroll.GetHeight
@@ -1639,8 +1723,62 @@ Public Sub AlignCanvasView()
     
     If tabstripVisible And (Not ImageStrip.Visible) Then ImageStrip.Visible = True
     
+    'If one or more images is loaded, ensure proper visibility between the primary canvas and
+    ' PD's "quick start" panel.
+    If PDImages.IsImageActive() Then
+        CanvasView.Visible = True
+        pnlNoImages.Visible = False
+    Else
+        LayoutNoImages
+        pnlNoImages.Visible = True
+        CanvasView.Visible = False
+    End If
+    
     m_InternalResize = False
     
+End Sub
+
+Private Sub LayoutNoImages()
+
+    'Determine a good button width; this varies according to canvas area
+    Dim curPanelWidth As Long, curPanelHeight As Long
+    curPanelWidth = pnlNoImages.GetWidth()
+    curPanelHeight = pnlNoImages.GetHeight()
+    
+    Dim btnWidth As Long, btnHeight As Long
+    btnWidth = Interface.FixDPI(250)
+    If (btnWidth > (curPanelWidth * 0.9)) Then btnWidth = curPanelWidth * 0.9
+    btnHeight = Interface.FixDPI(50)
+    
+    'Before we can center our button collection vertically, we need to figure out its total height.
+    ' As part of optimizing the redraw process, we're going to pre-calculate all item rects,
+    ' then position them all at once.
+    Dim totalHeight As Long, yPadding As Long
+    yPadding = Interface.FixDPI(12)
+    
+    Dim allRects() As RectL_WH
+    ReDim allRects(cmdStart.lBound To cmdStart.UBound) As RectL_WH
+    
+    Dim i As Long
+    For i = LBound(allRects) To UBound(allRects)
+        allRects(i).Width = btnWidth
+        allRects(i).Left = (curPanelWidth - btnWidth) \ 2
+        allRects(i).Height = btnHeight
+        totalHeight = totalHeight + allRects(i).Height
+        If (i < UBound(allRects)) Then totalHeight = totalHeight + yPadding
+    Next i
+    
+    'Determine starting height
+    Dim yOffset As Long
+    yOffset = (curPanelHeight - totalHeight) \ 2
+    
+    'Position everything
+    For i = LBound(allRects) To UBound(allRects)
+        allRects(i).Top = yOffset
+        cmdStart(i).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+        yOffset = yOffset + allRects(i).Height + yPadding
+    Next i
+
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -2131,7 +2269,6 @@ End Sub
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
     With m_Colors
-        .LoadThemeColor PDC_Background, "Background", IDE_GRAY
         .LoadThemeColor PDC_StatusBar, "StatusBar", IDE_GRAY
         .LoadThemeColor PDC_SpecialButtonBackground, "SpecialButtonBackground", IDE_GRAY
     End With
@@ -2139,9 +2276,9 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
-Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Optional ByVal forceRefresh As Boolean = False)
     
-    If ucSupport.ThemeUpdateRequired Then
+    If (ucSupport.ThemeUpdateRequired Or forceRefresh) Then
         
         'Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
         
@@ -2149,9 +2286,21 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         Me.SetRedrawSuspension True
         
         UpdateColorList
-        ucSupport.SetCustomBackcolor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        ucSupport.SetCustomBackcolor UserPrefs.GetCanvasColor()
+        UserControl.BackColor = UserPrefs.GetCanvasColor()
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        Dim btnImageSize As Long
+        btnImageSize = Interface.FixDPI(26)
+        pnlNoImages.UpdateAgainstCurrentTheme
+        cmdStart(0).AssignImage "file_new", imgWidth:=btnImageSize, imgHeight:=btnImageSize
+        cmdStart(1).AssignImage "file_open", imgWidth:=btnImageSize, imgHeight:=btnImageSize
+        cmdStart(2).AssignImage "edit_paste", imgWidth:=btnImageSize, imgHeight:=btnImageSize
+        
+        Dim i As Long
+        For i = cmdStart.lBound To cmdStart.UBound
+            cmdStart(i).UpdateAgainstCurrentTheme
+        Next i
         
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme
