@@ -1706,7 +1706,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_Image
         .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", "image_canvassize", True, True, True, UNDO_ImageHeader
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", "image_crop", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", "image_trim", True, True, False, UNDO_ImageHeader
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty image borders", "image_trim", True, True, False, UNDO_ImageHeader
         
             'Image -> Rotate submenu
             '.AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_Image
