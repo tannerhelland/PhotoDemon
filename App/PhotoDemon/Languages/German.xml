@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>8.2.50</langversion>
+<langversion>9.0.5</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -822,7 +822,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Diese Aktion wird Text- und Vektor-Layer in Bild- (Raster) Layer konvertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
+<translation>Diese Aktion wird Text- und Vektor-Layer in Bild- (Raster) Layer konvertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht länger modifizieren können.</translation>
 </phrase>
 
 <phrase>
@@ -842,7 +842,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>Dieser Text-Layer wird in einen Bild- (Raster) Layer geändert. Bedeutet, dass Sie dessen Text- oder Fonteinstellungen nicht mehr modifizieren können.</translation>
+<translation>Dieser Text-Layer wird in einen Bild- (Raster) Layer geändert. Bedeutet, dass Sie dessen Text- oder Fonteinstellungen nicht länger modifizieren können.</translation>
 </phrase>
 
 <phrase>
@@ -1090,9 +1090,9 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
 
 (Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Leider wird diese Makrodatei nicht mehr von der aktuellen Version von PhotoDemon unterstützt.
+<translation>Leider wird diese Makrodatei nicht länger von der aktuellen Version von PhotoDemon unterstützt.
 
-In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgezeichnete Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufzeichnen müssen.
+In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgezeichnete Makros nicht länger kompatibel sind. Sie werden diese Makros von Grund auf neu aufzeichnen müssen.
 
 (Hinweis: Beliebige alte Makrodateien werden trotzdem in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
 </phrase>
@@ -1286,7 +1286,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Canvas size</original>
-<translation>Leinwandgröße</translation>
+<translation>Leinwand-Größe</translation>
 </phrase>
 
 <phrase>
@@ -2261,12 +2261,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Open all recent images</original>
-<translation>Alle kürzlich verwendeten Bilder öffnen</translation>
+<translation>Alle jüngsten Bilder öffnen</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent image list</original>
-<translation>Liste kürzlich geöffneter Bilder löschen</translation>
+<translation>Liste jüngster Bilder löschen</translation>
 </phrase>
 
 <phrase>
@@ -3336,12 +3336,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Clipboard Image</original>
-<translation>Bild aus Zwischenablage</translation>
+<translation>Zwischenablage-Bild</translation>
 </phrase>
 
 <phrase>
 <original>Clipboard data imported successfully</original>
-<translation>Daten aus Zwischenablage erfolgreich importiert</translation>
+<translation>Zwischenablage-Daten erfolgreich importiert</translation>
 </phrase>
 
 <phrase>
@@ -3742,13 +3742,33 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>Open image</original>
+<original>quick start</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Import from clipboard</original>
+<original>recent images</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>clear recent image list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>show recent images, if any</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Open image</original>
+<translation>Bild öffnen</translation>
+</phrase>
+
+<phrase>
+<original>Import from clipboard</original>
+<translation>Aus Zwischenablage importieren</translation>
 </phrase>
 
 <phrase>
@@ -3783,10 +3803,10 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Center the image inside the viewport</original>
-<translation>Das Bild in Viewport zentrieren</translation>
+<translation>Das Bild innerhalb des Viewport zentrieren</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -4005,7 +4025,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>last-used settings</original>
-<translation>Zuletzt verwendete Einstellungen</translation>
+<translation>Zuletzt-verwendete Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -4396,7 +4416,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Select which scanner or camera to use</original>
-<translation>Wählen Sie aus, welcher Scanner oder welche Kamera verwendet werden soll</translation>
+<translation>Auswählen, welche(r) Scanner oder Kamera verwendet werden soll</translation>
 </phrase>
 
 <phrase>
@@ -6390,7 +6410,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying final false-positive checks</original>
-<translation>Finale false-positive Prüfungen werden angewendet</translation>
+<translation>Finale false-positive Überprüfungen werden angewendet</translation>
 </phrase>
 
 <phrase>
@@ -7223,7 +7243,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Canceling will return you to the main PhotoDemon window.</original>
-<translation>Mit Abbrechen werden Sie zum Hauptfenster von PhotoDemon zurückkehren.</translation>
+<translation>Mit Abbrechen werden Sie zum Haupt-PhotoDemon-Fenster zurückkehren.</translation>
 </phrase>
 
 <phrase>
@@ -7280,7 +7300,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation>(Sorry, aber automatische Neustarts in der IDE funktionieren nicht.)</translation>
+<translation>(Sorry, aber automatische Neustarts innerhalb der IDE funktionieren nicht.)</translation>
 </phrase>
 
 <phrase>
@@ -8936,7 +8956,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
-<translation>Wenn Sie die Leinwand vergrößern wollen, um das gedrehte Bild anzupassen, verwenden Sie stattdessen bitte das Menü "Bild > Drehen".</translation>
+<translation>Wenn Sie die Leinwand vergrößern wollen, um das rotierte Bild anzupassen, verwenden Sie stattdessen bitte das Menü "Bild > Drehen".</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9385,7 +9405,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann irgendeine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Extras > Makros > Neues Makro aufzeichnen" verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann irgendeine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie das Menü "Extras > Makros > Neues Makro aufzeichnen" im Haupt-PhotoDemon-Fenster verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -9410,7 +9430,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) in dem Ordner (oder den Unterordnern, falls ausgewählt) werden automatisch identifiziert.</translation>
+<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) innerhalb des Ordners (oder den Unterordnern, falls ausgewählt) werden automatisch identifiziert.</translation>
 </phrase>
 
 <phrase>
@@ -10059,7 +10079,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>%1 options</original>
-<translation>%1-Optionen</translation>
+<translation>Optionen %1</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -11088,7 +11108,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>canvas size</original>
-<translation>Leinwandgröße</translation>
+<translation>Leinwand-Größe</translation>
 </phrase>
 
 <phrase>
@@ -11975,7 +11995,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Diese Optionen steuern, den durch eine Auswahl beeinflussten Bereich. Die Auswahl kann auf der Leinwand modifiziert werden, während jegliche dieser Einstellungen aktiv sind. Für erweiterte Auswahlanpassungen verwenden Sie das Auswahlmenü.</translation>
+<translation>Diese Optionen steuern, den durch eine Auswahl beeinflussten Bereich. Die Auswahl kann auf Leinwand modifiziert werden, während jegliche dieser Einstellungen aktiv sind. Für erweiterte Auswahlanpassungen verwenden Sie das Auswahlmenü.</translation>
 </phrase>
 
 <phrase>
@@ -12646,17 +12666,17 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>Text der Titelleiste</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation></translation>
+<translation>Maximal zu merkende Anzahl der zuletzt verwendeten Dateien</translation>
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>Zuletzt verwendete Dateien</translation>
 </phrase>
 
 <phrase>
@@ -12676,12 +12696,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>Menütext der zuletzt verwendeten Datei</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>Leinwand-Hintergrundfarbe</translation>
 </phrase>
 
 <phrase>
@@ -12756,7 +12776,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation>PhotoDemon als zuletzt verwendete Bearbeitungssoftware listen</translation>
+<translation>PhotoDemon als zuletzt-verwendete Bearbeitungssoftware listen</translation>
 </phrase>
 
 <phrase>
@@ -12766,7 +12786,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
-<translation>Automatische Drehinstruktionen in Bilddateien befolgen</translation>
+<translation>Instruktionen zum automatischen Drehen in Bilddateien befolgen</translation>
 </phrase>
 
 <phrase>
@@ -12970,37 +12990,37 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>Kompakt (nur Dateiname)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>Ausführlich (Dateiname und Pfad)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeit geladene Bild an. Verwenden Sie diese Voreinstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
+<translation>Die Titelleiste des Haupt-PhotoDemon-Fensters zeigt Informationen über das derzeit geladene Bild an. Verwenden Sie diese Voreinstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
 </phrase>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildorten.</translation>
+<translation>Das Menü "Zuletzt verwendete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildorten.</translation>
 </phrase>
 
 <phrase>
 <original>Highlight checks</original>
-<translation>Glanzlicht-Prüfungen</translation>
+<translation>Glanzlicht-Überprüfungen</translation>
 </phrase>
 
 <phrase>
 <original>Midtone checks</original>
-<translation>Mittelton-Prüfungen</translation>
+<translation>Mittelton-Überprüfungen</translation>
 </phrase>
 
 <phrase>
 <original>Shadow checks</original>
-<translation>Schatten-Prüfungen</translation>
+<translation>Schatten-Überprüfungen</translation>
 </phrase>
 
 <phrase>
@@ -13070,7 +13090,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie probieren, das Feature zur autom. Rotation zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie probieren, das Feature zum automatischen Drehen zu deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -13090,7 +13110,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich PhotoDemon daran zu erinnern - daher die "Zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich, PhotoDemon daran erinnert zu haben - daher die Option "Zuletzt verwendet".</translation>
 </phrase>
 
 <phrase>
@@ -13140,7 +13160,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Rendering der primären Bildleinwand ist ein häufiger Flaschenhals für die Performance von PhotoDemon. Die automatische Einstellung wird empfohlen, aber auf älteren PCs können Sie die Option "Performance maximieren" manuell auswählen, um für mehr Performance sorgen.</translation>
+<translation>Rendering der primären Bildleinwand ist ein häufiger Flaschenhals für die Performance von PhotoDemon. Die automatische Einstellung wird empfohlen, aber bei älteren PCs können Sie die Option "Performance maximieren" manuell auswählen, um für mehr Performance sorgen.</translation>
 </phrase>
 
 <phrase>
@@ -13150,12 +13170,12 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>Primäre Anzeige</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>Sekundäre Anzeige</translation>
 </phrase>
 
 <phrase>
@@ -13471,10 +13491,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11870 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11883 total words. -->
 
 </pdData>

@@ -25,13 +25,57 @@ Begin VB.UserControl pdCanvas
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
    Begin PhotoDemon.pdContainer pnlNoImages 
-      Height          =   3135
+      Height          =   3375
       Left            =   6240
       Top             =   2160
       Visible         =   0   'False
       Width           =   3255
-      _ExtentX        =   1720
-      _ExtentY        =   1720
+      _ExtentX        =   5741
+      _ExtentY        =   5953
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         Top             =   2760
+         Width           =   855
+         _ExtentX        =   1508
+         _ExtentY        =   873
+         Caption         =   "quick start"
+         FontSize        =   18
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   495
+         Index           =   1
+         Left            =   1200
+         Top             =   2760
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   873
+         Caption         =   "recent images"
+         FontSize        =   18
+      End
+      Begin PhotoDemon.pdHyperlink hypRecentFiles 
+         Height          =   375
+         Left            =   120
+         Top             =   2400
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   "clear recent image list"
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkRecentFiles 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   13
+         Top             =   1920
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   661
+         Caption         =   "show recent images, if any"
+         Value           =   0   'False
+      End
       Begin PhotoDemon.pdButton cmdStart 
          Height          =   495
          Index           =   0
@@ -67,6 +111,16 @@ Begin VB.UserControl pdCanvas
          _ExtentY        =   873
          Caption         =   "Import from clipboard..."
          FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdRecent 
+         Height          =   495
+         Index           =   0
+         Left            =   960
+         TabIndex        =   12
+         Top             =   120
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
       End
    End
    Begin PhotoDemon.pdProgressBar mainProgBar 
@@ -625,6 +679,19 @@ Private Sub CanvasView_LostFocusAPI()
     m_RMBDown = False
 End Sub
 
+Private Sub chkRecentFiles_Click()
+    If chkRecentFiles.Visible Then
+        UserPrefs.SetPref_Boolean "Interface", "WelcomeScreenRecentFiles", chkRecentFiles.Value
+        LayoutNoImages True
+    End If
+End Sub
+
+Private Sub cmdRecent_Click(Index As Integer)
+    If (Not g_RecentFiles Is Nothing) Then
+        If (LenB(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
+    End If
+End Sub
+
 Private Sub cmdStart_Click(Index As Integer)
 
     'Some indices are hard-coded, others are contingent on current user settings (like recent files)
@@ -636,6 +703,11 @@ Private Sub cmdStart_Click(Index As Integer)
         Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
     End If
 
+End Sub
+
+Private Sub hypRecentFiles_Click()
+    If (Not g_RecentFiles Is Nothing) Then g_RecentFiles.ClearList
+    LayoutNoImages
 End Sub
 
 Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
@@ -1592,7 +1664,10 @@ Private Sub FillStatusBarRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
 End Sub
 
 Public Sub AlignCanvasView()
-    
+        
+    'Don't align anything until the program is up and running
+    If (Not UserPrefs.IsReady) Then Exit Sub
+        
     'Prevent recursive redraws by putting the entire UC into "resize mode"; while in this mode, we ignore anything that
     ' attempts to auto-initiate a canvas realignment request.
     If m_InternalResize Then Exit Sub
@@ -1729,17 +1804,27 @@ Public Sub AlignCanvasView()
         CanvasView.Visible = True
         pnlNoImages.Visible = False
     Else
+        
+        'Retrieve relevant properties before refreshing, and hide the relevant UI elements
+        ' so they don't trigger UI reflows
+        chkRecentFiles.Visible = False
+        chkRecentFiles.Value = UserPrefs.GetPref_Boolean("Interface", "WelcomeScreenRecentFiles", False)
+        chkRecentFiles.Visible = True
+        
         LayoutNoImages
         pnlNoImages.Visible = True
         CanvasView.Visible = False
+        
     End If
     
     m_InternalResize = False
     
 End Sub
 
-Private Sub LayoutNoImages()
-
+Private Sub LayoutNoImages(Optional ByVal srcIsCheckBox As Boolean = False)
+    
+    Dim i As Long
+    
     'Determine a good button width; this varies according to canvas area
     Dim curPanelWidth As Long, curPanelHeight As Long
     curPanelWidth = pnlNoImages.GetWidth()
@@ -1750,35 +1835,219 @@ Private Sub LayoutNoImages()
     If (btnWidth > (curPanelWidth * 0.9)) Then btnWidth = curPanelWidth * 0.9
     btnHeight = Interface.FixDPI(50)
     
+    Dim xPadding As Long, xOffset As Long
+    xPadding = Interface.FixDPI(20)
+    
+    'If space is available (and recent files exist), make some layout adjustments to account
+    ' for *two* columns of buttons - one for the standard new/open buttons, and another column
+    ' for recent files.
+    Dim showRecentFiles As Boolean, maxNumRecentFiles As Long
+    If (Not g_RecentFiles Is Nothing) Then maxNumRecentFiles = g_RecentFiles.GetNumOfItems Else maxNumRecentFiles = 0
+    showRecentFiles = (maxNumRecentFiles > 0) And ((btnWidth * 2 + xPadding) <= curPanelWidth)
+    
+    'Obviously, the value of the "show recent files" checkbox is also taken into account!
+    If showRecentFiles Then showRecentFiles = chkRecentFiles.Value
+    
+    'If we *can* show recent files, we want to align the regular shortcuts differently.
+    If showRecentFiles Then
+        xOffset = (curPanelWidth - (btnWidth * 2 + xPadding)) \ 2
+    Else
+        xOffset = (curPanelWidth - btnWidth) \ 2
+    End If
+    
     'Before we can center our button collection vertically, we need to figure out its total height.
     ' As part of optimizing the redraw process, we're going to pre-calculate all item rects,
     ' then position them all at once.
-    Dim totalHeight As Long, yPadding As Long
-    yPadding = Interface.FixDPI(12)
+    
+    'Start with the left-side controls (which may be the only visible controls, if we're not
+    ' displaying recent items).
+    Dim totalHeight As Long, yPadding As Long, yOffset As Long
+    yPadding = Interface.FixDPI(10)
+    
+    Dim objCount As Long
+    objCount = cmdStart.UBound + 2
     
     Dim allRects() As RectL_WH
-    ReDim allRects(cmdStart.lBound To cmdStart.UBound) As RectL_WH
+    ReDim allRects(0 To objCount) As RectL_WH
     
-    Dim i As Long
-    For i = LBound(allRects) To UBound(allRects)
+    totalHeight = 0
+    
+    For i = 0 To objCount
         allRects(i).Width = btnWidth
-        allRects(i).Left = (curPanelWidth - btnWidth) \ 2
-        allRects(i).Height = btnHeight
+        allRects(i).Left = xOffset
+        If (i = 0) Then
+            allRects(i).Height = lblTitle(0).GetHeight
+        ElseIf (i <= cmdStart.UBound + 1) Then
+            allRects(i).Height = btnHeight
+        Else
+            allRects(i).Height = chkRecentFiles.GetHeight
+        End If
         totalHeight = totalHeight + allRects(i).Height
         If (i < UBound(allRects)) Then totalHeight = totalHeight + yPadding
     Next i
     
     'Determine starting height
-    Dim yOffset As Long
     yOffset = (curPanelHeight - totalHeight) \ 2
     
     'Position everything
     For i = LBound(allRects) To UBound(allRects)
         allRects(i).Top = yOffset
-        cmdStart(i).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+        If (i = 0) Then
+            lblTitle(0).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+        ElseIf (i <= cmdStart.UBound + 1) Then
+            cmdStart(i - 1).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+        Else
+            chkRecentFiles.SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+        End If
         yOffset = yOffset + allRects(i).Height + yPadding
     Next i
-
+    
+    'If we *are* showing recent files, populate and position them next!
+    If showRecentFiles Then
+        
+        xOffset = xOffset + btnWidth + xPadding
+        
+        'Time to repeat most the above steps, but for the recent files list
+        objCount = maxNumRecentFiles + 2
+        ReDim allRects(0 To objCount - 1) As RectL_WH
+        
+        totalHeight = 0
+        
+        For i = 0 To objCount - 1
+            
+            'If we're too tall for the current container, halt processing
+            If ((totalHeight + btnHeight) > curPanelHeight) Then
+                totalHeight = totalHeight - yPadding
+                objCount = i
+                If (objCount > 2) Then
+                    allRects(objCount - 1).Height = hypRecentFiles.GetHeight
+                    Exit For
+                End If
+            End If
+            
+            allRects(i).Width = btnWidth
+            allRects(i).Left = xOffset
+            If (i = 0) Then
+                allRects(i).Height = lblTitle(1).GetHeight
+            ElseIf (i < UBound(allRects)) Then
+                allRects(i).Height = btnHeight
+            Else
+                allRects(i).Height = hypRecentFiles.GetHeight
+            End If
+            
+            totalHeight = totalHeight + allRects(i).Height
+            If (i < UBound(allRects)) Then
+                totalHeight = totalHeight + yPadding
+            
+            'This branch ensures that buttons in the recent images column align with
+            ' the standard buttons on the left (silly, I know, but it looks better!)
+            Else
+                totalHeight = totalHeight + (chkRecentFiles.GetHeight - hypRecentFiles.GetHeight)
+            End If
+            
+        Next i
+        
+        'Ensure the number of available cmdRecent instances matches the number of recent file
+        ' buttons we're gonna display
+        Dim tooMany As Boolean
+        tooMany = (cmdRecent.UBound > objCount - 2)
+        
+        If tooMany Then
+            For i = cmdRecent.UBound To objCount - 2 Step -1
+                Unload cmdRecent(i)
+            Next i
+        End If
+        
+        Dim tooFew As Boolean
+        tooFew = cmdRecent.UBound < objCount - 2
+        
+        If tooFew Then
+            For i = cmdRecent.UBound + 1 To objCount - 2
+                Load cmdRecent(i)
+            Next i
+        End If
+        
+        'Determine starting height
+        yOffset = (curPanelHeight - totalHeight) \ 2
+        
+        'Initialize a temporary object to hold thumbnails of recent files
+        Dim btnImageSize As Long
+        If OS.IsVistaOrLater Then
+            btnImageSize = Interface.FixDPI(32)
+        Else
+            btnImageSize = Interface.FixDPI(16)
+        End If
+        
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank btnImageSize, btnImageSize, 32, 0, 0
+        tmpDIB.SetInitialAlphaPremultiplicationState True
+        
+        'Position everything
+        For i = 0 To objCount - 1
+            allRects(i).Top = yOffset
+            If (i = 0) Then
+                lblTitle(1).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+                lblTitle(1).UpdateAgainstCurrentTheme
+                lblTitle(1).Visible = True
+            ElseIf (i < objCount - 1) Then
+                cmdRecent(i - 1).SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+                If (Not g_RecentFiles Is Nothing) Then
+                    
+                    'Thumbnails may not exist; always check before accessing
+                    If (Not g_RecentFiles.GetMRUThumbnail(i - 1) Is Nothing) Then
+                        tmpDIB.ResetDIB 0
+                        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, g_RecentFiles.GetMRUThumbnail(i - 1), 0, 0, g_RecentFiles.GetMRUThumbnail(i - 1).GetDIBWidth, g_RecentFiles.GetMRUThumbnail(i - 1).GetDIBHeight, interpolationType:=UserPrefs.GetThumbnailInterpolationPref(), dstCopyIsOkay:=True
+                        cmdRecent(i - 1).AssignImage vbNullString, tmpDIB, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight
+                    End If
+                    
+                    cmdRecent(i - 1).Caption = g_RecentFiles.GetMenuCaption(i - 1)
+                    cmdRecent(i - 1).UpdateAgainstCurrentTheme
+                    cmdRecent(i - 1).Visible = True
+                    
+                End If
+            Else
+                hypRecentFiles.SetPositionAndSize allRects(i).Left, allRects(i).Top, allRects(i).Width, allRects(i).Height
+                hypRecentFiles.UpdateAgainstCurrentTheme
+                hypRecentFiles.Visible = True
+            End If
+            
+            yOffset = yOffset + allRects(i).Height + yPadding
+            
+        Next i
+        
+    '(We're not showing recent files.  Unload everything we can, then hide the rest)
+    Else
+        
+        'Unload all buttons but the first one
+        If (cmdRecent.UBound > 0) Then
+            For i = 1 To cmdRecent.UBound
+                Unload cmdRecent(i)
+            Next i
+        End If
+        
+        'Hide any remaining recent-files UI elements
+        cmdRecent(0).Visible = False
+        lblTitle(1).Visible = False
+        hypRecentFiles.Visible = False
+        
+    End If
+    
+    'If this event *wasn't* initiated by the "show recent files" checkbox, try to set
+    ' focus to a useful UI element.
+    If (Not srcIsCheckBox) And (Not g_WindowManager Is Nothing) Then
+        
+        'Set keyboard focus to the first recent file
+        If showRecentFiles And cmdRecent(0).Visible Then
+            g_WindowManager.SetFocusAPI cmdRecent(0).hWnd
+    
+        'Set focus to the "open files" button
+        Else
+            g_WindowManager.SetFocusAPI cmdStart(1).hWnd
+        End If
+        
+    End If
+    
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -2301,6 +2570,13 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         For i = cmdStart.lBound To cmdStart.UBound
             cmdStart(i).UpdateAgainstCurrentTheme
         Next i
+        
+        For i = lblTitle.lBound To lblTitle.UBound
+            lblTitle(i).UpdateAgainstCurrentTheme
+        Next i
+        
+        chkRecentFiles.UpdateAgainstCurrentTheme
+        hypRecentFiles.UpdateAgainstCurrentTheme
         
         CanvasView.UpdateAgainstCurrentTheme
         StatusBar.UpdateAgainstCurrentTheme

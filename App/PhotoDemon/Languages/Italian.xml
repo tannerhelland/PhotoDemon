@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.8</langversion>
+<langversion>8.0.9</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -3741,6 +3741,26 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>quick start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clear recent image list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>show recent images, if any</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open image</original>
 <translation></translation>
 </phrase>
@@ -3785,7 +3805,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Centrare l'immagine all'interno della finestra di visualizzazione</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -13480,10 +13500,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11870 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11883 total words. -->
 
 </pdData>

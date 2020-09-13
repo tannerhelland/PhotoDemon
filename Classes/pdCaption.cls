@@ -118,7 +118,6 @@ Friend Function SetCaption(ByRef newCaption As String) As Boolean
         
         'Whenever the caption changes, we need to double-check that the caption + fontsize combination fits inside the control.
         m_FontSizeVerified = False
-                
         m_CaptionEn = newCaption
         
         'During run-time, apply translations as necessary
@@ -490,10 +489,24 @@ Private Sub VerifyFontSize()
     'Our parent control is responsible for notifying us if its size changes.  If it hasn't notified us yet, verification can't proceed.
     If (m_ContainerWidth > 0) Then
         
+        'Shortcut if the caption is null; many toolbar buttons don't use captions
+        If (LenB(m_CaptionTranslated) = 0) Then
+            m_FontSizeCaptionFit = m_FontSizeCaption
+            m_FontSizeVerified = True
+            Exit Sub
+        End If
+        
         Dim newFontSize As Single
         
-        'There are two ways to verify font size, and they differ depending on whether the caller wants us to enable wordwrapping.
-        If m_WordWrapAllowed Then
+        'There are two ways to verify font size, and they differ depending on whether the caller
+        ' wants us to enable wordwrapping.  (Note that even if word-wrap is enabled, we skip it
+        ' if the caption doesn't contain spaces - because then it wouldn't have anywhere to wrap
+        ' anyway!)
+        Dim tryWordWrap As Boolean
+        tryWordWrap = m_WordWrapAllowed
+        If tryWordWrap Then tryWordWrap = (InStr(1, m_CaptionTranslated, " ", vbBinaryCompare) <> 0)
+        
+        If tryWordWrap Then
             newFontSize = Fonts.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         Else
             newFontSize = Fonts.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)

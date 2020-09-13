@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.3</langversion>
+<langversion>8.0.4</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3742,6 +3742,26 @@ Geef een numerieke waarde.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>quick start</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clear recent image list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>show recent images, if any</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Open image</original>
 <translation></translation>
 </phrase>
@@ -3786,7 +3806,7 @@ Geef een numerieke waarde.</translation>
 <translation>Centreer de afbeelding binnenin de viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -13473,10 +13493,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11870 total words. -->
+<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11883 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.5</langversion>
+		<langversion>8.9.8</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -3692,6 +3692,26 @@ Please enter a numeric value.</original>
 		<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 		<phrase>
+			<original>quick start</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>recent images</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>clear recent image list</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>show recent images, if any</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>Open image</original>
 			<translation></translation>
 		</phrase>
@@ -3736,7 +3756,7 @@ Please enter a numeric value.</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- pdCanvas.ctl contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 		<phrase>
 			<original>caption</original>
@@ -13394,10 +13414,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2554</phrasecount>
+		<phrasecount>2558</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5079 phrases. -->
-	<!-- 2525 are duplicates, so only 2554 unique phrases have been written to file. -->
-	<!-- These 2554 phrases contain approximately 11870 total words. -->
+	<!-- As of this build, PhotoDemon contains 5083 phrases. -->
+	<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
+	<!-- These 2558 phrases contain approximately 11883 total words. -->
 
 	</pdData>
