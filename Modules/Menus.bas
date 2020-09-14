@@ -3136,7 +3136,7 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
             Message "Checking for software updates..."
-            FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
+            FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://tannerhelland.github.io/PhotoDemon-Updates-v2/", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
             
         Case "help_reportbug"
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
