@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.9</langversion>
+<langversion>8.0.10</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -7206,8 +7206,8 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Ripeti questa operazione su tutte le immagini non salvate (X in totale)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Ripeti questa operazione per tutte le immagini non salvate (%1 in totale)</translation>
 </phrase>
 
 <phrase>
@@ -7264,12 +7264,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Ripeti questa operazione per entrambe le immagini non salvate</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Ripeti questa operazione per tutte le immagini non salvate (%1 in totale)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13500,10 +13495,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

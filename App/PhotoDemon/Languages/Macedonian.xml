@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.311</langversion>
+<langversion>1.0.312</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7202,8 +7202,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Повторете ја постапката за сите незачувани слики (X вкупно)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Повторете ја постапката за сите незачувани слики ( %1 во вкупно)</translation>
 </phrase>
 
 <phrase>
@@ -7260,12 +7260,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Повторете ја постапката за двете незачувани слики</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Повторете ја постапката за сите незачувани слики ( %1 во вкупно)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13487,10 +13482,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

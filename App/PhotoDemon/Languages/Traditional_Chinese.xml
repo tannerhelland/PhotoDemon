@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.185</langversion>
+<langversion>7.0.186</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -7164,8 +7164,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>套用此操作至所有未儲存影像 (X in total)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>套用此操作至所有未儲存影像 (總計 %1 項)</translation>
 </phrase>
 
 <phrase>
@@ -7220,12 +7220,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>套用此操作至兩個未儲存影像</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>套用此操作至所有未儲存影像 (總計 %1 項)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13431,10 +13426,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.457</langversion>
+<langversion>6.6.458</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -7208,8 +7208,8 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Ulang tindakan ini untuk semua imej yang tidak disimpan (X dalam jumlah)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Ulang tindakan ini untuk semua imej yang tidak disimpan ( %1 dalam jumlah)</translation>
 </phrase>
 
 <phrase>
@@ -7266,12 +7266,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Ulang tindakan ini untuk kedua-dua imej yang tidak disimpan</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Ulang tindakan ini untuk semua imej yang tidak disimpan ( %1 dalam jumlah)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13493,10 +13488,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

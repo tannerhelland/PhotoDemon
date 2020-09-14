@@ -7,7 +7,7 @@ Begin VB.Form dialog_UnsavedChanges
    ClientHeight    =   4620
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   9360
+   ClientWidth     =   10110
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,7 +24,7 @@ Begin VB.Form dialog_UnsavedChanges
    MinButton       =   0   'False
    ScaleHeight     =   308
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   624
+   ScaleWidth      =   674
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdDropDown cboImageNames 
       Height          =   795
@@ -49,8 +49,8 @@ Begin VB.Form dialog_UnsavedChanges
       Height          =   840
       Left            =   4920
       Top             =   360
-      Width           =   4215
-      _ExtentX        =   7435
+      Width           =   5055
+      _ExtentX        =   8916
       _ExtentY        =   1482
       Caption         =   ""
       Layout          =   1
@@ -61,8 +61,8 @@ Begin VB.Form dialog_UnsavedChanges
       Left            =   3960
       TabIndex        =   0
       Top             =   1260
-      Width           =   5100
-      _ExtentX        =   8996
+      Width           =   5940
+      _ExtentX        =   10478
       _ExtentY        =   1296
       Caption         =   "Save the image before closing it"
    End
@@ -71,10 +71,10 @@ Begin VB.Form dialog_UnsavedChanges
       Left            =   3945
       TabIndex        =   3
       Top             =   4215
-      Width           =   5130
-      _ExtentX        =   9049
+      Width           =   6090
+      _ExtentX        =   10742
       _ExtentY        =   582
-      Caption         =   "Repeat this action for all unsaved images (X in total)"
+      Caption         =   "Repeat this action for all unsaved images (%1 in total)"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdPictureBox picPreview 
@@ -91,8 +91,8 @@ Begin VB.Form dialog_UnsavedChanges
       Left            =   3960
       TabIndex        =   1
       Top             =   2070
-      Width           =   5100
-      _ExtentX        =   8996
+      Width           =   5940
+      _ExtentX        =   10478
       _ExtentY        =   1296
       Caption         =   "Do not save the image (discard all changes)"
    End
@@ -102,8 +102,8 @@ Begin VB.Form dialog_UnsavedChanges
       Left            =   3960
       TabIndex        =   2
       Top             =   2880
-      Width           =   5100
-      _ExtentX        =   8996
+      Width           =   5940
+      _ExtentX        =   10478
       _ExtentY        =   1296
       Caption         =   "Cancel, and return to editing"
    End
@@ -255,22 +255,15 @@ Public Sub ShowDialog(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long
             
             'Change the text of the "repeat for all unsaved images" check box depending on how many unsaved images are present.
             If (m_numOfUnsavedImages = 2) Then
-                chkRepeat.Caption = g_Language.TranslateMessage(" Repeat this action for both unsaved images")
+                chkRepeat.Caption = g_Language.TranslateMessage("Repeat this action for both unsaved images")
             Else
-                chkRepeat.Caption = g_Language.TranslateMessage(" Repeat this action for all unsaved images (%1 in total)", m_numOfUnsavedImages)
+                chkRepeat.Caption = g_Language.TranslateMessage("Repeat this action for all unsaved images (%1 in total)", m_numOfUnsavedImages)
             End If
             
             g_WindowManager.SetSizeByHWnd Me.hWnd, wRect.x2 - wRect.x1, vDifference + (cboImageNames.GetTop + cboImageNames.GetHeight) + picPreview.GetTop + Interface.FixDPI(8)
             
         End If
     
-        'When translations are active, some lengthy language may push the check box caption completely off-screen.
-        ' To prevent this, give the check box a large buffer space if translations are active.
-        If g_Language.TranslationActive Then
-            chkRepeat.SetLeft Interface.FixDPI(8)
-            chkRepeat.SetWidth (wRectClient.x2 - wRectClient.x1) - Interface.FixDPI(16)
-        End If
-        
     End If
     
     'Apply any custom styles to the form

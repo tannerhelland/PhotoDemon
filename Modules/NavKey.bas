@@ -106,7 +106,7 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
     
     'If no parent window handle is specified, assume the last form
     If (hostFormhWnd = 0) Then
-        m_Forms(m_LastForm).NotifyChildControl childObject
+        If (Not m_Forms(m_LastForm) Is Nothing) Then m_Forms(m_LastForm).NotifyChildControl childObject
     
     'The caller specified a parent window handle.  Find a matching object before continuing.
     Else

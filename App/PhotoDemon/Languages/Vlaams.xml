@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.4</langversion>
+<langversion>8.0.5</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -7208,8 +7208,8 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (X in totaal)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (%1 in totaal)</translation>
 </phrase>
 
 <phrase>
@@ -7266,12 +7266,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Herhaal deze handeling voor beide niet-opgeslagen afbeeldingen</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (%1 in totaal)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13493,10 +13488,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

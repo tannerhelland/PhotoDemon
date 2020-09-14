@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.20</langversion>
+<langversion>8.0.21</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -7196,8 +7196,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Powtórz tę czynność dla wszystkich niezapisanych obrazów (X w sumie)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Powtórz tę czynność dla wszystkich niezapisanych obrazów (%1 w sumie)</translation>
 </phrase>
 
 <phrase>
@@ -7254,12 +7254,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>Powtórz tę czynność dla obu niezapisanych obrazów</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Powtórz tę czynność dla wszystkich niezapisanych obrazów (%1 w sumie)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13481,10 +13476,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.501</langversion>
+<langversion>6.7.499</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -992,7 +992,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Copy</original>
-<translation>Copier (toute l'image)</translation>
+<translation>Copier</translation>
 </phrase>
 
 <phrase>
@@ -1247,27 +1247,27 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Cut merged</original>
-<translation>Couper (sur l'ensemble des calques visibles)</translation>
+<translation>Couper avec fusion des calques visibles</translation>
 </phrase>
 
 <phrase>
 <original>Copy merged</original>
-<translation>Copier (de l'ensemble des calques visibles)</translation>
+<translation>Copier avec fusion des calques visibles</translation>
 </phrase>
 
 <phrase>
 <original>Paste</original>
-<translation>COLLER</translation>
+<translation>Coller</translation>
 </phrase>
 
 <phrase>
 <original>Paste to cursor</original>
-<translation>Coller (au curseur)</translation>
+<translation>Coller au curseur</translation>
 </phrase>
 
 <phrase>
 <original>Empty clipboard</original>
-<translation>Vidage du Presse papier</translation>
+<translation>Vider le Presse papier</translation>
 </phrase>
 
 <phrase>
@@ -1282,7 +1282,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>Redimensionnement sensible au contenu de l'image </translation>
+<translation>Redimensionner (sensible au contenu de l'image)</translation>
 </phrase>
 
 <phrase>
@@ -3996,7 +3996,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>OK</original>
-<translation>D'accord</translation>
+<translation>OK</translation>
 </phrase>
 
 <phrase>
@@ -4502,7 +4502,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>Redimensionner (sensible au contenu)</translation>
+<translation>Redimensionnement sensible au contenu</translation>
 </phrase>
 
 <phrase>
@@ -7204,8 +7204,8 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Répétez cette opération pour toutes les images non enregistrées (X au total)</translation>
+<original>Repeat this action for all unsaved images (%1 in total)</original>
+<translation>Répétez cette opération pour toutes les images non enregistrées (%1 au total)</translation>
 </phrase>
 
 <phrase>
@@ -7263,12 +7263,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Répétez l'opération pour chacune des images non enregistrées</translation>
 </phrase>
 
-<phrase>
-<original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Répétez cette opération pour toutes les images non enregistrées (%1 au total)</translation>
-</phrase>
-
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 5 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -13506,10 +13501,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2558</phrasecount>
+<phrasecount>2557</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2525 are duplicates, so only 2558 unique phrases have been written to file. -->
-<!-- These 2558 phrases contain approximately 11883 total words. -->
+<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11873 total words. -->
 
 </pdData>
