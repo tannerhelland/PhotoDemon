@@ -82,6 +82,14 @@ Begin VB.Form FormUpdateNotify
       _ExtentY        =   1323
       Caption         =   "Keep working"
    End
+   Begin PhotoDemon.pdPictureBox picWarning 
+      Height          =   615
+      Left            =   60
+      Top             =   120
+      Width           =   735
+      _ExtentX        =   1296
+      _ExtentY        =   1085
+   End
 End
 Attribute VB_Name = "FormUpdateNotify"
 Attribute VB_GlobalNameSpace = False
@@ -103,8 +111,10 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 
-
 Option Explicit
+
+'Theme-specific icons are fully supported
+Private m_icoDIB As pdDIB
 
 Private Sub cmdUpdate_Click(Index As Integer)
     
@@ -159,8 +169,14 @@ Private Sub Form_Load()
         cmdUpdate(0).Enabled = False
     End If
     
-    'Automatically draw a relevant icon using the system icon set
-    DrawSystemIcon IDI_ASTERISK, Me.hDC, FixDPI(16), FixDPI(12)
+    'Prep an information icon
+    Dim icoSize As Long
+    icoSize = Interface.FixDPI(32)
+    
+    If Not IconsAndCursors.LoadResourceToDIB("generic_info", m_icoDIB, icoSize, icoSize, 0) Then
+        Set m_icoDIB = Nothing
+        picWarning.Visible = False
+    End If
     
     'Display the update message.  (pdLabel automatically handles translations, as necessary.)
     lblUpdate.Caption = "A new version of PhotoDemon is available.  Restart the program to complete the update process."
@@ -175,4 +191,9 @@ Private Sub Form_Load()
     'Position the form at the bottom-right corner of the main program window.
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)
     
+End Sub
+
+Private Sub picWarning_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)
+    If (Not m_icoDIB Is Nothing) Then m_icoDIB.AlphaBlendToDC targetDC, , (ctlWidth - m_icoDIB.GetDIBWidth) \ 2, (ctlHeight - m_icoDIB.GetDIBHeight) \ 2
 End Sub

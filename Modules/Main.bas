@@ -58,7 +58,7 @@ Private m_IsProgramRunning As Boolean
 ' attempting to write data to file.
 Private m_ProgramStartupSuccessful As Boolean
 
-'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
+'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure theming is implemented
 ' correctly.  Note that this code is irrelevant within the IDE.
 Public Sub Main()
     
@@ -112,8 +112,7 @@ End Sub
 
 'Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be
 ' operated on by functions called from this routine.  (It is necessary to load the main window first, since a number of
-' load operations - like decoding PNG menu icons from the resource file, then applying them to program menus - operate
-' directly on the main window.)
+' load operations - like UI theming and localizations - need to directly operate on the main window.)
 Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages As Boolean = False) As Boolean
     
     'We assume that the program will initialize correctly.  If for some reason it doesn't, it will return FALSE, and the
