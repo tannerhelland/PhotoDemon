@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.9</langversion>
+<langversion>9.0.12</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -96,17 +96,17 @@
 
 <phrase>
 <original>Cut special</original>
-<translation>Speziell ausschneiden</translation>
+<translation>Spezielles ausschneiden</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation>Speziell kopieren</translation>
+<translation>Spezielles kopieren</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation>Speziell einfügen</translation>
+<translation>Spezielles einfügen</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -281,7 +281,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Total colors: %1</original>
-<translation>Farben insgesamt: %1</translation>
+<translation>Farben total: %1</translation>
 </phrase>
 
 <phrase>
@@ -434,7 +434,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Save cannot be completed without FreeImage library.</original>
-<translation>Speichern kann ohne FreeImage-Library nicht abgeschlossen werden.</translation>
+<translation>Speichern kann nicht ohne FreeImage-Library abgeschlossen werden.</translation>
 </phrase>
 
 <!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -922,7 +922,7 @@ Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk e
 Please close this file in any other running programs, then try again.</original>
 <translation>Leider ist die Datei '%1' derzeit durch ein anderes Programm auf diesem PC gesperrt.
 
-Bitte schließen Sie diese Datei in allen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
+Bitte schließen Sie diese Datei in irgendwelchen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2458,7 +2458,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>Scan canceled at the user's request.</original>
-<translation>Scannen auf Wunsch des Benutzers abgebrochen.</translation>
+<translation>Scan auf Wunsch des Benutzers abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -2562,7 +2562,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
-<translation>Unbekannte Prozessoranfrage eingereicht: %1
+<translation>Unbekannte Prozessor-Anfrage eingereicht: %1
 
 Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
@@ -2586,16 +2586,16 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
+<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
-2) der in PhotoDemon angegebene Dateiort korrekt ist.</translation>
+2) der in PhotoDemon angebotene Dateiort korrekt ist.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann keine additionalen Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass dieser Fehler ein Bug ist und er behoben werden muss!
+<translation>PhotoDemon kann nicht additionale Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass dieser Fehler ein Bug ist und er behoben werden muss!
 
 Möchten Sie einen Bug-Bericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
@@ -3793,7 +3793,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Open location in Explorer</original>
-<translation>Speicherort im Explorer öffnen</translation>
+<translation>Ort im Explorer öffnen</translation>
 </phrase>
 
 <phrase>
@@ -7209,7 +7209,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (insegasamt %1)</translation>
+<translation>Diese Aktion für alle ungesicherten Bilder wiederholen (%1 in total)</translation>
 </phrase>
 
 <phrase>
@@ -7233,7 +7233,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Because this image has not been saved before, you will be prompted to provide a file name for it.</original>
-<translation>Da dieses Bild bisher nicht gespeichert worden ist, werden Sie aufgefordert, einen Dateinamen für dieses anzugeben.</translation>
+<translation>Da dieses Bild bisher nicht gespeichert worden ist, werden Sie aufgefordert, einen Dateiname dafür zu bestimmen.</translation>
 </phrase>
 
 <phrase>
@@ -9064,7 +9064,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Original-Ort.</translation>
+<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien verbleiben an deren Original-Orten.</translation>
 </phrase>
 
 <phrase>
@@ -9251,7 +9251,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>if you only want to rename images or change image formats, use this option</original>
-<translation>Wenn Sie nur Bilder umbennnen oder Bildformate ändern wollen, verwenden Sie diese Option.</translation>
+<translation>Wenn Sie nur Bilder umbenennen oder Bildformate ändern wollen, verwenden Sie diese Option.</translation>
 </phrase>
 
 <phrase>
@@ -9420,7 +9420,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddateien unter Verwendung eines Standarddialogs "Bild öffnen".</translation>
+<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddatei(en) unter Verwendung eines Standarddialogs "Bild öffnen".</translation>
 </phrase>
 
 <phrase>
@@ -9460,7 +9460,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Step 4: provide a destination folder and any renaming options</original>
-<translation>Schritt 4: Geben Sie einen Zielordner und Ihre Umbenennungsoptionen an</translation>
+<translation>Schritt 4: Bestimmen Sie einen Zielordner und beliebige Umbenennungsoptionen</translation>
 </phrase>
 
 <phrase>
@@ -9470,7 +9470,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>Zu Ihrem Komfort werden auch eine Reihe von Standardoptionen zur Umbennung angeboten. Beachten Sie, dass alle Items unter "Additionale Umbennungsoptionen" optional sind.</translation>
+<translation>Zu Ihrem Komfort werden auch eine Reihe von Standard-Umbenennungsoptionen angeboten. Beachten Sie, dass alle Items unter "Additionale Umbenennungsoptionen" optional sind.</translation>
 </phrase>
 
 <phrase>
@@ -9768,7 +9768,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jede andere Bilddatei öffnen.</translation>
+<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie irgendeine andere Bilddatei öffnen.</translation>
 </phrase>
 
 <phrase>
@@ -9783,7 +9783,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 konnte unter dieser URL keine gültige Datei lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
+<translation>%1 konnte keine gültige Datei unter dieser URL lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -9977,7 +9977,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plug-in, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plug-ins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plug-in, welches auf diesem Computer nicht lokalisiert werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plug-ins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -10463,7 +10463,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl führt zu einer besseren Kompression. Verwenden Sie die automatische Einstellung, damit PhotoDemon multiple Strategien testen kann, und wählen automatisch diejenige aus, die die beste Kompression erzielt.</translation>
+<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl führt zu einer besseren Kompression. Verwenden Sie die automatische Einstellung, um PhotoDemon multiple Strategien testen zu lassen, und wählen Sie automatisch diejenige aus, die die beste Kompression erzeugt.</translation>
 </phrase>
 
 <phrase>
@@ -10811,7 +10811,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation>"System"-Tags werden vom Betriebssystem bereitgestellt. Sie werden nicht als traditionelle Metadaten eingebettet.</translation>
+<translation>"System"-Tags werden von dem Betriebssystem bereitgestellt. Sie werden nicht als traditionelle Metadaten eingebettet.</translation>
 </phrase>
 
 <phrase>
@@ -10836,12 +10836,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, diese können aber zum Erzeugen einer gültigen Bilddatei überschrieben werden.</translation>
+<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, diese können aber überschrieben werden, um eine gültige Bilddatei zu erzeugen.</translation>
 </phrase>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation>Dieses Tag ist beschränkt. Es kann nicht bearbeitet werden und Anfragen zur Entfernung werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
+<translation>Dieses Tag ist beschränkt. Es kann nicht bearbeitet werden, und Entfernungsanfragen werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
 </phrase>
 
 <phrase>
@@ -12436,7 +12436,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Development- oder Beta-Builds.
+<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht lokalisiert werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Development- oder Beta-Builds.
 
 Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
@@ -12517,7 +12517,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.</original>
-<translation>In diesem Schritt geben Sie bitte einige Metadaten hinsichtlich dieser Sprache an. Diese Informationen helfen PhotoDemon dabei, diese Sprachdatei zu handhaben.</translation>
+<translation>In diesem Schritt bestimmen Sie bitte ein wenig Metadaten hinsichtlich dieser Sprache. Diese Informationen helfen PhotoDemon dabei, diese Sprachdatei zu handhaben.</translation>
 </phrase>
 
 <phrase>
@@ -12881,7 +12881,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>temporary file location</original>
-<translation>Temporärer Dateispeicherort</translation>
+<translation>Temporärer Dateiort</translation>
 </phrase>
 
 <phrase>
@@ -13105,7 +13105,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich, PhotoDemon daran erinnert zu haben - daher die Option "Zuletzt verwendet".</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich, PhotoDemon daran erinnern zu lassen - daher die Option "Zuletzt verwendet".</translation>
 </phrase>
 
 <phrase>
@@ -13308,12 +13308,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>WARNUNG: Dieser Ordner ist ungültig (Zugriff untersagt). Bitte geben Sie einen gültigen Ordner an. Wenn kein neuer Ordner angeboten wird, verwendet PhotoDemon den Temp-Ordner des Systems.</translation>
+<translation>WARNUNG: Dieser Ordner ist ungültig (Zugriff untersagt). Bitte bestimmen Sie einen gültigen Ordner. Wenn kein neuer Ordner angeboten wird, verwendet PhotoDemon den Temp-Ordner des Systems.</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Dieser neue Speicherort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
+<translation>Dieser neue Ort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->

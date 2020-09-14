@@ -534,9 +534,11 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         ' it in "wait" mode.
         Case CCP_ExifTool
             
-            'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
-            ' to kill any stranded instances before starting new ones.
-            If (Not Autosaves.PeekLastShutdownClean) Then
+            'Crashes (or IDE stop button use) can result in stranded ExifTool instances.
+            ' As a convenience to the caller, we attempt to kill stranded instances before
+            ' starting new ones.  (Note that we must *not* kill ExifTool instances if
+            ' multiple PD sessions are active, or we'll screw up piping for them!)
+            If (Not Autosaves.PeekLastShutdownClean) And Mutex.IsThisOnlyInstance() Then
                 PDDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 ExifTool.KillStrandedExifToolInstances
             End If

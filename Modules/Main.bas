@@ -222,6 +222,18 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     
     '*************************************************************************************************************************************
+    ' Enforce multi-instancing checks
+    '*************************************************************************************************************************************
+    
+    'This step requires access to the UserPrefs module, as each PD install location uses a unique key.
+    If (Not Mutex.IsThisOnlyInstance) Then
+        PDDebug.LogAction "This PhotoDemon instance is not unique!  Querying user preferences for session behavior..."
+    Else
+        PDDebug.LogAction "(Note: this PD instance is unique; no other instances discovered.)"
+    End If
+    
+    
+    '*************************************************************************************************************************************
     ' Initialize the plugin manager and load any high-priority plugins (e.g. those required to start the program successfully)
     '*************************************************************************************************************************************
     
@@ -642,9 +654,10 @@ Public Sub FinalShutdown()
     Viewport.ReportViewportProfilingData
     PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
     
-    'Free any ugly VB-specific workaround data
+    'Free any other resources we're manually managing
     PDDebug.LogAction "Releasing VB-specific hackarounds..."
     VBHacks.ShutdownCleanup
+    Mutex.FreeAllMutexes
     
     'Delete any remaining temp files in the cache
     PDDebug.LogAction "Clearing temp file cache..."

@@ -3,8 +3,8 @@ Attribute VB_Name = "Autosaves"
 'Image Autosave Handler
 'Copyright 2014-2020 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 13/August/19
-'Last update: overhaul Undo/Redo file strategy to simplify and accelerate autosave checks
+'Last updated: 14/September/20
+'Last update: rely on new Mutex class for detecting parallel sessions and modifying behavior accordingly
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -112,7 +112,7 @@ End Sub
 Public Sub InitializeAutosave()
 
     'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
-    If (Not App.PrevInstance) Then
+    If Mutex.IsThisOnlyInstance() Then
         
         'See if the previous PD session crashed.
         Dim shutDownClean As Boolean

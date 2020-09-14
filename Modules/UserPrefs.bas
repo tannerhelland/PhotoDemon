@@ -122,6 +122,12 @@ Public Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PerformanceSetting
     End If
 End Sub
 
+'Each PD "install" (e.g. each preferences file) gets assigned a random ID.  This is useful for
+' e.g. instancing purposes.
+Public Function GetUniqueAppID() As String
+    GetUniqueAppID = UserPrefs.GetPref_String("Core", "UniqueAppID", OS.GetArbitraryGUID(False), True)
+End Function
+
 Public Function GenerateDebugLogs() As Boolean
     If (m_GenerateDebugLogs = dbg_Auto) Then
         GenerateDebugLogs = ((PD_BUILD_QUALITY <> PD_PRODUCTION) Or m_EmergencyDebug) And PDMain.IsProgramRunning()
