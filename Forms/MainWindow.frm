@@ -1792,10 +1792,17 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.  See the timer
-' start/stop functions for additional details.
+'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.
+' See the timer start/stop functions for additional details.
 Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
+
+'If the user has set the preference for single-session behavior, subsequent PD sessions will forward
+' their command-lines to us via a named pipe.  Pipe messages will be raised as events, and the pdStream
+' object gets automatically filled with data as it arrives.
+Private WithEvents m_OtherSessions As pdPipe
+Attribute m_OtherSessions.VB_VarHelpID = -1
+Private m_SessionStream As pdStream
 
 'Focus detection is used to correct some hotkey behavior.  (Specifically, when this form loses focus,
 ' PD resets its hotkey tracker; this solves problems created by Alt+Tabbing away from the program,
@@ -1811,6 +1818,60 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     HotkeyManager.ResetKeyStates
+End Sub
+
+Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
+    
+    'This pipe is used by other PD sessions to forward their command-line contents to us,
+    ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
+    ' data until the full pipe contents have arrived; for this reason, we don't care about
+    ' the passed pipe stream position - we only care about the size of the pipe matching
+    ' the long-type value at the start of the stream (which is the size of the passed string).
+    m_SessionStream.SetPosition 0, FILE_BEGIN
+    
+    'If at least four bytes are available, retrieve them; they're the size of the command line placed
+    ' into the pipe buffer.
+    If (m_SessionStream.GetStreamSize >= 4) Then
+        
+        Dim msgSize As Long
+        msgSize = m_SessionStream.ReadLong()
+        
+        'If the stream has received the full pipe message, retrieve all data, then blank out
+        ' the stream.
+        If (m_SessionStream.GetStreamSize = msgSize + 4) Then
+            
+            'If arguments were passed, extract them to a string stack
+            If (msgSize > 0) Then
+            
+                'Iterate strings
+                Dim numArguments As Long
+                numArguments = m_SessionStream.ReadLong()
+                
+                If (numArguments > 0) Then
+                    
+                    Dim i As Long, argSize As Long, argString As String
+                    For i = 0 To numArguments - 1
+                        argSize = m_SessionStream.ReadLong()
+                        argString = m_SessionStream.ReadString_UTF8(argSize, False)
+                        PDDebug.LogAction CStr(i + 1) & ": " & argString
+                    Next i
+                    
+                End If
+                
+            Else
+                PDDebug.LogAction "Received 0-length string from second instance; no action taken."
+            End If
+            
+            'Reset the stream in case other sessions connect in the future
+            m_SessionStream.SetPosition 0
+            m_SessionStream.SetSizeExternally 0
+            
+        Else
+            'Do nothing; we just need to chill and wait for the rest of the stream to arrive
+        End If
+        
+    End If
+    
 End Sub
 
 Private Sub MnuEffectUpper_Click(Index As Integer)
@@ -2777,7 +2838,37 @@ Private Sub Form_Load()
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
     Dim suspendAdditionalMessages As Boolean
     If PDMain.ContinueLoadingProgram(suspendAdditionalMessages) Then
-    
+        
+        'Initialize our multi-session listener
+        
+        'TODO: check user preference for single-session behavior here
+        If Mutex.IsThisOnlyInstance() Then
+            
+            'Write a unique session name to the user prefs file; other instances will use this
+            ' to connect to our named pipe.
+            Dim uniqueSessionName As String
+            uniqueSessionName = OS.GetArbitraryGUID()
+            UserPrefs.WritePreference "Core", "SessionID", uniqueSessionName
+            
+            'Prep the stream that will receive pipe data.  (At present, we use a plain
+            ' memory-backed stream.)
+            Set m_SessionStream = New pdStream
+            m_SessionStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
+            
+            Set m_OtherSessions = New pdPipe
+            If m_OtherSessions.CreatePipe(uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then
+                
+                'Pipe is created.  Put it in wait mode, and our work is done for now
+                PDDebug.LogAction "Multi-session listener started successfully."
+                m_OtherSessions.Server_WaitForResponse 1000
+                
+            Else
+                PDDebug.LogAction "WARNING!  FormMain couldn't create a named pipe for single session support!"
+            End If
+            
+        End If
+        
+        
         '*************************************************************************************************************************************
         ' Now that all program engines are initialized, we can finally display the primary window
         '*************************************************************************************************************************************

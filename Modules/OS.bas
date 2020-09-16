@@ -579,7 +579,7 @@ Public Function CommandW(ByRef dstStringStack As pdStringStack, Optional ByVal r
     End If
     
     'Next, we want to pre-parse the string into individual arguments using WAPI
-    If (Len(fullCmdLine) <> 0) Then
+    If (LenB(fullCmdLine) <> 0) Then
     
         Dim lPtr As Long, numArgs As Long
         lPtr = CommandLineToArgvW(StrPtr(fullCmdLine), numArgs)

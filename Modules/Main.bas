@@ -227,7 +227,65 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'This step requires access to the UserPrefs module, as each PD install location uses a unique key.
     If (Not Mutex.IsThisOnlyInstance) Then
+        
         PDDebug.LogAction "This PhotoDemon instance is not unique!  Querying user preferences for session behavior..."
+        
+        'TODO: query user prefs
+        
+        'Still under construction
+        GoTo MultiSessionNotReady
+        
+        'The user wants single-session mode.  Forward our command-line (if any) to the already-open
+        ' instance, then immediately exit.
+        Dim cPipe As pdPipe
+        Set cPipe = New pdPipe
+        If cPipe.ConnectToExistingPipe(UserPrefs.GetPref_String("Core", "SessionID", vbNullString, False), True, False, True) Then
+            
+            Dim cArgStack As pdStream
+            Set cArgStack = New pdStream
+            cArgStack.StartStream PD_SM_MemoryBacked
+            
+            Dim ourCmdLine As pdStringStack
+            If OS.CommandW(ourCmdLine, True) Then
+                
+                'Write out a dummy value (for full packet size)
+                cArgStack.WriteLong 0&
+                
+                '...as well as the total number of arguments
+                cArgStack.WriteLong ourCmdLine.GetNumOfStrings()
+                
+                'Extract the stack into a list of arguments and commands
+                Dim i As Long
+                For i = 0 To ourCmdLine.GetNumOfStrings - 1
+                    cArgStack.WriteLong LenB(ourCmdLine.GetString(i))
+                    cArgStack.WriteString_UTF8 ourCmdLine.GetString(i), False
+                Next i
+                
+                'Retreat to the start of the stream and write out the total stream size
+                cArgStack.SetPosition 0
+                cArgStack.WriteLong cArgStack.GetStreamSize() - 4
+                
+            Else
+                'No arguments?  Not sure what to do here; maybe send some "special" signal
+                ' that requests the main app flash or something?
+                cArgStack.WriteLong 0&
+            End If
+            
+            'Send our data to the already-open PD session
+            cPipe.WriteDataToPipe cArgStack.Peek_PointerOnly(0, cArgStack.GetStreamSize()), cArgStack.GetStreamSize
+            Set cArgStack = Nothing
+            Set cPipe = Nothing
+            
+            suspendAdditionalMessages = True
+            ContinueLoadingProgram = False
+            Exit Function
+            
+MultiSessionNotReady:
+            
+        Else
+            PDDebug.LogAction "WARNING!  Couldn't connect to existing PD session; loading anyway..."
+        End If
+        
     Else
         PDDebug.LogAction "(Note: this PD instance is unique; no other instances discovered.)"
     End If

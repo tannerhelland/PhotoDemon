@@ -1305,19 +1305,22 @@ Friend Function WriteString_UTF8(ByRef srcString As String, Optional ByVal embed
     End If
 End Function
 
-'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.
-' Unlike the various ReadXYZ() functions, this function does *not* modify the current stream pointer.
+'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer
+' will be used.
 '
-'NOTE: for memory-mapped file streams, you *must* supply a length alongside the peek position.  A length is required
-'      to page the source data into memory.
+'Unlike the various ReadXYZ() functions, this function does *not* modify the current stream pointer.
+'
+'NOTE: for memory-mapped file streams, you *must* supply a length alongside the peek position.
+'      A length is required to page the backing data into memory.
 '
 'NOTE: for file-backed streams, this function *cannot currently be used*.
 '
-'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream is file-backed.
+'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream
+'         is file-backed.
 '
-'IMPORTANT NOTE: adding data to the buffer may force it to allocate new memory, invalidating all previously returned
-' pointers.  You must use the return of this function immediately, as its correctness is not guaranteed after any
-' other functions are called.
+'IMPORTANT NOTE: adding data to the buffer may force it to allocate new memory, invalidating all
+'                previously returned pointers.  You must use the return of this function immediately,
+'                as its correctness is not guaranteed after any other functions are called.
 Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optional ByVal peekLength As Long = 0) As Long
 
     If (peekPosition < 0) Then peekPosition = Me.GetPosition()
