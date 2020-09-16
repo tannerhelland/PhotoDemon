@@ -335,8 +335,12 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_GIF
-                If srcImage.IsAnimated Then
-                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedGIF(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If (Not srcImage Is Nothing) Then
+                    If srcImage.IsAnimated Then
+                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedGIF(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    Else
+                        GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    End If
                 Else
                     GetExportParamsFromDialog = (Dialogs.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 End If
@@ -354,8 +358,12 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = (Dialogs.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
         
             Case PDIF_PNG
-                If srcImage.IsAnimated Then
-                    GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
+                If (Not srcImage Is Nothing) Then
+                    If srcImage.IsAnimated Then
+                        GetExportParamsFromDialog = (Dialogs.PromptExportAnimatedPNG(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    Else
+                        GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                    End If
                 Else
                     GetExportParamsFromDialog = (Dialogs.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 End If
@@ -385,6 +393,8 @@ End Function
 ' (I *DO NOT* recommend calling this function directly.  PD only uses it from within the main _SaveImage function, which also applies
 '  a number of failsafe checks against things like path accessibility and format compatibility.)
 Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
+    
+    If (srcImage Is Nothing) Then Exit Function
     
     'Generate perf reports on export; this is useful for regression testing
     Dim startTime As Currency
