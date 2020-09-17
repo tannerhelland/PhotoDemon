@@ -1803,6 +1803,7 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 Private WithEvents m_OtherSessions As pdPipe
 Attribute m_OtherSessions.VB_VarHelpID = -1
 Private m_SessionStream As pdStream
+Private m_uniqueSessionName As String
 
 'Focus detection is used to correct some hotkey behavior.  (Specifically, when this form loses focus,
 ' PD resets its hotkey tracker; this solves problems created by Alt+Tabbing away from the program,
@@ -1853,7 +1854,11 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
                     For i = 0 To numArguments - 1
                         argSize = m_SessionStream.ReadLong()
                         argString = m_SessionStream.ReadString_UTF8(argSize, False)
-                        PDDebug.LogAction CStr(i + 1) & ": " & argString
+                        
+                        'This is a path to an image.  If PD is idle, attempt to load it.
+                        If (Not Processor.IsProgramBusy()) Then Loading.LoadFileAsNewImage argString
+                        'PDDebug.LogAction CStr(i + 1) & ": " & argString
+                        
                     Next i
                     
                 End If
@@ -1865,6 +1870,14 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
             'Reset the stream in case other sessions connect in the future
             m_SessionStream.SetPosition 0
             m_SessionStream.SetSizeExternally 0
+            
+            'Forcibly disconnect from the client (required regardless of client connection state,
+            ' e.g. even if the client has disconnected, we still need to disconnect from this
+            ' instance as well), then recreate the pipe.  (This could be avoided by switching
+            ' to asynchronous I/O, but I haven't written that code... yet.)
+            m_OtherSessions.DisconnectFromClient
+            m_OtherSessions.ClosePipe
+            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then m_OtherSessions.Server_WaitForResponse 1000
             
         Else
             'Do nothing; we just need to chill and wait for the rest of the stream to arrive
@@ -2846,9 +2859,9 @@ Private Sub Form_Load()
             
             'Write a unique session name to the user prefs file; other instances will use this
             ' to connect to our named pipe.
-            Dim uniqueSessionName As String
-            uniqueSessionName = OS.GetArbitraryGUID()
-            UserPrefs.WritePreference "Core", "SessionID", uniqueSessionName
+            
+            m_uniqueSessionName = OS.GetArbitraryGUID()
+            UserPrefs.WritePreference "Core", "SessionID", m_uniqueSessionName
             
             'Prep the stream that will receive pipe data.  (At present, we use a plain
             ' memory-backed stream.)
@@ -2856,7 +2869,7 @@ Private Sub Form_Load()
             m_SessionStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
             
             Set m_OtherSessions = New pdPipe
-            If m_OtherSessions.CreatePipe(uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then
+            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then
                 
                 'Pipe is created.  Put it in wait mode, and our work is done for now
                 PDDebug.LogAction "Multi-session listener started successfully."
@@ -3795,6 +3808,35 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
         Case 7
             Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignbottom"
     End Select
+End Sub
+
+'Start/stop multisession listening support.  Note that this behavior can be overruled by the
+' user's current preference for single-session behavior (e.g. if the user doesn't want
+' single-session behavior, these functions are effectively nops.)
+'
+'That said, it is important to call these functions before PD engages something like a
+' batch process, because opening new images in the midst of a batch process can produce
+' very unpredictable behavior.  Same goes for e.g. an effect window being active, because PD
+' isn't really equipped to deal with the active image changing while a modal dialog is live.
+'
+'Pass FALSE to turn off multi-session detection; TRUE to turn it on.  Note that if the current
+' state is set to OFF, parallel PD sessions will be allowed to start regardless of the user's
+' current setting - this is a "convenience", as e.g. it allows the user to edit photos while
+' a batch process is running in the background.
+Public Sub ChangeSessionListenerState(ByVal newState As Boolean)
+    
+    'Before doing anything else, check the user's preference for multi-session behavior.
+    ' If the user does *not* want a multi-session listener, we can simply turn off the
+    ' current listener (if any).
+    
+    'Turn on multi-session listeners
+    If newState Then
+    
+    
+    Else
+    
+    End If
+
 End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,

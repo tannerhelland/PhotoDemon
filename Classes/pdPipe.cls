@@ -96,6 +96,7 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As L
 'There is no -W CreateNamedPipe, so we use -A wrappers for CreateFile as well
 Private Declare Function CreateFileA Lib "kernel32" (ByVal lpFileName As String, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
 Private Declare Function CreateNamedPipeA Lib "kernel32" (ByVal lpName As String, ByVal dwOpenMode As PD_PipeOpenMode, ByVal dwPipeMode As Long, ByVal nMaxInstances As Long, ByVal nOutBufferSize As Long, ByVal nInBufferSize As Long, ByVal nDefaultTimeOut As Long, ByVal lpSecurityAttributes As Long) As Long
+Private Declare Function DisconnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long) As Long
 Private Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Long, ByRef lpFlags As Long, ByRef outBufferSize As Long, ByRef inBufferSize As Long, ByRef nMaxInstances As Long) As Long
 Private Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long, ByVal lpDstBuffer As Long, ByVal nBufSize As Long, ByVal ptrToOutBytes As Long, ByRef lpTotalBytesAvail As Long, ByVal lpBytesLeftThisMessage As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
@@ -177,6 +178,12 @@ Friend Function ConnectToExistingPipe(ByRef pipeName As String, Optional ByVal n
     
 End Function
 
+'Server instances only: disconnect this pipe instance from a connected (or recently connected
+' but now closed) pipe client.
+Friend Function DisconnectFromClient() As Boolean
+    If (m_Pipe <> 0) Then DisconnectFromClient = (DisconnectNamedPipe(m_Pipe) <> 0)
+End Function
+
 'Once connected to a pipe, call this to pass binary data.
 Friend Function WriteDataToPipe(ByVal ptrToData As Long, ByVal sizeOfData As Long) As Boolean
     
@@ -231,7 +238,7 @@ Friend Sub Server_WaitForResponse(Optional ByVal waitIntervalInMS As Long = 1000
 End Sub
 
 'Manually shutdown our pipe (if one exists)
-Private Sub ClosePipe()
+Friend Sub ClosePipe()
     
     Set m_Stream = Nothing
     Set m_Timer = Nothing

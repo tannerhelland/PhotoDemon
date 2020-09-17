@@ -225,6 +225,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     ' Enforce multi-instancing checks
     '*************************************************************************************************************************************
     
+    perfCheck.MarkEvent "Check multi-session status"
+    
     'This step requires access to the UserPrefs module, as each PD install location uses a unique key.
     If (Not Mutex.IsThisOnlyInstance) Then
         
@@ -233,7 +235,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
         'TODO: query user prefs
         
         'Still under construction
-        GoTo MultiSessionNotReady
+        'GoTo MultiSessionNotReady
         
         'The user wants single-session mode.  Forward our command-line (if any) to the already-open
         ' instance, then immediately exit.
@@ -453,6 +455,7 @@ MultiSessionNotReady:
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     perfCheck.MarkEvent "Retrieve splash logo"
     FormSplash.PrepareSplashLogo NUMBER_OF_LOADING_STEPS
+    perfCheck.MarkEvent "Finalize splash screen"
     FormSplash.PrepareRestOfSplash
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
