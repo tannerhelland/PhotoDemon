@@ -1764,6 +1764,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormSurfaceBlur Else FormSurfaceBlur.BilaterFilter_Master processParameters
         Process_EffectsMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Dust and scratches", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormDustAndScratches Else FormDustAndScratches.ApplyDustAndScratchesFilter processParameters
+        Process_EffectsMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Harmonic mean", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormHarmonicMean Else FormHarmonicMean.ApplyHarmonicMean processParameters
         Process_EffectsMenu = True

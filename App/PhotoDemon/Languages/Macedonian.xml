@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.315</langversion>
+<langversion>1.0.316</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2087,6 +2087,11 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Harmonic mean</original>
 <translation>Хармонично значи</translation>
 </phrase>
@@ -2276,7 +2281,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 264 phrases. 30 were duplicates of existing phrases, so only 234 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5276,7 +5281,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 186 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 187 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12656,6 +12661,121 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>главниот прозорец</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>прикажување на рендерирање намера</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>достапни прикази</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>исклучете го управувањето на бојата на екранот</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>користете ги постојните системски профили за секој екран</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>профил во боја за овој екран</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>прикажување на политики</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>користете сопствени профили за секој екран</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>за затворање на слики, Предупреди ме мене за незачувани промени</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>при користење на "Save As" команда, во собата форматот на датотеката стандардно во согласност со</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>кога на "Зачувај" се користи</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>спаси однесување: пребришете vs направи копија</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>затворање незачувани слики</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>стандарден формат на датотека при зачувување</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>листа PhotoDemon како последен користат софтвер за уредување</translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -12813,121 +12933,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>Извести ме кога ажурирање е подготвена</translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>главниот прозорец</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>прикажување на рендерирање намера</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>достапни прикази</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>исклучете го управувањето на бојата на екранот</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>користете ги постојните системски профили за секој екран</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>профил во боја за овој екран</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>прикажување на политики</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>користете сопствени профили за секој екран</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>за затворање на слики, Предупреди ме мене за незачувани промени</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>при користење на "Save As" команда, во собата форматот на датотеката стандардно во согласност со</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>кога на "Зачувај" се користи</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>спаси однесување: пребришете vs направи копија</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>затворање незачувани слики</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>стандарден формат на датотека при зачувување</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>листа PhotoDemon како последен користат софтвер за уредување</translation>
 </phrase>
 
 <phrase>
@@ -13465,12 +13470,19 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
+<phrase>
+<original>Fixing dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2556</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5092 phrases. -->
-<!-- 2538 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11830 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2544 are duplicates, so only 2556 unique phrases have been written to file. -->
+<!-- These 2556 phrases contain approximately 11837 total words. -->
 
 </pdData>

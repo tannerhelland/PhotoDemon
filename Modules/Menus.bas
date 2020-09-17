@@ -475,10 +475,11 @@ Public Sub InitializeMenus()
         AddMenuItem "Add RGB noise...", "effects_rgbnoise", 6, 6, 1
         AddMenuItem "-", "-", 6, 6, 2
         AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 6, 6, 3
-        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 6, 4
-        AddMenuItem "Mean shift...", "effects_meanshift", 6, 6, 5
-        AddMenuItem "Median...", "effects_median", 6, 6, 6
-        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 6, 7
+        AddMenuItem "Dust and scratches...", "effects_dustandscratches", 6, 6, 4
+        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 6, 5
+        AddMenuItem "Mean shift...", "effects_meanshift", 6, 6, 6
+        AddMenuItem "Median...", "effects_median", 6, 6, 7
+        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 6, 8
     AddMenuItem "Pixelate", "effects_pixelate", 6, 7
         AddMenuItem "Color halftone...", "effects_colorhalftone", 6, 7, 0
         AddMenuItem "Crystallize...", "effects_crystallize", 6, 7, 1
@@ -2811,9 +2812,13 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_anisotropic"
                 Process "Anisotropic diffusion", True
-                
+            
+            'For legacy macros, only; bilateral has been replaced by Blur > Surface Blur
             Case "effects_bilateral"
                 Process "Surface blur", True
+                
+            Case "effects_dustandscratches"
+                Process "Dust and scratches", True
                 
             Case "effects_harmonicmean"
                 Process "Harmonic mean", True

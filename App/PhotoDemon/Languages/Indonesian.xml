@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.461</langversion>
+<langversion>6.6.462</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2093,6 +2093,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Harmonic mean</original>
 <translation>Harmonic mean</translation>
 </phrase>
@@ -2282,7 +2287,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 264 phrases. 30 were duplicates of existing phrases, so only 234 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5282,7 +5287,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 365 phrases. 186 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 187 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12662,6 +12667,121 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>jendela utama</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>tampilkan maksud rendering</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>display yang tersedia</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>matikan tampilan manajemen warna</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>gunakan profil sistem saat ini untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>profil warna untuk tampilan ini</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>menampilkan kebijakan</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>gunakan profil khusus untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>apabila menutup gambar, memberi peringatan kepada saya saya tentang perubahan yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>apabila menggunakan perintah "Simpan Sebagai", menetapkan format Gambar default Menurut</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>apabila "Simpan" digunakan</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>menyimpan jalan: menulis vs membuat salinan</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>menutup gambar yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Format gambar default apabila menyimpan</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>daftar PhotoDemon sebagai perangkat lunak pengeditan terakhir yang digunakan</translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -12819,121 +12939,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>memberitahu saya apabila Perbarui bersedia</translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>jendela utama</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>tampilkan maksud rendering</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>display yang tersedia</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>matikan tampilan manajemen warna</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>gunakan profil sistem saat ini untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>profil warna untuk tampilan ini</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>menampilkan kebijakan</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>gunakan profil khusus untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>apabila menutup gambar, memberi peringatan kepada saya saya tentang perubahan yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>apabila menggunakan perintah "Simpan Sebagai", menetapkan format Gambar default Menurut</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>apabila "Simpan" digunakan</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>menyimpan jalan: menulis vs membuat salinan</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>menutup gambar yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Format gambar default apabila menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>daftar PhotoDemon sebagai perangkat lunak pengeditan terakhir yang digunakan</translation>
 </phrase>
 
 <phrase>
@@ -13471,12 +13476,19 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
+<phrase>
+<original>Fixing dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2556</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5092 phrases. -->
-<!-- 2538 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11830 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2544 are duplicates, so only 2556 unique phrases have been written to file. -->
+<!-- These 2556 phrases contain approximately 11837 total words. -->
 
 </pdData>
