@@ -511,7 +511,7 @@ Private Sub MakeNewTooltip()
     'Failsafe for compile-time errors when properties are written
     If PDMain.IsProgramRunning() Then
     
-        Dim toolString As String, hexString As String, rgbString As String, targetColor As Long
+        Dim toolString As String, toolStringTitle As String, hexString As String, rgbString As String, targetColor As Long
         
         If m_MouseInPrimaryButton Or (m_MouseInSecondaryButton And m_ShowMainWindowColor) Then
         
@@ -532,10 +532,12 @@ Private Sub MakeNewTooltip()
             'Append a description string to the color data
             If m_MouseInPrimaryButton Then
                 toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
-                Me.AssignTooltip toolString, "Active color"
+                If m_ShowMainWindowColor Then toolStringTitle = g_Language.TranslateMessage("Active color") Else toolStringTitle = vbNullString
+                Me.AssignTooltip toolString, toolStringTitle
             ElseIf m_MouseInSecondaryButton Then
                 toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to make the main screen's paint color the active color.")
-                Me.AssignTooltip toolString, "Main screen paint color"
+                If m_ShowMainWindowColor Then toolStringTitle = g_Language.TranslateMessage("Main screen paint color") Else toolStringTitle = vbNullString
+                Me.AssignTooltip toolString, toolStringTitle
             End If
             
         End If
