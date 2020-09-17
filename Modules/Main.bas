@@ -3,8 +3,9 @@ Attribute VB_Name = "PDMain"
 'PhotoDemon Startup Module
 'Copyright 2014-2020 by Tanner Helland
 'Created: 03/March/14
-'Last updated: 31/January/17
-'Last update: continued work on improving program startup time
+'Last updated: 16/September/20
+'Last update: PD can now forward its command-line to an existing PD session then silently terminate,
+'             if user preferences request single-session behavior
 '
 'The Main() sub in this module is the first thing invoked when PD begins (after VB's own internal startup processes,
 ' obviously).  I've also included some other crucial startup and shutdown functions in this module.
@@ -228,64 +229,65 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Check multi-session status"
     
     'This step requires access to the UserPrefs module, as each PD install location uses a unique key.
-    If (Not Mutex.IsThisOnlyInstance) Then
+    ' (Note that we obviously disable this step in the IDE, as I often want to test things against a
+    ' side-by-side compiled copy of PD.)
+    If (Not Mutex.IsThisOnlyInstance) And OS.IsProgramCompiled Then
         
         PDDebug.LogAction "This PhotoDemon instance is not unique!  Querying user preferences for session behavior..."
         
-        'TODO: query user prefs
-        
-        'Still under construction
-        'GoTo MultiSessionNotReady
-        
-        'The user wants single-session mode.  Forward our command-line (if any) to the already-open
-        ' instance, then immediately exit.
-        Dim cPipe As pdPipe
-        Set cPipe = New pdPipe
-        If cPipe.ConnectToExistingPipe(UserPrefs.GetPref_String("Core", "SessionID", vbNullString, False), True, False, True) Then
+        'Check user preference for single-session behavior
+        If UserPrefs.GetPref_Boolean("Loading", "Single Instance", False) Then
             
-            Dim cArgStack As pdStream
-            Set cArgStack = New pdStream
-            cArgStack.StartStream PD_SM_MemoryBacked
-            
-            Dim ourCmdLine As pdStringStack
-            If OS.CommandW(ourCmdLine, True) Then
+            'The user wants single-session mode.  Forward our command-line (if any) to the already-open
+            ' instance, then immediately exit.
+            Dim cPipe As pdPipe
+            Set cPipe = New pdPipe
+            If cPipe.ConnectToExistingPipe(UserPrefs.GetPref_String("Core", "SessionID", vbNullString, False), True, False, True) Then
                 
-                'Write out a dummy value (for full packet size)
-                cArgStack.WriteLong 0&
+                Dim cArgStack As pdStream
+                Set cArgStack = New pdStream
+                cArgStack.StartStream PD_SM_MemoryBacked
                 
-                '...as well as the total number of arguments
-                cArgStack.WriteLong ourCmdLine.GetNumOfStrings()
+                Dim ourCmdLine As pdStringStack
+                If OS.CommandW(ourCmdLine, True) Then
+                    
+                    'Write out a dummy value (for full packet size)
+                    cArgStack.WriteLong 0&
+                    
+                    '...as well as the total number of arguments
+                    cArgStack.WriteLong ourCmdLine.GetNumOfStrings()
+                    
+                    'Extract the stack into a list of arguments and commands
+                    Dim i As Long
+                    For i = 0 To ourCmdLine.GetNumOfStrings - 1
+                        cArgStack.WriteLong LenB(ourCmdLine.GetString(i))
+                        cArgStack.WriteString_UTF8 ourCmdLine.GetString(i), False
+                    Next i
+                    
+                    'Retreat to the start of the stream and write out the total stream size
+                    cArgStack.SetPosition 0
+                    cArgStack.WriteLong cArgStack.GetStreamSize() - 4
+                    
+                Else
+                    'No arguments?  Not sure what to do here; maybe send some "special" signal
+                    ' that requests the main app flash or something?
+                    cArgStack.WriteLong 0&
+                End If
                 
-                'Extract the stack into a list of arguments and commands
-                Dim i As Long
-                For i = 0 To ourCmdLine.GetNumOfStrings - 1
-                    cArgStack.WriteLong LenB(ourCmdLine.GetString(i))
-                    cArgStack.WriteString_UTF8 ourCmdLine.GetString(i), False
-                Next i
+                'Send our data to the already-open PD session
+                cPipe.WriteDataToPipe cArgStack.Peek_PointerOnly(0, cArgStack.GetStreamSize()), cArgStack.GetStreamSize
+                Set cArgStack = Nothing
+                Set cPipe = Nothing
                 
-                'Retreat to the start of the stream and write out the total stream size
-                cArgStack.SetPosition 0
-                cArgStack.WriteLong cArgStack.GetStreamSize() - 4
+                suspendAdditionalMessages = True
+                ContinueLoadingProgram = False
+                Exit Function
                 
             Else
-                'No arguments?  Not sure what to do here; maybe send some "special" signal
-                ' that requests the main app flash or something?
-                cArgStack.WriteLong 0&
+                PDDebug.LogAction "WARNING!  Couldn't connect to existing PD session; starting session anyway..."
             End If
-            
-            'Send our data to the already-open PD session
-            cPipe.WriteDataToPipe cArgStack.Peek_PointerOnly(0, cArgStack.GetStreamSize()), cArgStack.GetStreamSize
-            Set cArgStack = Nothing
-            Set cPipe = Nothing
-            
-            suspendAdditionalMessages = True
-            ContinueLoadingProgram = False
-            Exit Function
-            
-MultiSessionNotReady:
-            
-        Else
-            PDDebug.LogAction "WARNING!  Couldn't connect to existing PD session; loading anyway..."
+        
+        '/end user allows multiple sessions
         End If
         
     Else
@@ -713,7 +715,7 @@ Public Sub FinalShutdown()
     
     'Report final profiling data
     Viewport.ReportViewportProfilingData
-    PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
+    If (Not g_Language Is Nothing) Then PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
     
     'Free any other resources we're manually managing
     PDDebug.LogAction "Releasing VB-specific hackarounds..."

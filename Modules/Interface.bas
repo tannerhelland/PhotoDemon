@@ -902,6 +902,9 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Make sure PD's main form is visible
     If (FormMain.WindowState = vbMinimized) Then FormMain.WindowState = vbNormal
     
+    'Turn off any async pipe connections or other listeners
+    FormMain.ChangeSessionListenerState False
+    
     'Reset our "last dialog result" tracker.  (We use "ignore" as the "default" value, as it's a value PD never utilizes internally.)
     m_LastShowDialogResult = vbIgnore
     
@@ -958,11 +961,12 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     ' on older OSes, even though a toolbox window has focus.
     Interface.FixPopupWindow dialogHWnd, True
     
-    'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
+    'Use VB to actually display the dialog.  Note that code execution will pause here until the form is closed.
+    ' (As usual, disclaimers apply to message-loop functions like DoEvents.)
     dialogForm.Show dialogModality, FormMain
     
-    'Now that the dialog has finished, we must replace the windows icons with its original ones - otherwise, VB will mistakenly
-    ' unload our custom icons with the window!
+    'Now that the dialog has finished, we must replace the windows icons with its original ones -
+    ' otherwise, VB will mistakenly unload our custom icons with the window!
     Interface.FixPopupWindow dialogHWnd, False
     
     'Release our reference to this dialog
@@ -977,6 +981,9 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
         Unload dialogForm
         Set dialogForm = Nothing
     End If
+    
+    'Reinstate any async listeners
+    FormMain.ChangeSessionListenerState True
     
     m_ModalDialogActive = False
     
@@ -1234,6 +1241,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    If (dstForm Is Nothing) Then Exit Sub
     
     'This function can be a rather egregious time hog, so I profile it from time-to-time to check for regressions
     Dim startTime As Currency

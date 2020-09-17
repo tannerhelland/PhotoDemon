@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.460</langversion>
+<langversion>6.6.461</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -12662,118 +12662,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>title bar text</original>
+<original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>jendela utama</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>tampilkan maksud rendering</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>display yang tersedia</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>matikan tampilan manajemen warna</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>gunakan profil sistem saat ini untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>profil warna untuk tampilan ini</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>menampilkan kebijakan</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>gunakan profil khusus untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>apabila menutup gambar, memberi peringatan kepada saya saya tentang perubahan yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>apabila menggunakan perintah "Simpan Sebagai", menetapkan format Gambar default Menurut</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>apabila "Simpan" digunakan</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>menyimpan jalan: menulis vs membuat salinan</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>menutup gambar yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Format gambar default apabila menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>daftar PhotoDemon sebagai perangkat lunak pengeditan terakhir yang digunakan</translation>
 </phrase>
 
 <phrase>
@@ -12809,6 +12699,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>automatically hide duplicate tags</original>
 <translation>secara otomatis menyembunyikan tag duplikat</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12927,6 +12822,121 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>jendela utama</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>tampilkan maksud rendering</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>display yang tersedia</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>matikan tampilan manajemen warna</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>gunakan profil sistem saat ini untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>profil warna untuk tampilan ini</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>menampilkan kebijakan</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>gunakan profil khusus untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>apabila menutup gambar, memberi peringatan kepada saya saya tentang perubahan yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>apabila menggunakan perintah "Simpan Sebagai", menetapkan format Gambar default Menurut</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>apabila "Simpan" digunakan</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>menyimpan jalan: menulis vs membuat salinan</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>menutup gambar yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Format gambar default apabila menyimpan</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>daftar PhotoDemon sebagai perangkat lunak pengeditan terakhir yang digunakan</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>menyimpan pilihan</translation>
 </phrase>
@@ -13028,6 +13038,16 @@ A Anda yakin ingin melanjutkan?</translation>
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
 <translation>HDR dan gambar RAW mengandungi lebih banyak warna daripada monitor PC fisikal boleh memaparkan. Sebelum memaparkan gambar tersebut, operasi pemetaan nada mesti digunakan dengan data lokasi gambar.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13283,7 +13303,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>Lokasi folder sementara yang baru ini tidak akan berpengaruh sampai Anda me-restart program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 182 phrases. 55 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13453,10 +13473,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2550</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5088 phrases. -->
-<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
-<!-- These 2550 phrases contain approximately 11808 total words. -->
+<!-- As of this build, PhotoDemon contains 5092 phrases. -->
+<!-- 2538 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11830 total words. -->
 
 </pdData>

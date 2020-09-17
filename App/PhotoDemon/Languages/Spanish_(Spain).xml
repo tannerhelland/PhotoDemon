@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.19</langversion>
+<langversion>8.0.20</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -12667,118 +12667,8 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 </phrase>
 
 <phrase>
-<original>title bar text</original>
+<original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>Ventana principal</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>usar la compensación del punto negro</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Mostrar intento de representación</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>Pantallas disponibles</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Desactivar gestión del color de pantalla</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Usar los perfiles actuales del sistema para cada pantalla</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>Perfil de color para esta pantalla</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Mostrar directivas</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Usar perfiles personalizados para cada pantalla</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>Al cerrar las imágenes, avisarme de los cambios no guardados</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>Al usar el comando "Guardar como", establecer el formato de archivo predeterminado de acuerdo con</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>Cuando se usa "Guardar"</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>Comportamiento de guardar: Sobrescribir o hacer copia</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>Cerrando imágenes no guardadas</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Formato de archivo por defecto al guardar</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>Listar PhotoDemon como el último software de edición utilizado</translation>
 </phrase>
 
 <phrase>
@@ -12814,6 +12704,11 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 <phrase>
 <original>automatically hide duplicate tags</original>
 <translation>Esconder automáticamente las etiquetas duplicadas</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12932,6 +12827,121 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 </phrase>
 
 <phrase>
+<original>title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>Ventana principal</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>usar la compensación del punto negro</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Mostrar intento de representación</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>Pantallas disponibles</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Desactivar gestión del color de pantalla</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Usar los perfiles actuales del sistema para cada pantalla</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>Perfil de color para esta pantalla</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Mostrar directivas</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Usar perfiles personalizados para cada pantalla</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>Al cerrar las imágenes, avisarme de los cambios no guardados</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>Al usar el comando "Guardar como", establecer el formato de archivo predeterminado de acuerdo con</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>Cuando se usa "Guardar"</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>Comportamiento de guardar: Sobrescribir o hacer copia</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>Cerrando imágenes no guardadas</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Formato de archivo por defecto al guardar</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>Listar PhotoDemon como el último software de edición utilizado</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>Guardando preferencias</translation>
 </phrase>
@@ -13033,6 +13043,16 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
 <translation>Las imágenes HDR y RAW contienen más colores que las que las pantallas de PC pueden mostrar físicamente. Antes de mostrar este tipo de imágenes, una operación de mapeado de tono se debe aplicar a los datos originales.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13288,7 +13308,7 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation>Esta nueva ubicación de la carpeta temporal no surtirá efecto hasta que reinicie el programa.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 182 phrases. 55 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13458,10 +13478,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2550</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5088 phrases. -->
-<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
-<!-- These 2550 phrases contain approximately 11808 total words. -->
+<!-- As of this build, PhotoDemon contains 5092 phrases. -->
+<!-- 2538 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11830 total words. -->
 
 </pdData>

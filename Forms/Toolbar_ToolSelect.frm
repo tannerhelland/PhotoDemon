@@ -1463,7 +1463,7 @@ Public Sub FreeAllToolpanels()
     ' embed it at the bottom of the main window.  Make certain those window bits are reset before
     ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
     ' encounters unexpected window bits, especially WS_CHILD).
-    g_WindowManager.DeactivateToolPanel
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.DeactivateToolPanel
     
     'Make sure our internal toolbox collection actually exists before attempting to iterate it
     If (m_NumOfPanels = 0) Then Exit Sub

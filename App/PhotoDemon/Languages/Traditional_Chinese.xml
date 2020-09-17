@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.188</langversion>
+<langversion>7.0.189</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -12604,118 +12604,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>title bar text</original>
+<original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>主視窗</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>使用黑點補償</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>顯示渲染目標</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>可顯示</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>關閉顯示色彩管理</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>使用目前系統設定檔進行顯示</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>顯示用的色彩描述檔</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>顯示規則</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>使用自訂設定檔進行顯示</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>當關閉影像時，提醒我是否尚未儲存變更</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>當使用 [另存新檔]，設定預設檔案格式為</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>當使用 [儲存]</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>儲存方式: 覆寫或製作複本</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>關閉尚未儲存影像</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>預設儲存的格式</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>寫入 PhotoDemon 為最後使用的編輯軟體</translation>
 </phrase>
 
 <phrase>
@@ -12751,6 +12641,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>automatically hide duplicate tags</original>
 <translation>自動隱藏重複標籤</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12869,6 +12764,121 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>主視窗</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>使用黑點補償</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>顯示渲染目標</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>可顯示</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>關閉顯示色彩管理</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>使用目前系統設定檔進行顯示</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>顯示用的色彩描述檔</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>顯示規則</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>使用自訂設定檔進行顯示</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>當關閉影像時，提醒我是否尚未儲存變更</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>當使用 [另存新檔]，設定預設檔案格式為</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>當使用 [儲存]</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>儲存方式: 覆寫或製作複本</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>關閉尚未儲存影像</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>預設儲存的格式</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>寫入 PhotoDemon 為最後使用的編輯軟體</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>正在儲存偏好設定</translation>
 </phrase>
@@ -12969,6 +12979,16 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
 <translation></translation>
 </phrase>
 
@@ -13221,7 +13241,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 182 phrases. 55 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13391,10 +13411,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2550</phrasecount>
+<phrasecount>2554</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5088 phrases. -->
-<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
-<!-- These 2550 phrases contain approximately 11808 total words. -->
+<!-- As of this build, PhotoDemon contains 5092 phrases. -->
+<!-- 2538 are duplicates, so only 2554 unique phrases have been written to file. -->
+<!-- These 2554 phrases contain approximately 11830 total words. -->
 
 </pdData>

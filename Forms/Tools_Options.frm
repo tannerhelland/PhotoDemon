@@ -347,7 +347,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   180
          TabIndex        =   13
-         Top             =   1455
+         Top             =   1350
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
@@ -358,7 +358,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   180
          TabIndex        =   14
-         Top             =   4125
+         Top             =   3750
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
@@ -369,7 +369,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   4
          Left            =   0
-         Top             =   2490
+         Top             =   2370
          Width           =   8265
          _ExtentX        =   14579
          _ExtentY        =   503
@@ -381,7 +381,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   6
          Left            =   0
-         Top             =   3645
+         Top             =   3405
          Width           =   8175
          _ExtentX        =   14420
          _ExtentY        =   503
@@ -417,7 +417,7 @@ Begin VB.Form FormOptions
          Height          =   375
          Left            =   180
          TabIndex        =   34
-         Top             =   3000
+         Top             =   2760
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   661
@@ -432,11 +432,22 @@ Begin VB.Form FormOptions
       Width           =   8295
       _ExtentX        =   14631
       _ExtentY        =   11853
+      Begin PhotoDemon.pdButtonStrip btsMultiInstance 
+         Height          =   975
+         Left            =   150
+         TabIndex        =   40
+         Top             =   360
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   1720
+         Caption         =   "when images arrive from an external source (like Windows Explorer):"
+         FontSizeCaption =   10
+      End
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   180
          TabIndex        =   15
-         Top             =   360
+         Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -446,7 +457,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   16
-         Top             =   3360
+         Top             =   5040
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -456,7 +467,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   9
          Left            =   0
-         Top             =   3000
+         Top             =   4680
          Width           =   8100
          _ExtentX        =   14288
          _ExtentY        =   503
@@ -468,7 +479,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   10
          Left            =   0
-         Top             =   0
+         Top             =   1680
          Width           =   8115
          _ExtentX        =   14314
          _ExtentY        =   503
@@ -480,7 +491,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   12
          Left            =   0
-         Top             =   960
+         Top             =   2640
          Width           =   8265
          _ExtentX        =   14579
          _ExtentY        =   503
@@ -492,7 +503,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   30
-         Top             =   2400
+         Top             =   4080
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -503,7 +514,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   31
-         Top             =   1680
+         Top             =   3360
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -513,7 +524,7 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   32
-         Top             =   2040
+         Top             =   3720
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
@@ -524,11 +535,23 @@ Begin VB.Form FormOptions
          Height          =   330
          Left            =   180
          TabIndex        =   33
-         Top             =   1320
+         Top             =   3000
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "automatically hide duplicate tags"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   11
+         Left            =   0
+         Top             =   0
+         Width           =   8115
+         _ExtentX        =   14314
+         _ExtentY        =   503
+         Caption         =   "app instances"
+         FontSize        =   12
+         ForeColor       =   5263440
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -1068,8 +1091,8 @@ Private Sub cmdBarMini_OKClick()
     'After updates on 22 Oct 2014, the preference saving sequence should happen in a flash, but just in case,
     ' we'll supply a bit of processing feedback.
     FormMain.Enabled = False
-    SetProgBarMax 8
-    SetProgBarVal 1
+    ProgressBars.SetProgBarMax 8
+    ProgressBars.SetProgBarVal 1
     
     'First, make note of the active panel, so we can default to that if the user returns to this dialog
     UserPrefs.SetPref_Long "Core", "Last Preferences Page", btsvCategory.ListIndex
@@ -1110,6 +1133,8 @@ Private Sub cmdBarMini_OKClick()
     
     'Loading preferences
     SetProgBarVal 2
+    
+    UserPrefs.SetPref_Boolean "Loading", "Single Instance", (btsMultiInstance.ListIndex = 0)
     
     UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
     
@@ -1212,6 +1237,7 @@ Private Sub cmdBarMini_OKClick()
     FormMain.UpdateMainLayout
     FormMain.MainCanvas(0).UpdateAgainstCurrentTheme FormMain.hWnd, True
     If PDImages.IsImageActive Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    FormMain.ChangeSessionListenerState UserPrefs.GetPref_Boolean("Loading", "Single Instance", False), True
     
     'TODO: color management changes need to be propagated here; otherwise, they won't trigger until the program is restarted.
     
@@ -1331,6 +1357,7 @@ Private Sub LoadAllPreferences()
     UpdateAlphaGridVisibility
     
     'Loading preferences
+    If UserPrefs.GetPref_Boolean("Loading", "Single Instance", False) Then btsMultiInstance.ListIndex = 0 Else btsMultiInstance.ListIndex = 1
     chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
     chkMetadataDuplicates.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True)
     chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
@@ -1466,6 +1493,8 @@ Private Sub Form_Load()
     
     'Loading prefs
     chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
+    btsMultiInstance.AddItem "load into this instance", 0
+    btsMultiInstance.AddItem "load into a new PhotoDemon instance", 1
     chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
     chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
     chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."

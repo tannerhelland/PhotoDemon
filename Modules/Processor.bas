@@ -893,6 +893,9 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         g_AllowDragAndDrop = False
         FormMain.OLEDropMode = vbOLEDropNone
         
+        'Suspend any async operations (including listeners)
+        FormMain.ChangeSessionListenerState False
+        
     Else
         
         m_Processing = False
@@ -905,6 +908,9 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         'Re-enable drag and drop operations
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = vbOLEDropManual
+        
+        'Restart any async operations (including listeners)
+        FormMain.ChangeSessionListenerState True
         
         'Restore keyboard focus to whichever control had it previously
         If maintainFocus And (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd

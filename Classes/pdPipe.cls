@@ -124,6 +124,8 @@ Private m_Stream As pdStream
 ' pipeName: must be passed.  Any Windows-required prefixes are handled automatically, so don't worry about adding them yourself.
 Friend Function CreatePipe(ByRef pipeName As String, ByRef instantiatedDstStream As pdStream, ByVal pipeOpenMode As PD_PipeOpenMode, ByVal pipeMode As PD_PipeMode, Optional ByVal maxInstances As Long = 1, Optional ByVal inputBufferSize As Long = 1024, Optional ByVal outputBufferSize As Long = 1024) As Boolean
     
+    If (m_Pipe <> 0) Then Me.ClosePipe
+    
     m_PipeName = AppendPipeNameBits(pipeName)
     
     'Store pipe mode; this affects some read/write functions

@@ -2855,11 +2855,10 @@ Private Sub Form_Load()
         'Initialize our multi-session listener
         
         'TODO: check user preference for single-session behavior here
-        If Mutex.IsThisOnlyInstance() Then
+        If Mutex.IsThisOnlyInstance() And OS.IsProgramCompiled() Then
             
             'Write a unique session name to the user prefs file; other instances will use this
             ' to connect to our named pipe.
-            
             m_uniqueSessionName = OS.GetArbitraryGUID()
             UserPrefs.WritePreference "Core", "SessionID", m_uniqueSessionName
             
@@ -2868,19 +2867,10 @@ Private Sub Form_Load()
             Set m_SessionStream = New pdStream
             m_SessionStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
             
-            Set m_OtherSessions = New pdPipe
-            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then
-                
-                'Pipe is created.  Put it in wait mode, and our work is done for now
-                PDDebug.LogAction "Multi-session listener started successfully."
-                m_OtherSessions.Server_WaitForResponse 1000
-                
-            Else
-                PDDebug.LogAction "WARNING!  FormMain couldn't create a named pipe for single session support!"
-            End If
+            'Start listening for other sessions
+            Me.ChangeSessionListenerState True, True
             
         End If
-        
         
         '*************************************************************************************************************************************
         ' Now that all program engines are initialized, we can finally display the primary window
@@ -3154,22 +3144,30 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Before unloading toolboxes, we need to reset their window bits.  (These window bits get
     ' toggled by the toolbox module as part of assigning parent/child relationships.)
-    Toolboxes.ReleaseToolbox toolbar_Layers.hWnd
-    Unload toolbar_Layers
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Layers.hWnd
+        Unload toolbar_Layers
+    End If
     Set toolbar_Layers = Nothing
     
-    Toolboxes.ReleaseToolbox toolbar_Options.hWnd
-    Unload toolbar_Options
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Options.hWnd
+        Unload toolbar_Options
+    End If
     Set toolbar_Options = Nothing
     
-    Toolboxes.ReleaseToolbox toolbar_Toolbox.hWnd
-    Unload toolbar_Toolbox
+    If PDMain.WasStartupSuccessful() Then
+        Toolboxes.ReleaseToolbox toolbar_Toolbox.hWnd
+        Unload toolbar_Toolbox
+    End If
     Set toolbar_Toolbox = Nothing
     
     'Release this form from the window manager, and write out all window data to file
     PDDebug.LogAction "Shutting down window manager..."
-    Interface.ReleaseFormTheming Me
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.UnregisterMainForm Me
+    If (Not g_WindowManager Is Nothing) Then
+        Interface.ReleaseFormTheming Me
+        g_WindowManager.UnregisterMainForm Me
+    End If
     
     'As a final failsafe, forcibly unload any remaining forms
     PDDebug.LogAction "Forcibly unloading any remaining forms..."
@@ -3823,20 +3821,51 @@ End Sub
 ' state is set to OFF, parallel PD sessions will be allowed to start regardless of the user's
 ' current setting - this is a "convenience", as e.g. it allows the user to edit photos while
 ' a batch process is running in the background.
-Public Sub ChangeSessionListenerState(ByVal newState As Boolean)
+Public Sub ChangeSessionListenerState(ByVal newState As Boolean, Optional ByVal isFirstCall As Boolean = False)
     
     'Before doing anything else, check the user's preference for multi-session behavior.
     ' If the user does *not* want a multi-session listener, we can simply turn off the
     ' current listener (if any).
+    If UserPrefs.GetPref_Boolean("Loading", "Single Instance", False) Then
+        
+        'The caller wants single-session behavior.
+        If isFirstCall Then Set m_OtherSessions = New pdPipe
+        
+        'In the IDE, it is possible for the session listener to *never* be enabled (because I don't
+        ' need async IDE shenanigans in my life), so bail if the pipe listener was never created.
+        If (m_OtherSessions Is Nothing) Or (m_SessionStream Is Nothing) Then Exit Sub
+        
+        'Turn on multi-session listeners
+        If newState Then
+            
+            'Create the pipe anew
+            If m_OtherSessions.CreatePipe(m_uniqueSessionName, m_SessionStream, pom_ClientToServer Or pom_FlagFirstPipeInstance, pm_TypeByte Or pm_ReadModeByte Or pm_RemoteClientsReject, 1) Then
+                If isFirstCall Then PDDebug.LogAction "Multi-session listener started successfully."
+                m_OtherSessions.Server_WaitForResponse 1000
+            Else
+                If isFirstCall Then PDDebug.LogAction "WARNING!  FormMain couldn't create a named pipe for single session support!"
+            End If
+                
+        'Suspend the pipe
+        Else
+            If (Not m_OtherSessions Is Nothing) Then
+                m_OtherSessions.DisconnectFromClient
+                m_OtherSessions.ClosePipe
+            End If
+        End If
     
-    'Turn on multi-session listeners
-    If newState Then
-    
-    
+    'The caller wants to allow multiple parallel instances.  Turn off the multi-session listener.
     Else
-    
+        
+        If (Not m_OtherSessions Is Nothing) Then
+            m_OtherSessions.DisconnectFromClient
+            m_OtherSessions.ClosePipe
+        End If
+        
+        Exit Sub
+        
     End If
-
+    
 End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,
