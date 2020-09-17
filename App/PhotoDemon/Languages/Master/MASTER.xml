@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.13</langversion>
+		<langversion>8.9.31</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -3877,7 +3877,7 @@ Please enter a numeric value.</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 		<phrase>
 			<original>Current color</original>
@@ -12609,12 +12609,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 		</phrase>
 
 		<phrase>
-			<original>transparency checkerboard size</original>
+			<original>grid size</original>
 			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>transparency checkerboard colors</original>
+			<original>grid colors</original>
 			<translation></translation>
 		</phrase>
 
@@ -12931,57 +12931,22 @@ Are you sure you want to continue?</original>
 		</phrase>
 
 		<phrase>
-			<original>Highlight checks</original>
+			<original>midtones</original>
 			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>Midtone checks</original>
+			<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
 			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>Shadow checks</original>
+			<original>small</original>
 			<translation></translation>
 		</phrase>
 
 		<phrase>
-			<original>Custom (click boxes to customize)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Click to change the first checkerboard background color for alpha channels</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Click to change the second checkerboard background color for alpha channels</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Small (4x4 pixels)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Medium (8x8 pixels)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Large (16x16 pixels)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+			<original>large</original>
 			<translation></translation>
 		</phrase>
 
@@ -13239,7 +13204,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 			<translation></translation>
 		</phrase>
 
-		<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
+		<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 		<phrase>
 			<original>Reset all library options</original>
@@ -13409,10 +13374,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2557</phrasecount>
+		<phrasecount>2550</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-	<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
-	<!-- These 2557 phrases contain approximately 11873 total words. -->
+	<!-- As of this build, PhotoDemon contains 5088 phrases. -->
+	<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
+	<!-- These 2550 phrases contain approximately 11808 total words. -->
 
 	</pdData>

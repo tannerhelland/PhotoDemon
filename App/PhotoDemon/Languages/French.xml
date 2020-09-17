@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.499</langversion>
+<langversion>6.7.501</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -3923,7 +3923,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Couleur de la peinture de l'écran principal</translation>
 </phrase>
 
-<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -12685,14 +12685,13 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
-<original>transparency checkerboard size</original>
-<translation>taille du damier de transparence
-</translation>
+<original>grid size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency checkerboard colors</original>
-<translation>couleurs du damier de transparence</translation>
+<original>grid colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13010,58 +13009,23 @@ Voulez-vous vraiment continuer?</translation>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>Damier clair</translation>
+<original>midtones</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Midtone checks</original>
-<translation>Damier mi-teinte</translation>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shadow checks</original>
-<translation>Damier sombre</translation>
+<original>small</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Personnalisé (cliquer sur les zones pour les personnaliser)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Si une image comporte des zones transparentes, un damier est généralement affiché "derrière" l'image. Cette boîte vous permet de changer les couleurs de cet échiquier qui est dans les tons gris par défaut.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Cliquez pour changer la couleur d'arrière-plan du premier damier pour les canaux alpha</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Cliquez pour changer la couleur d'arrière-plan du deuxième damier pour les canaux alpha</translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Petit (4x4 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Moyen (8x8 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Large (16x16 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Si une image comporte des zones transparentes, un damier est généralement affiché "derrière" l'image. Cette boîte vous permet de changer la taille de l'échiquier.</translation>
+<original>large</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13331,7 +13295,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>Ce nouvel emplacement de dossier temporaire ne prendra effet qu'après le redémarrage du programme.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13501,10 +13465,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2557</phrasecount>
+<phrasecount>2550</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
-<!-- These 2557 phrases contain approximately 11873 total words. -->
+<!-- As of this build, PhotoDemon contains 5088 phrases. -->
+<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
+<!-- These 2550 phrases contain approximately 11808 total words. -->
 
 </pdData>

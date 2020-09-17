@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.458</langversion>
+<langversion>6.6.460</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -3928,7 +3928,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Warna cat layar utama</translation>
 </phrase>
 
-<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -12682,13 +12682,13 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>transparency checkerboard size</original>
-<translation>Ukuran Transparan papan main dam</translation>
+<original>grid size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency checkerboard colors</original>
-<translation>warna Transparan papan main dam</translation>
+<original>grid colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13006,58 +13006,23 @@ A Anda yakin ingin melanjutkan?</translation>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>cek sorot</translation>
+<original>midtones</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Midtone checks</original>
-<translation>cek Midtone</translation>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shadow checks</original>
-<translation>cek Shadow</translation>
+<original>small</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Custom (klik kotak untuk menyesuaikan)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Jika gambar memiliki daerah yang transparan, kotak-kotak biasanya ditampilkan "belakang" gambar. Kotak ini memungkinkan Anda mengubah warna yang kotak-kotak itu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Klik Untuk menukar warna Latar Belakang Papan bendungan utama Yang Pertama UNTUK Saluran alpha</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Klik Untuk menukar kedua warna Latar Belakang Papan bendungan utama Saluran alpha </translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Kecil (4x4 piksel)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Sederhana (piksel 8x8)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Besar (16x16 piksel)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Jika gambar memiliki daerah yang transparan, kotak-kotak biasanya ditampilkan "belakang" gambar. Kotak ini memungkinkan Anda mengubah ukuran kotak-kotak ini. </translation>
+<original>large</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13318,7 +13283,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>Lokasi folder sementara yang baru ini tidak akan berpengaruh sampai Anda me-restart program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13488,10 +13453,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2557</phrasecount>
+<phrasecount>2550</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
-<!-- These 2557 phrases contain approximately 11873 total words. -->
+<!-- As of this build, PhotoDemon contains 5088 phrases. -->
+<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
+<!-- These 2550 phrases contain approximately 11808 total words. -->
 
 </pdData>

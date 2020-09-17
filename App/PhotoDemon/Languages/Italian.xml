@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.10</langversion>
+<langversion>8.0.12</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -3926,7 +3926,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Colore della vernice dello schermo principale</translation>
 </phrase>
 
-<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -12689,13 +12689,13 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>transparency checkerboard size</original>
-<translation>dimensione della scacchiera per la trasparenza</translation>
+<original>grid size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency checkerboard colors</original>
-<translation>dimensione della scacchiera per i colori</translation>
+<original>grid colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13013,58 +13013,23 @@ Are sei sicuro di voler continuare?</translation>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>Controlla l'evidenziazione</translation>
+<original>midtones</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Midtone checks</original>
-<translation>Controlla i mezzitoni</translation>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shadow checks</original>
-<translation>Controlla l'ombra</translation>
+<original>small</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Personalizza (clicca le caselle per personalizzare)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine.  Questa casella ti consente di cambiare il colore della scacchiera.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Clicca per cambiare il colore del primo sfondo della scacchiera per i canali alfa</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Clicca per cambiare il colore del secondo sfondo della scacchiera per i canali alfa</translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Piccolo (4x4 pixel)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Medio (8x8 pixel)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Largo (16x16 pixel)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Se l'immagine ha aree trasparenti, una scacchiera è tipicamente mostrata "dietro" l'immagine.  Questa casella ti consente di cambiare la dimensione della scacchiera.</translation>
+<original>large</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13325,7 +13290,7 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 <translation>Questa nuova posizione temporanea della cartella non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13495,10 +13460,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2557</phrasecount>
+<phrasecount>2550</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
-<!-- These 2557 phrases contain approximately 11873 total words. -->
+<!-- As of this build, PhotoDemon contains 5088 phrases. -->
+<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
+<!-- These 2550 phrases contain approximately 11808 total words. -->
 
 </pdData>

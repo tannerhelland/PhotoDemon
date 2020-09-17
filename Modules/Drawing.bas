@@ -144,6 +144,60 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
 
 End Sub
 
+'Given a source DIB, fill it with a 2x2 alpha checkerboard pattern matching the user's current preferences.
+' (The resulting DIB size is contingent on the user's checkerboard pattern size preference, FYI.)
+Public Sub GetArbitraryCheckerboardDIB(ByRef srcDIB As pdDIB, ByVal chkColorOne As Long, ByVal chkColorTwo As Long, ByVal chkSize As Long)
+    
+    Dim r1 As Long, g1 As Long, b1 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long
+    r1 = Colors.ExtractRed(chkColorOne)
+    r2 = Colors.ExtractRed(chkColorTwo)
+    g1 = Colors.ExtractGreen(chkColorOne)
+    g2 = Colors.ExtractGreen(chkColorTwo)
+    b1 = Colors.ExtractBlue(chkColorOne)
+    b2 = Colors.ExtractBlue(chkColorTwo)
+    
+    'Resize the source DIB to fit a 2x2 block pattern of the requested checkerboard pattern
+    srcDIB.CreateBlank chkSize * 2, chkSize * 2, 32, initialAlpha:=255
+    
+    Dim chkLookup() As Byte
+    ReDim chkLookup(0 To chkSize * 2) As Byte
+    Dim x As Long, y As Long
+    For x = 0 To chkSize * 2
+        chkLookup(x) = x \ chkSize
+    Next x
+    
+    'Point a temporary array directly at the source DIB's bitmap bits.
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
+    
+    'Fill the source DIB with the checkerboard pattern
+    Dim chkWidth As Long
+    chkWidth = srcDIB.GetDIBWidth - 1
+    
+    Dim xStride As Long
+    For y = 0 To chkWidth
+    For x = 0 To chkWidth
+    
+        xStride = x * 4
+        
+        If (((chkLookup(x) + chkLookup(y)) And 1) = 0) Then
+            srcImageData(xStride, y) = b1
+            srcImageData(xStride + 1, y) = g1
+            srcImageData(xStride + 2, y) = r1
+        Else
+            srcImageData(xStride, y) = b2
+            srcImageData(xStride + 1, y) = g2
+            srcImageData(xStride + 2, y) = r2
+        End If
+        
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcImageData
+
+End Sub
+
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
 Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 

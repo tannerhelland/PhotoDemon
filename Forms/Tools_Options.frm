@@ -53,6 +53,14 @@ Begin VB.Form FormOptions
       Width           =   8295
       _ExtentX        =   14631
       _ExtentY        =   11853
+      Begin PhotoDemon.pdPictureBox picGrid 
+         Height          =   735
+         Left            =   150
+         Top             =   4530
+         Width           =   735
+         _ExtentX        =   1296
+         _ExtentY        =   1296
+      End
       Begin PhotoDemon.pdColorSelector csCanvasColor 
          Height          =   375
          Left            =   3840
@@ -123,44 +131,44 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   810
-         Left            =   180
+         Left            =   1080
          TabIndex        =   2
-         Top             =   5370
-         Width           =   5895
-         _ExtentX        =   10398
+         Top             =   4500
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1429
-         Caption         =   "transparency checkerboard size:"
+         Caption         =   "grid size:"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   795
-         Left            =   180
+         Left            =   4140
          TabIndex        =   4
          Top             =   4500
-         Width           =   5895
-         _ExtentX        =   10398
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1402
-         Caption         =   "transparency checkerboard colors:"
+         Caption         =   "grid colors:"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdColorSelector csAlphaOne 
-         Height          =   435
-         Left            =   6240
+         Height          =   690
+         Left            =   7260
          TabIndex        =   5
-         Top             =   4830
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
+         Top             =   4560
+         Width           =   465
+         _ExtentX        =   820
+         _ExtentY        =   1217
          ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.pdColorSelector csAlphaTwo 
-         Height          =   435
-         Left            =   7320
+         Height          =   690
+         Left            =   7770
          TabIndex        =   6
-         Top             =   4830
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
+         Top             =   4560
+         Width           =   465
+         _ExtentX        =   820
+         _ExtentY        =   1217
          ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -883,8 +891,8 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2020 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 28/November/16
-'Last update: overhaul a number of panels to reflect new program behavior in 7.0
+'Last updated: 16/September/20
+'Last update: expand choices for transparency grid to better match Photoshop's offerings
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -900,6 +908,13 @@ Option Explicit
 
 'Used to see if the user physically clicked a combo box, or if VB selected it on its own
 Private m_userInitiatedColorSelection As Boolean, m_userInitiatedAlphaSelection As Boolean
+
+Private Sub UpdateAlphaGridVisibility()
+    Dim colorBoxVisibility As Boolean
+    colorBoxVisibility = (cboAlphaCheck.ListIndex = 8)
+    csAlphaOne.Visible = colorBoxVisibility
+    csAlphaTwo.Visible = colorBoxVisibility
+End Sub
 
 'When the preferences category is changed, only display the controls in that category
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
@@ -920,32 +935,66 @@ Private Sub cboAlphaCheck_Click()
         'Redraw the sample picture boxes based on the value the user has selected
         Select Case cboAlphaCheck.ListIndex
         
-            'Case 0 - Highlights
+            'highlights
             Case 0
                 csAlphaOne.Color = RGB(255, 255, 255)
                 csAlphaTwo.Color = RGB(204, 204, 204)
             
-            'Case 1 - Midtones
+            'midtones
             Case 1
                 csAlphaOne.Color = RGB(153, 153, 153)
                 csAlphaTwo.Color = RGB(102, 102, 102)
             
-            'Case 2 - Shadows
+            'shadows
             Case 2
                 csAlphaOne.Color = RGB(51, 51, 51)
                 csAlphaTwo.Color = RGB(0, 0, 0)
             
-            'Case 3 - Custom
+            'red
             Case 3
-                csAlphaOne.Color = RGB(255, 204, 246)
-                csAlphaTwo.Color = RGB(255, 255, 255)
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(255, 200, 200)
+            
+            'orange
+            Case 4
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(255, 215, 170)
+            
+            'green
+            Case 5
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(200, 255, 200)
+            
+            'blue
+            Case 6
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(200, 225, 255)
+            
+            'purple
+            Case 7
+                csAlphaOne.Color = RGB(255, 255, 255)
+                csAlphaTwo.Color = RGB(225, 200, 255)
+            
+            'custom
+            Case 8
+                csAlphaOne.Color = RGB(255, 160, 60)
+                csAlphaTwo.Color = RGB(160, 240, 160)
             
         End Select
+        
+        'Redraw the "sample" grid
+        picGrid.RequestRedraw True
         
         m_userInitiatedAlphaSelection = True
                 
     End If
+    
+    UpdateAlphaGridVisibility
+    
+End Sub
 
+Private Sub cboAlphaCheckSize_Click()
+    picGrid.RequestRedraw True
 End Sub
 
 'Whenever the Color and Transparency -> Color Management -> Monitor combo box is changed, load the relevant color profile
@@ -1279,6 +1328,7 @@ Private Sub LoadAllPreferences()
     csAlphaTwo.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
     m_userInitiatedAlphaSelection = True
     cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
+    UpdateAlphaGridVisibility
     
     'Loading preferences
     chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
@@ -1325,7 +1375,8 @@ Private Sub csAlphaOne_ColorChanged()
     
     If m_userInitiatedAlphaSelection Then
         m_userInitiatedAlphaSelection = False
-        cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
+        picGrid.RequestRedraw True
+        cboAlphaCheck.ListIndex = 8     '"custom colors"
         m_userInitiatedAlphaSelection = True
     End If
     
@@ -1334,8 +1385,9 @@ End Sub
 Private Sub csAlphaTwo_ColorChanged()
     
     If m_userInitiatedAlphaSelection Then
+        picGrid.RequestRedraw
         m_userInitiatedAlphaSelection = False
-        cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
+        cboAlphaCheck.ListIndex = 8     '"custom colors"
         m_userInitiatedAlphaSelection = True
     End If
     
@@ -1394,20 +1446,23 @@ Private Sub Form_Load()
     
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.Clear
-    cboAlphaCheck.AddItem "Highlight checks", 0
-    cboAlphaCheck.AddItem "Midtone checks", 1
-    cboAlphaCheck.AddItem "Shadow checks", 2
-    cboAlphaCheck.AddItem "Custom (click boxes to customize)", 3
-    cboAlphaCheck.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
-    csAlphaOne.AssignTooltip "Click to change the first checkerboard background color for alpha channels"
-    csAlphaTwo.AssignTooltip "Click to change the second checkerboard background color for alpha channels"
+    cboAlphaCheck.AddItem "highlights", 0
+    cboAlphaCheck.AddItem "midtones", 1
+    cboAlphaCheck.AddItem "shadows", 2, True
+    cboAlphaCheck.AddItem "red", 3
+    cboAlphaCheck.AddItem "orange", 4
+    cboAlphaCheck.AddItem "green", 5
+    cboAlphaCheck.AddItem "blue", 6
+    cboAlphaCheck.AddItem "purple", 7, True
+    cboAlphaCheck.AddItem "custom", 8
+    cboAlphaCheck.AssignTooltip "To help identify transparent pixels, a special grid appears ""behind"" them.  This setting modifies the grid's appearance."
     m_userInitiatedAlphaSelection = True
     
     cboAlphaCheckSize.Clear
-    cboAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
-    cboAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
-    cboAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
-    cboAlphaCheckSize.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
+    cboAlphaCheckSize.AddItem "small", 0
+    cboAlphaCheckSize.AddItem "medium", 1
+    cboAlphaCheckSize.AddItem "large", 2
+    cboAlphaCheckSize.AssignTooltip "To help identify transparent pixels, a special grid appears ""behind"" them.  This setting modifies the grid's appearance."
     
     'Loading prefs
     chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
@@ -1580,6 +1635,44 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub picGrid_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    
+    Dim chkSize As Long
+    Select Case cboAlphaCheckSize.ListIndex
+        Case 0
+            chkSize = 4
+        Case 1
+            chkSize = 8
+        Case 2
+            chkSize = 16
+    End Select
+    
+    Dim tmpGrid As pdDIB
+    Set tmpGrid = New pdDIB
+    Drawing.GetArbitraryCheckerboardDIB tmpGrid, csAlphaOne.Color, csAlphaTwo.Color, chkSize
+    
+    Dim tmpBrush As pd2DBrush
+    Set tmpBrush = New pd2DBrush
+    tmpBrush.SetBrushMode P2_BM_Texture
+    tmpBrush.SetBrushTextureWrapMode P2_WM_Tile
+    tmpBrush.SetBrushTextureFromDIB tmpGrid
+    
+    Dim tmpSurface As pd2DSurface
+    Set tmpSurface = New pd2DSurface
+    tmpSurface.WrapSurfaceAroundDC targetDC
+    tmpSurface.SetSurfaceAntialiasing P2_AA_None
+    tmpSurface.SetSurfacePixelOffset P2_PO_Normal
+    tmpSurface.SetSurfaceRenderingOriginX 1
+    tmpSurface.SetSurfaceRenderingOriginY 1
+    
+    PD2D.FillRectangleI tmpSurface, tmpBrush, 0, 0, ctlWidth, ctlHeight
+    
+    Dim tmpPen As pd2DPen
+    Drawing2D.QuickCreateSolidPen tmpPen, 1, g_Themer.GetGenericUIColor(UI_GrayNeutral)
+    PD2D.DrawRectangleI tmpSurface, tmpPen, 0, 0, ctlWidth - 1, ctlHeight - 1
+    
 End Sub
 
 'If the selected temp folder doesn't have write access, warn the user

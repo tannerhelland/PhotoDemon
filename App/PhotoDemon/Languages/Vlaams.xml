@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.5</langversion>
+<langversion>8.0.7</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3927,7 +3927,7 @@ Geef een numerieke waarde.</translation>
 <translation>Hoofdscherm-verfkleur</translation>
 </phrase>
 
-<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -12682,13 +12682,13 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>transparency checkerboard size</original>
-<translation>transparantie dambordgrootte</translation>
+<original>grid size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency checkerboard colors</original>
-<translation>transparantie dambordkleuren</translation>
+<original>grid colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13006,58 +13006,23 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>Glanspunt controles</translation>
+<original>midtones</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Midtone checks</original>
-<translation>Middentoon controles</translation>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shadow checks</original>
-<translation>Schaduw controles</translation>
+<original>small</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Aangepast (klik vakjes om aan te passen)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Als een afbeelding transparante gebieden heeft, wordt een dambord typisch weergegeven "achter" de afbeelding. Dit vak laat u toe de dambordkleuren te wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Klik om de eerste dambord achtergrondkleur te veranderen voor alfakanalen</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Klik om de tweede dambord achtergrondkleur te veranderen voor alfakanalen</translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Klein (4x4 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Medium (8x8 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Groot (16x16 pixels)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Als een afbeelding transparante gebieden heeft, wordt een dambord typisch weergegeven "achter" de afbeelding. Dit vak laat u toe de dambordgrootte te wijzigen.</translation>
+<original>large</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13318,7 +13283,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 175 phrases. 45 were duplicates of existing phrases, so only 130 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 178 phrases. 55 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13488,10 +13453,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2557</phrasecount>
+<phrasecount>2550</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5083 phrases. -->
-<!-- 2526 are duplicates, so only 2557 unique phrases have been written to file. -->
-<!-- These 2557 phrases contain approximately 11873 total words. -->
+<!-- As of this build, PhotoDemon contains 5088 phrases. -->
+<!-- 2538 are duplicates, so only 2550 unique phrases have been written to file. -->
+<!-- These 2550 phrases contain approximately 11808 total words. -->
 
 </pdData>
