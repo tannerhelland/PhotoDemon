@@ -229,8 +229,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2020 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 24/April/20
-'Last update: universal solution for switching to the color picker tool when ALT is pressed while using a paint tool
+'Last updated: 18/September/20
+'Last update: middle-mouse-button now silently activates the HAND (pan) tool, regardless of current tool
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -279,8 +279,9 @@ End Enum
 Private Const SM_CXVSCROLL As Long = 2
 Private Const SM_CYHSCROLL As Long = 3
 
-'Mouse interactions are complicated in this form, so we sometimes need to cache button values and process them elsewhere
-Private m_LMBDown As Boolean, m_RMBDown As Boolean
+'Mouse interactions are complicated in this form, so we sometimes need to cache button values
+' and process them elsewhere
+Private m_LMBDown As Boolean, m_RMBDown As Boolean, m_MMBDown As Boolean
 
 'Every time a canvas MouseMove event occurs, this number is incremented by one.  If mouse events are coming in fast and furious,
 ' we can delay renders between them to improve responsiveness.  (This number is reset to zero when the mouse is released.)
@@ -677,6 +678,7 @@ End Sub
 Private Sub CanvasView_LostFocusAPI()
     m_LMBDown = False
     m_RMBDown = False
+    m_MMBDown = False
 End Sub
 
 Private Sub chkRecentFiles_Click()
@@ -848,11 +850,15 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If Me.IsCanvasInteractionAllowed() Then
         
-        'If a paint tool is currently active, and the user presses the ALT key (but *no other*
+        'If certain tools are currently active, and the user presses the ALT key (but *no other*
         ' key modifiers), we will silently switch to the color picker.
-        Dim tmpIsPaintTool As Boolean
-        tmpIsPaintTool = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
-        If (tmpIsPaintTool And (Not Tools.GetToolAltState()) And (vkCode = VK_ALT) And (Not ucSupport.IsKeyDown(VK_CONTROL)) And (Not ucSupport.IsKeyDown(VK_SHIFT))) Then
+        Dim tmpIsSwitchableTool As Boolean
+        tmpIsSwitchableTool = tmpIsSwitchableTool Or (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
+        If (tmpIsSwitchableTool And (Not Tools.GetToolAltState()) And (vkCode = VK_ALT) And (Not ucSupport.IsKeyDown(VK_CONTROL)) And (Not ucSupport.IsKeyDown(VK_SHIFT))) Then
+            
+            'Addendum 8.4: before activating, notify the color tool of the current mouse position;
+            ' this lets it prep some internal values, so we don't get flicker when we active it
+            If m_IsMouseOverCanvas Then Tools_ColorPicker.NotifyMouseXY False, m_LastImageX, m_LastImageY, FormMain.MainCanvas(0)
             
             Tools.SetToolAltState True
             toolbar_Toolbox.SelectNewTool COLOR_PICKER
@@ -975,8 +981,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     m_LastImageX = imgX
     m_LastImageY = imgY
     
-    'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
-    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    'We also need a copy of the current mouse position relative to the active layer.
+    ' (This became necessary in PD 7.0, as layers may have non-destructive affine transforms active,
+    ' which means we can't blindly switch between image and layer coordinate spaces!)
     Dim layerX As Single, layerY As Single
     Drawing.ConvertImageCoordsToLayerCoords_Full PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, layerX, layerY
     
@@ -992,7 +999,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         
         m_LMBDown = True
         m_NumOfMouseMovements = 0
-            
+        
         'Remember this location
         m_InitMouseX = x
         m_InitMouseY = y
@@ -1101,12 +1108,21 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             
         End Select
     
+    'TODO: right-button functionality?
     ElseIf (Button = vbRightButton) Then
-    
         m_RMBDown = True
-        
-        'TODO: right-button functionality
     
+    ElseIf (Button = pdMiddleButton) Then
+        m_MMBDown = True
+        
+        'Activate HAND TOOL behavior
+        m_InitMouseX = x
+        m_InitMouseY = y
+        Tools.SetInitialCanvasScrollValues FormMain.MainCanvas(0)
+        
+        'Immediately update the cursor to reflect this change
+        SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
+        
     End If
     
 End Sub
@@ -1219,48 +1235,57 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     'This else means the LEFT mouse button is NOT down
     Else
         
-        Select Case g_CurrentTool
+        'Middle-mouse button is a special case; we activate HAND TOOL behavior when it is used
+        If m_MMBDown Then
+            Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
-            'Drag-to-navigate
-            Case NAV_DRAG
+        'Middle mouse-button is not down; treat this as a normal move event
+        Else
             
-            'Move stuff around
-            Case NAV_MOVE
-                m_LayerAutoActivateIndex = Tools_Move.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
+            Select Case g_CurrentTool
             
-            'Color picker
-            Case COLOR_PICKER
-                Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
-            
-            'Measure tool
-            Case ND_MEASURE
-                Tools_Measure.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
-            
-            'Selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
+                'Drag-to-navigate
+                Case NAV_DRAG
                 
-            'Text tools
-            Case TEXT_BASIC, TEXT_ADVANCED
+                'Move stuff around
+                Case NAV_MOVE
+                    m_LayerAutoActivateIndex = Tools_Move.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
+                
+                'Color picker
+                Case COLOR_PICKER
+                    Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                
+                'Measure tool
+                Case ND_MEASURE
+                    Tools_Measure.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
+                
+                'Selection tools
+                Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+                    Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
+                    
+                'Text tools
+                Case TEXT_BASIC, TEXT_ADVANCED
+                
+                Case PAINT_PENCIL
+                    Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                
+                Case PAINT_SOFTBRUSH, PAINT_ERASER
+                    Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    
+                Case PAINT_CLONE
+                    Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    
+                Case PAINT_FILL
+                    Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
+                    
+                Case PAINT_GRADIENT
+                    Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                    
+                Case Else
+                
+            End Select
             
-            Case PAINT_PENCIL
-                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-            
-            Case PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                
-            Case PAINT_CLONE
-                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                
-            Case PAINT_FILL
-                Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
-                
-            Case PAINT_GRADIENT
-                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
-                
-            Case Else
-            
-        End Select
+        End If
         
         'Now that everything's been updated, render a cursor to match
         SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
@@ -1428,7 +1453,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
     End If
     
-    If (Button = vbRightButton) Then m_RMBDown = False
+    If (Button = pdRightButton) Then m_RMBDown = False
+    If (Button = pdMiddleButton) Then m_MMBDown = False
     
     'Reset any tracked point of interest value for this layer
     m_CurPOI = poi_Undefined
@@ -2196,7 +2222,15 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     ' primary canvas, so we may need to perform a viewport refresh
     Dim tmpViewportParams As PD_ViewportParams
     tmpViewportParams = Viewport.GetDefaultParamObject()
-            
+    
+    'Handle some special cases first
+    
+    'If the MIDDLE MOUSE BUTTON is clicked, we silently activate the hand tool
+    If m_MMBDown Then
+        CanvasView.RequestCursor_Resource "cursor_handclosed", 0, 0
+        Exit Sub
+    End If
+    
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
         

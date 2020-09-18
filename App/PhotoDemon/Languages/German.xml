@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.16</langversion>
+<langversion>9.0.37</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2091,7 +2091,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>Staub und Kratzer</translation>
 </phrase>
 
 <phrase>
@@ -3691,7 +3691,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an ausgewählten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -12241,7 +12241,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>start a new language file from scratch</original>
-<translation>Mit einer völlig neuen Sprachdatei starten</translation>
+<translation>Von Grund auf eine neue Sprachdatei beginnen</translation>
 </phrase>
 
 <phrase>
@@ -12443,7 +12443,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht lokalisiert werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Development- oder Beta-Builds.
 
-Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
+Um eine neue Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -12686,12 +12686,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>Gittergröße</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>Gitterfarben</translation>
 </phrase>
 
 <phrase>
@@ -12721,7 +12721,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>turn off display color management</original>
-<translation>Anzeige des Farbmanagements ausschalten</translation>
+<translation>Anzeige-Farbmanagement ausschalten</translation>
 </phrase>
 
 <phrase>
@@ -12781,7 +12781,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation></translation>
+<translation>Wenn Bilder aus einer externen Quelle (wie Windows-Explorer) ankommen</translation>
 </phrase>
 
 <phrase>
@@ -12821,7 +12821,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>app instances</original>
-<translation></translation>
+<translation>App-Instanzen</translation>
 </phrase>
 
 <phrase>
@@ -13020,22 +13020,22 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>midtones</original>
-<translation></translation>
+<translation>Mitteltöne</translation>
 </phrase>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation></translation>
+<translation>Um transparente Pixel leichter zu identifizieren, erscheint "hinter" diesen ein spezielles Gitter.  Diese Einstellung modifiziert das Erscheinungsbild des Gitters.</translation>
 </phrase>
 
 <phrase>
 <original>small</original>
-<translation></translation>
+<translation>Klein</translation>
 </phrase>
 
 <phrase>
 <original>large</original>
-<translation></translation>
+<translation>Groß</translation>
 </phrase>
 
 <phrase>
@@ -13045,12 +13045,12 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>load into this instance</original>
-<translation></translation>
+<translation>In diese Instanz laden</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation></translation>
+<translation>In eine neue PhotoDemon-Instanz laden</translation>
 </phrase>
 
 <phrase>
@@ -13135,7 +13135,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Einige Interface-Elemente erhalten benutzerdefinierte Dekorationen (wie Schlagschatten). Auf älteren PCs können diese Dekorationen für einen geringen Performance-Schub ausgesetzt werden.</translation>
+<translation>Einige Interface-Elemente erhalten benutzerdefinierte Dekorationen (wie Schlagschatten). Auf älteren PCs können diese Dekorationen für einen kleinen Performance-Schub ausgesetzt werden.</translation>
 </phrase>
 
 <phrase>
@@ -13165,7 +13165,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Das Ausschalten der Anzeige des Farbmanagements kann für einen kleinen Performnace-Schub sorgen. Wenn Ihre Anzeige derzeit nicht für das Farbmanagement konfiguriert ist, verwenden Sie diese Einstellung.</translation>
+<translation>Das Ausschalten des Anzeige-Farbmanagements kann für einen kleinen Performance-Schub sorgen. Wenn Ihre Anzeige derzeit nicht für Farbmanagement konfiguriert ist, verwenden Sie diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -13240,7 +13240,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Defaultmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist, beim Testen neuer Releases zu helfen. Defaultmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
 </phrase>
 
 <phrase>
@@ -13476,7 +13476,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>Staub und Kratzer werden behoben</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->

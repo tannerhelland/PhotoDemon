@@ -63,6 +63,10 @@ Private m_HighResMouseInputAllowed As Boolean
 ' this requires cross-tool communication, this module needs to store the relevant tracker.
 Private m_PaintToolAltState As Boolean
 
+'As of 8.4, middle-clicks automatically engage the pan/move tool; we track this state independently,
+' because we need to restore previous tool state when the button is released.
+Private m_MiddleMouseState As Boolean
+
 'Get/Set the "alternate" state for a paint tool (typically triggered by pressing ALT)
 Public Function GetToolAltState() As Boolean
     GetToolAltState = m_PaintToolAltState
@@ -79,6 +83,15 @@ End Function
 
 Public Sub SetToolBusyState(ByVal newState As Boolean)
     m_ToolIsBusy = newState
+End Sub
+
+'Middle-mouse button state
+Public Function GetToolMMBState() As Boolean
+    GetToolMMBState = m_MiddleMouseState
+End Function
+
+Public Sub SetToolMMBState(ByVal newState As Boolean)
+    m_MiddleMouseState = newState
 End Sub
 
 Public Function GetCustomToolState() As Long
