@@ -3,7 +3,7 @@ Begin VB.Form FormBatchWizard
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Batch Process Wizard"
+   Caption         =   " Batch process"
    ClientHeight    =   8190
    ClientLeft      =   45
    ClientTop       =   390

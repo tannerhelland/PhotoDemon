@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.190</langversion>
+<langversion>7.0.191</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3734,6 +3734,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Batch process</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(在此輸入文字)</translation>
 </phrase>
@@ -3768,7 +3773,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -7792,6 +7797,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>Applying surface blur</original>
+<translation>套用表面模糊</translation>
+</phrase>
+
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>Applying zoom blur</original>
 <translation>套用變焦模糊</translation>
 </phrase>
@@ -8372,11 +8384,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>Applying surface blur</original>
-<translation>套用表面模糊</translation>
+<original>luminance only</original>
+<translation></translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Fixing dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8405,11 +8422,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>luminance only</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>percentile</original>
 <translation></translation>
 </phrase>
@@ -8429,7 +8441,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>cyan angle</original>
@@ -9044,11 +9056,6 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Batch Process Wizard</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Previous</original>
 <translation>上一步(P)</translation>
 </phrase>
@@ -9560,7 +9567,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>預估剩餘時間</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13414,19 +13421,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-<phrase>
-<original>Fixing dust and scratches</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2556</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2544 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5101 phrases. -->
+<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
+<!-- These 2556 phrases contain approximately 11836 total words. -->
 
 </pdData>

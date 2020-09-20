@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.9</langversion>
+<langversion>8.0.10</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3777,6 +3777,11 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
+<original>Batch process</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(geeft tekst hier op)</translation>
 </phrase>
@@ -3811,7 +3816,7 @@ Geef een numerieke waarde.</translation>
 <translation>Centreer de afbeelding binnenin de viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -7838,6 +7843,13 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>Applying surface blur</original>
+<translation>Toepassing oppervlak onscherpte</translation>
+</phrase>
+
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>Applying zoom blur</original>
 <translation>Toepassen zoomvervaging</translation>
 </phrase>
@@ -8418,11 +8430,16 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>Applying surface blur</original>
-<translation>Toepassing oppervlak onscherpte</translation>
+<original>luminance only</original>
+<translation>helderheid alleen</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Fixing dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8451,11 +8468,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>luminance only</original>
-<translation>helderheid alleen</translation>
-</phrase>
-
-<phrase>
 <original>percentile</original>
 <translation>percentiel</translation>
 </phrase>
@@ -8475,7 +8487,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen mediaan filter</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>cyan angle</original>
@@ -9092,11 +9104,6 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 <!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Batch Process Wizard</original>
-<translation>Batch Proces Wizard</translation>
-</phrase>
-
-<phrase>
 <original>Previous</original>
 <translation>Vorige</translation>
 </phrase>
@@ -9610,7 +9617,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Geschatte resterende tijd</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13476,19 +13483,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-<phrase>
-<original>Fixing dust and scratches</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2556</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2544 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5101 phrases. -->
+<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
+<!-- These 2556 phrases contain approximately 11836 total words. -->
 
 </pdData>

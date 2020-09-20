@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.25</langversion>
+<langversion>8.0.26</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -3768,6 +3768,11 @@ Wprowadź wartość liczbową.</translation>
 </phrase>
 
 <phrase>
+<original>Batch process</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(enter text here)</original>
 <translation>(wpisz tekst tutaj)</translation>
 </phrase>
@@ -3802,7 +3807,7 @@ Wprowadź wartość liczbową.</translation>
 <translation>Wyśrodkuj obraz wewnątrz okna</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 24 phrases. 11 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
@@ -7826,6 +7831,13 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>Applying surface blur</original>
+<translation>Stosowanie powierzchni rozmycia</translation>
+</phrase>
+
+<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
 <original>Applying zoom blur</original>
 <translation>Stosowanie powiększenia rozmycia</translation>
 </phrase>
@@ -8406,11 +8418,16 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>Applying surface blur</original>
-<translation>Stosowanie powierzchni rozmycia</translation>
+<original>luminance only</original>
+<translation>Tylko luminancja</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Fixing dust and scratches</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -8439,11 +8456,6 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>luminance only</original>
-<translation>Tylko luminancja</translation>
-</phrase>
-
-<phrase>
 <original>percentile</original>
 <translation>Procentowy</translation>
 </phrase>
@@ -8463,7 +8475,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>Stosowanie filtru mediana</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>cyan angle</original>
@@ -9079,11 +9091,6 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 <!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
-<original>Batch Process Wizard</original>
-<translation>Kreator procesu wsadowego</translation>
-</phrase>
-
-<phrase>
 <original>Previous</original>
 <translation>Poprzedni</translation>
 </phrase>
@@ -9597,7 +9604,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>Szacowany pozostały czas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 175 phrases. 72 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 175 phrases. 73 were duplicates of existing phrases, so only 102 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13464,19 +13471,12 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-<phrase>
-<original>Fixing dust and scratches</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2556</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5100 phrases. -->
-<!-- 2544 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5101 phrases. -->
+<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
+<!-- These 2556 phrases contain approximately 11836 total words. -->
 
 </pdData>

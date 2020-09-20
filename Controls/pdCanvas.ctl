@@ -112,6 +112,18 @@ Begin VB.UserControl pdCanvas
          Caption         =   "Import from clipboard..."
          FontSize        =   12
       End
+      Begin PhotoDemon.pdButton cmdStart 
+         Height          =   495
+         Index           =   3
+         Left            =   120
+         TabIndex        =   14
+         Top             =   1920
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
+         Caption         =   "Batch process..."
+         FontSize        =   12
+      End
       Begin PhotoDemon.pdButton cmdRecent 
          Height          =   495
          Index           =   0
@@ -703,6 +715,8 @@ Private Sub cmdStart_Click(Index As Integer)
         Menus.ProcessDefaultAction_ByName "file_open"
     ElseIf (Index = 2) Then
         Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
+    ElseIf (Index = 3) Then
+        Menus.ProcessDefaultAction_ByName "file_batch_process"
     End If
 
 End Sub
@@ -2599,6 +2613,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         cmdStart(0).AssignImage "file_new", imgWidth:=btnImageSize, imgHeight:=btnImageSize
         cmdStart(1).AssignImage "file_open", imgWidth:=btnImageSize, imgHeight:=btnImageSize
         cmdStart(2).AssignImage "edit_paste", imgWidth:=btnImageSize, imgHeight:=btnImageSize
+        cmdStart(3).AssignImage "file_batch", imgWidth:=btnImageSize, imgHeight:=btnImageSize
         
         Dim i As Long
         For i = cmdStart.lBound To cmdStart.UBound
