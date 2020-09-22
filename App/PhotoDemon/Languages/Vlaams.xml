@@ -2091,7 +2091,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>Stof en krassen</translation>
 </phrase>
 
 <phrase>
@@ -3748,37 +3748,37 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>quick start</original>
-<translation></translation>
+<translation>snelle start</translation>
 </phrase>
 
 <phrase>
 <original>recent images</original>
-<translation></translation>
+<translation>recente beelden</translation>
 </phrase>
 
 <phrase>
 <original>clear recent image list</original>
-<translation></translation>
+<translation>wis de lijst met recente afbeeldingen</translation>
 </phrase>
 
 <phrase>
 <original>show recent images, if any</original>
-<translation></translation>
+<translation>recente beelden tonen, indien van toepassing</translation>
 </phrase>
 
 <phrase>
 <original>Open image</original>
-<translation></translation>
+<translation>Open beeld</translation>
 </phrase>
 
 <phrase>
 <original>Import from clipboard</original>
-<translation></translation>
+<translation>Importeren van klembord</translation>
 </phrase>
 
 <phrase>
 <original>Batch process</original>
-<translation></translation>
+<translation>Batch-proces</translation>
 </phrase>
 
 <phrase>
@@ -8436,7 +8436,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>Bevestigen van stof en krassen</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12675,17 +12675,17 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>titelbalktekst</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation></translation>
+<translation>maximaal aantal recente bestanden om te onthouden</translation>
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>recente dossiers</translation>
 </phrase>
 
 <phrase>
@@ -12695,22 +12695,22 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>rastergrootte</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>rasterkleuren</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>recente bestandsmenutekst</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>canvasachtergrondkleur</translation>
 </phrase>
 
 <phrase>
@@ -12790,7 +12790,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation></translation>
+<translation>wanneer beelden van een externe bron (zoals Windows Verkenner) aankomen</translation>
 </phrase>
 
 <phrase>
@@ -12830,7 +12830,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>app instances</original>
-<translation></translation>
+<translation>app-gevallen</translation>
 </phrase>
 
 <phrase>
@@ -13009,12 +13009,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>compact (alleen bestandsnaam)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>woordenschat (bestandsnaam en pad)</translation>
 </phrase>
 
 <phrase>
@@ -13029,22 +13029,22 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>midtones</original>
-<translation></translation>
+<translation>middentonen</translation>
 </phrase>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation></translation>
+<translation>Om te helpen bij het identificeren van transparante pixels, verschijnt er een speciaal raster "achter".  Deze instelling wijzigt het uiterlijk van het raster.</translation>
 </phrase>
 
 <phrase>
 <original>small</original>
-<translation></translation>
+<translation>kleine</translation>
 </phrase>
 
 <phrase>
 <original>large</original>
-<translation></translation>
+<translation>grote</translation>
 </phrase>
 
 <phrase>
@@ -13054,12 +13054,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>load into this instance</original>
-<translation></translation>
+<translation>in dit geval laden</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation></translation>
+<translation>in een nieuwe PhotoDemon-instantie laden</translation>
 </phrase>
 
 <phrase>
@@ -13164,12 +13164,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>Primaire weergave</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>Secundaire weergave</translation>
 </phrase>
 
 <phrase>

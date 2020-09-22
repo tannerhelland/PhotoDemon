@@ -970,7 +970,10 @@ Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadow
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation></translation>
+<translation>Niestety, PhotoDemon nie był w stanie załadować następujących obrazów:
+
+%1
+Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu obrazu (jak JPEG lub PNG).  Dzięki!</translation>
 </phrase>
 
 <phrase>
@@ -1139,7 +1142,7 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Paste to new image</original>
-<translation></translation>
+<translation>Wklej do nowego obrazu</translation>
 </phrase>
 
 <phrase>
@@ -1239,22 +1242,22 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Cut merged</original>
-<translation></translation>
+<translation>Cięcie łączone</translation>
 </phrase>
 
 <phrase>
 <original>Copy merged</original>
-<translation></translation>
+<translation>Kopia połączona</translation>
 </phrase>
 
 <phrase>
 <original>Paste</original>
-<translation></translation>
+<translation>Pasta</translation>
 </phrase>
 
 <phrase>
 <original>Paste to cursor</original>
-<translation></translation>
+<translation>Wklej do kursora</translation>
 </phrase>
 
 <phrase>
@@ -1384,12 +1387,12 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Layer via copy</original>
-<translation></translation>
+<translation>Warstwa poprzez kopiowanie</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation></translation>
+<translation>Warstwa przez cięcie</translation>
 </phrase>
 
 <phrase>
@@ -2084,7 +2087,7 @@ Od wersji 6.0 PhotoDemon, pliki makro zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>Kurz i zadrapania</translation>
 </phrase>
 
 <phrase>
@@ -2628,7 +2631,7 @@ Opis: %2
 
 <phrase>
 <original>name</original>
-<translation></translation>
+<translation>Nazwa</translation>
 </phrase>
 
 <phrase>
@@ -3739,37 +3742,37 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>quick start</original>
-<translation></translation>
+<translation>szybki start</translation>
 </phrase>
 
 <phrase>
 <original>recent images</original>
-<translation></translation>
+<translation>niedawne obrazy</translation>
 </phrase>
 
 <phrase>
 <original>clear recent image list</original>
-<translation></translation>
+<translation>usunąć listę ostatnich obrazów</translation>
 </phrase>
 
 <phrase>
 <original>show recent images, if any</original>
-<translation></translation>
+<translation>pokazywać aktualne obrazy, jeśli takie są</translation>
 </phrase>
 
 <phrase>
 <original>Open image</original>
-<translation></translation>
+<translation>Otwarty obraz</translation>
 </phrase>
 
 <phrase>
 <original>Import from clipboard</original>
-<translation></translation>
+<translation>Import z schowka</translation>
 </phrase>
 
 <phrase>
 <original>Batch process</original>
-<translation></translation>
+<translation>Proces wsadowy</translation>
 </phrase>
 
 <phrase>
@@ -4147,12 +4150,12 @@ Wprowadź wartość liczbową.</translation>
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation></translation>
+<translation>Rama prądowa: %1 z %2</translation>
 </phrase>
 
 <phrase>
 <original>%1 of %2</original>
-<translation></translation>
+<translation>%1 z %2</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4557,7 +4560,7 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 
 <phrase>
 <original>Animation</original>
-<translation></translation>
+<translation>Animacja</translation>
 </phrase>
 
 <phrase>
@@ -6011,7 +6014,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>absorb UV radiation (slightly more than 2A)</original>
-<translation></translation>
+<translation>pochłaniają promieniowanie UV (nieco powyżej 2A)</translation>
 </phrase>
 
 <phrase>
@@ -8424,7 +8427,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>Mocowanie pyłu i zarysowań</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10600,12 +10603,12 @@ Przepraszamy za tę niedogodność, ale niestety %2 nie może nic zrobić ze sk�
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation></translation>
+<translation>animacja włączona dla tego obrazu</translation>
 </phrase>
 
 <phrase>
 <original>waiting</original>
-<translation></translation>
+<translation>czekanie</translation>
 </phrase>
 
 <!-- Image_Animation.frm contains 27 phrases. 25 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -11656,7 +11659,7 @@ Przepraszamy za tę niedogodność, ale niestety %2 nie może nic zrobić ze sk�
 
 <phrase>
 <original>after clicking, return to previous tool</original>
-<translation></translation>
+<translation>po kliknięciu, wrócić do poprzedniego narzędzia</translation>
 </phrase>
 
 <phrase>
@@ -12181,7 +12184,7 @@ Przepraszamy za tę niedogodność, ale niestety %2 nie może nic zrobić ze sk�
 
 <phrase>
 <original>hiragana</original>
-<translation></translation>
+<translation>hiragana</translation>
 </phrase>
 
 <phrase>
@@ -12318,7 +12321,7 @@ Przepraszamy za tę niedogodność, ale niestety %2 nie może nic zrobić ze sk�
 
 <phrase>
 <original>use an online service to estimate missing translations</original>
-<translation></translation>
+<translation>skorzystać z usługi online w celu oszacowania brakujących tłumaczeń</translation>
 </phrase>
 
 <phrase>
@@ -12663,17 +12666,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>tytułowy tekst paska</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation></translation>
+<translation>maksymalna liczba ostatnich plików do zapamiętania</translation>
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>niedawne akta</translation>
 </phrase>
 
 <phrase>
@@ -12683,22 +12686,22 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>rozmiar kratki</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>kolory siatki</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>aktualny tekst menu pliku</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>płócienny kolor tła</translation>
 </phrase>
 
 <phrase>
@@ -12778,7 +12781,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation></translation>
+<translation>gdy obrazy przychodzą z zewnętrznego źródła (np. Windows Explorer)</translation>
 </phrase>
 
 <phrase>
@@ -12818,7 +12821,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>app instances</original>
-<translation></translation>
+<translation>przypadki</translation>
 </phrase>
 
 <phrase>
@@ -12997,12 +13000,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>zwarty (tylko nazwa pliku)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>czasownik (nazwa pliku i ścieżka)</translation>
 </phrase>
 
 <phrase>
@@ -13017,22 +13020,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>midtones</original>
-<translation></translation>
+<translation>midtones</translation>
 </phrase>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation></translation>
+<translation>Aby pomóc w identyfikacji przezroczystych pikseli, za nimi pojawia się specjalna siatka.  To ustawienie modyfikuje wygląd siatki.</translation>
 </phrase>
 
 <phrase>
 <original>small</original>
-<translation></translation>
+<translation>niewielki</translation>
 </phrase>
 
 <phrase>
 <original>large</original>
-<translation></translation>
+<translation>duży</translation>
 </phrase>
 
 <phrase>
@@ -13042,12 +13045,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>load into this instance</original>
-<translation></translation>
+<translation>obciążenie w tym przypadku</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation></translation>
+<translation>ładowanie do nowej instancji PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -13152,12 +13155,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>Wyświetlacz główny</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>Wyświetlacz wtórny</translation>
 </phrase>
 
 <phrase>

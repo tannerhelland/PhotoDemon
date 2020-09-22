@@ -1,10 +1,10 @@
 ## Download
 
-| Stable (8.2) | Nightly (9.0-a) | Source code |
+| Stable (8.4) | Nightly (9.0-a) | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v8.2/PhotoDemon-8.2.zip) | [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
+| [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v8.4/PhotoDemon-8.4.zip) | [Download (.zip, 13 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download (.zip, 17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/master.zip) |
 
-## About PhotoDemon 8.2
+## About PhotoDemon 8.4
 
 **PhotoDemon** is a portable photo editor.  It is 100% free and [100% open-source](https://github.com/tannerhelland/PhotoDemon/blob/master/README.md#licensing).  
 
@@ -18,7 +18,7 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  It runs just fine from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 13 MB download.  It runs on any Windows PC (XP through Win 10) and it *does not* require installation.  It runs just fine from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -58,7 +58,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tannerhelland/d01b37a6-6b5c-4fc6-a143-fe82901da8dc/1?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-PhotoDemon 8.2 just released, so nightly builds don't have much to report (yet)!  
+PhotoDemon 8.4 just released, so nightly builds don't have much to report (yet)!  
 
 For a detailed list of recent changes, [check the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
 

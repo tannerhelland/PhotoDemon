@@ -2084,7 +2084,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>灰尘和划痕</translation>
 </phrase>
 
 <phrase>
@@ -3740,37 +3740,37 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>quick start</original>
-<translation></translation>
+<translation>快速开始</translation>
 </phrase>
 
 <phrase>
 <original>recent images</original>
-<translation></translation>
+<translation>近期图片</translation>
 </phrase>
 
 <phrase>
 <original>clear recent image list</original>
-<translation></translation>
+<translation>删除最近的图像列表</translation>
 </phrase>
 
 <phrase>
 <original>show recent images, if any</original>
-<translation></translation>
+<translation>显示最近的图像，如果有的话</translation>
 </phrase>
 
 <phrase>
 <original>Open image</original>
-<translation></translation>
+<translation>打开图片</translation>
 </phrase>
 
 <phrase>
 <original>Import from clipboard</original>
-<translation></translation>
+<translation>从剪贴板导入</translation>
 </phrase>
 
 <phrase>
 <original>Batch process</original>
-<translation></translation>
+<translation>批量加工</translation>
 </phrase>
 
 <phrase>
@@ -8428,7 +8428,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>修复灰尘和划痕</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12663,17 +12663,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>标题栏</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation></translation>
+<translation>最近要记住的文件的最大数量</translation>
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>最近的文件</translation>
 </phrase>
 
 <phrase>
@@ -12683,22 +12683,22 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>网格大小</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>网格色</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>最近的文件菜单文本</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>画布背景色</translation>
 </phrase>
 
 <phrase>
@@ -12778,7 +12778,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation></translation>
+<translation>当图像从外部来源（如Windows资源管理器）到达时。</translation>
 </phrase>
 
 <phrase>
@@ -12818,7 +12818,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>app instances</original>
-<translation></translation>
+<translation>应用程序实例</translation>
 </phrase>
 
 <phrase>
@@ -12996,12 +12996,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>紧凑(仅限文件名)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>啰嗦</translation>
 </phrase>
 
 <phrase>
@@ -13016,22 +13016,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>midtones</original>
-<translation></translation>
+<translation>中调</translation>
 </phrase>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation></translation>
+<translation>为了帮助识别透明像素，在它们的 "后面 "会出现一个特殊的网格。 此设置可以修改网格的外观。</translation>
 </phrase>
 
 <phrase>
 <original>small</original>
-<translation></translation>
+<translation>小型</translation>
 </phrase>
 
 <phrase>
 <original>large</original>
-<translation></translation>
+<translation>大型</translation>
 </phrase>
 
 <phrase>
@@ -13041,12 +13041,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>load into this instance</original>
-<translation></translation>
+<translation>载入本例</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation></translation>
+<translation>装入一个新的PhotoDemon实例</translation>
 </phrase>
 
 <phrase>
@@ -13151,12 +13151,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>主显示</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>二级显示</translation>
 </phrase>
 
 <phrase>

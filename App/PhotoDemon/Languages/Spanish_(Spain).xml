@@ -2091,7 +2091,7 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>El polvo y los arañazos</translation>
 </phrase>
 
 <phrase>
@@ -3753,37 +3753,37 @@ Por favor, introduzca un valor numérico válido.</translation>
 
 <phrase>
 <original>quick start</original>
-<translation></translation>
+<translation>comienzo rápido</translation>
 </phrase>
 
 <phrase>
 <original>recent images</original>
-<translation></translation>
+<translation>imágenes recientes</translation>
 </phrase>
 
 <phrase>
 <original>clear recent image list</original>
-<translation></translation>
+<translation>borrar la lista de imágenes recientes</translation>
 </phrase>
 
 <phrase>
 <original>show recent images, if any</original>
-<translation></translation>
+<translation>mostrar imágenes recientes, si las hay</translation>
 </phrase>
 
 <phrase>
 <original>Open image</original>
-<translation></translation>
+<translation>Abrir la imagen</translation>
 </phrase>
 
 <phrase>
 <original>Import from clipboard</original>
-<translation></translation>
+<translation>Importar desde el portapapeles</translation>
 </phrase>
 
 <phrase>
 <original>Batch process</original>
-<translation></translation>
+<translation>Proceso por lotes</translation>
 </phrase>
 
 <phrase>
@@ -8441,7 +8441,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>Arreglar el polvo y los arañazos</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12680,17 +12680,17 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>texto de la barra de título</translation>
 </phrase>
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation></translation>
+<translation>número máximo de archivos recientes para recordar</translation>
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>archivos recientes</translation>
 </phrase>
 
 <phrase>
@@ -12700,22 +12700,22 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>El tamaño de la rejilla</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>colores de la rejilla</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>texto reciente del menú de archivos</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>color de fondo del lienzo</translation>
 </phrase>
 
 <phrase>
@@ -12795,7 +12795,7 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation></translation>
+<translation>cuando las imágenes llegan de una fuente externa</translation>
 </phrase>
 
 <phrase>
@@ -12835,7 +12835,7 @@ Para continuar, descargue una copia actualizada de PhotoDemon desde photodemon.o
 
 <phrase>
 <original>app instances</original>
-<translation></translation>
+<translation>instancias de la aplicación</translation>
 </phrase>
 
 <phrase>
@@ -13014,12 +13014,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>compacto (sólo el nombre del archivo)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>verboso (nombre de archivo y ruta)</translation>
 </phrase>
 
 <phrase>
@@ -13034,22 +13034,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>midtones</original>
-<translation></translation>
+<translation>tonos medios</translation>
 </phrase>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation></translation>
+<translation>Para ayudar a identificar los píxeles transparentes, una cuadrícula especial aparece "detrás" de ellos.  Este ajuste modifica la apariencia de la cuadrícula.</translation>
 </phrase>
 
 <phrase>
 <original>small</original>
-<translation></translation>
+<translation>pequeño</translation>
 </phrase>
 
 <phrase>
 <original>large</original>
-<translation></translation>
+<translation>grande</translation>
 </phrase>
 
 <phrase>
@@ -13059,12 +13059,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>load into this instance</original>
-<translation></translation>
+<translation>carga en esta instancia</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation></translation>
+<translation>cargar en una nueva instancia de PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -13169,12 +13169,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>Pantalla principal</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>Pantalla secundaria</translation>
 </phrase>
 
 <phrase>

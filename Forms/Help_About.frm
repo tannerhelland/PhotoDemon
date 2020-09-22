@@ -295,13 +295,15 @@ Private Sub Form_Load()
     
     'Regular patrons (TODO someday soon, I hope!)
     actualText = g_Language.TranslateMessage("PATRONS")
-    'If OS.IsWin7OrLater Then
-    '    uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
-    '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
-    'Else
-    '    GeneratePatron actualText, , True
-    'End If
-    'GeneratePatron vbNullString
+    If OS.IsWin7OrLater Then
+        uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
+        GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
+    Else
+        GeneratePatron actualText, , True
+    End If
+    
+    GeneratePatron "James Proctor"
+    GeneratePatron vbNullString
     
     'Thank you text
     actualText = g_Language.TranslateMessage("Thank you to our wonderful Patreon supporters!")
@@ -348,7 +350,7 @@ Private Sub Form_Load()
     GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
     GenerateContributor "FreeImage Project", "http://freeimage.sourceforge.net/"
-    GenerateContributor "Gerry Busch", "http://gbusch.altervista.org/"
+    GenerateContributor "Gerry Busch", "http://gerrybusch.altervista.org/"
     GenerateContributor "Giorgio ""Gibra"" Brausi", "http://nuke.vbcorner.net"
     GenerateContributor "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
     GenerateContributor "Google Translate", "http://translate.google.com"
