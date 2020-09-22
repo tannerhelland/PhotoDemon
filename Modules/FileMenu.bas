@@ -213,6 +213,8 @@ End Function
 'Subroutine for displaying a commondialog save box, then saving an image to the specified file
 Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
+    If (srcImage Is Nothing) Then Exit Function
+    
     Dim saveFileDialog As pdOpenSaveDialog
     Set saveFileDialog = New pdOpenSaveDialog
     
@@ -224,10 +226,37 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     'Each of these will be handled in turn
     
-    '1) Determine an initial folder.  This is easy, as we will just grab the last "save image" path from the preferences file.
-    '   (The preferences engine will automatically pass us the user's Pictures folder if no "last path" entry exists.)
+    '1) Determine an initial folder.  If the user has saved a file before, we'll grab their last-used
+    '   path.  If the user has *not* saved a file before, we will use the current image path (if one
+    '   exists), or the default preferences engine path if this is e.g. a clipboard image with no
+    '   saved path (the preferences engine defaults to the user's Pictures folder.)
     Dim initialSaveFolder As String
-    initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    If UserPrefs.GetPref_Boolean("Saving", "Has Saved A File", True) Then
+        initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    Else
+    
+        'User has not saved a file before.  See if the current image has a usable path.
+        Dim testPath As String, pathIsUsable As Boolean
+        testPath = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+        
+        'Test the path's existence
+        pathIsUsable = (LenB(testPath) <> 0)
+        If pathIsUsable Then
+            testPath = Files.FileGetPath(testPath)
+            pathIsUsable = Files.PathExists(testPath, False)
+        End If
+        
+        'If the current image has a usable path, default to it; otherwise, grab the default value
+        ' from the preference's file (typically the active user's Pictures folder)
+        If pathIsUsable Then
+            initialSaveFolder = testPath
+        Else
+            initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+        End If
+    
+    End If
+    
+    'TODO: if the user has *not* saved a file before, default to the current image's path
     
     '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
     '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)
@@ -280,6 +309,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         g_LastSaveFilter = cdFormatIndex
         UserPrefs.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
         UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(sFile)
+        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
         
         'Our work here is done!  Transfer control to the core SaveImage routine, which will handle the actual export process.
         MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)

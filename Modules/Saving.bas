@@ -847,6 +847,7 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
         
         'Update the stored last-save-folder value
         UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
+        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
         
         'Next, retrieve export settings
         ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported
@@ -962,6 +963,7 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         
         'Update the stored last-save-folder value
         UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
+        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
         
         'Next, retrieve export settings
         ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported

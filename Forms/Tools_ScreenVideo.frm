@@ -444,6 +444,7 @@ Private Sub Capture_Stop()
             'Save the current export path as the latest "save image" path
             m_DstFilename = sFile
             UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(m_DstFilename)
+            UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
             
             'To avoid confusion, set the "start recording" button caption to "please wait".
             ' It will get formally reset after the image export ends.
