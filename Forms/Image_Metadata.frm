@@ -398,7 +398,7 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
-Private Sub btnGroupOptions_Click(Index As Integer)
+Private Sub btnGroupOptions_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     Dim curCategory As Long
     curCategory = lstGroup.ListIndex
@@ -447,7 +447,7 @@ Private Sub btnGroupOptions_Click(Index As Integer)
 
 End Sub
 
-Private Sub btnTagOptions_Click(Index As Integer)
+Private Sub btnTagOptions_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     Select Case Index
     

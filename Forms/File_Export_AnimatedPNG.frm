@@ -288,7 +288,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
 
 End Sub
 
-Private Sub btnPlay_Click(Index As Integer)
+Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
     Select Case Index
     

@@ -433,7 +433,7 @@ Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean
     If shiftTabWasPressed Then newTargetHwnd = chkLayerNodes.hWnd
 End Sub
 
-Private Sub cmdLayerAffinePermanent_Click()
+Private Sub cmdLayerAffinePermanent_Click(ByVal Shift As ShiftConstants)
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
 End Sub
@@ -446,7 +446,7 @@ Private Sub cmdLayerAffinePermanent_SetCustomTabTarget(ByVal shiftTabWasPressed 
     End If
 End Sub
 
-Private Sub cmdLayerMove_Click(Index As Integer)
+Private Sub cmdLayerMove_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     If (Not PDImages.IsImageActive()) Then Exit Sub
     

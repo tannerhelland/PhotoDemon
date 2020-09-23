@@ -223,7 +223,7 @@ Private m_AniFrame As pdDIB
 ' are in place.
 Private m_AllowReflow As Boolean, m_DisplayWaitingMsg As Boolean
 
-Private Sub btnPlay_Click(Index As Integer)
+Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
     Select Case Index
     

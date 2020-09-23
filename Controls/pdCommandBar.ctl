@@ -568,7 +568,7 @@ Private Function SavePreset() As Boolean
     
 End Function
 
-Private Sub cmdAction_Click(Index As Integer)
+Private Sub cmdAction_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     Select Case Index
     

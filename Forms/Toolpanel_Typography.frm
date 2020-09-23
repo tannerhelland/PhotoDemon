@@ -854,7 +854,7 @@ Private Sub bsTextBackground_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
 End Sub
 
-Private Sub btnFontStyles_Click(Index As Integer)
+Private Sub btnFontStyles_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
     If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub

@@ -667,7 +667,7 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As PD_MeasurementUnit, ByVal ne
     
 End Sub
 
-Private Sub cmdAspectRatio_Click()
+Private Sub cmdAspectRatio_Click(ByVal Shift As ShiftConstants)
     SyncDimensions True
 End Sub
 

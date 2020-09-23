@@ -290,7 +290,7 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 'The randomize button generates a random alphanumeric string
-Private Sub cmdRandomize_Click()
+Private Sub cmdRandomize_Click(ByVal Shift As ShiftConstants)
     Me.Randomize
 End Sub
 

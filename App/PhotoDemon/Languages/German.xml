@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.42</langversion>
+<langversion>9.0.51</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -9494,7 +9494,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation>Schritt 5: Warten Sie, bis die Batchverarbeitung (Stapelverarbeitung) beendet ist</translation>
+<translation>Schritt 5: Warten Sie auf die Beendigung der Batchverarbeitung (Stapelverarbeitung)</translation>
 </phrase>
 
 <phrase>
@@ -11334,7 +11334,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Rückgängigmachen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder Layer vorgenommene destruktive Änderungen um.</translation>
+<translation>Rückgängigmachen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder einem Layer vorgenommene destruktive Änderungen um.</translation>
 </phrase>
 
 <phrase>
@@ -11344,7 +11344,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation>Auswahltools: Isolieren Sie Teile eines Bildes oder Layers zur weiteren Bearbeitung.</translation>
+<translation>Auswahltools: Isolieren Sie Teile eines Bildes oder eines Layers zur weiteren Bearbeitung.</translation>
 </phrase>
 
 <phrase>
@@ -12571,7 +12571,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>When you are finished editing this language, please consider sharing it!  Contact me by visiting</original>
-<translation>Wenn Sie die Bearbeitung dieser Sprache beendet haben, erwägen Sie bitte, diese zu teilen! Kontaktieren Sie mich mit dem Besuch unter</translation>
+<translation>Wenn Sie mit der Bearbeitung dieser Sprache fertig sind, erwägen Sie bitte, diese mit anderen zu teilen! Kontaktieren Sie mich durch Besuch unter</translation>
 </phrase>
 
 <phrase>
@@ -13443,7 +13443,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>open it in PhotoDemon (for further editing)</original>
-<translation></translation>
+<translation>Es in PhotoDemon öffnen (zur weiteren Bearbeitung)</translation>
 </phrase>
 
 <phrase>
@@ -13468,17 +13468,17 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>countdown before starting (in seconds)</original>
-<translation>Countdown vor Aufzeichnung (in Sekunden)</translation>
+<translation>Countdown vor dem Start (in Sekunden)</translation>
 </phrase>
 
 <phrase>
 <original>when recording finishes</original>
-<translation></translation>
+<translation>Wenn Aufzeichnung beendet</translation>
 </phrase>
 
 <phrase>
 <original>save it directly to an animated PNG file</original>
-<translation></translation>
+<translation>Es direkt in eine animierte PNG-Datei speichern</translation>
 </phrase>
 
 <phrase>

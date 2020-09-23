@@ -504,7 +504,7 @@ Private m_ActiveToolPanel As PD_ToolPanels
 ' We store a list of localized tool names and corresponding action strings internally.
 Private m_ToolNames As pdStringStack, m_ToolActions As pdStringStack
 
-Private Sub cmdFile_Click(Index As Integer)
+Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
@@ -1158,7 +1158,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         
 End Sub
 
-Private Sub cmdTools_Click(Index As Integer)
+Private Sub cmdTools_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'Update the previous and current tool entries
     If cmdTools(Index).Value Then

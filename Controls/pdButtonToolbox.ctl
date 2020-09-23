@@ -62,8 +62,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control really only needs one event raised - Click
-Public Event Click()
+'This control really only needs one event raised - Click.  Note that I've added a Shift parameter;
+' this allows for e.g. Ctrl+Click and Shift+Click events to be handled more naturally.
+Public Event Click(ByVal Shift As ShiftConstants)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -529,7 +530,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             
                 Value = (Not Value)
                 RedrawBackBuffer
-                RaiseEvent Click
+                RaiseEvent Click(Shift)
             
             'Other modes behave identically
             Else
@@ -537,7 +538,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 If (Not m_ButtonState) Then
                     Value = True
                     RedrawBackBuffer
-                    RaiseEvent Click
+                    RaiseEvent Click(Shift)
                     
                     'During auto-toggle mode, immediately reverse the value after the Click() event is raised
                     If m_AutoToggle Then
@@ -591,7 +592,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         End If
         
         RedrawBackBuffer True
-        RaiseEvent Click
+        RaiseEvent Click(Shift)
         
         'During auto-toggle mode, immediately reverse the value after the Click() event is raised
         If m_AutoToggle Then

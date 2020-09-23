@@ -329,7 +329,7 @@ Private Sub cboBlendMode_LostFocusAPI()
 End Sub
 
 'Layer action buttons - move layers up/down, delete layers, etc.
-Private Sub cmdLayerAction_Click(Index As Integer)
+Private Sub cmdLayerAction_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
     Select Case Index
     

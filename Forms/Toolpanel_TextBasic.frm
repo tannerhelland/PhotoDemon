@@ -330,7 +330,7 @@ Option Explicit
 Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
-Private Sub btnFontStyles_Click(Index As Integer)
+Private Sub btnFontStyles_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
     If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub

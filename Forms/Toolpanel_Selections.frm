@@ -742,7 +742,7 @@ Private Sub cboWandCompare_Click()
     
 End Sub
 
-Private Sub cmdLock_Click(Index As Integer)
+Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'Ignore lock actions unless a selection is active, *and* the current selection tool matches the currently
     ' active selection.

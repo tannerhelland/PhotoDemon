@@ -459,19 +459,19 @@ Private Sub CmbZoom_Click()
 
 End Sub
 
-Private Sub cmdImgSize_Click()
+Private Sub cmdImgSize_Click(ByVal Shift As ShiftConstants)
     If FormMain.MainCanvas(0).IsCanvasInteractionAllowed() Then Process "Resize image", True
 End Sub
 
-Private Sub cmdZoomFit_Click()
+Private Sub cmdZoomFit_Click(ByVal Shift As ShiftConstants)
     CanvasManager.FitOnScreen
 End Sub
 
-Private Sub cmdZoomIn_Click()
+Private Sub cmdZoomIn_Click(ByVal Shift As ShiftConstants)
     cmbZoom.ListIndex = Zoom.GetNearestZoomInIndex(cmbZoom.ListIndex)
 End Sub
 
-Private Sub cmdZoomOut_Click()
+Private Sub cmdZoomOut_Click(ByVal Shift As ShiftConstants)
     cmbZoom.ListIndex = Zoom.GetNearestZoomOutIndex(cmbZoom.ListIndex)
 End Sub
 

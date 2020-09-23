@@ -971,7 +971,7 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
     
 End Sub
 
-Private Sub cmdCenter_Click()
+Private Sub cmdCenter_Click(ByVal Shift As ShiftConstants)
     CanvasManager.CenterOnScreen
 End Sub
 

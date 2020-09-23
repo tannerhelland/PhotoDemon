@@ -747,7 +747,7 @@ Private Sub UpdateTextBoxes()
 
 End Sub
 
-Private Sub cmdColorSelect_Click(Index As Integer)
+Private Sub cmdColorSelect_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
     If cmdBar.PreviewsAllowed Then
     
