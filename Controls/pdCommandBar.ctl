@@ -22,6 +22,18 @@ Begin VB.UserControl pdCommandBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ToolboxBitmap   =   "pdCommandBar.ctx":0000
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   285
+      Index           =   3
+      Left            =   1365
+      TabIndex        =   6
+      Top             =   90
+      Width           =   360
+      _ExtentX        =   635
+      _ExtentY        =   503
+      AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
+   End
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   510
       Left            =   6600
@@ -36,7 +48,7 @@ Begin VB.UserControl pdCommandBar
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
       Index           =   0
-      Left            =   120
+      Left            =   60
       TabIndex        =   2
       Top             =   90
       Width           =   630
@@ -47,7 +59,7 @@ Begin VB.UserControl pdCommandBar
    End
    Begin PhotoDemon.pdDropDown cboPreset 
       Height          =   345
-      Left            =   1560
+      Left            =   1845
       TabIndex        =   4
       Top             =   195
       Width           =   3135
@@ -58,7 +70,7 @@ Begin VB.UserControl pdCommandBar
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
       Index           =   1
-      Left            =   810
+      Left            =   690
       TabIndex        =   3
       Top             =   90
       Width           =   630
@@ -70,7 +82,7 @@ Begin VB.UserControl pdCommandBar
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
       Index           =   2
-      Left            =   4800
+      Left            =   5040
       TabIndex        =   5
       Top             =   90
       Width           =   630
@@ -89,6 +101,18 @@ Begin VB.UserControl pdCommandBar
       _ExtentY        =   900
       Caption         =   "Cancel"
       UseCustomBackgroundColor=   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   285
+      Index           =   4
+      Left            =   1365
+      TabIndex        =   7
+      Top             =   375
+      Width           =   360
+      _ExtentX        =   635
+      _ExtentY        =   503
+      AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
    End
 End
 Attribute VB_Name = "pdCommandBar"
@@ -241,6 +265,16 @@ Private m_NoLoadList As pdStringStack
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Changes to the underlying control are tracked and cached every [n] seconds; this provides a
+' poor-man's "undo/redo" feature without the need for complicated state tracking.
+Private WithEvents m_Timer As pdTimer
+Attribute m_Timer.VB_VarHelpID = -1
+
+'Stack of param strings that holds the list of settings modifications to the current dialog;
+' the user can step through these willy-nilly.
+Private m_StateStack As pdStringStack
+Private m_StackIndex As Long
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -583,6 +617,22 @@ Private Sub cmdAction_Click(Index As Integer, ByVal Shift As ShiftConstants)
         'Save new preset
         Case 2
             SavePreset
+            
+        'Undo
+        Case 3
+            If (m_StackIndex > 0) Then
+                m_StackIndex = m_StackIndex - 1
+                LoadPresetFromString m_StateStack.GetString(m_StackIndex)
+                UpdateStateStack False, True
+            End If
+            
+        'Redo
+        Case 4
+            If (m_StackIndex < m_StateStack.GetNumOfStrings() - 1) Then
+                m_StackIndex = m_StackIndex + 1
+                LoadPresetFromString m_StateStack.GetString(m_StackIndex)
+                UpdateStateStack False, True
+            End If
     
     End Select
     
@@ -784,6 +834,45 @@ Private Sub ResetSettings()
     
 End Sub
 
+Private Sub m_Timer_Timer()
+    UpdateStateStack
+End Sub
+
+Private Sub UpdateStateStack(Optional ByVal isFirstCall As Boolean = False, Optional ByVal forceUIUpdate As Boolean = False)
+    
+    Dim tmpString As String
+    tmpString = GetPresetParamString()
+    
+    Dim updateNeeded As Boolean
+    updateNeeded = False
+    
+    'If this is the first call to this object, forcibly save the state string to the stack
+    If isFirstCall Then
+        m_StateStack.ResetStack
+        m_StateStack.AddString tmpString
+        updateNeeded = True
+    
+    'If this is *not* the first call to this object, compare the dialog's current state to the
+    ' stored state at the present index.  If they differ, add a new string to the stack at
+    ' position [current-index + 1].
+    Else
+        If Strings.StringsNotEqual(tmpString, m_StateStack.GetString(m_StackIndex), False) Then
+            m_StateStack.SetNumOfStrings m_StackIndex + 1
+            m_StateStack.AddString tmpString
+            m_StackIndex = m_StackIndex + 1
+            Debug.Print m_StackIndex
+            updateNeeded = True
+        End If
+    End If
+    
+    'Update Undo/Redo button state based on current stack position
+    If updateNeeded Or forceUIUpdate Then
+        cmdAction(3).Enabled = (m_StackIndex > 0)
+        cmdAction(4).Enabled = (m_StackIndex < m_StateStack.GetNumOfStrings - 1)
+    End If
+    
+End Sub
+
 'This control subclasses some internal PD messages, which is how we support "OK" and "Cancel" shortcuts via
 ' "Enter" and "Esc" keypresses
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
@@ -951,6 +1040,17 @@ Private Sub UserControl_Show()
             m_allowPreviews = False
             
         End If
+        
+        'Start the state-tracking timer and initialize all state-tracking values
+        Set m_StateStack = New pdStringStack
+        m_StackIndex = 0
+        UpdateStateStack True
+        
+        Set m_Timer = New pdTimer
+        
+        Const STATE_TRACKING_INTERVAL_MS As Long = 1000
+        m_Timer.Interval = STATE_TRACKING_INTERVAL_MS
+        m_Timer.StartTimer
         
     End If
         
@@ -1154,145 +1254,7 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
     
     'If the preset exists, continue with the load process
     If presetExists Then
-        
-        'Copy this preset's XML into a local param evaluator
-        If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
-        m_Params.SetParamString m_Presets.GetPresetXML(srcPresetName)
-        
-        'Loading preset values involves (potentially) changing the value of every single object on this form.  To prevent each
-        ' of these changes from triggering a full preview redraw, we forcibly suspend previews now.
-        m_allowPreviews = False
-        
-        Dim controlName As String, controlType As String, controlValue As String
-        Dim controlIndex As Long
-        
-        'If parameters allow, iterate through each control on the form and attempt to retrieve its last-used value
-        Dim eControl As Object
-        
-        If loadEverything Then
-        
-            For Each eControl In Parent.Controls
-                
-                'Control values are saved by control name, and if it exists, control index.  We start by generating a matching preset
-                ' name for this control.
-                controlName = eControl.Name
-                If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
-                If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
-                
-                Dim okToLoad As Boolean: okToLoad = True
-                If (Not m_NoLoadList Is Nothing) Then okToLoad = (m_NoLoadList.ContainsString(controlName, True) < 0)
-                
-                'See if a preset exists for this control and this particular preset
-                If (okToLoad And m_Params.GetStringEx(controlName, controlValue)) Then
-                    
-                    'A value for this control exists, and it has been retrieved into controlValue.  We sort handling of this value
-                    ' by control type, as different controls require different input values (bool, int, etc).
-                    controlType = TypeName(eControl)
-                
-                    Select Case controlType
-                    
-                        'Sliders and text up/downs allow for floating-point values, so we always cast these returns as doubles
-                        Case "pdSlider", "pdSpinner"
-                            eControl.Value = CDblCustom(controlValue)
-                        
-                        'Check boxes use a long (technically a boolean, as PD's custom check box doesn't support a gray state, but for
-                        ' backward compatibility with VB check box constants, we cast to a Long)
-                        Case "pdCheckBox"
-                            eControl.Value = CBool(controlValue)
-                        
-                        'Option buttons use booleans
-                        Case "pdRadioButton"
-                            If CBool(controlValue) Then eControl.Value = CBool(controlValue)
-                            
-                        'Button strips are similar to list boxes, so they use a .ListIndex property
-                        Case "pdButtonStrip", "pdButtonStripVertical"
-                        
-                            'To protect against future changes that modify the number of available entries in a button strip, we always
-                            ' validate the list index against the current list count prior to setting it.
-                            If (CLng(controlValue) < eControl.ListCount) Then
-                                eControl.ListIndex = CLng(controlValue)
-                            Else
-                                If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
-                            End If
-                        
-                        'Various PD controls have their own custom "value"-type properties.
-                        Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
-                            eControl.Color = CLng(controlValue)
-                                   
-                        Case "pdBrushSelector"
-                            eControl.Brush = controlValue
-                        
-                        Case "pdPenSelector"
-                            eControl.Pen = controlValue
-                        
-                        Case "pdGradientSelector"
-                            eControl.Gradient = controlValue
-                        
-                        'Traditional scroll bar values are cast as Longs, despite them only having Int ranges
-                        ' (hopefully the original caller planned for this!)
-                        Case "HScrollBar", "VScrollBar"
-                            eControl.Value = CLng(controlValue)
-                        
-                        'List boxes and dropdowns all use a Long-type .ListIndex property
-                        Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
-                        
-                            'Validate range before setting
-                            If (CLng(controlValue) < eControl.ListCount) Then
-                                eControl.ListIndex = CLng(controlValue)
-                            Else
-                                If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
-                            End If
-                        
-                        'Text boxes just take the stored string as-is
-                        Case "TextBox", "pdTextBox"
-                            eControl.Text = controlValue
-                        
-                        'pdTitle is just a boolean
-                        Case "pdTitle"
-                            eControl.Value = CBool(controlValue)
-                        
-                        Case "pdColorDepth"
-                            eControl.SetAllSettings controlValue
-                        
-                        Case "pdResize"
-                            eControl.SetAllSettingsFromXML controlValue
-                            
-                        'Metadata management controls handle their own XML parsing
-                        Case "pdMetadataExport"
-                            eControl.SetMetadataSettings controlValue, True
-                            
-                        'History managers handle their own XML parsing
-                        Case "pdHistory"
-                            eControl.SetHistoryFromString controlValue
-                            
-                        Case "pdPaletteUI"
-                            eControl.CreateFromXML controlValue
-                            
-                        Case "pdRandomizeUI"
-                            eControl.Value = controlValue
-                            
-                    End Select
-        
-                End If
-            
-            'Iterate through the next control
-            Next eControl
-            
-        End If
-        
-        'Raise the ReadCustomPresetData event.  This allows the caller to retrieve any custom preset data from the file (e.g. data that
-        ' does not directly correspond to a traditional control, like the Curves dialog which supports custom curve point data)
-        RaiseEvent ReadCustomPresetData
-        
-        'Re-enable previews
-        m_allowPreviews = True
-        
-        'If the parent dialog is active (e.g. this function is not occurring during the parent dialog's Load process),
-        ' request a preview update as the preview has likely changed due to the new control values.
-        If m_controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
-        
-        'Return success!
-        LoadPreset = True
+        LoadPreset = LoadPresetFromString(m_Presets.GetPresetXML(srcPresetName), loadEverything)
                 
     'If the preset does *not* exist, exit without further processing
     Else
@@ -1300,6 +1262,149 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
         Exit Function
     End If
     
+End Function
+
+Private Function LoadPresetFromString(ByRef srcString As String, Optional ByVal loadEverything As Boolean = True) As Boolean
+
+    'Copy this preset's XML into a local param evaluator
+    If (m_Params Is Nothing) Then Set m_Params = New pdSerialize
+    m_Params.SetParamString srcString
+    
+    'Loading preset values involves (potentially) changing the value of every single object on this form.  To prevent each
+    ' of these changes from triggering a full preview redraw, we forcibly suspend previews now.
+    m_allowPreviews = False
+    
+    Dim controlName As String, controlType As String, controlValue As String
+    Dim controlIndex As Long
+    
+    'If parameters allow, iterate through each control on the form and attempt to retrieve its last-used value
+    Dim eControl As Object
+    
+    If loadEverything Then
+    
+        For Each eControl In Parent.Controls
+            
+            'Control values are saved by control name, and if it exists, control index.  We start by generating a matching preset
+            ' name for this control.
+            controlName = eControl.Name
+            If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If (controlIndex >= 0) Then controlName = controlName & ":" & controlIndex
+            
+            Dim okToLoad As Boolean: okToLoad = True
+            If (Not m_NoLoadList Is Nothing) Then okToLoad = (m_NoLoadList.ContainsString(controlName, True) < 0)
+            
+            'See if a preset exists for this control and this particular preset
+            If (okToLoad And m_Params.GetStringEx(controlName, controlValue)) Then
+                
+                'A value for this control exists, and it has been retrieved into controlValue.  We sort handling of this value
+                ' by control type, as different controls require different input values (bool, int, etc).
+                controlType = TypeName(eControl)
+            
+                Select Case controlType
+                
+                    'Sliders and text up/downs allow for floating-point values, so we always cast these returns as doubles
+                    Case "pdSlider", "pdSpinner"
+                        eControl.Value = CDblCustom(controlValue)
+                    
+                    'Check boxes use a long (technically a boolean, as PD's custom check box doesn't support a gray state, but for
+                    ' backward compatibility with VB check box constants, we cast to a Long)
+                    Case "pdCheckBox"
+                        eControl.Value = CBool(controlValue)
+                    
+                    'Option buttons use booleans
+                    Case "pdRadioButton"
+                        If CBool(controlValue) Then eControl.Value = CBool(controlValue)
+                        
+                    'Button strips are similar to list boxes, so they use a .ListIndex property
+                    Case "pdButtonStrip", "pdButtonStripVertical"
+                    
+                        'To protect against future changes that modify the number of available entries in a button strip, we always
+                        ' validate the list index against the current list count prior to setting it.
+                        If (CLng(controlValue) < eControl.ListCount) Then
+                            eControl.ListIndex = CLng(controlValue)
+                        Else
+                            If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
+                        End If
+                    
+                    'Various PD controls have their own custom "value"-type properties.
+                    Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
+                        eControl.Color = CLng(controlValue)
+                               
+                    Case "pdBrushSelector"
+                        eControl.Brush = controlValue
+                    
+                    Case "pdPenSelector"
+                        eControl.Pen = controlValue
+                    
+                    Case "pdGradientSelector"
+                        eControl.Gradient = controlValue
+                    
+                    'Traditional scroll bar values are cast as Longs, despite them only having Int ranges
+                    ' (hopefully the original caller planned for this!)
+                    Case "HScrollBar", "VScrollBar"
+                        eControl.Value = CLng(controlValue)
+                    
+                    'List boxes and dropdowns all use a Long-type .ListIndex property
+                    Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                    
+                        'Validate range before setting
+                        If (CLng(controlValue) < eControl.ListCount) Then
+                            eControl.ListIndex = CLng(controlValue)
+                        Else
+                            If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1
+                        End If
+                    
+                    'Text boxes just take the stored string as-is
+                    Case "TextBox", "pdTextBox"
+                        eControl.Text = controlValue
+                    
+                    'pdTitle is just a boolean
+                    Case "pdTitle"
+                        eControl.Value = CBool(controlValue)
+                    
+                    Case "pdColorDepth"
+                        eControl.SetAllSettings controlValue
+                    
+                    Case "pdResize"
+                        eControl.SetAllSettingsFromXML controlValue
+                        
+                    'Metadata management controls handle their own XML parsing
+                    Case "pdMetadataExport"
+                        eControl.SetMetadataSettings controlValue, True
+                        
+                    'History managers handle their own XML parsing
+                    Case "pdHistory"
+                        eControl.SetHistoryFromString controlValue
+                        
+                    Case "pdPaletteUI"
+                        eControl.CreateFromXML controlValue
+                        
+                    Case "pdRandomizeUI"
+                        eControl.Value = controlValue
+                        
+                End Select
+    
+            End If
+        
+        'Iterate through the next control
+        Next eControl
+        
+    End If
+    
+    'Raise the ReadCustomPresetData event.  This allows the caller to retrieve any custom preset data from the file (e.g. data that
+    ' does not directly correspond to a traditional control, like the Curves dialog which supports custom curve point data)
+    RaiseEvent ReadCustomPresetData
+    
+    'Re-enable previews
+    m_allowPreviews = True
+    
+    'If the parent dialog is active (e.g. this function is not occurring during the parent dialog's Load process),
+    ' request a preview update as the preview has likely changed due to the new control values.
+    If m_controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
+    
+    'This function's return isn't meaningful at present
+    LoadPresetFromString = True
+        
 End Function
 
 'Search the preset file for all valid presets.  This sub doesn't actually load any of the presets - it just adds their
@@ -1403,11 +1508,17 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
         'When running, we can assign images and tooltips to the image-only command buttons
         If PDMain.IsProgramRunning() Then
+            
             Dim cmdButtonImageSize As Long
             cmdButtonImageSize = Interface.FixDPI(24)
             cmdAction(0).AssignImage "generic_reset", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(1).AssignImage "generic_random", , cmdButtonImageSize, cmdButtonImageSize
             cmdAction(2).AssignImage "generic_savepreset", , cmdButtonImageSize, cmdButtonImageSize
+            
+            cmdButtonImageSize = Interface.FixDPI(14)
+            cmdAction(3).AssignImage "generic_undo", , cmdButtonImageSize, cmdButtonImageSize
+            cmdAction(4).AssignImage "generic_redo", , cmdButtonImageSize, cmdButtonImageSize
+            
         End If
         
         'I've gone back and forth on whether these tooltips are useful.  My current $0.02 is that
@@ -1417,6 +1528,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmdAction(0).AssignTooltip "Reset all settings to their default values."
         cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image."
         cmdAction(2).AssignTooltip "Save the current settings as a new preset."
+        cmdAction(3).AssignTooltip "Undo (rewind to an earlier state)"
+        cmdAction(4).AssignTooltip "Redo (fast-foward to a later state)"
         cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new

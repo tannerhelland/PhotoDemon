@@ -118,7 +118,14 @@ Friend Function GetNumOfStrings() As Long
     GetNumOfStrings = m_NumOfStrings
 End Function
 
-'Trim the stack to its exact size.  IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
+'Set a new stack size.  By design, this only works if the new size is <= the current stack size
+' (otherwise we'd need to allocate new memory and what would we even fill it with - null strings?).
+Friend Sub SetNumOfStrings(ByVal newNumStrings As Long)
+    If (newNumStrings <= m_NumOfStrings) Then m_NumOfStrings = newNumStrings
+End Sub
+
+'Trim the stack to its exact size.
+' IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
 Friend Sub TrimStack()
     ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
 End Sub
