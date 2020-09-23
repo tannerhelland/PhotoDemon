@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.62</langversion>
+<langversion>8.2.63</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -24,6 +24,13 @@
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[无图]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -497,11 +504,6 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>[untitled image]</original>
-<translation>[无图]</translation>
-</phrase>
-
-<phrase>
 <original>Recording</original>
 <translation>录制</translation>
 </phrase>
@@ -756,7 +758,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>预览不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -13425,7 +13427,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>正在录制 - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>open it in PhotoDemon (for further editing)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>recording settings</original>
@@ -13448,13 +13455,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>countdown before recording (in seconds)</original>
+<original>countdown before starting (in seconds)</original>
 <translation>录制前倒计时（秒）</translation>
 </phrase>
 
 <phrase>
-<original>file settings</original>
-<translation>文件设置</translation>
+<original>when recording finishes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save it directly to an animated PNG file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13467,14 +13479,14 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>光标和单击</translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2556</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5101 phrases. -->
-<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11836 total words. -->
+<!-- As of this build, PhotoDemon contains 5111 phrases. -->
+<!-- 2553 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11852 total words. -->
 
 </pdData>

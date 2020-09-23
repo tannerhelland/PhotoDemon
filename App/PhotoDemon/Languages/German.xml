@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.38</langversion>
+<langversion>9.0.42</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -24,6 +24,13 @@
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[unbetiteltes Image]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -499,11 +506,6 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>[untitled image]</original>
-<translation>[unbetiteltes Image]</translation>
-</phrase>
-
-<phrase>
 <original>Recording</original>
 <translation>Aufzeichnung</translation>
 </phrase>
@@ -758,7 +760,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Vorschau nicht verfügbar</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -1276,7 +1278,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Resize image</original>
-<translation>Bildgröße ändern</translation>
+<translation>Bild in der Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -1546,7 +1548,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Resize layer</original>
-<translation>Layer-Größe ändern</translation>
+<translation>Layer in der Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -2692,7 +2694,7 @@ Beschreibung: %2
 
 <phrase>
 <original>resize quality</original>
-<translation>Qualitätsgröße ändern</translation>
+<translation>Qualität der Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -3075,7 +3077,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Resize selection</original>
-<translation>Auswahlgröße ändern</translation>
+<translation>Auswahl in der Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -3110,7 +3112,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Resize layer (on-canvas)</original>
-<translation>Layer-Größe ändern (auf Leinwand)</translation>
+<translation>Layer in der Größe ändern (auf Leinwand)</translation>
 </phrase>
 
 <phrase>
@@ -3778,7 +3780,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Batch process</original>
-<translation></translation>
+<translation>Batch-Prozess</translation>
 </phrase>
 
 <phrase>
@@ -4226,7 +4228,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Seitenverhältnis beibehalten (mitunter Einschränkungsproportionen genannt). Verwenden Sie diese Option, um die Größe eines Bildes zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
+<translation>Seitenverhältnis beibehalten (mitunter Einschränkungsproportionen genannt). Verwenden Sie diese Option, um ein Bild in der Größe zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
 </phrase>
 
 <phrase>
@@ -4236,7 +4238,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Die Maßeinheit ändern, die zur Größenänderung des Bildes verwendet wird.</translation>
+<translation>Die Maßeinheit ändern, die verwendet wird, um das Bild in der Größe zu ändern.</translation>
 </phrase>
 
 <phrase>
@@ -9268,7 +9270,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize image by</original>
-<translation>Bildgröße ändern nach</translation>
+<translation>Bild in der Größe ändern nach</translation>
 </phrase>
 
 <phrase>
@@ -9283,7 +9285,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize images</original>
-<translation>Bildgrößen ändern</translation>
+<translation>Bilder in der Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -9492,7 +9494,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation>Schritt 5: Warten Sie, bis die Batchverarbeitung beendet ist</translation>
+<translation>Schritt 5: Warten Sie, bis die Batchverarbeitung (Stapelverarbeitung) beendet ist</translation>
 </phrase>
 
 <phrase>
@@ -10624,7 +10626,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>resize images as necessary</original>
-<translation>Bildgrößen ändern wie erforderlich</translation>
+<translation>Bilder in der Größe ändern wie erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -10995,12 +10997,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Resizing image</original>
-<translation>Bildgröße wird geändert</translation>
+<translation>Bild wird in der Größe geändert</translation>
 </phrase>
 
 <phrase>
 <original>Resizing layer</original>
-<translation>Layer-Größe wird geändert</translation>
+<translation>Layer wird in der Größe geändert</translation>
 </phrase>
 
 <!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -11432,12 +11434,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Shortcut key: %1</original>
-<translation>Shortcut: %1</translation>
+<translation>Shortcut-Key: %1</translation>
 </phrase>
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>Bild-Layer verschieben und Größe ändern</translation>
+<translation>Bild-Layer verschieben und in der Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -13437,7 +13439,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 <translation>Aufzeichnung - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>open it in PhotoDemon (for further editing)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>recording settings</original>
@@ -13460,13 +13467,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 </phrase>
 
 <phrase>
-<original>countdown before recording (in seconds)</original>
+<original>countdown before starting (in seconds)</original>
 <translation>Countdown vor Aufzeichnung (in Sekunden)</translation>
 </phrase>
 
 <phrase>
-<original>file settings</original>
-<translation>Dateieinstellungen</translation>
+<original>when recording finishes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save it directly to an animated PNG file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13479,14 +13491,14 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 <translation>Cursor und Klicks</translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2556</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5101 phrases. -->
-<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11836 total words. -->
+<!-- As of this build, PhotoDemon contains 5111 phrases. -->
+<!-- 2553 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11852 total words. -->
 
 </pdData>

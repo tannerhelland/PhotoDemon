@@ -184,8 +184,9 @@ End Sub
 Private Sub Form_Load()
     
     'Set a default size for the image.  This is calculated according to the following formula:
-    ' If another image is loaded and active, default to that image size.  GIMP does this and it's extremely helpful.
-    ' If no images have been loaded, default to desktop wallpaper size
+    ' - If another image is loaded and active, default to that image size.
+    '  (GIMP does this and it's extremely helpful.)
+    ' - If no images have been loaded, default to desktop wallpaper size
     
     'Obviously, the user can use the save/load preset functionality to save favorite image sizes.
     

@@ -2959,7 +2959,7 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
         
         Case "tools_screenrecord"
             ShowPDDialog vbModal, FormRecordAPNGPrefs
-        
+            
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions
             

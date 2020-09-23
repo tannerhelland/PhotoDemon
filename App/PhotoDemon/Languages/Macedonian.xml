@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.317</langversion>
+<langversion>1.0.318</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -24,6 +24,13 @@
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[Untitled сликата]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -496,11 +503,6 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
-<original>[untitled image]</original>
-<translation>[Untitled сликата]</translation>
-</phrase>
-
-<phrase>
 <original>Recording</original>
 <translation>снимање</translation>
 </phrase>
@@ -755,7 +757,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>преглед не се достапни</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -13433,7 +13435,12 @@ If сеуште изберете да го исклучите ажурирања
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>open it in PhotoDemon (for further editing)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>recording settings</original>
@@ -13456,12 +13463,17 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
-<original>countdown before recording (in seconds)</original>
+<original>countdown before starting (in seconds)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>file settings</original>
+<original>when recording finishes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save it directly to an animated PNG file</original>
 <translation></translation>
 </phrase>
 
@@ -13475,14 +13487,14 @@ If сеуште изберете да го исклучите ажурирања
 <translation></translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2556</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5101 phrases. -->
-<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11836 total words. -->
+<!-- As of this build, PhotoDemon contains 5111 phrases. -->
+<!-- 2553 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11852 total words. -->
 
 </pdData>

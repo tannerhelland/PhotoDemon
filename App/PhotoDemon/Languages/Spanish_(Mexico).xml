@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.22</langversion>
+<langversion>8.0.23</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -24,6 +24,13 @@
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<phrase>
+<original>[untitled image]</original>
+<translation>[imagen sin título]</translation>
+</phrase>
+
+<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -499,11 +506,6 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>[untitled image]</original>
-<translation>[imagen sin título]</translation>
-</phrase>
-
-<phrase>
 <original>Recording</original>
 <translation>grabación</translation>
 </phrase>
@@ -758,7 +760,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>la vista previa no está disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 23 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -13433,7 +13435,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>Grabación - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 29 phrases. 24 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 35 phrases. 30 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>open it in PhotoDemon (for further editing)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>recording settings</original>
@@ -13456,13 +13463,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 </phrase>
 
 <phrase>
-<original>countdown before recording (in seconds)</original>
-<translation>cuenta atrás antes de la grabación (en segundos)</translation>
+<original>countdown before starting (in seconds)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>file settings</original>
-<translation>configuración de los archivos</translation>
+<original>when recording finishes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save it directly to an animated PNG file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13475,14 +13487,14 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>el cursor y los clics</translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2556</phrasecount>
+<phrasecount>2558</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5101 phrases. -->
-<!-- 2545 are duplicates, so only 2556 unique phrases have been written to file. -->
-<!-- These 2556 phrases contain approximately 11836 total words. -->
+<!-- As of this build, PhotoDemon contains 5111 phrases. -->
+<!-- 2553 are duplicates, so only 2558 unique phrases have been written to file. -->
+<!-- These 2558 phrases contain approximately 11852 total words. -->
 
 </pdData>

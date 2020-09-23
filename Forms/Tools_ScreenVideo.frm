@@ -167,6 +167,9 @@ Private m_ShowCursor As Boolean, m_ShowClicks As Boolean
 'Seconds to countdown (if any) before starting the recording
 Private m_CountdownTime As Long
 
+'Whether to save the image directly to disk, or load it into PD for further editing
+Private m_SaveImmediatelyToDisk As Boolean
+
 'Capture rects; once populated (at the start of the capture), these *cannot* be changed
 Private m_CaptureRectClient As RectL, m_CaptureRectScreen As RectL
 
@@ -241,7 +244,7 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'This dialog must be invoked via this function.  It preps a bunch of internal values that must exist
 ' for the recorder to function.
-Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long, ByVal countdownInSeconds As Long)
+Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByVal dstFrameRateFPS As Double, ByVal dstLoopCount As Long, ByVal dstShowCursor As Boolean, ByVal dstShowClicks As Boolean, ByVal pngCompressionLevel As Long, ByVal countdownInSeconds As Long, ByVal saveToDisk As Boolean)
     
     'Before doing anything else, determine how we're going to "cut-out" a portion of this window
     m_WindowMethod = tw_GDIRegion
@@ -256,6 +259,7 @@ Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByVal dstFrameRateFPS As Do
     If (m_PNGCompressionLevel < 1) Then m_PNGCompressionLevel = 1
     If (m_PNGCompressionLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then m_PNGCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     m_CountdownTime = countdownInSeconds
+    m_SaveImmediatelyToDisk = saveToDisk
     
     'Initialize a last-used settings object
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -409,141 +413,247 @@ End Sub
 Private Sub Capture_Stop()
 
     If m_CaptureActive Then
-    
+        
         'Immediately stop the capture timer
         m_CaptureActive = False
         If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
         
-        'Next, we need to prompt the user for a destination filename
-            
-        'Start by validating m_dstFilename, which will be filled with the user's past
-        ' destination filename (if one exists), or a default capture filename in the
-        ' user's current "Save image" folder
-        If ((LenB(m_DstFilename) = 0) Or (Not Files.PathExists(Files.FileGetPath(m_DstFilename)))) Then
-        
-            'm_dstFilename is bad.  Attempt to populate it with default values.
-            Dim tmpPath As String, tmpFilename As String
-            tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
-            tmpFilename = g_Language.TranslateMessage("capture")
-            m_DstFilename = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
-        
-        End If
-        
-        'Use a standard common-dialog to prompt for filename
-        Dim cSave As pdOpenSaveDialog
-        Set cSave = New pdOpenSaveDialog
-        
-        Dim okToProceed As Boolean, sFile As String
-        sFile = m_DstFilename
-        okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated PNG (.png)|*.png;*.apng", 1, Files.FileGetPath(m_DstFilename), "Save image", ".png", Me.hWnd)
-            
-        'The user can cancel the common-dialog - that's fine; it just means we don't save
-        ' any of the current settings (or close the window).
-        If okToProceed Then
-            
-            'Save the current export path as the latest "save image" path
-            m_DstFilename = sFile
-            UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(m_DstFilename)
-            UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
-            
-            'To avoid confusion, set the "start recording" button caption to "please wait".
-            ' It will get formally reset after the image export ends.
-            cmdStart.Caption = g_Language.TranslateMessage("Please wait")
-            
-            'Start the PNG streamer
-            If (m_PNG Is Nothing) Then Set m_PNG = New pdPNG
-            If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
-                
-                'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
-                ' so that it can produce a usable APNG file!
-                Dim i As Long
-                For i = 0 To m_FrameCount - 1
-                    
-                    'Periodically check for emergency cancellation
-                    If m_Cancel Then GoTo EndImmediately
-                    
-                    lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
-                    lblInfo.RequestRefresh
-                    
-                    'Extract this frame into the capture DIB, then immediately free its compressed memory
-                    Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
-                    If m_Cancel Then GoTo EndImmediately
-                    
-                    '(Note that we deliberately do *not* free the first frame - we want to save it
-                    ' to generate a file thumbnail before exiting.)
-                    If (i <> 0) Then Erase m_Frames(i).frameData
-                    
-                    'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
-                    If (m_captureDIB32 Is Nothing) Then
-                        Set m_captureDIB32 = New pdDIB
-                        m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
-                        m_captureDIB32.SetInitialAlphaPremultiplicationState True
-                    End If
-                    
-                    GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
-                    If m_Cancel Then GoTo EndImmediately
-                    m_captureDIB32.ForceNewAlpha 255
-                    
-                    'Pass the frame off to the PNG encoder
-                    If m_Cancel Then GoTo EndImmediately
-                    m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
-                    
-                    'Every few frames, notify the OS that we're still alive
-                    If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
-                    
-                Next i
-                
-            Else
-                PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
-            End If
-            
-EndImmediately:
-            
-            'Notify the PNG encoder that the stream has ended
-            If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
-            Set m_PNG = Nothing
-            If m_Cancel Then Files.FileDeleteIfExists m_DstFilename
-            
-            'Add this image to PD's recent files list, which greatly simplifies the process of
-            ' re-opening it for further edits.
-            If (Not m_Cancel) Then
-                
-                'Re-extract this frame's pixel data
-                Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(0).frameSizeOrig, VarPtr(m_Frames(0).frameData(0)), m_Frames(0).frameSizeCompressed, cf_Lz4
-                
-                'Convert it to 32-bpp with a solid alpha channel
-                If (Not m_captureDIB32 Is Nothing) Then
-                    GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
-                    m_captureDIB32.ForceNewAlpha 255
-                End If
-                
-                g_RecentFiles.AddFileToList m_DstFilename, Nothing, m_captureDIB32
-                
-            End If
-            
-            'Free the memory used by the first frame (now that we've generated a thumbnail)
-            Erase m_Frames(0).frameData
-            
-            'Note that the save was successful
-            lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
-        
+        'Next, our behavior varies depending on the user's export settings.
+        If m_SaveImmediatelyToDisk Then
+            FinishRecording_ToDisk
         Else
-            lblInfo.Caption = g_Language.TranslateMessage("Save canceled.")
+            FinishRecording_ToPD
         End If
         
-        'Reset this button's caption and notify the user that we're finished
-        cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
-        cmdStart.Caption = g_Language.TranslateMessage("Start recording")
-        cmdExit.Caption = g_Language.TranslateMessage("Exit")
-            
         'Immediately trigger a save of the current screen position.
         ' (Unlike other dialogs, we don't save position at export time - we save it after
         ' a successful capture!)
         m_CaptureSuccessful = True
         If (Not m_lastUsedSettings Is Nothing) Then m_lastUsedSettings.SaveAllControlValues
         
+        'If the user is loading this file into PD, unload this dialog immediately
+        If (Not m_SaveImmediatelyToDisk) Then
+            StopTimer_Forcibly
+            Unload Me
+        End If
+        
     End If
         
+End Sub
+
+Private Sub FinishRecording_ToDisk()
+
+    'Notify the animation engine that we're handling the export locally
+    Animation.SetAnimationTmpFile vbNullString
+    
+    'We first need to prompt the user for a destination filename
+        
+    'Start by validating m_dstFilename, which will be filled with the user's past
+    ' destination filename (if one exists), or a default capture filename in the
+    ' user's current "Save image" folder
+    If ((LenB(m_DstFilename) = 0) Or (Not Files.PathExists(Files.FileGetPath(m_DstFilename)))) Then
+    
+        'm_dstFilename is bad.  Attempt to populate it with default values.
+        Dim tmpPath As String, tmpFilename As String
+        tmpPath = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+        tmpFilename = g_Language.TranslateMessage("capture")
+        m_DstFilename = tmpPath & IncrementFilename(tmpPath, tmpFilename, "png") & ".png"
+    
+    End If
+    
+    'Use a standard common-dialog to prompt for filename
+    Dim cSave As pdOpenSaveDialog
+    Set cSave = New pdOpenSaveDialog
+    
+    Dim okToProceed As Boolean, sFile As String
+    sFile = m_DstFilename
+    okToProceed = cSave.GetSaveFileName(sFile, Files.FileGetName(m_DstFilename), True, "Animated PNG (.png)|*.png;*.apng", 1, Files.FileGetPath(m_DstFilename), "Save image", ".png", Me.hWnd)
+        
+    'The user can cancel the common-dialog - that's fine; it just means we don't save
+    ' any of the current settings (or close the window).
+    If okToProceed Then
+        
+        'Save the current export path as the latest "save image" path
+        m_DstFilename = sFile
+        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(m_DstFilename)
+        UserPrefs.SetPref_Boolean "Saving", "Has Saved A File", True
+        
+        'To avoid confusion, set the "start recording" button caption to "please wait".
+        ' It will get formally reset after the image export ends.
+        cmdStart.Caption = g_Language.TranslateMessage("Please wait")
+        
+        'Start the PNG streamer
+        If (m_PNG Is Nothing) Then Set m_PNG = New pdPNG
+        If (m_PNG.SaveAPNG_Streaming_Start(m_DstFilename, m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight) < png_Failure) Then
+            
+            'Now comes the fun part: loading all cached frames, and passing them off to the APNG writer
+            ' so that it can produce a usable APNG file!
+            Dim i As Long
+            For i = 0 To m_FrameCount - 1
+                
+                'Periodically check for emergency cancellation
+                If m_Cancel Then GoTo EndImmediately
+                
+                lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+                lblInfo.RequestRefresh
+                
+                'Extract this frame into the capture DIB, then immediately free its compressed memory
+                Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+                If m_Cancel Then GoTo EndImmediately
+                
+                '(Note that we deliberately do *not* free the first frame - we want to save it
+                ' to generate a file thumbnail before exiting.)
+                If (i <> 0) Then Erase m_Frames(i).frameData
+                
+                'Convert the 24-bpp DIB to 32-bpp before handing it off to the APNG encoder
+                If (m_captureDIB32 Is Nothing) Then
+                    Set m_captureDIB32 = New pdDIB
+                    m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+                    m_captureDIB32.SetInitialAlphaPremultiplicationState True
+                End If
+                
+                GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+                If m_Cancel Then GoTo EndImmediately
+                m_captureDIB32.ForceNewAlpha 255
+                
+                'Pass the frame off to the PNG encoder
+                If m_Cancel Then GoTo EndImmediately
+                m_PNG.SaveAPNG_Streaming_Frame m_captureDIB32, m_Frames(i).fcTimeStamp, m_PNGCompressionLevel
+                
+                'Every few frames, notify the OS that we're still alive
+                If ((i And 3) = 0) Then VBHacks.DoEvents_SingleHwnd Me.hWnd
+                
+            Next i
+            
+        Else
+            PDDebug.LogAction "WARNING!  APNG screen capture failed for unknown reason.  Consult debug log."
+        End If
+        
+EndImmediately:
+        
+        'Notify the PNG encoder that the stream has ended
+        If (Not m_PNG Is Nothing) Then m_PNG.SaveAPNG_Streaming_Stop m_LoopCount
+        Set m_PNG = Nothing
+        If m_Cancel Then Files.FileDeleteIfExists m_DstFilename
+        
+        'Add this image to PD's recent files list, which greatly simplifies the process of
+        ' re-opening it for further edits.
+        If (Not m_Cancel) Then
+            
+            'Re-extract this frame's pixel data
+            Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(0).frameSizeOrig, VarPtr(m_Frames(0).frameData(0)), m_Frames(0).frameSizeCompressed, cf_Lz4
+            
+            'Convert it to 32-bpp with a solid alpha channel
+            If (Not m_captureDIB32 Is Nothing) Then
+                GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+                m_captureDIB32.ForceNewAlpha 255
+            End If
+            
+            g_RecentFiles.AddFileToList m_DstFilename, Nothing, m_captureDIB32
+            
+        End If
+        
+        'Free the memory used by the first frame (now that we've generated a thumbnail)
+        Erase m_Frames(0).frameData
+        
+        'Note that the save was successful
+        lblInfo.Caption = g_Language.TranslateMessage("Save complete.")
+    
+    Else
+        lblInfo.Caption = g_Language.TranslateMessage("Save canceled.")
+    End If
+    
+    'Reset this button's caption and notify the user that we're finished
+    cmdStart.AssignImage "macro_record", Nothing, Interface.FixDPI(20), Interface.FixDPI(20)
+    cmdStart.Caption = g_Language.TranslateMessage("Start recording")
+    cmdExit.Caption = g_Language.TranslateMessage("Exit")
+    
+End Sub
+
+Private Sub FinishRecording_ToPD()
+
+    'Ideally, we'd construct a new pdImage object purely "in-memory" and load *that* into
+    ' the program.  But I don't really have a good way to do this at present, as all image-loading
+    ' code is built around discrete files.
+    '
+    'So instead, I'm gonna cheat and do things the easy way: by constructing a "temporary" pdImage
+    ' object, saving it out to a temp file, then using PD's standard "load file" function to create
+    ' a new image.  (This ensures that the new image behaves like any other freshly loaded file.)
+    Dim tmpImage As pdImage
+    PDImages.GetDefaultPDImageObject tmpImage
+    
+    'Add each recorded layer one-at-a-time, and free its associated memory as we go.
+    Dim newLayerID As Long
+    
+    Dim i As Long
+    For i = 0 To m_FrameCount - 1
+    
+        lblInfo.Caption = g_Language.TranslateMessage("Saving animation frame %1 of %2...", i + 1, m_FrameCount)
+        lblInfo.RequestRefresh
+        
+        'Extract the original frame data into the capture DIB (which is already sized correctly),
+        ' then immediately free its compressed memory.
+        Compression.DecompressPtrToPtr m_captureDIB24.GetDIBPointer, m_Frames(i).frameSizeOrig, VarPtr(m_Frames(i).frameData(0)), m_Frames(i).frameSizeCompressed, cf_Lz4
+        Erase m_Frames(i).frameData
+        
+        'Convert the 24-bpp DIB to 32-bpp before constructing a layer from it
+        If (m_captureDIB32 Is Nothing) Then
+            Set m_captureDIB32 = New pdDIB
+            m_captureDIB32.CreateBlank m_captureDIB24.GetDIBWidth, m_captureDIB24.GetDIBHeight, 32, 0, 255
+            m_captureDIB32.SetInitialAlphaPremultiplicationState True
+        End If
+        
+        GDI.BitBltWrapper m_captureDIB32.GetDIBDC, 0, 0, m_captureDIB32.GetDIBWidth, m_captureDIB32.GetDIBHeight, m_captureDIB24.GetDIBDC, 0, 0, vbSrcCopy
+        m_captureDIB32.ForceNewAlpha 255
+        
+        'Add this frame to the image
+        newLayerID = tmpImage.CreateBlankLayer()
+        
+        'Calculate frame time (noting that the final frame is written differently, since it doesn't
+        ' represent a difference between frames).
+        Dim frameMS As Long
+        If (i < m_FrameCount - 1) Then
+            frameMS = m_Frames(i + 1).fcTimeStamp - m_Frames(i).fcTimeStamp
+        
+        'Display the last frame for some arbitrary amount of time (currently 3 seconds)
+        Else
+            frameMS = 3000
+        End If
+        
+        Dim lyrName As String
+        lyrName = g_Language.TranslateMessage("Frame %1", i + 1)
+        lyrName = lyrName & " (" & Trim$(Str$(frameMS)) & "ms)"
+        tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, lyrName, m_captureDIB32, True
+        tmpImage.GetLayerByID(newLayerID).SetLayerFrameTimeInMS frameMS
+        tmpImage.GetLayerByID(newLayerID).SetLayerVisibility (i = 0)
+        
+    Next i
+    
+    lblInfo.Caption = g_Language.TranslateMessage("Finalizing image...")
+    lblInfo.RequestRefresh
+    
+    'With all layers added, we need to populate a few remaining image attributes
+    tmpImage.SetActiveLayerByIndex 0
+    tmpImage.UpdateSize
+    tmpImage.SetDPI 96, 96
+    
+    tmpImage.SetOriginalFileFormat PDIF_UNKNOWN
+    tmpImage.SetCurrentFileFormat PDIF_UNKNOWN
+    tmpImage.SetOriginalColorDepth 32
+    tmpImage.SetOriginalGrayscale False
+    tmpImage.SetOriginalAlpha True
+    tmpImage.SetAnimated True
+    
+    tmpImage.ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
+    tmpImage.ImgStorage.AddEntry "OriginalFileName", vbNullString
+    tmpImage.ImgStorage.AddEntry "OriginalFileExtension", vbNullString
+    
+    'Write the temp image out to file
+    Dim tmpExportFile As String
+    tmpExportFile = UserPrefs.GetTempPath & "screen_capture.pdi"
+    Saving.SavePDI_Image tmpImage, tmpExportFile, True, cf_Lz4, cf_Lz4, False
+    Animation.SetAnimationTmpFile tmpExportFile
+    
 End Sub
 
 'Whenever the form is resized, we must repaint it with the transparent key color
@@ -716,6 +826,9 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Restore the main PD window
     FormMain.WindowState = vbNormal
+    
+    'If we're supposed to load our recording into PD, do so now
+    Animation.CreateNewPDImageFromAnimation
     
 End Sub
 

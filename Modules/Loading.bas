@@ -801,7 +801,7 @@ Public Sub DuplicateCurrentImage()
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
     tmpDuplicationFile = UserPrefs.GetTempPath & "PDDuplicate.pdi"
-    SavePDI_Image PDImages.GetActiveImage(), tmpDuplicationFile, True, cf_Lz4, cf_Lz4, False
+    Saving.SavePDI_Image PDImages.GetActiveImage(), tmpDuplicationFile, True, cf_Lz4, cf_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
@@ -809,7 +809,7 @@ Public Sub DuplicateCurrentImage()
     If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
     sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
     
-    LoadFileAsNewImage tmpDuplicationFile, sTitle, False
+    Loading.LoadFileAsNewImage tmpDuplicationFile, sTitle, False
                     
     'Be polite and remove the temporary file
     Files.FileDeleteIfExists tmpDuplicationFile

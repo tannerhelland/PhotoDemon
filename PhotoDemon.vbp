@@ -457,9 +457,9 @@ HelpContextID="0"
 Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=8
-MinorVer=4
-RevisionVer=0
-AutoIncrementVer=0
+MinorVer=9
+RevisionVer=52
+AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Copyright 2000-2020 Tanner Helland - photodemon.org"
 VersionCompanyName="photodemon.org"
@@ -501,5 +501,3 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
-
-

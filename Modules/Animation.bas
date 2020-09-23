@@ -18,6 +18,13 @@ Attribute VB_Name = "Animation"
 
 Option Explicit
 
+'Used to temporarily cache the location of a temporary animation-related file.
+Private m_TmpAnimationFile As String
+
+Public Sub SetAnimationTmpFile(ByRef srcFile As String)
+    m_TmpAnimationFile = srcFile
+End Sub
+
 Public Function GetFrameTimeFromLayerName(ByRef srcLayerName As String, Optional ByVal defaultTimeIfMissing As Long = 100) As Long
     
     'Default to the user's requested default value; if we find a valid value, it will replace this one
@@ -64,6 +71,25 @@ BadNumber:
     End If
     
 End Function
+
+'Create a new pdImage object from a screen recording.  Note that this is only meaningful if the user
+' selected to load their recording directly into PD; otherwise, the passed filename will be null and
+' we don't need to do anything.
+Public Sub CreateNewPDImageFromAnimation()
+    
+    If (LenB(m_TmpAnimationFile) <> 0) Then
+        
+        'We can now use the standard image load routine to import the temporary file
+        Dim sTitle As String
+        sTitle = g_Language.TranslateMessage("[untitled image]")
+        Loading.LoadFileAsNewImage m_TmpAnimationFile, sTitle, False
+                        
+        'Be polite and remove the temporary file, then release this dialog completely
+        Files.FileDeleteIfExists m_TmpAnimationFile
+        m_TmpAnimationFile = vbNullString
+            
+    End If
+End Sub
 
 Public Function UpdateFrameTimeInLayerName(ByRef srcLayerName As String, ByVal newFrameTime As Long) As String
     

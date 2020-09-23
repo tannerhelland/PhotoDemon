@@ -4,7 +4,7 @@ Begin VB.Form FormRecordAPNGPrefs
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animated screen capture (APNG)"
-   ClientHeight    =   4230
+   ClientHeight    =   4950
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   11775
@@ -22,16 +22,27 @@ Begin VB.Form FormRecordAPNGPrefs
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   282
+   ScaleHeight     =   330
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   785
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdRadioButton rdoAfter 
+      Height          =   375
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   600
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+      Caption         =   "open it in PhotoDemon (for further editing)"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   6
-      Top             =   3495
+      Top             =   4215
       Width           =   11775
       _ExtentX        =   20770
       _ExtentY        =   1296
@@ -66,21 +77,21 @@ Begin VB.Form FormRecordAPNGPrefs
    End
    Begin PhotoDemon.pdButtonStrip btsLoop 
       Height          =   975
-      Left            =   6240
+      Left            =   6360
       TabIndex        =   1
-      Top             =   1440
-      Width           =   5415
-      _ExtentX        =   9975
+      Top             =   2280
+      Width           =   5295
+      _ExtentX        =   9340
       _ExtentY        =   1720
       Caption         =   "repeat final animation"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSlider sldLoop 
       Height          =   735
-      Left            =   6600
+      Left            =   6360
       TabIndex        =   2
-      Top             =   2520
-      Width           =   5055
+      Top             =   3360
+      Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   1296
       Caption         =   "repeat count"
@@ -95,7 +106,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Height          =   975
       Left            =   360
       TabIndex        =   3
-      Top             =   2220
+      Top             =   2280
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1720
@@ -104,11 +115,11 @@ Begin VB.Form FormRecordAPNGPrefs
    End
    Begin PhotoDemon.pdSlider sldCompression 
       Height          =   735
-      Left            =   6240
+      Left            =   6360
       TabIndex        =   4
-      Top             =   600
-      Width           =   5415
-      _ExtentX        =   11668
+      Top             =   1440
+      Width           =   5295
+      _ExtentX        =   9340
       _ExtentY        =   1296
       Caption         =   "compression level"
       FontSizeCaption =   10
@@ -126,7 +137,7 @@ Begin VB.Form FormRecordAPNGPrefs
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1296
-      Caption         =   "countdown before recording (in seconds)"
+      Caption         =   "countdown before starting (in seconds)"
       FontSizeCaption =   10
       Max             =   20
       Value           =   3
@@ -142,8 +153,20 @@ Begin VB.Form FormRecordAPNGPrefs
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
-      Caption         =   "file settings"
+      Caption         =   "when recording finishes"
       FontSize        =   12
+   End
+   Begin PhotoDemon.pdRadioButton rdoAfter 
+      Height          =   375
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   960
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+      Caption         =   "save it directly to an animated PNG file"
+      Value           =   -1  'True
    End
 End
 Attribute VB_Name = "FormRecordAPNGPrefs"
@@ -197,8 +220,12 @@ Private Sub cmdBar_OKClick()
     End If
     
     'Launch the capture form, then note that the command bar will handle unloading this form
-    FormRecordAPNG.ShowDialog VarPtr(myRect), sldFrameRate.Value, loopCount, (btsMouse.ListIndex >= 1), (btsMouse.ListIndex >= 2), sldCompression.Value, sldCountdown.Value
-        
+    FormRecordAPNG.ShowDialog VarPtr(myRect), sldFrameRate.Value, loopCount, (btsMouse.ListIndex >= 1), (btsMouse.ListIndex >= 2), sldCompression.Value, sldCountdown.Value, rdoAfter(1).Value
+    
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    rdoAfter(1).Value = True
 End Sub
 
 Private Sub Form_Load()
@@ -246,4 +273,14 @@ Private Sub ReflowInterface()
         yOffset = yOffset - yPadding + yPaddingTitle
     End If
     
+End Sub
+
+Private Sub rdoAfter_Click(Index As Integer)
+    SyncAfterOptions
+End Sub
+
+Private Sub SyncAfterOptions()
+    sldCompression.Visible = rdoAfter(1).Value
+    btsLoop.Visible = rdoAfter(1).Value
+    sldLoop.Visible = rdoAfter(1).Value And (btsLoop.ListIndex = 2)
 End Sub
