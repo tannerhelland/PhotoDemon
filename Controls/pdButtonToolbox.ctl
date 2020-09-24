@@ -641,6 +641,10 @@ Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ne
     RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If newVisibility Then RedrawBackBuffer
+End Sub
+
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
