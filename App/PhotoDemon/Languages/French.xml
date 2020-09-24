@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.506</langversion>
+<langversion>6.7.507</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -11255,26 +11255,66 @@ Toutes nos excuses pour ce désagrément, mais malheureusement, il n'y a rien qu
 </phrase>
 
 <phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Ajouter un calque vierge.</translation>
+<original>Click: show the "New layer" dialog</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Supprimer le calque sélectionné.</translation>
+<original>Shift + Click: add a blank layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>d'un niveau vers le dessus.</translation>
+<original>Add layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>d'un niveau vers le bas.</translation>
+<original>Click: delete this layer</original>
+<translation></translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Click: move this layer up the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer above it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: move this layer down the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer beneath it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: add a duplicate of this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -13522,10 +13562,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2568</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5112 phrases. -->
-<!-- 2552 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 11864 total words. -->
+<!-- As of this build, PhotoDemon contains 5123 phrases. -->
+<!-- 2555 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 11907 total words. -->
 
 </pdData>

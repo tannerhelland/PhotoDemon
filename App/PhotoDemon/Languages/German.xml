@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.52</langversion>
+<langversion>9.0.57</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -487,7 +487,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Undo</original>
-<translation>Rückgängig</translation>
+<translation>Rückgängig (Undo)</translation>
 </phrase>
 
 <phrase>
@@ -497,7 +497,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Redo</original>
-<translation>Wiederherstellen</translation>
+<translation>Wiederherstellen (Redo)</translation>
 </phrase>
 
 <phrase>
@@ -3401,7 +3401,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
-<translation>ExifTool-Plug-in fehlt. Import der Metadaten abgebrochen.</translation>
+<translation>ExifTool-Plug-in fehlend. Import der Metadaten abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -4057,12 +4057,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Undo (rewind to an earlier state)</original>
-<translation></translation>
+<translation>Rückgängig (zu einem früheren Zustand zurückspulen)</translation>
 </phrase>
 
 <phrase>
 <original>Redo (fast-foward to a later state)</original>
-<translation></translation>
+<translation>Wiederherstellen (zu einem späteren Zustand vorspulen)</translation>
 </phrase>
 
 <phrase>
@@ -4371,17 +4371,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>(messages will appear here at run-time)</original>
-<translation>(Nachrichten werden hier bei Laufzeit erscheinen)</translation>
+<translation>(Nachrichten werden bei Laufzeit hier erscheinen)</translation>
 </phrase>
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation>Anpassen des BIldes auf dem Bildschirm</translation>
+<translation>Anpassen des Bildes auf dem Bildschirm</translation>
 </phrase>
 
 <phrase>
 <original>Zoom in</original>
-<translation>Heranzoomen</translation>
+<translation>Hineinzoomen</translation>
 </phrase>
 
 <phrase>
@@ -6520,7 +6520,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
+<translation>Eine vorherige PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
 </phrase>
 
 <phrase>
@@ -9190,7 +9190,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
-<translation>(Batch-Konvertierungsprozess wird hier bei Laufzeit erscheinen)</translation>
+<translation>(Batch-Konvertierungsprozess wird bei Laufzeit hier erscheinen)</translation>
 </phrase>
 
 <phrase>
@@ -9322,7 +9322,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verloren sein. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
+<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verloren sein. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt problemlos fortsetzen.
 
 Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
@@ -11253,26 +11253,66 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Einen blanken Layer dem Bild hinzufügen.</translation>
+<original>Click: show the "New layer" dialog</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Den derzeit ausgewählten Layer löschen.</translation>
+<original>Shift + Click: add a blank layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Den aktuellen Layer im Layer-Stapel nach oben verschieben.</translation>
+<original>Add layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Den aktuellen Layer im Layer-Stapel nach unten verschieben.</translation>
+<original>Click: delete this layer</original>
+<translation></translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Click: move this layer up the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer above it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: move this layer down the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer beneath it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: add a duplicate of this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -12467,7 +12507,7 @@ Um eine neue Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von
 
 <phrase>
 <original>Master language file missing</original>
-<translation>Master-Sprachdatei fehlt</translation>
+<translation>Master-Sprachdatei fehlend</translation>
 </phrase>
 
 <phrase>
@@ -12845,7 +12885,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>Rückgängigmachen-/Wiederherstellen-Daten auf folgendem Level komprimieren</translation>
+<translation>Rückgängigmachen-/Wiederherstellen-Daten auf dem folgenden Level komprimieren</translation>
 </phrase>
 
 <phrase>
@@ -13419,7 +13459,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>missing</original>
-<translation>Fehlt</translation>
+<translation>Fehlend</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 39 phrases. 20 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
@@ -13505,10 +13545,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2568</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5112 phrases. -->
-<!-- 2552 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 11864 total words. -->
+<!-- As of this build, PhotoDemon contains 5123 phrases. -->
+<!-- 2555 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 11907 total words. -->
 
 </pdData>

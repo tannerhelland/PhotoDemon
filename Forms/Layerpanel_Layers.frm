@@ -51,41 +51,52 @@ Begin VB.Form layerpanel_Layers
          Left            =   0
          TabIndex        =   5
          Top             =   0
-         Width           =   540
-         _ExtentX        =   953
+         Width           =   510
+         _ExtentX        =   900
          _ExtentY        =   900
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
          Index           =   1
-         Left            =   720
+         Left            =   600
          TabIndex        =   6
          Top             =   0
-         Width           =   540
-         _ExtentX        =   953
+         Width           =   510
+         _ExtentX        =   900
          _ExtentY        =   900
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
          Index           =   2
-         Left            =   1440
+         Left            =   1200
          TabIndex        =   7
          Top             =   0
-         Width           =   540
-         _ExtentX        =   953
+         Width           =   510
+         _ExtentX        =   900
          _ExtentY        =   900
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
          Index           =   3
-         Left            =   2160
+         Left            =   1800
          TabIndex        =   8
          Top             =   0
-         Width           =   540
-         _ExtentX        =   953
+         Width           =   510
+         _ExtentX        =   900
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   4
+         Left            =   2400
+         TabIndex        =   9
+         Top             =   0
+         Width           =   510
+         _ExtentX        =   900
          _ExtentY        =   900
          AutoToggle      =   -1  'True
       End
@@ -201,10 +212,12 @@ Private Enum LAYER_BUTTON_ID
     LYR_BTN_DELETE = 1
     LYR_BTN_MOVE_UP = 2
     LYR_BTN_MOVE_DOWN = 3
+    LYR_BTN_DUPLICATE = 4
 End Enum
 
 #If False Then
-    Private Const LYR_BTN_ADD = 0, LYR_BTN_DELETE = 1, LYR_BTN_MOVE_UP = 2, LYR_BTN_MOVE_DOWN = 3
+    Private Const LYR_BTN_ADD = 0, LYR_BTN_DELETE = 1
+    Private Const LYR_BTN_MOVE_UP = 2, LYR_BTN_MOVE_DOWN = 4, LYR_BTN_DUPLICATE = 4
 #End If
 
 'Sometimes we need to make changes that will raise redraw-causing events.  Set this variable to TRUE if you want
@@ -224,7 +237,7 @@ Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, O
         If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
             
             With PDImages.GetActiveImage.GetActiveLayer
-            
+                
                 'Synchronize the opacity scroll bar to the active layer
                 If (sltLayerOpacity.Value <> .GetLayerOpacity) Then sltLayerOpacity.Value = .GetLayerOpacity
                 
@@ -254,8 +267,9 @@ Private Sub CheckButtonEnablement()
     'Make sure at least one image has been loaded
     If PDImages.IsImageActive() Then
 
-        'Add layer is always allowed
+        'Add and Dupliate layer are always allowed
         cmdLayerAction(LYR_BTN_ADD).Enabled = True
+        cmdLayerAction(LYR_BTN_DUPLICATE).Enabled = True
         
         'Merge down is only allowed for layer indexes > 0
         cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
@@ -334,16 +348,31 @@ Private Sub cmdLayerAction_Click(Index As Integer, ByVal Shift As ShiftConstants
     Select Case Index
     
         Case LYR_BTN_ADD
-            Menus.ProcessDefaultAction_ByName "layer_addbasic"
+            If (Shift = vbShiftMask) Then
+                Menus.ProcessDefaultAction_ByName "layer_addblank"
+            Else
+                Menus.ProcessDefaultAction_ByName "layer_addbasic"
+            End If
             
         Case LYR_BTN_DELETE
             Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
             
         Case LYR_BTN_MOVE_UP
-            Menus.ProcessDefaultAction_ByName "layer_moveup"
+            If (Shift = vbShiftMask) Then
+                Menus.ProcessDefaultAction_ByName "layer_mergeup"
+            Else
+                Menus.ProcessDefaultAction_ByName "layer_moveup"
+            End If
             
         Case LYR_BTN_MOVE_DOWN
-            Menus.ProcessDefaultAction_ByName "layer_movedown"
+            If (Shift = vbShiftMask) Then
+                Menus.ProcessDefaultAction_ByName "layer_mergedown"
+            Else
+                Menus.ProcessDefaultAction_ByName "layer_movedown"
+            End If
+            
+        Case LYR_BTN_DUPLICATE
+            Menus.ProcessDefaultAction_ByName "layer_duplicate"
             
     End Select
     
@@ -433,11 +462,14 @@ Private Sub ReflowInterface()
     Dim sizeCheck As Long
     
     'Start by moving the button box to the bottom of the available area
-    sizeCheck = curFormHeight - ctlGroupLayerButtons.GetHeight - Interface.FixDPI(7)
+    Dim bottomPadding As Long
+    bottomPadding = Interface.FixDPI(2)
+    
+    sizeCheck = curFormHeight - ctlGroupLayerButtons.GetHeight - bottomPadding
     If (sizeCheck > 0) Then ctlGroupLayerButtons.SetTop sizeCheck Else Exit Sub
     
     'Next, stretch the layer box to fill the available space
-    sizeCheck = (ctlGroupLayerButtons.GetTop - lstLayers.GetTop) - Interface.FixDPI(7)
+    sizeCheck = (ctlGroupLayerButtons.GetTop - lstLayers.GetTop) - bottomPadding
     If (sizeCheck > 0) Then
             
         If (lstLayers.GetHeight <> sizeCheck) Then lstLayers.SetHeight sizeCheck
@@ -472,17 +504,39 @@ Private Sub ReflowInterface()
         ctlGroupLayerButtons.SetLeft lstLayers.GetLeft
         ctlGroupLayerButtons.SetWidth lstLayers.GetWidth
         
-        '44px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 8px for spacing.
-        ' The total size of the button area of the box is thus 4 * 36 + 3 * 8, for FOUR buttons and THREE spacers.
-        Dim buttonAreaWidth As Long, buttonAreaLeft As Long
-        buttonAreaWidth = Interface.FixDPI(4 * 36 + 3 * 8)
-        buttonAreaLeft = (ctlGroupLayerButtons.GetWidth - buttonAreaWidth) \ 2
+        'The total size of the button region is [numButtons * buttonWidth + (numButtons - 1) * buttonPadding],
+        ' for e.g. N buttons and N-1 spacers.
+        Dim btnPadding As Long, btnWidth As Long
+        btnPadding = Interface.FixDPI(4)
+        btnWidth = cmdLayerAction(0).GetWidth()
         
-        sizeCheck = Interface.FixDPIFloat(44)
+        Dim numLayerButtons As Long, numLayerButtonsAllowed As Long
+        numLayerButtons = cmdLayerAction.Count
+        numLayerButtonsAllowed = numLayerButtons
+        
+        Dim buttonAreaWidth As Long, buttonAreaLeft As Long
+        buttonAreaWidth = Interface.FixDPI(numLayerButtons * btnWidth + (numLayerButtons - 1) * btnPadding)
+        
+        Dim btnContainerWidth As Long
+        btnContainerWidth = ctlGroupLayerButtons.GetWidth
+        
+        Do While (buttonAreaWidth > btnContainerWidth)
+            numLayerButtonsAllowed = numLayerButtonsAllowed - 1
+            buttonAreaWidth = Interface.FixDPI(numLayerButtonsAllowed * btnWidth + (numLayerButtonsAllowed - 1) * btnPadding)
+        Loop
+        
+        buttonAreaLeft = (btnContainerWidth - buttonAreaWidth) \ 2
+        
+        sizeCheck = btnWidth + btnPadding
         
         Dim i As Long
         For i = 0 To cmdLayerAction.Count - 1
-            cmdLayerAction(i).SetLeft buttonAreaLeft + (i * sizeCheck)
+            If (i < numLayerButtonsAllowed) Then
+                cmdLayerAction(i).SetLeft buttonAreaLeft + (i * sizeCheck)
+                cmdLayerAction(i).Visible = True
+            Else
+                cmdLayerAction(i).Visible = False
+            End If
         Next i
     
     End If
@@ -500,21 +554,35 @@ Public Sub UpdateAgainstCurrentTheme()
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(26)
-    cmdLayerAction(0).AssignImage "layer_add", , buttonSize, buttonSize
-    cmdLayerAction(1).AssignImage "layer_delete", , buttonSize, buttonSize
-    cmdLayerAction(2).AssignImage "layer_up", , buttonSize, buttonSize
-    cmdLayerAction(3).AssignImage "layer_down", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_ADD).AssignImage "layer_add", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_DELETE).AssignImage "layer_delete", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_MOVE_UP).AssignImage "layer_up", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_MOVE_DOWN).AssignImage "layer_down", , buttonSize, buttonSize
+    cmdLayerAction(LYR_BTN_DUPLICATE).AssignImage "layer_duplicate", , buttonSize, buttonSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
     
     'Recreate tooltips (necessary to support run-time language changes)
-    'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
-    cmdLayerAction(0).AssignTooltip "Add a blank layer to the image.", "New layer"
-    cmdLayerAction(1).AssignTooltip "Delete the currently selected layer.", "Delete layer"
-    cmdLayerAction(2).AssignTooltip "Move the current layer upward in the layer stack.", "Move layer up"
-    cmdLayerAction(3).AssignTooltip "Move the current layer downward in the layer stack.", "Move layer down"
+    
+    'Tooltips for these controls are now multiline, because they describe multiple interactions
+    Dim ttTextNew As String
+    ttTextNew = g_Language.TranslateMessage("Click: show the ""New layer"" dialog")
+    ttTextNew = ttTextNew & vbCrLf & g_Language.TranslateMessage("Shift + Click: add a blank layer")
+    cmdLayerAction(LYR_BTN_ADD).AssignTooltip ttTextNew, "Add layer"
+    
+    cmdLayerAction(LYR_BTN_DELETE).AssignTooltip "Click: delete this layer", "Delete layer"
+    
+    ttTextNew = g_Language.TranslateMessage("Click: move this layer up the layer stack")
+    ttTextNew = ttTextNew & vbCrLf & g_Language.TranslateMessage("Shift + Click: merge this layer with the layer above it")
+    cmdLayerAction(LYR_BTN_MOVE_UP).AssignTooltip ttTextNew, "Move or merge layer up"
+    
+    ttTextNew = g_Language.TranslateMessage("Click: move this layer down the layer stack")
+    ttTextNew = ttTextNew & vbCrLf & g_Language.TranslateMessage("Shift + Click: merge this layer with the layer beneath it")
+    cmdLayerAction(LYR_BTN_MOVE_DOWN).AssignTooltip ttTextNew, "Move or merge layer down"
+    
+    cmdLayerAction(LYR_BTN_DUPLICATE).AssignTooltip "Click: add a duplicate of this layer", "Duplicate layer"
         
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     ReflowInterface

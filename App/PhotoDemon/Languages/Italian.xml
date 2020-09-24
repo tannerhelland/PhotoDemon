@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.17</langversion>
+<langversion>8.0.18</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -11262,26 +11262,66 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Aggiungi un livello vuoto all'immagine.</translation>
+<original>Click: show the "New layer" dialog</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Elimina il livello attualmente selezionato.</translation>
+<original>Shift + Click: add a blank layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Sposta il livello corrente verso l'alto nella pila dei livelli.</translation>
+<original>Add layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Sposta il livello corrente verso il basso nella pila dei livelli.</translation>
+<original>Click: delete this layer</original>
+<translation></translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Click: move this layer up the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer above it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: move this layer down the layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift + Click: merge this layer with the layer beneath it</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move or merge layer down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click: add a duplicate of this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -13514,10 +13554,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2560</phrasecount>
+<phrasecount>2568</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5112 phrases. -->
-<!-- 2552 are duplicates, so only 2560 unique phrases have been written to file. -->
-<!-- These 2560 phrases contain approximately 11864 total words. -->
+<!-- As of this build, PhotoDemon contains 5123 phrases. -->
+<!-- 2555 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 11907 total words. -->
 
 </pdData>

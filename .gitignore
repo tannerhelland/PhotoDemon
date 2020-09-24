@@ -68,9 +68,8 @@ Desktop.ini
 *.zip
 /no_sync
 PhotoDemon.exe
-README_PSC-version.txt
 *.7z
-/App/PhotoDemon/Themes/Core_Icons.pdr
+/App/PhotoDemon/Themes/Core_Icons.pdrc
 /App/PhotoDemon/Plugins/Experimental
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
@@ -84,14 +83,10 @@ README_PSC-version.txt
 /Data
 *.tmpxml
 *.backup
-README.txt
-LICENSE.txt
-/App/PhotoDemon/Plugins/ExifToolDatabase.xml
-bfg.jar
 
 # GoRC is currently used to build PD's resource file.
 # http://godevtool.com/
 /Resources/Assets/*.pdrc
 /Resources/Assets/*.xml
 /Resources/Assets/GoRC.exe
-/Resources/Assets/PD_Icons.res
+/Resources/Assets/PD_Icons.RES
