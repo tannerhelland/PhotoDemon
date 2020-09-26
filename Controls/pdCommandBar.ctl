@@ -270,6 +270,7 @@ Attribute ucSupport.VB_VarHelpID = -1
 ' poor-man's "undo/redo" feature without the need for complicated state tracking.
 Private WithEvents m_Timer As pdTimer
 Attribute m_Timer.VB_VarHelpID = -1
+Private m_AllowedToCheckUndo As Boolean
 
 'Stack of param strings that holds the list of settings modifications to the current dialog;
 ' the user can step through these willy-nilly.
@@ -704,6 +705,10 @@ Private Sub HandleOKButton()
     
     'At this point, we are now free to proceed like any normal OK click.
     
+    'Immediately deactivate the Undo/Redo timer
+    If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
+    Set m_Timer = Nothing
+    
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
     StorePreset
     
@@ -835,7 +840,7 @@ Private Sub ResetSettings()
 End Sub
 
 Private Sub m_Timer_Timer()
-    UpdateStateStack
+    If m_AllowedToCheckUndo Then UpdateStateStack
 End Sub
 
 Private Sub UpdateStateStack(Optional ByVal isFirstCall As Boolean = False, Optional ByVal forceUIUpdate As Boolean = False)
@@ -860,7 +865,6 @@ Private Sub UpdateStateStack(Optional ByVal isFirstCall As Boolean = False, Opti
             m_StateStack.SetNumOfStrings m_StackIndex + 1
             m_StateStack.AddString tmpString
             m_StackIndex = m_StackIndex + 1
-            Debug.Print m_StackIndex
             updateNeeded = True
         End If
     End If
@@ -924,6 +928,10 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    m_AllowedToCheckUndo = newVisibility
 End Sub
 
 Private Sub UserControl_Initialize()
