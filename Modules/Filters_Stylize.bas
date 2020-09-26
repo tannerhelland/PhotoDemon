@@ -198,7 +198,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Retrieve the relevant channel color at this position
             target = srcImageData(clampX * 4 + curChannel, clampY)
-                        
+            
             'Calculate a dot size, relative to the underlying grid control point
             dx = x - dstX
             dy = y - dstY
@@ -307,13 +307,9 @@ End Function
 ' the caller requires.
 Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As Double, ByVal colorSoftness As Double, Optional ByVal colorSoftnessOpacity As Double = 100#, Optional ByVal grainAmt As Double = 0#, Optional ByVal vignetteAmt As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte, dstSA As SafeArray1D
-    dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
-    
-    Dim dibPtr As Long, dibStride As Long
-    dibPtr = dstSA.pvData
-    dibStride = dstSA.cElements
+    'Unpremultiply alpha
+    If (dstDIB Is Nothing) Then Exit Function
+    If dstDIB.GetAlphaPremultiplication() Then dstDIB.SetAlphaPremultiplication False
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -324,7 +320,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
+    If (Not suppressMessages) Then
         If (modifyProgBarMax = -1) Then SetProgBarMax finalY * 2 Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
@@ -363,6 +359,14 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte, dstSA As SafeArray1D
+    dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
+    
+    Dim dibPtr As Long, dibStride As Long
+    dibPtr = dstSA.pvData
+    dibStride = dstSA.cElements
+    
     finalX = finalX * 4
     
     'Loop through each pixel in the image, converting values as we go
@@ -396,23 +400,24 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         End If
     Next y
     
+    'Re-premultiply alpha
     dstDIB.UnwrapArrayFromDIB dstImageData
-    workingDIB.SetAlphaPremultiplication True
+    dstDIB.SetAlphaPremultiplication True
     
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
         
-    'workingDIB now contains a sepia-toned version of the image.  We now want to create a duplicate copy,
+    'dstDIB now contains a sepia-toned version of the image.  We now want to create a duplicate copy,
     ' which we will blur according to the user's "softness" parameter.
     If (colorSoftness > 0#) Then
-    
-        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-        m_tmpDIB.CreateFromExistingDIB workingDIB
-        Filters_Layers.QuickBlurDIB workingDIB, colorSoftness, False
         
-        'We now want to merge the resulting, blurred DIB onto our original copy, using the HARD LIGHT blend mode
-        ' (which will "blow out" gradiens in the image, giving an overlit appearance)
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BM_SoftLight, colorSoftnessOpacity
+        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+        m_tmpDIB.CreateFromExistingDIB dstDIB
+        Filters_Layers.QuickBlurDIB dstDIB, colorSoftness, False
+        
+        'We now want to merge the resulting, blurred DIB onto our original copy, using a non-standard
+        ' blend mode
+        cCompositor.QuickMergeTwoDibsOfEqualSize dstDIB, m_tmpDIB, BM_SoftLight, colorSoftnessOpacity
         
     End If
     
@@ -424,10 +429,14 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         Set cRandom = New pdRandomize
         cRandom.SetSeed_AutomaticAndRandom
         
-        Dim noiseVal As Long
-        workingDIB.SetAlphaPremultiplication False
+        If dstDIB.GetAlphaPremultiplication Then dstDIB.SetAlphaPremultiplication False
         
+        'Reset our DIB pointer and stride; they may have changed after rotation, above
         dstDIB.WrapArrayAroundScanline dstImageData, dstSA, 0
+        dibPtr = dstSA.pvData
+        dibStride = dstSA.cElements
+        
+        Dim noiseVal As Long
         
         'Loop through each pixel in the image, converting values as we go
         For y = initY To finalY
@@ -445,9 +454,12 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
             g = g + noiseVal
             b = b + noiseVal
             
-            If (r > 255) Then r = 255 Else If (r < 0) Then r = 0
-            If (g > 255) Then g = 255 Else If (g < 0) Then g = 0
-            If (b > 255) Then b = 255 Else If (b < 0) Then b = 0
+            If (r > 255) Then r = 255
+            If (r < 0) Then r = 0
+            If (g > 255) Then g = 255
+            If (g < 0) Then g = 0
+            If (b > 255) Then b = 255
+            If (b < 0) Then b = 0
                     
             'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
             dstImageData(x) = b
@@ -464,19 +476,13 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         Next y
         
         dstDIB.UnwrapArrayFromDIB dstImageData
-        
-        workingDIB.SetAlphaPremultiplication True
+        dstDIB.SetAlphaPremultiplication True
     
     End If
     
     'Finally, we want to apply a vignette (if any).  Note that our vignette strategy is roughly identical to PD's
     ' separate Effects > Stylize > Vignetting tool; in the future, it would be nice to simply call that function directly.
     If (vignetteAmt > 0#) Then
-    
-        'We're going to use the temporary DIB for this; that lets us process the vignette much faster, and we can blend
-        ' it in a single final swoop using a pdCompositor instance.
-        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-        m_tmpDIB.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
         
         'Vignette input parameters are hard-coded
         Dim maxRadius As Double, vFeathering As Double
@@ -485,7 +491,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         
         Dim blendVal As Double
         
-        finalX = workingDIB.GetDIBWidth - 1
+        finalX = dstDIB.GetDIBWidth - 1
         
         'Calculate the center of the image, in absolute pixels
         Dim midX As Double, midY As Double
@@ -500,8 +506,8 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
                 
         'Radius is based off the smaller of the two dimensions - width or height.  (This is used in the "circle" mode.)
         Dim tWidth As Long, tHeight As Long
-        tWidth = curDIBValues.Width
-        tHeight = curDIBValues.Height
+        tWidth = dstDIB.GetDIBWidth
+        tHeight = dstDIB.GetDIBHeight
         
         Dim sRadiusW As Double, sRadiusH As Double
         Dim sRadiusW2 As Double, sRadiusH2 As Double
@@ -520,8 +526,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         'Build a lookup table of vignette values.  Because we're just applying the vignette to a standalone layer,
         ' we can treat the vignette as a constant color scaled from transparent to opaque.  This makes it *very*
         ' fast to apply.
-        Dim vLookup() As Long
-        ReDim vLookup(0 To 255) As Long
+        Dim vLookup(0 To 255) As Long
         Dim tmpQuad As RGBQuad
         
         'Extract the RGB values of the vignetting color
@@ -540,9 +545,14 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
                 .Green = Int(blendVal * CSng(newG))
                 .Blue = Int(blendVal * CSng(newB))
             End With
-            CopyMemoryStrict VarPtr(vLookup(x)), VarPtr(tmpQuad), 4&
+            GetMem4 VarPtr(tmpQuad), vLookup(x)
         Next x
-    
+        
+        'We're going to use the temporary DIB for this; that lets us process the vignette much faster, and we can blend
+        ' it in a single final swoop using a pdCompositor instance.
+        If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+        m_tmpDIB.CreateBlank dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, 32, 0, 0
+        
         Dim dstImageDataL() As Long, tmpSA2D As SafeArray2D
         m_tmpDIB.WrapLongArrayAroundDIB dstImageDataL, tmpSA2D
         
@@ -555,7 +565,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
             nY = y - midY
             nX2 = nX * nX
             nY2 = nY * nY
-                
+            
             sRadiusMax = sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)
             
             'Outside
@@ -572,20 +582,20 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
                     blendVal = (nY2 - sRadiusMin) / vFeathering2
                     dstImageDataL(x, y) = vLookup(blendVal * 255)
                 End If
-                    
+                
             End If
-                            
+            
         Next x
         Next y
         
         m_tmpDIB.UnwrapLongArrayFromDIB dstImageDataL
         m_tmpDIB.SetInitialAlphaPremultiplicationState True
         
-        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, BM_Normal, vignetteAmt
+        cCompositor.QuickMergeTwoDibsOfEqualSize dstDIB, m_tmpDIB, BM_Normal, vignetteAmt
         
     End If
     
     ApplyAntiqueEffect = True
-        
+    
 End Function
 

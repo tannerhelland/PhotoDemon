@@ -1305,7 +1305,11 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             If (dstDIB.GetDIBWidth <> newWidth) Or (dstDIB.GetDIBHeight <> newHeight) Or (dstDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
                 dstDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
             End If
-    
+            
+            'The destination DIB will *always* have premultiplied alpha, since we're using a
+            ' GdipDraw* function to perform the fast rotate.
+            dstDIB.SetInitialAlphaPremultiplicationState True
+            
             'Copy the rotated source into the destination DIB
             Dim hGraphics As Long
             If (GdipCreateFromHDC(dstDIB.GetDIBDC, hGraphics) = GP_OK) Then
@@ -1317,7 +1321,7 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         
                 'Render the rotated image
                 GDIPlusRotateFlipDIB = GdipDrawImageI(hGraphics, hGdipBitmap, 0, 0) = GP_OK
-        
+                
                 'Release both the destination graphics object and the source bitmap object
                 GdipDeleteGraphics hGraphics
                 
