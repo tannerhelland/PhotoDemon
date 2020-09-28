@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.18</langversion>
+<langversion>8.0.19</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -2002,6 +2002,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Range filter</original>
 <translation>Filtro della gamma</translation>
 </phrase>
@@ -2286,7 +2291,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Cancella l'elenco delle macro recenti</translation>
 </phrase>
 
-<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
+<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5302,7 +5307,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 366 phrases. 187 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 367 phrases. 188 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13552,12 +13557,54 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>render</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>foreground color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magnitude</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>direction</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dynamic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>static</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2568</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5123 phrases. -->
-<!-- 2555 are duplicates, so only 2568 unique phrases have been written to file. -->
-<!-- These 2568 phrases contain approximately 11907 total words. -->
+<!-- As of this build, PhotoDemon contains 5138 phrases. -->
+<!-- 2561 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 11920 total words. -->
 
 </pdData>

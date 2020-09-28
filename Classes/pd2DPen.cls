@@ -145,6 +145,7 @@ Friend Sub SetPenMiterLimit(ByVal newSetting As Single)
     If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenMiterLimit, m_PenMiterLimit
 End Sub
 
+'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
 Friend Sub SetPenOpacity(ByVal newSetting As Single)
     m_PenOpacity = newSetting
     If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenOpacity, m_PenOpacity

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.57</langversion>
+<langversion>9.0.62</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -83,7 +83,7 @@
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation>Es dem aktuellen Bild als einen neuen Layer hinzufügen.</translation>
+<translation>Es dem aktuellen Bild als neuen Layer hinzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -1428,12 +1428,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Go to layer above</original>
-<translation>Gehe zu Layer oberhalb</translation>
+<translation>Gehe zu Layer darüber</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation>Gehe zu Layer unterhalb</translation>
+<translation>Gehe zu Layer darunter</translation>
 </phrase>
 
 <phrase>
@@ -2002,6 +2002,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Range filter</original>
 <translation>Bereichsfilter </translation>
 </phrase>
@@ -2286,7 +2291,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
+<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5304,7 +5309,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 366 phrases. 187 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 367 phrases. 188 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9444,7 +9449,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddatei(en) unter Verwendung eines Standarddialogs "Bild öffnen".</translation>
+<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddatei(en) unter Verwendung eines Standard-Dialogs "Bild öffnen".</translation>
 </phrase>
 
 <phrase>
@@ -9681,7 +9686,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Dieser Button wirkt sich nur auf die obige Vorschau aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
+<translation>Dieser Button wirkt sich nur auf die Vorschau oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -10437,7 +10442,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>standard PNG</original>
-<translation>Standard PNG</translation>
+<translation>Standard-PNG</translation>
 </phrase>
 
 <phrase>
@@ -11093,12 +11098,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>top of layer stack</original>
-<translation>Ganz oben von Layer-Stapel</translation>
+<translation>Ganz oben des Layer-Stacks</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>Ganz unten von Layer-Stapel</translation>
+<translation>Ganz unten des Layer-Stacks</translation>
 </phrase>
 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11254,62 +11259,62 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click: show the "New layer" dialog</original>
-<translation></translation>
+<translation>Klick: Den Dialog "Neuer Layer" zeigen</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation></translation>
+<translation>Shift+Mausklick: Einen blanken Layer hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>Add layer</original>
-<translation></translation>
+<translation>Layer hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>Click: delete this layer</original>
-<translation></translation>
+<translation>Klick: Diesen Layer löschen</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation></translation>
+<translation>Klick: Diesen Layer im Layer-Stack nach oben verschieben</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation></translation>
+<translation>Shift+Mausklick: Diesen Layer mit dem Layer darüber zusammenführen</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer up</original>
-<translation></translation>
+<translation>Layer nach oben verschieben oder zusammenführen</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer down the layer stack</original>
-<translation></translation>
+<translation>Klick: Diesen Layer im Layer-Stack nach unten verschieben</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation></translation>
+<translation>Shift+Mausklick: Diesen Layer mit dem Layer darunter zusammenführen</translation>
 </phrase>
 
 <phrase>
 <original>Move or merge layer down</original>
-<translation></translation>
+<translation>Layer nach unten verschieben oder zusammenführen</translation>
 </phrase>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation></translation>
+<translation>Klick: Ein Duplikat dieses Layers hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate layer</original>
-<translation></translation>
+<translation>Layer duplizieren</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -13543,12 +13548,54 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>render</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>foreground color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magnitude</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>direction</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dynamic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>static</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2568</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5123 phrases. -->
-<!-- 2555 are duplicates, so only 2568 unique phrases have been written to file. -->
-<!-- These 2568 phrases contain approximately 11907 total words. -->
+<!-- As of this build, PhotoDemon contains 5138 phrases. -->
+<!-- 2561 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 11920 total words. -->
 
 </pdData>

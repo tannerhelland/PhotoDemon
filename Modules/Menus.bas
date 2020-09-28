@@ -452,8 +452,9 @@ Public Sub InitializeMenus()
         AddMenuItem "Emboss...", "effects_emboss", 6, 3, 0
         AddMenuItem "Enhance edges...", "effects_enhanceedges", 6, 3, 1
         AddMenuItem "Find edges...", "effects_findedges", 6, 3, 2
-        AddMenuItem "Range filter...", "effects_rangefilter", 6, 3, 3
-        AddMenuItem "Trace contour...", "effects_tracecontour", 6, 3, 4
+        AddMenuItem "Gradient flow...", "effects_gradientflow", 6, 3, 3
+        AddMenuItem "Range filter...", "effects_rangefilter", 6, 3, 4
+        AddMenuItem "Trace contour...", "effects_tracecontour", 6, 3, 5
     AddMenuItem "Light and shadow", "effects_lightandshadow", 6, 4
         AddMenuItem "Black light...", "effects_blacklight", 6, 4, 0
         AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 4, 1
@@ -2755,6 +2756,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_findedges"
                 Process "Find edges", True
+                
+            Case "effects_gradientflow"
+                Process "Gradient flow", True
                 
             Case "effects_rangefilter"
                 Process "Range filter", True

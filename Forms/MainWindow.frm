@@ -1188,12 +1188,16 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuEdge 
-            Caption         =   "Range filter..."
+            Caption         =   "Gradient flow..."
             Index           =   3
          End
          Begin VB.Menu MnuEdge 
-            Caption         =   "Trace contour..."
+            Caption         =   "Range filter..."
             Index           =   4
+         End
+         Begin VB.Menu MnuEdge 
+            Caption         =   "Trace contour..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3298,11 +3302,49 @@ End Sub
 
 'All distortion filters happen here
 Private Sub MnuDistortEffects_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuDistortEffects(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_fixlensdistort"
+        Case 1
+            'separator
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_donut"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_lens"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_pinchandwhirl"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_poke"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_ripple"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "effects_squish"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "effects_swirl"
+        Case 9
+            Menus.ProcessDefaultAction_ByName "effects_waves"
+        Case 10
+            'separator
+        Case 11
+            Menus.ProcessDefaultAction_ByName "effects_miscdistort"
+    End Select
 End Sub
 
 Private Sub MnuEdge_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuEdge(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_emboss"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_enhanceedges"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_findedges"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_gradientflow"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_rangefilter"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_tracecontour"
+    End Select
 End Sub
 
 Private Sub MnuEdit_Click(Index As Integer)

@@ -1684,6 +1684,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormFindEdges Else FormFindEdges.ApplyEdgeDetection processParameters
         Process_EffectsMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Gradient flow", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormGradientFlow Else FormGradientFlow.ApplyGradientFlowFx processParameters
+        Process_EffectsMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Range filter", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormRangeFilter Else FormRangeFilter.ApplyRangeFilter processParameters
         Process_EffectsMenu = True
