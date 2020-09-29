@@ -15,7 +15,7 @@ Option Explicit
 
 'If possible (e.g. painting without stretching), this painter class will drop back to bare AlphaBlend calls
 ' for image rendering.  This provides a meaningful performance improvement over GDI+ draw calls.
-Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
+Private Declare Function AlphaBlend Lib "gdi32" Alias "GdiAlphaBlend" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
 
 'Copy functions.  Copying one surface onto another surface does *not* perform any blending.  It performs a wholesale
 ' replacement of the destination bytes with the source bytes.
