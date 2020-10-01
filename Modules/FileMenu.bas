@@ -3,8 +3,8 @@ Attribute VB_Name = "FileMenu"
 'File Menu Handler
 'Copyright 2001-2020 by Tanner Helland
 'Created: 15/Apr/01
-'Last updated: 15/August/15
-'Last update: convert the old cCommonDialog references to the newer, lighter pdOpenSaveDialog instance
+'Last updated: 30/September/20
+'Last update: new user preference for initial folder suggestion on Save As
 '
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
@@ -186,8 +186,8 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
         
         If safeSaveModeActive Then
         
-            'File name incrementation requires help from an outside function.  We must pass it the folder, filename, and extension
-            ' we want it to search against.
+            'File name incrementation requires help from an outside function.  We must pass it the folder,
+            ' filename, and extension we want it to search against.
             Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
             tmpFolder = Files.FileGetPath(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
             If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
@@ -201,9 +201,9 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             dstFilename = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
         End If
         
-        'New to v7.0 is the way save option dialogs work.  PD's primary save function is now responsible for displaying save dialogs.
-        ' (We can forcibly request a dialog, as we do in the "Save As" function, but in this function, we leave it up to the primary
-        ' save function to determine if a dialog is necessary.)
+        'New to v7.0 is the way save option dialogs work.  PD's primary save function is now responsible for
+        ' displaying save dialogs. (We can forcibly request a dialog, as we do in the "Save As" function,
+        ' but in this function, we leave it up to the primary save function to determine if a dialog is necessary.)
         MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, False)
         
     End If
@@ -226,25 +226,43 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     'Each of these will be handled in turn
     
-    '1) Determine an initial folder.  If the user has saved a file before, we'll grab their last-used
-    '   path.  If the user has *not* saved a file before, we will use the current image path (if one
-    '   exists), or the default preferences engine path if this is e.g. a clipboard image with no
-    '   saved path (the preferences engine defaults to the user's Pictures folder.)
+    '1) Determine an initial folder.  If the user has saved a file before, we'll use their export
+    '   preference to determine what folder we suggest (either the current image's folder, or their
+    '   last-used path.)
+    '
+    '   If, however, the user has *not* saved a file before, we will always use the current image
+    '   path (if one exists), or the default preferences engine path if this is e.g. a clipboard
+    '   image with no saved path (the preferences engine defaults to the user's Pictures folder.)
+    
+    'Before doing anything, figure out if the current image even has a useable path; if it doesn't,
+    ' we need to adjust behavior
+    Dim testPath As String, pathIsUsable As Boolean
+    testPath = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    
+    'Test the path's existence (important when running PD from a removeable drive)
+    pathIsUsable = (LenB(testPath) <> 0)
+    If pathIsUsable Then
+        testPath = Files.FileGetPath(testPath)
+        pathIsUsable = Files.PathExists(testPath, False)
+    End If
+        
     Dim initialSaveFolder As String
     If UserPrefs.GetPref_Boolean("Saving", "Has Saved A File", True) Then
-        initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
-    Else
-    
-        'User has not saved a file before.  See if the current image has a usable path.
-        Dim testPath As String, pathIsUsable As Boolean
-        testPath = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
         
-        'Test the path's existence
-        pathIsUsable = (LenB(testPath) <> 0)
-        If pathIsUsable Then
-            testPath = Files.FileGetPath(testPath)
-            pathIsUsable = Files.PathExists(testPath, False)
+        'Check user preference for default folder behavior
+        If UserPrefs.GetPref_Boolean("Saving", "Use Last Folder", False) Then
+            initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+        
+        'If the current image has a useable path, use it; otherwise, default to the last-used path
+        Else
+            If pathIsUsable Then
+                initialSaveFolder = testPath
+            Else
+                initialSaveFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+            End If
         End If
+        
+    Else
         
         'If the current image has a usable path, default to it; otherwise, grab the default value
         ' from the preference's file (typically the active user's Pictures folder)
@@ -255,8 +273,6 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         End If
     
     End If
-    
-    'TODO: if the user has *not* saved a file before, default to the current image's path
     
     '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
     '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)

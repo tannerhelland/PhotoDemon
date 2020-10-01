@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.321</langversion>
+<langversion>1.0.322</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7408,13 +7408,13 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>pressure</original>
-<translation>притисок</translation>
+<original>Sketching image with pencils</original>
+<translation>Четката слика со моливи</translation>
 </phrase>
 
 <phrase>
-<original>Sketching image with pencils</original>
-<translation>Четката слика со моливи</translation>
+<original>pressure</original>
+<translation>притисок</translation>
 </phrase>
 
 <phrase>
@@ -7432,7 +7432,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>графит</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -12765,81 +12765,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use black point compensation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>прикажување на рендерирање намера</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>достапни прикази</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>исклучете го управувањето на бојата на екранот</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>користете ги постојните системски профили за секој екран</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>профил во боја за овој екран</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>прикажување на политики</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>користете сопствени профили за секој екран</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>за затворање на слики, Предупреди ме мене за незачувани промени</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>при користење на "Save As" команда, во собата форматот на датотеката стандардно во согласност со</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>кога на "Зачувај" се користи</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>спаси однесување: пребришете vs направи копија</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>затворање незачувани слики</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>стандарден формат на датотека при зачувување</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>листа PhotoDemon како последен користат софтвер за уредување</translation>
-</phrase>
-
-<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -12881,6 +12806,51 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>app instances</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>кога на "Зачувај" се користи</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>листа PhotoDemon како последен користат софтвер за уредување</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
 <translation></translation>
 </phrase>
 
@@ -12932,6 +12902,46 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>гледиштето</translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>прикажување на рендерирање намера</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>достапни прикази</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>исклучете го управувањето на бојата на екранот</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>користете ги постојните системски профили за секој екран</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>профил во боја за овој екран</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>прикажување на политики</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>користете сопствени профили за секој екран</translation>
 </phrase>
 
 <phrase>
@@ -12995,8 +13005,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>notify me when an update is ready</original>
-<translation>Извести ме кога ажурирање е подготвена</translation>
+<original>notify when an update is ready</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13144,18 +13154,33 @@ A дали сте сигурни дека сакате да продолжите
 </phrase>
 
 <phrase>
-<original>the current file format of the image being saved</original>
-<translation>сегашниот формат на датотека на сликата што се зачувани</translation>
+<original>the current image's folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>the last image format I used in the "Save As" screen</original>
-<translation>последните форматот на сликата се користи во екран "Save As"</translation>
+<original>the last-used folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Повеќето фото едитори користат форматот на тековната слика како стандарден во "Зачувај како" екран. Кога се работи со RAW слики, кои на крајот ќе биде зачувана на JPEG, тоа е корисно да се има PhotoDemon сеќавам дека - па оттука и "последна користи" опција.</translation>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13366,7 +13391,7 @@ If сеуште изберете да го исклучите ажурирања
 <translation>Оваа нова локација привремена папка нема да се случи се додека не рестартирам програмата.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 182 phrases. 55 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 187 phrases. 55 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13588,10 +13613,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5138 phrases. -->
-<!-- 2561 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11920 total words. -->
+<!-- As of this build, PhotoDemon contains 5147 phrases. -->
+<!-- 2565 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11930 total words. -->
 
 </pdData>

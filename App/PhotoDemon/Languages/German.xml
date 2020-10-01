@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.62</langversion>
+<langversion>9.0.63</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7414,13 +7414,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>pressure</original>
-<translation>Druck</translation>
+<original>Sketching image with pencils</original>
+<translation>Bild wird mit Bleistiften skizziert</translation>
 </phrase>
 
 <phrase>
-<original>Sketching image with pencils</original>
-<translation>Bild wird mit Bleistiften skizziert</translation>
+<original>pressure</original>
+<translation>Druck</translation>
 </phrase>
 
 <phrase>
@@ -7438,7 +7438,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Graphit</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -12769,81 +12769,6 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
-<original>use black point compensation</original>
-<translation>Schwarzpunktkompensation verwenden</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Rendering-Intent anzeigen</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>Verfügbare Anzeigen</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Anzeige-Farbmanagement ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Die aktuellen Systemprofile für jede Anzeige verwenden</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>Farbprofil für diese Anzeige</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Richtlinien anzeigen</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Benutzerdefinierte Profile für jede Anzeige verwenden</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>Mich beim Schließen von Bildern über ungesicherte Änderungen warnen</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>Bei Verwendung des Befehls "Speichern unter" das Default-Dateiformat entsprechend setzen auf</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>Wenn "Speichern" verwendet wird</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>Verhalten beim Speichern: Überschreiben vs. eine Kopie erstellen</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>Schließen ungesicherter Bilder</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Default-Dateiformat beim Speichern</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>PhotoDemon als zuletzt-verwendete Bearbeitungssoftware listen</translation>
-</phrase>
-
-<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>Wenn Bilder aus einer externen Quelle (wie Windows-Explorer) ankommen</translation>
 </phrase>
@@ -12886,6 +12811,51 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <phrase>
 <original>app instances</original>
 <translation>App-Instanzen</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>Wenn "Speichern" verwendet wird</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>PhotoDemon als zuletzt-verwendete Bearbeitungssoftware listen</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12936,6 +12906,46 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <phrase>
 <original>viewport</original>
 <translation>Viewport</translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>Schwarzpunktkompensation verwenden</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Rendering-Intent anzeigen</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>Verfügbare Anzeigen</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Anzeige-Farbmanagement ausschalten</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Die aktuellen Systemprofile für jede Anzeige verwenden</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>Farbprofil für diese Anzeige</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Richtlinien anzeigen</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Benutzerdefinierte Profile für jede Anzeige verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12999,8 +13009,8 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
-<original>notify me when an update is ready</original>
-<translation>Mich benachrichtigen, wenn ein Update bereit steht</translation>
+<original>notify when an update is ready</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13148,18 +13158,33 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
-<original>the current file format of the image being saved</original>
-<translation>Das aktuelle Dateiformat des Bildes, das gespeichert wird</translation>
+<original>the current image's folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>the last image format I used in the "Save As" screen</original>
-<translation>Das letzte Bildformat, das ich im Screen "Speichern unter" verwendet habe</translation>
+<original>the last-used folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Screen "Speichern unter". Beim Arbeiten mit RAW-Bildern, die letzten Endes in JPEG gespeichert werden, ist es nützlich, PhotoDemon daran erinnern zu lassen - daher die Option "Zuletzt verwendet".</translation>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13370,7 +13395,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 <translation>Dieser neue Ort des temporären Ordners wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 182 phrases. 55 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 187 phrases. 55 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13592,10 +13617,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5138 phrases. -->
-<!-- 2561 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 11920 total words. -->
+<!-- As of this build, PhotoDemon contains 5147 phrases. -->
+<!-- 2565 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 11930 total words. -->
 
 </pdData>

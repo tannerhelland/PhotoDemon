@@ -208,224 +208,6 @@ Begin VB.Form FormOptions
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6720
-      Index           =   4
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdCheckBox chkColorManagement 
-         Height          =   315
-         Index           =   0
-         Left            =   240
-         TabIndex        =   11
-         Top             =   4080
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   556
-         Caption         =   "use black point compensation"
-      End
-      Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
-         Height          =   735
-         Left            =   180
-         TabIndex        =   36
-         Top             =   3240
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   1296
-         Caption         =   "display rendering intent:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdButton cmdColorProfilePath 
-         Height          =   375
-         Left            =   7380
-         TabIndex        =   26
-         Top             =   2760
-         Width           =   810
-         _ExtentX        =   1429
-         _ExtentY        =   661
-         Caption         =   "..."
-      End
-      Begin PhotoDemon.pdDropDown cboDisplays 
-         Height          =   690
-         Left            =   780
-         TabIndex        =   7
-         Top             =   1590
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   1217
-         Caption         =   "available displays:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdTextBox txtColorProfilePath 
-         Height          =   315
-         Left            =   900
-         TabIndex        =   8
-         Top             =   2790
-         Width           =   6375
-         _ExtentX        =   11245
-         _ExtentY        =   556
-         Text            =   "(none)"
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   0
-         Left            =   180
-         TabIndex        =   9
-         Top             =   480
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "turn off display color management"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   1
-         Left            =   180
-         TabIndex        =   10
-         Top             =   840
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use the current system profiles for each display"
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   2
-         Left            =   780
-         Top             =   2430
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   503
-         Caption         =   "color profile for this display:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "display policies"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdRadioButton optColorManagement 
-         Height          =   330
-         Index           =   2
-         Left            =   180
-         TabIndex        =   35
-         Top             =   1200
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use custom profiles for each display"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
-      Index           =   2
-      Left            =   3000
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   14631
-      _ExtentY        =   11853
-      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
-         Height          =   330
-         Left            =   180
-         TabIndex        =   12
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "when closing images, warn me me about unsaved changes"
-      End
-      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
-         Height          =   690
-         Left            =   180
-         TabIndex        =   13
-         Top             =   1350
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboSaveBehavior 
-         Height          =   690
-         Left            =   180
-         TabIndex        =   14
-         Top             =   3750
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "when ""Save"" is used:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   2370
-         Width           =   8265
-         _ExtentX        =   14579
-         _ExtentY        =   503
-         Caption         =   "metadata"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   3405
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "save behavior: overwrite vs make a copy"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   7
-         Left            =   0
-         Top             =   0
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "closing unsaved images"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   8
-         Left            =   0
-         Top             =   990
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "default file format when saving"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdCheckBox chkMetadataListPD 
-         Height          =   375
-         Left            =   180
-         TabIndex        =   34
-         Top             =   2760
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "list PhotoDemon as the last-used editing software"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6720
       Index           =   1
       Left            =   3000
       Top             =   120
@@ -552,6 +334,128 @@ Begin VB.Form FormOptions
          Caption         =   "app instances"
          FontSize        =   12
          ForeColor       =   5263440
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   2
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
+         Height          =   330
+         Left            =   180
+         TabIndex        =   12
+         Top             =   5400
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "when closing images, warn about unsaved changes"
+      End
+      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   13
+         Top             =   1680
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when using ""Save As"", set the default file format to:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboSaveBehavior 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   14
+         Top             =   3990
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when ""Save"" is used:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         Top             =   2610
+         Width           =   8265
+         _ExtentX        =   14579
+         _ExtentY        =   503
+         Caption         =   "metadata"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   6
+         Left            =   0
+         Top             =   3645
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "safe saving"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   7
+         Left            =   0
+         Top             =   5040
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "unsaved changes"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   8
+         Left            =   0
+         Top             =   1320
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "default format"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdCheckBox chkMetadataListPD 
+         Height          =   375
+         Left            =   180
+         TabIndex        =   34
+         Top             =   3000
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "list PhotoDemon as the last-used editing software"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   21
+         Left            =   0
+         Top             =   0
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "default folder"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdDropDown cboDefaultSaveFolder 
+         Height          =   690
+         Left            =   180
+         TabIndex        =   41
+         Top             =   360
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "when using ""Save As"", set the initial folder to:"
+         FontSizeCaption =   10
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -686,6 +590,125 @@ Begin VB.Form FormOptions
          Caption         =   "viewport"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6720
+      Index           =   4
+      Left            =   3000
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   14631
+      _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
+         Index           =   0
+         Left            =   240
+         TabIndex        =   11
+         Top             =   4080
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   556
+         Caption         =   "use black point compensation"
+      End
+      Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
+         Height          =   735
+         Left            =   180
+         TabIndex        =   36
+         Top             =   3240
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   1296
+         Caption         =   "display rendering intent:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButton cmdColorProfilePath 
+         Height          =   375
+         Left            =   7380
+         TabIndex        =   26
+         Top             =   2760
+         Width           =   810
+         _ExtentX        =   1429
+         _ExtentY        =   661
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdDropDown cboDisplays 
+         Height          =   690
+         Left            =   780
+         TabIndex        =   7
+         Top             =   1590
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   1217
+         Caption         =   "available displays:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdTextBox txtColorProfilePath 
+         Height          =   315
+         Left            =   900
+         TabIndex        =   8
+         Top             =   2790
+         Width           =   6375
+         _ExtentX        =   11245
+         _ExtentY        =   556
+         Text            =   "(none)"
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   0
+         Left            =   180
+         TabIndex        =   9
+         Top             =   480
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "turn off display color management"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   1
+         Left            =   180
+         TabIndex        =   10
+         Top             =   840
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use the current system profiles for each display"
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   2
+         Left            =   780
+         Top             =   2430
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   503
+         Caption         =   "color profile for this display:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "display policies"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdRadioButton optColorManagement 
+         Height          =   330
+         Index           =   2
+         Left            =   180
+         TabIndex        =   35
+         Top             =   1200
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use custom profiles for each display"
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -901,7 +924,7 @@ Begin VB.Form FormOptions
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   582
-         Caption         =   "notify me when an update is ready"
+         Caption         =   "notify when an update is ready"
       End
    End
 End
@@ -914,8 +937,8 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2020 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 16/September/20
-'Last update: expand choices for transparency grid to better match Photoshop's offerings
+'Last updated: 30/September/20
+'Last update: new options for default folder during Save As
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -1160,6 +1183,7 @@ Private Sub cmdBarMini_OKClick()
     UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
     UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
     UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
+    UserPrefs.SetPref_Boolean "Saving", "Use Last Folder", (cboDefaultSaveFolder.ListIndex = 1)
     
     'Performance preferences.  (Note that many of these are specially cached, for obvious perf reasons.)
     SetProgBarVal 4
@@ -1368,6 +1392,7 @@ Private Sub LoadAllPreferences()
     'Saving preferences
     chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
     cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
+    If UserPrefs.GetPref_Boolean("Saving", "Use Last Folder", False) Then cboDefaultSaveFolder.ListIndex = 1 Else cboDefaultSaveFolder.ListIndex = 0
     cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
     chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
     
@@ -1504,10 +1529,15 @@ Private Sub Form_Load()
     'Saving prefs
     chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
     
+    cboDefaultSaveFolder.Clear
+    cboDefaultSaveFolder.AddItem "the current image's folder", 0
+    cboDefaultSaveFolder.AddItem "the last-used folder", 1
+    cboDefaultSaveFolder.AssignTooltip "Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time."
+    
     cboDefaultSaveFormat.Clear
-    cboDefaultSaveFormat.AddItem "the current file format of the image being saved", 0
-    cboDefaultSaveFormat.AddItem "the last image format I used in the ""Save As"" screen", 1
-    cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
+    cboDefaultSaveFormat.AddItem "the current image's format", 0
+    cboDefaultSaveFormat.AddItem "the last-used format", 1
+    cboDefaultSaveFormat.AssignTooltip "Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time."
     
     cboSaveBehavior.Clear
     cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0

@@ -720,9 +720,10 @@ Private Sub CreateNewPreferencesFile()
         .WriteTag "Saving", vbNullString, True
             .WriteTag "ConfirmClosingUnsaved", "True"
             .WriteTag "HasSavedAFile", "False"
+            .WriteTag "MetadataListPD", "True"
             .WriteTag "OverwriteOrCopy", "0"
             .WriteTag "SuggestedFormat", "0"
-            .WriteTag "MetadataListPD", "True"
+            .WriteTag "UseLastFolder", "False"
         .CloseTag "Saving"
         .WriteBlankLine
         
