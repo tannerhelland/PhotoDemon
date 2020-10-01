@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.196</langversion>
+<langversion>7.0.197</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5265,7 +5265,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 367 phrases. 188 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -8171,6 +8171,63 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>render</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>平滑</translation>
+</phrase>
+
+<phrase>
+<original>boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample radius</original>
+<translation>取樣半徑</translation>
+</phrase>
+
+<phrase>
+<original>foreground color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magnitude</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>direction</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dynamic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>static</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<phrase>
 <original>synchronize search radius</original>
 <translation></translation>
 </phrase>
@@ -8576,16 +8633,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>background color and opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Splattering canvas with paint</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -11670,11 +11722,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>取樣半徑</translation>
-</phrase>
-
-<phrase>
 <original>RGB %</original>
 <translation>RGB %</translation>
 </phrase>
@@ -11699,7 +11746,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 43 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -11916,11 +11963,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>smoothing</original>
-<translation>平滑</translation>
-</phrase>
-
-<phrase>
 <original>corner rounding</original>
 <translation>圓角</translation>
 </phrase>
@@ -12060,7 +12102,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
 <original>font style</original>
@@ -13513,54 +13555,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>render</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>foreground color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Calculating gradient flow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>magnitude</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>direction</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dynamic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>static</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5147 phrases. -->
-<!-- 2565 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5148 phrases. -->
+<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
 <!-- These 2582 phrases contain approximately 11930 total words. -->
 
 </pdData>

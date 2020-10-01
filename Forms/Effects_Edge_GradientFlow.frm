@@ -147,8 +147,8 @@ Attribute VB_Exposed = False
 'Gradient flow tool
 'Copyright 2020-2020 by Tanner Helland
 'Created: 26/September/20
-'Last updated: 26/September/20
-'Last update: initial UI build
+'Last updated: 28/September/20
+'Last update: wrap up initial build
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -170,9 +170,9 @@ Public Sub ApplyGradientFlowFx(ByVal parameterList As String, Optional ByVal toP
     boostMultiplier = (CSng(cParams.GetLong("boost", 0, True)) / 10!) + 1!
     renderMagnitude = Strings.StringsEqual(cParams.GetString("target", "target", True), "magnitude", True)
     
-    Dim sampleRadius As Long, backgroundColor As Long, backgroundOpacity As Long, dynamicForeground As Boolean
+    Dim sampleRadius As Long, fxBackcolor As Long, backgroundOpacity As Long, dynamicForeground As Boolean
     sampleRadius = cParams.GetLong("sample-radius", 5, True)
-    backgroundColor = cParams.GetLong("background-color", vbWhite, True)
+    fxBackcolor = cParams.GetLong("background-color", vbWhite, True)
     backgroundOpacity = cParams.GetLong("background-opacity", 100, True)
     dynamicForeground = cParams.GetBool("dynamic-foreground", True, True)
     
@@ -277,14 +277,14 @@ Public Sub ApplyGradientFlowFx(ByVal parameterList As String, Optional ByVal toP
         workingDIB.WrapArrayAroundDIB srcPixels, dstSA
         If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
         tmpDIB.CreateFromExistingDIB workingDIB
-        tmpDIB.FillWithColor backgroundColor, backgroundOpacity
+        tmpDIB.FillWithColor fxBackcolor, backgroundOpacity
         If (backgroundOpacity <> 100) Then tmpDIB.SetAlphaPremultiplication True
         
         Dim forceForegroundColor As Long
         If (Not dynamicForeground) Then
-            r = 255 - Colors.ExtractRed(backgroundColor)
-            g = 255 - Colors.ExtractGreen(backgroundColor)
-            b = 255 - Colors.ExtractBlue(backgroundColor)
+            r = 255 - Colors.ExtractRed(fxBackcolor)
+            g = 255 - Colors.ExtractGreen(fxBackcolor)
+            b = 255 - Colors.ExtractBlue(fxBackcolor)
             forceForegroundColor = RGB(r, g, b)
         End If
         

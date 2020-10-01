@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.20</langversion>
+<langversion>8.0.21</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -5307,7 +5307,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 367 phrases. 188 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -8215,6 +8215,63 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>background color and opacity</original>
+<translation>colore di sfondo e opacità</translation>
+</phrase>
+
+<phrase>
+<original>render</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>lisciatura</translation>
+</phrase>
+
+<phrase>
+<original>boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sample radius</original>
+<translation>raggio del campione</translation>
+</phrase>
+
+<phrase>
+<original>foreground color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magnitude</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>direction</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dynamic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>static</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<phrase>
 <original>synchronize search radius</original>
 <translation>sincronizzare il raggio di ricerca</translation>
 </phrase>
@@ -8620,16 +8677,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>background color and opacity</original>
-<translation>colore di sfondo e opacità</translation>
-</phrase>
-
-<phrase>
 <original>Splattering canvas with paint</original>
 <translation>Tela splattering con vernice</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -11731,11 +11783,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>sample radius</original>
-<translation>raggio del campione</translation>
-</phrase>
-
-<phrase>
 <original>RGB %</original>
 <translation>RGB %</translation>
 </phrase>
@@ -11760,7 +11807,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>N/A</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 43 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -11977,11 +12024,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <!-- Toolpanel_Pencil.frm contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
-<original>smoothing</original>
-<translation>lisciatura</translation>
-</phrase>
-
-<phrase>
 <original>corner rounding</original>
 <translation>arrotondamento spigolo</translation>
 </phrase>
@@ -12121,7 +12163,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 56 phrases. 28 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
 <original>font style</original>
@@ -13582,54 +13624,12 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>render</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>foreground color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Calculating gradient flow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>magnitude</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>direction</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dynamic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>static</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5147 phrases. -->
-<!-- 2565 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5148 phrases. -->
+<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
 <!-- These 2582 phrases contain approximately 11930 total words. -->
 
 </pdData>
