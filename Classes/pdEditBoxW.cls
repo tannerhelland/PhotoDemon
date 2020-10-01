@@ -206,11 +206,6 @@ Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lp
 'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
-'Virtual key-codes currently supported by pdInput
-Private Const VK_SHIFT As Long = &H10
-Private Const VK_CONTROL As Long = &H11
-Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
-
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
 

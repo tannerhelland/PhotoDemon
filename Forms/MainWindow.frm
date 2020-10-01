@@ -2768,15 +2768,18 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         End If
         
         'MRU files
-        Dim i As Integer
+        Dim i As Integer, targetMRU As Long
         For i = 0 To 9
+            
             If .HotKeyName(acceleratorIndex) = ("MRU_" & i) Then
-                If FormMain.MnuRecDocs.Count > i Then
+                
+                If (FormMain.MnuRecDocs.Count >= i) Then
                     If FormMain.MnuRecDocs(i).Enabled Then
                         Call FormMain.mnuRecDocs_Click(i)
                         Exit Sub
                     End If
                 End If
+                
             End If
         Next i
         
@@ -2787,18 +2790,21 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         'If no images are loaded, exit immediately
         If (Not PDImages.IsImageActive()) Then Exit Sub
         
+        'Layer > merge down (requires a passed parameter to ID the active layer)
+        If .HotKeyName(acceleratorIndex) = "layer_mergedown" Then Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+        
         'Fit on screen
-        If .HotKeyName(acceleratorIndex) = "FitOnScreen" Then FitOnScreen
+        If .HotKeyName(acceleratorIndex) = "FitOnScreen" Then Menus.ProcessDefaultAction_ByName "view_fit"
         
         'Zoom in
-        If .HotKeyName(acceleratorIndex) = "Zoom_In" Then Call MnuView_Click(3)
+        If .HotKeyName(acceleratorIndex) = "Zoom_In" Then Menus.ProcessDefaultAction_ByName "view_zoomin"
         
         'Zoom out
-        If .HotKeyName(acceleratorIndex) = "Zoom_Out" Then Call MnuView_Click(4)
+        If .HotKeyName(acceleratorIndex) = "Zoom_Out" Then Menus.ProcessDefaultAction_ByName "view_zoomout"
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex Zoom.GetZoom100Index
+            If FormMain.MainCanvas(0).IsZoomEnabled Then Menus.ProcessDefaultAction_ByName "zoom_actual"
         End If
         
         'Various zoom values

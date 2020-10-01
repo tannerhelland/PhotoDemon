@@ -117,10 +117,6 @@ Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRA
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
 'Virtual key-codes currently supported by pdInput
-Private Const VK_SHIFT As Long = &H10
-Private Const VK_CONTROL As Long = &H11
-Private Const VK_ALT As Long = &H12         'Note that VK_ALT is referred to as VK_MENU in MSDN documentation
-
 Private Const VK_LBUTTON As Long = &H1
 Private Const VK_RBUTTON As Long = &H2
 Private Const VK_MBUTTON As Long = &H4

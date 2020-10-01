@@ -87,7 +87,7 @@ Public Const VK_END As Long = &H23
 Public Const VK_HOME As Long = &H24
 
 Public Const VK_OEM_PLUS As Long = 187   'Locale-inspecific + key
-'Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
+Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
 Public Const VK_OEM_4 As Long = 219      'For the US standard keyboard, the '[{' key.  (Varies internationally.)
 Public Const VK_OEM_6 As Long = 221      'For the US standard keyboard, the ']}' key.  (Varies internationally.)
 

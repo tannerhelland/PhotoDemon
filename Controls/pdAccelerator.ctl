@@ -85,11 +85,6 @@ Private m_Hotkeys() As pdHotkey
 Private m_NumOfHotkeys As Long
 Private Const INITIAL_HOTKEY_LIST_SIZE As Long = 16&
 
-'In some places, virtual key-codes are used to retrieve key states
-Private Const VK_SHIFT As Long = &H10
-Private Const VK_CONTROL As Long = &H11
-Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
-
 'New solution!  Virtual-key tracking is a bad idea, because we want to know key state at the time the hotkey
 ' was pressed (not what it is right now).  Solving this is as easy as tracking key up/down state for Ctrl/Alt/Shift
 ' presses and storing the results locally - but note that this does require some extra checking for things

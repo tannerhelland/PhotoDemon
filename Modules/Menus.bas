@@ -1659,8 +1659,8 @@ Public Sub InitializeAllHotkeys()
         'File menu
         .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_Nothing
         .AddAccelerator vbKeyO, vbCtrlMask, "Open", "file_open", True, False, True, UNDO_Nothing
-        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", "file_close", True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", "file_closeall", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyW, vbCtrlMask, "Close", "file_close", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyW, vbCtrlMask Or vbAltMask, "Close all", "file_closeall", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyS, vbCtrlMask, "Save", "file_save", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", "file_savecopy", True, False, True, UNDO_Nothing
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", "file_saveas", True, True, True, UNDO_Nothing
@@ -1676,16 +1676,16 @@ Public Sub InitializeAllHotkeys()
         
             'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
             ' exist at run-time.  (They are dynamically created as necessary.)
-            .AddAccelerator vbKey0, vbCtrlMask, "MRU_0"
-            .AddAccelerator vbKey1, vbCtrlMask, "MRU_1"
-            .AddAccelerator vbKey2, vbCtrlMask, "MRU_2"
-            .AddAccelerator vbKey3, vbCtrlMask, "MRU_3"
-            .AddAccelerator vbKey4, vbCtrlMask, "MRU_4"
-            .AddAccelerator vbKey5, vbCtrlMask, "MRU_5"
-            .AddAccelerator vbKey6, vbCtrlMask, "MRU_6"
-            .AddAccelerator vbKey7, vbCtrlMask, "MRU_7"
-            .AddAccelerator vbKey8, vbCtrlMask, "MRU_8"
-            .AddAccelerator vbKey9, vbCtrlMask, "MRU_9"
+            .AddAccelerator vbKey1, vbCtrlMask Or vbShiftMask, "MRU_0", requiresOpenImage:=False
+            .AddAccelerator vbKey2, vbCtrlMask Or vbShiftMask, "MRU_1", requiresOpenImage:=False
+            .AddAccelerator vbKey3, vbCtrlMask Or vbShiftMask, "MRU_2", requiresOpenImage:=False
+            .AddAccelerator vbKey4, vbCtrlMask Or vbShiftMask, "MRU_3", requiresOpenImage:=False
+            .AddAccelerator vbKey5, vbCtrlMask Or vbShiftMask, "MRU_4", requiresOpenImage:=False
+            .AddAccelerator vbKey6, vbCtrlMask Or vbShiftMask, "MRU_5", requiresOpenImage:=False
+            .AddAccelerator vbKey7, vbCtrlMask Or vbShiftMask, "MRU_6", requiresOpenImage:=False
+            .AddAccelerator vbKey8, vbCtrlMask Or vbShiftMask, "MRU_7", requiresOpenImage:=False
+            .AddAccelerator vbKey9, vbCtrlMask Or vbShiftMask, "MRU_8", requiresOpenImage:=False
+            .AddAccelerator vbKey0, vbCtrlMask Or vbShiftMask, "MRU_9", requiresOpenImage:=False
             
         'Edit menu
         .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, True, False, UNDO_Nothing
@@ -1711,17 +1711,17 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty image borders", "image_trim", True, True, False, UNDO_ImageHeader
         
             'Image -> Rotate submenu
-            '.AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", "image_rotate90", True, True, False, UNDO_Image
-            '.AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", "image_rotate270", True, True, False, UNDO_Image
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
+        .AddAccelerator vbKeyN, vbCtrlMask Or vbShiftMask, "Add new layer", "layer_addbasic", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyJ, vbCtrlMask, "Layer via copy", "layer_addviacopy", True, True, False, UNDO_Image_VectorSafe
         .AddAccelerator vbKeyJ, vbCtrlMask Or vbShiftMask, "Layer via cut", "layer_addviacut", True, True, False, UNDO_Image
         .AddAccelerator vbKeyPageUp, vbCtrlMask Or vbAltMask, "Go to top layer", "layer_gotop", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageDown, vbAltMask, "Go to layer below", "layer_godown", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyE, vbCtrlMask, "layer_mergedown", "layer_mergedown", False, True, False, UNDO_Image
         .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "image_mergevisible", True, True, False, UNDO_Image
         .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "image_flatten", True, True, True, UNDO_Nothing
         
@@ -1737,6 +1737,8 @@ Public Sub InitializeAllHotkeys()
         'Adjustments Menu
         
         'Adjustments top shortcut menu
+        .AddAccelerator vbKeyL, vbCtrlMask Or vbShiftMask, "Auto correct", "adj_autocorrect", True, True, False, UNDO_Layer
+        .AddAccelerator vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "Auto enhance", "adj_autoenhance", True, True, False, UNDO_Layer
         .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", "adj_blackandwhite", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", "adj_bandc", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", "adj_colorbalance", True, True, True, UNDO_Nothing
@@ -1745,7 +1747,9 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", "adj_sandh", True, True, True, UNDO_Nothing
         .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", "adj_vibrance", True, True, True, UNDO_Nothing
         .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", , True, True, True, UNDO_Nothing
-        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_Nothing
+        
+        'Ctrl+W has been remapped to File > Close
+        '.AddAccelerator vbKeyW, vbCtrlMask, "White balance", "adj_whitebalance", True, True, True, UNDO_Nothing
         
             'Color adjustments
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", "adj_hsl", True, True, True, UNDO_Nothing
@@ -1783,16 +1787,16 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_3rdpartylibs", False, False, True, UNDO_Nothing
         
         'View menu
-        .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_Nothing
-        '.AddAccelerator vbKeyAdd, 0, "Zoom_In", "zoom_in", False, True, False, UNDO_NOTHING
-        '.AddAccelerator VK_OEM_PLUS, 0, "Zoom_In", , False, True, False, UNDO_NOTHING
-        '.AddAccelerator vbKeySubtract, 0, "Zoom_Out", "zoom_out", False, True, False, UNDO_NOTHING
-        '.AddAccelerator VK_OEM_MINUS, 0, "Zoom_Out", , False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey5, 0, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey4, 0, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey3, 0, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey2, 0, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey1, 0, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey0, vbCtrlMask, "FitOnScreen", "view_fit", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyAdd, vbCtrlMask, "Zoom_In", "view_zoomin", False, True, False, UNDO_Nothing
+        .AddAccelerator VK_OEM_PLUS, vbCtrlMask, "Zoom_In", , False, True, False, UNDO_Nothing
+        .AddAccelerator vbKeySubtract, vbCtrlMask, "Zoom_Out", "view_zoomout", False, True, False, UNDO_Nothing
+        .AddAccelerator VK_OEM_MINUS, vbCtrlMask, "Zoom_Out", , False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey5, vbCtrlMask, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey4, vbCtrlMask, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey3, vbCtrlMask, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey2, vbCtrlMask, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey1, vbCtrlMask, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
         .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_Nothing
         .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_Nothing
         .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_Nothing
@@ -3323,13 +3327,17 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             Else
                 
                 'If actual MRU paths exist, note that we apply them *without* translations, obviously.
-                Dim i As Long
+                Dim i As Long, hotkeyNumber As Long
                 For i = 0 To numOfMRUFiles - 1
                     
                     tmpString = g_RecentFiles.GetMenuCaption(i)
                     
                     'Entries under "10" get a free accelerator of the form "Ctrl+i"
-                    If (i < 10) Then tmpString = tmpString & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
+                    If (i < 10) Then
+                        hotkeyNumber = i + 1
+                        If (i = 9) Then hotkeyNumber = 0
+                        tmpString = tmpString & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+" & hotkeyNumber
+                    End If
                     
                     tmpMii.dwTypeData = StrPtr(tmpString)
                     SetMenuItemInfoW hMenu, i, 1&, tmpMii
