@@ -40,6 +40,7 @@ Public Event RepaintRequired(ByVal updateLayoutToo As Boolean)
 Public Event VisibilityChange(ByVal newVisibility As Boolean)
 Public Event WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
 Public Event WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+Public Event WindowResizeFinished(ByVal newWidth As Long, ByVal newHeight As Long)
 
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -600,6 +601,10 @@ Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
     
 End Sub
 
+Friend Function IsResizeActive() As Boolean
+    IsResizeActive = m_MoveSize.IsResizeActive()
+End Function
+
 Friend Sub NotifyMouseDragResize_Start()
     m_MouseEvents.SetCaptureOverride True
 End Sub
@@ -962,6 +967,12 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
         
     End If
     
+End Sub
+
+'Convenience wrapper; some windows prefer to handle intensive resize events *after* the resize
+' has completed (rather than interactively)
+Private Sub m_MoveSize_WindowResizeFinal(ByVal newWidth As Long, ByVal newHeight As Long)
+    RaiseEvent WindowResizeFinished(newWidth, newHeight)
 End Sub
 
 'Erase events must be responded to, regardless of paint mode.  (Previously, they were only handled if m_NoBackBufferMode = TRUE,

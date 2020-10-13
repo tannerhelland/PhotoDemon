@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormSplitTone 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Split toning"
    ClientHeight    =   6480
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,10 +24,7 @@ Begin VB.Form FormSplitTone
    ScaleHeight     =   432
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   2
@@ -300,7 +296,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

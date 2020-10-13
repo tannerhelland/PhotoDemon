@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPosterize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Posterize"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   11970
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormPosterize
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   798
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsAdaptiveColoring 
       Height          =   1020
       Left            =   6000
@@ -37,7 +35,6 @@ Begin VB.Form FormPosterize
       Caption         =   "adaptive coloring"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -173,7 +170,7 @@ Private Sub Form_Load()
     btsAdaptiveColoring.AddItem "on", 1
     btsAdaptiveColoring.ListIndex = 0
     
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

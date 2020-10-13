@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormMiscDistorts 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Miscellaneous distorts"
    ClientHeight    =   6540
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormMiscDistorts
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdListBox lstDistorts 
       Height          =   3015
       Left            =   6000
       TabIndex        =   4
       Top             =   120
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5295
+      _ExtentX        =   9340
       _ExtentY        =   5318
       Caption         =   "distortions"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormMiscDistorts
       Left            =   6000
       TabIndex        =   1
       Top             =   3360
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "quality"
       Min             =   1
       Max             =   5
@@ -75,8 +72,8 @@ Begin VB.Form FormMiscDistorts
       Left            =   6000
       TabIndex        =   3
       Top             =   4320
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1508
       Caption         =   "if pixels lie outside the corrected area..."
    End
@@ -430,7 +427,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormTwins 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Twins"
    ClientHeight    =   6525
-   ClientLeft      =   -15
-   ClientTop       =   390
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11310
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormTwins
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   754
    Begin PhotoDemon.pdButtonStrip btsOrientation 
       Height          =   1095
       Left            =   6000
       TabIndex        =   2
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5055
+      _ExtentX        =   8916
       _ExtentY        =   1931
       Caption         =   "orientation"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11310
+      _ExtentX        =   19950
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -207,7 +204,7 @@ Private Sub Form_Load()
     btsOrientation.ListIndex = 0
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

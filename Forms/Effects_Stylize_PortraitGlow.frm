@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormPortraitGlow 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Portrait glow"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11580
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormPortraitGlow
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   772
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
       Left            =   6000
       TabIndex        =   5
       Top             =   840
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5400
+      _ExtentX        =   9525
       _ExtentY        =   1931
       Caption         =   "style"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11580
+      _ExtentX        =   20426
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormPortraitGlow
       Left            =   6000
       TabIndex        =   2
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   1244
       Caption         =   "glow radius"
       Min             =   1
       Max             =   100
@@ -74,9 +71,9 @@ Begin VB.Form FormPortraitGlow
       Left            =   6000
       TabIndex        =   3
       Top             =   2880
-      Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   1270
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   1244
       Caption         =   "exposure boost"
       Max             =   200
    End
@@ -85,9 +82,9 @@ Begin VB.Form FormPortraitGlow
       Left            =   6000
       TabIndex        =   4
       Top             =   3720
-      Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   1270
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   100
       Value           =   100
@@ -248,7 +245,7 @@ Private Sub Form_Load()
     btsStyle.AddItem "subtle", 2
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

@@ -469,7 +469,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
         ' colors are loaded FIRST
         UpdateColorList
-        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim cbBackgroundColor As Long

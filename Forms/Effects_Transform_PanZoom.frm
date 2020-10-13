@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormPanAndZoom 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Offset and zoom"
    ClientHeight    =   6510
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11760
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,17 +23,15 @@ Begin VB.Form FormPanAndZoom
    MinButton       =   0   'False
    ScaleHeight     =   434
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   784
    Visible         =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5760
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11760
+      _ExtentX        =   20743
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -52,9 +49,9 @@ Begin VB.Form FormPanAndZoom
       Left            =   6000
       TabIndex        =   1
       Top             =   240
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "horizontal offset"
       Min             =   -100
       Max             =   100
@@ -65,9 +62,9 @@ Begin VB.Form FormPanAndZoom
       Left            =   6000
       TabIndex        =   2
       Top             =   1320
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "vertical offset"
       Min             =   -100
       Max             =   100
@@ -78,9 +75,9 @@ Begin VB.Form FormPanAndZoom
       Left            =   6000
       TabIndex        =   3
       Top             =   2400
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "zoom"
       Min             =   -10
       SigDigits       =   2
@@ -90,9 +87,9 @@ Begin VB.Form FormPanAndZoom
       Left            =   6000
       TabIndex        =   6
       Top             =   3480
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "quality"
       Min             =   1
       Max             =   5
@@ -105,8 +102,8 @@ Begin VB.Form FormPanAndZoom
       Left            =   6000
       TabIndex        =   5
       Top             =   4680
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
    End
@@ -386,7 +383,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

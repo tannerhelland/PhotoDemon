@@ -33,7 +33,7 @@ Begin VB.UserControl pdFxPreviewCtl
    End
    Begin PhotoDemon.pdButtonStrip btsZoom 
       Height          =   495
-      Left            =   2985
+      Left            =   3000
       TabIndex        =   1
       Top             =   5160
       Width           =   2775
@@ -254,6 +254,10 @@ Private Sub pdPreviewBox_ViewportChanged()
     If ucSupport.AmIVisible Then RaiseEvent ViewportChanged
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_DIALOG_RESIZE_FINISHED) Then pdPreviewBox.RequestImmediateRefresh
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
@@ -325,6 +329,7 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, False
+    ucSupport.SubclassCustomMessage WM_PD_DIALOG_RESIZE_FINISHED, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -376,7 +381,7 @@ Private Sub UpdateControlLayout()
         'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
         Dim newPicWidth As Long, newPicHeight As Long
         newPicWidth = ucSupport.GetControlWidth
-        newPicHeight = ucSupport.GetControlHeight - (btsState.GetHeight + FixDPI(4))
+        newPicHeight = ucSupport.GetControlHeight - (btsState.GetHeight + Interface.FixDPI(4))
         pdPreviewBox.SetPositionAndSize 0, 0, newPicWidth, newPicHeight
         
         'If zoom/pan is not allowed, hide that button entirely
@@ -388,8 +393,8 @@ Private Sub UpdateControlLayout()
         
         'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
         If Me.AllowZoomPan Then
-            newButtonWidth = (newPicWidth \ 2) - FixDPI(8)
-            btsZoom.SetPositionAndSize ucSupport.GetControlWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.GetHeight
+            newButtonWidth = (newPicWidth \ 2) - Interface.FixDPI(4)
+            btsZoom.SetPositionAndSize newPicWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.GetHeight
             
         'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
         Else
@@ -431,6 +436,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         pdPreviewBox.UpdateAgainstCurrentTheme
         btsState.UpdateAgainstCurrentTheme
         btsZoom.UpdateAgainstCurrentTheme
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

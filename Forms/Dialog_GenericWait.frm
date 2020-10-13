@@ -6,7 +6,7 @@ Begin VB.Form FormWait
    Caption         =   " Please wait a moment..."
    ClientHeight    =   2535
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9015
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form FormWait
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   601
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
    Begin PhotoDemon.pdProgressBar pbMarquee 
       Height          =   495

@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormRainbow 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rainbow"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11775
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormRainbow
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   785
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11775
+      _ExtentX        =   20770
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltOffset 
@@ -41,9 +38,9 @@ Begin VB.Form FormRainbow
       Left            =   6000
       TabIndex        =   2
       Top             =   840
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "offset"
       Max             =   359
       SliderTrackStyle=   4
@@ -63,9 +60,9 @@ Begin VB.Form FormRainbow
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "angle"
       Max             =   360
    End
@@ -74,9 +71,9 @@ Begin VB.Form FormRainbow
       Left            =   6000
       TabIndex        =   4
       Top             =   3000
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   100
       Value           =   100
@@ -87,9 +84,9 @@ Begin VB.Form FormRainbow
       Left            =   6000
       TabIndex        =   5
       Top             =   4080
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "saturation boost"
       Max             =   100
    End
@@ -278,7 +275,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

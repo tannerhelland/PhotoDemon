@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormPhotoFilters 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Photo filters"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   14745
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   14340
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormPhotoFilters
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   983
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   956
    Begin PhotoDemon.pdListBoxOD lstFilters 
       Height          =   4695
       Left            =   6000
       TabIndex        =   3
       Top             =   120
-      Width           =   8535
-      _ExtentX        =   15055
+      Width           =   8175
+      _ExtentX        =   14420
       _ExtentY        =   8281
       Caption         =   "available filters"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
-      Height          =   744
+      Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5796
-      Width           =   14748
-      _ExtentX        =   26009
+      Top             =   5790
+      Width           =   14340
+      _ExtentX        =   25294
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormPhotoFilters
       Left            =   6000
       TabIndex        =   2
       Top             =   4860
-      Width           =   8535
-      _ExtentX        =   15055
-      _ExtentY        =   1270
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   1244
       Caption         =   "density"
       Min             =   1
       Max             =   100
@@ -258,7 +255,7 @@ Private Sub Form_Load()
     lstFilters.SetAutomaticRedraws True, True
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

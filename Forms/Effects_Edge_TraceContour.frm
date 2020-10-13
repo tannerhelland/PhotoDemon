@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormContour 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Trace contour"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormContour
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdCheckBox chkBlackBackground 
@@ -41,9 +38,9 @@ Begin VB.Form FormContour
       Left            =   6120
       TabIndex        =   2
       Top             =   3120
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
+      Width           =   5340
+      _ExtentX        =   9419
+      _ExtentY        =   661
       Caption         =   "use black background"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormContour
       Left            =   6120
       TabIndex        =   3
       Top             =   3720
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
+      Width           =   5340
+      _ExtentX        =   9419
+      _ExtentY        =   661
       Caption         =   "apply contour smoothing"
    End
    Begin PhotoDemon.pdSlider sltThickness 
@@ -70,9 +67,9 @@ Begin VB.Form FormContour
       Left            =   6000
       TabIndex        =   4
       Top             =   2160
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "thickness"
       Min             =   1
       Max             =   100
@@ -300,7 +297,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

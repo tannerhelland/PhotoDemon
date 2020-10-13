@@ -6,7 +6,7 @@ Begin VB.Form FormUndoHistory
    Caption         =   " Undo history"
    ClientHeight    =   6390
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   9615
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

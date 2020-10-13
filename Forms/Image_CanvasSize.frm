@@ -6,7 +6,7 @@ Begin VB.Form FormCanvasSize
    Caption         =   " Canvas size"
    ClientHeight    =   6540
    ClientLeft      =   45
-   ClientTop       =   225
+   ClientTop       =   390
    ClientWidth     =   9705
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

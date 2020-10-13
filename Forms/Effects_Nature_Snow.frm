@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormSnow 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Snow"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12120
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormSnow
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdSlider sldIntensity 
       Height          =   705
       Left            =   6000
@@ -50,7 +48,6 @@ Begin VB.Form FormSnow
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -355,7 +352,7 @@ Private Sub Form_Load()
     Set m_Randomize = New pdRandomize
     m_Randomize.SetSeed_AutomaticAndRandom
     
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

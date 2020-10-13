@@ -62,8 +62,8 @@ Public Event LostFocusAPI()
 Public Event SizeChanged()
 
 'Drag/drop is up to owners to implement
-Public Event OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-Public Event OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Public Event OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Public Event OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -181,7 +181,7 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_ARROW
 End Sub
 
@@ -207,12 +207,12 @@ Private Sub UserControl_Initialize()
     
 End Sub
 
-Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    RaiseEvent OLEDragDrop(Data, Effect, Button, Shift, X, Y)
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    RaiseEvent OLEDragDrop(Data, Effect, Button, Shift, x, y)
 End Sub
 
-Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
-    RaiseEvent OLEDragOver(Data, Effect, Button, Shift, X, Y, State)
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    RaiseEvent OLEDragOver(Data, Effect, Button, Shift, x, y, State)
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -242,6 +242,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         ucSupport.SetCustomBackcolor targetBackColor
         UserControl.BackColor = targetBackColor
         
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     
     End If

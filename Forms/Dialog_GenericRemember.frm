@@ -6,7 +6,7 @@ Begin VB.Form dialog_GenericMemory
    Caption         =   " "
    ClientHeight    =   4665
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   7185
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

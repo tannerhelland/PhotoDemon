@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormFxFibers 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fibers"
    ClientHeight    =   7155
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormFxFibers
    ScaleHeight     =   477
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsType 
       Height          =   975
       Left            =   6000
@@ -48,7 +46,6 @@ Begin VB.Form FormFxFibers
       Caption         =   "colors"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -450,7 +447,7 @@ Private Sub Form_Load()
     UpdateCloudTypeUI
     
     'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

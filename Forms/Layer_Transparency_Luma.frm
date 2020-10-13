@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormTransparency_FromLuma 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Generate mask from luminance"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   11820
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormTransparency_FromLuma
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   788
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdSlider sldGray 
       Height          =   495
       Left            =   6360
@@ -54,7 +52,6 @@ Begin VB.Form FormTransparency_FromLuma
       Value           =   -1  'True
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -135,7 +132,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdateDialogUI
     UpdatePreview

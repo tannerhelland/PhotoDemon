@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormSNN 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Symmetric nearest-neighbor"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11550
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,8 +23,7 @@ Begin VB.Form FormSNN
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   770
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
@@ -36,13 +34,12 @@ Begin VB.Form FormSNN
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11550
+      _ExtentX        =   20373
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltStrength 
@@ -50,9 +47,9 @@ Begin VB.Form FormSNN
       Left            =   6000
       TabIndex        =   2
       Top             =   2880
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   100
       Value           =   50
@@ -63,9 +60,9 @@ Begin VB.Form FormSNN
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   1244
       Caption         =   "radius"
       Min             =   1
       Value           =   1
@@ -363,7 +360,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

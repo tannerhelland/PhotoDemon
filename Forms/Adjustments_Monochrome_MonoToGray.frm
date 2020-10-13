@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormMonoToColor 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Monochrome to gray"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +24,7 @@ Begin VB.Form FormMonoToColor
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -412,7 +409,7 @@ Private Sub Form_Load()
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

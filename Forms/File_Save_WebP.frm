@@ -5,7 +5,7 @@ Begin VB.Form dialog_ExportWebP
    BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6585
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   12135
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

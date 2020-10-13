@@ -6,7 +6,7 @@ Begin VB.Form FormPluginManager
    Caption         =   " Third-party libraries"
    ClientHeight    =   7125
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   10815
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

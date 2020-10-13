@@ -6,7 +6,7 @@ Begin VB.Form FormThemeEditor
    Caption         =   " Resource editor"
    ClientHeight    =   10170
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   13260
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

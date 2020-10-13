@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormSepia 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Sepia"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11520
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,8 +23,7 @@ Begin VB.Form FormSepia
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   768
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
@@ -36,13 +34,12 @@ Begin VB.Form FormSepia
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11520
+      _ExtentX        =   20320
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sldStrength 
@@ -51,9 +48,9 @@ Begin VB.Form FormSepia
       Left            =   6000
       TabIndex        =   2
       Top             =   2400
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   100
       GradientColorLeft=   15102446
@@ -179,7 +176,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

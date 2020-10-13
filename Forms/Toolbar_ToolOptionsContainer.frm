@@ -6,7 +6,7 @@ Begin VB.Form toolbar_Options
    Caption         =   " Tools"
    ClientHeight    =   1470
    ClientLeft      =   0
-   ClientTop       =   -75
+   ClientTop       =   0
    ClientWidth     =   13515
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent

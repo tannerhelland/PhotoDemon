@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormDustAndScratches 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Dust and scratches"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,19 +24,17 @@ Begin VB.Form FormDustAndScratches
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkLuminance 
       Height          =   375
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   3
-      Top             =   2280
-      Width           =   5895
-      _ExtentX        =   10398
+      Top             =   3720
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   661
       Caption         =   "luminance only"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -59,7 +56,7 @@ Begin VB.Form FormDustAndScratches
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1800
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -379,7 +376,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

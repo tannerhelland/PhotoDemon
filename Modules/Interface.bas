@@ -125,6 +125,10 @@ Private m_CurrentInterfaceID As String
 ' are active.  We track dialog state internally, although things like modal dialogs require external notifications.
 Private m_ModalDialogActive As Boolean, m_SystemDialogActive As Boolean
 
+'When a dialog enters a modal resize loop, it should call us to set this flag; child controls may
+' query the flag to know whether to perform intensive processing (or wait until the resize ends)
+Private m_DialogActivelyResizing As Boolean
+
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
 
@@ -167,6 +171,14 @@ End Sub
 Public Function GetCurrentInterfaceID() As String
     GetCurrentInterfaceID = m_CurrentInterfaceID
 End Function
+
+Public Function GetDialogResizeFlag() As Boolean
+    GetDialogResizeFlag = m_DialogActivelyResizing
+End Function
+
+Public Sub SetDialogResizeFlag(ByVal newFlag As Boolean)
+    m_DialogActivelyResizing = newFlag
+End Sub
 
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
@@ -1237,7 +1249,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handleFormPainting As Boolean = True)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handleFormPainting As Boolean = True, Optional ByVal handleAutoResize As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
@@ -1253,11 +1265,14 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     
+    'TODO: solve icon issues here
+    If (Not (dstForm.Name = "FormMain")) Then Set dstForm.icon = Nothing
+    
     'While we're here, notify the tab manager of the newly loaded form, and make a note of the form's hWnd so we
     ' can relay it to various child controls.
     Dim hostFormhWnd As Long
     hostFormhWnd = dstForm.hWnd
-    NavKey.NotifyFormLoading dstForm
+    NavKey.NotifyFormLoading dstForm, handleAutoResize
     
     Dim ctlThemedOK As Boolean
     
@@ -1293,8 +1308,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
             On Error GoTo ControlIsNotPD
             ctlThemedOK = False
             
-            'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates
-            ' two things:
+            'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.
+            ' This function updates two things:
             ' 1) The control's visual appearance (to reflect any changes to visual themes)
             ' 2) Updating any translatable text against the current translation
             

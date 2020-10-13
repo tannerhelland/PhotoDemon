@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormRotateDistort 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rotate"
    ClientHeight    =   6510
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormRotateDistort
    ScaleHeight     =   434
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdButtonStrip btsRender 
       Height          =   975
@@ -38,7 +36,6 @@ Begin VB.Form FormRotateDistort
       Caption         =   "mode"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -251,7 +248,7 @@ Private Sub Form_Load()
     lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

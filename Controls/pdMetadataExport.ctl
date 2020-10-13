@@ -443,6 +443,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             lblInfo(i).UpdateAgainstCurrentTheme
         Next i
         
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If

@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl pdPictureBox 
+Begin VB.UserControl pdPictureBoxInteractive 
    Appearance      =   0  'Flat
    BackColor       =   &H00FFFFFF&
    CanGetFocus     =   0   'False
@@ -21,23 +21,23 @@ Begin VB.UserControl pdPictureBox
    ScaleHeight     =   53
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   260
-   ToolboxBitmap   =   "pdPictureBox.ctx":0000
+   ToolboxBitmap   =   "pdPictureBoxInteractive.ctx":0000
 End
-Attribute VB_Name = "pdPictureBox"
+Attribute VB_Name = "pdPictureBoxInteractive"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon PictureBox Replacement control (lightweight non-interactive version)
+'PhotoDemon Interactive PictureBox Replacement control
 'Copyright 2018-2020 by Tanner Helland
 'Created: 21/March/18
 'Last updated: 13/October/20
-'Last update: spin off interactive bits into their own control
+'Last update: split off from the display-only picture box variant
 '
-'For non-interactive images in various dialogs and controls, please use this control.  It support theming,
-' high-DPI monitors, flicker-free rendering (across all Windows versions), and consumes less resources than
-' a built-in VB picture box.
+'For interactive UI elements that don't warrant a dedicated user-control, use this control instead.
+' It basically acts as a thin operator to a pdUCSupport instance, but you'll need to manually handle
+' input (and backbuffer rendering) for the control to do anything useful.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -54,7 +54,9 @@ Public Event DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHei
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
+Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -62,7 +64,7 @@ Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
 Public Function GetControlType() As PD_ControlType
-    GetControlType = pdct_PictureBox
+    GetControlType = pdct_PictureBoxInteractive
 End Function
 
 Public Function GetControlName() As String
@@ -289,12 +291,20 @@ Private Sub ucSupport_LostFocusAPI()
     RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
+End Sub
+
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_ARROW
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)

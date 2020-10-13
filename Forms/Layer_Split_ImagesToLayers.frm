@@ -6,7 +6,7 @@ Begin VB.Form FormLayerSplit
    Caption         =   " Split images into layers"
    ClientHeight    =   7605
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   12510
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

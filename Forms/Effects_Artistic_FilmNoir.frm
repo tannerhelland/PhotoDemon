@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormFilmNoir 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Film noir"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11700
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,15 @@ Begin VB.Form FormFilmNoir
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   780
    Begin PhotoDemon.pdSlider sltShadow 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   480
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5520
+      _ExtentX        =   9737
+      _ExtentY        =   1244
       Caption         =   "shadow cut-off"
       Max             =   100
       SigDigits       =   1
@@ -50,13 +48,12 @@ Begin VB.Form FormFilmNoir
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11700
+      _ExtentX        =   20638
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltContrast 
@@ -64,9 +61,9 @@ Begin VB.Form FormFilmNoir
       Left            =   6000
       TabIndex        =   3
       Top             =   2400
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5520
+      _ExtentX        =   9737
+      _ExtentY        =   1244
       Caption         =   "contrast boost"
       Max             =   100
       SigDigits       =   1
@@ -78,9 +75,9 @@ Begin VB.Form FormFilmNoir
       Left            =   6000
       TabIndex        =   4
       Top             =   1440
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5520
+      _ExtentX        =   9737
+      _ExtentY        =   1244
       Caption         =   "highlight cut-off"
       Max             =   100
       SigDigits       =   1
@@ -92,9 +89,9 @@ Begin VB.Form FormFilmNoir
       Left            =   6000
       TabIndex        =   5
       Top             =   3360
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5520
+      _ExtentX        =   9737
+      _ExtentY        =   1244
       Caption         =   "contrast midpoint"
       Max             =   100
       SigDigits       =   1
@@ -106,9 +103,9 @@ Begin VB.Form FormFilmNoir
       Left            =   6000
       TabIndex        =   6
       Top             =   4320
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5520
+      _ExtentX        =   9737
+      _ExtentY        =   1244
       Caption         =   "film grain"
       Max             =   100
       SigDigits       =   1
@@ -275,7 +272,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

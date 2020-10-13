@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormFindEdges 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Find edges"
    ClientHeight    =   6525
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12195
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormFindEdges
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   813
-   ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdListBox lstEdgeOptions 
       Height          =   2775
@@ -38,7 +36,6 @@ Begin VB.Form FormFindEdges
       Caption         =   "edge detection technique"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -568,7 +565,7 @@ Private Sub Form_Load()
     lstEdgeOptions.SetAutomaticRedraws True, True
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

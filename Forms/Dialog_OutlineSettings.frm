@@ -6,7 +6,7 @@ Begin VB.Form dialog_OutlineSettings
    Caption         =   "Outline settings"
    ClientHeight    =   8205
    ClientLeft      =   45
-   ClientTop       =   375
+   ClientTop       =   390
    ClientWidth     =   12660
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form dialog_OutlineSettings
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.pdDropDown cboCorner 
       Height          =   750
       Left            =   6480

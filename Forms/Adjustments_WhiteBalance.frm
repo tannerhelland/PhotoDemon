@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormWhiteBalance 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " White balance"
    ClientHeight    =   6510
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12120
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormWhiteBalance
    MinButton       =   0   'False
    ScaleHeight     =   434
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   808
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5760
-      Width           =   12120
-      _ExtentX        =   21378
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -50,9 +47,9 @@ Begin VB.Form FormWhiteBalance
       Left            =   6000
       TabIndex        =   2
       Top             =   2520
-      Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   1270
+      Width           =   5445
+      _ExtentX        =   9604
+      _ExtentY        =   1244
       Caption         =   "strength"
       Min             =   0.01
       Max             =   5
@@ -106,7 +103,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

@@ -777,6 +777,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.UpdateAgainstCurrentTheme
         cmbSizeUnit.UpdateAgainstCurrentTheme
         
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)

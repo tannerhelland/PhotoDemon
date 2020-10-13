@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormDiffuse 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Diffuse"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12210
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11790
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormDiffuse
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   814
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   786
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12210
-      _ExtentX        =   21537
+      Width           =   11790
+      _ExtentX        =   20796
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltX 
@@ -41,9 +38,9 @@ Begin VB.Form FormDiffuse
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   1270
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1244
       Caption         =   "horizontal strength"
       Max             =   100
       SigDigits       =   2
@@ -74,9 +71,9 @@ Begin VB.Form FormDiffuse
       Left            =   6000
       TabIndex        =   4
       Top             =   2640
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   1270
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1244
       Caption         =   "vertical strength"
       Max             =   100
       SigDigits       =   2
@@ -124,7 +121,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
      
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

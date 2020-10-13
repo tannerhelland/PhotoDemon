@@ -4,8 +4,8 @@ Begin VB.Form FormMain
    BackColor       =   &H80000005&
    Caption         =   "PhotoDemon by Tanner Helland - www.photodemon.org"
    ClientHeight    =   11130
-   ClientLeft      =   1290
-   ClientTop       =   1065
+   ClientLeft      =   120
+   ClientTop       =   765
    ClientWidth     =   15510
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

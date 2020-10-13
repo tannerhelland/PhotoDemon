@@ -6,7 +6,7 @@ Begin VB.Form FormImageCompare
    Caption         =   " Compare images"
    ClientHeight    =   5910
    ClientLeft      =   45
-   ClientTop       =   225
+   ClientTop       =   390
    ClientWidth     =   6510
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

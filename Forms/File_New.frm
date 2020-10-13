@@ -6,7 +6,7 @@ Begin VB.Form FormNewImage
    Caption         =   " New image"
    ClientHeight    =   7035
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9630
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form FormNewImage
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750

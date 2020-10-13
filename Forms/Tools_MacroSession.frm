@@ -6,7 +6,7 @@ Begin VB.Form FormMacroSession
    Caption         =   " Create macro from session history"
    ClientHeight    =   7545
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   11790
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

@@ -357,6 +357,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         If PDMain.IsProgramRunning() Then
             m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
             m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
+            NavKey.NotifyControlLoad Me, hostFormhWnd, False
             ucSupport.UpdateAgainstThemeAndLanguage
         Else
             m_NewCaptionTranslated = "new:"

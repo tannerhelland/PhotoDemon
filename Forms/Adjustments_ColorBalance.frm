@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormColorBalance 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color balance"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12630
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11820
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormColorBalance
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   842
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   788
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12630
-      _ExtentX        =   22278
+      Width           =   11820
+      _ExtentX        =   20849
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -47,12 +44,12 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltRed 
       Height          =   405
-      Left            =   6120
+      Left            =   6000
       TabIndex        =   1
       Top             =   1440
-      Width           =   6255
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   714
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -62,12 +59,12 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltGreen 
       Height          =   405
-      Left            =   6120
+      Left            =   6000
       TabIndex        =   2
       Top             =   2400
-      Width           =   6255
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   714
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -76,12 +73,12 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdSlider sltBlue 
       Height          =   405
-      Left            =   6120
+      Left            =   6000
       TabIndex        =   3
       Top             =   3360
-      Width           =   6255
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   714
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -90,12 +87,12 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdCheckBox chkLuminance 
       Height          =   360
-      Left            =   6360
+      Left            =   6120
       TabIndex        =   5
       Top             =   4440
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   582
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   635
       Caption         =   "preserve luminance"
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -103,8 +100,8 @@ Begin VB.Form FormColorBalance
       Index           =   0
       Left            =   6000
       Top             =   1080
-      Width           =   6345
-      _ExtentX        =   11192
+      Width           =   5625
+      _ExtentX        =   9922
       _ExtentY        =   503
       Caption         =   "new balance"
       FontSize        =   12
@@ -112,40 +109,40 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblYellow 
       Height          =   270
-      Left            =   6420
+      Left            =   6120
       Top             =   3840
-      Width           =   2115
-      _ExtentX        =   3731
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Caption         =   "yellow"
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblMagenta 
       Height          =   270
-      Left            =   6420
+      Left            =   6120
       Top             =   2880
-      Width           =   2190
-      _ExtentX        =   3863
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Caption         =   "magenta"
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblCyan 
       Height          =   270
-      Left            =   6420
+      Left            =   6120
       Top             =   1920
-      Width           =   2145
-      _ExtentX        =   3784
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Caption         =   "cyan"
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblBlue 
       Height          =   270
-      Left            =   9240
+      Left            =   8160
       Top             =   3840
-      Width           =   2070
-      _ExtentX        =   3651
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Alignment       =   1
       Caption         =   "blue"
@@ -153,10 +150,10 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblGreen 
       Height          =   270
-      Left            =   9165
+      Left            =   8160
       Top             =   2880
-      Width           =   2115
-      _ExtentX        =   3731
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Alignment       =   1
       Caption         =   "green"
@@ -164,10 +161,10 @@ Begin VB.Form FormColorBalance
    End
    Begin PhotoDemon.pdLabel lblRed 
       Height          =   270
-      Left            =   9165
+      Left            =   8160
       Top             =   1920
-      Width           =   2115
-      _ExtentX        =   3731
+      Width           =   2025
+      _ExtentX        =   3572
       _ExtentY        =   476
       Alignment       =   1
       Caption         =   "red"
@@ -356,7 +353,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

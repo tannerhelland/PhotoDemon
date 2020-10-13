@@ -6,7 +6,7 @@ Begin VB.Form dialog_ExportPalette
    Caption         =   " Palette export options"
    ClientHeight    =   6585
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   10950
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

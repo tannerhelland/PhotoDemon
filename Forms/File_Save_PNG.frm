@@ -5,7 +5,7 @@ Begin VB.Form dialog_ExportPNG
    BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   8595
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   13110
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

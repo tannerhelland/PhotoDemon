@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormBrightnessContrast 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Brightness and contrast"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12075
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormBrightnessContrast
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsModel 
       Height          =   975
       Left            =   6000
@@ -37,7 +35,6 @@ Begin VB.Form FormBrightnessContrast
       Caption         =   "model"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -361,7 +358,7 @@ Private Sub Form_Load()
     SetLegacyVisibility
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

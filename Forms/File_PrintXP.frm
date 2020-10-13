@@ -6,7 +6,7 @@ Begin VB.Form FormPrint
    Caption         =   " Print"
    ClientHeight    =   5745
    ClientLeft      =   45
-   ClientTop       =   270
+   ClientTop       =   390
    ClientWidth     =   8745
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent

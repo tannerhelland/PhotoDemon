@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormFragment 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fragment"
    ClientHeight    =   6525
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormFragment
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdSlider sldOpacity 
       Height          =   495
       Left            =   6000
@@ -52,7 +50,6 @@ Begin VB.Form FormFragment
       Caption         =   "opacity"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -267,7 +264,7 @@ Private Sub Form_Load()
     ToggleOpacitySliderVisibility
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 

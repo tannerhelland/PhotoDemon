@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormCustomFilter 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Custom filter"
    ClientHeight    =   6540
-   ClientLeft      =   150
-   ClientTop       =   120
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12735
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +24,7 @@ Begin VB.Form FormCustomFilter
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   849
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -478,7 +475,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

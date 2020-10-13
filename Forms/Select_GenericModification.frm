@@ -6,7 +6,7 @@ Begin VB.Form FormSelectionDialogs
    Caption         =   " Selection options"
    ClientHeight    =   2640
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   6660
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

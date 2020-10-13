@@ -38,7 +38,7 @@ Private m_NumOfForms As Long, m_LastForm As Long
 
 'Before loading individual controls, notify this module of the parent form preceding the loop.  (This improves
 ' performance because we don't have to look-up the form in our table for subsequent calls.)
-Public Sub NotifyFormLoading(ByRef parentForm As Form)
+Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean)
 
     'At present, PD guarantees that forms will not be double-loaded - e.g. only one instance is allowed at a time.
     ' As such, we don't have to search our table for existing entries.
@@ -52,7 +52,7 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form)
         End If
         
         Set m_Forms(m_NumOfForms) = New pdObjectList
-        m_Forms(m_NumOfForms).SetParentHWnd parentForm.hWnd
+        m_Forms(m_NumOfForms).SetParentHWnd parentForm.hWnd, handleAutoResize
         
         m_LastForm = m_NumOfForms
         m_NumOfForms = m_NumOfForms + 1
@@ -102,11 +102,11 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
 End Sub
 
 'After calling NotifyFormLoading(), above, you can proceed to notify us of all child controls.
-Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFormhWnd As Long = 0)
+Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFormhWnd As Long = 0, Optional ByVal canReceiveFocus As Boolean = True)
     
     'If no parent window handle is specified, assume the last form
     If (hostFormhWnd = 0) Then
-        If (Not m_Forms(m_LastForm) Is Nothing) Then m_Forms(m_LastForm).NotifyChildControl childObject
+        If (Not m_Forms(m_LastForm) Is Nothing) Then m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
     
     'The caller specified a parent window handle.  Find a matching object before continuing.
     Else
@@ -114,13 +114,13 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
         If (m_NumOfForms > 0) Then
         
             If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
-                m_Forms(m_LastForm).NotifyChildControl childObject
+                m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
             Else
             
                 Dim i As Long
                 For i = 0 To m_NumOfForms - 1
                     If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
-                        m_Forms(i).NotifyChildControl childObject
+                        m_Forms(i).NotifyChildControl childObject, canReceiveFocus
                         Exit For
                     End If
                 Next i

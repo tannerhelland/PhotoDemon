@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormStraighten 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Straighten"
    ClientHeight    =   6540
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12105
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormStraighten
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   807
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdButtonStrip btsGrid 
       Height          =   975
       Left            =   6000
       TabIndex        =   3
       Top             =   3120
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1720
       Caption         =   "grid"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12105
-      _ExtentX        =   21352
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -61,9 +58,9 @@ Begin VB.Form FormStraighten
       Left            =   6000
       TabIndex        =   2
       Top             =   2160
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "angle"
       Min             =   -15
       Max             =   15
@@ -458,7 +455,7 @@ Private Sub Form_Load()
     pdFxPreview.SetOriginalImage smallDIB
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

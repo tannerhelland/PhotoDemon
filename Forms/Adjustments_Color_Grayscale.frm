@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormGrayscale 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Black and white"
    ClientHeight    =   6555
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   11895
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormGrayscale
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
-   ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdSlider sldDitherAmount 
       Height          =   735
@@ -51,7 +49,6 @@ Begin VB.Form FormGrayscale
       Caption         =   "dithering"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -744,7 +741,7 @@ Private Sub Form_Load()
     UpdateVisibleControls
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     'Draw the initial preview
     cmdBar.SetPreviewStatus True

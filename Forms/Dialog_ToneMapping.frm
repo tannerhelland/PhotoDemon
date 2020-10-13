@@ -6,7 +6,7 @@ Begin VB.Form dialog_ToneMapping
    Caption         =   " HDR image identified"
    ClientHeight    =   6660
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormSunshine 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Sunshine"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormSunshine
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkRandomize 
       Height          =   375
       Left            =   6075
@@ -108,7 +106,6 @@ Begin VB.Form FormSunshine
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   7
@@ -552,7 +549,7 @@ Private Sub Form_Load()
     Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

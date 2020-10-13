@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPoke 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Poke"
    ClientHeight    =   6540
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormPoke
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
@@ -82,7 +80,6 @@ Begin VB.Form FormPoke
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   1
@@ -449,7 +446,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Clamp
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

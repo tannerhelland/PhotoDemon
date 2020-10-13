@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormFxClouds 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Clouds"
-   ClientHeight    =   7155
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientHeight    =   6525
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12090
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -22,10 +21,9 @@ Begin VB.Form FormFxClouds
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   477
+   ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsType 
       Height          =   975
       Left            =   6000
@@ -48,11 +46,10 @@ Begin VB.Form FormFxClouds
       Caption         =   "colors"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6405
+      Top             =   5775
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
@@ -74,13 +71,13 @@ Begin VB.Form FormFxClouds
       NotchValueCustom=   25
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6225
+      Height          =   5505
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   10980
+      _ExtentY        =   9710
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sldOpacity 
@@ -321,7 +318,7 @@ Private Sub Form_Load()
     cboGenerator.SetAutomaticRedraws True, True
     
     'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

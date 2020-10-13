@@ -6,7 +6,7 @@ Begin VB.Form dialog_AddPreset
    Caption         =   " Saved presets"
    ClientHeight    =   4440
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   6735
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form dialog_AddPreset
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   449
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   735
       Left            =   120

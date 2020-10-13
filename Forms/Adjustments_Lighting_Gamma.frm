@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormGamma 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Gamma"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +24,7 @@ Begin VB.Form FormGamma
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -299,7 +296,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     m_UserChange = True
     UpdatePreview

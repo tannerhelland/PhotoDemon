@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormShear 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Shear"
    ClientHeight    =   6540
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11745
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormShear
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   783
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11745
+      _ExtentX        =   20717
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -51,9 +48,9 @@ Begin VB.Form FormShear
       Left            =   6000
       TabIndex        =   3
       Top             =   1080
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "horizontal angle"
       Min             =   -85
       Max             =   85
@@ -64,9 +61,9 @@ Begin VB.Form FormShear
       Left            =   6000
       TabIndex        =   4
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "vertical angle"
       Min             =   -85
       Max             =   85
@@ -77,9 +74,9 @@ Begin VB.Form FormShear
       Left            =   6000
       TabIndex        =   5
       Top             =   3000
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "quality"
       Min             =   1
       Max             =   5
@@ -92,8 +89,8 @@ Begin VB.Form FormShear
       Left            =   6000
       TabIndex        =   2
       Top             =   3960
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
    End
@@ -346,7 +343,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Wrap
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
         
     'Create the preview
     cmdBar.SetPreviewStatus True

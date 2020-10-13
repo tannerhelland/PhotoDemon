@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormCurves 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Curves"
    ClientHeight    =   8205
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   13095
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +24,7 @@ Begin VB.Form FormCurves
    ScaleHeight     =   547
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -624,7 +621,7 @@ Private Sub Form_Load()
     Histograms.GenerateHistogramImages m_hData, m_hMax, m_hDIB, picDraw.ScaleWidth - (PREVIEW_BORDER_PX * 2) - 1, picDraw.ScaleHeight - (PREVIEW_BORDER_PX * 2) - 1
         
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     cmdBar.SetPreviewStatus True
     UpdatePreview

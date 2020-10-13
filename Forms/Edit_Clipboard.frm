@@ -6,7 +6,7 @@ Begin VB.Form FormClipboard
    Caption         =   " "
    ClientHeight    =   4245
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   6360
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

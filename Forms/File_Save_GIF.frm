@@ -5,7 +5,7 @@ Begin VB.Form dialog_ExportGIF
    BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   7230
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   13095
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

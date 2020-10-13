@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormSolarize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Solarize"
    ClientHeight    =   6525
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12075
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11565
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormSolarize
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   805
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   771
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   12075
-      _ExtentX        =   21299
+      Width           =   11565
+      _ExtentX        =   20399
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -50,9 +47,9 @@ Begin VB.Form FormSolarize
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
-      Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   1270
+      Width           =   5325
+      _ExtentX        =   9393
+      _ExtentY        =   1244
       Caption         =   "threshold"
       Max             =   255
       Value           =   127
@@ -160,7 +157,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

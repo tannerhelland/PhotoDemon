@@ -6,7 +6,7 @@ Begin VB.Form FormAnimation
    Caption         =   " Animation options"
    ClientHeight    =   7230
    ClientLeft      =   120
-   ClientTop       =   360
+   ClientTop       =   465
    ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

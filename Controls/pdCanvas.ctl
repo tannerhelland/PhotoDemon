@@ -2605,6 +2605,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         UpdateColorList
         ucSupport.SetCustomBackcolor UserPrefs.GetCanvasColor()
         UserControl.BackColor = UserPrefs.GetCanvasColor()
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim btnImageSize As Long

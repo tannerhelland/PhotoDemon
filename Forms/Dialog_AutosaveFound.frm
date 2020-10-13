@@ -6,7 +6,7 @@ Begin VB.Form dialog_AutosaveWarning
    Caption         =   " Autosave data detected"
    ClientHeight    =   5565
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9165
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

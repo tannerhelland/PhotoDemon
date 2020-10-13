@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PD Object List Manager
 'Copyright 2017-2020 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 24/August/17
-'Last update: finish work on automatic tab-order sorting
+'Last updated: 07/October/20
+'Last update: new support for run-time resizing of any arbitrary child dialog, with full UI reflow
 '
 'This class is exclusively used by the NavKey module.  Look there for implementation details.
 '
@@ -30,30 +30,77 @@ Option Explicit
 'If you want to dump tab order to the debug window, set this to TRUE.
 Private Const DISPLAY_DEBUG_TABORDER_DATA As Boolean = False
 
+'SetWindowPos flags
+Private Enum SWP_FLAGS
+    SWP_ASYNCWINDOWPOS = &H4000
+    SWP_FRAMECHANGED = &H20
+    SWP_NOACTIVATE = &H10
+    SWP_NOMOVE = &H2
+    SWP_NOOWNERZORDER = &H200
+    SWP_NOREDRAW = &H8
+    SWP_NOSENDCHANGING = &H400
+    SWP_NOSIZE = &H1
+    SWP_HIDEWINDOW = &H80
+    SWP_SHOWWINDOW = &H40
+    SWP_NOZORDER = &H4
+    SWP_DRAWFRAME = &H20
+    SWP_NOCOPYBITS = &H100
+End Enum
+
+'MINMAXINFO struct
+Private Type MinMaxInfo
+    ptReserved As PointAPI
+    ptMaxSize As PointAPI
+    ptMaxPosition As PointAPI
+    ptMinTrackSize As PointAPI
+    ptMaxTrackSize As PointAPI
+End Type
+
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As SWP_FLAGS)
 
 'The hWnd of the parent (the form hosting this collection)
 Private m_ParentHWnd As Long
+
+'The WindowRect *in screen coords* of the parent hWnd, at load-time
+Private m_ParentRectScreen As winRect, m_ParentRectClient As winRect
+
+'Handle auto-resize of child controls for this window?
+Private m_AutoResize As Boolean
 
 'hWnds of child controls
 Private Const INIT_NUM_OF_CONTROLS As Long = 16
 
 'As part of subclassing the parent control, we want to detect ENTER and ESC keypresses.  Dialogs with
-' command bars will automatically assign those keypresses to OK/Cancel.
+' command bars will automatically assign those keypresses to OK/Cancel.  As of 9.0, we'll also handle
+' min/max messages (since users can now resize some windows!).
+Private Const WM_ENTERSIZEMOVE As Long = &H231
+Private Const WM_EXITSIZEMOVE As Long = &H232
+Private Const WM_GETMINMAXINFO As Long = &H24
 Private Const WM_KEYDOWN As Long = &H100
+Private Const WM_SIZE As Long = &H5
 
 'We may not need to use a custom type for this - an hWnd may ultimately be enough - but during debugging,
 ' it's nice to store some extra bits of information
 Private Type PD_Control
     hWnd As Long
+    ctlRectLoadTime As winRect
     ctlName As String
     ctlType As PD_ControlType
+    ctlCanGetFocus As Boolean
 End Type
 
 Private m_Controls() As PD_Control
 Private m_numOfControls As Long
+
+'Some control indices are stored specially; this is useful for subsequent loops
+Private m_CommandBarIndex As Long, m_PreviewIndex As Long
 
 'When tab is pressed, we sort the current control list according to each control's top-left position.
 ' This sorted list can then be used to easily determine the next/prev control in order.
@@ -70,11 +117,14 @@ Private m_numOfControlsSort As Long
 'Subclasser for intercepting window messages
 Implements ISubclass
 
-Friend Sub SetParentHWnd(ByVal hWnd As Long)
+Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean)
     
     If (PDMain.IsProgramRunning() And (hWnd <> 0)) Then
     
         m_ParentHWnd = hWnd
+        GetWindowRect m_ParentHWnd, VarPtr(m_ParentRectScreen)
+        GetClientRect m_ParentHWnd, VarPtr(m_ParentRectClient)
+        m_AutoResize = handleAutoResize
         
         'We also subclass the parent control so we can capture ENTER and ESCAPE keypresses (to facilitate
         ' keyboard navigation)
@@ -137,7 +187,7 @@ Friend Function GetFirstHWndForType(ByVal srcType As PD_ControlType) As Long
 End Function
 
 'Load individual controls using this function; we'll retrieve whatever we need from them
-Friend Sub NotifyChildControl(ByRef childControl As Object)
+Friend Sub NotifyChildControl(ByRef childControl As Object, ByVal canReceiveFocus As Boolean)
 
     'Make sure we have room for this hWnd
     If (m_numOfControls = 0) Then
@@ -146,10 +196,16 @@ Friend Sub NotifyChildControl(ByRef childControl As Object)
         If (m_numOfControls > UBound(m_Controls)) Then ReDim Preserve m_Controls(0 To m_numOfControls * 2 - 1) As PD_Control
     End If
     
+    'Store all load-time values
     With m_Controls(m_numOfControls)
         .hWnd = childControl.hWnd
+        GetWindowRect .hWnd, VarPtr(.ctlRectLoadTime)
+        MapWindowPoints 0&, m_ParentHWnd, VarPtr(.ctlRectLoadTime), 2&
         .ctlName = childControl.GetControlName()
         .ctlType = childControl.GetControlType()
+        .ctlCanGetFocus = canReceiveFocus
+        If (.ctlType = pdct_CommandBar) Or (.ctlType = pdct_CommandBarMini) Then m_CommandBarIndex = m_numOfControls
+        If (.ctlType = pdct_FxPreviewCtl) Then m_PreviewIndex = m_numOfControls
     End With
     
     m_numOfControls = m_numOfControls + 1
@@ -188,10 +244,10 @@ Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
             'Only visible + enabled controls are eligible for receiving focus
             If (IsWindowVisible(m_Controls(i).hWnd) <> 0) And (IsWindowEnabled(m_Controls(i).hWnd)) Then
                 
-                'The command bar (and mini command bar) are a special case.  They are managed by this class,
-                ' because we need to detect them for OK/Cancel purposes, but we don't want them receiving
-                ' focus during KeyPress events.  (Instead, focus should go to one of their child controls.)
-                If (m_Controls(i).ctlType <> pdct_CommandBar) And (m_Controls(i).ctlType <> pdct_CommandBarMini) Then
+                'Some controls are tracked by this class for auto-resize purposes, but we don't want them
+                ' involved in tab key events because they are just containers (or they aren't meant to
+                ' receive focus, like labels.)
+                If m_Controls(i).ctlCanGetFocus Then
                 
                     'This control is visible, enabled, and interactive, making it a candidate for receiving focus.
                     ' Retrieve its coordinates.
@@ -383,10 +439,123 @@ Friend Sub PrintDebugList()
     
 End Sub
 
+Private Sub PerformAutoResize()
+    
+    'Start by retrieving the current rect of the window in question
+    Dim curParentRect As winRect, curParentClientRect As winRect
+    Dim curParentClientWidth As Long, curParentClientHeight As Long
+    GetWindowRect m_ParentHWnd, VarPtr(curParentRect)
+    GetClientRect m_ParentHWnd, VarPtr(curParentClientRect)
+    curParentClientWidth = curParentClientRect.x2 - curParentClientRect.x1
+    curParentClientHeight = curParentClientRect.y2 - curParentClientRect.y1
+    
+    'We now need to iterate all child controls and right-align all of them EXCEPT:
+    ' - previewFX controls (these get resized to fill)
+    ' - command bars (these are bottom-aligned)
+    ' - controls sitting on command bars (these are aligned automatically by the command bar)
+    ' - controls sitting inside a container *other* than the parent form (parent controls will auto-align them)
+    Dim i As Long, newLeft As Long, newTop As Long, newWidth As Long, newHeight As Long
+    For i = 0 To m_numOfControls - 1
+        
+        With m_Controls(i)
+            
+            'Handle command bar specially (bottom-aligned)
+            If (i = m_CommandBarIndex) Then
+                SetWindowPos .hWnd, 0, 0, curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1), curParentClientWidth, curParentClientHeight, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+            
+            'Preview boxes are the only control that gets resized in both directions
+            ElseIf (.ctlType = pdct_FxPreviewCtl) Then
+            
+                'Resize to an identical proportional amount of the dialog
+                newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1))
+                newHeight = curParentClientHeight - ((m_ParentRectClient.y2 - m_ParentRectClient.y1) - (.ctlRectLoadTime.y2 - .ctlRectLoadTime.y1))
+                SetWindowPos .hWnd, 0, .ctlRectLoadTime.x1, .ctlRectLoadTime.y1, newWidth, newHeight, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                
+            'any other controls WHOSE PARENT IS THE FORM ITSELF get right-aligned
+            Else
+            
+                'See if this control sits below the command bar; if it does, ignore it.
+                If (.ctlRectLoadTime.y1 < m_Controls(m_CommandBarIndex).ctlRectLoadTime.y1) Then
+                    
+                    'Only move controls whose parent is the form itself; anything else is a nested control whose position
+                    ' will be handled automatically when we move its parent.
+                    If (GetParent(.hWnd) = m_ParentHWnd) Then
+                        
+                        'Next, some esoteric dialogs (e.g. curves) place some settings *beneath* the
+                        ' preview box.  These require horizontal resizing to match whatever we've done
+                        'to the preview box.
+                        Dim changeHorizontalSize As Boolean
+                        If (m_PreviewIndex >= 0) Then changeHorizontalSize = (.ctlRectLoadTime.x1 < (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - 10))   '10px is an arbitrary failsafe for tight-fitting controls
+                        
+                        If changeHorizontalSize Then
+                            
+                            'Left stays the same, height stays the same.
+                            
+                            'Top gets moved to an identical offset from the parent window's *bottom*
+                            newTop = curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1)
+                            
+                            'Width also gets modified using the same formula as the preview box
+                            newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1))
+                            
+                            SetWindowPos .hWnd, 0, .ctlRectLoadTime.x1, newTop, newWidth, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                            
+                        'Change left parameter only; top/width/height can remain as-is.
+                        Else
+                        
+                            newLeft = curParentClientWidth - (m_ParentRectClient.x2 - .ctlRectLoadTime.x1)
+                            
+                            'We have two options here: we can either "reflow" items vertically
+                            ' (which will place items at a proportionally equivalent vertical position)
+                            ' ...or we can just leave items at their original top position.  It's hard
+                            ' to unequivocally call one or the other "better", since it really depends
+                            ' on the dialog.  For now, I default to the simpler option (leaving items
+                            ' in their current position).
+                            
+                            'Leave in current position:
+                            newTop = .ctlRectLoadTime.y1
+                            
+                            'Place in proportionate position (to new size):
+                            'newTop = (.ctlRectLoadTime.y1 / (m_ParentRectClient.y2 - m_ParentRectClient.y1)) * curParentClientHeight
+                            
+                            SetWindowPos .hWnd, 0, newLeft, newTop, .ctlRectLoadTime.x2 - .ctlRectLoadTime.x1, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                            
+                        End If
+                        
+                    End If
+                    
+                End If
+            
+            End If
+        
+        End With
+        
+    Next i
+    
+End Sub
+
+'You *must* pass lParam; this is a pointer to a MINMAXINFO struct which holds the actual size information
+Private Sub HandleMinMaxMsg(ByVal lParam As Long)
+    
+    Dim copyOfStruct As MinMaxInfo
+    CopyMemoryStrict VarPtr(copyOfStruct), lParam, LenB(copyOfStruct)
+    
+    'We don't enforce a max size - only a min size
+    copyOfStruct.ptMinTrackSize.x = PDMath.Min2Int(800, m_ParentRectScreen.x2 - m_ParentRectScreen.x1)
+    copyOfStruct.ptMinTrackSize.y = PDMath.Min2Int(600, m_ParentRectScreen.y2 - m_ParentRectScreen.y1)
+    CopyMemoryStrict lParam, VarPtr(copyOfStruct), LenB(copyOfStruct)
+    
+End Sub
+
+Private Sub Class_Initialize()
+    m_CommandBarIndex = -1
+    m_PreviewIndex = -1
+End Sub
+
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
     Dim eatMsg As Boolean: eatMsg = False
     
+    'Enter and Escape are handled automatically
     If (uiMsg = WM_KEYDOWN) Then
     
         'The only keypresses we currently care about are ENTER and ESCAPE
@@ -415,7 +584,35 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             End If
             
         End If
+    
+    'Windows with auto-resizing are also handled specially
+    ElseIf (uiMsg = WM_SIZE) Then
+        If m_AutoResize Then
+            If IsWindowVisible(hWnd) Then PerformAutoResize
+        End If
+    
+    'Windows with auto-resizing also get "free" minimum size handling (we don't let users shrink them below
+    ' their original size, or 800x600, whichever is smaller).
+    ElseIf (uiMsg = WM_GETMINMAXINFO) Then
+        If m_AutoResize Then
+            If IsWindowVisible(hWnd) Then
+                HandleMinMaxMsg lParam
+                ISubclass_WindowMsg = 0
+                eatMsg = True
+            End If
+        End If
+    
+    'Set query-able flags upon resize start/finish so our child controls can query it
+    ElseIf (uiMsg = WM_ENTERSIZEMOVE) Then
+        Interface.SetDialogResizeFlag True
         
+    ElseIf (uiMsg = WM_EXITSIZEMOVE) Then
+        Interface.SetDialogResizeFlag False
+        
+        'Immediately notify the preview control, if any, of the finished resize event; it will use
+        ' this to immediately generate a new preview.
+        If (m_PreviewIndex <> 0) Then SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
+     
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then
         EndSubclassing
@@ -435,4 +632,3 @@ End Sub
 Private Sub Class_Terminate()
     EndSubclassing
 End Sub
-

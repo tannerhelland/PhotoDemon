@@ -6,7 +6,7 @@ Begin VB.Form FormLanguageEditor
    Caption         =   " Language editor"
    ClientHeight    =   9000
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   15360
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

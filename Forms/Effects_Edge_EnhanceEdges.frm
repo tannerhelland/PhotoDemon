@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormEdgeEnhance 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Enhance edges"
    ClientHeight    =   6525
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12195
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11775
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,27 +23,25 @@ Begin VB.Form FormEdgeEnhance
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   813
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   785
    Visible         =   0   'False
    Begin PhotoDemon.pdListBox lstEdgeOptions 
       Height          =   2775
       Left            =   6000
       TabIndex        =   5
       Top             =   120
-      Width           =   5775
-      _ExtentX        =   10186
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   4895
       Caption         =   "edge detection technique"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   12195
-      _ExtentX        =   21511
+      Width           =   11775
+      _ExtentX        =   20770
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -62,9 +59,9 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6240
       TabIndex        =   4
       Top             =   3360
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
+      Width           =   5385
+      _ExtentX        =   9499
+      _ExtentY        =   635
       Caption         =   "horizontal"
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
@@ -73,9 +70,9 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6240
       TabIndex        =   1
       Top             =   3840
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
+      Width           =   5385
+      _ExtentX        =   9499
+      _ExtentY        =   635
       Caption         =   "vertical"
    End
    Begin PhotoDemon.pdSlider sltStrength 
@@ -83,9 +80,9 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6000
       TabIndex        =   3
       Top             =   4560
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   1270
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   100
       Value           =   50
@@ -97,8 +94,8 @@ Begin VB.Form FormEdgeEnhance
       Index           =   1
       Left            =   6000
       Top             =   3000
-      Width           =   5835
-      _ExtentX        =   10292
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   503
       Caption         =   "detection direction(s)"
       FontSize        =   12
@@ -542,7 +539,7 @@ Private Sub Form_Load()
     lstEdgeOptions.SetAutomaticRedraws True, True
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

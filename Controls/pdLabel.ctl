@@ -557,6 +557,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

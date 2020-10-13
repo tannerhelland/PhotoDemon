@@ -686,6 +686,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         pdssPrimary.UpdateAgainstCurrentTheme
         tudPrimary.UpdateAgainstCurrentTheme
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormSwirl 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Swirl"
    ClientHeight    =   6540
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12105
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,9 +24,7 @@ Begin VB.Form FormSwirl
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -447,7 +444,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Clamp
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     cmdBar.SetPreviewStatus True
     UpdatePreview

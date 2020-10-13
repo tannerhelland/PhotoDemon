@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormWater 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Underwater"
    ClientHeight    =   6555
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11640
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormWater
    MinButton       =   0   'False
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   776
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5805
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11640
+      _ExtentX        =   20532
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltScale 
@@ -41,9 +38,9 @@ Begin VB.Form FormWater
       Left            =   6000
       TabIndex        =   2
       Top             =   600
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "scale"
       Max             =   250
       SigDigits       =   1
@@ -67,9 +64,9 @@ Begin VB.Form FormWater
       Left            =   6000
       TabIndex        =   3
       Top             =   2520
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "turbulence"
       Max             =   1
       SigDigits       =   2
@@ -82,9 +79,9 @@ Begin VB.Form FormWater
       Left            =   6000
       TabIndex        =   4
       Top             =   1560
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "color shift"
       Max             =   100
       Value           =   50
@@ -96,8 +93,8 @@ Begin VB.Form FormWater
       Left            =   6000
       TabIndex        =   5
       Top             =   3540
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1296
       Caption         =   "random seed:"
    End
@@ -320,7 +317,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

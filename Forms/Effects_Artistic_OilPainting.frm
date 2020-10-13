@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormOilPainting 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Oil painting"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11415
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormOilPainting
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   761
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11415
+      _ExtentX        =   20135
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -50,9 +47,9 @@ Begin VB.Form FormOilPainting
       Left            =   6000
       TabIndex        =   2
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5175
+      _ExtentX        =   9128
+      _ExtentY        =   1244
       Caption         =   "brush size"
       Min             =   1
       Max             =   200
@@ -64,9 +61,9 @@ Begin VB.Form FormOilPainting
       Left            =   6000
       TabIndex        =   3
       Top             =   2880
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5175
+      _ExtentX        =   9128
+      _ExtentY        =   1244
       Caption         =   "detail"
       Min             =   1
       Max             =   50
@@ -484,7 +481,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

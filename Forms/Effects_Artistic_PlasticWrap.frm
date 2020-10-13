@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormPlasticWrap 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Plastic wrap"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12075
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11670
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormPlasticWrap
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   805
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   778
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12075
-      _ExtentX        =   21299
+      Width           =   11670
+      _ExtentX        =   20585
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sldRadius 
@@ -41,9 +38,9 @@ Begin VB.Form FormPlasticWrap
       Left            =   6000
       TabIndex        =   2
       Top             =   1560
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "smoothness"
       Max             =   200
       SigDigits       =   1
@@ -64,9 +61,9 @@ Begin VB.Form FormPlasticWrap
       Left            =   6000
       TabIndex        =   3
       Top             =   600
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "detail"
       Max             =   16
       Value           =   4
@@ -78,9 +75,9 @@ Begin VB.Form FormPlasticWrap
       Left            =   6000
       TabIndex        =   4
       Top             =   2520
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "thickness"
       SigDigits       =   2
       Value           =   2
@@ -91,9 +88,9 @@ Begin VB.Form FormPlasticWrap
       Left            =   6000
       TabIndex        =   5
       Top             =   3480
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "light angle"
       Min             =   -180
       Max             =   180
@@ -104,9 +101,9 @@ Begin VB.Form FormPlasticWrap
       Left            =   6000
       TabIndex        =   6
       Top             =   4440
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "light intensity"
       Min             =   0.1
       SigDigits       =   2
@@ -376,7 +373,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

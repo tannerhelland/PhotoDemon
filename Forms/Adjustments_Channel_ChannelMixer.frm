@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormChannelMixer 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Channel mixer"
-   ClientHeight    =   7845
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientHeight    =   7215
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12150
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -22,24 +21,23 @@ Begin VB.Form FormChannelMixer
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   523
+   ScaleHeight     =   481
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6735
+      Height          =   6255
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   11880
+      _ExtentY        =   11033
    End
    Begin PhotoDemon.pdSlider sltRed 
       Height          =   705
       Left            =   6120
       TabIndex        =   2
-      Top             =   1800
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -53,7 +51,7 @@ Begin VB.Form FormChannelMixer
       Height          =   705
       Left            =   6120
       TabIndex        =   3
-      Top             =   2760
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -67,7 +65,7 @@ Begin VB.Form FormChannelMixer
       Height          =   705
       Left            =   6120
       TabIndex        =   4
-      Top             =   3720
+      Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -81,7 +79,7 @@ Begin VB.Form FormChannelMixer
       Height          =   375
       Left            =   6120
       TabIndex        =   5
-      Top             =   6120
+      Top             =   5520
       Width           =   5760
       _ExtentX        =   10160
       _ExtentY        =   582
@@ -91,7 +89,7 @@ Begin VB.Form FormChannelMixer
       Height          =   705
       Left            =   6120
       TabIndex        =   6
-      Top             =   4680
+      Top             =   4200
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -104,18 +102,17 @@ Begin VB.Form FormChannelMixer
       Height          =   375
       Left            =   6120
       TabIndex        =   7
-      Top             =   6480
+      Top             =   5880
       Width           =   5760
       _ExtentX        =   10160
       _ExtentY        =   582
       Caption         =   "preserve luminance"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   7095
+      Top             =   6465
       Width           =   12150
       _ExtentX        =   21431
       _ExtentY        =   1323
@@ -134,7 +131,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   0
       Left            =   6000
-      Top             =   1320
+      Top             =   1200
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   503
@@ -146,7 +143,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   1
       Left            =   6000
-      Top             =   5760
+      Top             =   5160
       Width           =   5820
       _ExtentX        =   10266
       _ExtentY        =   503
@@ -585,7 +582,7 @@ Private Sub Form_Load()
     btsChannel.ListIndex = 0
             
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
     ' (due to no Click event being fired).  Forcibly check this state in advance.

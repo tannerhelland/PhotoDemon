@@ -6,7 +6,7 @@ Begin VB.Form dialog_ExportAnimatedPNG
    Caption         =   " Animation options"
    ClientHeight    =   7230
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

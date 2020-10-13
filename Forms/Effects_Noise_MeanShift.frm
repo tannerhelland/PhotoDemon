@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormMeanShift 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Mean shift"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11670
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,10 +23,8 @@ Begin VB.Form FormMeanShift
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   778
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -50,9 +47,9 @@ Begin VB.Form FormMeanShift
       Left            =   6000
       TabIndex        =   2
       Top             =   1560
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "radius"
       Min             =   1
       Max             =   50
@@ -64,9 +61,9 @@ Begin VB.Form FormMeanShift
       Left            =   6000
       TabIndex        =   3
       Top             =   2400
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "threshold"
       Min             =   1
       Max             =   50
@@ -78,8 +75,8 @@ Begin VB.Form FormMeanShift
       Left            =   6000
       TabIndex        =   4
       Top             =   3240
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1931
       Caption         =   "kernel shape"
    End
@@ -340,7 +337,7 @@ Private Sub Form_Load()
     Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Rectangle
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

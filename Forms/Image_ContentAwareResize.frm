@@ -6,7 +6,7 @@ Begin VB.Form FormResizeContentAware
    Caption         =   "Content-aware resize"
    ClientHeight    =   4965
    ClientLeft      =   45
-   ClientTop       =   225
+   ClientTop       =   390
    ClientWidth     =   9705
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

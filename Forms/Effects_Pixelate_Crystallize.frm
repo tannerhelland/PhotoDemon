@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormCrystallize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Crystallize"
    ClientHeight    =   6510
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,27 +23,25 @@ Begin VB.Form FormCrystallize
    MinButton       =   0   'False
    ScaleHeight     =   434
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboColorSampling 
       Height          =   735
       Left            =   6000
       TabIndex        =   4
       Top             =   2760
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "color sampling"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5760
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -61,9 +58,9 @@ Begin VB.Form FormCrystallize
       Left            =   6000
       TabIndex        =   2
       Top             =   840
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "cell size"
       Min             =   3
       Max             =   200
@@ -75,9 +72,9 @@ Begin VB.Form FormCrystallize
       Left            =   6000
       TabIndex        =   3
       Top             =   1800
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "turbulence"
       Max             =   1
       SigDigits       =   2
@@ -89,8 +86,8 @@ Begin VB.Form FormCrystallize
       Left            =   6000
       TabIndex        =   5
       Top             =   3720
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "distance method"
    End
@@ -395,7 +392,7 @@ Private Sub Form_Load()
     m_RndSeed = cRandom.GetSeed()
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     'Request a preview
     cmdBar.SetPreviewStatus True

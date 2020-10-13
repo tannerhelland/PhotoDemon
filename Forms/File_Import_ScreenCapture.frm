@@ -6,7 +6,7 @@ Begin VB.Form FormScreenCapture
    Caption         =   " Screenshot options"
    ClientHeight    =   7005
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   13095
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form FormScreenCapture
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4335
       Index           =   1

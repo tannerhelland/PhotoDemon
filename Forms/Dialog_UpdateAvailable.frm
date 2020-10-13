@@ -6,7 +6,7 @@ Begin VB.Form FormUpdateNotify
    Caption         =   "Update ready"
    ClientHeight    =   2790
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9195
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form FormUpdateNotify
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   613
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdButton cmdUpdate 
       Height          =   750
       Index           =   0

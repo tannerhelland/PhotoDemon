@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormRadialBlur 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Radial blur"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormRadialBlur
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsRender 
       Height          =   1095
       Left            =   6000
@@ -37,7 +35,6 @@ Begin VB.Form FormRadialBlur
       Caption         =   "render emphasis"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -246,7 +243,7 @@ Private Sub Form_Load()
     btsRender.ListIndex = 1
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormMezzotint 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Mezzotint"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormMezzotint
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdButtonStrip btsType 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
       Top             =   240
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1931
       Caption         =   "type"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormMezzotint
       Left            =   6000
       TabIndex        =   3
       Top             =   2520
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "smoothness"
       Max             =   100
       Value           =   10
@@ -74,9 +71,9 @@ Begin VB.Form FormMezzotint
       Left            =   6000
       TabIndex        =   5
       Top             =   1560
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "randomness"
       Max             =   100
       Value           =   50
@@ -88,9 +85,9 @@ Begin VB.Form FormMezzotint
       Left            =   6000
       TabIndex        =   2
       Top             =   3480
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1085
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1931
       Caption         =   "stippling"
    End
 End
@@ -287,7 +284,7 @@ Private Sub Form_Load()
     btsStippling.ListIndex = 2
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

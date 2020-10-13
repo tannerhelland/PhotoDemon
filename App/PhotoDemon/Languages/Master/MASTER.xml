@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.86</langversion>
+		<langversion>8.9.103</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -7352,6 +7352,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 		<phrase>
+			<original>random seed</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>tip radius</original>
 			<translation></translation>
 		</phrase>
@@ -7381,7 +7386,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 			<translation></translation>
 		</phrase>
 
-		<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 		<phrase>
 			<original>brush smoothing</original>
@@ -7441,16 +7446,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		</phrase>
 
 		<phrase>
-			<original>random seed</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>Projecting image through simulated glass</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 		<phrase>
 			<original>shadow cut-off</original>
@@ -13542,8 +13542,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<phrasecount>2582</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-	<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
+	<!-- As of this build, PhotoDemon contains 5150 phrases. -->
+	<!-- 2568 are duplicates, so only 2582 unique phrases have been written to file. -->
 	<!-- These 2582 phrases contain approximately 11930 total words. -->
 
 	</pdData>

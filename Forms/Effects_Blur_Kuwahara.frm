@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormKuwahara 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Kuwahara"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   390
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11640
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormKuwahara
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   776
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11640
+      _ExtentX        =   20532
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltRadius 
@@ -41,9 +38,9 @@ Begin VB.Form FormKuwahara
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "radius"
       Min             =   1
       Value           =   1
@@ -272,7 +269,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

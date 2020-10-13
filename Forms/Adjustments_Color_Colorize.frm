@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormColorize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colorize"
    ClientHeight    =   6570
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12345
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11655
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormColorize
    MinButton       =   0   'False
    ScaleHeight     =   438
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   823
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   777
    Begin PhotoDemon.pdButtonStrip btsSaturation 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
       Top             =   1485
-      Width           =   6135
-      _ExtentX        =   10821
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1931
       Caption         =   "saturation"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5820
-      Width           =   12345
-      _ExtentX        =   21775
+      Width           =   11655
+      _ExtentX        =   20558
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -61,9 +58,9 @@ Begin VB.Form FormColorize
       Left            =   6000
       TabIndex        =   2
       Top             =   600
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Caption         =   "new color"
       Max             =   359
       SliderTrackStyle=   4
@@ -77,9 +74,9 @@ Begin VB.Form FormColorize
       Left            =   6000
       TabIndex        =   3
       Top             =   2685
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Max             =   100
       SliderTrackStyle=   2
       Value           =   50
@@ -91,8 +88,8 @@ Begin VB.Form FormColorize
       Left            =   6000
       TabIndex        =   5
       Top             =   3480
-      Width           =   6135
-      _ExtentX        =   10821
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1931
       Caption         =   "luminance"
    End
@@ -102,9 +99,9 @@ Begin VB.Form FormColorize
       Left            =   6000
       TabIndex        =   6
       Top             =   4680
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   1270
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1244
       Max             =   100
       SliderTrackStyle=   2
       Value           =   50
@@ -277,7 +274,7 @@ Private Sub Form_Load()
     btsLuminance.ListIndex = 0
     
     ReflowInterface
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     cmdBar.SetPreviewStatus True
     UpdatePreview

@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormColorTemp 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Color temperature"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12330
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormColorTemp
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   822
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsMethod 
       Height          =   975
       Left            =   5880
@@ -37,7 +35,6 @@ Begin VB.Form FormColorTemp
       Caption         =   "method"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -387,7 +384,7 @@ Private Sub Form_Load()
     sltTemperature.GradientColorMiddle = RGB(r, g, b)
     sldTempBasic.GradientColorMiddle = RGB(r, g, b)
     
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 

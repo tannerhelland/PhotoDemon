@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormFog 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fog"
    ClientHeight    =   6555
-   ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11790
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormFog
    MinButton       =   0   'False
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   786
    Begin PhotoDemon.pdRandomizeUI rndSeed 
       Height          =   735
       Left            =   6000
       TabIndex        =   6
       Top             =   4800
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "random seed:"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5805
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11790
+      _ExtentX        =   20796
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltScale 
@@ -51,9 +48,9 @@ Begin VB.Form FormFog
       Left            =   6000
       TabIndex        =   2
       Top             =   600
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "scale"
       Min             =   1
       Max             =   100
@@ -77,9 +74,9 @@ Begin VB.Form FormFog
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "contrast"
       Max             =   100
       Value           =   50
@@ -91,9 +88,9 @@ Begin VB.Form FormFog
       Left            =   6000
       TabIndex        =   4
       Top             =   3840
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "quality"
       Min             =   1
       Max             =   6
@@ -106,9 +103,9 @@ Begin VB.Form FormFog
       Left            =   6000
       TabIndex        =   5
       Top             =   2760
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "density"
       Min             =   1
       Max             =   100
@@ -348,7 +345,7 @@ Private Sub Form_Load()
     Set m_Random = New pdRandomize
     
     'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

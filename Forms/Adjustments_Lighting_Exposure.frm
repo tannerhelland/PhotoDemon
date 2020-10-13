@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormExposure 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Exposure"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11685
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,34 +23,32 @@ Begin VB.Form FormExposure
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   779
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11685
+      _ExtentX        =   20611
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdPictureBox picChart 
       Height          =   2415
       Left            =   8400
       Top             =   240
-      Width           =   3375
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   4260
    End
    Begin PhotoDemon.pdSlider sltExposure 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2880
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "exposure compensation (stops)"
       Min             =   -5
       Max             =   5
@@ -72,9 +69,9 @@ Begin VB.Form FormExposure
       Left            =   6000
       TabIndex        =   3
       Top             =   3720
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "offset"
       Min             =   -1
       Max             =   1
@@ -85,9 +82,9 @@ Begin VB.Form FormExposure
       Left            =   6000
       TabIndex        =   4
       Top             =   4560
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "gamma"
       Min             =   0.01
       Max             =   2
@@ -259,7 +256,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

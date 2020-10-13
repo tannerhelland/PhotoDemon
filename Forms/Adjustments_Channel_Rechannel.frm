@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormRechannel 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Rechannel"
    ClientHeight    =   6570
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   11895
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormRechannel
    ScaleHeight     =   438
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsColorSpace 
       Height          =   1095
       Left            =   5880
@@ -180,7 +178,7 @@ Private Sub Form_Load()
     btsChannel(2).AddItem "key (black)", 3
     
     'Apply translations and visual themes, and supply an initial effect preview
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

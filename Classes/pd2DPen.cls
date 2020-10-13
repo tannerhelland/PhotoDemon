@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Outline ("Pen" in GDI/GDI+ parlance) Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 04/July/15 (but assembled from many bits written earlier)
-'Last updated: 27/February/20
-'Last update: remove PenAlignment property; it is half-baked and poorly implemented in GDI+, and if we
-'             ever switch to a homebrew renderer, it won't be used anyway.
+'Last updated: 06/October/20
+'Last update: start inlining GDI+ calls for improved performance (and cleaner code)
 '
 'This class manages a single GDI+ WAPI pen instance.  Pens are used to trace shapes and paths.
 '
@@ -30,13 +29,27 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-    
+
+'GDI+ declares
+Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
+Private Declare Function GdipSetPenDashArray Lib "gdiplus" (ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As GP_Result
+Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
+Private Declare Function GdipSetPenDashOffset Lib "gdiplus" (ByVal hPen As Long, ByVal newPenOffset As Single) As GP_Result
+Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByVal newDashStyle As GP_DashStyle) As GP_Result
+Private Declare Function GdipSetPenEndCap Lib "gdiplus" (ByVal hPen As Long, ByVal endCap As GP_LineCap) As GP_Result
+Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal startCap As GP_LineCap, ByVal endCap As GP_LineCap, ByVal dashCap As GP_DashCap) As GP_Result
+Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByVal newLineJoin As GP_LineJoin) As GP_Result
+Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal hPen As Long, ByVal newMiterLimit As Single) As GP_Result
+Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal hPen As Long, ByVal penMode As GP_PenAlignment) As GP_Result
+Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByVal startCap As GP_LineCap) As GP_Result
+Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
+
 'Current pen style (solid, dashed, dotted, etc)
 Private m_PenStyle As PD_2D_DashStyle
 
 'Basic pen settings
-Private m_PenColor As Long
-Private m_PenOpacity As Single
+Private m_PenColorOpacity As RGBQuad    'GDI+ requires RGB quads; we translate between this format as necessary
+Private m_PenColorLong As Long          'Must always be manually synched against m_PenColorOpacity
 Private m_PenWidth As Single
 
 'Advanced pen settings
@@ -61,7 +74,11 @@ Private m_PenHandle As Long
 
 'Get/set individual settings.
 Friend Function GetPenColor() As Long
-    GetPenColor = m_PenColor
+    GetPenColor = RGB(m_PenColorOpacity.Red, m_PenColorOpacity.Green, m_PenColorOpacity.Blue)
+End Function
+
+Friend Function GetPenColorRGBA() As RGBQuad
+    GetPenColorRGBA = m_PenColorOpacity
 End Function
 
 Friend Function GetPenDashCap() As PD_2D_DashCap
@@ -89,7 +106,7 @@ Friend Function GetPenMiterLimit() As Single
 End Function
 
 Friend Function GetPenOpacity() As Single
-    GetPenOpacity = m_PenOpacity
+    GetPenOpacity = m_PenColorOpacity.Alpha / 2.55!
 End Function
 
 Friend Function GetPenStartCap() As PD_2D_LineCap
@@ -104,10 +121,40 @@ Friend Function GetPenWidth() As Single
     GetPenWidth = m_PenWidth
 End Function
 
-Friend Sub SetPenColor(ByVal newSetting As Long)
-    m_PenColor = newSetting
-    If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenColor, m_PenColor
-End Sub
+'Color does *not* currently support OLE color constants; you need to manually uncomment
+' the OleTranslateColor call, below, if you care about this (PD does not, and it's obviously
+' faster to skip the function call)
+Friend Function SetPenColor(ByVal newSetting As Long) As Boolean
+    
+    'See documentation for OleTranslateColor before enabling this line
+    'If OleTranslateColor(newSetting, 0, newSetting) Then 'failure - do what you want!
+    
+    m_PenColorOpacity.Red = Colors.ExtractRed(newSetting)
+    m_PenColorOpacity.Green = Colors.ExtractGreen(newSetting)
+    m_PenColorOpacity.Blue = Colors.ExtractBlue(newSetting)
+    
+    'Synchronize against our long-type value
+    GetMem4 VarPtr(m_PenColorOpacity), m_PenColorLong
+    
+    'Apply immediately
+    If (m_PenHandle <> 0) Then SetPenColor = (GdipSetPenColor(m_PenHandle, m_PenColorLong) = GP_OK)
+    
+End Function
+
+'Color does *not* currently support OLE color constants; you need to manually uncomment
+' the OleTranslateColor call, below, if you care about this (PD does not, and it's obviously
+' faster to skip the function call)
+Friend Function SetPenColorRGBA(ByRef newSetting As RGBQuad) As Boolean
+    
+    m_PenColorOpacity = newSetting
+    
+    'Synchronize against our long-type value
+    GetMem4 VarPtr(m_PenColorOpacity), m_PenColorLong
+    
+    'Apply immediately
+    If (m_PenHandle <> 0) Then SetPenColorRGBA = (GdipSetPenColor(m_PenHandle, m_PenColorLong) = GP_OK)
+    
+End Function
 
 Friend Sub SetPenDashCap(ByVal newSetting As PD_2D_DashCap)
     m_PenDashCap = newSetting
@@ -146,10 +193,11 @@ Friend Sub SetPenMiterLimit(ByVal newSetting As Single)
 End Sub
 
 'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
-Friend Sub SetPenOpacity(ByVal newSetting As Single)
-    m_PenOpacity = newSetting
-    If (m_PenHandle <> 0) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenOpacity, m_PenOpacity
-End Sub
+Friend Function SetPenOpacity(ByVal newSetting As Single) As Boolean
+    m_PenColorOpacity.Alpha = Int(newSetting * 2.55! + 0.5!)
+    GetMem4 VarPtr(m_PenColorOpacity), m_PenColorLong
+    If (m_PenHandle <> 0) Then SetPenOpacity = (GdipSetPenColor(m_PenHandle, m_PenColorLong) = GP_OK)
+End Function
 
 Friend Sub SetPenStartCap(ByVal newSetting As PD_2D_LineCap)
     m_PenStartCap = newSetting
@@ -181,8 +229,8 @@ Friend Function GetPenPropertiesAsXML() As String
     If (m_Serialize Is Nothing) Then Set m_Serialize = New pdSerialize
     With m_Serialize
         .Reset 1#
-        .AddParam "pen-color", m_PenColor, True, True
-        .AddParam "pen-opacity", m_PenOpacity, True, True
+        .AddParam "pen-color", RGB(m_PenColorOpacity.Red, m_PenColorOpacity.Green, m_PenColorOpacity.Blue), True, True
+        .AddParam "pen-opacity", m_PenColorOpacity.Alpha / 2.55!, True, True
         .AddParam "pen-width", m_PenWidth, True, True
         .AddParam "pen-line-join", Drawing2D.XML_GetNameOfLineJoin(m_PenLineJoin), True, True
         .AddParam "pen-miter-limit", m_PenMiterLimit, True, True
@@ -274,8 +322,8 @@ Friend Function CreatePen() As Boolean
     
     If (m_PenHandle <> 0) Then ReleasePen
     
-    m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, GP_PA_Center)
-            
+    m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(RGB(m_PenColorOpacity.Red, m_PenColorOpacity.Green, m_PenColorOpacity.Blue), m_PenColorOpacity.Alpha, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, GP_PA_Center)
+    
     If (m_PenHandle <> 0) Then
         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenDashCap, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
         If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap

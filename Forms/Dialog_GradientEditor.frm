@@ -6,7 +6,7 @@ Begin VB.Form dialog_GradientEditor
    Caption         =   "Gradient editor"
    ClientHeight    =   8970
    ClientLeft      =   45
-   ClientTop       =   375
+   ClientTop       =   390
    ClientWidth     =   12660
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form dialog_GradientEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin PhotoDemon.pdContainer pnlShared 
       Height          =   2175
       Left            =   120

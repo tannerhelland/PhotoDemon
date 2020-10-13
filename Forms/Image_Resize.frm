@@ -6,7 +6,7 @@ Begin VB.Form FormResize
    Caption         =   " Resize image"
    ClientHeight    =   7140
    ClientLeft      =   45
-   ClientTop       =   225
+   ClientTop       =   390
    ClientWidth     =   9630
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

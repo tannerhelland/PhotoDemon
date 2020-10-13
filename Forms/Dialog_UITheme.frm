@@ -6,7 +6,7 @@ Begin VB.Form dialog_UITheme
    Caption         =   " Theme and language"
    ClientHeight    =   6405
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9045
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

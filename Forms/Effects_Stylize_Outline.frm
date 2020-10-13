@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormOutlineEffect 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Outline"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11640
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,15 +23,14 @@ Begin VB.Form FormOutlineEffect
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   776
    Begin PhotoDemon.pdColorSelector csBackground 
       Height          =   975
       Left            =   5880
       TabIndex        =   5
       Top             =   4200
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1720
       Caption         =   "background color"
    End
@@ -41,8 +39,8 @@ Begin VB.Form FormOutlineEffect
       Left            =   5880
       TabIndex        =   4
       Top             =   2040
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1720
       Caption         =   "edge type"
    End
@@ -51,8 +49,8 @@ Begin VB.Form FormOutlineEffect
       Left            =   5880
       TabIndex        =   3
       Top             =   480
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   2355
       Caption         =   "outline style"
    End
@@ -61,8 +59,8 @@ Begin VB.Form FormOutlineEffect
       Left            =   5880
       TabIndex        =   2
       Top             =   3240
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "threshold"
       Max             =   100
@@ -80,13 +78,12 @@ Begin VB.Form FormOutlineEffect
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Width           =   11640
+      _ExtentX        =   20532
       _ExtentY        =   1323
    End
 End
@@ -295,7 +292,7 @@ Private Sub Form_Load()
     btsEdgeType.ListIndex = 0
     UpdateVisibleEdgeOptions
     
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     
     cmdBar.SetPreviewStatus True
     UpdatePreview

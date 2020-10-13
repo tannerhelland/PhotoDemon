@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormCrossScreen 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Cross-screen"
-   ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12030
+   ClientHeight    =   6300
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11670
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,18 +21,16 @@ Begin VB.Form FormCrossScreen
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   420
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   802
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   778
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
-      Width           =   12030
-      _ExtentX        =   21220
+      Top             =   5550
+      Width           =   11670
+      _ExtentX        =   20585
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -50,9 +47,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   2
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "angle"
       Max             =   359.9
       SigDigits       =   1
@@ -64,9 +61,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   3
       Top             =   2940
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "distance"
       Min             =   1
       Max             =   200
@@ -79,9 +76,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   4
       Top             =   3840
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "strength"
       Max             =   200
       SigDigits       =   1
@@ -93,9 +90,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   5
       Top             =   1140
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "threshold"
       Min             =   1
       Max             =   200
@@ -107,9 +104,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   6
       Top             =   240
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "spokes"
       Min             =   1
       Max             =   8
@@ -121,9 +118,9 @@ Begin VB.Form FormCrossScreen
       Left            =   6000
       TabIndex        =   7
       Top             =   4740
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "softness"
    End
 End
@@ -470,7 +467,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

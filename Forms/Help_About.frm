@@ -5,8 +5,8 @@ Begin VB.Form FormAbout
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
    ClientHeight    =   7980
-   ClientLeft      =   2340
-   ClientTop       =   1875
+   ClientLeft      =   45
+   ClientTop       =   390
    ClientWidth     =   9870
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

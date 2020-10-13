@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPencil 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Colored pencil"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,8 +25,30 @@ Begin VB.Form FormPencil
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSlider sldAngle 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   840
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1244
+      Caption         =   "angle"
+      Max             =   360
+      Value           =   45
+      DefaultValue    =   45
+   End
+   Begin PhotoDemon.pdRandomizeUI rndSeed 
+      Height          =   855
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   4200
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1508
+      Caption         =   "random seed:"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -49,12 +70,12 @@ Begin VB.Form FormPencil
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1920
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "tip radius"
-      Min             =   3
+      Min             =   2
       Max             =   100
       Value           =   5
       DefaultValue    =   5
@@ -63,7 +84,7 @@ Begin VB.Form FormPencil
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2760
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -78,7 +99,7 @@ Begin VB.Form FormPencil
       Height          =   705
       Left            =   6000
       TabIndex        =   4
-      Top             =   3600
+      Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -141,13 +162,14 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     cParams.SetParamString effectParams
     
     Dim penRadius As Single, penDensity As Single, penAngle As Double
-    Dim edgeThreshold As Single
+    Dim edgeThreshold As Single, rndSeedString As String
     
     With cParams
         penRadius = .GetSingle("radius", 5!, True)
         penDensity = .GetSingle("density", 100, True)
         penAngle = .GetDouble("angle", 45#, True)
         edgeThreshold = .GetSingle("edge-threshold", 10!, True)
+        rndSeedString = .GetString("seed", vbNullString, True)
     End With
     
     'Angle needs to be in radians
@@ -167,15 +189,15 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    Dim progBarCheck As Long
+    Dim progBarCheck As Long, prevModifier As Single
+    prevModifier = curDIBValues.previewModifier
     
     If toPreview Then
-        penRadius = penRadius * curDIBValues.previewModifier
+        penRadius = penRadius * prevModifier
         'penDensity = penDensity * curDIBValues.previewModifier
     End If
     
     If (penRadius < 1.6) Then penRadius = 1.6
-    Dim curRadius As Single
     
     'Density controls the limiting radius that we pass to the poisson disc generator.
     ' As such, HIGHER density equals a LOWER limiting radius (with a minimum value of
@@ -190,13 +212,9 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     Dim listOfPoints() As PointFloat, numOfPoints As Long
     Dim ptGrid() As Long, gridWidth As Long, gridHeight As Long
     
-    Dim limitRadius As Single
-    limitRadius = penRadius * Sqr(2#) * penDensity
-    cPoints.GetDisc listOfPoints, numOfPoints, ptGrid, gridWidth, gridHeight, limitRadius, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-    
     'The number of points in our sampling disc determines progress bar max
     If (Not toPreview) Then
-        ProgressBars.SetProgBarMax numOfPoints * 2
+        ProgressBars.SetProgBarMax 100
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
@@ -215,7 +233,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     'We want to randomize angles to make the strokes look more natural
     Dim cRandomize As pdRandomize
     Set cRandomize = New pdRandomize
-    cRandomize.SetSeed_AutomaticAndRandom
+    cRandomize.SetSeed_String rndSeedString
     
     'This function requires a lot of random values to look interesting; we pre-calculate
     ' a table of random values to improve performance.
@@ -236,15 +254,12 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     Const NUM_PEN_OBJECTS As Long = 7
     Dim cPens(0 To NUM_PEN_OBJECTS) As pd2DPen, curPen As pd2DPen, curPenIndex As Long
     
+    'Create all pens
+    Dim curRadius As Single
     For curPenIndex = 0 To NUM_PEN_OBJECTS
         
         Set cPens(curPenIndex) = New pd2DPen
         With cPens(curPenIndex)
-            
-            'Assign a variable radius
-            curRadius = penRadius + PEN_SIZE_VARIATION * listOfGaussRnd(curPenIndex)
-            If (curRadius < 1.6) Then curRadius = 1.6
-            .SetPenWidth curRadius
             
             'Set matching line ends and joins
             .SetPenLineCap P2_LC_Round
@@ -254,7 +269,7 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
         
     Next curPenIndex
     curPenIndex = 0
-    
+        
     'X/Y steps will be randomized as we go
     Dim curX As Double, curY As Double
     Dim stepX As Double, stepY As Double
@@ -280,32 +295,51 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     ' (But the extension amount must be proportionally reduced during previews.)
     Const LINE_EXTEND_PX As Single = 4!
     
-    Dim maxExtend As Single, curExtend As Single
+    Dim maxExtend As Single, curExtend As Single, lineStep As Single
     maxExtend = LINE_EXTEND_PX
     If toPreview Then maxExtend = maxExtend * curDIBValues.previewModifier
     
+    Dim limitRadius As Single
     Const ANGLE_VARIATION As Single = 0.1!
     
-    'We iterate through the list twice; on the first pass, we draw all lines that do *not*
-    ' lie on strong edge boundaries.  On the second pass, we draw all lines that *do* lie on
-    ' strong boundaries (and we draw them in a perpendicular direction).
-    Dim pxProcess As Boolean
+    Const minSizeModifier As Single = 1!
+    Const maxSizeModifier As Single = 10!
+    
+    Const NUM_WAVELETS As Long = 3
+    
+    Dim maxWavelets As Long
+    maxWavelets = NUM_WAVELETS - 1
     
     'Iterate through each point in our list, and attempt to draw a nice pen stroke using that point
-    For j = 0 To 1
-    For i = 0 To numOfPoints - 1
+    For j = 0 To maxWavelets
+    
+        'Each wavelet uses a predefined multiplier, scaling from 1000% to 100%
+        Dim waveRadius As Single
+        waveRadius = minSizeModifier + ((maxWavelets - j) / maxWavelets) * (maxSizeModifier - minSizeModifier)
         
-        'Handle pixels on strong boundaries differently??
-        pxProcess = True
-        
-        'If (j = 0) Then
-        '    pxProcess = (imgMag(listOfPoints(i).x, listOfPoints(i).y) <= 127)
-        'Else
-        '    pxProcess = (imgMag(listOfPoints(i).x, listOfPoints(i).y) > 127)
-        'End If
-        
-        If pxProcess Then
+        'Recreate all pens
+        For curPenIndex = 0 To NUM_PEN_OBJECTS
             
+            'Assign a variable radius
+            curRadius = (penRadius + PEN_SIZE_VARIATION * listOfGaussRnd(curPenIndex)) * waveRadius
+            If (curRadius < 1.6!) Then curRadius = 1.6!
+            cPens(curPenIndex).SetPenWidth curRadius
+            
+            'Assign variable opacity depending on the current wavelet size
+            Const MIN_OPACITY As Single = 50!
+            Const MAX_OPACITY As Single = 90!
+            cPens(curPenIndex).SetPenOpacity MIN_OPACITY + (j / maxWavelets) * (MAX_OPACITY - MIN_OPACITY)
+            Debug.Print cPens(curPenIndex).GetPenOpacity
+            
+        Next curPenIndex
+        curPenIndex = 0
+        
+        'Re-create list of points
+        limitRadius = penRadius * Sqr(2#) * penDensity * (waveRadius * 1.5!)
+        cPoints.GetDisc listOfPoints, numOfPoints, ptGrid, gridWidth, gridHeight, limitRadius, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+            
+        For i = 0 To numOfPoints - 1
+        
             curX = listOfPoints(i).x
             curY = listOfPoints(i).y
             drawPoints(1).x = curX
@@ -318,9 +352,11 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
             
             'Starting at the current point, move in direction (lineAngle) until we reach a strong
             ' gradient boundary.
-            stepX = SQR2 * Cos(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
+            lineStep = SQR2 * waveRadius * (1! + Abs(listOfGaussRnd(rndIndex)) * 2! * prevModifier)
             rndIndex = rndIndex + 1
-            stepY = SQR2 * Sin(penAngle)
+            stepX = lineStep * Cos(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
+            rndIndex = rndIndex + 1
+            stepY = lineStep * Sin(penAngle)
             
             Do
                 curX = curX + stepX
@@ -334,26 +370,19 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
             drawPoints(0).y = curY
             
             'Extend the end of the line by some random amount, to make it look more natural
-            curExtend = maxExtend * listOfGaussRnd(rndIndex)
-            rndIndex = rndIndex + 1
-            If (drawPoints(0).x > drawPoints(1).x) Then
-                drawPoints(0).x = drawPoints(0).x + curExtend * stepX
-            Else
-                drawPoints(0).x = drawPoints(0).x - curExtend * stepX
-            End If
-            
-            If (drawPoints(0).y > drawPoints(1).y) Then
-                drawPoints(0).y = drawPoints(0).y + curExtend * stepY
-            Else
-                drawPoints(0).y = drawPoints(0).y - curExtend * stepY
-            End If
+            'curExtend = maxExtend * Abs(listOfGaussRnd(rndIndex)) '* waveRadius
+            'rndIndex = rndIndex + 1
+            'drawPoints(0).x = drawPoints(0).x + curExtend * stepX
+            'drawPoints(0).y = drawPoints(0).y - curExtend * stepY
             
             'Next, repeat the above steps, but in the opposite direction from the
             ' original pixel; this will extend the line in the opposite direction.
             curX = listOfPoints(i).x
             curY = listOfPoints(i).y
-            stepX = -1 * SQR2 * Cos(penAngle)
-            stepY = -1 * SQR2 * Sin(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
+            lineStep = SQR2 * waveRadius * (1! + Abs(listOfGaussRnd(rndIndex)) * 2! * prevModifier)
+            rndIndex = rndIndex + 1
+            stepX = -1 * lineStep * Cos(penAngle)
+            stepY = -1 * lineStep * Sin(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
             rndIndex = rndIndex + 1
             
             Do
@@ -367,24 +396,22 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
             drawPoints(2).y = curY
             
             'Again, extend the end of the line by some random amount, to make it look more natural
-            curExtend = maxExtend * listOfGaussRnd(rndIndex)
-            rndIndex = rndIndex + 1
-            If (drawPoints(2).x > drawPoints(1).x) Then
-                drawPoints(2).x = drawPoints(2).x + curExtend * stepX
-            Else
-                drawPoints(2).x = drawPoints(2).x - curExtend * stepX
-            End If
+            'curExtend = maxExtend * listOfGaussRnd(rndIndex) '* waveRadius
+            'rndIndex = rndIndex + 1
+            'drawPoints(2).x = drawPoints(2).x + curExtend * stepX
+            'drawPoints(2).y = drawPoints(2).y - curExtend * stepY
             
-            If (drawPoints(2).y > drawPoints(1).y) Then
-                drawPoints(2).y = drawPoints(2).y + curExtend * stepY
-            Else
-                drawPoints(2).y = drawPoints(2).y - curExtend * stepY
-            End If
+            'GDI+ will fail if points are too close together.  Ensure a minimum viable distance?
             
             'Draw a line with the color of the source pixel
             Set curPen = cPens(curPenIndex)
             curPen.SetPenColor RGB(origColor.Red, origColor.Green, origColor.Blue)
-            PD2D.DrawLinesF_FromPtF cSurface, curPen, 3, VarPtr(drawPoints(0)), True
+            If Not PD2D.DrawLinesF_FromPtF(cSurface, curPen, 3, VarPtr(drawPoints(0)), True) Then
+                Dim q As Long
+                For q = 0 To 2
+                    Debug.Print drawPoints(q).x, drawPoints(q).y
+                Next q
+            End If
             
             'Rotate between pens as we go
             curPenIndex = curPenIndex + 1
@@ -393,16 +420,13 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
             If (Not toPreview) Then
                 If (i And progBarCheck) = 0 Then
                     If Interface.UserPressedESC() Then Exit For
-                    ProgressBars.SetProgBarVal i * 2    '+ (j * numOfPoints)
+                    ProgressBars.SetProgBarVal i + (j * numOfPoints)
                 End If
             End If
+                
+        Next i
         
-        End If
-            
-    Next i
-        'On the second pass, rotate stroke directionality by 90 degrees
-        'penAngle = penAngle + (PI / 2)
-        Exit For
+    'Next wavelet
     Next j
     
     workingDIB.UnwrapRGBQuadArrayFromDIB srcPixels
@@ -437,7 +461,7 @@ Private Sub Form_Load()
     dummyString = g_Language.TranslateMessage("Graphite")
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     
@@ -468,14 +492,24 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
+        .AddParam "angle", sldAngle.Value
         .AddParam "radius", sldRadius.Value
         .AddParam "density", sldDensity.Value
         .AddParam "edge-threshold", sldEdgeThreshold.Value
+        .AddParam "seed", rndSeed.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
 End Function
+
+Private Sub rndSeed_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sldAngle_Change()
+    UpdatePreview
+End Sub
 
 Private Sub sldDensity_Change()
     UpdatePreview

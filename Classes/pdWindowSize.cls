@@ -74,7 +74,7 @@ Private Type POINTL
     y As Long
 End Type
 
-Private Type MINMAXINFO
+Private Type MinMaxInfo
     Reserved As POINTL
     MaxSize As POINTL
     maxPosition As POINTL
@@ -96,7 +96,10 @@ Private m_WindowRect As winRect
 
 'If (optional) max/min tracking is active, this will be set to TRUE, and the associated struct
 ' will be passed to the user for modification.
-Private m_SubclassMaxMin As Boolean, m_tmpMinMax As MINMAXINFO
+Private m_SubclassMaxMin As Boolean, m_tmpMinMax As MinMaxInfo
+
+'You can always query this to see if a resize event is active; FALSE means the resize has completed
+Private m_ResizeActive As Boolean
 
 'Prior to doing anything with this class, you need to attach it to an hWnd.
 ' (For UCs, this will simply be UserControl.hWnd.)
@@ -148,6 +151,10 @@ End Function
 Friend Function GetTop() As Long
     If (Not m_SubclassActive) Then UpdateWinRect
     GetTop = m_WindowRect.y1
+End Function
+
+Friend Function IsResizeActive() As Boolean
+    IsResizeActive = m_ResizeActive
 End Function
 
 'Move or resize a window
@@ -237,10 +244,12 @@ End Sub
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
     If (uiMsg = WM_ENTERSIZEMOVE) Then
+        m_ResizeActive = True
         RaiseEvent WindowResizeInitial
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     ElseIf (uiMsg = WM_EXITSIZEMOVE) Then
+        m_ResizeActive = False
         UpdateWinRect
         RaiseEvent WindowResizeFinal(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)

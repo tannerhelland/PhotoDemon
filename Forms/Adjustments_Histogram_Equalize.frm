@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormEqualize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Equalize"
    ClientHeight    =   6555
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11685
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,15 +23,14 @@ Begin VB.Form FormEqualize
    MinButton       =   0   'False
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   779
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   5880
       TabIndex        =   4
       Top             =   4440
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   1244
       Caption         =   "radius"
       Min             =   1
@@ -46,8 +44,8 @@ Begin VB.Form FormEqualize
       Left            =   5880
       TabIndex        =   2
       Top             =   720
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   1931
       Caption         =   "target histogram"
    End
@@ -57,8 +55,8 @@ Begin VB.Form FormEqualize
       Left            =   0
       TabIndex        =   0
       Top             =   5805
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11685
+      _ExtentX        =   20611
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -75,8 +73,8 @@ Begin VB.Form FormEqualize
       Left            =   5880
       TabIndex        =   3
       Top             =   1920
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   1931
       Caption         =   "mode"
    End
@@ -85,8 +83,8 @@ Begin VB.Form FormEqualize
       Left            =   5880
       TabIndex        =   5
       Top             =   3120
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   1931
       Caption         =   "kernel shape"
    End
@@ -530,7 +528,7 @@ Private Sub Form_Load()
     UpdateRadiusVisibility
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

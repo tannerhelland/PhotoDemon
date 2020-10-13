@@ -5,8 +5,8 @@ Begin VB.Form FormPerspective
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Perspective"
    ClientHeight    =   9060
-   ClientLeft      =   -15
-   ClientTop       =   225
+   ClientLeft      =   45
+   ClientTop       =   390
    ClientWidth     =   14175
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

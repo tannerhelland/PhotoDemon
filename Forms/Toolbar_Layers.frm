@@ -6,7 +6,7 @@ Begin VB.Form toolbar_Layers
    Caption         =   "Layers"
    ClientHeight    =   7245
    ClientLeft      =   0
-   ClientTop       =   -75
+   ClientTop       =   0
    ClientWidth     =   3735
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent

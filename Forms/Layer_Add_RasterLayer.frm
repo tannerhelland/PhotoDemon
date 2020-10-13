@@ -6,7 +6,7 @@ Begin VB.Form FormNewLayer
    Caption         =   " Add new layer"
    ClientHeight    =   6075
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9630
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form FormNewLayer
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdDropDown cboPosition 
       Height          =   375
       Left            =   480

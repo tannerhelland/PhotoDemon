@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormConvert24bpp 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Remove alpha channel"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   11820
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11310
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormConvert24bpp
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   788
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   754
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   11820
-      _ExtentX        =   20849
+      Width           =   11310
+      _ExtentX        =   19950
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -50,8 +47,8 @@ Begin VB.Form FormConvert24bpp
       Left            =   6000
       TabIndex        =   2
       Top             =   2160
-      Width           =   5535
-      _ExtentX        =   9763
+      Width           =   5055
+      _ExtentX        =   8916
       _ExtentY        =   2143
       Caption         =   "background color:"
    End
@@ -94,7 +91,7 @@ End Sub
 
 Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
 End Sub

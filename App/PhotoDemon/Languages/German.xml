@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.64</langversion>
+<langversion>9.0.85</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -173,12 +173,12 @@
 Lossless copies will be saved to the same folder as this initial image save.</original>
 <translation>Bevor verlustfreie Kopien gespeichert werden können, müssen Sie dieses Bild mindestens einmal speichern.
 
-Verlustfreie Kopien werden in demselben Ordner wie dieses initiale Bild gespeichert.</translation>
+Verlustfreie Kopien werden in demselben Ordner gespeichert wie dieses erstmalige Bild-Speichern.</translation>
 </phrase>
 
 <phrase>
 <original>Initial save required</original>
-<translation>Initiales Speichern erforderlich</translation>
+<translation>Erstmaliges Speichern erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -1713,7 +1713,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Vibrance</original>
-<translation>Dynamik</translation>
+<translation>Lebendigkeit</translation>
 </phrase>
 
 <phrase>
@@ -2003,12 +2003,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>Gradientenfluss</translation>
 </phrase>
 
 <phrase>
 <original>Range filter</original>
-<translation>Bereichsfilter </translation>
+<translation>Bereichsfilter</translation>
 </phrase>
 
 <phrase>
@@ -2521,7 +2521,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant konnte Datei nicht schreiben. Default 32bpp Bild wurde stattdessen gespeichert.</translation>
+<translation>PNGQuant konnte Datei nicht schreiben. Default-32bpp-Bild wurde stattdessen gespeichert.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -2914,7 +2914,7 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Beim Versuch dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plug-in meldete die folgenden Fehlerdetails:
+<translation>Beim Versuch dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plug-in hat die folgenden Fehlerdetails gemeldet:
 
 %1
 
@@ -2938,7 +2938,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als animiertes.</translation>
+<translation>Sie können fortfahren, das Bild wird aber als statisches Bild gespeichert, nicht als animiertes.</translation>
 </phrase>
 
 <phrase>
@@ -4110,7 +4110,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation>Dieses Bild hat noch keinen Dateinamen.</translation>
+<translation>Dieses Bild hat keinen Dateiname.</translation>
 </phrase>
 
 <phrase>
@@ -5712,12 +5712,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>vibrance</original>
-<translation>Dynamik</translation>
+<translation>Lebendigkeit</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting color vibrance</original>
-<translation>Farbdynamik wird angepasst</translation>
+<translation>Lebendigkeit der Farbe wird angepasst</translation>
 </phrase>
 
 <!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -5927,7 +5927,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>exposure compensation (stops)</original>
-<translation>Belichtungskorrektur (Stopps)</translation>
+<translation>Belichtungskompensation (Stopps)</translation>
 </phrase>
 
 <phrase>
@@ -7342,7 +7342,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Wenn Sie in der Mitte von etwas sind, fühlen Sie sich frei, weiter zu arbeiten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
+<translation>Wenn Sie in der Mitte von irgendetwas sind, fühlen Sie sich frei, weiter zu arbeiten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -7951,7 +7951,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>initial angle</original>
-<translation>Initialer Winkel</translation>
+<translation>Anfangswinkel</translation>
 </phrase>
 
 <phrase>
@@ -8223,7 +8223,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>render</original>
-<translation></translation>
+<translation>Rendern</translation>
 </phrase>
 
 <phrase>
@@ -8233,7 +8233,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>boost</original>
-<translation></translation>
+<translation>Verstärkung</translation>
 </phrase>
 
 <phrase>
@@ -8243,32 +8243,32 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>foreground color</original>
-<translation></translation>
+<translation>Vordergrundfarbe</translation>
 </phrase>
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation></translation>
+<translation>Gradientenfluss wird berechnet</translation>
 </phrase>
 
 <phrase>
 <original>magnitude</original>
-<translation></translation>
+<translation>Größenordnung (Magnitude)</translation>
 </phrase>
 
 <phrase>
 <original>direction</original>
-<translation></translation>
+<translation>Richtung</translation>
 </phrase>
 
 <phrase>
 <original>dynamic</original>
-<translation></translation>
+<translation>Dynamisch</translation>
 </phrase>
 
 <phrase>
 <original>static</original>
-<translation></translation>
+<translation>Statisch</translation>
 </phrase>
 
 <!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -8692,7 +8692,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rendering clouds</original>
-<translation>Wolken werden gerendert</translation>
+<translation>Rendering der Wolken</translation>
 </phrase>
 
 <phrase>
@@ -8714,7 +8714,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rendering fibers</original>
-<translation>Fasern werden gerendert</translation>
+<translation>Rendering der Fasern</translation>
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9262,22 +9262,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>add a prefix to each filename</original>
-<translation>Einen Präfix zu jedem Dateinamen hinzufügen</translation>
+<translation>Einen Präfix zu jedem Dateiname hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>add a suffix to each filename</original>
-<translation>Einen Suffix zu jedem Dateinamen hinzufügen</translation>
+<translation>Einen Suffix zu jedem Dateiname hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>remove the following text (if found) from each filename</original>
-<translation>Den folgenden Text (falls vorhanden) aus jedem Dateinamen entfernen</translation>
+<translation>Den folgenden Text (falls vorhanden) aus jedem Dateiname entfernen</translation>
 </phrase>
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>Jeden Dateinamen erzwingen, einschließlich Erweiterung in folgendem Fall</translation>
+<translation>Jeden Dateiname erzwingen, einschließlich Erweiterung in folgendem Fall</translation>
 </phrase>
 
 <phrase>
@@ -9481,7 +9481,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann irgendeine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie das Menü "Extras > Makros > Neues Makro aufzeichnen" im Haupt-PhotoDemon-Fenster verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist schlichtweg eine Liste von Fotobearbeitungsaktionen. Dies kann irgendeine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie das Menü "Extras > Makros > Neues Makro aufzeichnen" im Haupt-PhotoDemon-Fenster verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -9556,7 +9556,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien beim Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
+<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateiname haben und die Option "Original-Dateinamen" ausgewählt ist, werden solchen Dateien beim Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Original-Dateiname (2)").</translation>
 </phrase>
 
 <phrase>
@@ -10607,7 +10607,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>Der Fotoeditor - schnell, frei und portabel</translation>
+<translation>Der Foto-Editor - schnell, kostenlos, portabel</translation>
 </phrase>
 
 <phrase>
@@ -11511,7 +11511,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Sie haben den "sicheren" Speicher-Modus spezifiziert. Dies bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateinamen erstellen wird.</translation>
+<translation>Sie haben den "sicheren" Speicher-Modus spezifiziert, was bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateiname erstellen wird.</translation>
 </phrase>
 
 <phrase>
@@ -11526,12 +11526,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf, so können Sie einen neuen Dateinamen, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
+<translation>Der Befehl "Speichern unter" ruft immer einen Dialog auf, so können Sie einen neuen Dateiname, Ordner und/oder ein Bildformat für das aktuelle Bild spezifizieren.</translation>
 </phrase>
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation>Speichern unter (Export zu neuem Format oder Dateinamen)</translation>
+<translation>Speichern unter (Export in neues Format oder neuen Dateiname)</translation>
 </phrase>
 
 <phrase>
@@ -12091,7 +12091,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klick, um die Art zu ändern, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahl-Contents - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
+<translation>Klick, um die Art zu ändern, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keine Auswirkungen auf Auswahl-Contents - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
 
 <phrase>
@@ -12501,7 +12501,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation>Sie haben keinen Zugriff auf diesen Ordner. Bitte melden Sie sich als Administrator an und versuchen es erneut.</translation>
+<translation>Sie haben keinen Zugriff auf diesen Ordner. Bitte loggen Sie sich als Administrator ein und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -12857,12 +12857,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
-<translation></translation>
+<translation>Beim Schließen von Bildern vor ungesicherten Änderungen warnen</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation></translation>
+<translation>Bei Verwendung von "Speichern unter" das per Default vorgegebene Dateiformat setzen auf</translation>
 </phrase>
 
 <phrase>
@@ -12872,17 +12872,17 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>safe saving</original>
-<translation></translation>
+<translation>Sicheres Speichern</translation>
 </phrase>
 
 <phrase>
 <original>unsaved changes</original>
-<translation></translation>
+<translation>Ungesicherte Änderungen</translation>
 </phrase>
 
 <phrase>
 <original>default format</original>
-<translation></translation>
+<translation>Default-Format</translation>
 </phrase>
 
 <phrase>
@@ -12892,12 +12892,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>default folder</original>
-<translation></translation>
+<translation>Default-Ordner</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation></translation>
+<translation>Bei Verwendung von "Speichern unter" den Ausgangsordner setzen auf</translation>
 </phrase>
 
 <phrase>
@@ -13052,7 +13052,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>notify when an update is ready</original>
-<translation></translation>
+<translation>Benachrichtigen, wenn ein Update bereit steht</translation>
 </phrase>
 
 <phrase>
@@ -13074,7 +13074,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation>Alle Einstellungen werden auf deren defaultwerte zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.
+<translation>Alle Einstellungen werden auf deren Defaultwerte zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.
  
 Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
@@ -13131,7 +13131,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Das Menü "Zuletzt verwendete Dateien" wird von Windows in der Breite limitiert. Um das Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildorten.</translation>
+<translation>Das Menü "Zuletzt verwendete Dateien" wird von Windows in der Breite limitiert. Um ein Überlaufen dieses Menüs zu verhindern, kann PhotoDemon nur Bildnamen anzeigen anstelle von vollständigen Bildorten.</translation>
 </phrase>
 
 <phrase>
@@ -13186,7 +13186,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Defaultmäßig werden große Binär-Tags (wie Bild-Thumbnails) nicht verarbeitet. Stattdessen gibt PhotoDemon einfach die Größe der eingebetteten Daten an. Wenn Sie diese Daten benötigen, kann PhotoDemon diese zur weiteren Analyse manuell in Base64 konvertieren.</translation>
+<translation>Defaultmäßig werden große Binär-Tags (wie Bild-Thumbnails) nicht verarbeitet. Stattdessen meldet PhotoDemon schlichtweg die Größe der eingebetteten Daten. Wenn Sie diese Daten benötigen, kann PhotoDemon diese zur weiteren Analyse manuell in Base64 konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -13201,32 +13201,32 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>the current image's folder</original>
-<translation></translation>
+<translation>Ordner des aktuellen Bildes</translation>
 </phrase>
 
 <phrase>
 <original>the last-used folder</original>
-<translation></translation>
+<translation>Der zuletzt-verwendete Ordner</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation></translation>
+<translation>Die meisten Foto-Editoren greifen auf den Ordner des aktuellen Bildes zurück. Bei Workflows, die das Laden von Bildern aus einem Ordner, aber das Speichern in einem neuen Ordner involvieren, verwenden Sie den zuletzt-verwendeten Ordner, um Zeit zu sparen.</translation>
 </phrase>
 
 <phrase>
 <original>the current image's format</original>
-<translation></translation>
+<translation>Format des aktuellen Bildes</translation>
 </phrase>
 
 <phrase>
 <original>the last-used format</original>
-<translation></translation>
+<translation>Das zuletzt-verwendete Format</translation>
 </phrase>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation></translation>
+<translation>Die meisten Foto-Editoren greifen auf das Format des aktuellen Bildes zurück. Bei Workflows, die das Laden von Bildern in einem Format (z. B. RAW), aber das Speichern in einem neuen Format (z. B. JPEG) involvieren, verwenden Sie das zuletzt-verwendete Format, um Zeit zu sparen.</translation>
 </phrase>
 
 <phrase>
@@ -13241,7 +13241,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>In den meisten Fotoeditoren überschreibt der Befehl "Speichern" das Bild in seiner Original-Version, die Kopie wird für immer gelöscht. PhotoDemon bietet eine "sicherere" Option, wo jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
+<translation>In den meisten Foto-Editoren überschreibt der Befehl "Speichern" das Bild in seiner Original-Version, die Kopie wird für immer gelöscht. PhotoDemon bietet eine "sicherere" Option, wo jedes Speichern in einer neuen Kopie der Datei resultiert.</translation>
 </phrase>
 
 <phrase>
@@ -13392,14 +13392,14 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>In Developer-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Bugs stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird den Developern helfen, Ihr Problem zu lösen.</translation>
+<translation>In Developer-Builds werden Debug-Daten automatisch im Ordner \Data\Debug des Programms geloggt. Wenn Sie in einem stabilen Release auf Bugs stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird den Developern helfen, Ihr Problem zu lösen.</translation>
 </phrase>
 
 <phrase>

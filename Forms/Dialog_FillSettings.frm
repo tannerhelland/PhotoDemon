@@ -6,7 +6,7 @@ Begin VB.Form dialog_FillSettings
    Caption         =   "Fill settings"
    ClientHeight    =   8820
    ClientLeft      =   45
-   ClientTop       =   375
+   ClientTop       =   390
    ClientWidth     =   12270
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form dialog_FillSettings
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picBrushPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True

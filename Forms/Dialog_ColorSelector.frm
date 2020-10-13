@@ -6,7 +6,7 @@ Begin VB.Form dialog_ColorSelector
    Caption         =   " Change color"
    ClientHeight    =   6045
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   11535
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -26,7 +26,6 @@ Begin VB.Form dialog_ColorSelector
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin PhotoDemon.pdHistory hstColors 
       Height          =   900
       Left            =   5070

@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormGlassTiles 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Glass tiles"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12090
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11775
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,16 +23,14 @@ Begin VB.Form FormGlassTiles
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   785
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Width           =   11775
+      _ExtentX        =   20770
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltAngle 
@@ -41,9 +38,9 @@ Begin VB.Form FormGlassTiles
       Left            =   6000
       TabIndex        =   2
       Top             =   360
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "angle"
       Min             =   -45
       Max             =   45
@@ -65,9 +62,9 @@ Begin VB.Form FormGlassTiles
       Left            =   6000
       TabIndex        =   3
       Top             =   1440
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "size"
       Min             =   1
       Max             =   100
@@ -81,9 +78,9 @@ Begin VB.Form FormGlassTiles
       Left            =   6000
       TabIndex        =   4
       Top             =   2520
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "curvature"
       Min             =   -20
       Max             =   20
@@ -96,9 +93,9 @@ Begin VB.Form FormGlassTiles
       Left            =   6000
       TabIndex        =   6
       Top             =   3600
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1244
       Caption         =   "quality"
       Min             =   1
       Max             =   5
@@ -111,8 +108,8 @@ Begin VB.Form FormGlassTiles
       Left            =   6000
       TabIndex        =   5
       Top             =   4680
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
    End
@@ -409,7 +406,7 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, pdeo_Reflect
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

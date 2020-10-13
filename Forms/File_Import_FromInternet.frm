@@ -6,7 +6,7 @@ Begin VB.Form FormInternetImport
    Caption         =   "Download image"
    ClientHeight    =   2685
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   10050
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

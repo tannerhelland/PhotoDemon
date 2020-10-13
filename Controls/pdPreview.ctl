@@ -639,6 +639,10 @@ Public Sub NotifyNonStandardSource(ByVal srcWidth As Long, ByVal srcHeight As Lo
     CalculateScrollMaxMin
 End Sub
 
+Public Sub RequestImmediateRefresh()
+    UpdateControlLayout True
+End Sub
+
 Private Sub CalculateScrollMaxMin()
     
     Dim maxHOffset As Long, maxVOffset As Long
@@ -664,13 +668,32 @@ Private Sub CalculateScrollMaxMin()
 End Sub
 
 'After a resize or paint request, update the layout of our control
-Private Sub UpdateControlLayout()
+Private Sub UpdateControlLayout(Optional ByVal forceResetOfSizeParams As Boolean = False)
+    
+    Dim origWidth As Long, origHeight As Long
+    origWidth = m_PreviewAreaWidth
+    origHeight = m_PreviewAreaHeight
     
     'Cache DPI-aware control dimensions from the support class
     m_PreviewAreaWidth = ucSupport.GetControlWidth - BORDER_PADDING * 2
     m_PreviewAreaHeight = ucSupport.GetControlHeight - BORDER_PADDING * 2
     
     CalculateScrollMaxMin
+    
+    'If our original and new sizes don't match, request an immediate redraw.
+    ' (We also need to change our unique ID, so the preview engine knows to recreate the base preview DIB;
+    ' the forceResetOfSizeParams will be set to TRUE if our parent window just notified us of a window-resize-end
+    ' event via WM_EXITSIZEMOVE message.)
+    If (origWidth <> m_PreviewAreaWidth) Or (origHeight <> m_PreviewAreaHeight) Or forceResetOfSizeParams Then
+        
+        If (Not Interface.GetDialogResizeFlag()) Or forceResetOfSizeParams Then
+            m_HasOriginal = False
+            m_HasFX = False
+            m_UniqueID = m_UniqueID - 0.1
+            RaiseEvent ViewportChanged
+        End If
+        
+    End If
     
 End Sub
 
@@ -731,24 +754,25 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         'Images smaller than the target area in one (or more) dimensions need to be centered in the target area
         Dim previewX As Long, previewY As Long
         If (srcAspect > dstAspect) Then
-            previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
+            previewY = Int((dstHeight - finalHeight) / 2 + 0.5) + BORDER_PADDING
             If (finalWidth = dstWidth) Then
                 previewX = BORDER_PADDING
             Else
-                previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
+                previewX = Int((dstWidth - finalWidth) / 2 + 0.5) + BORDER_PADDING
             End If
         Else
-            previewX = Int((dstWidth - finalWidth) / 2) + BORDER_PADDING
+            previewX = Int((dstWidth - finalWidth) / 2 + 0.5) + BORDER_PADDING
             If (finalHeight = dstHeight) Then
                 previewY = BORDER_PADDING
             Else
-                previewY = Int((dstHeight - finalHeight) / 2) + BORDER_PADDING
+                previewY = Int((dstHeight - finalHeight) / 2 + 0.5) + BORDER_PADDING
             End If
         End If
         
         Dim ctlBackColor As Long, ctlBorderColor As Long
         ctlBackColor = m_Colors.RetrieveColor(PDP_PreviewBackground, True)
         
+        'When the control is hovered, we use an accent color and a chunky border to convey it to the user
         Dim hoverMatters As Boolean, borderWidth As Single
         borderWidth = 1!
         hoverMatters = AllowColorSelection Or AllowPointSelection Or (AllowZoomPan And Not ViewportFitFullImage)
@@ -758,7 +782,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         End If
         ctlBorderColor = m_Colors.RetrieveColor(PDP_PreviewBorder, True, , hoverMatters)
         
-        'We now have a set of source and destination coordinates, allowing us to perform a StretchBlt-style copy
+        'Use pd2D to fill the background of this window with the background color, followed by a checkerboard
         Dim dstSurface As pd2DSurface: Set dstSurface = New pd2DSurface
         dstSurface.WrapSurfaceAroundDC bufferDC
         dstSurface.SetSurfaceAntialiasing P2_AA_None
@@ -767,7 +791,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         If (m_Brush Is Nothing) Then Set m_Brush = New pd2DBrush
         m_Brush.SetBrushColor ctlBackColor
         PD2D.FillRectangleI dstSurface, m_Brush, BORDER_PADDING, BORDER_PADDING, m_PreviewAreaWidth, m_PreviewAreaHeight
-        PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, Int(previewX), Int(previewY), Int(PDMath.Frac(previewX) + finalWidth + 0.99999), Int(PDMath.Frac(previewY) + finalHeight + 0.99999)
+        PD2D.FillRectangleI dstSurface, g_CheckerboardBrush, previewX, previewY, finalWidth, finalHeight
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
         Dim isZoomedIn As Boolean
@@ -782,20 +806,25 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         
         Dim srcSurface As pd2DSurface: Set srcSurface = New pd2DSurface
         srcSurface.WrapSurfaceAroundPDDIB srcDIB
+        srcSurface.SetSurfaceAntialiasing P2_AA_None
+        srcSurface.SetSurfacePixelOffset P2_PO_Normal
         PD2D.DrawSurfaceResizedCroppedI dstSurface, previewX, previewY, finalWidth, finalHeight, srcSurface, 0, 0, srcWidth, srcHeight
         Set srcSurface = Nothing
         srcDIB.FreeFromDC
         
         'We also draw a border around the final result
         Dim halfBorder As Long
-        halfBorder = BORDER_PADDING \ 2
+        halfBorder = Int(BORDER_PADDING / 2 + 0.5)
+        
         If (m_Pen Is Nothing) Then
             Set m_Pen = New pd2DPen
             m_Pen.SetPenLineJoin P2_LJ_Miter
         End If
         m_Pen.SetPenColor ctlBorderColor
         m_Pen.SetPenWidth borderWidth
-        PD2D.DrawRectangleI_AbsoluteCoords dstSurface, m_Pen, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder
+        
+        dstSurface.SetSurfacePixelOffset P2_PO_Normal
+        PD2D.DrawRectangleI_AbsoluteCoords dstSurface, m_Pen, halfBorder, halfBorder, (bWidth - 1) - halfBorder, (bHeight - 1) - halfBorder
         Set dstSurface = Nothing
         
         'Paint the results to the screen!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)

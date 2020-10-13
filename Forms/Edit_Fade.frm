@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormFadeLast 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Fade"
    ClientHeight    =   6525
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12315
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11295
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,26 +23,24 @@ Begin VB.Form FormFadeLast
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   821
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   753
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   735
       Left            =   6000
       TabIndex        =   1
       Top             =   2880
-      Width           =   6135
-      _ExtentX        =   10821
+      Width           =   5055
+      _ExtentX        =   8916
       _ExtentY        =   1296
       Caption         =   "blend mode"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   12315
-      _ExtentX        =   21722
+      Width           =   11295
+      _ExtentX        =   19923
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
@@ -60,9 +57,9 @@ Begin VB.Form FormFadeLast
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
-      Width           =   6135
-      _ExtentX        =   10821
-      _ExtentY        =   1270
+      Width           =   5055
+      _ExtentX        =   8916
+      _ExtentY        =   1244
       Caption         =   "opacity"
       Min             =   1
       Max             =   100
@@ -148,7 +145,7 @@ Private Sub Form_Load()
     m_curLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).layerDIB
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

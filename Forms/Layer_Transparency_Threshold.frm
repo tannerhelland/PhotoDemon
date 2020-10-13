@@ -2,12 +2,11 @@ VERSION 5.00
 Begin VB.Form FormThresholdAlpha 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Threshold alpha"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   12150
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   11790
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,15 +23,14 @@ Begin VB.Form FormThresholdAlpha
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   810
-   ShowInTaskbar   =   0   'False
+   ScaleWidth      =   786
    Begin PhotoDemon.pdColorSelector csMatte 
       Height          =   975
       Left            =   6000
       TabIndex        =   5
       Top             =   3600
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1720
       Caption         =   "matte"
    End
@@ -41,8 +39,8 @@ Begin VB.Form FormThresholdAlpha
       Left            =   6000
       TabIndex        =   4
       Top             =   2640
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1508
       Caption         =   "dithering amount"
       Max             =   100
@@ -55,8 +53,8 @@ Begin VB.Form FormThresholdAlpha
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
-      Width           =   6015
-      _ExtentX        =   10610
+      Width           =   5535
+      _ExtentX        =   9763
       _ExtentY        =   1508
       Caption         =   "dithering"
    End
@@ -65,8 +63,8 @@ Begin VB.Form FormThresholdAlpha
       Left            =   6000
       TabIndex        =   2
       Top             =   840
-      Width           =   6045
-      _ExtentX        =   10663
+      Width           =   5565
+      _ExtentX        =   9816
       _ExtentY        =   1244
       Caption         =   "threshold"
       Min             =   1
@@ -85,13 +83,12 @@ Begin VB.Form FormThresholdAlpha
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12150
-      _ExtentX        =   21431
+      Width           =   11790
+      _ExtentX        =   20796
       _ExtentY        =   1323
    End
 End
@@ -171,7 +168,7 @@ Private Sub Form_Load()
     cboDither.ListIndex = 6
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     

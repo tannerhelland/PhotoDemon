@@ -6,7 +6,7 @@ Begin VB.Form dialog_ColorPanel
    Caption         =   " Color panel settings"
    ClientHeight    =   4155
    ClientLeft      =   45
-   ClientTop       =   315
+   ClientTop       =   390
    ClientWidth     =   9045
    DrawStyle       =   5  'Transparent
    BeginProperty Font 

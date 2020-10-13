@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormPalettize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Palettize"
    ClientHeight    =   7710
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12315
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,7 +24,6 @@ Begin VB.Form FormPalettize
    ScaleHeight     =   514
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   615
       Left            =   5880
@@ -36,7 +34,6 @@ Begin VB.Form FormPalettize
       _ExtentY        =   1085
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
-      Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
@@ -422,7 +419,7 @@ Private Sub Form_Load()
     ReflowFirstPanel
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     cmdBar.SetPreviewStatus True
     UpdatePreview
     
