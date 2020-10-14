@@ -153,17 +153,37 @@ End Sub
 '
 'Note: this function only takes one set of input histogram data, so if you want images for both log and non-log variants,
 ' you'll need to call this function *twice*, once for each set.
-Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelMax() As Long, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long)
+Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelMax() As Long, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long, Optional ByVal paintBorder As Boolean = False)
     
     'The incoming histogramData() and channelMax() arrays are already filled, and must not be modified.
     
     'The DIBs, however, are fully under our control
     ReDim dstDIBs(0 To 3) As pdDIB
     
-    Dim tmpPath As pd2DPath, histogramShape() As PointFloat
-    Dim hColor As Long
-    Dim i As Long, j As Long
-    Dim yMax As Double
+    Dim tmpImage As pdDIB
+    Dim cCompositor As pdCompositor
+    Set cCompositor = New pdCompositor
+    
+    'Width/height padding for the histogram image itself
+    Const HIST_WIDTH_PADDING As Single = 2!
+    Const HIST_HEIGHT_PADDING As Single = 4!
+    
+    'tHeight is used to determine the height of the maximum value in the histogram.  We want it to be slightly
+    ' shorter than the height of the picture box; this way the tallest histogram value fills the entire box
+    Dim dstWidth As Single, dstHeight As Single
+    dstWidth = imgWidth - HIST_WIDTH_PADDING * 2
+    dstHeight = imgHeight - HIST_HEIGHT_PADDING * 2
+    
+    'pd2D will be used for rendering, so we simply need to construct a polyline for it to draw.
+    ' If the user wants us to *fill* the histogram, we will need to add corner points to the
+    ' finished line to construct a filled shape - two extra points exist so that the left and right
+    ' histogram points extend to the edge of the image (so 255 + 2), plus another 2 points for the
+    ' bottom two corners (255 + 2 + 2.)
+    Dim listOfPoints() As PointFloat
+    ReDim listOfPoints(0 To 259) As PointFloat
+    
+    Dim i As Long, j As Long, k As Long
+    Dim curChannelMax As Long, targetColor As Long
     
     'Build a look-up table of x-positions for the histogram data; these are equally distributed across the width of
     ' the target image (with a little room left for padding).
@@ -175,79 +195,108 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
     
     Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
     
+    'Find the max of all channels
+    curChannelMax = PDMath.Max3Int(channelMax(0), channelMax(1), channelMax(2))
+    If (curChannelMax = 0) Then curChannelMax = 1
+    
     For i = 0 To 3
         
         'Initialize this channel's DIB
         Set dstDIBs(i) = New pdDIB
-        dstDIBs(i).CreateBlank imgWidth, imgHeight, 32, vbBlack
+        dstDIBs(i).CreateBlank imgWidth, imgHeight, 32, 0, 0
         
-        yMax = 0.9 * imgHeight
-        
-        'The color of the histogram changes for each channel
-        Select Case i
-        
-            'Red
-            Case 0
-                hColor = RGB(255, 60, 80)
+        'Individual color channels are handled differently from the "merged" RGB channel
+        If (i < 3) Then
             
-            'Green
-            Case 1
-                hColor = RGB(60, 210, 80)
+            'The color of the histogram changes for each channel
+            Select Case i
+                Case 0
+                    targetColor = g_Themer.GetGenericUIColor(UI_ChannelRed)
+                Case 1
+                    targetColor = g_Themer.GetGenericUIColor(UI_ChannelGreen)
+                Case 2
+                    targetColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
+            End Select
             
-            'Blue
-            Case 2
-                hColor = RGB(60, 100, 255)
+            'Iterate through the histogram and construct a matching on-screen point for each value
+            For j = 0 To 255
+                listOfPoints(j + 1).x = HIST_WIDTH_PADDING + (CSng(j) * dstWidth) / 255!
+                listOfPoints(j + 1).y = HIST_HEIGHT_PADDING + (dstHeight - (histogramData(i, j) * dstHeight) / curChannelMax)
+            Next j
             
-            'Luminance
-            Case 3
-                hColor = RGB(66, 74, 74)
+            'Manually populate the first and last points
+            listOfPoints(0).x = 0!
+            listOfPoints(0).y = listOfPoints(1).y
+            listOfPoints(257).x = imgWidth
+            listOfPoints(257).y = listOfPoints(256).y
+            
+            'Also fill in the end points of the polyline, so we can treat it as a polygon
+            listOfPoints(258).x = imgWidth
+            listOfPoints(258).y = imgHeight
+            listOfPoints(259).x = 0!
+            listOfPoints(259).y = imgHeight
+            
+            'Assemble a drawing surface
+            Drawing2D.QuickCreateSurfaceFromDIB cSurface, dstDIBs(i), True
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            
+            'Construct a matching fill brush, then fill the histogram region
+            Drawing2D.QuickCreateSolidBrush cBrush, targetColor, 15!
+            PD2D.FillPolygonF_FromPtF cSurface, cBrush, 260, VarPtr(listOfPoints(0)), True
+            
+            'Next, stroke the outline, then free all rendering objects
+            Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, 100!, P2_LJ_Round
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, 260, VarPtr(listOfPoints(0)), True
+            cSurface.ReleaseSurface
+            
+            'Mark the DIB's alpha state
+            dstDIBs(i).SetInitialAlphaPremultiplicationState True
         
-        
-        End Select
-                
-        'New strategy!  Use the awesome pd2DPath class to construct a matching polygon for each histogram.
-        ' Then, stroke and fill the polygon in one fell swoop (much faster).
-        ReDim histogramShape(0 To 260) As PointFloat
-        
-        For j = 0 To 255
-            histogramShape(j).x = hLookupX(j)
-            If (channelMax(i) > 0) Then
-                histogramShape(j).y = imgHeight - (histogramData(i, j) / channelMax(i)) * yMax
-            Else
-                histogramShape(j).y = imgHeight - yMax
-            End If
-        Next j
-        
-        'Complete each shape by tracing the outline of the DIB
-        histogramShape(256).x = imgWidth + 1
-        histogramShape(256).y = imgHeight
-        histogramShape(257).x = imgWidth
-        histogramShape(257).y = imgHeight + 1
-        
-        histogramShape(258).x = 0
-        histogramShape(258).y = imgHeight
-        histogramShape(259).x = -1
-        histogramShape(259).y = imgHeight + 1
-        
-        'Populate shape objects using those point lists
-        Set tmpPath = New pd2DPath
-        tmpPath.AddPolygon 260, VarPtr(histogramShape(0)), True, True
-        
-        'Prep pens and brushes in the current color
-        Drawing2D.QuickCreateSolidPen cPen, 1#, hColor, 100#, P2_LJ_Round, P2_LC_Round
-        Drawing2D.QuickCreateSolidBrush cBrush, hColor, 25#
-        
-        'Render the paths to their target DIBs
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIBs(i).GetDIBDC, True
-        PD2D.FillPath cSurface, cBrush, tmpPath
-        PD2D.DrawPath cSurface, cPen, tmpPath
-        
-        'Mark alpha premultiplication status
-        dstDIBs(i).SetInitialAlphaPremultiplicationState True
+        'For the "merged" RGB image, we want to merge all three channel DIBs together,
+        ' but we need to rebuild them against the max of *all* channels
+        Else
+            
+            'Prepare a "temporary" DIB to receive the merged image
+            Set tmpImage = New pdDIB
+            tmpImage.CreateBlank imgWidth, imgHeight, 32, 0, 0
+            tmpImage.SetInitialAlphaPremultiplicationState True
+            
+            'Merge all previous images onto it
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(0), BM_Screen
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(1), BM_Screen
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(2), BM_Screen
+            
+            'Fill the target DIB with the current background UI color, then blend the
+            ' final result onto it
+            dstDIBs(i).FillWithColor g_Themer.GetGenericUIColor(UI_Background), 100!
+            tmpImage.AlphaBlendToDC dstDIBs(i).GetDIBDC
+            
+        End If
         
     Next i
     
-    'All pd2D paint objects are self-freeing
+    'Finalize the individual channel DIBs by merging them onto the current theme background color
+    For i = 0 To 2
+        tmpImage.FillWithColor g_Themer.GetGenericUIColor(UI_Background), 100!
+        dstDIBs(i).AlphaBlendToDC tmpImage.GetDIBDC
+        dstDIBs(i).CreateFromExistingDIB tmpImage
+    Next i
+    
+    'If the caller wants us to paint a border, do that last
+    If paintBorder Then
+        
+        cPen.SetPenWidth 1!
+        cPen.SetPenColor g_Themer.GetGenericUIColor(UI_GrayNeutral)
+        cPen.SetPenLineJoin P2_LJ_Miter
+        
+        For i = 0 To 3
+            cSurface.WrapSurfaceAroundPDDIB dstDIBs(i)
+            cSurface.SetSurfaceAntialiasing P2_AA_None
+            cSurface.SetSurfacePixelOffset P2_PO_Normal
+            PD2D.DrawRectangleI cSurface, cPen, 0, 0, imgWidth - 1, imgHeight - 1
+        Next i
+    
+    End If
     
 End Sub
 
