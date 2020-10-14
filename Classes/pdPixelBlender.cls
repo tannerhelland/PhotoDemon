@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Blender class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 05/April/20
+'Last updated: 14/October/20
 'Last update: ongoing performance improvements
 '
 'This class exists for a single purpose: blending colors from two DIBs, using any of the
@@ -41,7 +41,7 @@ Private m_topDIBCopy As pdDIB
 ' After the blend, we restore the original values (regardless of any changes caused by the blend).
 Private m_AlphaCopy() As Byte
 
-Private Const ONE_DIV_255 As Double = 1# / 255#
+Private Const ONE_DIV_255 As Single = 1! / 255!
 
 'Given two DIBs, blend them together and place the result inside the bottom DIB.
 ' IMPORTANT NOTES FOR THIS FUNCTION:
@@ -295,8 +295,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
         intToFloat(i) = CSng(i) * ONE_DIV_255
@@ -387,8 +386,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         
         'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
         ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-        Dim intToFloat() As Single
-        ReDim intToFloat(0 To 255) As Single
+        Dim intToFloat(0 To 255) As Single
         Dim i As Long
         For i = 0 To 255
             intToFloat(i) = CSng(i) * ONE_DIV_255
@@ -615,8 +613,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
         intToFloat(i) = CSng(i) * ONE_DIV_255
@@ -742,11 +739,10 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -884,11 +880,10 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1026,11 +1021,10 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1151,11 +1145,10 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1279,11 +1272,10 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1419,11 +1411,10 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1518,11 +1509,10 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1643,11 +1633,10 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1783,11 +1772,10 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -1923,11 +1911,10 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2048,11 +2035,10 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2173,8 +2159,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
         intToFloat(i) = CSng(i) * ONE_DIV_255
@@ -2299,11 +2284,10 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2424,11 +2408,10 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2552,11 +2535,10 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2680,11 +2662,10 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2823,11 +2804,10 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2950,11 +2930,10 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3075,11 +3054,10 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3200,11 +3178,10 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3325,11 +3302,10 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3451,11 +3427,10 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3496,7 +3471,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If (topAInt <> 0#) Then
+        If (topAInt <> 0) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
@@ -3521,11 +3496,11 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1#) Then
+                If (topA <> 1!) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1#) Then
+                If (bottomA <> 1!) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -3541,7 +3516,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1#) Then
+                If (bottomA <> 1!) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -3549,7 +3524,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255#
+                topA = topA * 255!
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -3581,11 +3556,10 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3706,11 +3680,10 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -3834,11 +3807,10 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
+    Dim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i * (1# / 255#)
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
