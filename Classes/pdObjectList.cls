@@ -611,7 +611,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'Immediately notify the preview control, if any, of the finished resize event; it will use
         ' this to immediately generate a new preview.
-        If (m_PreviewIndex <> 0) Then SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
+        If (m_PreviewIndex >= 0) Then SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
      
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then
