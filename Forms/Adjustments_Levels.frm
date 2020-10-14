@@ -86,40 +86,28 @@ Begin VB.Form FormLevels
       Top             =   2790
       Width           =   7095
    End
-   Begin VB.PictureBox picHistogram 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picHistogram 
       Height          =   2295
       Left            =   6000
-      ScaleHeight     =   151
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   444
-      TabIndex        =   10
       Top             =   480
       Width           =   6690
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
-   Begin VB.PictureBox picOutputGradient 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBox picOutputGradient 
       Height          =   375
       Left            =   6000
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   444
-      TabIndex        =   9
       Top             =   4200
       Width           =   6690
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   3240
+      Top             =   3270
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -142,14 +130,13 @@ Begin VB.Form FormLevels
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   1
       Left            =   8760
       TabIndex        =   5
-      Top             =   3240
+      Top             =   3270
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -164,7 +151,7 @@ Begin VB.Form FormLevels
       Index           =   2
       Left            =   11490
       TabIndex        =   6
-      Top             =   3240
+      Top             =   3270
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -178,7 +165,7 @@ Begin VB.Form FormLevels
       Index           =   3
       Left            =   6000
       TabIndex        =   7
-      Top             =   5040
+      Top             =   5070
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -189,7 +176,7 @@ Begin VB.Form FormLevels
       Index           =   4
       Left            =   11355
       TabIndex        =   8
-      Top             =   5040
+      Top             =   5070
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -210,7 +197,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   1080
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   9
       Top             =   5520
       Width           =   6675
       _ExtentX        =   11774
@@ -221,7 +208,7 @@ Begin VB.Form FormLevels
       Height          =   375
       Index           =   1
       Left            =   10530
-      TabIndex        =   16
+      TabIndex        =   10
       Top             =   3255
       Width           =   375
       _ExtentX        =   661
@@ -340,13 +327,9 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     m_curChannel = buttonIndex
     
     'Draw the relevant histogram onto the histogram box
-    On Error GoTo IgnoreChannelRender
-    picHistogram.Picture = LoadPicture(vbNullString)
-    If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
-    picHistogram.Picture = picHistogram.Image
+    picHistogram.RequestRedraw
     
     'Update the text boxes to match the values for the selected channel
-IgnoreChannelRender:
     UpdateTextBoxes
     
     'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
@@ -745,7 +728,9 @@ Private Sub UpdateTextBoxes()
 End Sub
 
 Private Sub cmdColorSelect_Click(Index As Integer, ByVal Shift As ShiftConstants)
-
+    
+    pdFxPreview.AllowColorSelection = (cmdColorSelect(0).Value Or cmdColorSelect(1).Value)
+    
     If cmdBar.PreviewsAllowed Then
     
         cmdBar.SetPreviewStatus False
@@ -1084,7 +1069,7 @@ Private Sub PrepHistogramOverlays()
     Histograms.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
     'Use that data to generate DIBs for the histogram data
-    Histograms.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
+    Histograms.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.GetWidth, picHistogram.GetHeight, True
     
 End Sub
 
@@ -1117,12 +1102,11 @@ Private Sub Form_Load()
     
     'Add button images
     Dim dropperSize As Long
-    dropperSize = FixDPI(16)
+    dropperSize = Interface.FixDPI(16)
     cmdColorSelect(0).AssignImage "generic_dropper", , dropperSize, dropperSize
     cmdColorSelect(1).AssignImage "generic_dropper", , dropperSize, dropperSize
     cmdColorSelect(0).AssignTooltip "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
     cmdColorSelect(1).AssignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
-    cmdColorSelect(0).Value = True
     
     'Note that the user is not currently interacting with a slider node
     m_HoverArrow = -1
@@ -1143,9 +1127,7 @@ Private Sub Form_Load()
     btsChannel.ListIndex = m_curChannel
     
     'Draw the default histogram onto the histogram box
-    picHistogram.Picture = LoadPicture(vbNullString)
-    If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
-    picHistogram.Picture = picHistogram.Image
+    picHistogram.RequestRedraw
     
     'Store the arrow dimensions
     m_ArrowWidth = LEVEL_NODE_WIDTH
@@ -1153,24 +1135,8 @@ Private Sub Form_Load()
         
     'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
     ' right borders of the desired area, so that the edges of the slider images are not cropped.
-    m_DstArrowBoxWidth = picHistogram.ScaleWidth
-    m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
-    
-    'Render sample gradients for input/output levels
-    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-    Dim boundsRectF As RectF
-    With boundsRectF
-        .Left = 0
-        .Top = 0
-        .Height = picOutputGradient.ScaleHeight
-        .Width = picOutputGradient.ScaleWidth
-    End With
-    
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
-    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
-    PD2D.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
-    Set cSurface = Nothing: Set cBrush = Nothing
-    picOutputGradient.Picture = picOutputGradient.Image
+    m_DstArrowBoxWidth = picHistogram.GetWidth - 2
+    m_DstArrowBoxOffset = picHistogram.GetLeft - picInputArrows.Left + 1
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me, True, True
@@ -1399,8 +1365,8 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         
         'Finally, some generic scale factors to simplify the process of positioning nodes (who store their positions on the range [0, 1])
         Dim hOffset As Single, hScaleFactor As Single
-        hOffset = scaleX((picHistogram.Left - picInputArrows.Left), vbTwips, vbPixels) + 1
-        hScaleFactor = (picHistogram.ScaleWidth - 1)
+        hOffset = picHistogram.GetLeft - scaleX(picInputArrows.Left, vbTwips, vbPixels) + 1
+        hScaleFactor = (picHistogram.GetWidth - 3)
         
         '...and pen/fill objects for the actual rendering
         Dim blockFill As pd2DBrush
@@ -1527,6 +1493,39 @@ End Sub
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
+End Sub
+
+Private Sub picHistogram_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    On Error GoTo IgnoreChannelRender
+    If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC targetDC
+IgnoreChannelRender:
+End Sub
+
+Private Sub picOutputGradient_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+
+    'Render sample gradients for input/output levels
+    Dim boundsRectF As RectF
+    With boundsRectF
+        .Left = 0
+        .Top = 0
+        .Height = picOutputGradient.GetHeight
+        .Width = picOutputGradient.GetWidth
+    End With
+    
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC, False
+    
+    Dim cBrush As pd2DBrush
+    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
+    
+    Dim cPen As pd2DPen
+    Drawing2D.QuickCreateSolidPen cPen, penColor:=g_Themer.GetGenericUIColor(UI_GrayNeutral)
+    
+    With boundsRectF
+        PD2D.DrawRectangleF cSurface, cPen, .Left, .Top, .Width - 1!, .Height - 1!
+    End With
+    
 End Sub
 
 Private Sub tudLevels_Change(Index As Integer)

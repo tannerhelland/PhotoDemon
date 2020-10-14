@@ -319,8 +319,8 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, False, False
-    ucSupport.RequestExtraFunctionality True, , , False
+    ucSupport.RegisterControl UserControl.hWnd, True, False
+    ucSupport.RequestExtraFunctionality True
     
 End Sub
 

@@ -923,7 +923,7 @@ CouldNotCreateDIB:
 End Function
 
 'Replace the entire DIB's contents with some solid color
-Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0#)
+Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0!)
 
     'If the DIB is 24bpp, apply the background color now
     If (m_dibColorDepth = 24) Then
@@ -949,10 +949,11 @@ Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
         'Just like the 24-bpp block above, we can cheat with black and white values in 32-bpp mode too,
         ' BUT ONLY if the alpha byte value matches.
         Dim fillAlphaL As Long
-        fillAlphaL = fillAlpha * 2.55
+        fillAlphaL = Int(fillAlpha * 2.55! + 0.5!)
         
         If ((fillColor = vbWhite) And (fillAlphaL = 255)) Then
             Me.ResetDIB 255
+            m_IsAlphaPremultiplied = True
         Else
             
             Me.ResetDIB 0

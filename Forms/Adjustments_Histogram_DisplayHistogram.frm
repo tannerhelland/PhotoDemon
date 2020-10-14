@@ -459,7 +459,7 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
                 m_hMax = m_channelMax(hType)
                 m_hMaxLog = m_channelMaxLog(hType)
             End If
-    
+            
             'Iterate through the histogram and construct a matching on-screen point for each value
             Dim x As Long
             For x = 0 To 255
@@ -497,7 +497,7 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
                 Drawing2D.QuickCreateSolidBrush cBrush, targetColor, 15!
                 
                 'Fill the histogram region
-                PD2D.FillPolygonF_FromPtF cSurface, cBrush, 260, VarPtr(listOfPoints(0))
+                PD2D.FillPolygonF_FromPtF cSurface, cBrush, 260, VarPtr(listOfPoints(0)), True
                 
                 Set cBrush = Nothing
             
@@ -507,7 +507,7 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
             Dim cPen As pd2DPen
             Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, , P2_LJ_Round
             
-            PD2D.DrawLinesF_FromPtF cSurface, cPen, 258, VarPtr(listOfPoints(0)), False
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, 258, VarPtr(listOfPoints(0)), True
             
             Set cSurface = Nothing
             Set cPen = Nothing
