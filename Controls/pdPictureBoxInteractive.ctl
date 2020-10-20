@@ -54,7 +54,10 @@ Public Event DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHei
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
+
 Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
 
@@ -281,6 +284,14 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
     
 End Sub
 
+Public Sub SetCursorCustom(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
+    ucSupport.RequestCursor standardCursorType
+End Sub
+
+Public Sub SetCursorCustom_Resource(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+    ucSupport.RequestCursor_Resource pngResourceName, cursorHotspotX, cursorHotspotY
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
     RedrawBackBuffer
@@ -297,6 +308,11 @@ End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_ARROW
+    RaiseEvent MouseEnter(Button, Shift, x, y)
+End Sub
+
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)

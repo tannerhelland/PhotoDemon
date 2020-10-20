@@ -48,7 +48,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.pdColorSelector csShadow 
       Height          =   375
       Left            =   7230
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   3255
       Width           =   495
       _ExtentX        =   873
@@ -56,35 +56,21 @@ Begin VB.Form FormLevels
       curColor        =   0
       ShowMainWindowColor=   0   'False
    End
-   Begin VB.PictureBox picOutputArrows 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBoxInteractive picOutputArrows 
       Height          =   360
       Left            =   5760
-      ScaleHeight     =   24
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
-      TabIndex        =   12
       Top             =   4590
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
-   Begin VB.PictureBox picInputArrows 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdPictureBoxInteractive picInputArrows 
       Height          =   360
       Left            =   5760
-      ScaleHeight     =   24
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
-      TabIndex        =   11
       Top             =   2790
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
    Begin PhotoDemon.pdPictureBox picHistogram 
       Height          =   2295
@@ -187,7 +173,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.pdColorSelector csHighlight 
       Height          =   375
       Left            =   10920
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   3255
       Width           =   495
       _ExtentX        =   873
@@ -249,8 +235,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright 2006-2020 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 27/April/20
-'Last update: minor perf improvements
+'Last updated: 15/October/20
+'Last update: migrate remaining UI to elements to PD's internal toolkit
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool,
 ' and identical values entered into both programs should yield a roughly identical image.
@@ -298,11 +284,8 @@ Private m_curChannel As Long
 ' The layout of this array is [channel R/G/B/L, level adjustment].
 Private m_LevelValues(0 To 3, 0 To 4) As Double
 
-'Two special input classes are required; one each for the input and output arrow boxes
-Private WithEvents m_MouseEventsIn As pdInputMouse
-Attribute m_MouseEventsIn.VB_VarHelpID = -1
-Private WithEvents m_MouseEventsOut As pdInputMouse
-Attribute m_MouseEventsOut.VB_VarHelpID = -1
+'Persistent DIBs are stored for the back buffers of the interactive picture boxes
+Private m_InputDIB As pdDIB, m_OutputDIB As pdDIB
 
 'When the user is interacting with input or output level nodes, these values are updated to match.
 ' (Note that the same [0, 4] indices are used to identify these nodes; also, these are set to -1
@@ -753,199 +736,13 @@ Private Sub Form_Activate()
     FixScrollBars
 End Sub
 
-Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
-    If ((Button And pdLeftButton) <> 0) Then
-        m_ActiveArrow = IsCursorOverArrow(x, True)
-    End If
-
-End Sub
-
-Private Sub m_MouseEventsIn_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If (m_HoverArrow >= 0) Then
-        m_HoverArrow = -1
-        UpdatePreview False
-    End If
-End Sub
-
-Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    'If the mouse is not down, check for a hovered node
-    If ((Button And pdLeftButton) = 0) Then
-        Dim hoverCheck As Long
-        hoverCheck = IsCursorOverArrow(x, True)
-        If (hoverCheck <> m_HoverArrow) Then
-            m_HoverArrow = hoverCheck
-            UpdatePreview False
-        End If
-    End If
-    
-    'Left mouse button is down, and the user has a node selected
-    If (((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2)) Then
-    
-        'Disable automatic preview updates
-        cmdBar.SetPreviewStatus False
-        
-        Dim newTUDValue As Double
-        
-        'Start by recalculating the x position relative to the histogram box
-        Dim tmpX As Double
-        tmpX = x - m_DstArrowBoxOffset
-        tmpX = tmpX / m_DstArrowBoxWidth
-        
-        If (tmpX < 0) Then tmpX = 0
-        If (tmpX > 1) Then tmpX = 1
-        
-        'Calculate a new value for the corresponding text box
-        Select Case m_ActiveArrow
-        
-            'Shadow input node
-            Case 0
-                newTUDValue = tmpX * 255
-                If (newTUDValue > tudLevels(0).Max) Then newTUDValue = tudLevels(0).Max
-                tudLevels(0).Value = newTUDValue
-            
-            'Midtones input node
-            Case 1
-                newTUDValue = tmpX * 255
-                newTUDValue = (newTUDValue - tudLevels(0).Value) / (tudLevels(2).Value - tudLevels(0).Value)
-                If (newTUDValue > tudLevels(1).Max) Then
-                    newTUDValue = tudLevels(1).Max
-                ElseIf (tmpX < tudLevels(1).Min) Then
-                    newTUDValue = tudLevels(1).Min
-                End If
-                tudLevels(1).Value = newTUDValue
-                
-            'Highlight input node
-            Case 2
-                newTUDValue = tmpX * 255
-                If (newTUDValue < tudLevels(2).Min) Then newTUDValue = tudLevels(2).Min
-                tudLevels(2).Value = newTUDValue
-        
-        End Select
-        
-        'Re-enable preview updates, and refresh the screen now
-        cmdBar.SetPreviewStatus True
-        UpdatePreview
-        
-    'Left mouse button is not down
-    Else
-    
-        'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If (IsCursorOverArrow(x, True) >= 0) Then
-            m_MouseEventsIn.SetCursor_System IDC_HAND
-        Else
-            m_MouseEventsIn.SetCursor_System IDC_ARROW
-        End If
-        
-    End If
-
-End Sub
-
-Private Sub m_MouseEventsIn_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    m_ActiveArrow = -1
-End Sub
-
-Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-
-    'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
-    If (Button And pdLeftButton) <> 0 Then
-        m_ActiveArrow = IsCursorOverArrow(x, False)
-    End If
-
-End Sub
-
-Private Sub m_MouseEventsOut_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If (m_HoverArrow >= 0) Then
-        m_HoverArrow = -1
-        UpdatePreview False
-    End If
-End Sub
-
-Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    
-    
-    'If the mouse is not down, check for a hovered node
-    If ((Button And pdLeftButton) = 0) Then
-        Dim hoverCheck As Long
-        hoverCheck = IsCursorOverArrow(x, False)
-        If (hoverCheck <> m_HoverArrow) Then
-            m_HoverArrow = hoverCheck
-            UpdatePreview False
-        End If
-    End If
-    
-    'Left mouse button is down, and the user has a node selected
-    If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
-    
-        'Disable automatic preview updates
-        cmdBar.SetPreviewStatus False
-        
-        Dim newTUDValue As Double
-        
-        'Start by recalculating the x position relative to the histogram box
-        Dim tmpX As Double
-        tmpX = x - m_DstArrowBoxOffset
-        tmpX = tmpX / m_DstArrowBoxWidth
-        
-        If (tmpX < 0) Then tmpX = 0
-        If (tmpX > 1) Then tmpX = 1
-        
-        'Calculate a new value for the corresponding text box
-        Select Case m_ActiveArrow
-        
-            'Black level node
-            Case 3
-                newTUDValue = tmpX * 255
-                If (newTUDValue > 255) Then
-                    newTUDValue = 255
-                ElseIf (newTUDValue < 0) Then
-                    newTUDValue = 0
-                End If
-                tudLevels(3).Value = newTUDValue
-                
-            'White level node
-            Case 4
-                newTUDValue = tmpX * 255
-                If (newTUDValue > 255) Then
-                    newTUDValue = 255
-                ElseIf (newTUDValue < 0) Then
-                    newTUDValue = 0
-                End If
-                tudLevels(4).Value = newTUDValue
-        
-        End Select
-        
-        'Re-enable preview updates, and refresh the screen now
-        cmdBar.SetPreviewStatus True
-        UpdatePreview
-        
-    'Left mouse button is not down
-    Else
-    
-        'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If (IsCursorOverArrow(x, False) >= 0) Then
-            m_MouseEventsOut.SetCursor_System IDC_HAND
-        Else
-            m_MouseEventsOut.SetCursor_System IDC_ARROW
-        End If
-        
-    End If
-
-End Sub
-
-Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
-    m_ActiveArrow = -1
-End Sub
-
 'For mouse events over the input or output box, this function can be used to determine if the cursor is over a slider node.
 ' To try and "optimize" arrow selection, distance is calculated to the centerpoint of each node, and the smallest distance
 ' is treated as the "best" match.
 Private Function IsCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInputArrows As Boolean) As Long
 
     Dim minDistance As Single, minDistanceIndex As Long
-    minDistance = picInputArrows.ScaleWidth
+    minDistance = picInputArrows.GetWidth
     minDistanceIndex = -1
     
     Dim tmpDistance As Double
@@ -1059,14 +856,11 @@ Private Sub PrepHistogramOverlays()
     
     'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
     ' (TODO: fix this!  Most functions need one or the other; not both.)
-    Dim hData() As Long
-    Dim hDataLog() As Double
-    Dim hMax() As Long
-    Dim hMaxLog() As Double
-    Dim hMaxPosition() As Byte
+    Dim hData() As Long, hDataLog() As Double
+    Dim hMax() As Long, hMaxLog() As Double, hMaxPosition() As Byte
     
     'Gather histogram data for the current layer
-    Histograms.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    Histograms.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition, True
     
     'Use that data to generate DIBs for the histogram data
     Histograms.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.GetWidth, picHistogram.GetHeight, True
@@ -1076,8 +870,8 @@ End Sub
 Private Sub Form_Load()
 
     'Prevent automatic preview refreshes until we have finished initializing the dialog
-    cmdBar.SetPreviewStatus False
     m_DisableMaxMinLimits = True
+    cmdBar.SetPreviewStatus False
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -1092,13 +886,6 @@ Private Sub Form_Load()
     btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(pdri_ChannelGreen, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(pdri_ChannelBlue, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 3, , Interface.GetRuntimeUIDIB(pdri_ChannelRGB, btnImageSizeGroup, 2), btnImageSizeGroup, btnImageSizeGroup
-    
-    'Prepare the custom input handlers
-    Set m_MouseEventsIn = New pdInputMouse
-    m_MouseEventsIn.AddInputTracker picInputArrows.hWnd
-    
-    Set m_MouseEventsOut = New pdInputMouse
-    m_MouseEventsOut.AddInputTracker picOutputArrows.hWnd
     
     'Add button images
     Dim dropperSize As Long
@@ -1136,7 +923,7 @@ Private Sub Form_Load()
     'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
     ' right borders of the desired area, so that the edges of the slider images are not cropped.
     m_DstArrowBoxWidth = picHistogram.GetWidth - 2
-    m_DstArrowBoxOffset = picHistogram.GetLeft - picInputArrows.Left + 1
+    m_DstArrowBoxOffset = picHistogram.GetLeft - picInputArrows.GetLeft + 1
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me, True, True
@@ -1155,7 +942,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     If (Not toPreview) Then Message "Mapping new image levels..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    Dim tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -1220,7 +1007,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next i
     
     'Look-up table for the input leveled values
-    Dim newLevels(0 To 3, 0 To 255) As Byte
+    Dim newLevels(0 To 255, 0 To 3) As Byte
     
     'Fill the look-up table with appropriately mapped input limits
     Dim pStep As Double
@@ -1235,11 +1022,11 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
         
         For x = 0 To 255
             If x < levelValues(i, 0) Then
-                newLevels(i, x) = 0
+                newLevels(x, i) = 0
             ElseIf x > levelValues(i, 2) Then
-                newLevels(i, x) = 255
+                newLevels(x, i) = 255
             Else
-                newLevels(i, x) = ByteMe(((CDbl(x) - levelValues(i, 0)) * pStep))
+                newLevels(x, i) = ByteMe(((CDbl(x) - levelValues(i, 0)) * pStep))
             End If
         Next x
         
@@ -1248,7 +1035,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     'Now run all input-mapped values through our midtone-correction look-up
     For i = 0 To 3
         For x = 0 To 255
-            newLevels(i, x) = gLevels(i, newLevels(i, x))
+            newLevels(x, i) = gLevels(i, newLevels(x, i))
         Next x
     Next i
     
@@ -1256,29 +1043,27 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Dim oStep As Double
     
     For i = 0 To 3
-    
         oStep = (levelValues(i, 4) - levelValues(i, 3)) / 255
-    
         For x = 0 To 255
-            newLevels(i, x) = ByteMe(levelValues(i, 3) + (CDbl(newLevels(i, x)) * oStep))
+            newLevels(x, i) = ByteMe(levelValues(i, 3) + (CDbl(newLevels(x, i)) * oStep))
         Next x
-    
     Next i
     
     'Now we can finally loop through each pixel in the image, converting values as we go
+    Dim imageData() As Byte
     For y = initY To finalY
         workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
         
         'Get the source pixel color values
-        b = newLevels(2, imageData(x))
-        g = newLevels(1, imageData(x + 1))
-        r = newLevels(0, imageData(x + 2))
+        b = newLevels(imageData(x), 2)
+        g = newLevels(imageData(x + 1), 1)
+        r = newLevels(imageData(x + 2), 0)
         
         'Assign new values looking the lookup table
-        imageData(x) = newLevels(3, b)
-        imageData(x + 1) = newLevels(3, g)
-        imageData(x + 2) = newLevels(3, r)
+        imageData(x) = newLevels(b, 3)
+        imageData(x + 1) = newLevels(g, 3)
+        imageData(x + 2) = newLevels(r, 3)
         
     Next x
         If (Not toPreview) Then
@@ -1325,9 +1110,11 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         
         cmdBar.SetPreviewStatus False
         
-        'Erase the picture boxes
-        picInputArrows.Picture = LoadPicture(vbNullString)
-        picOutputArrows.Picture = LoadPicture(vbNullString)
+        'Initialize backbuffers for the interactive picture boxes
+        If (m_InputDIB Is Nothing) Then Set m_InputDIB = New pdDIB
+        m_InputDIB.CreateBlank picInputArrows.GetWidth, picInputArrows.GetHeight, 32, g_Themer.GetGenericUIColor(UI_Background), 255
+        If (m_OutputDIB Is Nothing) Then Set m_OutputDIB = New pdDIB
+        m_OutputDIB.CreateBlank picOutputArrows.GetWidth, picOutputArrows.GetHeight, 32, g_Themer.GetGenericUIColor(UI_Background), 255
         
         'Synchronize the arrow offsets with the values of the corresponding text boxes
         ' (input levels)
@@ -1352,7 +1139,7 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         'The base arrow is centered at 0, for convenience when translating
         Dim triangleHalfWidth As Single, triangleHeight As Single
         triangleHalfWidth = (LEVEL_NODE_WIDTH / 2)
-        triangleHeight = (picInputArrows.ScaleHeight - LEVEL_NODE_HEIGHT) - 1
+        triangleHeight = (picInputArrows.GetHeight - LEVEL_NODE_HEIGHT) - 1
         baseArrow.AddTriangle -1 * triangleHalfWidth, triangleHeight, 0, 0, triangleHalfWidth, triangleHeight
         
         'Next up is the colored block, also centered horizontally around position 0
@@ -1365,7 +1152,7 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         
         'Finally, some generic scale factors to simplify the process of positioning nodes (who store their positions on the range [0, 1])
         Dim hOffset As Single, hScaleFactor As Single
-        hOffset = picHistogram.GetLeft - scaleX(picInputArrows.Left, vbTwips, vbPixels) + 1
+        hOffset = picHistogram.GetLeft - picInputArrows.GetLeft + 1
         hScaleFactor = (picHistogram.GetWidth - 3)
         
         '...and pen/fill objects for the actual rendering
@@ -1378,10 +1165,10 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         
         'Fill the target picture boxes with the current background color
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, picInputArrows.hDC, False
-        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picInputArrows.ScaleWidth, picInputArrows.ScaleHeight
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputArrows.hDC, False
-        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picOutputArrows.ScaleWidth, picOutputArrows.ScaleHeight
+        Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_InputDIB, False
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picInputArrows.GetWidth, picInputArrows.GetHeight
+        Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_OutputDIB, False
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picOutputArrows.GetWidth, picOutputArrows.GetHeight
         
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         
@@ -1412,9 +1199,9 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
             
             'Make sure we target the right picture box!
             If (i < 3) Then
-                Drawing2D.QuickCreateSurfaceFromDC cSurface, picInputArrows.hDC, True
+                Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_InputDIB, True
             Else
-                Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputArrows.hDC, True
+                Drawing2D.QuickCreateSurfaceFromDIB cSurface, m_OutputDIB, True
             End If
             
             blockFill.SetBrushColor targetColor
@@ -1436,10 +1223,8 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         Set cSurface = Nothing: Set cBrush = Nothing
         
         'Relay changes to the screen
-        picInputArrows.Picture = picInputArrows.Image
-        picInputArrows.Refresh
-        picOutputArrows.Picture = picOutputArrows.Image
-        picOutputArrows.Refresh
+        picInputArrows.RequestRedraw alsoUpdateEffect
+        picOutputArrows.RequestRedraw alsoUpdateEffect
                 
         'Update the shadow color box to match the new level values
         Dim r As Long, g As Long, b As Long, l As Long
@@ -1499,6 +1284,199 @@ Private Sub picHistogram_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, 
     On Error GoTo IgnoreChannelRender
     If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC targetDC
 IgnoreChannelRender:
+End Sub
+
+Private Sub picInputArrows_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_InputDIB Is Nothing) Then GDI.BitBltWrapper targetDC, 0, 0, ctlWidth, ctlHeight, m_InputDIB.GetDIBDC, 0, 0, vbSrcCopy
+End Sub
+
+Private Sub picInputArrows_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
+    If ((Button And pdLeftButton) <> 0) Then
+        m_ActiveArrow = IsCursorOverArrow(x, True)
+    End If
+
+End Sub
+
+Private Sub picInputArrows_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (m_HoverArrow >= 0) Then
+        m_HoverArrow = -1
+        UpdatePreview False
+    End If
+End Sub
+
+Private Sub picInputArrows_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'If the mouse is not down, check for a hovered node
+    If ((Button And pdLeftButton) = 0) Then
+        Dim hoverCheck As Long
+        hoverCheck = IsCursorOverArrow(x, True)
+        If (hoverCheck <> m_HoverArrow) Then
+            m_HoverArrow = hoverCheck
+            UpdatePreview False
+        End If
+    End If
+    
+    'Left mouse button is down, and the user has a node selected
+    If (((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2)) Then
+    
+        'Disable automatic preview updates
+        cmdBar.SetPreviewStatus False
+        
+        Dim newTUDValue As Double
+        
+        'Start by recalculating the x position relative to the histogram box
+        Dim tmpX As Double
+        tmpX = x - m_DstArrowBoxOffset
+        tmpX = tmpX / m_DstArrowBoxWidth
+        
+        If (tmpX < 0) Then tmpX = 0
+        If (tmpX > 1) Then tmpX = 1
+        
+        'Calculate a new value for the corresponding text box
+        Select Case m_ActiveArrow
+        
+            'Shadow input node
+            Case 0
+                newTUDValue = tmpX * 255
+                If (newTUDValue > tudLevels(0).Max) Then newTUDValue = tudLevels(0).Max
+                tudLevels(0).Value = newTUDValue
+            
+            'Midtones input node
+            Case 1
+                newTUDValue = tmpX * 255
+                newTUDValue = (newTUDValue - tudLevels(0).Value) / (tudLevels(2).Value - tudLevels(0).Value)
+                If (newTUDValue > tudLevels(1).Max) Then
+                    newTUDValue = tudLevels(1).Max
+                ElseIf (tmpX < tudLevels(1).Min) Then
+                    newTUDValue = tudLevels(1).Min
+                End If
+                tudLevels(1).Value = newTUDValue
+                
+            'Highlight input node
+            Case 2
+                newTUDValue = tmpX * 255
+                If (newTUDValue < tudLevels(2).Min) Then newTUDValue = tudLevels(2).Min
+                tudLevels(2).Value = newTUDValue
+        
+        End Select
+        
+        'Re-enable preview updates, and refresh the screen now
+        cmdBar.SetPreviewStatus True
+        UpdatePreview
+        
+    'Left mouse button is not down
+    Else
+    
+        'See if the cursor is over a slider.  If it is, change the cursor to a hand.
+        If (IsCursorOverArrow(x, True) >= 0) Then
+            picInputArrows.SetCursorCustom IDC_HAND
+        Else
+            picInputArrows.SetCursorCustom IDC_ARROW
+        End If
+        
+    End If
+
+End Sub
+
+Private Sub picInputArrows_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    m_ActiveArrow = -1
+End Sub
+
+Private Sub picOutputArrows_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    If (Not m_OutputDIB Is Nothing) Then GDI.BitBltWrapper targetDC, 0, 0, ctlWidth, ctlHeight, m_OutputDIB.GetDIBDC, 0, 0, vbSrcCopy
+End Sub
+
+Private Sub picOutputArrows_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
+    If (Button And pdLeftButton) <> 0 Then
+        m_ActiveArrow = IsCursorOverArrow(x, False)
+    End If
+    
+End Sub
+
+Private Sub picOutputArrows_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (m_HoverArrow >= 0) Then
+        m_HoverArrow = -1
+        UpdatePreview False
+    End If
+End Sub
+
+Private Sub picOutputArrows_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+
+    'If the mouse is not down, check for a hovered node
+    If ((Button And pdLeftButton) = 0) Then
+        Dim hoverCheck As Long
+        hoverCheck = IsCursorOverArrow(x, False)
+        If (hoverCheck <> m_HoverArrow) Then
+            m_HoverArrow = hoverCheck
+            UpdatePreview False
+        End If
+    End If
+    
+    'Left mouse button is down, and the user has a node selected
+    If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
+    
+        'Disable automatic preview updates
+        cmdBar.SetPreviewStatus False
+        
+        Dim newTUDValue As Double
+        
+        'Start by recalculating the x position relative to the histogram box
+        Dim tmpX As Double
+        tmpX = x - m_DstArrowBoxOffset
+        tmpX = tmpX / m_DstArrowBoxWidth
+        
+        If (tmpX < 0) Then tmpX = 0
+        If (tmpX > 1) Then tmpX = 1
+        
+        'Calculate a new value for the corresponding text box
+        Select Case m_ActiveArrow
+        
+            'Black level node
+            Case 3
+                newTUDValue = tmpX * 255
+                If (newTUDValue > 255) Then
+                    newTUDValue = 255
+                ElseIf (newTUDValue < 0) Then
+                    newTUDValue = 0
+                End If
+                tudLevels(3).Value = newTUDValue
+                
+            'White level node
+            Case 4
+                newTUDValue = tmpX * 255
+                If (newTUDValue > 255) Then
+                    newTUDValue = 255
+                ElseIf (newTUDValue < 0) Then
+                    newTUDValue = 0
+                End If
+                tudLevels(4).Value = newTUDValue
+        
+        End Select
+        
+        'Re-enable preview updates, and refresh the screen now
+        cmdBar.SetPreviewStatus True
+        UpdatePreview
+        
+    'Left mouse button is not down
+    Else
+    
+        'See if the cursor is over a slider.  If it is, change the cursor to a hand.
+        If (IsCursorOverArrow(x, False) >= 0) Then
+            picOutputArrows.SetCursorCustom IDC_HAND
+        Else
+            picOutputArrows.SetCursorCustom IDC_ARROW
+        End If
+        
+    End If
+
+End Sub
+
+Private Sub picOutputArrows_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    m_ActiveArrow = -1
 End Sub
 
 Private Sub picOutputGradient_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)

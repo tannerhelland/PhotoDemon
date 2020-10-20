@@ -651,22 +651,26 @@ Private Sub m_EditBox_Change()
             RedrawBackBuffer
         End If
         
-        'Update the tooltip, as appropriate
-        Dim tipText As String
-        If (m_EntryType = set_Numeric) Then
-            Me.AssignTooltip vbNullString, vbNullString, False
-        ElseIf (m_EntryType = set_NumericButOOB) Then
-            tipText = g_Language.TranslateMessage("%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
-            Me.AssignTooltip tipText, "Invalid entry", True
-        ElseIf (m_EntryType = set_Formula) Then
-            tipText = g_Language.TranslateMessage("%1 = %2", m_EditBox.Text, Me.Value)
-            Me.AssignTooltip tipText, vbNullString, True
-        ElseIf (m_EntryType = set_FormulaButOOB) Then
-            tipText = g_Language.TranslateMessage("""%1"" produces an out of range result (%2)." & vbCrLf & "The final value must be between %3 and %4.", m_EditBox.Text, Evaluator.Evaluate(m_EditBox.Text), GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
-            Me.AssignTooltip tipText, "Invalid entry", True
-        Else
-            tipText = g_Language.TranslateMessage("PhotoDemon doesn't understand the expression: %1", m_EditBox.Text)
-            Me.AssignTooltip tipText, "Invalid entry", True
+        'Update the tooltip, as appropriate (but only if we are currently visible)
+        If ucSupport.AmIVisible() Then
+            
+            Dim tipText As String
+            If (m_EntryType = set_Numeric) Then
+                Me.AssignTooltip vbNullString, vbNullString, False
+            ElseIf (m_EntryType = set_NumericButOOB) Then
+                tipText = g_Language.TranslateMessage("%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
+                Me.AssignTooltip tipText, "Invalid entry", True
+            ElseIf (m_EntryType = set_Formula) Then
+                tipText = g_Language.TranslateMessage("%1 = %2", m_EditBox.Text, Me.Value)
+                Me.AssignTooltip tipText, vbNullString, True
+            ElseIf (m_EntryType = set_FormulaButOOB) Then
+                tipText = g_Language.TranslateMessage("""%1"" produces an out of range result (%2)." & vbCrLf & "The final value must be between %3 and %4.", m_EditBox.Text, Evaluator.Evaluate(m_EditBox.Text), GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
+                Me.AssignTooltip tipText, "Invalid entry", True
+            Else
+                tipText = g_Language.TranslateMessage("PhotoDemon doesn't understand the expression: %1", m_EditBox.Text)
+                Me.AssignTooltip tipText, "Invalid entry", True
+            End If
+            
         End If
         
     End If

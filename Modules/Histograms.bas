@@ -166,7 +166,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
     
     'Width/height padding for the histogram image itself
     Const HIST_WIDTH_PADDING As Single = 2!
-    Const HIST_HEIGHT_PADDING As Single = 4!
+    Const HIST_HEIGHT_PADDING As Single = 8!
     
     'tHeight is used to determine the height of the maximum value in the histogram.  We want it to be slightly
     ' shorter than the height of the picture box; this way the tallest histogram value fills the entire box
