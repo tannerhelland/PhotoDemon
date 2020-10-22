@@ -2768,7 +2768,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         End If
         
         'MRU files
-        Dim i As Integer, targetMRU As Long
+        Dim i As Integer
         For i = 0 To 9
             
             If .HotKeyName(acceleratorIndex) = ("MRU_" & i) Then

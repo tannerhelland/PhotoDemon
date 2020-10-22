@@ -29,19 +29,9 @@ End Enum
     Private Const IDI_HAND = 32513, IDI_QUESTION = 32514, IDI_EXCLAMATION = 32515, IDI_ASTERISK = 32516, IDI_WINDOWS = 32517
 #End If
 
-Private Declare Function LoadIconW Lib "user32" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
-
 'At startup, PD caches a few different UI pens and brushes related to viewport rendering.
 Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
-
-'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
-    Dim hIcon As Long
-    hIcon = LoadIconW(0, icon)
-    DrawIcon hDC, x, y, hIcon
-End Sub
 
 'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
 Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Single, ByVal xRight As Single, ByVal colorLeft As Long, ByVal colorRight As Long)

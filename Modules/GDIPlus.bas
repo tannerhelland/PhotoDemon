@@ -1406,46 +1406,10 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     
 End Function
 
-'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
-
-    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
-    
-    Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
-    
-End Function
-
 'Similar function to GdiPlusDrawCanvasCircle, above, but draws a RectF outline, specifically
 Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As RectF, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor), cTransparency, 3#, True, GP_LJ_Miter
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor), 220, 1.6, True, GP_LJ_Miter
-End Function
-
-'Use GDI+ to render a line, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal hqOffsets As Boolean = False) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    If hqOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
-    
-    'Create a pen, which will be used to stroke the line
-    Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, GP_U_Pixel, iPen
-    
-    'If a custom line cap was specified, apply it now
-    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
-    
-    'Render the line
-    GdipDrawLine hGraphics, iPen, x1, y1, x2, y2
-        
-    'Release all created objects
-    GdipDeletePen iPen
-    GdipDeleteGraphics hGraphics
-
 End Function
 
 'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing

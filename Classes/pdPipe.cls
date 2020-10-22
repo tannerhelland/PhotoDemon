@@ -97,7 +97,7 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As L
 Private Declare Function CreateFileA Lib "kernel32" (ByVal lpFileName As String, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
 Private Declare Function CreateNamedPipeA Lib "kernel32" (ByVal lpName As String, ByVal dwOpenMode As PD_PipeOpenMode, ByVal dwPipeMode As Long, ByVal nMaxInstances As Long, ByVal nOutBufferSize As Long, ByVal nInBufferSize As Long, ByVal nDefaultTimeOut As Long, ByVal lpSecurityAttributes As Long) As Long
 Private Declare Function DisconnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long) As Long
-Private Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Long, ByRef lpFlags As Long, ByRef outBufferSize As Long, ByRef inBufferSize As Long, ByRef nMaxInstances As Long) As Long
+'Private Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Long, ByRef lpFlags As Long, ByRef outBufferSize As Long, ByRef inBufferSize As Long, ByRef nMaxInstances As Long) As Long
 Private Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long, ByVal lpDstBuffer As Long, ByVal nBufSize As Long, ByVal ptrToOutBytes As Long, ByRef lpTotalBytesAvail As Long, ByVal lpBytesLeftThisMessage As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function WaitNamedPipeA Lib "kernel32" (ByVal lpName As String, ByVal nTimeOut As Long) As Long
