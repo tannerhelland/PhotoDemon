@@ -135,91 +135,16 @@ Public Sub UnionRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByRef srcR
 
 End Sub
 
-Public Function AreRectFsEqual(ByRef srcRectF1 As RectF, ByRef srcRectf2 As RectF) As Boolean
-    AreRectFsEqual = VBHacks.MemCmp(VarPtr(srcRectF1), VarPtr(srcRectf2), LenB(srcRectF1))
+'Arccosine function
+Public Function Acos(ByVal x As Double) As Double
+    If (x > 1#) Or (x < -1#) Then x = 1#
+    Acos = Atan2(Sqr(1# - x * x), x)
 End Function
 
-Public Function Frac(ByVal srcValue As Double) As Double
-    Frac = srcValue - Int(srcValue)
-End Function
-
-'Fast and easy technique for converting an arbitrary floating-point value to a fraction.  Developed with thanks to
-' multiple authors at: https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions
-Public Sub ConvertToFraction(ByVal srcValue As Double, ByRef dstNumerator As Long, ByRef dstDenominator As Long, Optional ByVal epsilon As Double = 0.001)
-
-    dstNumerator = 1
-    dstDenominator = 1
-    
-    Dim fracTest As Double
-    fracTest = 1#
-    
-    Do While (Abs(fracTest - srcValue) > epsilon)
-    
-        If (fracTest < srcValue) Then
-            dstNumerator = dstNumerator + 1
-        Else
-            dstDenominator = dstDenominator + 1
-            dstNumerator = Int(srcValue * dstDenominator + 0.5)
-        End If
-        
-        fracTest = CDbl(dstNumerator) / CDbl(dstDenominator)
-        
-    Loop
-    
-End Sub
-
-'Convert a width and height pair to a new max width and height, while preserving aspect ratio
-' NOTE: by default, inclusive fitting is assumed, but the user can set that parameter to false.  That can be used to
-'        fit an image into a new size with no blank space, but cropping overhanging edges as necessary.)
-Public Sub ConvertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
-    
-    Dim srcAspect As Double, dstAspect As Double
-    If (srcHeight > 0) And (dstHeight > 0) Then
-        srcAspect = srcWidth / srcHeight
-        dstAspect = dstWidth / dstHeight
-    Else
-        Exit Sub
-    End If
-    
-    Dim aspectLarger As Boolean
-    aspectLarger = (srcAspect > dstAspect)
-    
-    'Exclusive fitting fits the opposite dimension, so simply reverse the way the dimensions are calculated
-    If (Not fitInclusive) Then aspectLarger = Not aspectLarger
-    
-    If aspectLarger Then
-        newWidth = dstWidth
-        newHeight = CDbl(srcHeight / srcWidth) * newWidth
-    Else
-        newHeight = dstHeight
-        newWidth = CDbl(srcWidth / srcHeight) * newHeight
-    End If
-    
-End Sub
-
-'Return the distance between two values on the same line
-Public Function DistanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
-    DistanceOneDimension = Sqr((x1 - x2) * (x1 - x2))
-End Function
-
-'Return the distance between two points
-Public Function DistanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    DistanceTwoPoints = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
-End Function
-
-'Return the distance between two points, but ignores the square root function; if calculating something simple, like "minimum distance only",
-' we only need relative values - not absolute ones - so we can skip that step for an extra performance boost.
-Public Function DistanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    DistanceTwoPointsShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
-End Function
-
-'Return the distance between two 3D points
-Public Function DistanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double) As Double
-    DistanceThreeDimensions = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2))
-End Function
-
-Public Function Distance3D_FastFloat(ByVal x1 As Single, ByVal y1 As Single, ByVal z1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal z2 As Single) As Single
-    Distance3D_FastFloat = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2))
+'Arcsine function
+Public Function Asin(ByVal x As Double) As Double
+    If (x > 1#) Or (x < -1#) Then x = 1#
+    Asin = Atan2(x, Sqr(1# - x * x))
 End Function
 
 'Given two intersecting lines, return the angle between them (e.g. the inner product: https://en.wikipedia.org/wiki/Inner_product_space)
@@ -240,6 +165,10 @@ Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As PointFloat
     
     If returnResultInDegrees Then AngleBetweenTwoIntersectingLines = AngleBetweenTwoIntersectingLines / PI_DIV_180
     
+End Function
+
+Public Function AreRectFsEqual(ByRef srcRectF1 As RectF, ByRef srcRectf2 As RectF) As Boolean
+    AreRectFsEqual = VBHacks.MemCmp(VarPtr(srcRectF1), VarPtr(srcRectf2), LenB(srcRectF1))
 End Function
 
 'Fast arctangent estimation.  Max error 0.0015 radians (0.085944 degrees), first found here: http://nghiaho.com/?p=997
@@ -331,16 +260,94 @@ Public Function Atan2_Fastest(ByVal y As Double, ByVal x As Double) As Double
     
 End Function
 
-'Arcsine function
-Public Function Asin(ByVal x As Double) As Double
-    If (x > 1#) Or (x < -1#) Then x = 1#
-    Asin = Atan2(x, Sqr(1# - x * x))
+'Fast and easy technique for converting an arbitrary floating-point value to a fraction.  Developed with thanks to
+' multiple authors at: https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions
+Public Sub ConvertToFraction(ByVal srcValue As Double, ByRef dstNumerator As Long, ByRef dstDenominator As Long, Optional ByVal epsilon As Double = 0.001)
+
+    dstNumerator = 1
+    dstDenominator = 1
+    
+    Dim fracTest As Double
+    fracTest = 1#
+    
+    Do While (Abs(fracTest - srcValue) > epsilon)
+    
+        If (fracTest < srcValue) Then
+            dstNumerator = dstNumerator + 1
+        Else
+            dstDenominator = dstDenominator + 1
+            dstNumerator = Int(srcValue * dstDenominator + 0.5)
+        End If
+        
+        fracTest = CDbl(dstNumerator) / CDbl(dstDenominator)
+        
+    Loop
+    
+End Sub
+
+'Convert a width and height pair to a new max width and height, while preserving aspect ratio
+' NOTE: by default, inclusive fitting is assumed, but the user can set that parameter to false.  That can be used to
+'        fit an image into a new size with no blank space, but cropping overhanging edges as necessary.)
+Public Sub ConvertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
+    
+    Dim srcAspect As Double, dstAspect As Double
+    If (srcHeight > 0) And (dstHeight > 0) Then
+        srcAspect = srcWidth / srcHeight
+        dstAspect = dstWidth / dstHeight
+    Else
+        Exit Sub
+    End If
+    
+    Dim aspectLarger As Boolean
+    aspectLarger = (srcAspect > dstAspect)
+    
+    'Exclusive fitting fits the opposite dimension, so simply reverse the way the dimensions are calculated
+    If (Not fitInclusive) Then aspectLarger = Not aspectLarger
+    
+    If aspectLarger Then
+        newWidth = dstWidth
+        newHeight = CDbl(srcHeight / srcWidth) * newWidth
+    Else
+        newHeight = dstHeight
+        newWidth = CDbl(srcWidth / srcHeight) * newHeight
+    End If
+    
+End Sub
+
+'Return the distance between two values on the same line
+Public Function DistanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
+    DistanceOneDimension = Sqr((x1 - x2) * (x1 - x2))
 End Function
 
-'Arccosine function
-Public Function Acos(ByVal x As Double) As Double
-    If (x > 1#) Or (x < -1#) Then x = 1#
-    Acos = Atan2(Sqr(1# - x * x), x)
+'Return the perpendicular distance between an arbitrary point and a line
+Public Function DistancePerpendicular(ByVal ptX As Single, ByVal ptY As Single, ByVal lineX1 As Single, ByVal lineY1 As Single, ByVal lineX2 As Single, ByVal lineY2 As Single) As Single
+    DistancePerpendicular = Sqr((lineY2 - lineY1) * (lineY2 - lineY1) + (lineX2 - lineX1) * (lineX2 - lineX1))
+    If (DistancePerpendicular <> 0!) Then DistancePerpendicular = ((lineY2 - lineY1) * ptX - (lineX2 - lineX1) * ptY + (lineX2 * lineY1) - (lineY2 * lineX1)) / DistancePerpendicular
+    If (DistancePerpendicular < 0!) Then DistancePerpendicular = -1 * DistancePerpendicular
+End Function
+
+'Return the distance between two points
+Public Function DistanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+    DistanceTwoPoints = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+End Function
+
+'Return the distance between two points, but ignores the square root function; if calculating something simple, like "minimum distance only",
+' we only need relative values - not absolute ones - so we can skip that step for an extra performance boost.
+Public Function DistanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+    DistanceTwoPointsShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+End Function
+
+'Return the distance between two 3D points
+Public Function DistanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double) As Double
+    DistanceThreeDimensions = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2))
+End Function
+
+Public Function Distance3D_FastFloat(ByVal x1 As Single, ByVal y1 As Single, ByVal z1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal z2 As Single) As Single
+    Distance3D_FastFloat = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2))
+End Function
+
+Public Function Frac(ByVal srcValue As Double) As Double
+    Frac = srcValue - Int(srcValue)
 End Function
 
 'Given a list of floating-point values, convert each to its integer equivalent *furthest* from 0.
@@ -458,6 +465,12 @@ Public Function FindClosestPointInFloatArray(ByVal targetX As Single, ByVal targ
 
 End Function
 
+'Log variants
+Public Function Log10(ByVal srcValue As Double) As Double
+    Const INV_LOG_OF_10 As Double = 1# / 2.30258509     'Ln(10) = 2.30258509
+    Log10 = Log(srcValue) * INV_LOG_OF_10
+End Function
+
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
 Public Function LoWord(ByRef dw As Long) As Integer
    If (dw And &H8000&) Then
@@ -467,86 +480,56 @@ Public Function LoWord(ByRef dw As Long) As Integer
    End If
 End Function
 
-'Log variants
-Public Function Log10(ByVal srcValue As Double) As Double
-    Const INV_LOG_OF_10 As Double = 1# / 2.30258509     'Ln(10) = 2.30258509
-    Log10 = Log(srcValue) * INV_LOG_OF_10
-End Function
-
 'Max/min functions
-Public Function Max2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
-    If (l1 > l2) Then Max2Int = l1 Else Max2Int = l2
-End Function
-
-Public Function Min2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
-    If (l1 < l2) Then Min2Int = l1 Else Min2Int = l2
-End Function
-
 Public Function Max2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
     If (f1 > f2) Then Max2Float_Single = f1 Else Max2Float_Single = f2
 End Function
 
-Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
-    If (f1 < f2) Then Min2Float_Single = f1 Else Min2Float_Single = f2
+Public Function Max2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
+    If (l1 > l2) Then Max2Int = l1 Else Max2Int = l2
 End Function
 
 'Return the maximum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
 Public Function Max3Float(ByVal rR As Double, ByVal rG As Double, ByVal rB As Double) As Double
     If (rR > rG) Then
-        If (rR > rB) Then
-            Max3Float = rR
-        Else
-            Max3Float = rB
-        End If
-    ElseIf (rB > rG) Then
-        Max3Float = rB
+        If (rR > rB) Then Max3Float = rR Else Max3Float = rB
     Else
-        Max3Float = rG
-    End If
-End Function
-
-'Return the minimum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
-Public Function Min3Float(ByVal rR As Double, ByVal rG As Double, ByVal rB As Double) As Double
-    If (rR < rG) Then
-        If (rR < rB) Then
-            Min3Float = rR
-        Else
-            Min3Float = rB
-        End If
-    ElseIf (rB < rG) Then
-        Min3Float = rB
-    Else
-        Min3Float = rG
+        If (rB > rG) Then Max3Float = rB Else Max3Float = rG
     End If
 End Function
 
 'Return the maximum of three integer values.  (PD commonly uses this for colors, hence the RGB notation.)
 Public Function Max3Int(ByVal rR As Long, ByVal rG As Long, ByVal rB As Long) As Long
     If (rR > rG) Then
-        If (rR > rB) Then
-            Max3Int = rR
-        Else
-            Max3Int = rB
-        End If
-    ElseIf (rB > rG) Then
-        Max3Int = rB
+        If (rR > rB) Then Max3Int = rR Else Max3Int = rB
     Else
-        Max3Int = rG
+        If (rB > rG) Then Max3Int = rB Else Max3Int = rG
+    End If
+End Function
+
+Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
+    If (f1 < f2) Then Min2Float_Single = f1 Else Min2Float_Single = f2
+End Function
+
+Public Function Min2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
+    If (l1 < l2) Then Min2Int = l1 Else Min2Int = l2
+End Function
+
+'Return the minimum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)
+Public Function Min3Float(ByVal rR As Double, ByVal rG As Double, ByVal rB As Double) As Double
+    If (rR < rG) Then
+        If (rR < rB) Then Min3Float = rR Else Min3Float = rB
+    Else
+        If (rB < rG) Then Min3Float = rB Else Min3Float = rG
     End If
 End Function
 
 'Return the minimum of three integer values.  (PD commonly uses this for colors, hence the RGB notation.)
 Public Function Min3Int(ByVal rR As Long, ByVal rG As Long, ByVal rB As Long) As Long
     If (rR < rG) Then
-        If (rR < rB) Then
-            Min3Int = rR
-        Else
-            Min3Int = rB
-        End If
-    ElseIf (rB < rG) Then
-        Min3Int = rB
+        If (rR < rB) Then Min3Int = rR Else Min3Int = rB
     Else
-        Min3Int = rG
+        If (rB < rG) Then Min3Int = rB Else Min3Int = rG
     End If
 End Function
 
@@ -609,6 +592,139 @@ End Function
 Public Function NearestInt(ByVal srcFloat As Single) As Long
     NearestInt = Int(srcFloat + 0.5!)
 End Function
+
+'Simplify an arbitrary polyline of arbitrary length using some arbitrary epsilon value (which defines
+' minimum required distance between a point and the line defined by its neighbors).
+'
+'Pass your list of points and the number of points in the array.  (Upper array bound doesn't matter;
+' it's ignored.)  This function will return the number of points removed; if it returns 0, no points
+' were removed.  Also, the numOfPoints value - passed BYREF - will be updated to the current number
+' of points in the final, simplified polyline array.  (Note that points beyond the final index of the
+' simplified polyline *are not guaranteed to be zeroed-out*; their value is technically "undefined".)
+'
+'The strategy currently used is of my own invention.  I doubt I'm the first person to think of this
+' approach, but I wanted something faster than the traditional Ramer–Douglas–Peucker algorithm
+' (which is awkward to implement in VB6 since recursion is a non-starter, and stack conversions are
+' cumbersome).  My algorithm is O(n) and it requires no new allocations; the points are returned
+' as-is in the source array, shifted as necessary to remove unimportant points.  It's very fast,
+' with excellent accuracy, even on very gradual curves where traditional perpendicular-distance
+' algorithms can fail - this is achieved by accumulating errors when removing points, and adding the
+' accumulated error to the current point distance.  (The error tracker is reset when a point is *not*
+' removed.)  You can control the amount of errorFade with the same-named parameter; set the value to
+' 0 to disable error diffusion entirely.
+Public Function SimplifyLine(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal epsilon As Single = 0.1!, Optional ByVal errorFade As Single = 0.25!) As Long
+    
+    'If we want to (possibly) remove points, we need at least three points to start!
+    If (numOfPoints < 3) Then Exit Function
+    Dim numPointsRemoved As Long
+    
+    'Square epsilon; this allows us to use a non-branching multiply instead of Abs() for comparisons
+    epsilon = epsilon * epsilon
+    
+    'Start with the first line segment, comparing point (1) to the segment between (0) and (2)
+    Dim leftIndex As Long, rightIndex As Long
+    leftIndex = 0
+    rightIndex = 2
+    
+    'Perpendicular distance to a given line-segment is used to determine removal, plus some temp variables
+    ' to improve performance vs array accesses
+    Dim curDistance As Single, x1 As Single, y1 As Single, x2 As Single, y2 As Single
+    
+    'Error diffusion is used to correct for gentle slopes in a uniform direction; we detect these
+    ' via error accumulation, which automates the process of handling them.
+    Dim curError As Single, origDistance As Single
+    
+    'Iterate all points except the endpoints (which are essential and non-removable)
+    Dim i As Long
+    For i = 1 To numOfPoints - 2
+        
+        'Compare the current point to the point at startIndex to endIndex.
+        ' (For improved performance, we manually in-line the perpendicular distance calculation.
+        ' Note that we also do *not* apply absolute value until after the running error is updated.)
+        y1 = (listOfPoints(rightIndex).y - listOfPoints(leftIndex).y)
+        x1 = (listOfPoints(rightIndex).x - listOfPoints(leftIndex).x)
+        curDistance = Sqr(y1 * y1 + x1 * x1)
+        If (curDistance <> 0!) Then
+            x1 = listOfPoints(leftIndex).x
+            y1 = listOfPoints(leftIndex).y
+            x2 = listOfPoints(rightIndex).x
+            y2 = listOfPoints(rightIndex).y
+            curDistance = ((y2 - y1) * listOfPoints(i).x - (x2 - x1) * listOfPoints(i).y + (x2 * y1) - (y2 * x1)) / curDistance
+        End If
+        
+        'Make a note of the *unmodified* distance, then add the running error to the current distance
+        origDistance = curDistance
+        curDistance = curDistance + curError
+        
+        'Square distance, than compare to epsilon (fp multiply is faster than Abs() in VB)
+        If (curDistance * curDistance < epsilon) Then
+        
+            'This point can be removed.  Increment the point removal counter, but otherwise do nothing;
+            ' this point will be automatically "removed" by the left-shift code in the other branch.
+            numPointsRemoved = numPointsRemoved + 1
+            
+            'Increment our running error (which is just the current perpendicular distance, multipled
+            ' by a user-supplied fade value)
+            curError = curError + (origDistance * errorFade)
+            
+        'This point cannot be removed.  Increment the *left* point index only, and shift the current
+        ' point left-ward so that it's now located at the end of our running list of "good" points.
+        ' (The shift step can obviously be skipped if no points have been removed yet.)  We also
+        ' need to reset our running error whenever the current point is kept.
+        Else
+            leftIndex = leftIndex + 1
+            If (numPointsRemoved > 0) Then listOfPoints(i - numPointsRemoved) = listOfPoints(i)
+            curError = 0!
+        End If
+        
+        'Right index is *always* incremented regardless of this point's removal status
+        rightIndex = rightIndex + 1
+        
+    Next i
+    
+    'Shift the final polyline endpoint leftward by the number of removed points
+    If (numPointsRemoved > 0) Then listOfPoints(numOfPoints - 1 - numPointsRemoved) = listOfPoints(numOfPoints - 1)
+    
+    'Return the number of points removed, and modify the current point count to reflect removals
+    numOfPoints = numOfPoints - numPointsRemoved
+    SimplifyLine = numPointsRemoved
+
+End Function
+
+'Use a simple moving-average formula to smooth a given input line on the Y-axis only.
+' Strength is a value on the range [0, 1]; 0 is a nop, 1 replaces all points with their moving average
+Public Sub SmoothLineY(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal strength As Single = 0.5!)
+    
+    'If we want to (possibly) remove points, we need at least three points to start!
+    If (numOfPoints < 3) Then Exit Sub
+    
+    'A temporary copy of the input points are required so we don't lose data.
+    ' (This could be worked-around with clever caching, but PD's input lists are
+    ' generally small so a full copy is easier.)
+    Dim copyOfPoints() As PointFloat
+    ReDim copyOfPoints(0 To numOfPoints - 1) As PointFloat
+    CopyMemoryStrict VarPtr(copyOfPoints(0)), VarPtr(listOfPoints(0)), 8 * numOfPoints
+    
+    If (strength < 0!) Then strength = 0!
+    If (strength > 1!) Then strength = 1!
+    
+    Dim invStrength As Single
+    invStrength = 1! - strength
+    
+    Dim newY As Single
+    
+    Dim i As Long
+    For i = 1 To numOfPoints - 2
+        
+        'Calculate an average y value
+        newY = (copyOfPoints(i - 1).y + copyOfPoints(i).y + copyOfPoints(i + 1).y) * 0.3333333!
+        
+        'Average using the "strength" parameter
+        listOfPoints(i).y = (listOfPoints(i).y * invStrength) + (newY * strength)
+        
+    Next i
+
+End Sub
 
 'Given an array of points (in floating-point format), calculate the center point of the bounding rect.
 Public Sub FindCenterOfFloatPoints(ByRef dstPoint As PointFloat, ByRef srcPoints() As PointFloat)
