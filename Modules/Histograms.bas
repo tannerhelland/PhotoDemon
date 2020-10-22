@@ -182,7 +182,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
     Dim listOfPoints() As PointFloat
     ReDim listOfPoints(0 To 259) As PointFloat
     
-    Dim i As Long, j As Long, k As Long
+    Dim i As Long, j As Long
     Dim curChannelMax As Long, targetColor As Long
     
     'Build a look-up table of x-positions for the histogram data; these are equally distributed across the width of
@@ -230,11 +230,25 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
             listOfPoints(257).x = imgWidth
             listOfPoints(257).y = listOfPoints(256).y
             
+            'Apply gentle smoothing to the line to improve its visual appearance
+            Dim numOfPoints As Long
+            numOfPoints = 257
+            PDMath.SmoothLineY listOfPoints, numOfPoints, 0.5
+            PDMath.SimplifyLine listOfPoints, numOfPoints, 0.25
+            
+            'Re-fill the first and last points to ensure the histogram is filled correctly.
+            listOfPoints(0).x = 0!
+            listOfPoints(0).y = listOfPoints(1).y
+            listOfPoints(numOfPoints).x = imgWidth
+            listOfPoints(numOfPoints).y = listOfPoints(numOfPoints).y
+            
             'Also fill in the end points of the polyline, so we can treat it as a polygon
-            listOfPoints(258).x = imgWidth
-            listOfPoints(258).y = imgHeight
-            listOfPoints(259).x = 0!
-            listOfPoints(259).y = imgHeight
+            listOfPoints(numOfPoints + 1).x = imgWidth + 1
+            listOfPoints(numOfPoints + 1).y = imgHeight * 2
+            listOfPoints(numOfPoints + 2).x = -1!
+            listOfPoints(numOfPoints + 2).y = imgHeight
+            
+            numOfPoints = numOfPoints + 3
             
             'Assemble a drawing surface
             Drawing2D.QuickCreateSurfaceFromDIB cSurface, dstDIBs(i), True
@@ -242,11 +256,11 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
             
             'Construct a matching fill brush, then fill the histogram region
             Drawing2D.QuickCreateSolidBrush cBrush, targetColor, 15!
-            PD2D.FillPolygonF_FromPtF cSurface, cBrush, 260, VarPtr(listOfPoints(0)), True
+            PD2D.FillPolygonF_FromPtF cSurface, cBrush, numOfPoints, VarPtr(listOfPoints(0)), True, 0.25
             
             'Next, stroke the outline, then free all rendering objects
-            Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, 100!, P2_LJ_Round
-            PD2D.DrawLinesF_FromPtF cSurface, cPen, 260, VarPtr(listOfPoints(0)), True
+            Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, 100!, P2_LJ_Round, P2_LC_Round
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, numOfPoints, VarPtr(listOfPoints(0)), True, 0.25
             cSurface.ReleaseSurface
             
             'Mark the DIB's alpha state
@@ -262,9 +276,12 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
             tmpImage.SetInitialAlphaPremultiplicationState True
             
             'Merge all previous images onto it
-            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(0), BM_Screen
-            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(1), BM_Screen
-            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(2), BM_Screen
+            Dim targetBM As PD_BlendMode
+            targetBM = BM_Overlay
+            
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(0), targetBM
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(1), targetBM
+            cCompositor.QuickMergeTwoDibsOfEqualSize tmpImage, dstDIBs(2), targetBM
             
             'Fill the target DIB with the current background UI color, then blend the
             ' final result onto it
