@@ -30,9 +30,9 @@ Begin VB.Form FormStraighten
       TabIndex        =   3
       Top             =   3120
       Width           =   5415
-      _ExtentX        =   9551
-      _ExtentY        =   1720
-      Caption         =   "grid"
+      _extentx        =   9551
+      _extenty        =   1720
+      caption         =   "grid"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750
@@ -40,8 +40,8 @@ Begin VB.Form FormStraighten
       TabIndex        =   0
       Top             =   5790
       Width           =   11655
-      _ExtentX        =   20558
-      _ExtentY        =   1323
+      _extentx        =   20558
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -49,9 +49,9 @@ Begin VB.Form FormStraighten
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
-      DisableZoomPan  =   -1  'True
+      _extentx        =   9922
+      _extenty        =   9922
+      disablezoompan  =   -1
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -59,12 +59,12 @@ Begin VB.Form FormStraighten
       TabIndex        =   2
       Top             =   2160
       Width           =   5415
-      _ExtentX        =   9551
-      _ExtentY        =   1244
-      Caption         =   "angle"
-      Min             =   -15
-      Max             =   15
-      SigDigits       =   2
+      _extentx        =   9551
+      _extenty        =   1244
+      caption         =   "angle"
+      sigdigits       =   2
+      max             =   15
+      min             =   -15
    End
 End
 Attribute VB_Name = "FormStraighten"
@@ -93,7 +93,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This temporary DIB will be used for rendering the preview
-Private smallDIB As pdDIB
+Private m_smallDIB As pdDIB
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
@@ -140,8 +140,8 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     ' single layers (where the layer is rotated around its own center point), and the full image (where each layer
     ' is null-padded in turn, straightened, then un-null-padded).
     If isPreview Then
-        srcWidth = smallDIB.GetDIBWidth
-        srcHeight = smallDIB.GetDIBHeight
+        srcWidth = m_smallDIB.GetDIBWidth
+        srcHeight = m_smallDIB.GetDIBHeight
     Else
         Select Case thingToRotate
             Case pdat_Image
@@ -197,7 +197,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         finalDIB.CreateBlank srcWidth, srcHeight, 32, 0
         
         'Rotate the new image into place
-        GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, smallDIB, 0, 0, smallDIB.GetDIBWidth, smallDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, False, True
+        GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, m_smallDIB, 0, 0, m_smallDIB.GetDIBWidth, m_smallDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, False, True
         
         If showPreviewGrid Then
             
@@ -383,9 +383,25 @@ Private Sub Form_Load()
     btsGrid.AddItem "off", 1
     btsGrid.ListIndex = 0
     
+    UpdatePreviewSource
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me, True, True
+    cmdBar.SetPreviewStatus True
+    UpdatePreview
+    
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
+'Generate a new source for the preview
+Private Sub UpdatePreviewSource()
+
     'During the preview stage, we want to rotate a smaller version of the image or active layer.  This increases
     ' the speed of previewing immensely (especially for large images, like 10+ megapixel photos)
-    Set smallDIB = New pdDIB
+    Set m_smallDIB = New pdDIB
     
     'Determine a new image size that preserves the current aspect ratio
     Dim srcWidth As Long, srcHeight As Long
@@ -408,7 +424,7 @@ Private Sub Form_Load()
     'Create a new, smaller image at those dimensions
     If (dWidth <= srcWidth) Or (dHeight <= srcHeight) Then
         
-        smallDIB.CreateBlank dWidth, dHeight, 32, 0
+        m_smallDIB.CreateBlank dWidth, dHeight, 32, 0
         
         Select Case m_StraightenTarget
         
@@ -429,10 +445,10 @@ Private Sub Form_Load()
                     .Height = PDImages.GetActiveImage.Height
                 End With
                 
-                PDImages.GetActiveImage.GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
+                PDImages.GetActiveImage.GetCompositedRect m_smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case pdat_SingleLayer
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                GDIPlusResizeDIB m_smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
         
@@ -442,27 +458,18 @@ Private Sub Form_Load()
         Select Case m_StraightenTarget
         
             Case pdat_Image
-                PDImages.GetActiveImage.GetCompositedImage smallDIB
+                PDImages.GetActiveImage.GetCompositedImage m_smallDIB
             
             Case pdat_SingleLayer
-                smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+                m_smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
             
         End Select
         
     End If
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    pdFxPreview.SetOriginalImage smallDIB
+    pdFxPreview.SetOriginalImage m_smallDIB
     
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me, True, True
-    cmdBar.SetPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
 End Sub
 
 'Redraw the on-screen preview of the rotated image
@@ -476,6 +483,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
+    UpdatePreviewSource
     UpdatePreview
 End Sub
 
