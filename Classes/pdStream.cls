@@ -1002,7 +1002,7 @@ End Function
 '
 'Regardless of original encoding, a proper BSTR will be returned.  If the requested length is invalid
 ' (i.e. it extends beyond the end of the stream), a partial string will be returned.
-Friend Function ReadString_UnknownEncoding(ByVal numOfBytes As Long) As String
+Friend Function ReadString_UnknownEncoding(ByVal numOfBytes As Long, Optional ByVal forceWindowsLineEndings As Boolean = True) As String
     
     If m_Open Then
         
@@ -1010,7 +1010,7 @@ Friend Function ReadString_UnknownEncoding(ByVal numOfBytes As Long) As String
         trueByteCount = Me.ReadBytes(tmpBytes, numOfBytes, True)
         
         If (trueByteCount > 0) Then
-            If (Not Strings.StringFromMysteryBytes(tmpBytes, ReadString_UnknownEncoding, True)) Then ReadString_UnknownEncoding = vbNullString
+            If (Not Strings.StringFromMysteryBytes(tmpBytes, ReadString_UnknownEncoding, forceWindowsLineEndings)) Then ReadString_UnknownEncoding = vbNullString
         Else
             ReadString_UnknownEncoding = vbNullString
         End If
