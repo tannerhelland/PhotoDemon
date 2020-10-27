@@ -437,38 +437,43 @@ End Function
 Public Sub RGBtoHSV(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef h As Double, ByRef s As Double, ByRef v As Double)
 
     Dim fR As Double, fG As Double, fB As Double
-    fR = r / 255#
-    fG = g / 255#
-    fB = b / 255#
+    Const ONE_DIV_255 As Double = 1# / 255#
+    fR = r * ONE_DIV_255
+    fG = g * ONE_DIV_255
+    fB = b * ONE_DIV_255
 
     Dim var_Min As Double, var_Max As Double, del_Max As Double
-    var_Min = Min3Float(fR, fG, fB)
-    var_Max = Max3Float(fR, fG, fB)
+    var_Min = PDMath.Min3Float(fR, fG, fB)
+    var_Max = PDMath.Max3Float(fR, fG, fB)
     del_Max = var_Max - var_Min
     
     'Value is easy to calculate - it's the largest of R/G/B
     v = var_Max
 
     'If the max and min are the same, this is a gray pixel
-    If del_Max = 0# Then
+    If (del_Max = 0#) Then
         h = 0#
         s = 0#
         
     'If max and min vary, we can calculate a hue component
     Else
-    
+        
         s = del_Max / var_Max
         
         Const ONE_DIV_SIX As Double = 1# / 6#
         
+        Dim inv_del_Max As Double, half_del_Max As Double
+        inv_del_Max = 1# / del_Max
+        half_del_Max = del_Max / 2
+        
         Dim del_R As Double, del_G As Double, del_B As Double
-        del_R = (((var_Max - fR) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
-        del_G = (((var_Max - fG) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
-        del_B = (((var_Max - fB) * ONE_DIV_SIX) + (del_Max * 0.5)) / del_Max
+        del_R = (((var_Max - fR) * ONE_DIV_SIX) + half_del_Max) * inv_del_Max
+        del_G = (((var_Max - fG) * ONE_DIV_SIX) + half_del_Max) * inv_del_Max
+        del_B = (((var_Max - fB) * ONE_DIV_SIX) + half_del_Max) * inv_del_Max
 
-        If fR = var_Max Then
+        If (fR = var_Max) Then
             h = del_B - del_G
-        ElseIf fG = var_Max Then
+        ElseIf (fG = var_Max) Then
             h = 0.333333333333333 + del_R - del_B
         Else
             h = 0.666666666666667 + del_G - del_R
@@ -485,7 +490,7 @@ End Sub
 Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Long, ByRef g As Long, ByRef b As Long)
 
     'If saturation is 0, RGB are calculated identically
-    If s = 0 Then
+    If (s <= 0#) Then
         r = v * 255#
         g = v * 255#
         b = v * 255#
@@ -493,10 +498,9 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
     'If saturation is not 0, we have to calculate RGB independently
     Else
        
+        'To keep our math simple, limit hue to [0, 5.9999999]
         Dim var_H As Double
         var_H = h * 6#
-        
-        'To keep our math simple, limit hue to [0, 5.9999999]
         If (var_H >= 6#) Then var_H = 0#
         
         Dim var_I As Long
@@ -509,37 +513,32 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
 
         Dim var_R As Double, var_G As Double, var_B As Double
 
-        If (var_I = 0) Then
-            var_R = v
-            var_G = var_3
-            var_B = var_1
-                
-        ElseIf (var_I = 1) Then
-            var_R = var_2
-            var_G = v
-            var_B = var_1
-        
-        ElseIf (var_I = 2) Then
-            var_R = var_1
-            var_G = v
-            var_B = var_3
-                
-        ElseIf (var_I = 3) Then
-            var_R = var_1
-            var_G = var_2
-            var_B = v
-            
-        ElseIf (var_I = 4) Then
-            var_R = var_3
-            var_G = var_1
-            var_B = v
-                
-        Else
-            var_R = v
-            var_G = var_1
-            var_B = var_2
-                
-        End If
+        Select Case var_I
+            Case 0
+                var_R = v
+                var_G = var_3
+                var_B = var_1
+            Case 1
+                var_R = var_2
+                var_G = v
+                var_B = var_1
+            Case 2
+                var_R = var_1
+                var_G = v
+                var_B = var_3
+            Case 3
+                var_R = var_1
+                var_G = var_2
+                var_B = v
+            Case 4
+                var_R = var_3
+                var_G = var_1
+                var_B = v
+            Case 5
+                var_R = v
+                var_G = var_1
+                var_B = var_2
+        End Select
 
         r = var_R * 255#
         g = var_G * 255#
