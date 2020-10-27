@@ -244,6 +244,8 @@ End Sub
 'When the load function updates the current progress count, we refresh the splash screen to reflect the new progress.
 Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     
+    If (m_splashDIB Is Nothing) Then Exit Sub
+    
     'If progress notifications arrived before the form was made visible, ignore them; this makes the loading bar appear
     ' more fluid, rather than magically jumping to the middle of the form when it's first loaded.
     If (m_progressAtFirstNotify = -1) Then m_progressAtFirstNotify = newProgressMarker - 1
