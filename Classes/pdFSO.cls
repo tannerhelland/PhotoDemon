@@ -649,7 +649,7 @@ Friend Function FileGetExtension(ByRef srcFile As String) As String
     ' 1) The right-most position of a path separator (forward or backward slash)
     ' 2) The right-most position of an extension separator (".")
     '
-    'TODO: normalize path before processing it
+    'TODO: normalize path before processing it?
     
     Dim slashPos As Long
     slashPos = InStrRev(srcFile, "\", -1, vbBinaryCompare)

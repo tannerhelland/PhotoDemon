@@ -2023,6 +2023,31 @@ Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately
     
+    Dim cLUT As pdLUT3D
+    Set cLUT = New pdLUT3D
+    
+    Dim curTime As Currency
+    VBHacks.GetHighResTime curTime
+    
+    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\_Orange and Blue 16.cube")
+    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\KH LUT 6.cube")
+    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\DropBlues.3DL")
+    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\IWLTBAP Arapaho - LOG.3dl")
+    Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\filmstock_50.3dl")
+    
+    PDDebug.LogAction "LUT load: " & VBHacks.GetTimeDiffNowAsString(curTime)
+    VBHacks.GetHighResTime curTime
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SafeArray2D
+    EffectPrep.PrepImageData dstSA, False   'toPreview, dstPic
+    
+    cLUT.ApplyLUTToDIB workingDIB
+    
+    PDDebug.LogAction "Apply time: " & VBHacks.GetTimeDiffNowAsString(curTime)
+    
+    EffectPrep.FinalizeImageData False
+    
     'Filters_Scientific.InternalFFTTest
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
