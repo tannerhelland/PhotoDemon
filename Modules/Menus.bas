@@ -385,9 +385,10 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 5, 13, 7
         AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
         AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
-        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 10
-        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 11
-        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 12
+        AddMenuItem "Photo filters...", "adj_photofilters", 5, 13, 10
+        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 11
+        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 12
+        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 13
     AddMenuItem "Histogram", "adj_histogram", 5, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
         AddMenuItem "-", "-", 5, 14, 1
@@ -408,9 +409,6 @@ Public Sub InitializeMenus()
     AddMenuItem "Monochrome", "adj_monochrome", 5, 17
         AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 17, 0
         AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 17, 1
-    AddMenuItem "Photography", "adj_photo", 5, 18
-        AddMenuItem "Photo filters...", "adj_photofilters", 5, 18, 0
-        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 5, 18, 1
         
     'Effects (Filters) Menu
     AddMenuItem "Effects", "effects_top", 6
@@ -2569,7 +2567,6 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
         Case "adj_color"
         
             'Case "adj_colorbalance"    'Covered by parent menu
-            
             'Case "adj_whitebalance"    'Covered by parent menu
             
             Case "adj_hsl"
@@ -2582,18 +2579,20 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 Process "Tint", True
                 
             'Case "adj_vibrance"        'Covered by parent menu
-            
             'Case "adj_blackandwhite"   'Covered by parent menu
             
             Case "adj_colorize"
                 Process "Colorize", True
+                
+            Case "adj_photofilters"
+                Process "Photo filter", True
                 
             Case "adj_replacecolor"
                 Process "Replace color", True
                 
             Case "adj_sepia"
                 Process "Sepia", True
-            
+                
             Case "adj_splittone"
                 Process "Split toning", True
                 
@@ -2641,14 +2640,7 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 
             Case "adj_monochrometogray"
                 Process "Monochrome to gray", True
-                
-        Case "adj_photo"
-            Case "adj_photofilters"
-                Process "Photo filter", True
-                
-            Case "adj_redeyeremoval"
-                Process "Red-eye removal", True
-                
+            
         Case Else
             cmdFound = False
                 

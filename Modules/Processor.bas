@@ -1919,9 +1919,17 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     ElseIf Strings.StringsEqual(processID, "Curves", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormCurves Else FormCurves.ApplyCurveToImage processParameters
         Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Exposure", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormExposure Else FormExposure.Exposure processParameters
+        Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Gamma", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormGamma Else FormGamma.GammaCorrect processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "HDR", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormHDR Else FormHDR.ApplyImitationHDR processParameters
         Process_AdjustmentsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Levels", True) Then
@@ -1944,9 +1952,21 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     ElseIf Strings.StringsEqual(processID, "Hue and saturation", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormHSL Else FormHSL.AdjustImageHSL processParameters
         Process_AdjustmentsMenu = True
-        
+    
+    ElseIf Strings.StringsEqual(processID, "Photo filter", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormPhotoFilters Else FormPhotoFilters.ApplyPhotoFilter processParameters
+        Process_AdjustmentsMenu = True
+    
     ElseIf Strings.StringsEqual(processID, "Replace color", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormReplaceColor Else FormReplaceColor.ReplaceSelectedColor processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Sepia", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSepia Else FormSepia.ApplySepiaEffect processParameters
+        Process_AdjustmentsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Split toning", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormSplitTone Else FormSplitTone.SplitTone processParameters
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Temperature", True) Then
@@ -1994,10 +2014,6 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         If raiseDialog Then ShowPDDialog vbModal, FormMonoToColor Else FormMonoToColor.ConvertMonoToColor processParameters
         Process_AdjustmentsMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Sepia", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSepia Else FormSepia.ApplySepiaEffect processParameters
-        Process_AdjustmentsMenu = True
-        
     'Channel operations
     ElseIf Strings.StringsEqual(processID, "Channel mixer", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormChannelMixer Else FormChannelMixer.ApplyChannelMixer processParameters
@@ -2035,28 +2051,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     ElseIf Strings.StringsEqual(processID, "Equalize", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormEqualize Else FormEqualize.EqualizeHistogram processParameters
         Process_AdjustmentsMenu = True
-    
-    'Photography sub-menu functions
-    ElseIf Strings.StringsEqual(processID, "Exposure", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormExposure Else FormExposure.Exposure processParameters
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "HDR", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormHDR Else FormHDR.ApplyImitationHDR processParameters
-        Process_AdjustmentsMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Photo filter", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormPhotoFilters Else FormPhotoFilters.ApplyPhotoFilter processParameters
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Red-eye removal", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormRedEye Else FormRedEye.ApplyRedEyeCorrection processParameters
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Split toning", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormSplitTone Else FormSplitTone.SplitTone processParameters
-        Process_AdjustmentsMenu = True
-            
     End If
     
 End Function

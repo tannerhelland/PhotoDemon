@@ -929,16 +929,20 @@ Begin VB.Form FormMain
             Index           =   9
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Replace color..."
+            Caption         =   "Photo filters..."
             Index           =   10
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Sepia..."
+            Caption         =   "Replace color..."
             Index           =   11
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Split toning..."
+            Caption         =   "Sepia..."
             Index           =   12
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Split toning..."
+            Index           =   13
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -1018,18 +1022,6 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Monochrome to gray..."
-            Index           =   1
-         End
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Photography"
-         Index           =   18
-         Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Photo filters..."
-            Index           =   0
-         End
-         Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Red-eye removal..."
             Index           =   1
          End
       End
@@ -2350,16 +2342,6 @@ Private Sub m_MetadataTimer_Timer()
 
 End Sub
 
-'Menu: Adjustments -> Photography
-Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
-    Select Case Index
-        Case 0
-            Menus.ProcessDefaultAction_ByName "adj_photofilters"
-        Case 1
-            Menus.ProcessDefaultAction_ByName "adj_redeyeremoval"
-    End Select
-End Sub
-
 Private Sub MnuBatch_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3318,10 +3300,12 @@ Private Sub MnuColor_Click(Index As Integer)
         Case 9
             Menus.ProcessDefaultAction_ByName "adj_colorize"
         Case 10
-            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
+            Menus.ProcessDefaultAction_ByName "adj_photofilters"
         Case 11
-            Menus.ProcessDefaultAction_ByName "adj_sepia"
+            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
         Case 12
+            Menus.ProcessDefaultAction_ByName "adj_sepia"
+        Case 13
             Menus.ProcessDefaultAction_ByName "adj_splittone"
     End Select
 End Sub
