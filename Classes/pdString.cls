@@ -137,6 +137,13 @@ Friend Sub EnsureCapacity(ByVal requiredCapacityInChars As Long)
     
 End Sub
 
+'Find a specific character (single-byte only).  Use StrStr for Unicode-aware or case-insensitive comparisons.
+' Returns 0 if char is not found.
+Friend Function FindChar(ByRef srcChar As String, Optional ByVal startPos As Long = 1) As Long
+    FindChar = InStr(startPos, m_Buffer, srcChar, vbBinaryCompare)
+    If (FindChar > m_Length) Then FindChar = 0
+End Function
+
 '1-based current buffer length
 Friend Function GetCapacity() As Long
     GetCapacity = Len(m_Buffer)
@@ -146,6 +153,21 @@ End Function
 ' equal-to or shorter than the current buffer size.)
 Friend Function GetLength() As Long
     GetLength = m_Length
+End Function
+
+'Places an entire line of text inside GetLine.  Delimiter can be manually specified.  Returns FALSE
+' if no line is found (treat as EOF).
+'Note that the delimiter itself *IS NOT* returned as part of the string, by design; to account for
+' the next search position (while doing a line-by-line retrieval, for example), you can calculate
+' the start of the next line as "startPos + Len(returnedLine) + Len(lineDelimiter) + 1"
+Friend Function GetLine(ByRef dstLine As String, Optional ByVal startPos As Long = 1, Optional ByVal lineDelimiter As String = vbCrLf) As Boolean
+    If (startPos < m_Length) Then
+        Dim delPos As Long
+        delPos = InStr(startPos, m_Buffer, lineDelimiter, vbBinaryCompare)
+        If (delPos > m_Length) Then delPos = 0  'String may be null-padded beyond its BSTR length
+        GetLine = (delPos > 0)
+        If GetLine Then dstLine = Mid$(m_Buffer, startPos, delPos - startPos) Else dstLine = vbNullString
+    End If
 End Function
 
 'Use this value responsibly!  (Also, note that this function may return 0; our internal buffer is not guaranteed
