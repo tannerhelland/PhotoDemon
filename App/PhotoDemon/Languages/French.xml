@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.510</langversion>
+<langversion>6.7.512</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -1773,6 +1773,11 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>Filtre photo</translation>
+</phrase>
+
+<phrase>
 <original>Replace color</original>
 <translation>Remplacer une couleur</translation>
 </phrase>
@@ -1835,16 +1840,6 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 <phrase>
 <original>Monochrome to gray</original>
 <translation>De monochrome à gris</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>Filtre photo</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Suppression des yeux rouges</translation>
 </phrase>
 
 <phrase>
@@ -2292,7 +2287,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 <translation>Effacer la liste récente des macros</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4882,16 +4877,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
-<original>Photography</original>
-<translation>Photographie</translation>
-</phrase>
-
-<phrase>
-<original>Photo filters</original>
-<translation>Tous les filtres</translation>
-</phrase>
-
-<phrase>
 <original>Effects</original>
 <translation>Effets</translation>
 </phrase>
@@ -5309,7 +5294,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6004,8 +5989,8 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>available filters</original>
-<translation>filtres disponibles</translation>
+<original>filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6014,378 +5999,78 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>skylight (pale pink)</original>
-<translation>aurore (rose pâle)</translation>
+<original>Warming filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reduce haze in landscape photography</original>
-<translation>réduit la brume dans la photographie de paysage</translation>
+<original>Cooling filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>pale yellow</original>
-<translation>jaune pâle</translation>
+<original>Red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation</original>
-<translation>absorbe le rayonnement UV</translation>
+<original>Orange</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly less than 2A)</original>
-<translation>absorbe le rayonnement UV (un peu moins que 2A)</translation>
+<original>Yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly more than 2A)</original>
-<translation>absorbe le rayonnement UV (un peu plus que 2A)</translation>
+<original>Green</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>light yellow</original>
-<translation>jaune clair</translation>
+<original>Cyan</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>absorbe le bleu ciel excessif, assombrit le ciel dans les photos noir et blanc</translation>
+<original>Blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, emphasizing clouds</original>
-<translation>absorbe le bleu ciel excessif, mettant l'accent sur les nuages</translation>
+<original>Violet</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>high blue absorption; correction for sky, cloud, and foliage</original>
-<translation>absorption bleu élevée; correction pour le ciel, les nuages et le feuillage</translation>
+<original>Magenta</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>deep yellow</original>
-<translation>jaune foncé</translation>
+<original>Deep red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>moderate contrast in black/white outdoor photography</original>
-<translation>contraste modéré en photographie noir et blanc de plein air</translation>
+<original>Deep blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-green</original>
-<translation>jaune-vert</translation>
+<original>Deep emerald</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>correction for tungsten light</original>
-<translation>correction pour la lumière tungstène</translation>
+<original>Deep yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>minus blue; reduce haze in aerial photos</original>
-<translation>moins bleu, réduit la brume sur les photos aériennes</translation>
-</phrase>
-
-<phrase>
-<original>darken sky in black/white outdoor photography</original>
-<translation>assombrit le ciel en photographie noir et blanc de plein air</translation>
-</phrase>
-
-<phrase>
-<original>yellow-orange</original>
-<translation>jaune orangé</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 15</original>
-<translation>version forte de 15</translation>
-</phrase>
-
-<phrase>
-<original>orange</original>
-<translation>orangé</translation>
-</phrase>
-
-<phrase>
-<original>contrast filter for blue and blue-green absorption</original>
-<translation>filtre de contraste pour l'absorption du bleu et bleu-vert</translation>
-</phrase>
-
-<phrase>
-<original>deep orange</original>
-<translation>orange foncé</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 21</original>
-<translation>version forte du 21</translation>
-</phrase>
-
-<phrase>
-<original>light red</original>
-<translation>rouge clair</translation>
-</phrase>
-
-<phrase>
-<original>contrast effects, darken sky and water</original>
-<translation>effets de contraste, assombrit le ciel et l'eau</translation>
-</phrase>
-
-<phrase>
-<original>red for two-color photography (daylight or tungsten)</original>
-<translation>rouge pour les photographies bichromatiques (lumière du jour ou tungstène)</translation>
-</phrase>
-
-<phrase>
-<original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>tricolore rouge, contraste les effets dans les scènes en plein air</translation>
-</phrase>
-
-<phrase>
-<original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>rouge stéréo; coupe la brume, utile pour les réglages de tempête ou de clair de lune</translation>
-</phrase>
-
-<phrase>
-<original>deep red</original>
-<translation>rouge profond</translation>
-</phrase>
-
-<phrase>
-<original>color separation; extreme sky darkening in black/white photos</original>
-<translation>séparation des couleurs, assombrissement extême du ciel dans les photos en noir/blanc</translation>
-</phrase>
-
-<phrase>
-<original>green absorption</original>
-<translation>absorption du vert</translation>
-</phrase>
-
-<phrase>
-<original>strong green absorption</original>
-<translation>forte absorption du vert</translation>
-</phrase>
-
-<phrase>
-<original>variant on 32</original>
-<translation>variante du 32</translation>
-</phrase>
-
-<phrase>
-<original>violet</original>
-<translation>violet</translation>
-</phrase>
-
-<phrase>
-<original>minus-green and plus-blue separation</original>
-<translation>séparation moins-vert et plus-bleu</translation>
-</phrase>
-
-<phrase>
-<original>red absorption; useful for contrast in microscopy</original>
-<translation>absorption rouge, utile pour le contraste en microscopie</translation>
-</phrase>
-
-<phrase>
-<original>light blue-green</original>
-<translation>lumière bleue-verte</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, two-color general viewing</original>
-<translation>moins-rouge, affichage général en bichromie</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, variant on 44</original>
-<translation>moins-rouge, variante du 44</translation>
-</phrase>
-
-<phrase>
-<original>blue tricolor</original>
-<translation>bleu tricolore</translation>
-</phrase>
-
-<phrase>
-<original>direct color separation; contrast effects in commercial photography</original>
-<translation>séparation des couleurs directes, effets de contraste dans la photographie commerciale</translation>
-</phrase>
-
-<phrase>
-<original>light blue</original>
-<translation>bleu clair</translation>
-</phrase>
-
-<phrase>
-<original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>renforce les objets bleus et violets, utile pour les colorants fluorescents</translation>
-</phrase>
-
-<phrase>
-<original>deep blue tricolor</original>
-<translation>bleu profond tricolore</translation>
-</phrase>
-
-<phrase>
-<original>color separation; calibration using SMPTE color bars</original>
-<translation>séparation des couleurs, étalonnage en utilisant des barres de couleur SMPTE</translation>
-</phrase>
-
-<phrase>
-<original>very light green</original>
-<translation>vert très clair</translation>
-</phrase>
-
-<phrase>
-<original>darkens sky, improves flesh tones</original>
-<translation>assombrit le ciel, améliore les tons chair</translation>
-</phrase>
-
-<phrase>
-<original>green tricolor</original>
-<translation>vert tricolore</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation; improves definition of foliage</original>
-<translation>utilisé pour la séparation des couleurs, améliore la définition du feuillage</translation>
-</phrase>
-
-<phrase>
-<original>deep green tricolor</original>
-<translation>vert foncé tricolore</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation, tungsten tricolor projection</original>
-<translation>utilisé pour la séparation des couleurs, projection tricolore tungstène </translation>
-</phrase>
-
-<phrase>
-<original>dark red</original>
-<translation>rouge foncé</translation>
-</phrase>
-
-<phrase>
-<original>infrared photography longpass filter blocking</original>
-<translation>blocage du filtre photographique infrarouge passe-haut</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter, 3200K to 5500K; converts indoor lighting to sunlight</original>
-<translation>filtre de refroidissement, 3200K à 5500K; convertit l'éclairage intérieur à celui de la lumière du soleil</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3400K to 5500K</original>
-<translation>variante de 80A, 3400K à 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3800K to 5500K</original>
-<translation>variante de 80A, 3800K à 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 4200K to 5500K</original>
-<translation>variante de 80A, 4200K à 5500K</translation>
-</phrase>
-
-<phrase>
-<original>pale orange</original>
-<translation>orange pâle</translation>
-</phrase>
-
-<phrase>
-<original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation>filtre de réchauffement (abaisse la température de la couleur), 3400 K et 3200 K</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81A</original>
-<translation>filtre de réchauffement, légèrement plus fort que 81A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81B</original>
-<translation>filtre de réchauffement, légèrement plus fort que 81B</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81C</original>
-<translation>filtre de réchauffement, légèrement plus fort que 81C</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81D</original>
-<translation>filtre de réchauffement, légèrement plus fort que 81D</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; raises color temperature 100K</original>
-<translation>filtre refroidissant, élève la température de couleur de 100K</translation>
-</phrase>
-
-<phrase>
-<original>pale blue</original>
-<translation>bleu pâle</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81A</original>
-<translation>filtre refroidissant, opposé de 81A</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81B</original>
-<translation>filtre refroidissant, opposé de 81B</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81C</original>
-<translation>filtre refroidissant, opposé de 81C</translation>
-</phrase>
-
-<phrase>
-<original>amber</original>
-<translation>ambre</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation>filtre de réchauffement, 5500K à 3400K; convertit la lumière extérieure à la lumière incandescente</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3200K; opposite of 80A</original>
-<translation>filtre de réchauffement, 5500K à 3200K, opposé de 80A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3800K; opposite of 80C</original>
-<translation>filtre de réchauffement, 5500K à 3800K, opposé de 80C</translation>
-</phrase>
-
-<phrase>
-<original>dark gray amber</original>
-<translation>gris foncé ambre</translation>
-</phrase>
-
-<phrase>
-<original>remove color before photographing; rarely used for actual photos</original>
-<translation>retire la couleur avant de photographier, rarement utilisé pour les photos réelles</translation>
-</phrase>
-
-<phrase>
-<original>neutral gray</original>
-<translation>gris neutre</translation>
-</phrase>
-
-<phrase>
-<original>neutral density filter; equally blocks all light frequencies</original>
-<translation>filtre de densité neutre, bloque également toutes les fréquences de la lumière</translation>
+<original>Custom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6393,59 +6078,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Application du filtre photo</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
-
-<phrase>
-<original>strictness</original>
-<translation>rigueur</translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation>imposer des restrictions de forme</translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation>sensibilité des couleurs</translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation>sensibilité d'objet</translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation>mettre en évidence les régions détectées (aperçu seulement)</translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation>imposer des restrictions de taille</translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation>Recherche dans l'image d'emplacements d'yeux rouges potentiels</translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation>Affiner la liste des candidats pour les yeux</translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation>Appliquer les derniers contrôles faussement positifs</translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation>Application des corrections d'yeux rouges finales (%1 de %2)</translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -7188,6 +6821,11 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
+<original>orange</original>
+<translation>orangé</translation>
+</phrase>
+
+<phrase>
 <original>pink</original>
 <translation>rose</translation>
 </phrase>
@@ -7217,7 +6855,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Traduction par %1</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7409,6 +7047,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>random seed</original>
+<translation>générer aléatoirement</translation>
+</phrase>
+
+<phrase>
 <original>tip radius</original>
 <translation>rayon de la pointe</translation>
 </phrase>
@@ -7438,7 +7081,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Graphite</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7498,16 +7141,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>random seed</original>
-<translation>générer aléatoirement</translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Projection de l'image à travers un verre simulé</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13634,10 +13272,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11930 total words. -->
+<!-- As of this build, PhotoDemon contains 5078 phrases. -->
+<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 11577 total words. -->
 
 </pdData>

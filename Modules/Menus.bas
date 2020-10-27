@@ -385,7 +385,7 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 5, 13, 7
         AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
         AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
-        AddMenuItem "Photo filters...", "adj_photofilters", 5, 13, 10
+        AddMenuItem "Photo filter...", "adj_photofilters", 5, 13, 10
         AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 11
         AddMenuItem "Sepia...", "adj_sepia", 5, 13, 12
         AddMenuItem "Split toning...", "adj_splittone", 5, 13, 13

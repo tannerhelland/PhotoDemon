@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.469</langversion>
+<langversion>6.6.471</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1775,6 +1775,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>penyaring Photo</translation>
+</phrase>
+
+<phrase>
 <original>Replace color</original>
 <translation>Ganti warna</translation>
 </phrase>
@@ -1837,16 +1842,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <phrase>
 <original>Monochrome to gray</original>
 <translation>Monokrom menjadi abu-abu</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>penyaring Photo</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Penghapusan mata merah</translation>
 </phrase>
 
 <phrase>
@@ -2294,7 +2289,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4882,16 +4877,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Photography</original>
-<translation>fotografi</translation>
-</phrase>
-
-<phrase>
-<original>Photo filters</original>
-<translation>Penyaring Photo</translation>
-</phrase>
-
-<phrase>
 <original>Effects</original>
 <translation>kesan</translation>
 </phrase>
@@ -5309,7 +5294,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6004,8 +5989,8 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>available filters</original>
-<translation>penapis boleh didapati</translation>
+<original>filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6014,378 +5999,78 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>skylight (pale pink)</original>
-<translation>jendela langit (merah jambu pucat)</translation>
+<original>Warming filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reduce haze in landscape photography</original>
-<translation>mengurangkan jerebu dalam fotografi landskap</translation>
+<original>Cooling filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>pale yellow</original>
-<translation>kuning pucat</translation>
+<original>Red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation</original>
-<translation>menyerap radiasi UV</translation>
+<original>Orange</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly less than 2A)</original>
-<translation>menyerap radiasi UV (sedikit kurang dari 2A)</translation>
+<original>Yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly more than 2A)</original>
-<translation>menyerap radiasi UV (lebih sedikit daripada 2A)</translation>
+<original>Green</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>light yellow</original>
-<translation>cahaya kuning</translation>
+<original>Cyan</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>menyerap langit biru yang berlebihan, membuat langit gelap dalam gambar hitam/putih</translation>
+<original>Blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, emphasizing clouds</original>
-<translation>menyerap langit biru yang berlebihan, menekankan awan</translation>
+<original>Violet</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>high blue absorption; correction for sky, cloud, and foliage</original>
-<translation>penyerapan biru yang tinggi; pembetulan untuk langit, awan, dan dedaun</translation>
+<original>Magenta</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>deep yellow</original>
-<translation>mendalam kuning</translation>
+<original>Deep red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>moderate contrast in black/white outdoor photography</original>
-<translation>Sebaliknya sederhana hitam fotografi/luaran putih</translation>
+<original>Deep blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-green</original>
-<translation>kuning-hijau</translation>
+<original>Deep emerald</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>correction for tungsten light</original>
-<translation>pembetulan untuk cahaya tungsten</translation>
+<original>Deep yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>minus blue; reduce haze in aerial photos</original>
-<translation>tolak biru; mengurangkan jerebu dalam gambar udara</translation>
-</phrase>
-
-<phrase>
-<original>darken sky in black/white outdoor photography</original>
-<translation>gelap langit hitam fotografi/luaran putih</translation>
-</phrase>
-
-<phrase>
-<original>yellow-orange</original>
-<translation>kuning-oren</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 15</original>
-<translation>versi lebih kukuh sebanyak 15</translation>
-</phrase>
-
-<phrase>
-<original>orange</original>
-<translation>oren</translation>
-</phrase>
-
-<phrase>
-<original>contrast filter for blue and blue-green absorption</original>
-<translation>bezakan penapis untuk penyerapan biru dan biru-hijau</translation>
-</phrase>
-
-<phrase>
-<original>deep orange</original>
-<translation>oren yang mendalam</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 21</original>
-<translation>versi lebih kukuh sebanyak 21</translation>
-</phrase>
-
-<phrase>
-<original>light red</original>
-<translation>merah cahaya</translation>
-</phrase>
-
-<phrase>
-<original>contrast effects, darken sky and water</original>
-<translation>bezakan kesan, gelap langit dan air</translation>
-</phrase>
-
-<phrase>
-<original>red for two-color photography (daylight or tungsten)</original>
-<translation>merah untuk fotografi dua warna (siang atau tungsten)</translation>
-</phrase>
-
-<phrase>
-<original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>merah triwarna; bezakan kesan dalam adegan-adegan</translation>
-</phrase>
-
-<phrase>
-<original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>merah stereo; memotong jerebu, berguna untuk tetapan ribut atau cahaya bulan</translation>
-</phrase>
-
-<phrase>
-<original>deep red</original>
-<translation>merah yang mendalam</translation>
-</phrase>
-
-<phrase>
-<original>color separation; extreme sky darkening in black/white photos</original>
-<translation>pemisahan warna; langit gelap yang melampau dalam gambar hitam/putih</translation>
-</phrase>
-
-<phrase>
-<original>green absorption</original>
-<translation>penyerapan hijau</translation>
-</phrase>
-
-<phrase>
-<original>strong green absorption</original>
-<translation>penyerapan hijau kuat</translation>
-</phrase>
-
-<phrase>
-<original>variant on 32</original>
-<translation>varian pada 32</translation>
-</phrase>
-
-<phrase>
-<original>violet</original>
-<translation>ungu</translation>
-</phrase>
-
-<phrase>
-<original>minus-green and plus-blue separation</original>
-<translation>tolak-hijau dan pemisahan campur-biru</translation>
-</phrase>
-
-<phrase>
-<original>red absorption; useful for contrast in microscopy</original>
-<translation>penyerapan merah; berguna untuk kontras dalam mikroskop</translation>
-</phrase>
-
-<phrase>
-<original>light blue-green</original>
-<translation>cahaya biru-hijau</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, two-color general viewing</original>
-<translation>tolak-merah, dua warna tatapan umum</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, variant on 44</original>
-<translation>tolak-merah, varian pada 44</translation>
-</phrase>
-
-<phrase>
-<original>blue tricolor</original>
-<translation>triwarna biru</translation>
-</phrase>
-
-<phrase>
-<original>direct color separation; contrast effects in commercial photography</original>
-<translation>pemisahan warna langsung; bezakan kesan dalam fotografi komersial</translation>
-</phrase>
-
-<phrase>
-<original>light blue</original>
-<translation>biru muda</translation>
-</phrase>
-
-<phrase>
-<original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>meningkatkan objek biru dan ungu; berguna untuk pewarna pendarfluor</translation>
-</phrase>
-
-<phrase>
-<original>deep blue tricolor</original>
-<translation>triwarna biru</translation>
-</phrase>
-
-<phrase>
-<original>color separation; calibration using SMPTE color bars</original>
-<translation>pemisahan warna; penentukuran menggunakan bar warna SMPTE</translation>
-</phrase>
-
-<phrase>
-<original>very light green</original>
-<translation>hijau sangat ringan</translation>
-</phrase>
-
-<phrase>
-<original>darkens sky, improves flesh tones</original>
-<translation>gelap langit, meningkatkan nada daging</translation>
-</phrase>
-
-<phrase>
-<original>green tricolor</original>
-<translation>triwarna hijau</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation; improves definition of foliage</original>
-<translation>digunakan untuk pemisahan warna; meningkatkan definisi dedaunan</translation>
-</phrase>
-
-<phrase>
-<original>deep green tricolor</original>
-<translation>triwarna hijau yang mendalam</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation, tungsten tricolor projection</original>
-<translation>digunakan untuk pemisahan warna, unjuran triwarna tungsten</translation>
-</phrase>
-
-<phrase>
-<original>dark red</original>
-<translation>merah gelap</translation>
-</phrase>
-
-<phrase>
-<original>infrared photography longpass filter blocking</original>
-<translation>fotografi inframerah penapis longpass menyekat</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter, 3200K to 5500K; converts indoor lighting to sunlight</original>
-<translation>penapis penyejukan, 3200K 5500K untuk; menukarkan lampu tertutup kepada cahaya matahari</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3400K to 5500K</original>
-<translation>variasi daripada 80A, 3400K 5500K untuk</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3800K to 5500K</original>
-<translation>variasi daripada 80A, 3800K 5500K untuk</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 4200K to 5500K</original>
-<translation>variasi daripada 80A, 4200K 5500K untuk</translation>
-</phrase>
-
-<phrase>
-<original>pale orange</original>
-<translation>oren pucat</translation>
-</phrase>
-
-<phrase>
-<original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation>penapis pemanasan (merendahkan suhu warna), 3400 K 3200 K</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81A</original>
-<translation>penapis pemanasan; kukuh sedikit daripada 81A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81B</original>
-<translation>penapis pemanasan; kukuh sedikit daripada 81B</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81C</original>
-<translation>penapis pemanasan; kukuh sedikit daripada 81C</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81D</original>
-<translation>penapis pemanasan; kukuh sedikit daripada 81D</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; raises color temperature 100K</original>
-<translation>penyejukan penapis; meningkatkan suhu warna 100K</translation>
-</phrase>
-
-<phrase>
-<original>pale blue</original>
-<translation>biru pucat</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81A</original>
-<translation>penyejukan penapis; bertentangan dengan 81A</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81B</original>
-<translation>penyejukan penapis; bertentangan dengan 81B</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81C</original>
-<translation>penyejukan penapis; bertentangan dengan 81C</translation>
-</phrase>
-
-<phrase>
-<original>amber</original>
-<translation>amber</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation>penapis pemanasan, 5500K 3400K untuk; menukarkan cahaya matahari kepada pijar</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3200K; opposite of 80A</original>
-<translation>penapis pemanasan, 5500K 3200K untuk; bertentangan dengan 80A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3800K; opposite of 80C</original>
-<translation>penapis pemanasan, 5500K 3800K untuk; bertentangan dengan 80C</translation>
-</phrase>
-
-<phrase>
-<original>dark gray amber</original>
-<translation>ambar kelabu gelap</translation>
-</phrase>
-
-<phrase>
-<original>remove color before photographing; rarely used for actual photos</original>
-<translation>mengeluarkan warna sebelum mengambil gambar; jarang digunakan untuk gambar sebenar</translation>
-</phrase>
-
-<phrase>
-<original>neutral gray</original>
-<translation>kelabu neutral</translation>
-</phrase>
-
-<phrase>
-<original>neutral density filter; equally blocks all light frequencies</original>
-<translation>penapis ketumpatan neutral; sama-sama menyekat semua frekuensi cahaya</translation>
+<original>Custom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6393,59 +6078,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Menggunakan penapis foto</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
-
-<phrase>
-<original>strictness</original>
-<translation>kekerasan</translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation>menegakkan batasan bentuk</translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation>kepekaan warna</translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation>sensitivitas objek</translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation>sorot daerah yang terdeteksi (hanya pratinjau saja)</translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation>memberlakukan batasan ukuran</translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation>Menelusuri gambar untuk lokasi mata merah potensial</translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation>Refining daftar kandidat mata</translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation>Menerapkan cek false-positive terakhir</translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation>Menerapkan koreksi mata merah akhir ( %1 dari %2)</translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -7188,6 +6821,11 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>orange</original>
+<translation>oren</translation>
+</phrase>
+
+<phrase>
 <original>pink</original>
 <translation>berwarna merah muda</translation>
 </phrase>
@@ -7217,7 +6855,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Terjemahan oleh %1</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7409,6 +7047,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>tip radius</original>
 <translation>jejari hujung</translation>
 </phrase>
@@ -7438,7 +7081,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>grafit</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7498,16 +7141,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Mengunjurkan imej melalui kaca simulasi</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13619,10 +13257,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11930 total words. -->
+<!-- As of this build, PhotoDemon contains 5078 phrases. -->
+<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 11577 total words. -->
 
 </pdData>

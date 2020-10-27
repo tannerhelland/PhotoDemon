@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.16</langversion>
+<langversion>8.0.18</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -1772,6 +1772,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>Fotofilter</translation>
+</phrase>
+
+<phrase>
 <original>Replace color</original>
 <translation>Vervang kleur</translation>
 </phrase>
@@ -1834,16 +1839,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Monochrome to gray</original>
 <translation>Monochroom tot grijs</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>Fotofilter</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Rode ogen verwijdering</translation>
 </phrase>
 
 <phrase>
@@ -2291,7 +2286,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Wis recente macro-lijst</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4882,16 +4877,6 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>Photography</original>
-<translation>Fotografie</translation>
-</phrase>
-
-<phrase>
-<original>Photo filters</original>
-<translation>Foto filters</translation>
-</phrase>
-
-<phrase>
 <original>Effects</original>
 <translation>Effecten</translation>
 </phrase>
@@ -5309,7 +5294,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6004,8 +5989,8 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>available filters</original>
-<translation>beschikbare filters</translation>
+<original>filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6014,378 +5999,78 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>skylight (pale pink)</original>
-<translation>skylight (bleek rose)</translation>
+<original>Warming filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reduce haze in landscape photography</original>
-<translation>reduceren waas in landschapfotografie</translation>
+<original>Cooling filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>pale yellow</original>
-<translation>bleek geel</translation>
+<original>Red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation</original>
-<translation>absorbeer UV radiatie</translation>
+<original>Orange</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly less than 2A)</original>
-<translation>absorbeer UV radiatie (beetje minder dan 2A)</translation>
+<original>Yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly more than 2A)</original>
-<translation>absorbeer UV radiatie (beetje meer dan 2A)</translation>
+<original>Green</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>light yellow</original>
-<translation>licht geel</translation>
+<original>Cyan</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>absorbeer buitensporig hemelsblauw, maak lucht donkerder in zwart-wit foto's</translation>
+<original>Blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, emphasizing clouds</original>
-<translation>absorbeer buitensporig hemelsblauw, benadrukken wolken</translation>
+<original>Violet</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>high blue absorption; correction for sky, cloud, and foliage</original>
-<translation>hoog blauw absorbtie: correctie voor hemel, wolk en loof</translation>
+<original>Magenta</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>deep yellow</original>
-<translation>diep geel</translation>
+<original>Deep red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>moderate contrast in black/white outdoor photography</original>
-<translation>matig contrast in zwart-wit buitenfotografie</translation>
+<original>Deep blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-green</original>
-<translation>geel-groen</translation>
+<original>Deep emerald</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>correction for tungsten light</original>
-<translation>correctie voor gloeilamplicht</translation>
+<original>Deep yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>minus blue; reduce haze in aerial photos</original>
-<translation>minus blauw; reduceer waas in luchtfoto's</translation>
-</phrase>
-
-<phrase>
-<original>darken sky in black/white outdoor photography</original>
-<translation>verdonker hemel in zwart-wit buitenfotografie</translation>
-</phrase>
-
-<phrase>
-<original>yellow-orange</original>
-<translation>geel-oranje</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 15</original>
-<translation>sterkere versie van 15</translation>
-</phrase>
-
-<phrase>
-<original>orange</original>
-<translation>oranje</translation>
-</phrase>
-
-<phrase>
-<original>contrast filter for blue and blue-green absorption</original>
-<translation>contrastfilter voor blauw en blauw-groen absorptie</translation>
-</phrase>
-
-<phrase>
-<original>deep orange</original>
-<translation>diep oranje</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 21</original>
-<translation>sterkere versie van 21</translation>
-</phrase>
-
-<phrase>
-<original>light red</original>
-<translation>licht rood</translation>
-</phrase>
-
-<phrase>
-<original>contrast effects, darken sky and water</original>
-<translation>contrast effecten, verdonkeren hemel en water</translation>
-</phrase>
-
-<phrase>
-<original>red for two-color photography (daylight or tungsten)</original>
-<translation>rood voor tweekleuren fotografie (daglicht of wolfraam)</translation>
-</phrase>
-
-<phrase>
-<original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>driekleuren rood: contrast effecten in buiten scenes</translation>
-</phrase>
-
-<phrase>
-<original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>stereo rood: knipt waas, nuttig voor storm en maanlicht scenes</translation>
-</phrase>
-
-<phrase>
-<original>deep red</original>
-<translation>diep rood</translation>
-</phrase>
-
-<phrase>
-<original>color separation; extreme sky darkening in black/white photos</original>
-<translation>kleurenseparatie: extreme verdonkering hemel in zwart/wit foto's</translation>
-</phrase>
-
-<phrase>
-<original>green absorption</original>
-<translation>groen absorbtie</translation>
-</phrase>
-
-<phrase>
-<original>strong green absorption</original>
-<translation>sterke groen absorbtie</translation>
-</phrase>
-
-<phrase>
-<original>variant on 32</original>
-<translation>versie van 32</translation>
-</phrase>
-
-<phrase>
-<original>violet</original>
-<translation>violet</translation>
-</phrase>
-
-<phrase>
-<original>minus-green and plus-blue separation</original>
-<translation>minus-groen en plus-blauw separatie</translation>
-</phrase>
-
-<phrase>
-<original>red absorption; useful for contrast in microscopy</original>
-<translation>rood absorbtie: nuttig voor contrast microscopie</translation>
-</phrase>
-
-<phrase>
-<original>light blue-green</original>
-<translation>licht blauw-groen</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, two-color general viewing</original>
-<translation>minus-rood, tweekleuren algemeen bekijken</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, variant on 44</original>
-<translation>minus-rood, variant op 44</translation>
-</phrase>
-
-<phrase>
-<original>blue tricolor</original>
-<translation>blauw driekleuren</translation>
-</phrase>
-
-<phrase>
-<original>direct color separation; contrast effects in commercial photography</original>
-<translation>directe kleurenseparatie; contrast effecten in commerciële fotografie</translation>
-</phrase>
-
-<phrase>
-<original>light blue</original>
-<translation>licht blauw</translation>
-</phrase>
-
-<phrase>
-<original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>verhoog blauw en purper objecten; nuttig voor fluorisente verven</translation>
-</phrase>
-
-<phrase>
-<original>deep blue tricolor</original>
-<translation>diep blauw driekleuren</translation>
-</phrase>
-
-<phrase>
-<original>color separation; calibration using SMPTE color bars</original>
-<translation>kleurenseparatie; kalibratie met gebruik van SMPTE kleurstaven</translation>
-</phrase>
-
-<phrase>
-<original>very light green</original>
-<translation>heel licht groen</translation>
-</phrase>
-
-<phrase>
-<original>darkens sky, improves flesh tones</original>
-<translation>verdonkert hemel, verbetert huidskleuren</translation>
-</phrase>
-
-<phrase>
-<original>green tricolor</original>
-<translation>groen driekleuren</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation; improves definition of foliage</original>
-<translation>gebruikt voor kleurenseparatie; verbetert definitie van loof</translation>
-</phrase>
-
-<phrase>
-<original>deep green tricolor</original>
-<translation>diep groen driekleuern</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation, tungsten tricolor projection</original>
-<translation>gebruikt voor kleurenseparatie; wolfraam driekleuren projectie</translation>
-</phrase>
-
-<phrase>
-<original>dark red</original>
-<translation>donker rood</translation>
-</phrase>
-
-<phrase>
-<original>infrared photography longpass filter blocking</original>
-<translation>infrarood fotografie longpass filter blokkering</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter, 3200K to 5500K; converts indoor lighting to sunlight</original>
-<translation>koeling filter,3200K tot 5500K; converteert binnenverlichting tot zonlicht</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3400K to 5500K</original>
-<translation>variant van 80A, 3400K tot 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3800K to 5500K</original>
-<translation>variant van 80A, 3800K tot 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 4200K to 5500K</original>
-<translation>variant van 80A, 4200K tot 5500K</translation>
-</phrase>
-
-<phrase>
-<original>pale orange</original>
-<translation>bleek oranje</translation>
-</phrase>
-
-<phrase>
-<original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation>warmte filter (verlaagt kleurtemperatuur), 3400K tot 3200K</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81A</original>
-<translation>warmte filter; beetje sterker dan 81A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81B</original>
-<translation>warmte filter; beetje sterker dan 81B</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81C</original>
-<translation>warmte filter; beetje sterker dan 81C</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81D</original>
-<translation>warmte filter; beetje sterker dan 81D</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; raises color temperature 100K</original>
-<translation>koelen filter; verhoogt kleurtemperatuur 100K</translation>
-</phrase>
-
-<phrase>
-<original>pale blue</original>
-<translation>bleek blauw</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81A</original>
-<translation>koelen filter; tegengestelde 81A</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81B</original>
-<translation>koelen filter; tegengestelde 81B</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81C</original>
-<translation>koelen filter; tegengestelde 81C</translation>
-</phrase>
-
-<phrase>
-<original>amber</original>
-<translation>amber</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation>warmte filter; 5500K to 3400K; converteert zonlicht naar gloeiend</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3200K; opposite of 80A</original>
-<translation>warmte filter; 5500K to 3200K; tegengestelde 80A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3800K; opposite of 80C</original>
-<translation>warmte filter; 5500K to 3800K; tegengestelde 80C</translation>
-</phrase>
-
-<phrase>
-<original>dark gray amber</original>
-<translation>donker grijs amber</translation>
-</phrase>
-
-<phrase>
-<original>remove color before photographing; rarely used for actual photos</original>
-<translation>verwijder kleur vóór fotograferen; zelden gebruikt voor werkelijke foto's</translation>
-</phrase>
-
-<phrase>
-<original>neutral gray</original>
-<translation>neutraal grijs</translation>
-</phrase>
-
-<phrase>
-<original>neutral density filter; equally blocks all light frequencies</original>
-<translation>neutraal densiteit filter; blokkeert evenzeer al de lichtfrequenties</translation>
+<original>Custom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6393,59 +6078,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Toepassen fotofilter</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
-
-<phrase>
-<original>strictness</original>
-<translation>striktheid</translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation>vormbeperkingen afdwingen</translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation>kleuren intensiteit</translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation>object gevoeligheid</translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation>markeer gedetecteerde regio's (alleen voorbeeld)</translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation>forceer beperkingsmaatregelen</translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation>Zoeken naar potentiële rode ogenlocaties in afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation>Raffineren lijst van oogkandidaten</translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation>Toepassing van definitieve vals positieve controles</translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation>Toepassen finale rode ogen correcties (%1 van %2)</translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -7188,6 +6821,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
+<original>orange</original>
+<translation>oranje</translation>
+</phrase>
+
+<phrase>
 <original>pink</original>
 <translation>roos</translation>
 </phrase>
@@ -7217,7 +6855,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Vertaling door %1</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7409,6 +7047,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>random seed</original>
+<translation>willekeurig zaad</translation>
+</phrase>
+
+<phrase>
 <original>tip radius</original>
 <translation>topradius</translation>
 </phrase>
@@ -7438,7 +7081,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Grafiet</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7498,16 +7141,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>random seed</original>
-<translation>willekeurig zaad</translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Projecteren van afbeelding door gesimuleerde glas</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13619,10 +13257,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11930 total words. -->
+<!-- As of this build, PhotoDemon contains 5078 phrases. -->
+<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 11577 total words. -->
 
 </pdData>

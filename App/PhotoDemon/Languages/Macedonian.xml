@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.323</langversion>
+<langversion>1.0.325</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1769,6 +1769,11 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>Фото филтер</translation>
+</phrase>
+
+<phrase>
 <original>Replace color</original>
 <translation>Заменете боја</translation>
 </phrase>
@@ -1831,16 +1836,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <phrase>
 <original>Monochrome to gray</original>
 <translation>Монохроматски до сива боја</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>Фото филтер</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>отстранување на црвени очи</translation>
 </phrase>
 
 <phrase>
@@ -2288,7 +2283,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4876,16 +4871,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Photography</original>
-<translation>фотографија</translation>
-</phrase>
-
-<phrase>
-<original>Photo filters</original>
-<translation>Фото филтри</translation>
-</phrase>
-
-<phrase>
 <original>Effects</original>
 <translation>ефекти</translation>
 </phrase>
@@ -5303,7 +5288,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5998,8 +5983,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>available filters</original>
-<translation>достапни филтри</translation>
+<original>filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6008,378 +5993,78 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>skylight (pale pink)</original>
-<translation>светларник (бледо розова)</translation>
+<original>Warming filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>reduce haze in landscape photography</original>
-<translation>намалување на магла во фотографирањето на пејзажи</translation>
+<original>Cooling filter (%1)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>pale yellow</original>
-<translation>бледо жолта</translation>
+<original>Red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation</original>
-<translation>апсорбира УВ зрачење</translation>
+<original>Orange</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly less than 2A)</original>
-<translation>апсорбира УВ зрачење (нешто помалку од 2А)</translation>
+<original>Yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly more than 2A)</original>
-<translation>апсорбира УВ зрачење (нешто повеќе од 2А)</translation>
+<original>Green</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>light yellow</original>
-<translation>светло жолта</translation>
+<original>Cyan</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>апсорбираат вишокот на сино небо, направи небото потемна во црно/бели фотографии</translation>
+<original>Blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, emphasizing clouds</original>
-<translation>апсорбираат вишокот на сино небо, нагласувајќи облаци</translation>
+<original>Violet</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>high blue absorption; correction for sky, cloud, and foliage</original>
-<translation>високи сини апсорпција; корекција на небо, облака и зеленило</translation>
+<original>Magenta</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>deep yellow</original>
-<translation>длабоко жолто</translation>
+<original>Deep red</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>moderate contrast in black/white outdoor photography</original>
-<translation>умерена контраст во црно/бело отворено фотографија</translation>
+<original>Deep blue</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-green</original>
-<translation>жолто-зелена</translation>
+<original>Deep emerald</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>correction for tungsten light</original>
-<translation>корекција на волфрам светлина</translation>
+<original>Deep yellow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>minus blue; reduce haze in aerial photos</original>
-<translation>минус сина; намалување на магла во воздушни фотографии</translation>
-</phrase>
-
-<phrase>
-<original>darken sky in black/white outdoor photography</original>
-<translation>небото затемни во црна/бела отворено фотографија</translation>
-</phrase>
-
-<phrase>
-<original>yellow-orange</original>
-<translation>жолто-портокалова</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 15</original>
-<translation>посилна верзија од 15</translation>
-</phrase>
-
-<phrase>
-<original>orange</original>
-<translation>портокал</translation>
-</phrase>
-
-<phrase>
-<original>contrast filter for blue and blue-green absorption</original>
-<translation>контраст филтер за сина и сино-зелена апсорпција</translation>
-</phrase>
-
-<phrase>
-<original>deep orange</original>
-<translation>длабоко портокал</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 21</original>
-<translation>посилна верзија од 21</translation>
-</phrase>
-
-<phrase>
-<original>light red</original>
-<translation>светло црвена</translation>
-</phrase>
-
-<phrase>
-<original>contrast effects, darken sky and water</original>
-<translation>контраст ефекти, небо и вода потемни</translation>
-</phrase>
-
-<phrase>
-<original>red for two-color photography (daylight or tungsten)</original>
-<translation>црвено за две бои фотографија (дневна светлина или вештачка светлина)</translation>
-</phrase>
-
-<phrase>
-<original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>тробојка црвена; контраст ефекти во сцени на отворено</translation>
-</phrase>
-
-<phrase>
-<original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>стерео црвена; намалување на магла, корисни за бура или месечината подесувања</translation>
-</phrase>
-
-<phrase>
-<original>deep red</original>
-<translation>длабока црвена</translation>
-</phrase>
-
-<phrase>
-<original>color separation; extreme sky darkening in black/white photos</original>
-<translation>сепарација на бои; екстремни небото затемнување во црно/бели фотографии</translation>
-</phrase>
-
-<phrase>
-<original>green absorption</original>
-<translation>зелена апсорпција</translation>
-</phrase>
-
-<phrase>
-<original>strong green absorption</original>
-<translation>силен зелен апсорпција</translation>
-</phrase>
-
-<phrase>
-<original>variant on 32</original>
-<translation>варијанта на 32</translation>
-</phrase>
-
-<phrase>
-<original>violet</original>
-<translation>виолетова</translation>
-</phrase>
-
-<phrase>
-<original>minus-green and plus-blue separation</original>
-<translation>минус и плус-зелена-сина поделба</translation>
-</phrase>
-
-<phrase>
-<original>red absorption; useful for contrast in microscopy</original>
-<translation>црвена апсорпција; корисни за контраст во микроскопија</translation>
-</phrase>
-
-<phrase>
-<original>light blue-green</original>
-<translation>светло сино-зелена</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, two-color general viewing</original>
-<translation>минус-црвена боја, две бои воопшто гледање</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, variant on 44</original>
-<translation>минус-црвена, варијанта на 44</translation>
-</phrase>
-
-<phrase>
-<original>blue tricolor</original>
-<translation>сина тробојка</translation>
-</phrase>
-
-<phrase>
-<original>direct color separation; contrast effects in commercial photography</original>
-<translation>директна боја сепарација; контраст ефекти во комерцијална фотографија</translation>
-</phrase>
-
-<phrase>
-<original>light blue</original>
-<translation>Светло сино</translation>
-</phrase>
-
-<phrase>
-<original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>подобрување на сини и виолетови објекти; корисни за флуоресцентни бои</translation>
-</phrase>
-
-<phrase>
-<original>deep blue tricolor</original>
-<translation>длабоко синото тробојка</translation>
-</phrase>
-
-<phrase>
-<original>color separation; calibration using SMPTE color bars</original>
-<translation>сепарација на бои; калибрација со користење на боја барови SMPTE</translation>
-</phrase>
-
-<phrase>
-<original>very light green</original>
-<translation>многу светло зелена</translation>
-</phrase>
-
-<phrase>
-<original>darkens sky, improves flesh tones</original>
-<translation>затемнува небото, ја подобрува месо тонови</translation>
-</phrase>
-
-<phrase>
-<original>green tricolor</original>
-<translation>зелени тробојка</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation; improves definition of foliage</original>
-<translation>се користи за сепарација на бои; подобрува дефиницијата на зеленило</translation>
-</phrase>
-
-<phrase>
-<original>deep green tricolor</original>
-<translation>длабоко зелена тробојка</translation>
-</phrase>
-
-<phrase>
-<original>used for color separation, tungsten tricolor projection</original>
-<translation>се користи за сепарација на бои, волфрам тробојка проекција</translation>
-</phrase>
-
-<phrase>
-<original>dark red</original>
-<translation>темно црвено</translation>
-</phrase>
-
-<phrase>
-<original>infrared photography longpass filter blocking</original>
-<translation>инфраред фотографија долго филтер блокирање</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter, 3200K to 5500K; converts indoor lighting to sunlight</original>
-<translation>ладење филтер, 3200K да 5500K; претвора затворен осветлување на сончева светлина</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3400K to 5500K</original>
-<translation>варијанта на 80A, 3400K да 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3800K to 5500K</original>
-<translation>варијанта на 80A, 3800K да 5500K</translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 4200K to 5500K</original>
-<translation>варијанта на 80A, 4200K да 5500K</translation>
-</phrase>
-
-<phrase>
-<original>pale orange</original>
-<translation>бледо портокалова</translation>
-</phrase>
-
-<phrase>
-<original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation>затоплување филтер (ја намалува температурата во боја), 3400K да 3200K</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81A</original>
-<translation>затоплување филтерот; малку посилна од 81A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81B</original>
-<translation>затоплување филтерот; малку посилна од 81B</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81C</original>
-<translation>затоплување филтерот; малку посилна од 81C</translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81D</original>
-<translation>затоплување филтерот; малку посилна од 81D</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; raises color temperature 100K</original>
-<translation>ладење филтер; покренува температура на бојата 100k</translation>
-</phrase>
-
-<phrase>
-<original>pale blue</original>
-<translation>бледо сино</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81A</original>
-<translation>ладење филтер; спротивно на 81A</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81B</original>
-<translation>ладење филтер; спротивно на 81B</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81C</original>
-<translation>ладење филтер; спротивно на 81C</translation>
-</phrase>
-
-<phrase>
-<original>amber</original>
-<translation>килибар</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation>затоплување филтер, 5500K да 3400K; конвертира сончевата светлина за да блескаво</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3200K; opposite of 80A</original>
-<translation>затоплување филтер, 5500K премногу 3200K; спротивно на 80A</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3800K; opposite of 80C</original>
-<translation>затоплување филтер, 5500K да 3800K; спротивно на 80C</translation>
-</phrase>
-
-<phrase>
-<original>dark gray amber</original>
-<translation>темно сива килибар</translation>
-</phrase>
-
-<phrase>
-<original>remove color before photographing; rarely used for actual photos</original>
-<translation>се отстрани боја пред фотографирање; ретко се користи за вистински фотографии</translation>
-</phrase>
-
-<phrase>
-<original>neutral gray</original>
-<translation>неутрална сива</translation>
-</phrase>
-
-<phrase>
-<original>neutral density filter; equally blocks all light frequencies</original>
-<translation>неутрален филтер за густина; подеднакво блокира сите светлина фреквенции</translation>
+<original>Custom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6387,59 +6072,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Примена на слика филтер</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
-
-<phrase>
-<original>strictness</original>
-<translation>строгост</translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation>спроведе ограничувањата форма</translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation>боја чувствителност</translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation>чувствителност објект</translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation>нагласување откриени региони (само преглед)</translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation>спроведе големина ограничувања</translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation>Пребарување на сликата за потенцијални локации на црвени очи</translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation>листа рафинирање на око кандидати</translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation>Примена на конечниот лажно-позитивни прегледи</translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation>Примена на конечниот корекција на црвени очи ( %1 %2)</translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -7182,6 +6815,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>orange</original>
+<translation>портокал</translation>
+</phrase>
+
+<phrase>
 <original>pink</original>
 <translation>розова</translation>
 </phrase>
@@ -7211,7 +6849,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Превод од %1</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7403,6 +7041,11 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>tip radius</original>
 <translation>радиус на врвот</translation>
 </phrase>
@@ -7432,7 +7075,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>графит</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7492,16 +7135,11 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Проектирање на сликата преку симулирани стакло</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13613,10 +13251,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11930 total words. -->
+<!-- As of this build, PhotoDemon contains 5078 phrases. -->
+<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 11577 total words. -->
 
 </pdData>

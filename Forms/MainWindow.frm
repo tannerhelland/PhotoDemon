@@ -929,7 +929,7 @@ Begin VB.Form FormMain
             Index           =   9
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Photo filters..."
+            Caption         =   "Photo filter..."
             Index           =   10
          End
          Begin VB.Menu MnuColor 

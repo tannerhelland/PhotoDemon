@@ -2,11 +2,11 @@ VERSION 5.00
 Begin VB.Form FormPhotoFilters 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   Caption         =   " Photo filters"
+   Caption         =   " Photo filter"
    ClientHeight    =   6540
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   14340
+   ClientWidth     =   11670
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -23,16 +23,26 @@ Begin VB.Form FormPhotoFilters
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   956
+   ScaleWidth      =   778
+   Begin PhotoDemon.pdColorSelector csColor 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3360
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   1720
+      Caption         =   "color"
+   End
    Begin PhotoDemon.pdListBoxOD lstFilters 
-      Height          =   4695
+      Height          =   3015
       Left            =   6000
       TabIndex        =   3
       Top             =   120
-      Width           =   8175
-      _ExtentX        =   14420
-      _ExtentY        =   8281
-      Caption         =   "available filters"
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   6800
+      Caption         =   "filter"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750
@@ -56,9 +66,9 @@ Begin VB.Form FormPhotoFilters
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   4860
-      Width           =   8175
-      _ExtentX        =   14420
+      Top             =   4440
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   1244
       Caption         =   "density"
       Min             =   1
@@ -68,6 +78,16 @@ Begin VB.Form FormPhotoFilters
       GradientColorLeft=   16777215
       NotchPosition   =   2
       NotchValueCustom=   30
+   End
+   Begin PhotoDemon.pdCheckBox chkLuminance 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   5280
+      Width           =   5280
+      _ExtentX        =   9313
+      _ExtentY        =   661
+      Caption         =   "preserve luminance"
    End
 End
 Attribute VB_Name = "FormPhotoFilters"
@@ -79,30 +99,19 @@ Attribute VB_Exposed = False
 'Photo Filter Application Tool
 'Copyright 2013-2020 by Tanner Helland
 'Created: 06/June/13
-'Last updated: 02/August/16
-'Last update: totally overhaul UI
+'Last updated: 27/October/20
+'Last update: greatly simplify tool to bring it in line with Photoshop
 '
-'Advanced photo filter simulation tool.  A full discussion of photographic filters and how they work are available
-' at this Wikipedia article: https://en.wikipedia.org/wiki/Photographic_filter
+'Photo filter simulation tool.  For a brief overview of how photographic filters theoretically work,
+' consult Wikipedia: https://en.wikipedia.org/wiki/Photographic_filter
 '
-'This code is very similar to PhotoDemon's "Temperature" algorithm.  The main difference is the way the user
-' selects a filter to apply.  The available list of filters is flexible, and I have gone to great lengths to find and
-' implement a rough correlation for every traditional Wratten (Tiffen) photo filter.
+'The list of available filters mirrors Photoshop's.  There's not much reason to provide this tool
+' other than to "fill a gap" in Photoshop tutorials that leverage it.  I've at least tried to improve
+' the UI and make the tool a little more interesting visually than Photoshop's, and we also perform
+' our conversion in L*ab color space for ideal results (something PS does not, to my knowledge).
 '
-'That said, I hope it is abundantly clear that these conversions are all very loose estimations.  Filters work by
-' blocking specific wavelengths of light at the moment of photography, so it's impossible to perfectly replicate their
-' behavior via code.  All we can do is approximate, so do not expect to get identical results between actual filters
-' and post-production tools like PhotoDemon.
-'
-'Luminosity preservation is assumed.  I could provide a toggle for it, but I see no real benefit to unpreserved use
-' of these tools.
-'
-'The list-box-style interface was custom built for this tool, and I derived it from similar code in the Metadata Browser
-' and About dialog.  Please compile for best results; things like mousewheel support and mouseleave tracking require
-' subclassing, so they may not behave as expected in the IDE.
-'
-'I used many resources while attempting to create a list of Wratten filters and their RGB equivalents.  In no particular
-' order, thank you to:
+'For a better understanding of "true" photo filters (e.g. actual hardware that you stick on a
+' camera lens), consider these useful resources:
 '
 'http://www.karmalimbo.com/aro/pics/filters/transmision%20of%20wratten%20filters.pdf
 'https://en.wikipedia.org/wiki/Wratten_85#Reference_table
@@ -123,9 +132,7 @@ Option Explicit
 
 'Specialized type for holding photographic filter information
 Private Type WrattenFilter
-    Id As String
     Name As String
-    Description As String
     RGBColor As Long
 End Type
 
@@ -133,23 +140,22 @@ End Type
 Private m_Filters() As WrattenFilter
 Private m_numOfFilters As Long
 
-'Height of each filter content block
-Private Const BLOCKHEIGHT As Long = 53
+'Height of each filter content block, in pixels at 96 DPI.
+' (This will be automatically scaled at run-time, as necessary.)
+Private Const BLOCKHEIGHT As Long = 28
 
-'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
-' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
-Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
+'Font object for rendering list captions
+Private m_TitleFont As pdFont
 
-Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.AddPresetData "CurrentFilter", Trim$(Str$(lstFilters.ListIndex))
+'Avoid stack crashes
+Private m_SourceIsColor As Boolean, m_SourceIsList As Boolean
+
+Private Sub chkLuminance_Click()
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
     Process "Photo filter", , GetLocalParamString(), UNDO_Layer
-End Sub
-
-Private Sub cmdBar_ReadCustomPresetData()
-    lstFilters.ListIndex = CLng(Trim$(cmdBar.RetrievePresetData("CurrentFilter")))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -157,17 +163,22 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 'Adding new filters is as simple as passing additional values through this sub
-Private Sub AddWratten(ByVal wrattenID As String, ByVal filterColor As String, ByVal filterDescription As String, ByVal filterRGB As Long)
-    
+Private Sub AddWratten(ByVal filterName As String, ByVal filterRGB As Long)
     With m_Filters(m_numOfFilters)
-        .Id = wrattenID
-        .Name = filterColor
-        .Description = filterDescription
+        .Name = filterName
         .RGBColor = filterRGB
     End With
     m_numOfFilters = m_numOfFilters + 1
     ReDim Preserve m_Filters(0 To m_numOfFilters) As WrattenFilter
-    
+End Sub
+
+Private Sub csColor_ColorChanged()
+    If (Not m_SourceIsList) Then
+        m_SourceIsColor = True
+        lstFilters.ListIndex = m_numOfFilters - 1
+        m_SourceIsColor = False
+    End If
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -177,81 +188,46 @@ Private Sub Form_Load()
     
     'Initialize a custom font object for names
     Set m_TitleFont = New pdFont
-    m_TitleFont.SetFontBold True
-    m_TitleFont.SetFontSize 12
+    m_TitleFont.SetFontBold False
+    m_TitleFont.SetFontSize 10
     m_TitleFont.CreateFontObject
     m_TitleFont.SetTextAlignment vbLeftJustify
-    
-    '...and a second custom font object for descriptions
-    Set m_DescriptionFont = New pdFont
-    m_DescriptionFont.SetFontBold False
-    m_DescriptionFont.SetFontSize 10
-    m_DescriptionFont.CreateFontObject
-    m_DescriptionFont.SetTextAlignment vbLeftJustify
     
     m_numOfFilters = 0
     ReDim m_Filters(0) As WrattenFilter
     
     'Add a comprehensive list of Wratten-type filters and their corresponding RGB values.  In the future, this may be moved to an external
     ' (or embedded) XML file.  That would certainly make editing the list easier, though I don't anticipate needing to change it much.
-    AddWratten "1A", g_Language.TranslateMessage("skylight (pale pink)"), g_Language.TranslateMessage("reduce haze in landscape photography"), RGB(245, 236, 240)
-    AddWratten "2A", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation"), RGB(244, 243, 233)
-    AddWratten "2B", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation (slightly less than 2A)"), RGB(244, 245, 230)
-    AddWratten "2E", g_Language.TranslateMessage("pale yellow"), g_Language.TranslateMessage("absorb UV radiation (slightly more than 2A)"), RGB(242, 254, 139)
-    AddWratten "3", g_Language.TranslateMessage("light yellow"), g_Language.TranslateMessage("absorb excessive sky blue, make sky darker in black/white photos"), RGB(255, 250, 110)
-    AddWratten "6", g_Language.TranslateMessage("light yellow"), g_Language.TranslateMessage("absorb excessive sky blue, emphasizing clouds"), RGB(253, 247, 3)
-    AddWratten "8", g_Language.TranslateMessage("yellow"), g_Language.TranslateMessage("high blue absorption; correction for sky, cloud, and foliage"), RGB(247, 241, 0)
-    AddWratten "9", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("moderate contrast in black/white outdoor photography"), RGB(255, 228, 0)
-    AddWratten "11", g_Language.TranslateMessage("yellow-green"), g_Language.TranslateMessage("correction for tungsten light"), RGB(75, 175, 65)
-    AddWratten "12", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("minus blue; reduce haze in aerial photos"), RGB(255, 220, 0)
-    AddWratten "15", g_Language.TranslateMessage("deep yellow"), g_Language.TranslateMessage("darken sky in black/white outdoor photography"), RGB(240, 160, 50)
-    AddWratten "16", g_Language.TranslateMessage("yellow-orange"), g_Language.TranslateMessage("stronger version of 15"), RGB(237, 140, 20)
-    AddWratten "21", g_Language.TranslateMessage("orange"), g_Language.TranslateMessage("contrast filter for blue and blue-green absorption"), RGB(245, 100, 50)
-    AddWratten "22", g_Language.TranslateMessage("deep orange"), g_Language.TranslateMessage("stronger version of 21"), RGB(247, 84, 33)
-    AddWratten "23A", g_Language.TranslateMessage("light red"), g_Language.TranslateMessage("contrast effects, darken sky and water"), RGB(255, 117, 106)
-    AddWratten "24", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("red for two-color photography (daylight or tungsten)"), RGB(240, 0, 0)
-    AddWratten "25", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("tricolor red; contrast effects in outdoor scenes"), RGB(220, 0, 60)
-    AddWratten "26", g_Language.TranslateMessage("red"), g_Language.TranslateMessage("stereo red; cuts haze, useful for storm or moonlight settings"), RGB(210, 0, 0)
-    AddWratten "29", g_Language.TranslateMessage("deep red"), g_Language.TranslateMessage("color separation; extreme sky darkening in black/white photos"), RGB(115, 10, 25)
-    AddWratten "32", g_Language.TranslateMessage("magenta"), g_Language.TranslateMessage("green absorption"), RGB(240, 0, 255)
-    AddWratten "33", g_Language.TranslateMessage("strong green absorption"), g_Language.TranslateMessage("variant on 32"), RGB(154, 0, 78)
-    AddWratten "34A", g_Language.TranslateMessage("violet"), g_Language.TranslateMessage("minus-green and plus-blue separation"), RGB(124, 40, 240)
-    AddWratten "38A", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("red absorption; useful for contrast in microscopy"), RGB(1, 156, 210)
-    AddWratten "44", g_Language.TranslateMessage("light blue-green"), g_Language.TranslateMessage("minus-red, two-color general viewing"), RGB(0, 136, 152)
-    AddWratten "44A", g_Language.TranslateMessage("light blue-green"), g_Language.TranslateMessage("minus-red, variant on 44"), RGB(0, 175, 190)
-    AddWratten "47", g_Language.TranslateMessage("blue tricolor"), g_Language.TranslateMessage("direct color separation; contrast effects in commercial photography"), RGB(43, 75, 220)
-    AddWratten "47A", g_Language.TranslateMessage("light blue"), g_Language.TranslateMessage("enhance blue and purple objects; useful for fluorescent dyes"), RGB(0, 15, 150)
-    AddWratten "47B", g_Language.TranslateMessage("deep blue tricolor"), g_Language.TranslateMessage("color separation; calibration using SMPTE color bars"), RGB(0, 0, 120)
-    AddWratten "56", g_Language.TranslateMessage("very light green"), g_Language.TranslateMessage("darkens sky, improves flesh tones"), RGB(132, 206, 35)
-    AddWratten "58", g_Language.TranslateMessage("green tricolor"), g_Language.TranslateMessage("used for color separation; improves definition of foliage"), RGB(40, 110, 5)
-    AddWratten "61", g_Language.TranslateMessage("deep green tricolor"), g_Language.TranslateMessage("used for color separation, tungsten tricolor projection"), RGB(40, 70, 10)
-    AddWratten "70", g_Language.TranslateMessage("dark red"), g_Language.TranslateMessage("infrared photography longpass filter blocking"), RGB(62, 0, 0)
-    AddWratten "80A", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("cooling filter, 3200K to 5500K; converts indoor lighting to sunlight"), RGB(50, 100, 230)
-    AddWratten "80B", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 3400K to 5500K"), RGB(70, 120, 230)
-    AddWratten "80C", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 3800K to 5500K"), RGB(90, 140, 235)
-    AddWratten "80D", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("variant of 80A, 4200K to 5500K"), RGB(110, 160, 240)
-    AddWratten "81A", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter (lowers color temperature), 3400 K to 3200 K"), RGB(247, 240, 220)
-    AddWratten "81B", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81A"), RGB(242, 232, 205)
-    AddWratten "81C", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81B"), RGB(230, 220, 200)
-    AddWratten "81D", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81C"), RGB(235, 220, 190)
-    AddWratten "81EF", g_Language.TranslateMessage("pale orange"), g_Language.TranslateMessage("warming filter; slightly stronger than 81D"), RGB(215, 185, 150)
-    AddWratten "82", g_Language.TranslateMessage("blue"), g_Language.TranslateMessage("cooling filter; raises color temperature 100K"), RGB(150, 205, 240)
-    AddWratten "82A", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81A"), RGB(205, 225, 235)
-    AddWratten "82B", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81B"), RGB(155, 190, 220)
-    AddWratten "82C", g_Language.TranslateMessage("pale blue"), g_Language.TranslateMessage("cooling filter; opposite of 81C"), RGB(120, 155, 190)
-    AddWratten "85", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3400K; converts sunlight to incandescent"), RGB(250, 155, 115)
-    AddWratten "85B", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3200K; opposite of 80A"), RGB(250, 125, 95)
-    AddWratten "85C", g_Language.TranslateMessage("amber"), g_Language.TranslateMessage("warming filter, 5500K to 3800K; opposite of 80C"), RGB(250, 155, 115)
-    AddWratten "90", g_Language.TranslateMessage("dark gray amber"), g_Language.TranslateMessage("remove color before photographing; rarely used for actual photos"), RGB(100, 85, 20)
-    AddWratten "96", g_Language.TranslateMessage("neutral gray"), g_Language.TranslateMessage("neutral density filter; equally blocks all light frequencies"), RGB(100, 100, 100)
+    AddWratten g_Language.TranslateMessage("Warming filter (%1)", "85"), RGB(236, 138, 0)
+    AddWratten g_Language.TranslateMessage("Warming filter (%1)", "LBA"), RGB(250, 150, 0)
+    AddWratten g_Language.TranslateMessage("Warming filter (%1)", "81"), RGB(235, 177, 19)
+    AddWratten g_Language.TranslateMessage("Cooling filter (%1)", "80"), RGB(0, 109, 255)
+    AddWratten g_Language.TranslateMessage("Cooling filter (%1)", "LBB"), RGB(0, 93, 255)
+    AddWratten g_Language.TranslateMessage("Cooling filter (%1)", "82"), RGB(0, 181, 255)
+    AddWratten g_Language.TranslateMessage("Red"), RGB(234, 26, 26)
+    AddWratten g_Language.TranslateMessage("Orange"), RGB(243, 162, 23)
+    AddWratten g_Language.TranslateMessage("Yellow"), RGB(249, 227, 28)
+    AddWratten g_Language.TranslateMessage("Green"), RGB(25, 201, 25)
+    AddWratten g_Language.TranslateMessage("Cyan"), RGB(29, 203, 234)
+    AddWratten g_Language.TranslateMessage("Blue"), RGB(29, 53, 234)
+    AddWratten g_Language.TranslateMessage("Violet"), RGB(155, 29, 234)
+    AddWratten g_Language.TranslateMessage("Magenta"), RGB(227, 24, 227)
+    AddWratten g_Language.TranslateMessage("Sepia"), RGB(172, 122, 51)
+    AddWratten g_Language.TranslateMessage("Deep red"), RGB(255, 0, 0)
+    AddWratten g_Language.TranslateMessage("Deep blue"), RGB(0, 34, 205)
+    AddWratten g_Language.TranslateMessage("Deep emerald"), RGB(0, 140, 0)
+    AddWratten g_Language.TranslateMessage("Deep yellow"), RGB(255, 213, 0)
+    AddWratten g_Language.TranslateMessage("Underwater"), RGB(0, 193, 177)
+    AddWratten g_Language.TranslateMessage("Custom"), RGB(127, 127, 127)
     
     'Add dummy entries to the owner-drawn listbox, so that it's initialized to the proper size and layout
-    lstFilters.ListItemHeight = FixDPI(BLOCKHEIGHT)
+    lstFilters.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
     lstFilters.SetAutomaticRedraws False
     Dim i As Long
     For i = 0 To m_numOfFilters - 1
-        lstFilters.AddItem , i
+        lstFilters.AddItem vbNullString, i
     Next i
+    lstFilters.ListIndex = 0
     lstFilters.SetAutomaticRedraws True, True
     
     'Apply translations and visual themes
@@ -266,7 +242,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub lstFilters_Click()
-    UpdatePreview
+    If (Not m_SourceIsColor) Then
+        m_SourceIsList = True
+        csColor.Color = m_Filters(lstFilters.ListIndex).RGBColor
+        m_SourceIsList = False
+    End If
 End Sub
 
 Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
@@ -284,57 +264,51 @@ Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
     Dim linePadding As Long
     linePadding = Interface.FixDPI(2)
     
+    Dim curBlockHeight As Long
+    curBlockHeight = Interface.FixDPI(BLOCKHEIGHT)
+    
     'pd2D is used for extra drawing capabilities
     Dim cPen As pd2DPen, cBrush As pd2DBrush, cSurface As pd2DSurface
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
         
     'Modify font colors to match the current selection state of this item
     If itemIsSelected Then
         m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected, True, False, itemIsHovered)
-        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected, True, False, itemIsHovered)
     Else
         m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, True, False, itemIsHovered)
-        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, True, False, itemIsHovered)
     End If
     
     'Render a color box that represents the color of this filter
+    Const COLOR_BOX_PADDING As Long = 3
     Dim colorRectF As RectF
     With colorRectF
-        .Width = FixDPIFloat(64)
-        .Height = FixDPIFloat(42)
-        .Left = offsetX + FixDPIFloat(4)
-        .Top = offsetY + ((FixDPIFloat(BLOCKHEIGHT) - .Height) / 2)
+        .Width = Interface.FixDPI(48)
+        .Height = curBlockHeight - COLOR_BOX_PADDING * 2
+        .Left = offsetX + Interface.FixDPI(4)
+        .Top = offsetY + COLOR_BOX_PADDING
     End With
     
-    Drawing2D.QuickCreateSolidBrush cBrush, m_Filters(itemIndex).RGBColor
-    PD2D.FillRectangleF_FromRectF cSurface, cBrush, colorRectF
+    If (itemIndex < m_numOfFilters - 1) Then
+        Drawing2D.QuickCreateSolidBrush cBrush, m_Filters(itemIndex).RGBColor
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, colorRectF
+        Drawing2D.QuickCreateSolidPen cPen, 1!, g_Themer.GetGenericUIColor(UI_GrayDefault)
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, colorRectF
+    End If
     
-    Drawing2D.QuickCreateSolidPen cPen, 1#, g_Themer.GetGenericUIColor(UI_GrayDefault)
-    PD2D.DrawRectangleF_FromRectF cSurface, cPen, colorRectF
-    
-    'To minimize confusion, release the surface now; all subsequent objects will draw directly to the target DC
+    'To minimize confusion, release the surface now; all subsequent rendering is text, which is easier
+    ' to draw directly onto the target DC
     Set cSurface = Nothing
         
     'Render the Wratten ID and name fields
     Dim textLeft As Long
     textLeft = colorRectF.Left + colorRectF.Width + FixDPI(8)
     
-    Dim titleString As String
-    titleString = m_Filters(itemIndex).Id & " - " & m_Filters(itemIndex).Name
+    Dim titleString As String, titleHeight As Long
+    titleString = m_Filters(itemIndex).Name
     m_TitleFont.AttachToDC bufferDC
-    m_TitleFont.FastRenderText textLeft, offsetY + FixDPI(4), titleString
-    
-    'Calculate the drop-down for the description line
-    Dim lineHeight As Single
-    lineHeight = m_TitleFont.GetHeightOfString(titleString) + linePadding
+    titleHeight = m_TitleFont.GetHeightOfString(titleString)
+    m_TitleFont.FastRenderText textLeft, offsetY + (BLOCKHEIGHT - titleHeight) \ 2, titleString
     m_TitleFont.ReleaseFromDC
-    
-    'Below that, add the description text
-    Dim descriptionString As String
-    descriptionString = m_Filters(itemIndex).Description
-    m_DescriptionFont.AttachToDC bufferDC
-    m_DescriptionFont.FastRenderText textLeft, offsetY + FixDPI(4) + lineHeight, descriptionString
-    m_DescriptionFont.ReleaseFromDC
     
 End Sub
 
@@ -347,7 +321,7 @@ Private Sub UpdatePreview()
     
     If (lstFilters.ListIndex >= 0) Then
     
-        'Sync the density slider to match the currently selected color
+        'Sync the density slider's background gradient to match the currently selected color
         If (sltDensity.GradientColorRight <> m_Filters(lstFilters.ListIndex).RGBColor) Then sltDensity.GradientColorRight = m_Filters(lstFilters.ListIndex).RGBColor
         
         'Render the preview
@@ -367,84 +341,111 @@ Public Sub ApplyPhotoFilter(ByVal effectParams As String, Optional ByVal toPrevi
     Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
-    Dim filterColor As Long, filterDensity As Double, preserveLuminance As Boolean
+    Dim filterColor As Long, filterDensity As Double, changeLuminance As Boolean
     
     With cParams
         filterColor = .GetLong("color")
         filterDensity = .GetDouble("density", 0#)
-        preserveLuminance = .GetBool("preserveluminance", True)
+        changeLuminance = Not .GetBool("preserveluminance", True)
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * 4
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * 4
     finalY = curDIBValues.Bottom
-    
-    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim h As Double, s As Double, l As Double
-    Dim originalLuminance As Double
-    Dim tmpR As Long, tmpG As Long, tmpB As Long
-            
-    'Extract the RGB values from the color we were passed
-    tmpR = Colors.ExtractRed(filterColor)
-    tmpG = Colors.ExtractGreen(filterColor)
-    tmpB = Colors.ExtractBlue(filterColor)
-            
-    'Divide tempStrength by 100 to yield a value between 0 and 1
-    filterDensity = filterDensity / 100
-            
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xStride = x * 4
-    For y = initY To finalY
+    'Cache some values to improve performance in the inner loop
+    filterDensity = filterDensity * 0.01
+    Dim invFilterDensity As Double
+    invFilterDensity = 1# - filterDensity
     
-        'Get the source pixel color values
-        b = imageData(xStride, y)
-        g = imageData(xStride + 1, y)
-        r = imageData(xStride + 2, y)
+    'Use LCMS to create an RGB to LAB transform (and vice-versa)
+    Dim cRGB As pdLCMSProfile
+    Set cRGB = New pdLCMSProfile
+    cRGB.CreateSRGBProfile True
+    
+    Dim cLAB As pdLCMSProfile
+    Set cLAB = New pdLCMSProfile
+    cLAB.CreateLabProfile True
+    
+    Dim cTransformRGBtoLAB As pdLCMSTransform
+    Set cTransformRGBtoLAB = New pdLCMSTransform
+    cTransformRGBtoLAB.CreateTwoProfileTransform cRGB, cLAB, TYPE_BGRA_8, TYPE_ALab_8, INTENT_PERCEPTUAL
+    
+    Dim cTransformLABtoRGB As pdLCMSTransform
+    Set cTransformLABtoRGB = New pdLCMSTransform
+    cTransformLABtoRGB.CreateTwoProfileTransform cLAB, cRGB, TYPE_ALab_8, TYPE_BGRA_8, INTENT_PERCEPTUAL
+    
+    'Get LAB values of the target color
+    Dim srcColorRGBA As RGBQuad
+    srcColorRGBA.Blue = Colors.ExtractBlue(filterColor)
+    srcColorRGBA.Green = Colors.ExtractGreen(filterColor)
+    srcColorRGBA.Red = Colors.ExtractRed(filterColor)
+    srcColorRGBA.Alpha = 255
+    
+    Dim srcColorLabA As RGBQuad
+    cTransformRGBtoLAB.ApplyTransformToScanline VarPtr(srcColorRGBA), VarPtr(srcColorLabA), 1
+    
+    Dim srcL As Long, srcA As Long, srcB As Long
+    srcB = srcColorLabA.Green
+    srcA = srcColorLabA.Red
+    srcL = srcColorLabA.Alpha
+    
+    'Resize the LAB array to the same size as a scanline of the source image;
+    ' we'll translate RGB to LAB values a scanline at a time
+    Dim srcPixelsLab() As Byte
+    ReDim srcPixelsLab(0 To workingDIB.GetDIBStride - 1) As Byte
+    
+    Dim labL As Long, labA As Long, labB As Long
+    
+    'Loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
         
-        'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (GetLuminance(r, g, b) / 255#)
+        'Translate this scanline into LAB color
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+        cTransformRGBtoLAB.ApplyTransformToScanline VarPtr(imageData(0)), VarPtr(srcPixelsLab(0)), workingDIB.GetDIBWidth
         
-        'Blend the original and new RGB values using the specified strength
-        r = BlendColors(r, tmpR, filterDensity)
-        g = BlendColors(g, tmpG, filterDensity)
-        b = BlendColors(b, tmpB, filterDensity)
+    For x = initX To finalX Step 4
         
-        'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
-        ' value with the original
-        If preserveLuminance Then
-            ImpreciseRGBtoHSL r, g, b, h, s, l
-            ImpreciseHSLtoRGB h, s, originalLuminance, r, g, b
-        End If
+        'Get the source pixel color values (LAB color space)
+        labB = srcPixelsLab(x + 1)
+        labA = srcPixelsLab(x + 2)
+        labL = srcPixelsLab(x + 3)
         
-        'Assign the new values to each color channel
-        imageData(xStride, y) = b
-        imageData(xStride + 1, y) = g
-        imageData(xStride + 2, y) = r
+        'Perform the blend in LAB
+        labB = Int(filterDensity * srcB) + Int(invFilterDensity * labB + 0.5)
+        labA = Int(filterDensity * srcA) + Int(invFilterDensity * labA + 0.5)
+        If changeLuminance Then labL = Int(filterDensity * srcL) + Int(invFilterDensity * labL + 0.5)
         
-    Next y
+        'Copy the merged LAB results back into the dedicated LAB array
+        srcPixelsLab(x + 1) = labB
+        srcPixelsLab(x + 2) = labA
+        srcPixelsLab(x + 3) = labL
+        
+    Next x
+    
+        'Translate all LAB results back into RGB in a single pass
+        cTransformLABtoRGB.ApplyTransformToScanline VarPtr(srcPixelsLab(0)), VarPtr(imageData(0)), workingDIB.GetDIBWidth
+        
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+        
+    Next y
     
     'Safely deallocate imageData()
     workingDIB.UnwrapArrayFromDIB imageData
@@ -465,9 +466,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
-        .AddParam "color", m_Filters(lstFilters.ListIndex).RGBColor
+        .AddParam "color", csColor.Color
         .AddParam "density", sltDensity.Value
-        .AddParam "preserveluminance", True
+        .AddParam "preserveluminance", chkLuminance.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.197</langversion>
+<langversion>7.0.199</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -1747,6 +1747,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>相片濾鏡</translation>
+</phrase>
+
+<phrase>
 <original>Replace color</original>
 <translation>取代色彩</translation>
 </phrase>
@@ -1809,16 +1814,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Monochrome to gray</original>
 <translation>單色至灰色</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>相片濾鏡</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>移除紅眼</translation>
 </phrase>
 
 <phrase>
@@ -2266,7 +2261,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近巨集列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4838,16 +4833,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Photography</original>
-<translation>攝影</translation>
-</phrase>
-
-<phrase>
-<original>Photo filters</original>
-<translation>相片濾鏡</translation>
-</phrase>
-
-<phrase>
 <original>Effects</original>
 <translation>效果</translation>
 </phrase>
@@ -5265,7 +5250,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 368 phrases. 189 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5960,8 +5945,8 @@ The update is automatically processing in the background.  You will receive a ne
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
-<original>available filters</original>
-<translation>可用濾鏡</translation>
+<original>filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5970,377 +5955,77 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>skylight (pale pink)</original>
+<original>Warming filter (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>reduce haze in landscape photography</original>
+<original>Cooling filter (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>pale yellow</original>
-<translation>淡黃</translation>
-</phrase>
-
-<phrase>
-<original>absorb UV radiation</original>
+<original>Red</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly less than 2A)</original>
+<original>Orange</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb UV radiation (slightly more than 2A)</original>
+<original>Yellow</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>light yellow</original>
-<translation>淺黃</translation>
-</phrase>
-
-<phrase>
-<original>absorb excessive sky blue, make sky darker in black/white photos</original>
+<original>Green</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>absorb excessive sky blue, emphasizing clouds</original>
+<original>Cyan</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>high blue absorption; correction for sky, cloud, and foliage</original>
+<original>Blue</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>deep yellow</original>
-<translation>深黃</translation>
-</phrase>
-
-<phrase>
-<original>moderate contrast in black/white outdoor photography</original>
+<original>Violet</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-green</original>
-<translation>黃綠</translation>
-</phrase>
-
-<phrase>
-<original>correction for tungsten light</original>
+<original>Magenta</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>minus blue; reduce haze in aerial photos</original>
+<original>Deep red</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>darken sky in black/white outdoor photography</original>
+<original>Deep blue</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>yellow-orange</original>
-<translation>橘黃</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 15</original>
+<original>Deep emerald</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>orange</original>
-<translation>橘色</translation>
-</phrase>
-
-<phrase>
-<original>contrast filter for blue and blue-green absorption</original>
+<original>Deep yellow</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>deep orange</original>
-<translation>深橘</translation>
-</phrase>
-
-<phrase>
-<original>stronger version of 21</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>light red</original>
-<translation>淺紅</translation>
-</phrase>
-
-<phrase>
-<original>contrast effects, darken sky and water</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>red for two-color photography (daylight or tungsten)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>tricolor red; contrast effects in outdoor scenes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>deep red</original>
-<translation>深紅</translation>
-</phrase>
-
-<phrase>
-<original>color separation; extreme sky darkening in black/white photos</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>green absorption</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>strong green absorption</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>variant on 32</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>violet</original>
-<translation>紫色</translation>
-</phrase>
-
-<phrase>
-<original>minus-green and plus-blue separation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>red absorption; useful for contrast in microscopy</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>light blue-green</original>
-<translation>淺藍綠色</translation>
-</phrase>
-
-<phrase>
-<original>minus-red, two-color general viewing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>minus-red, variant on 44</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>blue tricolor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>direct color separation; contrast effects in commercial photography</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>light blue</original>
-<translation>淺藍</translation>
-</phrase>
-
-<phrase>
-<original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>deep blue tricolor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color separation; calibration using SMPTE color bars</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>very light green</original>
-<translation>極淺綠</translation>
-</phrase>
-
-<phrase>
-<original>darkens sky, improves flesh tones</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>green tricolor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>used for color separation; improves definition of foliage</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>deep green tricolor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>used for color separation, tungsten tricolor projection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dark red</original>
-<translation>暗紅</translation>
-</phrase>
-
-<phrase>
-<original>infrared photography longpass filter blocking</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cooling filter, 3200K to 5500K; converts indoor lighting to sunlight</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3400K to 5500K</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 3800K to 5500K</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>variant of 80A, 4200K to 5500K</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pale orange</original>
-<translation>淡橘</translation>
-</phrase>
-
-<phrase>
-<original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81A</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81B</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81C</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter; slightly stronger than 81D</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; raises color temperature 100K</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pale blue</original>
-<translation>淡藍</translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81A</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81B</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cooling filter; opposite of 81C</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>amber</original>
-<translation>琥珀色</translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3200K; opposite of 80A</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>warming filter, 5500K to 3800K; opposite of 80C</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dark gray amber</original>
-<translation>暗灰琥珀色</translation>
-</phrase>
-
-<phrase>
-<original>remove color before photographing; rarely used for actual photos</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>neutral gray</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>neutral density filter; equally blocks all light frequencies</original>
+<original>Custom</original>
 <translation></translation>
 </phrase>
 
@@ -6349,59 +6034,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>正在套用相片濾鏡</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
-
-<phrase>
-<original>strictness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation>色彩靈敏度</translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation>物件靈敏度</translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -7144,6 +6777,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>orange</original>
+<translation>橘色</translation>
+</phrase>
+
+<phrase>
 <original>pink</original>
 <translation>粉紅</translation>
 </phrase>
@@ -7173,7 +6811,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>由 %1 翻譯</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_UITheme.frm contains 19 phrases. 4 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7363,6 +7001,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>tip radius</original>
 <translation></translation>
 </phrase>
@@ -7392,7 +7035,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7452,16 +7095,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Projecting image through simulated glass</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13557,10 +13195,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5148 phrases. -->
-<!-- 2566 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 11930 total words. -->
+<!-- As of this build, PhotoDemon contains 5078 phrases. -->
+<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 11577 total words. -->
 
 </pdData>
