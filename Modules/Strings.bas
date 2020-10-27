@@ -3,8 +3,8 @@ Attribute VB_Name = "Strings"
 'Additional string support functions
 'Copyright 2017-2020 by Tanner Helland
 'Created: 13/June/17
-'Last updated: 02/May/20
-'Last update: add wrapper for StrCmpLogicalW
+'Last updated: 23/October/20
+'Last update: fix a bug in Boyer-Moore string matcher if ANSI compare is requested on a string that contains non-ANSI chars
 '
 'Special thank-yous go out to some valuable references while developing this class:
 ' - fast Boyer-Moore string comparisons: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
@@ -350,6 +350,23 @@ Public Function GetListOfWordsFromString(ByRef srcString As String) As pdStringS
     Set GetListOfWordsFromString = New pdStringStack
     If (UBound(tmpList) >= 0) Then GetListOfWordsFromString.CreateFromStringArray tmpList
     
+End Function
+
+'Returns TRUE if the LEFT of this string (no trimming) matches the passed target
+Public Function LeftMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As String
+    If (LenB(srcString) >= LenB(desiredString)) Then LeftMatches = Strings.StringsEqual(Left$(srcString, Len(desiredString)), desiredString, ignoreCase)
+End Function
+
+'Identical to Right$(), but it uses a character instead of a position; this is used throughout PD for
+' simplified parsing.
+Public Function RightByChar(ByRef srcString As String, ByRef desiredChar As String, Optional ByVal initPos As Long = 1, Optional ByRef dstPosOfChar As Long = 0) As String
+    dstPosOfChar = InStr(initPos, srcString, desiredChar, vbBinaryCompare)
+    If (dstPosOfChar <> 0) Then RightByChar = Right$(srcString, Len(srcString) - dstPosOfChar)
+End Function
+
+'Returns TRUE if the RIGHT of this string (no trimming) matches the passed target
+Public Function RightMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As String
+    If (LenB(srcString) >= LenB(desiredString)) Then RightMatches = Strings.StringsEqual(Right$(srcString, Len(desiredString)), desiredString, ignoreCase)
 End Function
 
 Public Sub SetFormCaptionW(ByRef dstForm As Form, ByVal srcCaption As String)
@@ -879,8 +896,15 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
     End If
     
     'If full Unicode matching is required, we need a bigger table for char comparisons
-    Dim alphabetSize As Long
-    If useFullUnicodeSet Then alphabetSize = 65535 Else alphabetSize = 256
+    Dim alphabetSize As Long, charMask As Long
+    If useFullUnicodeSet Then
+        charMask = &HFFFF&
+        alphabetSize = 65535
+    Else
+        charMask = &HFF&
+        alphabetSize = 256
+    End If
+    
     If (alphabetSize <> m_lastAlphabetSize) Then
         m_lastAlphabetSize = alphabetSize
         ReDim m_charOccur(0 To alphabetSize - 1) As Long
@@ -938,7 +962,7 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
     ' not appear in the needle string should be specially marked (as -1 in our case).
     Dim j As Long, a As Long
     For j = 0 To lenNeedle - 1
-        a = needle(j) And &HFFFF&
+        a = needle(j) And charMask
         If (a > m_HighestChar) Then m_HighestChar = a
         m_charOccur(a) = j
     Next j
@@ -1002,10 +1026,10 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
         'The substring wasn't found.  Jump ahead as far as possible, based on how much of the
         ' current substring *was* matched.
         Else
-            If (partialSuffix(j + 1) >= j - m_charOccur(haystack(i + j) And &HFFFF&)) Then
+            If (partialSuffix(j + 1) >= j - m_charOccur(haystack(i + j) And charMask)) Then
                 i = i + partialSuffix(j + 1)
             Else
-                i = i + (j - m_charOccur(haystack(i + j) And &HFFFF&))
+                i = i + (j - m_charOccur(haystack(i + j) And charMask))
             End If
         End If
         
