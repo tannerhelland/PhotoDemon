@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 02/May/20
-'Last update: add new function(s) for sorting stack using StrCmpLogicalW; this matches Explorer sort order
+'Last updated: 23/October/20
+'Last update: add new function to blank a string in the array; this is useful for freeing memory while
+'             traversing a large collection in-order
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -128,6 +129,10 @@ End Sub
 ' IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
 Friend Sub TrimStack()
     ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
+End Sub
+
+Friend Sub FreeString(ByVal strIndex As Long)
+    If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then m_Strings(strIndex) = vbNullString
 End Sub
 
 'Retrieve a string from the stack, with optional support for locale invariant conversions (when the caller expects the string
@@ -611,9 +616,9 @@ Friend Sub CreateFromStringArray(ByRef srcStringArray() As String)
 End Sub
 
 'Fill this stack by parsing a string.  VBA.Split() is currently used; obviously a faster solution could be implemented.
-Friend Sub CreateFromMultilineString(ByRef srcString As String)
+Friend Sub CreateFromMultilineString(ByRef srcString As String, Optional ByVal lineDelimiter As String = vbCrLf)
     Dim tmpArray() As String
-    tmpArray = Split(srcString, vbCrLf, , vbBinaryCompare)
+    tmpArray = Split(srcString, lineDelimiter, , vbBinaryCompare)
     Me.CreateFromStringArray tmpArray
 End Sub
 
