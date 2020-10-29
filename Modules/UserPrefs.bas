@@ -3,8 +3,8 @@ Attribute VB_Name = "UserPrefs"
 'PhotoDemon User Preferences Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 10/September/20
-'Last update: treat canvas color as a dedicated preference, instead of a UI theme property
+'Last updated: 27/October/20
+'Last update: add a new 3DLUTs folder to the default /Data collection
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
 ' persistent user settings.
@@ -13,10 +13,10 @@ Attribute VB_Name = "UserPrefs"
 ' generate a default settings file on first run.
 '
 'Because the settings XML file may receive new settings with each new version, all setting
-' interaction functions require the caller to specify a default value, which will be used if
-' the requested setting does not exist in the XML.  Also note that if code attempts to write a
-' setting, but that setting name or section does not exist, it will automatically be appended as a
-' "new" setting at the end of its respective section.
+' interaction functions require the caller to specify a default value (which will be used if
+' that setting is requested, but it doesn't exist in the XML).  Also note that if you attempt to
+' write a setting, but that setting name or section does not exist, it will automatically be
+' appended as a "new" setting at the end of its respective section.
 '
 'Finally, outside functions should *never* interact with the central XML settings file directly.
 ' Always pass read/writes through this class.  I cannot guarantee that the XML format or style
@@ -54,6 +54,7 @@ Private m_IconPath As String
 
 Private m_ColorProfilePath As String
 Private m_UserLanguagePath As String
+Private m_LUTPathDefault As String, m_LUTPathUser As String
 Private m_GradientPathDefault As String, m_GradientPathUser As String
 Private m_PalettePath As String
 Private m_SelectionPath As String
@@ -196,6 +197,24 @@ End Function
 Public Sub SetGradientPath(ByRef newPath As String)
     m_GradientPathUser = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "Gradients", m_GradientPathUser
+End Sub
+
+Public Function GetLUTPath(Optional ByVal useDefaultLocation As Boolean = False) As String
+    If useDefaultLocation Then
+        GetLUTPath = m_LUTPathDefault
+    Else
+        GetLUTPath = m_LUTPathUser
+    End If
+End Function
+
+'There are two 3DLUT paths at present; a "default" one that marks PD's 3DLUT collection folder
+' (hard-coded to /Data/3DLUTs), and a user-editable one that auto-updates when individual LUTs
+' are imported/exported from standalone files - e.g. the equivalent of a "last-used LUT" path.
+'
+'This function sets the "last-used LUT" path.
+Public Sub SetLUTPath(ByRef newPath As String)
+    m_LUTPathUser = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "LUTs", m_LUTPathUser
 End Sub
 
 Public Function GetPalettePath() As String
@@ -443,6 +462,10 @@ Public Function InitializePaths() As Boolean
     m_GradientPathUser = m_GradientPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
     If (Not Files.PathExists(m_GradientPathDefault)) Then Files.PathCreate m_GradientPathDefault
     
+    m_LUTPathDefault = m_DataPath & "3DLUTs\"
+    m_LUTPathUser = m_LUTPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
+    If (Not Files.PathExists(m_LUTPathDefault)) Then Files.PathCreate m_LUTPathDefault
+    
     m_IconPath = m_DataPath & "Icons\"
     If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
     
@@ -542,10 +565,11 @@ Public Sub LoadUserSettings()
             m_TempPath = OS.SystemTempPath()
             SetPref_String "Paths", "TempFiles", m_TempPath
         End If
-            
+        
         'Pull all other stored paths
         m_ColorProfilePath = GetPref_String("Paths", "ColorProfiles", m_ColorProfilePath)
         m_GradientPathUser = GetPref_String("Paths", "Gradients", m_GradientPathDefault)
+        m_LUTPathUser = GetPref_String("Paths", "LUTs", m_LUTPathDefault)
         m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
         m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
         m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)
