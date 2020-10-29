@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.87</langversion>
+<langversion>9.0.135</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1313,12 +1313,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation>Bild 90° im Uhrzeigersinn drehen</translation>
+<translation>Bild 90° im UZS drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation>Bild 90° entgegen dem Uhrzeigersinn drehen</translation>
+<translation>Bild 90° entgegen dem UZS drehen</translation>
 </phrase>
 
 <phrase>
@@ -1513,12 +1513,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation>Layer 90° im Uhrzeigersinn drehen</translation>
+<translation>Layer 90° im UZS drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation>Layer 90° entgegen dem Uhrzeigersinn drehen</translation>
+<translation>Layer 90° entgegen dem UZS drehen</translation>
 </phrase>
 
 <phrase>
@@ -1764,6 +1764,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <phrase>
 <original>Tint</original>
 <translation>Farbton</translation>
+</phrase>
+
+<phrase>
+<original>Color lookup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2286,7 +2291,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
+<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2945,7 +2950,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Capturing screen</original>
-<translation>Bildschirm wird erfasst</translation>
+<translation>Screen wird erfasst</translation>
 </phrase>
 
 <phrase>
@@ -3921,7 +3926,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>Klick, um einen Vollfarb-Auswahlbildschirm einzugeben.</translation>
+<translation>Klick, um einen Vollfarb-Auswahlscreen einzugeben.</translation>
 </phrase>
 
 <phrase>
@@ -3931,12 +3936,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>Klick, damit die Malfarbe des Hauptbildschirms die aktive Farbe wird.</translation>
+<translation>Klick, damit die Malfarbe des Hauptscreens die aktive Farbe wird.</translation>
 </phrase>
 
 <phrase>
 <original>Main screen paint color</original>
-<translation>Malfarbe des Hauptbildschirms</translation>
+<translation>Hauptscreen-Malfarbe</translation>
 </phrase>
 
 <!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3948,7 +3953,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation>Farbton im Uhrzeigersinn drehen</translation>
+<translation>Farbton im UZS drehen</translation>
 </phrase>
 
 <phrase>
@@ -3988,7 +3993,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation>Farbton entgegen dem Uhrzeigersinn drehen</translation>
+<translation>Farbton entgegen dem UZS drehen</translation>
 </phrase>
 
 <phrase>
@@ -4376,7 +4381,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation>Anpassen des Bildes auf dem Bildschirm</translation>
+<translation>Anpassen des Bildes auf dem Screen</translation>
 </phrase>
 
 <phrase>
@@ -4548,12 +4553,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation>90° im Uhrzeigersinn drehen</translation>
+<translation>90° im UZS drehen</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation>90° entgegen dem Uhrzeigersinn drehen</translation>
+<translation>90° entgegen dem UZS drehen</translation>
 </phrase>
 
 <phrase>
@@ -5073,7 +5078,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit image on screen</original>
-<translation>Bild an Bildschirm anpassen</translation>
+<translation>Bild an Screen anpassen</translation>
 </phrase>
 
 <phrase>
@@ -5294,7 +5299,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- MainWindow.frm contains 367 phrases. 190 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5990,7 +5995,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>filter</original>
-<translation></translation>
+<translation>Filter</translation>
 </phrase>
 
 <phrase>
@@ -6000,77 +6005,77 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation></translation>
+<translation>Warming-Filter (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Cooling filter (%1)</original>
-<translation></translation>
+<translation>Cooling-Filter (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Red</original>
-<translation></translation>
+<translation>Rot</translation>
 </phrase>
 
 <phrase>
 <original>Orange</original>
-<translation></translation>
+<translation>Orange</translation>
 </phrase>
 
 <phrase>
 <original>Yellow</original>
-<translation></translation>
+<translation>Gelb</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation></translation>
+<translation>Grün</translation>
 </phrase>
 
 <phrase>
 <original>Cyan</original>
-<translation></translation>
+<translation>Cyan</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation></translation>
+<translation>Blau</translation>
 </phrase>
 
 <phrase>
 <original>Violet</original>
-<translation></translation>
+<translation>Violett</translation>
 </phrase>
 
 <phrase>
 <original>Magenta</original>
-<translation></translation>
+<translation>Magenta</translation>
 </phrase>
 
 <phrase>
 <original>Deep red</original>
-<translation></translation>
+<translation>Tiefes Rot</translation>
 </phrase>
 
 <phrase>
 <original>Deep blue</original>
-<translation></translation>
+<translation>Tiefes Blau</translation>
 </phrase>
 
 <phrase>
 <original>Deep emerald</original>
-<translation></translation>
+<translation>Tiefes Smaragdgrün</translation>
 </phrase>
 
 <phrase>
 <original>Deep yellow</original>
-<translation></translation>
+<translation>Tiefes Gelb</translation>
 </phrase>
 
 <phrase>
 <original>Custom</original>
-<translation></translation>
+<translation>Benutzerdefiniert</translation>
 </phrase>
 
 <phrase>
@@ -6576,8 +6581,8 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>click to open the gradient collection folder in Windows Explorer</original>
-<translation>Klick, um den Ordner mit der Gradienten-Collection im Windows-Explorer zu öffnen.</translation>
+<original>click to open this folder in Windows Explorer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6745,7 +6750,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
-<translation>Das Bild enthält mehr als 16 Millionen Farben. Bevor es auf Ihrem Bildschirm angezeigt werden kann, muss es in ein einfacheres Format konvertiert werden. Dieser Prozess wird Tone-Mapping genannt.</translation>
+<translation>Das Bild enthält mehr als 16 Millionen Farben. Bevor es auf Ihrem Screen angezeigt werden kann, muss es in ein einfacheres Format konvertiert werden. Dieser Prozess wird Tone-Mapping genannt.</translation>
 </phrase>
 
 <phrase>
@@ -7604,7 +7609,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Deep-frying image</original>
-<translation>Bild wird tief ausgebacken</translation>
+<translation>Bild tief-ausbackend</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9681,7 +9686,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsbildschirme zum Drucken erscheinen.)</translation>
+<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsscreens zum Drucken erscheinen.)</translation>
 </phrase>
 
 <phrase>
@@ -13253,12 +13258,41 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>All supported LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a LUT</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>3D lookup files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your 3D LUT collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2510</phrasecount>
+<phrasecount>2516</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5078 phrases. -->
-<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
-<!-- These 2510 phrases contain approximately 11577 total words. -->
+<!-- As of this build, PhotoDemon contains 5096 phrases. -->
+<!-- 2580 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 11596 total words. -->
 
 </pdData>
