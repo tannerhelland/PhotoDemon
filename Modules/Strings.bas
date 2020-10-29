@@ -353,7 +353,7 @@ Public Function GetListOfWordsFromString(ByRef srcString As String) As pdStringS
 End Function
 
 'Returns TRUE if the LEFT of this string (no trimming) matches the passed target
-Public Function LeftMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As String
+Public Function LeftMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     If (LenB(srcString) >= LenB(desiredString)) Then LeftMatches = Strings.StringsEqual(Left$(srcString, Len(desiredString)), desiredString, ignoreCase)
 End Function
 
@@ -365,7 +365,7 @@ Public Function RightByChar(ByRef srcString As String, ByRef desiredChar As Stri
 End Function
 
 'Returns TRUE if the RIGHT of this string (no trimming) matches the passed target
-Public Function RightMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As String
+Public Function RightMatches(ByRef srcString As String, ByRef desiredString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     If (LenB(srcString) >= LenB(desiredString)) Then RightMatches = Strings.StringsEqual(Right$(srcString, Len(desiredString)), desiredString, ignoreCase)
 End Function
 
@@ -850,6 +850,22 @@ Public Function StringsEqual(ByRef firstString As String, ByRef secondString As 
                 StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), LenB(firstString))
             End If
         End If
+    End If
+    
+End Function
+
+'Compare a target string against an arbitrary list of strings.  Returns TRUE if the target string
+' matches *at least one* of the arbitrary list of strings.
+Public Function StringsEqualAny(ByRef firstString As String, ByVal ignoreCase As Boolean, ParamArray otherStrings() As Variant) As Boolean
+    
+    StringsEqualAny = False
+    
+    If (UBound(otherStrings) >= LBound(otherStrings)) Then
+        Dim i As Long
+        For i = LBound(otherStrings) To UBound(otherStrings)
+            StringsEqualAny = StringsEqual(firstString, CStr(otherStrings(i)), ignoreCase)
+            If StringsEqualAny Then Exit Function
+        Next i
     End If
     
 End Function

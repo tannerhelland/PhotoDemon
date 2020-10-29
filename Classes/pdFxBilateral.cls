@@ -92,7 +92,7 @@ Public Function Bilateral_Recursive(ByRef srcDIB As pdDIB, ByVal kernelRadius As
     If raiseProgressEvents Then
         progMax = srcDIB.GetDIBHeight * 3
         progCheck = ProgressBars.FindBestProgBarValue(progMax)
-        progMax = (1# / progMax)
+        progMax = (1! / progMax)
     End If
     
     'Enforce a minimum radius; below this, effects won't be noticeable (and accuracy vs

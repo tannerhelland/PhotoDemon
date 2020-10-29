@@ -233,6 +233,10 @@ Private Function InitializeFSO() As Boolean
     InitializeFSO = True
 End Function
 
+Public Function FileCopyW(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
+    If InitializeFSO Then FileCopyW = m_FSO.FileCopyW(srcFilename, dstFilename)
+End Function
+
 Public Function FileCreateFromByteArray(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False, Optional ByVal sizeOfData As Long = -1) As Boolean
     If InitializeFSO Then FileCreateFromByteArray = m_FSO.FileCreateFromByteArray(srcArray, pathToFile, overwriteExistingIfPresent, fileIsTempFile, sizeOfData)
 End Function

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.471</langversion>
+<langversion>6.6.473</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1770,6 +1770,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Colorize</original>
 <translation>Warnai</translation>
 </phrase>
@@ -2289,7 +2294,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
+<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3399,6 +3404,18 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
+<original>All supported LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a LUT file</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
@@ -5294,7 +5311,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- MainWindow.frm contains 367 phrases. 190 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5591,6 +5608,38 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>available LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import LUT file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intensity</original>
+<translation>kehebatan</translation>
+</phrase>
+
+<phrase>
+<original>Applying color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your LUT collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to open this folder in Windows Explorer</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -6576,11 +6625,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>click to open the gradient collection folder in Windows Explorer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
 <translation></translation>
 </phrase>
@@ -6615,7 +6659,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>silahkan pilih sebuah node</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
@@ -6729,11 +6773,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>intensity</original>
-<translation>kehebatan</translation>
-</phrase>
-
-<phrase>
 <original>adaptation</original>
 <translation>penyesuaian</translation>
 </phrase>
@@ -6778,7 +6817,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>spektrum penuh</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -13257,10 +13296,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2510</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5078 phrases. -->
-<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
-<!-- These 2510 phrases contain approximately 11577 total words. -->
+<!-- As of this build, PhotoDemon contains 5096 phrases. -->
+<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 11600 total words. -->
 
 </pdData>

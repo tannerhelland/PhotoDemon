@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.135</langversion>
+<langversion>9.0.136</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3405,6 +3405,18 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
+<original>All supported LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a LUT file</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
 <translation>ExifTool-Plug-in fehlend. Import der Metadaten abgebrochen.</translation>
 </phrase>
@@ -5598,6 +5610,38 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>available LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import LUT file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intensity</original>
+<translation>Intensität</translation>
+</phrase>
+
+<phrase>
+<original>Applying color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your LUT collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to open this folder in Windows Explorer</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>replace threshold</original>
 <translation>Ersetzungsschwellenwert</translation>
 </phrase>
@@ -6581,11 +6625,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>click to open this folder in Windows Explorer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
 <translation>Wenn ein Gradient Farben mit völlig verschiedenen Luminanzwerten enthält, kann die Gammakorrektur dessen Erscheinungsbild verbessern.</translation>
 </phrase>
@@ -6620,7 +6659,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Bitte selektieren Sie einen Node</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
@@ -6734,11 +6773,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>intensity</original>
-<translation>Intensität</translation>
-</phrase>
-
-<phrase>
 <original>adaptation</original>
 <translation>Adaptation</translation>
 </phrase>
@@ -6783,7 +6817,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Vollständiges Spektrum</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -13258,41 +13292,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>All supported LUTs</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Select a LUT</original>
-<translation></translation>
-</phrase>
-
-<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<phrase>
-<original>3D lookup files</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Your 3D LUT collection is stored in the "%1" folder</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2517</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5096 phrases. -->
-<!-- 2580 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 11596 total words. -->
+<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 11600 total words. -->
 
 </pdData>

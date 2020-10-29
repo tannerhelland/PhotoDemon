@@ -1948,7 +1948,15 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
     ElseIf Strings.StringsEqual(processID, "Color balance", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormColorBalance Else FormColorBalance.ApplyColorBalance processParameters
         Process_AdjustmentsMenu = True
-        
+    
+    ElseIf Strings.StringsEqual(processID, "Color lookup", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorLookup Else FormColorLookup.ApplyColorLookupEffect processParameters
+        Process_AdjustmentsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Colorize", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormColorize Else FormColorize.ColorizeImage processParameters
+        Process_AdjustmentsMenu = True
+    
     ElseIf Strings.StringsEqual(processID, "Hue and saturation", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormHSL Else FormHSL.AdjustImageHSL processParameters
         Process_AdjustmentsMenu = True
@@ -1979,11 +1987,6 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         
     ElseIf Strings.StringsEqual(processID, "Vibrance", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormVibrance Else FormVibrance.Vibrance processParameters
-        Process_AdjustmentsMenu = True
-        
-    'Miscellaneous adjustments
-    ElseIf Strings.StringsEqual(processID, "Colorize", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormColorize Else FormColorize.ColorizeImage processParameters
         Process_AdjustmentsMenu = True
     
     'Grayscale conversions

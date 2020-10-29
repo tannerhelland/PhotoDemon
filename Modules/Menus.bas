@@ -384,11 +384,12 @@ Public Sub InitializeMenus()
         AddMenuItem "Vibrance...", "adj_vibrance", 5, 13, 6
         AddMenuItem "-", "-", 5, 13, 7
         AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
-        AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
-        AddMenuItem "Photo filter...", "adj_photofilters", 5, 13, 10
-        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 11
-        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 12
-        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 13
+        AddMenuItem "Color lookup...", "adj_colorlookup", 5, 13, 9
+        AddMenuItem "Colorize...", "adj_colorize", 5, 13, 10
+        AddMenuItem "Photo filter...", "adj_photofilters", 5, 13, 11
+        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 12
+        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 13
+        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 14
     AddMenuItem "Histogram", "adj_histogram", 5, 14
         AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
         AddMenuItem "-", "-", 5, 14, 1
@@ -2581,6 +2582,9 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             'Case "adj_vibrance"        'Covered by parent menu
             'Case "adj_blackandwhite"   'Covered by parent menu
             
+            Case "adj_colorlookup"
+                Process "Color lookup", True
+                
             Case "adj_colorize"
                 Process "Colorize", True
                 

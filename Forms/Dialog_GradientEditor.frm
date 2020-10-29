@@ -746,7 +746,7 @@ End Sub
 Private Sub ChangeActivePanel(ByVal buttonIndex As Long)
     
     Dim i As Long
-    For i = picContainer.lBound To picContainer.UBound
+    For i = picContainer.lBound To picContainer.ubound
         
         'Show the primary container for this panel
         picContainer(i).Visible = (i = buttonIndex)
@@ -1484,7 +1484,7 @@ Private Sub Form_Load()
     cmdFile(2).AssignImage "file_saveas", , buttonImgSize, buttonImgSize
     
     lblCollection.Caption = g_Language.TranslateMessage("Your gradient collection is stored in the ""%1"" folder", UserPrefs.GetGradientPath(True))
-    lblCollection.AssignTooltip "click to open the gradient collection folder in Windows Explorer"
+    lblCollection.AssignTooltip "click to open this folder in Windows Explorer"
     
     chkGamma.AssignTooltip "When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance."
     chkDistributeEvenly.AssignTooltip "Use this setting to automatically calculate equal positioning for all gradient nodes."
@@ -1760,7 +1760,7 @@ End Sub
 
 Private Sub lblCollection_Click()
     Dim filePath As String, shellCommand As String
-    filePath = UserPrefs.GetGradientPath()
+    filePath = UserPrefs.GetGradientPath(True)
     shellCommand = "explorer.exe """ & filePath & """"
     Shell shellCommand, vbNormalFocus
 End Sub

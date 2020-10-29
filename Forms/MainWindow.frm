@@ -925,24 +925,28 @@ Begin VB.Form FormMain
             Index           =   8
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Colorize..."
+            Caption         =   "Color lookup..."
             Index           =   9
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Photo filter..."
+            Caption         =   "Colorize..."
             Index           =   10
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Replace color..."
+            Caption         =   "Photo filter..."
             Index           =   11
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Sepia..."
+            Caption         =   "Replace color..."
             Index           =   12
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Split toning..."
+            Caption         =   "Sepia..."
             Index           =   13
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Split toning..."
+            Index           =   14
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -2025,7 +2029,7 @@ Private Sub MnuTest_Click()
     'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\KH LUT 6.cube")
     'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\DropBlues.3DL")
     'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\IWLTBAP Arapaho - LOG.3dl")
-    Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\filmstock_50.3dl")
+    Debug.Print cLUT.LoadLUTFromFile("C:\PhotoDemon v4\PhotoDemon\Data\3DLuts\AVC-01-Youngbacca.cube")
     
     PDDebug.LogAction "LUT load: " & VBHacks.GetTimeDiffNowAsString(curTime)
     VBHacks.GetHighResTime curTime
@@ -3298,14 +3302,16 @@ Private Sub MnuColor_Click(Index As Integer)
         Case 8
             Menus.ProcessDefaultAction_ByName "adj_blackandwhite"
         Case 9
-            Menus.ProcessDefaultAction_ByName "adj_colorize"
+            Menus.ProcessDefaultAction_ByName "adj_colorlookup"
         Case 10
-            Menus.ProcessDefaultAction_ByName "adj_photofilters"
+            Menus.ProcessDefaultAction_ByName "adj_colorize"
         Case 11
-            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
+            Menus.ProcessDefaultAction_ByName "adj_photofilters"
         Case 12
-            Menus.ProcessDefaultAction_ByName "adj_sepia"
+            Menus.ProcessDefaultAction_ByName "adj_replacecolor"
         Case 13
+            Menus.ProcessDefaultAction_ByName "adj_sepia"
+        Case 14
             Menus.ProcessDefaultAction_ByName "adj_splittone"
     End Select
 End Sub

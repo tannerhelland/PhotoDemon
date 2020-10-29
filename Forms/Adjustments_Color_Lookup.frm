@@ -1,0 +1,393 @@
+VERSION 5.00
+Begin VB.Form FormColorLookup 
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
+   Caption         =   " Color lookup"
+   ClientHeight    =   7080
+   ClientLeft      =   120
+   ClientTop       =   465
+   ClientWidth     =   12120
+   DrawStyle       =   5  'Transparent
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   HasDC           =   0   'False
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   472
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   808
+   Begin PhotoDemon.pdListBox lstLUTs 
+      Height          =   3135
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   840
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   5530
+      Caption         =   "available LUTs"
+   End
+   Begin PhotoDemon.pdButton cmdBrowse 
+      Height          =   615
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1085
+      Caption         =   "import LUT file..."
+   End
+   Begin PhotoDemon.pdDropDown cboBlendMode 
+      Height          =   855
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   4920
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1508
+      Caption         =   "blend mode"
+   End
+   Begin PhotoDemon.pdSlider sldIntensity 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   4080
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "intensity"
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+   End
+   Begin PhotoDemon.pdCommandBar cmdBar 
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   6330
+      Width           =   12120
+      _ExtentX        =   21378
+      _ExtentY        =   1323
+   End
+   Begin PhotoDemon.pdHyperlink lblCollection 
+      Height          =   255
+      Left            =   120
+      Top             =   5910
+      Width           =   11895
+      _ExtentX        =   20981
+      _ExtentY        =   450
+      Alignment       =   2
+      Caption         =   ""
+      RaiseClickEvent =   -1  'True
+   End
+End
+Attribute VB_Name = "FormColorLookup"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'***************************************************************************
+'3D color lookup effect
+'Copyright 2020-2020 by Tanner Helland
+'Created: 27/October/20
+'Last updated: 29/October/20
+'Last update: finalize key UI elements
+'
+'For a detailed explanation of 3D color lookup tables and how they work, see the pdLUT3D class.
+'
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
+'
+'***************************************************************************
+
+Option Explicit
+
+'LUTs are very expensive to parse.  As such, if the user previews a LUT, we serialize its data
+' (in binary format) and store that data locally.  If the user returns to that preview later,
+' we can produce a much-faster preview since we can just grab the serialized data.
+Private Type LUTCache
+    fullPath As String
+    filenameOnly As String
+    lenData As Long
+    cachedData() As Byte
+End Type
+
+Private m_numOfLUTs As Long
+Private m_LUTs() As LUTCache
+
+'This class handles all actual LUT duties
+Private WithEvents m_LUT As pdLUT3D
+Attribute m_LUT.VB_VarHelpID = -1
+
+'To improve preview performance, a persistent preview DIB is cached locally
+Private m_EffectDIB As pdDIB
+
+'Apply a hazy, cool color transformation I call an "atmospheric" transform.
+Public Sub ApplyColorLookupEffect(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    If (m_LUT Is Nothing) Then Exit Sub
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString effectParams
+    
+    Dim fxIntensity As Double, fxPath As String, fxBlend As PD_BlendMode
+    
+    With cParams
+        fxBlend = .GetLong("blendmode", BM_Normal)
+        fxPath = .GetString("lut-file", vbNullString)
+        fxIntensity = .GetDouble("intensity", 50#)
+    End With
+    
+    If (Not toPreview) Then Message "Applying color lookup..."
+    
+    'Initialize the effect engine
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
+    
+    If Files.FileExists(fxPath) Then
+    
+        'For non-previews, set up the progress bar.  (Note that we have to use an integer value,
+        ' or taskbar progress updates won't work - this is specifically an OS limitation, as PD's
+        ' internal progress bar works just fine with [0, 1] progress values.)
+        If (Not toPreview) Then ProgressBars.SetProgBarMax 100#
+        
+        'Create a copy of the working data
+        If (m_EffectDIB Is Nothing) Then Set m_EffectDIB = New pdDIB
+        m_EffectDIB.CreateFromExistingDIB workingDIB
+        
+        'Ensure the requested LUT has been loaded
+        If (m_LUT Is Nothing) Then Set m_LUT = New pdLUT3D
+        If (m_LUT.GetLUTPath <> fxPath) Then
+            If (Not m_LUT.LoadLUTFromFile(fxPath)) Then Exit Sub
+        End If
+        
+        'Apply the LUT to our working DIB copy
+        m_LUT.ApplyLUTToDIB m_EffectDIB, (Not toPreview)
+        
+        'If the effect wasn't canceled, merge the result onto the original working DIB
+        ' at the specified strength and blend mode
+        If (Not g_cancelCurrentAction) Then
+        
+            If (Not m_EffectDIB.GetAlphaPremultiplication()) Then m_EffectDIB.SetAlphaPremultiplication True
+            
+            Dim cCompositor As pdCompositor
+            Set cCompositor = New pdCompositor
+            cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_EffectDIB, fxBlend, fxIntensity
+            
+        End If
+        
+    End If
+    
+    'Finalize result
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
+    
+End Sub
+
+Private Sub cboBlendMode_Click()
+    UpdatePreview
+End Sub
+
+Private Sub cmdBar_OKClick()
+    Process "Color lookup", , GetLocalParamString(), UNDO_Layer
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    UpdatePreview
+End Sub
+
+Private Sub cmdBrowse_Click()
+    
+    Dim srcFilename As String
+    If m_LUT.DisplayLUTLoadDialog(vbNullString, srcFilename) Then
+        
+        'Before doing anything else, copy the source file into the user's LUT folder.
+        If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
+            Dim newFilename As String
+            newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
+            Files.FileCopyW srcFilename, newFilename
+            srcFilename = newFilename
+        End If
+        
+        'Ensure we have sufficient space for a new entry
+        If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+        
+        Dim targetFilenameOnly As String
+        targetFilenameOnly = Files.FileGetName(srcFilename)
+        
+        'We now need to search the current list of LUTs and figure out where to insert this one.
+        Dim i As Long
+        For i = 0 To m_numOfLUTs - 1
+            
+            'Look for the first entry with a value *less* than the current one
+            If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+            
+        Next i
+        
+        'Shift all existing entries to make room for this new one
+        If (i < m_numOfLUTs - 1) Then
+            
+            Dim j As Long
+            For j = m_numOfLUTs - 1 To i + 1 Step -1
+                m_LUTs(j) = m_LUTs(j - 1)
+            Next j
+            
+        End If
+        
+        With m_LUTs(i)
+            .fullPath = srcFilename
+            .filenameOnly = targetFilenameOnly
+            .lenData = 0
+        End With
+        m_numOfLUTs = m_numOfLUTs + 1
+        
+        'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
+        ' get added to the *end* of the list.  This is by design to make newly added entries
+        ' easier to find.  If the user leaves and returns to this dialog, the list of available
+        ' LUTs always gets re-sorted.
+        lstLUTs.AddItem targetFilenameOnly, i
+        lstLUTs.ListIndex = i
+    
+    End If
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    cmdBar.SetPreviewStatus False
+    
+    'Make sure we have a 3DLUT object to work with
+    Set m_LUT = New pdLUT3D
+    
+    'Add all available LUTs to the list box
+    Dim listOfFiles As pdStringStack
+    
+    Dim lutFolder As String
+    lutFolder = UserPrefs.GetLUTPath(True)
+    
+    If Files.RetrieveAllFiles(lutFolder, listOfFiles, True, False, "cube|3dl") Then
+        
+        'Sort the list of files (using Explorer order); that's usually close to final display order
+        listOfFiles.SortLogically True
+        
+        'Tell the listbox to use file display mode
+        lstLUTs.SetDisplayMode_Files True
+        
+        'Prep the LUT collection
+        Const INIT_LUT_SIZE As Long = 16
+        ReDim m_LUTs(0 To INIT_LUT_SIZE - 1) As LUTCache
+        m_numOfLUTs = 0
+        
+        'Compatible LUTs currently include .cube and .3dl files; list only these files
+        Dim i As Long, testFile As String, testExtension As String, testFilenameOnly As String
+        For i = 0 To listOfFiles.GetNumOfStrings - 1
+            
+            testFile = listOfFiles.GetString(i)
+            testFilenameOnly = Files.FileGetName(testFile)
+            'testFilenameOnly = listOfFiles.GetString(i)
+            'testFile = lutFolder & testFilenameOnly
+            
+            If Files.FileExists(testFile) Then
+            
+                If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+                With m_LUTs(m_numOfLUTs)
+                    .fullPath = testFile
+                    .filenameOnly = testFilenameOnly
+                    .lenData = 0
+                End With
+                m_numOfLUTs = m_numOfLUTs + 1
+                
+                'Don't forget to add this lut to the listbox!
+                lstLUTs.AddItem testFilenameOnly
+                
+            End If
+            
+        Next i
+        
+    End If
+    
+    lstLUTs.ListIndex = 0
+    
+    'Let the user know where their LUT collection resides
+    lblCollection.Caption = g_Language.TranslateMessage("Your LUT collection is stored in the ""%1"" folder", UserPrefs.GetLUTPath(True))
+    lblCollection.AssignTooltip "click to open this folder in Windows Explorer"
+    
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
+    
+    ApplyThemeAndTranslations Me, True, True
+    cmdBar.SetPreviewStatus True
+    UpdatePreview
+    
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
+
+Private Sub lblCollection_Click()
+    Dim filePath As String, shellCommand As String
+    filePath = UserPrefs.GetLUTPath(True)
+    shellCommand = "explorer.exe """ & filePath & """"
+    Shell shellCommand, vbNormalFocus
+End Sub
+
+Private Sub lstLUTs_Click()
+    UpdatePreview
+End Sub
+
+Private Sub m_LUT_ProgressUpdate(ByVal progressValue As Single, cancelOperation As Boolean)
+
+    'Note: because PD uses a high-performance mechanism for updating the progress bar during
+    ' long-running events, it's critical that you query for ESC keypresses *BEFORE* attempting
+    ' to modify the live progress bar.  (If you do this in reverse order, the progress bar
+    ' update may eat any keypress messages.)
+    cancelOperation = Interface.UserPressedESC()
+    ProgressBars.SetProgBarVal progressValue * 100!
+    
+End Sub
+
+'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
+Private Sub pdFxPreview_ViewportChanged()
+    UpdatePreview
+End Sub
+
+'Update the preview whenever the combination slider/text control has its value changed
+Private Sub sldIntensity_Change()
+    UpdatePreview
+End Sub
+
+Private Sub UpdatePreview()
+    If cmdBar.PreviewsAllowed Then Me.ApplyColorLookupEffect GetLocalParamString(), True, pdFxPreview
+End Sub
+
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    
+    With cParams
+        .AddParam "lut-file", m_LUTs(lstLUTs.ListIndex).fullPath
+        .AddParam "intensity", sldIntensity.Value
+        .AddParam "blendmode", cboBlendMode.ListIndex
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

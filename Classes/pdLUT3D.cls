@@ -60,6 +60,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Progress reports are returned on the scale (0, 1).  When raised, you can request that the operation
+' cancel itself; any in-progress work will be erased.
+Event ProgressUpdate(ByVal progressValue As Single, ByRef cancelOperation As Boolean)
+
 'Only 3D LUTs are currently supported, at single-precision.
 Private Type FloatColor
     rFloat As Single
@@ -68,6 +72,9 @@ Private Type FloatColor
 End Type
 
 Private m_lut3D() As FloatColor
+
+'Path of the currently loaded LUT, if any; null means a LUT has not been loaded yet
+Private m_lutPath As String
 
 'LUT size is uniform for all dimensions, and must be specified by the file (e.g. there is no default value)
 ' (loop size is just m_LutSize-1, but it's faster to precalculate it since it's accessed inside many loops).
@@ -79,6 +86,57 @@ Private m_MaxR As Single, m_MaxG As Single, m_MaxB As Single
 Private m_RangeR As Single, m_RangeG As Single, m_RangeB As Single
 
 Private m_LoadSuccessful As Boolean
+
+'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes will be available to the user.
+Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
+    
+    DisplayLUTLoadDialog = False
+    
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
+    
+    Dim cdFilter As pdString
+    Set cdFilter = New pdString
+    cdFilter.Append g_Language.TranslateMessage("All supported LUTs") & "|*.cube;*.3dl|"
+    
+    cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
+    cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl|"
+    cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Select a LUT file")
+    
+    'Prep a common dialog interface
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
+            
+    Dim sFile As String
+    sFile = srcFilename
+    
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter.ToString(), 1, UserPrefs.GetLUTPath(False), cdTitle, , GetModalOwner().hWnd) Then
+    
+        'By design, we don't perform any validation here.  Let the caller validate the file as much (or as little)
+        ' as they require.
+        DisplayLUTLoadDialog = (LenB(sFile) <> 0)
+        
+        'The dialog was successful.  Return the path, and save this path for future usage.
+        If DisplayLUTLoadDialog Then
+            UserPrefs.SetLUTPath sFile
+            dstFilename = sFile
+        Else
+            dstFilename = vbNullString
+        End If
+        
+    End If
+    
+    'Re-enable user input
+    Interface.EnableUserInput
+    
+End Function
+
+Friend Function GetLUTPath() As String
+    GetLUTPath = m_lutPath
+End Function
 
 'Load any LUT from file by calling this function.  The LUT format doesn't need to be known in advance;
 ' we'll sort it out based on file extension.  (A necessary evil since these formats are all just text files.)
@@ -95,6 +153,13 @@ Friend Function LoadLUTFromFile(ByRef srcFile As String) As Boolean
         InternalProblem "LoadLUTFromFile", "unknown file format"
         LoadLUTFromFile = False
     End If
+    
+    If LoadLUTFromFile Then
+        m_lutPath = srcFile
+    Else
+        m_lutPath = vbNullString
+        InternalProblem "LoadLUTFromFile", "load failure"
+    End If
 
 End Function
 
@@ -102,6 +167,7 @@ End Function
 Private Function LoadLUTFromFile_3DL(ByRef srcFile As String) As Boolean
 
     On Error GoTo LUTParseCrash
+    Me.ResetLUT
     
     Dim srcStream As pdStream
     Set srcStream = New pdStream
@@ -365,6 +431,7 @@ End Function
 Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
 
     On Error GoTo LUTParseCrash
+    Me.ResetLUT
     
     Dim srcStream As pdStream
     Set srcStream = New pdStream
@@ -673,11 +740,23 @@ Friend Sub GetInterpolatedRGB_Int(ByVal srcR As Long, ByVal srcG As Long, ByVal 
     
 End Sub
 
-Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB)
+Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB, Optional ByVal raiseProgressEvents As Boolean = False)
+    
+    'This filter is interruptible
+    Dim cancelOp As Boolean
+    cancelOp = False
+    
+    'If the caller wants progress reports, calculate some max/min progress values
+    Dim progCheck As Long, progMax As Single
+    If raiseProgressEvents Then
+        progMax = srcDIB.GetDIBHeight
+        progCheck = ProgressBars.FindBestProgBarValue(progMax)
+        progMax = (1! / progMax)
+    End If
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
-    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication Then
+    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication() Then
         srcWasPremultiplied = True
         srcDIB.SetAlphaPremultiplication False
     Else
@@ -715,8 +794,19 @@ Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB)
         imageData(x + 2) = newR
         
     Next x
-    Next y
     
+        'UI updates
+        If raiseProgressEvents Then
+            If ((y And progCheck) = 0) Then
+                RaiseEvent ProgressUpdate((CDbl(y) * progMax), cancelOp)
+                If cancelOp Then GoTo FilterCleanup
+            End If
+        End If
+        
+    Next y
+
+FilterCleanup:
+
     'Safely deallocate imageData()
     srcDIB.UnwrapArrayFromDIB imageData
     
@@ -729,7 +819,7 @@ End Sub
 
 Friend Sub ResetLUT()
     m_LutSize = 0
-    m_MaxR = 0!: m_MaxG = 0!: m_MaxB = 0!
+    m_MaxR = 1!: m_MaxG = 1!: m_MaxB = 1!
     m_MinR = 0!: m_MinG = 0!: m_MinB = 0!
 End Sub
 

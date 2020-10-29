@@ -85,8 +85,8 @@ Attribute VB_Exposed = False
 'Surface Blur (bilateral filter)
 'Copyright 2014-2020 by Tanner Helland
 'Created: 19/June/14
-'Last updated: 04/December/19
-'Last update: fully convert to recursive bilateral implementation
+'Last updated: 28/October/20
+'Last update: modify event behavior to fix potentially lost ESC keypresses
 '
 'Per Wikipedia (https://en.wikipedia.org/wiki/Bilateral_filter):
 ' "A bilateral filter is a non-linear, edge-preserving, and noise-reducing smoothing filter for images.
@@ -157,7 +157,7 @@ Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toP
     ' or taskbar progress updates won't work - this is specifically an OS limitation, as PD's
     ' internal progress bar works just fine with [0, 1] progress values.)
     If (Not toPreview) Then ProgressBars.SetProgBarMax 100#
-        
+    
     'As of 2019, PD ships with an ultra-fast recursive bilateral filter (adapted from this
     ' MIT-licensed code: https://github.com/ufoym/recursive-bf).  This is now used
     ' exclusively by the program, as it is multiple orders of magnitude faster than a
@@ -169,7 +169,7 @@ Public Sub BilaterFilter_Master(ByVal effectParams As String, Optional ByVal toP
     ' function can change colors in unpredictable ways.  Forcibly unpremultiply it just to
     ' be safe.  (The effect handler will take care of re-premultiplying it for us.)
     workingDIB.SetAlphaPremultiplication False, True
-        
+    
     'Finalize result
     EffectPrep.FinalizeImageData toPreview, dstPic
     
@@ -195,7 +195,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub m_Bilateral_ProgressUpdate(ByVal progressValue As Single, cancelOperation As Boolean)
+    
+    'Note: because PD uses a high-performance mechanism for updating the progress bar during
+    ' long-running events, it's critical that you query for ESC keypresses *BEFORE* attempting
+    ' to modify the live progress bar.  (If you do this in reverse order, the progress bar
+    ' update may eat any keypress messages.)
+    If Interface.UserPressedESC() Then cancelOperation = True
     ProgressBars.SetProgBarVal progressValue * 100!
+    
 End Sub
 
 Private Sub sldRadius_Change()

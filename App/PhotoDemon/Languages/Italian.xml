@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.23</langversion>
+<langversion>8.0.25</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -1767,6 +1767,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Colorize</original>
 <translation>Colora</translation>
 </phrase>
@@ -2286,7 +2291,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Cancella l'elenco delle macro recenti</translation>
 </phrase>
 
-<!-- Menus.bas contains 265 phrases. 30 were duplicates of existing phrases, so only 235 new phrases were written to file. -->
+<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3397,6 +3402,18 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<phrase>
+<original>All supported LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select a LUT file</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
@@ -5292,7 +5309,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 366 phrases. 189 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- MainWindow.frm contains 367 phrases. 190 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5589,6 +5606,38 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>available LUTs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import LUT file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>intensity</original>
+<translation>intensità</translation>
+</phrase>
+
+<phrase>
+<original>Applying color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your LUT collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to open this folder in Windows Explorer</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -6574,11 +6623,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>click to open the gradient collection folder in Windows Explorer</original>
-<translation>cliccare per aprire la cartella di raccolta dei sfumaturi in Esplora risorse di Windows</translation>
-</phrase>
-
-<phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
 <translation>Quando un sfumatura contiene colori con valori di luminanza molto diversi, la correzione gamma può migliorare il suo aspetto.</translation>
 </phrase>
@@ -6613,7 +6657,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>selezionare un nodo</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
@@ -6727,11 +6771,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>intensity</original>
-<translation>intensità</translation>
-</phrase>
-
-<phrase>
 <original>adaptation</original>
 <translation>adattamento</translation>
 </phrase>
@@ -6776,7 +6815,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>spettro completo</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -13264,10 +13303,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2510</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5078 phrases. -->
-<!-- 2568 are duplicates, so only 2510 unique phrases have been written to file. -->
-<!-- These 2510 phrases contain approximately 11577 total words. -->
+<!-- As of this build, PhotoDemon contains 5096 phrases. -->
+<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 11600 total words. -->
 
 </pdData>

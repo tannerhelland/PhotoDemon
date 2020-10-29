@@ -579,7 +579,7 @@ Friend Function FileFind(ByRef searchParam As String, ByRef dstStack As pdString
     
     'Start by applying some modifications to the incoming search parameter string.
     ' (FindFirstFile fails under conditions that VB's Dir() does not.)
-    If (Len(searchParam) <> 0) Then
+    If (LenB(searchParam) <> 0) Then
     
         If (dstStack Is Nothing) Then Set dstStack = New pdStringStack Else dstStack.ResetStack
     
@@ -613,8 +613,10 @@ Friend Function FileFind(ByRef searchParam As String, ByRef dstStack As pdString
                 Const STR_DOTDOT As String = ".."
                 
                 'Look for "." and ".." returns; these are *not* returned, by design.
-                If (Len(retString) <> 0) And (Strings.StringsNotEqual(retString, STR_DOT, True) And Strings.StringsNotEqual(retString, STR_DOTDOT, True)) Then
-                    dstStack.AddString retString
+                If (LenB(retString) <> 0) Then
+                    If (Strings.StringsNotEqual(retString, STR_DOT, True) And Strings.StringsNotEqual(retString, STR_DOTDOT, True)) Then
+                        dstStack.AddString retString
+                    End If
                 End If
                 
             Loop While (FindNextFileW(searchHandle, VarPtr(findResult)) <> 0)
@@ -1856,11 +1858,13 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     If whiteListInUse Then
         If Not Strings.StringsEqual(Left$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = "|" & onlyAllowTheseExtensions
         If Not Strings.StringsEqual(Right$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = onlyAllowTheseExtensions & "|"
+        onlyAllowTheseExtensions = LCase$(onlyAllowTheseExtensions)
     End If
         
     If blackListInUse Then
         If Not Strings.StringsEqual(Left$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = "|" & doNotAllowTheseExtensions
         If Not Strings.StringsEqual(Right$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = doNotAllowTheseExtensions & "|"
+        doNotAllowTheseExtensions = LCase$(doNotAllowTheseExtensions)
     End If
         
     'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
@@ -1924,11 +1928,11 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                         
                             'White-listing check required
                             If whiteListInUse Then
-                                fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) <> 0)
+                                fileValid = (InStr(1, onlyAllowTheseExtensions, "|" & LCase$(Me.FileGetExtension(chkFile)) & "|", vbBinaryCompare) <> 0)
                                 
                             'Black-listing check required
                             ElseIf blackListInUse Then
-                                fileValid = (InStr(1, doNotAllowTheseExtensions, "|" & Me.FileGetExtension(chkFile) & "|", vbBinaryCompare) = 0)
+                                fileValid = (InStr(1, doNotAllowTheseExtensions, "|" & LCase$(Me.FileGetExtension(chkFile)) & "|", vbBinaryCompare) = 0)
                                 
                             'All files are allowed
                             Else
