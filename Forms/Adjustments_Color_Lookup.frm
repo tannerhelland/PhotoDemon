@@ -59,9 +59,9 @@ Begin VB.Form FormColorLookup
       Left            =   6000
       TabIndex        =   2
       Top             =   4080
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1244
       Caption         =   "intensity"
       Max             =   100
       Value           =   100
@@ -125,12 +125,17 @@ Option Explicit
 Private Type LUTCache
     fullPath As String
     filenameOnly As String
-    lenData As Long
+    lenDataCompressed As Long
+    lenDataUncompressed As Long
+    cmpFormat As PD_CompressionFormat
     cachedData() As Byte
 End Type
 
 Private m_numOfLUTs As Long
 Private m_LUTs() As LUTCache
+
+'To improve performance, we cache LUT data after loading it; this makes subsequent previews *much* faster
+Private m_LastLUTIndex As Long
 
 'This class handles all actual LUT duties
 Private WithEvents m_LUT As pdLUT3D
@@ -254,7 +259,8 @@ Private Sub cmdBrowse_Click()
         With m_LUTs(i)
             .fullPath = srcFilename
             .filenameOnly = targetFilenameOnly
-            .lenData = 0
+            .lenDataCompressed = 0
+            .lenDataUncompressed = 0
         End With
         m_numOfLUTs = m_numOfLUTs + 1
         
@@ -274,6 +280,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     'Make sure we have a 3DLUT object to work with
+    m_LastLUTIndex = -1
     Set m_LUT = New pdLUT3D
     
     'Add all available LUTs to the list box
@@ -284,10 +291,8 @@ Private Sub Form_Load()
     
     If Files.RetrieveAllFiles(lutFolder, listOfFiles, True, False, "cube|3dl") Then
         
-        'Sort the list of files (using Explorer order); that's usually close to final display order
-        listOfFiles.SortLogically True
-        
-        'Tell the listbox to use file display mode
+        'Tell the listbox to use file display mode.  (This will truncate extremely long filenames using
+        ' OS rules, as necessary.)
         lstLUTs.SetDisplayMode_Files True
         
         'Prep the LUT collection
@@ -301,8 +306,6 @@ Private Sub Form_Load()
             
             testFile = listOfFiles.GetString(i)
             testFilenameOnly = Files.FileGetName(testFile)
-            'testFilenameOnly = listOfFiles.GetString(i)
-            'testFile = lutFolder & testFilenameOnly
             
             If Files.FileExists(testFile) Then
             
@@ -310,16 +313,55 @@ Private Sub Form_Load()
                 With m_LUTs(m_numOfLUTs)
                     .fullPath = testFile
                     .filenameOnly = testFilenameOnly
-                    .lenData = 0
+                    .lenDataCompressed = 0
+                    .lenDataUncompressed = 0
                 End With
                 m_numOfLUTs = m_numOfLUTs + 1
-                
-                'Don't forget to add this lut to the listbox!
-                lstLUTs.AddItem testFilenameOnly
                 
             End If
             
         Next i
+        
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
+        'With the list constructed, do a quick insertion sort in case subfolders are used.
+        ' (pdStringStack has built-in search functionality, but only for whole strings - and we need to manually
+        ' compare filenames *only*, since this list of files may not all come from the same base folder.)
+        ' Fortunately, this tends to be fast as Windows file results are often returned semi-sorted as-is.
+        Dim j As Long
+        Dim tmpSort As LUTCache, searchCont As Boolean
+        i = 1
+        
+        Do While (i < m_numOfLUTs)
+        
+            tmpSort = m_LUTs(i)
+            j = i - 1
+            
+            'Because VB6 doesn't short-circuit And statements, we have to split this check into separate parts.
+            searchCont = False
+            If (j >= 0) Then searchCont = (Strings.StrCompSortPtr_Filenames(StrPtr(m_LUTs(j).filenameOnly), StrPtr(tmpSort.filenameOnly)) > 0)
+            
+            Do While searchCont
+                m_LUTs(j + 1) = m_LUTs(j)
+                j = j - 1
+                searchCont = False
+                If (j >= 0) Then searchCont = (Strings.StrCompSortPtr_Filenames(StrPtr(m_LUTs(j).filenameOnly), StrPtr(tmpSort.filenameOnly)) > 0)
+            Loop
+            
+            m_LUTs(j + 1) = tmpSort
+            i = i + 1
+            
+        Loop
+        
+        PDDebug.LogAction "FYI - sorting LUTs took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        
+        'Finally, add all entries to the listbox
+        lstLUTs.SetAutomaticRedraws False
+        For i = 0 To m_numOfLUTs - 1
+            lstLUTs.AddItem m_LUTs(i).filenameOnly
+        Next i
+        lstLUTs.SetAutomaticRedraws True, True
         
     End If
     
@@ -379,6 +421,23 @@ End Sub
 
 Private Function GetLocalParamString() As String
     
+    Dim curTime As Currency
+    VBHacks.GetHighResTime curTime
+    
+    'Cache the current LUT data, if any exists
+    If (m_LastLUTIndex >= 0) And (m_LastLUTIndex < m_numOfLUTs) And (m_LastLUTIndex <> lstLUTs.ListIndex) Then
+        
+        'Ensure we haven't already cached this LUT
+        If (m_LUTs(m_LastLUTIndex).lenDataCompressed = 0) And (m_LUT.GetLUTPath = m_LUTs(m_LastLUTIndex).fullPath) Then
+            m_LUTs(m_LastLUTIndex).cmpFormat = cf_Zstd
+            m_LUTs(m_LastLUTIndex).lenDataCompressed = m_LUT.Serialize_ToBytes(m_LUTs(m_LastLUTIndex).cachedData, m_LUTs(m_LastLUTIndex).lenDataUncompressed, m_LUTs(m_LastLUTIndex).cmpFormat)
+        End If
+        
+        'PDDebug.LogAction "LUT data cached in " & VBHacks.GetTimeDiffNowAsString(curTime)
+        VBHacks.GetHighResTime curTime
+        
+    End If
+    
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     
@@ -387,6 +446,17 @@ Private Function GetLocalParamString() As String
         .AddParam "intensity", sldIntensity.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
     End With
+    
+    'Before returning, see if we have cached data for the requested LUT
+    If (m_LUTs(lstLUTs.ListIndex).lenDataCompressed <> 0) And (lstLUTs.ListIndex <> m_LastLUTIndex) Then
+        VBHacks.GetHighResTime curTime
+        With m_LUTs(lstLUTs.ListIndex)
+            m_LUT.Serialize_FromBytes .cachedData, .lenDataCompressed, .lenDataUncompressed, .cmpFormat
+        End With
+    End If
+    
+    'Remember the current lut index in case we need to cache *it* next
+    m_LastLUTIndex = lstLUTs.ListIndex
     
     GetLocalParamString = cParams.GetParamString()
     

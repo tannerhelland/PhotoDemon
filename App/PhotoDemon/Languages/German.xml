@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.136</langversion>
+<langversion>9.0.140</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -122,7 +122,7 @@
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool konnte nicht gestartet werden. Metadaten für diese Sitzung nicht verfügbar.</translation>
+<translation>ExifTool konnte nicht gestartet werden. Metadaten für diese Session nicht verfügbar.</translation>
 </phrase>
 
 <phrase>
@@ -1031,7 +1031,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sitzung aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
+<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Session aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
 
 (Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
@@ -1703,7 +1703,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Levels</original>
-<translation>Pegel</translation>
+<translation>Tonwertkorrektur</translation>
 </phrase>
 
 <phrase>
@@ -1768,7 +1768,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Farb-Lookup</translation>
 </phrase>
 
 <phrase>
@@ -3406,12 +3406,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>Alle unterstützten LUTs</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>Eine LUT-Datei auswählen</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4275,12 +4275,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>pixels / inch (PPI)</original>
-<translation>Pixel/Inch (ppi)</translation>
+<translation>Pixel / Inch (ppi)</translation>
 </phrase>
 
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
-<translation>Pixel/Zentimeter (px/cm)</translation>
+<translation>Pixel / Zentimeter (px/cm)</translation>
 </phrase>
 
 <phrase>
@@ -5429,12 +5429,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>output channel</original>
-<translation>Ausgabekanal</translation>
+<translation>Output-Kanal</translation>
 </phrase>
 
 <phrase>
 <original>input channel(s)</original>
-<translation>Eingabekanal / -kanäle</translation>
+<translation>Input-Kanal / -Kanäle</translation>
 </phrase>
 
 <phrase>
@@ -5611,12 +5611,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>available LUTs</original>
-<translation></translation>
+<translation>Verfügbare LUTs</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation></translation>
+<translation>LUT-Datei importieren</translation>
 </phrase>
 
 <phrase>
@@ -5626,17 +5626,17 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying color lookup</original>
-<translation></translation>
+<translation>Farb-Lookup wird angewendet</translation>
 </phrase>
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>Ihre LUT-Collection wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation></translation>
+<translation>Klick, um diesen Ordner im Windows-Explorer zu öffnen</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -5818,12 +5818,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>input</original>
-<translation>Eingabe</translation>
+<translation>Input</translation>
 </phrase>
 
 <phrase>
 <original>output</original>
-<translation>Ausgabe</translation>
+<translation>Output</translation>
 </phrase>
 
 <!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -5860,7 +5860,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>level</original>
-<translation>Pegel</translation>
+<translation>Tonwertkorrektur</translation>
 </phrase>
 
 <phrase>
@@ -5929,32 +5929,32 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>set levels automatically</original>
-<translation>Pegel automatisch festlegen</translation>
+<translation>Tonwertkorrektur automatisch festlegen</translation>
 </phrase>
 
 <phrase>
 <original>output levels</original>
-<translation>Ausgangspegel</translation>
+<translation>Tonwertumfang</translation>
 </phrase>
 
 <phrase>
 <original>input levels</original>
-<translation>Eingangspegel</translation>
+<translation>Tonwertspreizung</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Schatten-Eingangspegel-Farbe festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Highlight-Eingangspegel-Farbe festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
 </phrase>
 
 <phrase>
 <original>Mapping new image levels</original>
-<translation>Neue Bildpegel werden abgebildet</translation>
+<translation>Neue Bild-Tonwertkorrektur wird abgebildet</translation>
 </phrase>
 
 <!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -6207,7 +6207,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation>Eine vorherige PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
+<translation>Eine vorherige PhotoDemon-Session wurde unerwartet beendet. Möchten Sie die folgenden autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
 </phrase>
 
 <phrase>
@@ -6621,7 +6621,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Ihre Gradienten-Collection wird im Ordner "%1" gespeichert</translation>
+<translation>Ihre Gradienten-Collection wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
@@ -12407,7 +12407,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>Makro aus Sitzungshistorie erstellen</translation>
+<translation>Makro aus Session-Historie erstellen</translation>
 </phrase>
 
 <phrase>
@@ -13008,7 +13008,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>each session</original>
-<translation>Bei jeder Sitzung</translation>
+<translation>Bei jeder Session</translation>
 </phrase>
 
 <phrase>
@@ -13091,7 +13091,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>Max. Speicherverbrauch von PhotoDemon bei dieser Sitzung</translation>
+<translation>Max. Speicherverbrauch von PhotoDemon bei dieser Session</translation>
 </phrase>
 
 <phrase>
