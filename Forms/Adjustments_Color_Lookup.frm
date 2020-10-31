@@ -164,7 +164,7 @@ Public Sub ApplyColorLookupEffect(ByVal effectParams As String, Optional ByVal t
     If (Not toPreview) Then Message "Applying color lookup..."
     
     'Initialize the effect engine
-    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
+    Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
     
     If Files.FileExists(fxPath) Then
@@ -301,7 +301,7 @@ Private Sub Form_Load()
         m_numOfLUTs = 0
         
         'Compatible LUTs currently include .cube and .3dl files; list only these files
-        Dim i As Long, testFile As String, testExtension As String, testFilenameOnly As String
+        Dim i As Long, testFile As String, testFilenameOnly As String
         For i = 0 To listOfFiles.GetNumOfStrings - 1
             
             testFile = listOfFiles.GetString(i)
@@ -442,17 +442,19 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
-        .AddParam "lut-file", m_LUTs(lstLUTs.ListIndex).fullPath
+        If (lstLUTs.ListIndex >= 0) Then .AddParam "lut-file", m_LUTs(lstLUTs.ListIndex).fullPath Else .AddParam "lut-file", vbNullString
         .AddParam "intensity", sldIntensity.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
     End With
     
     'Before returning, see if we have cached data for the requested LUT
-    If (m_LUTs(lstLUTs.ListIndex).lenDataCompressed <> 0) And (lstLUTs.ListIndex <> m_LastLUTIndex) Then
-        VBHacks.GetHighResTime curTime
-        With m_LUTs(lstLUTs.ListIndex)
-            m_LUT.Serialize_FromBytes .cachedData, .lenDataCompressed, .lenDataUncompressed, .cmpFormat
-        End With
+    If (lstLUTs.ListIndex >= 0) Then
+        If (m_LUTs(lstLUTs.ListIndex).lenDataCompressed <> 0) And (lstLUTs.ListIndex <> m_LastLUTIndex) Then
+            VBHacks.GetHighResTime curTime
+            With m_LUTs(lstLUTs.ListIndex)
+                m_LUT.Serialize_FromBytes .cachedData, .lenDataCompressed, .lenDataUncompressed, .cmpFormat
+            End With
+        End If
     End If
     
     'Remember the current lut index in case we need to cache *it* next

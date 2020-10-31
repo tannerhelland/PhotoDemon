@@ -1442,27 +1442,6 @@ Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF 
     GDIPlusDrawRectFOutlineToDC = GDIPlusDrawRectOutlineToDC(dstDC, srcRectF.Left, srcRectF.Top, srcRectF.Left + srcRectF.Width, srcRectF.Top + srcRectF.Height, eColor, cTransparency, lineWidth, useAA, customLinejoin, hqOffsets, useInsetMode)
 End Function
 
-'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    
-    'Create a pen, which will be used to stroke the circle
-    Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, GP_U_Pixel, iPen
-    
-    'Render the circle
-    GdipDrawEllipse hGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
-        
-    'Release all created objects
-    GdipDeletePen iPen
-    GdipDeleteGraphics hGraphics
-
-End Function
-
 'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
 ' DIB alpha in a single pass, which is important for 32-bpp DIBs.
 Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
