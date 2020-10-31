@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon 3D LUT I/O class
 'Copyright 2020-2020 by Tanner Helland
 'Created: 23/October/20
-'Last updated: 26/October/20
-'Last update: finish optimizing the .CUBE and .3DL parsers
+'Last updated: 30/October/20
+'Last update: add support for serializing to/from byte arrays, with float shuffling for better compression
 '
 'From the .CUBE spec:
 '
@@ -60,9 +60,18 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'When serializing the LUT array (which is just a large array of floats) to/from a byte stream,
+' we can shuffle the floats for greatly improved compression performance.  (Shuffling takes
+' the first byte of every float and places them together, then all second bytes, etc; this is
+' much more likely to produce useful compression sequences as opposed to normal interlaced data.)
+Private Const DEBUG_SHUFFLE_FLOATS As Boolean = True
+
 'Progress reports are returned on the scale (0, 1).  When raised, you can request that the operation
 ' cancel itself; any in-progress work will be erased.
 Event ProgressUpdate(ByVal progressValue As Single, ByRef cancelOperation As Boolean)
+
+'Magic ID when serializing to a byte stream
+Private Const PD_LUT_MAGIC_NUMBER As String = "PDLUT3DS"
 
 'Only 3D LUTs are currently supported, at single-precision.
 Private Type FloatColor
@@ -86,6 +95,82 @@ Private m_MaxR As Single, m_MaxG As Single, m_MaxB As Single
 Private m_RangeR As Single, m_RangeG As Single, m_RangeB As Single
 
 Private m_LoadSuccessful As Boolean
+
+'Apply the loaded lUT to an arbitrary DIB
+Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB, Optional ByVal raiseProgressEvents As Boolean = False)
+    
+    'This filter is interruptible
+    Dim cancelOp As Boolean
+    cancelOp = False
+    
+    'If the caller wants progress reports, calculate some max/min progress values
+    Dim progCheck As Long, progMax As Single
+    If raiseProgressEvents Then
+        progMax = srcDIB.GetDIBHeight
+        progCheck = ProgressBars.FindBestProgBarValue(progMax)
+        progMax = (1! / progMax)
+    End If
+    
+    'Unpremultiply the source DIB's alpha, as necessary
+    Dim srcWasPremultiplied As Boolean
+    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication() Then
+        srcWasPremultiplied = True
+        srcDIB.SetAlphaPremultiplication False
+    Else
+        srcWasPremultiplied = False
+    End If
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0 * 4
+    initY = 0
+    finalX = (srcDIB.GetDIBWidth - 1) * 4
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
+    Dim r As Long, g As Long, b As Long, newR As Long, newG As Long, newB As Long
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For y = initY To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step 4
+        
+        'Get the source pixel color values
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
+        
+        'Apply the active LUT
+        Me.GetInterpolatedRGB_Int r, g, b, newR, newG, newB
+        
+        'Assign the look-up table values
+        imageData(x) = newB
+        imageData(x + 1) = newG
+        imageData(x + 2) = newR
+        
+    Next x
+    
+        'UI updates
+        If raiseProgressEvents Then
+            If ((y And progCheck) = 0) Then
+                RaiseEvent ProgressUpdate((CDbl(y) * progMax), cancelOp)
+                If cancelOp Then GoTo FilterCleanup
+            End If
+        End If
+        
+    Next y
+
+FilterCleanup:
+
+    'Safely deallocate imageData()
+    srcDIB.UnwrapArrayFromDIB imageData
+    
+    'Reset alpha premultiplication, as necessary
+    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
+    
+End Sub
 
 'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes will be available to the user.
 Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
@@ -158,7 +243,7 @@ Friend Function LoadLUTFromFile(ByRef srcFile As String) As Boolean
         m_lutPath = srcFile
     Else
         m_lutPath = vbNullString
-        InternalProblem "LoadLUTFromFile", "load failure"
+        InternalProblem "LoadLUTFromFile", "load failure: " & srcFile
     End If
 
 End Function
@@ -203,9 +288,6 @@ Private Function LoadLUTFromFile_3DL(ByRef srcFile As String) As Boolean
             Dim wordsInLine As pdStringStack
             Set wordsInLine = New pdStringStack
             
-            'Reset all LUT values
-            Me.ResetLUT
-            
             'When we hit a value line, all remaining lines in the file must be value lines *ONLY*.
             ' (This is also a useful optimization, as it allows us to bypass other perf-intensive checks.)
             Dim firstLineHit As Boolean, headerHit As Boolean
@@ -225,6 +307,7 @@ Private Function LoadLUTFromFile_3DL(ByRef srcFile As String) As Boolean
                 'Before processing the current line, calculate the next line's start position
                 linePos = linePos + Len(curLine) + 1
                 
+                '(Crashing on a LUT?  Uncomment to see what we're attempting to parse:
                 'Debug.Print "|" & curLine & "|"
                 
                 'Trim leading and trailing whitespace from all lines before parsing
@@ -461,9 +544,6 @@ Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
             'Some complex lines are parsed using a string stack object
             Dim wordsInLine As pdStringStack
             Set wordsInLine = New pdStringStack
-            
-            'Reset all LUT values
-            Me.ResetLUT
             
             'When we hit a value line, all remaining lines in the file must be value lines *ONLY*.
             ' (This is also a useful optimization, as it allows us to bypass other perf-intensive checks.)
@@ -740,88 +820,183 @@ Friend Sub GetInterpolatedRGB_Int(ByVal srcR As Long, ByVal srcG As Long, ByVal 
     
 End Sub
 
-Friend Sub ApplyLUTToDIB(ByRef srcDIB As pdDIB, Optional ByVal raiseProgressEvents As Boolean = False)
-    
-    'This filter is interruptible
-    Dim cancelOp As Boolean
-    cancelOp = False
-    
-    'If the caller wants progress reports, calculate some max/min progress values
-    Dim progCheck As Long, progMax As Single
-    If raiseProgressEvents Then
-        progMax = srcDIB.GetDIBHeight
-        progCheck = ProgressBars.FindBestProgBarValue(progMax)
-        progMax = (1! / progMax)
-    End If
-    
-    'Unpremultiply the source DIB's alpha, as necessary
-    Dim srcWasPremultiplied As Boolean
-    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication() Then
-        srcWasPremultiplied = True
-        srcDIB.SetAlphaPremultiplication False
-    Else
-        srcWasPremultiplied = False
-    End If
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA As SafeArray1D
-    
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0 * 4
-    initY = 0
-    finalX = (srcDIB.GetDIBWidth - 1) * 4
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
-    Dim r As Long, g As Long, b As Long, newR As Long, newG As Long, newB As Long
-    
-    'Now we can loop through each pixel in the image, converting values as we go
-    For y = initY To finalY
-        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
-    For x = initX To finalX Step 4
-        
-        'Get the source pixel color values
-        b = imageData(x)
-        g = imageData(x + 1)
-        r = imageData(x + 2)
-        
-        'Apply the active LUT
-        Me.GetInterpolatedRGB_Int r, g, b, newR, newG, newB
-        
-        'Assign the look-up table values
-        imageData(x) = newB
-        imageData(x + 1) = newG
-        imageData(x + 2) = newR
-        
-    Next x
-    
-        'UI updates
-        If raiseProgressEvents Then
-            If ((y And progCheck) = 0) Then
-                RaiseEvent ProgressUpdate((CDbl(y) * progMax), cancelOp)
-                If cancelOp Then GoTo FilterCleanup
-            End If
-        End If
-        
-    Next y
-
-FilterCleanup:
-
-    'Safely deallocate imageData()
-    srcDIB.UnwrapArrayFromDIB imageData
-    
-    'Reset alpha premultiplication, as necessary
-    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
-    
-    'If g_cancelCurrentAction Then ApplyLUTToAllColorChannels = 0 Else ApplyLUTToAllColorChannels = 1
-    
-End Sub
-
 Friend Sub ResetLUT()
+    m_LoadSuccessful = False
     m_LutSize = 0
     m_MaxR = 1!: m_MaxG = 1!: m_MaxB = 1!
     m_MinR = 0!: m_MinG = 0!: m_MinB = 0!
+    m_lutPath = vbNullString
 End Sub
+
+'Serialize the current LUT's contents to a byte array.  Returns the size of the stored data, UNCOMPRESSED.
+' (If you choose to compress the data, you ALSO need to retrieve and store the dstUncompressedSize value,
+' obviously!)
+' IMPORTANTLY: the UBound() of the returned bytes are unlikely to match the actual size of the returned data,
+' because the array is over-sized to allow for more efficient compression.
+Friend Function Serialize_ToBytes(ByRef dstBytes() As Byte, ByRef dstUncompressedSize As Long, ByVal cmpFormat As PD_CompressionFormat, Optional ByVal compressionLevel As Long = -1) As Long
+    
+    If (Not m_LoadSuccessful) Then Exit Function
+    
+    'As always, pdStream is the solution for all serialization needs
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite) Then
+    
+        'Start with a magic number, then basic header bits
+        cStream.WriteString_ASCII PD_LUT_MAGIC_NUMBER
+        
+        'LUT path
+        cStream.WriteString_UTF8 m_lutPath, True
+        
+        'LUT size (loop size can be inferred at read-time)
+        cStream.WriteLong m_LutSize
+        
+        'Max/min values (range can be inferred at read-time)
+        cStream.WriteFloat m_MinR
+        cStream.WriteFloat m_MinG
+        cStream.WriteFloat m_MinB
+        cStream.WriteFloat m_MaxR
+        cStream.WriteFloat m_MaxG
+        cStream.WriteFloat m_MaxB
+        
+        'All that's left is the float data.  Swizzling the float data by byte can produce
+        ' much better compression ratios, at some cost to performance.
+        '
+        'To make data retrievable between sessions, regardless of our behavior, write a swizzle flag
+        If DEBUG_SHUFFLE_FLOATS Then cStream.WriteByte 1 Else cStream.WriteByte 0
+        
+        If DEBUG_SHUFFLE_FLOATS Then
+            Dim tmpBytes() As Byte
+            ReDim tmpBytes(0 To 4 * 3 * m_LutSize * m_LutSize * m_LutSize - 1) As Byte
+            VBHacks.ShuffleBytes_4 VarPtr(m_lut3D(0, 0, 0)), VarPtr(tmpBytes(0)), 3 * m_LutSize * m_LutSize * m_LutSize
+            cStream.WriteBytesFromPointer VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1
+        Else
+            cStream.WriteBytesFromPointer VarPtr(m_lut3D(0, 0, 0)), 4 * 3 * m_LutSize * m_LutSize * m_LutSize
+        End If
+        
+        'That's everything!  Note the uncompressed size
+        dstUncompressedSize = cStream.GetStreamSize()
+        
+        'Figure out export size
+        Dim dstArraySize As Long
+        If (cmpFormat = cf_None) Then
+            dstArraySize = dstUncompressedSize
+        Else
+            dstArraySize = Compression.GetWorstCaseSize(dstUncompressedSize, cmpFormat, compressionLevel)
+        End If
+        
+        'Prep the array, while attempting to reuse an existing allocation (if any)
+        If VBHacks.IsArrayInitialized(dstBytes) Then
+            If (UBound(dstBytes) < dstArraySize - 1) Then ReDim dstBytes(0 To dstArraySize - 1) As Byte
+        Else
+            ReDim dstBytes(0 To dstArraySize - 1) As Byte
+        End If
+        
+        'Compress!
+        If (cmpFormat = cf_None) Then
+            cStream.SetPosition 0
+            cStream.ReadBytesToBarePointer VarPtr(dstBytes(0)), dstUncompressedSize
+            Serialize_ToBytes = dstUncompressedSize
+        Else
+        
+            Dim compressedSize As Long
+            compressedSize = dstArraySize
+            
+            If Compression.CompressPtrToPtr(VarPtr(dstBytes(0)), compressedSize, cStream.Peek_PointerOnly(0, dstUncompressedSize), dstUncompressedSize, cmpFormat, compressionLevel) Then
+                Debug.Print "Compressed LUT during serialization: " & cStream.GetStreamSize() & " to " & compressedSize & " bytes"
+                Serialize_ToBytes = compressedSize
+            Else
+                InternalProblem "Serialize_ToBytes", "compression failure"
+                Serialize_ToBytes = 0
+            End If
+            
+        End If
+        
+    End If
+    
+End Function
+
+'Re-create a LUT from previously serialized bytes.  Returns TRUE if un-serialization appears to be successful.
+Friend Function Serialize_FromBytes(ByRef srcBytes() As Byte, ByVal currentSizeInBytes As Long, ByVal uncompressedSizeInBytes As Long, ByVal cmpFormat As PD_CompressionFormat) As Boolean
+    
+    'Reset everything we've currently got stored
+    Me.ResetLUT
+    
+    'As always, pdStream is the solution for all serialization needs
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    
+    'If the data is compressed, we need to uncompress it before reading.
+    Dim streamOK As Boolean
+    If (cmpFormat = cf_None) Then
+        
+        'Wrap the stream around the data as-is
+        streamOK = cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=currentSizeInBytes, baseFilePointerOffset:=VarPtr(srcBytes(0)))
+    
+    Else
+    
+        'Decompress the data directly into the stream object
+        streamOK = cStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=uncompressedSizeInBytes)
+        cStream.SetSizeExternally uncompressedSizeInBytes
+        If streamOK Then streamOK = Compression.DecompressPtrToPtr(cStream.Peek_PointerOnly(0, uncompressedSizeInBytes), uncompressedSizeInBytes, VarPtr(srcBytes(0)), currentSizeInBytes, cmpFormat)
+        If streamOK Then cStream.SetPosition 0, FILE_BEGIN
+        
+    End If
+    
+    If (Not streamOK) Then
+        InternalProblem "Serialize_FromByte", "couldn't initialize stream"
+        Exit Function
+    End If
+    
+    'Validate the magic number
+    Dim testString As String
+    testString = cStream.ReadString_ASCII(8)
+    If (testString <> PD_LUT_MAGIC_NUMBER) Then
+        InternalProblem "Serialize_FromByte", "magic number doesn't match: " & testString
+        Exit Function
+    End If
+    
+    'Retrieve LUT path
+    m_lutPath = cStream.ReadString_UTF8(0, True)
+    
+    'Load and validate LUT size
+    m_LutSize = cStream.ReadLong()
+    If (m_LutSize <= 0) Then
+        InternalProblem "Serialize_FromByte", "bad lut size: " & m_LutSize
+        Exit Function
+    End If
+        
+    m_LutLoopSize = m_LutSize - 1
+        
+    'Max/min values, then infer range accordingly
+    m_MinR = cStream.ReadFloat()
+    m_MinG = cStream.ReadFloat()
+    m_MinB = cStream.ReadFloat()
+    m_MaxR = cStream.ReadFloat()
+    m_MaxG = cStream.ReadFloat()
+    m_MaxB = cStream.ReadFloat()
+    
+    m_RangeR = m_MaxR - m_MinR
+    m_RangeG = m_MaxG - m_MinG
+    m_RangeB = m_MaxB - m_MinB
+    
+    'All that's left is float data.  Prepare the array then copy the data directly into place.
+    ReDim m_lut3D(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As FloatColor
+    
+    'Float data may be swizzled for improved compression performance.  Retrieve the swizzle flag first
+    If (cStream.ReadByte() = 1) Then
+        Dim tmpBytes() As Byte
+        ReDim tmpBytes(0 To 4 * 3 * m_LutSize * m_LutSize * m_LutSize - 1) As Byte
+        cStream.ReadBytesToBarePointer VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1
+        VBHacks.UnshuffleBytes_4 VarPtr(tmpBytes(0)), VarPtr(m_lut3D(0, 0, 0)), 3 * m_LutSize * m_LutSize * m_LutSize
+    Else
+        cStream.ReadBytesToBarePointer VarPtr(m_lut3D(0, 0, 0)), 4 * 3 * m_LutSize * m_LutSize * m_LutSize
+    End If
+    
+    m_LoadSuccessful = True
+    Serialize_FromBytes = m_LoadSuccessful
+
+End Function
 
 Private Sub InternalProblem(ByRef srcFunction As String, ByRef errMsg As String)
     PDDebug.LogAction "WARNING!  pdLUT3D." & srcFunction & "() returned an error: " & errMsg
