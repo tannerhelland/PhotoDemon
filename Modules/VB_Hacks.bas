@@ -420,6 +420,56 @@ Public Function SendMsgW(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As
     SendMsgW = SendMessageW(hWnd, wMsg, wParam, lParam)
 End Function
 
+'Shuffle a source array (should be float data crammed or aliased into a byte array) into a new array,
+' but perform the equivalent of a planar-to-chunky conversion.  This is useful for floating-point data
+' in particular, as it can greatly improve compression ratios by placing all 1st bytes, 2nd bytes, etc
+' next to each to eachother as there is a far higher probability of repeatable sequences.
+'
+'Note that THE CALLER needs to ensure that BOTH the source and destination points are to valid,
+' correctly allocated arrays (type doesn't matter - we'll allocate at byte level as necessary).
+' and that the number of LONGS (not bytes) to shuffle is accurate.
+Public Sub ShuffleBytes_4(ByVal srcPtr As Long, ByVal dstPtr As Long, ByVal numLongsToShuffle As Long)
+    
+    'Alias an RGBQuad around the source array.  Note that this is an arbitrary struct;
+    ' we simply need a VB-convenient way to access individual bytes, and PD already uses
+    ' this struct everywhere.
+    Dim srcQuads() As RGBQuad, sfArrayQuad As SafeArray1D
+    With sfArrayQuad
+        .cbElements = 4
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = numLongsToShuffle
+        .pvData = srcPtr
+    End With
+    PutMem4 VarPtrArray(srcQuads()), VarPtr(sfArrayQuad)
+    
+    'Next, alias an arbitrary byte array around the destination
+    Dim dstBytes() As Byte, sfArrayByte As SafeArray1D
+    With sfArrayByte
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = numLongsToShuffle * 4
+        .pvData = dstPtr
+    End With
+    PutMem4 VarPtrArray(dstBytes()), VarPtr(sfArrayByte)
+    
+    'Shuffle!
+    Dim i As Long
+    For i = 0 To numLongsToShuffle - 1
+        dstBytes(i) = srcQuads(i).Alpha
+        dstBytes(numLongsToShuffle + i) = srcQuads(i).Red
+        dstBytes(numLongsToShuffle * 2 + i) = srcQuads(i).Green
+        dstBytes(numLongsToShuffle * 3 + i) = srcQuads(i).Blue
+    Next i
+    
+    PutMem4 VarPtrArray(srcQuads()), 0&
+    PutMem4 VarPtrArray(dstBytes()), 0&
+
+End Sub
+
 Public Sub SleepAPI(ByVal sleepTimeInMS As Long)
     Sleep sleepTimeInMS
 End Sub
@@ -433,6 +483,49 @@ Public Sub SwapEndianness16(ByRef srcData() As Byte)
         srcData(i) = srcData(i + 1)
         srcData(i + 1) = tmpValue
     Next i
+End Sub
+
+'Un-shuffle data that was previously shuffled by the ShuffleBytes_4 function.
+' (Look there for comments.)
+'As always, make sure your source and destination pointers are accurate!
+Public Sub UnshuffleBytes_4(ByVal srcPtr As Long, ByVal dstPtr As Long, ByVal numLongsToShuffle As Long)
+    
+    'Basically, do everything in reverse from ShuffleBytes_4.
+    Dim dstQuads() As RGBQuad, sfArrayQuad As SafeArray1D
+    With sfArrayQuad
+        .cbElements = 4
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = numLongsToShuffle
+        .pvData = dstPtr
+    End With
+    PutMem4 VarPtrArray(dstQuads()), VarPtr(sfArrayQuad)
+    
+    Dim srcBytes() As Byte, sfArrayByte As SafeArray1D
+    With sfArrayByte
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = numLongsToShuffle * 4
+        .pvData = srcPtr
+    End With
+    PutMem4 VarPtrArray(srcBytes()), VarPtr(sfArrayByte)
+    
+    Dim i As Long
+    For i = 0 To numLongsToShuffle - 1
+        With dstQuads(i)
+            .Alpha = srcBytes(i)
+            .Red = srcBytes(numLongsToShuffle + i)
+            .Green = srcBytes(numLongsToShuffle * 2 + i)
+            .Blue = srcBytes(numLongsToShuffle * 3 + i)
+        End With
+    Next i
+    
+    PutMem4 VarPtrArray(dstQuads()), 0&
+    PutMem4 VarPtrArray(srcBytes()), 0&
+
 End Sub
 
 'Make certain the length of the source array is a multiple of 4 before calling;
