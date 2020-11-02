@@ -107,8 +107,8 @@ Attribute VB_Exposed = False
 '3D color lookup effect
 'Copyright 2020-2020 by Tanner Helland
 'Created: 27/October/20
-'Last updated: 29/October/20
-'Last update: finalize key UI elements
+'Last updated: 02/November/20
+'Last update: add support for .look LUT format
 '
 'For a detailed explanation of 3D color lookup tables and how they work, see the pdLUT3D class.
 '
@@ -223,54 +223,71 @@ Private Sub cmdBrowse_Click()
     Dim srcFilename As String
     If m_LUT.DisplayLUTLoadDialog(vbNullString, srcFilename) Then
         
-        'Before doing anything else, copy the source file into the user's LUT folder.
-        If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
-            Dim newFilename As String
-            newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
-            Files.FileCopyW srcFilename, newFilename
-            srcFilename = newFilename
+        'Don't load this LUT at all unless it validates
+        If m_LUT.LoadLUTFromFile(srcFilename) Then
+            
+            'Before doing anything else, copy the source file into the user's LUT folder.
+            If (Not Strings.LeftMatches(srcFilename, Files.PathAddBackslash(UserPrefs.GetLUTPath(True)), True)) Then
+                Dim newFilename As String
+                newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(srcFilename, False)
+                Files.FileCopyW srcFilename, newFilename
+                srcFilename = newFilename
+            End If
+            
+            'If the file validated, and it has a sub-file, copy the sub-file into the local folder as well
+            If (LenB(m_LUT.GetLUTSubPath()) <> 0) Then
+                newFilename = Files.PathAddBackslash(UserPrefs.GetLUTPath(True)) & Files.FileGetName(m_LUT.GetLUTSubPath(), False)
+                Files.FileCopyW m_LUT.GetLUTSubPath(), newFilename
+            End If
+            
+            'Ensure we have sufficient space for a new entry
+            If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
+            
+            Dim targetFilenameOnly As String
+            targetFilenameOnly = Files.FileGetName(srcFilename)
+            
+            'We now need to search the current list of LUTs and figure out where to insert this one.
+            Dim i As Long
+            For i = 0 To m_numOfLUTs - 1
+                
+                'Look for the first entry with a value *less* than the current one
+                If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
+                
+            Next i
+            
+            'Shift all existing entries to make room for this new one
+            If (i < m_numOfLUTs - 1) Then
+                
+                Dim j As Long
+                For j = m_numOfLUTs - 1 To i + 1 Step -1
+                    m_LUTs(j) = m_LUTs(j - 1)
+                Next j
+                
+            End If
+            
+            With m_LUTs(i)
+                .fullPath = srcFilename
+                .filenameOnly = targetFilenameOnly
+                .lenDataCompressed = 0
+                .lenDataUncompressed = 0
+            End With
+            m_numOfLUTs = m_numOfLUTs + 1
+            
+            'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
+            ' get added to the *end* of the list.  This is by design to make newly added entries
+            ' easier to find.  If the user leaves and returns to this dialog, the list of available
+            ' LUTs always gets re-sorted.
+            lstLUTs.AddItem targetFilenameOnly, i
+            lstLUTs.ListIndex = i
+            
+        'LUT didn't validate!  Notify the user, then exit.
+        Else
+            Dim msgText As String, msgTitle As String
+            msgText = g_Language.TranslateMessage("%1 is not a valid 3D lookup table (LUT).", srcFilename)
+            msgTitle = g_Language.TranslateMessage("Error")
+            PDMsgBox msgText, vbExclamation Or vbOKOnly Or vbApplicationModal, msgTitle
         End If
         
-        'Ensure we have sufficient space for a new entry
-        If (m_numOfLUTs > UBound(m_LUTs)) Then ReDim Preserve m_LUTs(0 To m_numOfLUTs * 2 - 1) As LUTCache
-        
-        Dim targetFilenameOnly As String
-        targetFilenameOnly = Files.FileGetName(srcFilename)
-        
-        'We now need to search the current list of LUTs and figure out where to insert this one.
-        Dim i As Long
-        For i = 0 To m_numOfLUTs - 1
-            
-            'Look for the first entry with a value *less* than the current one
-            If (Strings.StrCompSortPtr_Filenames(StrPtr(targetFilenameOnly), StrPtr(m_LUTs(i).filenameOnly)) < 0) Then Exit For
-            
-        Next i
-        
-        'Shift all existing entries to make room for this new one
-        If (i < m_numOfLUTs - 1) Then
-            
-            Dim j As Long
-            For j = m_numOfLUTs - 1 To i + 1 Step -1
-                m_LUTs(j) = m_LUTs(j - 1)
-            Next j
-            
-        End If
-        
-        With m_LUTs(i)
-            .fullPath = srcFilename
-            .filenameOnly = targetFilenameOnly
-            .lenDataCompressed = 0
-            .lenDataUncompressed = 0
-        End With
-        m_numOfLUTs = m_numOfLUTs + 1
-        
-        'Don't forget to add this lut to the listbox!  (Note that this entry will, by default,
-        ' get added to the *end* of the list.  This is by design to make newly added entries
-        ' easier to find.  If the user leaves and returns to this dialog, the list of available
-        ' LUTs always gets re-sorted.
-        lstLUTs.AddItem targetFilenameOnly, i
-        lstLUTs.ListIndex = i
-    
     End If
     
 End Sub
@@ -289,7 +306,7 @@ Private Sub Form_Load()
     Dim lutFolder As String
     lutFolder = UserPrefs.GetLUTPath(True)
     
-    If Files.RetrieveAllFiles(lutFolder, listOfFiles, True, False, "cube|3dl") Then
+    If Files.RetrieveAllFiles(lutFolder, listOfFiles, True, False, "cube|look|3dl") Then
         
         'Tell the listbox to use file display mode.  (This will truncate extremely long filenames using
         ' OS rules, as necessary.)

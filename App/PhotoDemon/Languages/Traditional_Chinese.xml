@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.201</langversion>
+<langversion>7.0.203</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -192,8 +192,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Image save error</original>
-<translation>影像儲存錯誤</translation>
+<original>Error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -427,16 +427,11 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>FreeImage Interface Error</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Save cannot be completed without FreeImage library.</original>
 <translation></translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2383,24 +2378,9 @@ Please make sure the device is turned on and ready for use.</original>
 </phrase>
 
 <phrase>
-<original>Unresponsive scanner - scanning suspended</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Scanner Interface Error</original>
-<translation>掃描器介面錯誤</translation>
-</phrase>
-
-<phrase>
-<original>Scanning disabled</original>
 <translation></translation>
 </phrase>
 
@@ -2454,7 +2434,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation></translation>
 </phrase>
 
-<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
@@ -2549,11 +2529,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Processor Error</original>
-<translation>處理器錯誤</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation></translation>
 </phrase>
@@ -2595,11 +2570,6 @@ Description: %2
 描述: %2
 
 %3</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Error Handler</original>
-<translation>PhotoDemon 錯誤處理常式</translation>
 </phrase>
 
 <phrase>
@@ -2864,7 +2834,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>錯誤回報說明</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2942,11 +2912,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>Selection Error</original>
-<translation>選取區錯誤</translation>
 </phrase>
 
 <phrase>
@@ -3049,7 +3014,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>按下第 1 個點以完成選取區</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3299,11 +3264,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Windows Clipboard Error</original>
-<translation>Windows 剪貼簿錯誤</translation>
-</phrase>
-
-<phrase>
 <original>Clipboard Image</original>
 <translation>剪貼簿影像</translation>
 </phrase>
@@ -3333,7 +3293,7 @@ Please enter a numeric value.</original>
 <translation>匯入影像</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 30 phrases. 22 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -3671,16 +3631,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Error: too many images</original>
-<translation>錯誤: 影像過多</translation>
-</phrase>
-
-<phrase>
 <original>Load canceled.</original>
 <translation>已取消載入。</translation>
 </phrase>
 
-<!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
@@ -5586,6 +5541,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>%1 is not a valid 3D lookup table (LUT).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
 <translation></translation>
 </phrase>
@@ -5595,7 +5555,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -9482,11 +9442,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Internet Connection Error</original>
-<translation>網路連線錯誤</translation>
-</phrase>
-
-<phrase>
 <original>Verifying image URL (this may take a moment)</original>
 <translation>正在驗證影像網址 (可能需要一些時間)</translation>
 </phrase>
@@ -9560,7 +9515,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>等待使用者輸入</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9677,11 +9632,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Printer Error</original>
-<translation>列印錯誤</translation>
-</phrase>
-
-<phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
 <translation></translation>
 </phrase>
@@ -9701,7 +9651,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13234,10 +13184,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2507</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5096 phrases. -->
-<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11600 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2593 are duplicates, so only 2507 unique phrases have been written to file. -->
+<!-- These 2507 phrases contain approximately 11574 total words. -->
 
 </pdData>

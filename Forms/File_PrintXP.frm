@@ -289,7 +289,7 @@ Private Sub cmdBar_OKClick()
     
 PrintingFailed:
 
-    PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Printer Error", "PhotoDemon", Printer.DeviceName
+    PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation Or vbOKOnly, "Error", "PhotoDemon", Printer.DeviceName
     cmdBar.DoNotUnloadForm
     
 End Sub

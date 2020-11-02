@@ -114,13 +114,13 @@ Public Sub Twain32SelectScanner()
             TWAIN_SelectImageSource GetModalOwner().hWnd
             Message "Scanner successfully enabled "
         Else
-            PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation Or vbOKOnly, " Scanner error"
-            Message "Unresponsive scanner - scanning suspended "
+            PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation Or vbOKOnly, "Error"
+            Message "Scanner error"
         End If
     
     Else
-        PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, " Scanner Interface Error"
-        Message "Scanning disabled "
+        PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "Error"
+        Message "Scanner error"
     End If
     
 End Sub
@@ -172,13 +172,13 @@ Public Sub Twain32Scan()
             End If
             
         Else
-            PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation Or vbOKOnly, " Scanner Interface Error"
-            Message "Unresponsive scanner - scanning suspended "
+            PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation Or vbOKOnly, "Error"
+            Message "Scanner error"
         End If
         
     Else
-        PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, " Scanner Interface Error"
-        Message "Scanner error "
+        PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "Error"
+        Message "Scanner error"
     End If
     
     Exit Sub
@@ -206,7 +206,7 @@ ScanError:
     End Select
         
     PDMsgBox scanErrMessage, vbExclamation Or vbOKOnly, "Scan canceled"
-    Message "Scan canceled "
+    Message "Scan canceled"
     
 End Sub
 

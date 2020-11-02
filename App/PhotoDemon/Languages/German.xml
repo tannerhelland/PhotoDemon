@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.140</langversion>
+<langversion>9.0.142</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -196,8 +196,8 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 </phrase>
 
 <phrase>
-<original>Image save error</original>
-<translation>Fehler beim Speichern des Bildes</translation>
+<original>Error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -435,16 +435,11 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>FreeImage Interface Error</original>
-<translation>Fehler bei FreeImage-Interface</translation>
-</phrase>
-
-<phrase>
 <original>Save cannot be completed without FreeImage library.</original>
 <translation>Speichern kann nicht ohne FreeImage-Library abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2410,27 +2405,12 @@ Bitte stellen Sie sicher, dass das Gerät eingeschaltet und bereit für die Nutz
 </phrase>
 
 <phrase>
-<original>Unresponsive scanner - scanning suspended</original>
-<translation>Scanner antwortet nicht - Scannen wird ausgesetzt</translation>
-</phrase>
-
-<phrase>
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde bei der Programminitialisierung als fehlend markiert.
 
 Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
-</phrase>
-
-<phrase>
-<original>Scanner Interface Error</original>
-<translation>Fehler bei Scanner-Interface</translation>
-</phrase>
-
-<phrase>
-<original>Scanning disabled</original>
-<translation>Scannen wird deaktiviert</translation>
 </phrase>
 
 <phrase>
@@ -2483,7 +2463,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 <translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Bitte besuchen Sie http://www.eztwain.com für mehr Informationen.</translation>
 </phrase>
 
-<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
@@ -2580,11 +2560,6 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 </phrase>
 
 <phrase>
-<original>Processor Error</original>
-<translation>Prozessorfehler</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
 </phrase>
@@ -2630,11 +2605,6 @@ Fehlernummer %1
 Beschreibung: %2
 
 %3</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Error Handler</original>
-<translation>PhotoDemon Fehler-Handler</translation>
 </phrase>
 
 <phrase>
@@ -2901,7 +2871,7 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <translation>Bug-Bericht-Instruktionen</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2983,11 +2953,6 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Beim Versuch %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
-</phrase>
-
-<phrase>
-<original>Selection Error</original>
-<translation>Auswahlfehler</translation>
 </phrase>
 
 <phrase>
@@ -3090,7 +3055,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Klick auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3342,11 +3307,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fehler in Windows-Zwischenablage</translation>
-</phrase>
-
-<phrase>
 <original>Clipboard Image</original>
 <translation>Zwischenablage-Bild</translation>
 </phrase>
@@ -3376,7 +3336,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Importiertes Bild</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 30 phrases. 22 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -3714,16 +3674,11 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Error: too many images</original>
-<translation>Fehler: Zu viele Bilder</translation>
-</phrase>
-
-<phrase>
 <original>Load canceled.</original>
 <translation>Laden abgebrochen.</translation>
 </phrase>
 
-<!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
@@ -5630,6 +5585,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>%1 is not a valid 3D lookup table (LUT).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
 <translation>Ihre LUT-Collection wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
@@ -5639,7 +5599,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Klick, um diesen Ordner im Windows-Explorer zu öffnen</translation>
 </phrase>
 
-<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -9530,11 +9490,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Internet Connection Error</original>
-<translation>Internet-Verbindungsfehler</translation>
-</phrase>
-
-<phrase>
 <original>Verifying image URL (this may take a moment)</original>
 <translation>Bild-URL wird verifiziert (dies kann einen Moment dauern)</translation>
 </phrase>
@@ -9612,7 +9567,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Warten auf Benutzereingabe</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9729,11 +9684,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Printer Error</original>
-<translation>Druckerfehler</translation>
-</phrase>
-
-<phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
 <translation>Die Druckvorschau erfordert das FreeImage-Plug-in, welches auf diesem Computer nicht lokalisiert werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plug-ins geboten.</translation>
 </phrase>
@@ -9753,7 +9703,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Landscape</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13294,10 +13244,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2507</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5096 phrases. -->
-<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11600 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2593 are duplicates, so only 2507 unique phrases have been written to file. -->
+<!-- These 2507 phrases contain approximately 11574 total words. -->
 
 </pdData>

@@ -2694,7 +2694,7 @@ End Function
 'Many export functions require FreeImage.  If it doesn't exist, a generic warning will be raised when the user tries to
 ' export to a FreeImage-based format.  (Note that the warning is suppressed during batch processing, by design.)
 Private Sub RaiseFreeImageWarning()
-    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "FreeImage Interface Error"
+    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "Error"
     Message "Save cannot be completed without FreeImage library."
 End Sub
 

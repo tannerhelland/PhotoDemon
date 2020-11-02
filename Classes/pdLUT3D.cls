@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon 3D LUT I/O class
 'Copyright 2020-2020 by Tanner Helland
 'Created: 23/October/20
-'Last updated: 30/October/20
-'Last update: add support for serializing to/from byte arrays, with float shuffling for better compression
+'Last updated: 02/November/20
+'Last update: add support for .look-format files, which are also supported by (and ship with) Photoshop
 '
 'From the .CUBE spec:
 '
@@ -84,6 +84,12 @@ Private m_lut3D() As FloatColor
 
 'Path of the currently loaded LUT, if any; null means a LUT has not been loaded yet
 Private m_lutPath As String
+
+'Some LUTs (.look format) may reference a sub-file for actual LUT data.  In PD, successfully loaded LUTs
+' are typically copied into the local LUT folder to maintain portability.  We need to copy the subfile as
+' well, or the LUT won't work.  (We could theoretically work around this by converting the LUT to hex,
+' then copying that data into the parent LUT file... but wow, that's a mess.)
+Private m_subLutPath As String
 
 'LUT size is uniform for all dimensions, and must be specified by the file (e.g. there is no default value)
 ' (loop size is just m_LutSize-1, but it's faster to precalculate it since it's accessed inside many loops).
@@ -173,6 +179,8 @@ FilterCleanup:
 End Sub
 
 'Display PD's generic 3D LUT load dialog.  All supported LUT filetypes will be available to the user.
+' Note that this function returns TRUE if the user selects a file, FALSE if they cancel.  This function
+' DOES NOT attempt to load or validate the target file - that's on you.
 Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
     
     DisplayLUTLoadDialog = False
@@ -182,9 +190,10 @@ Public Function DisplayLUTLoadDialog(ByRef srcFilename As String, ByRef dstFilen
     
     Dim cdFilter As pdString
     Set cdFilter = New pdString
-    cdFilter.Append g_Language.TranslateMessage("All supported LUTs") & "|*.cube;*.3dl|"
+    cdFilter.Append g_Language.TranslateMessage("All supported LUTs") & "|*.cube;*.look;*.3dl|"
     
     cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
+    cdFilter.Append "Adobe SpeedGrade (.look)|*.look|"
     cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl|"
     cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
     
@@ -223,6 +232,11 @@ Friend Function GetLUTPath() As String
     GetLUTPath = m_lutPath
 End Function
 
+'Only some files (.look format) require a subpath
+Friend Function GetLUTSubPath() As String
+    GetLUTSubPath = m_subLutPath
+End Function
+
 'Load any LUT from file by calling this function.  The LUT format doesn't need to be known in advance;
 ' we'll sort it out based on file extension.  (A necessary evil since these formats are all just text files.)
 Friend Function LoadLUTFromFile(ByRef srcFile As String) As Boolean
@@ -234,11 +248,14 @@ Friend Function LoadLUTFromFile(ByRef srcFile As String) As Boolean
         LoadLUTFromFile = LoadLUTFromFile_CUBE(srcFile)
     ElseIf (strExtension = "3dl") Then
         LoadLUTFromFile = LoadLUTFromFile_3DL(srcFile)
+    ElseIf (strExtension = "look") Then
+        LoadLUTFromFile = LoadLUTFromFile_look(srcFile)
     Else
         InternalProblem "LoadLUTFromFile", "unknown file format"
         LoadLUTFromFile = False
     End If
     
+    'Do *NOT* overwrite the LUT path if this is a sub-file
     If LoadLUTFromFile Then
         m_lutPath = srcFile
     Else
@@ -511,6 +528,7 @@ LUTParseCrash:
     LoadLUTFromFile_3DL = False
 End Function
 
+'Adobe CUBE format
 Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
 
     On Error GoTo LUTParseCrash
@@ -731,6 +749,176 @@ LUTParseCrash:
     LoadLUTFromFile_CUBE = False
 End Function
 
+'Adobe (?) LOOK format
+Private Function LoadLUTFromFile_look(ByRef srcFile As String) As Boolean
+
+    On Error GoTo LUTParseCrash
+    Me.ResetLUT
+    
+    Dim srcStream As pdStream
+    Set srcStream = New pdStream
+    If srcStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+    
+        '.look files are just XML.  Load the entire thing into a string.
+        Dim rawFileString As String
+        srcStream.SetPosition 0, FILE_BEGIN
+        rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize(), False)
+        If (LenB(rawFileString) <> 0) And (Strings.StrStrBM(rawFileString, "<LUT>") <> 0) Then
+            
+            'Let's cheat and use PD's lightweight "fake" XML parser to retrieve just the LUT data
+            Dim cXML As pdSerialize
+            Set cXML = New pdSerialize
+            cXML.SetParamString rawFileString
+            
+            Dim lutText As String
+            If cXML.GetStringEx("LUT", lutText) Then
+                
+                'We need two values from the LUT section.
+                cXML.SetParamString lutText
+                
+                'First, we need to know the size of the LUT
+                Dim sizeString As String
+                sizeString = cXML.GetString("size", vbNullString, True)
+                
+                'Some special .look LUT files (described below) won't have a size parameter;
+                ' we'll deal with these in a moment.
+                Dim noSize As Boolean
+                noSize = (LenB(sizeString) <= 0)
+                
+                If (Not noSize) Then
+                    
+                    'Size is always an integer delimited by quotation marks
+                    sizeString = Replace(sizeString, """", vbNullString)
+                    
+                    Dim sizeInt As Long
+                    sizeInt = Val(sizeString)
+                    If (sizeInt < 0) Then Exit Function
+                    
+                    m_LutSize = sizeInt
+                    m_LutLoopSize = m_LutSize - 1
+                    
+                End If
+                    
+                'Next, we need the LUT data itself
+                Dim lutString As String
+                lutString = cXML.GetString("data", vbNullString, True)
+                
+                'Remove all useless formatting chars
+                lutString = Replace(lutString, """", vbNullString)
+                lutString = Replace(lutString, vbTab, vbNullString)
+                lutString = Replace(lutString, vbCr, vbNullString)
+                lutString = Replace(lutString, vbLf, vbNullString)
+                
+                'Now we have to address a rare but valid situation.  Some .look files don't
+                ' actually embed full LUT data.  Instead, they simply point at another LUT
+                ' file in the same folder.  We want to try and detect this case, and fall back
+                ' to a separate load call as necessary.
+                
+                'The easiest way to catch this case is to simply calculate the size of the
+                ' LUT table we expect to see.  If the returned string is smaller than this,
+                ' check for a filename.
+                Dim minRequiredSize As Long
+                minRequiredSize = m_LutSize * m_LutSize * m_LutSize * 3 * 8  '3 color components * 8 hex chars required to describe 4 bytes worth of data per component
+                
+                If (noSize Or (Len(lutString) < minRequiredSize - 1)) Then
+                
+                    'Uh oh - we don't have enough data to parse hex data.  See if this is a filename instead.
+                    Dim potentialFile As String
+                    potentialFile = Files.PathAddBackslash(Files.FileGetPath(srcFile)) & lutString
+                    
+                    Dim subFileRequired As Boolean
+                    subFileRequired = Files.FileExists(potentialFile)
+                    
+                    'Some files may not list the file in the <Data> segment, but may instead place it directly
+                    ' in the LUT tag.
+                    If (Not subFileRequired) Then
+                        potentialFile = Files.PathAddBackslash(Files.FileGetPath(srcFile)) & Replace(lutText, """", vbNullString)
+                        subFileRequired = Files.FileExists(potentialFile)
+                    End If
+                    
+                    'If this file simply references another external LUT file (sigh), we want to load that LUT file,
+                    ' then copy its contents into *this* LUT class.  This allows us to support nested LUT files
+                    ' without complex detection criteria.
+                    If subFileRequired Then
+                        
+                        'Cache a copy of the sub-LUT file's location; we need to restore this because the next
+                        ' step we perform (serialization) will reset many of this class's module-level values.
+                        Dim cChild As pdLUT3D
+                        Set cChild = New pdLUT3D
+                        m_LoadSuccessful = cChild.LoadLUTFromFile(potentialFile)
+                        If m_LoadSuccessful Then
+                        
+                            'Overwrite this LUT's data with the data from its child
+                            Dim lutBytes() As Byte, lutSize As Long
+                            cChild.Serialize_ToBytes lutBytes, lutSize, cf_None
+                            Me.Serialize_FromBytes lutBytes, lutSize, lutSize, cf_None
+                            
+                            'Restore the sub-LUT path (as it will have been erased by the serialize command, above)
+                            m_subLutPath = potentialFile
+                            
+                            'Note that m_LUTPath will also be null at this point - that's okay, because the parent
+                            ' Load_XYZ function sets that path before exiting when a file loads correctly.
+                            
+                        Else
+                            m_subLutPath = vbNullString
+                        End If
+                        
+                    End If
+                
+                Else
+                    
+                    lutString = Replace(lutString, " ", vbNullString)
+                    
+                    'Attempt to convert the length list of hexes to a standard byte array
+                    'Dim lutBytes() As Byte
+                    If Strings.BytesFromHex(lutBytes, lutString) Then
+                    
+                        'If we're still here, the result is likely useable!
+                        m_LoadSuccessful = True
+                        
+                        'Initialize all key LUT values
+                        m_MinR = 0!
+                        m_MinG = m_MinR
+                        m_MinB = m_MinR
+                        m_MaxR = 1!
+                        m_MaxG = m_MaxR
+                        m_MaxB = m_MaxR
+                        m_RangeR = m_MaxR - m_MinR
+                        m_RangeG = m_MaxG - m_MinG
+                        m_RangeB = m_MaxB - m_MinB
+                        
+                        'Initialize the LUT array
+                        ReDim m_lut3D(0 To m_LutLoopSize, 0 To m_LutLoopSize, 0 To m_LutLoopSize) As FloatColor
+                        
+                        'Copy the bytes as-is into the float array
+                        CopyMemoryStrict VarPtr(m_lut3D(0, 0, 0)), VarPtr(lutBytes(0)), m_LutSize * m_LutSize * m_LutSize * 4 * 3
+            
+                    End If
+                    
+                End If
+                    
+            '/end load LUT section
+            End If
+            
+        Else
+            m_LoadSuccessful = False
+            GoTo BadLUTFile
+        End If
+        
+    Else
+        m_LoadSuccessful = False
+        GoTo BadLUTFile
+    End If
+    
+BadLUTFile:
+    LoadLUTFromFile_look = m_LoadSuccessful
+    Exit Function
+    
+LUTParseCrash:
+    InternalProblem "LoadLUTFromFile_look", "VB Error # " & Err.Number & ": " & Err.Description
+    LoadLUTFromFile_look = False
+End Function
+
 Friend Sub GetInterpolatedRGB_Int(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long, ByRef dstR As Long, ByRef dstG As Long, ByRef dstB As Long)
 
     'Use the source RGB values as indices into the master lookup table
@@ -826,6 +1014,7 @@ Friend Sub ResetLUT()
     m_MaxR = 1!: m_MaxG = 1!: m_MaxB = 1!
     m_MinR = 0!: m_MinG = 0!: m_MinB = 0!
     m_lutPath = vbNullString
+    m_subLutPath = vbNullString
 End Sub
 
 'Serialize the current LUT's contents to a byte array.  Returns the size of the stored data, UNCOMPRESSED.
@@ -903,7 +1092,7 @@ Friend Function Serialize_ToBytes(ByRef dstBytes() As Byte, ByRef dstUncompresse
             compressedSize = dstArraySize
             
             If Compression.CompressPtrToPtr(VarPtr(dstBytes(0)), compressedSize, cStream.Peek_PointerOnly(0, dstUncompressedSize), dstUncompressedSize, cmpFormat, compressionLevel) Then
-                Debug.Print "Compressed LUT during serialization: " & cStream.GetStreamSize() & " to " & compressedSize & " bytes"
+                'Debug.Print "Compressed LUT during serialization: " & cStream.GetStreamSize() & " to " & compressedSize & " bytes"
                 Serialize_ToBytes = compressedSize
             Else
                 InternalProblem "Serialize_ToBytes", "compression failure"

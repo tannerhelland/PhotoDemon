@@ -421,7 +421,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
         g_RecentFiles.AddFileToList dstFilename, srcImage
     Else
         Message "Save canceled."
-        PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Image save error"
+        PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Error"
     End If
 
 End Function

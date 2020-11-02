@@ -319,7 +319,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
             'This function should never be passed a process ID it can't parse, but if that happens,
             ' ask the user to report the unparsed ID
-            If (LenB(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical Or vbOKOnly, "Processor Error", processID
+            If (LenB(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical Or vbOKOnly, "Error", processID
             
         End If
         
@@ -439,7 +439,7 @@ MainErrHandler:
     End If
     
     'Create the message box to return the error information
-    msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, addInfo)
+    msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "Error", Err.Number, Err.Description, addInfo)
     
     'If the message box return value is "Yes", the user is willing to file a bug report.
     If (msgReturn = vbYes) Then FileErrorReport Err.Number

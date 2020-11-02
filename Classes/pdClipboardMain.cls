@@ -565,7 +565,7 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
         End If
         
     Else
-        PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation Or vbOKOnly, "Windows Clipboard Error"
+        PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation Or vbOKOnly, "Error"
     End If
     
 End Sub

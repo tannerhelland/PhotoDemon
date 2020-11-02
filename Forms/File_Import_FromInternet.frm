@@ -171,7 +171,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     hInternetSession = InternetOpenW(StrPtr(App.EXEName), INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0)
     
     If (hInternetSession = 0) Then
-        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Internet Connection Error", "PhotoDemon"
+        If (Not suppressErrorMsgs) Then PDMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation Or vbOKOnly, "Error", "PhotoDemon"
         DownloadURLToTempFile = vbNullString
         Screen.MousePointer = 0
         Exit Function
@@ -239,7 +239,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
             'If something goes horribly wrong, terminate the download
             If (Not chunkOK) Then
                 
-                If (Not suppressErrorMsgs) Then PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Internet Connection Error", "PhotoDemon"
+                If (Not suppressErrorMsgs) Then PDMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation Or vbOKOnly, "Error", "PhotoDemon"
                 
                 If Files.FileExists(tmpFile) Then
                     cFile.FileCloseHandle hFile

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.327</langversion>
+<langversion>1.0.329</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -195,8 +195,8 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Image save error</original>
-<translation>Слика Грешкапризачувување</translation>
+<original>Error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -432,16 +432,11 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
-<original>FreeImage Interface Error</original>
-<translation>Слободен Слика Грешка интерфејс</translation>
-</phrase>
-
-<phrase>
 <original>Save cannot be completed without FreeImage library.</original>
 <translation>Зачувај не може да се заврши без FreeImage библиотека.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 20 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2407,27 +2402,12 @@ Please make sure the device is turned on and ready for use.</original>
 </phrase>
 
 <phrase>
-<original>Unresponsive scanner - scanning suspended</original>
-<translation>Ладен скенер - Скенирање суспендирани</translation>
-</phrase>
-
-<phrase>
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>plug-in-интерфејс скенер/дигитален фото апарат (EZTW32.dll) беше обележан како исчезнати по завршувањето на програмата initialization.
 
 To овозможи поддршка скенер, молам копирајте EZTW32.dll фајлови (достапна за преземање од http://eztwain.com/ezt1_download.htm) во plug-in-директориум и вчитување на програма.</translation>
-</phrase>
-
-<phrase>
-<original>Scanner Interface Error</original>
-<translation>Грешка скенер интерфејс</translation>
-</phrase>
-
-<phrase>
-<original>Scanning disabled</original>
-<translation>скенирање исклучен</translation>
 </phrase>
 
 <phrase>
@@ -2480,7 +2460,7 @@ To овозможи поддршка скенер, молам копирајте
 <translation>Скенерот врати код на грешка која не е наведено во документацијата EZTW32.dll (Грешка # 1%). Посетете http://www.eztwain.com за повеќе информации.</translation>
 </phrase>
 
-<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
@@ -2577,11 +2557,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Processor Error</original>
-<translation>процесор Грешка</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Нема доволно меморија на располагање да се продолжи оваа операција. Ослободете системската меморија (RAM) од страна на затворање на непотребни програми - особено во вашиот веб прелистувач, ако тоа е отворен - тогаш пробај со акција повторно.</translation>
 </phrase>
@@ -2627,11 +2602,6 @@ Error број %
  Опис: %
  
  %3</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Error Handler</original>
-<translation>PhotoDemon обработувачот Грешка</translation>
 </phrase>
 
 <phrase>
@@ -2896,7 +2866,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 64 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2978,11 +2948,6 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Се случи грешка при обидот да се вчита %1. Ве молиме потврдете дека датотеката е валидна PhotoDemon избор на датотека.</translation>
-</phrase>
-
-<phrase>
-<original>Selection Error</original>
-<translation>Грешка избор</translation>
 </phrase>
 
 <phrase>
@@ -3085,7 +3050,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
 </phrase>
 
-<!-- Selections.bas contains 67 phrases. 43 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Selections.bas contains 67 phrases. 44 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3337,11 +3302,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Windows Clipboard Error</original>
-<translation>Windows Clipboard Грешка</translation>
-</phrase>
-
-<phrase>
 <original>Clipboard Image</original>
 <translation>таблата со исечоци на сликата</translation>
 </phrase>
@@ -3371,7 +3331,7 @@ Please enter a numeric value.</original>
 <translation>увезените слика</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 30 phrases. 22 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -3709,16 +3669,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Error: too many images</original>
-<translation>Грешка: премногу слики</translation>
-</phrase>
-
-<phrase>
 <original>Load canceled.</original>
 <translation>Транспорт откажани.</translation>
 </phrase>
 
-<!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
@@ -5624,6 +5579,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>%1 is not a valid 3D lookup table (LUT).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
 <translation></translation>
 </phrase>
@@ -5633,7 +5593,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Color_Lookup.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -9526,11 +9486,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Internet Connection Error</original>
-<translation>Интернет конекција Грешка</translation>
-</phrase>
-
-<phrase>
 <original>Verifying image URL (this may take a moment)</original>
 <translation>Потврдување на URL-то на сликата (ова може да потрае еден момент)</translation>
 </phrase>
@@ -9608,7 +9563,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Чека за корисникот влез</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 3 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9725,11 +9680,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Printer Error</original>
-<translation>печатење Грешка</translation>
-</phrase>
-
-<phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
 <translation>Верзија за прегледување бара FreeImage додаток, кои не можат да се наоѓаат на овој компјутер. За да се овозможи преглед, ве молиме одете на Edit - ". Провери за исчезнати приклучоци на програмата на проектот"> Опции и одберете Следниот пат кога ќе се вчита PhotoDemon, тоа ќе им понуди да го симнете овој додаток за вас.</translation>
 </phrase>
@@ -9749,7 +9699,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>пејзаж</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -13290,10 +13240,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2507</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5096 phrases. -->
-<!-- 2579 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11600 total words. -->
+<!-- As of this build, PhotoDemon contains 5100 phrases. -->
+<!-- 2593 are duplicates, so only 2507 unique phrases have been written to file. -->
+<!-- These 2507 phrases contain approximately 11574 total words. -->
 
 </pdData>
