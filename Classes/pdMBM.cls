@@ -283,6 +283,8 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 scanlineSize = (pxWidth + 1) \ 2
             ElseIf (pxBitCount = 8) Then
                 scanlineSize = pxWidth
+            ElseIf (pxBitCount = 12) Then
+                scanlineSize = pxWidth * 2  '(pxWidth * 3) \ 2
             ElseIf (pxBitCount = 16) Then
                 scanlineSize = pxWidth * 2
             ElseIf (pxBitCount = 24) Then
@@ -436,6 +438,9 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 'Point a destination array at the target DIB
                 .mbm_DIB.WrapRGBQuadArrayAroundScanline dstPixels, tmpSA1D, y
                 
+                'Used on 12, 16-bpp images to avoid byte overflow issues when masking
+                Dim tmpInteger As Long
+                
                 'Process each pixel in turn
                 For x = 0 To xFinal
                 
@@ -447,14 +452,20 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         Case 8
                             dstPixels(x) = srcPalette(pxScanline(x))
                         
-                        '16-bpp appears to use 5-6-5 masking, but as usual byte order is *reversed*
-                        Case 16
-                            Dim tmpInteger As Long
+                        '12-bpp uses 0-4-4-4 masking (network byte order) on 16-bit boundaries
+                        Case 12
                             tmpInteger = CLng(pxScanline(x * 2)) + CLng(pxScanline(x * 2 + 1)) * 256
+                            dstPixels(x).Red = ((tmpInteger And &HF00&) \ (2 ^ 8)) * 16
+                            dstPixels(x).Green = ((tmpInteger And &HF0&) \ (2 ^ 4)) * 16
+                            dstPixels(x).Blue = (tmpInteger And &HF&) * 16
+                            
+                        '16-bpp appears to use 5-6-5 masking (network byte order)
+                        Case 16
+                            tmpInteger = CLng(pxScanline(x * 2)) + CLng(pxScanline(x * 2 + 1)) * 256
+                            dstPixels(x).Red = ((tmpInteger And &HF800&) \ (2 ^ 11)) * 8
+                            dstPixels(x).Green = ((tmpInteger And &H7E0&) \ (2 ^ 5)) * 4
+                            dstPixels(x).Blue = (tmpInteger And &H1F&) * 8
                             dstPixels(x).Alpha = 255
-                            dstPixels(x).Red = ((tmpInteger And &HF800) \ (2 ^ 11)) * 8
-                            dstPixels(x).Green = ((tmpInteger And &H7E0) \ (2 ^ 5)) * 4
-                            dstPixels(x).Blue = (tmpInteger And &H1F) * 8
                             
                         Case 24
                             dstPixels(x).Blue = pxScanline(x * 3)
