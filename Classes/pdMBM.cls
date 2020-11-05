@@ -131,6 +131,12 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             If (.mbm_Length <= 40) Then GoTo NextFrame
             Debug.Print m_Frames(i).mbm_Length
             
+            'Failsafe validation against end-of-stream failure
+            If (.mbm_Length + m_Stream.GetPosition() > m_Stream.GetStreamSize()) Then
+                InternalError "LoadMBM_FromFile", "frame extends beyond end of file"
+                Exit Function
+            End If
+            
             'Retrieve header size (should always be 40; consider validating this?)
             .mbm_HeaderLength = m_Stream.ReadLong()
             If (.mbm_HeaderLength < 40) Then GoTo NextFrame
@@ -284,7 +290,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             ElseIf (pxBitCount = 8) Then
                 scanlineSize = pxWidth
             ElseIf (pxBitCount = 12) Then
-                scanlineSize = pxWidth * 2  '(pxWidth * 3) \ 2
+                scanlineSize = pxWidth * 2  '16-bit alignment; 4-bits go unused
             ElseIf (pxBitCount = 16) Then
                 scanlineSize = pxWidth * 2
             ElseIf (pxBitCount = 24) Then
@@ -312,24 +318,16 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             ElseIf (.mbm_BPP = 24) Then
                 scanlineSize = ((scanlineSize + 11) \ 12) * 12
             
-            '32-bpp is a mess; on some images, it produces useable images with 4-byte alignment;
-            ' on others, it appears to require 8-bpp boundaries?  I do not know how to differentiate these,
-            ' or if the results are even meant to be useable (and not just test images)
+            '32-bpp is a mess; on most images, it produces useable images with 4-byte alignment;
+            ' on a rare subset, it appears to require 8-bpp boundaries?  I do not know how to
+            ' differentiate these, or if the results are even meant to be useable (and not just
+            ' deliberately broken test images).  Based on a sampling of images from the Symbian test
+            ' suite on GitHub, 4-byte alignment produces good images 95+% of the time, and it also
+            ' makes much more sense from a technical standpoint, so I'm inclined to commit to it here.
             ElseIf (.mbm_BPP > 24) Then
                 scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
                 'scanlineSize = (scanlineSize + 7) And &HFFFFFFF8
             End If
-            
-            If (.mbm_CompressionType = mbmc_None) Then
-                
-                
-            End If
-            'scanlineSize = ((scanlineSize + (LINE_SIZE - 1)) \ LINE_SIZE) * LINE_SIZE
-            'scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
-            'scanlineSize = ((scanlineSize + 7) \ 8) * 8
-            
-            'scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
-            'Debug.Print pxWidth, scanlineSize
             
             'The icon's size appears to be valid.  Initialize the destination DIB and a temporary
             ' array for holding raw scanline data (before it's proceed to 32-bpp).
@@ -362,26 +360,96 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             
             End If
             
+            'RLE compression requires a second buffer for decompression; individual scanlines do
+            ' not have their own markers, vs say PSD's PackBits RLE scheme, so it's significantly
+            ' easier to just decode the full image in advance.
+            Dim numScanlines As Long
+            numScanlines = .mbm_Height - 1
+            
+            Dim srcByte As Byte, srcLong As Long, numPixelsProcessed As Long
+            Dim numSafeBytes As Long, curOffset As Long
+            
+            'Perform RLE decompression first
+            Dim pxPostRLE() As Byte
+            If (.mbm_CompressionType <> mbmc_None) Then
+                
+                'Add a small margin of safety to the RLE decompression buffer; old file formats like
+                ' this have a non-zero risk of being malformed, and while I do perform safety checks
+                ' in the inner loop, this provides an added safeguard against surprises.
+                numSafeBytes = scanlineSize * .mbm_Height
+                ReDim pxPostRLE(0 To numSafeBytes + scanlineSize - 1) As Byte
+                
+                'Ignore scanlines and just treat the data as an arbitrary source of bytes.
+                ' Note that this function is *not* guaranteed to be robust against malformed data;
+                ' e.g. it may crash if fed deliberately corrupted RLE data that produces runs
+                ' extending beyond the end of the image.
+                curOffset = 0
+                Do While curOffset < numSafeBytes
+                    
+                    'Retrieve the next marker from the stream.  The size of this marker varies
+                    ' based on RLE compression model.
+                    If (.mbm_CompressionType = mbmc_RLE_8bit) Then
+                        
+                        'Get the RLE byte
+                        srcLong = m_Stream.ReadByte()
+                        
+                        'Use MSB to determine RLE meaning
+                        If (srcLong < &H80&) Then
+                            
+                            'This is a run.  Fill the byte value manually (n+1 times)
+                            srcLong = srcLong + 1
+                            srcByte = m_Stream.ReadByte()
+                            If (curOffset + srcLong <= numSafeBytes) Then
+                                VBHacks.FillMemory VarPtr(pxPostRLE(curOffset)), srcLong, srcByte
+                            Else
+                                InternalError "LoadMBM_FromFile", "bad RLE run: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytes)
+                                srcLong = numSafeBytes - curOffset
+                                VBHacks.FillMemory VarPtr(pxPostRLE(curOffset)), srcLong, srcByte
+                            End If
+                            
+                            curOffset = curOffset + srcLong
+                            
+                        Else
+                        
+                            'This is a segment (size 0x100 - value) of uncompressed bytes.  Read the bytes
+                            ' directly into the target buffer.
+                            srcLong = 256 - srcLong
+                            If (curOffset + srcLong <= numSafeBytes) Then
+                                m_Stream.ReadBytesToBarePointer VarPtr(pxPostRLE(curOffset)), srcLong
+                            Else
+                                InternalError "LoadMBM_FromFile", "bad RLE chunk: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytes)
+                                srcLong = numSafeBytes - curOffset
+                                m_Stream.ReadBytesToBarePointer VarPtr(pxPostRLE(curOffset)), srcLong
+                            End If
+                            
+                            curOffset = curOffset + srcLong
+                        
+                        End If
+                        
+                    End If
+                    
+                Loop
+                
+            End If
+            
             'Process each scanline in turn
             Dim x As Long, y As Long, alphaFound As Boolean
             alphaFound = False
             
             Dim tmpSA1D As SafeArray1D, dstPixels() As RGBQuad
-            Dim srcByte As Byte, numPixelsProcessed As Long
-            
-            Dim numScanlines As Long
-            numScanlines = .mbm_Height - 1
             
             For y = 0 To numScanlines
                 
-                'TODO: decompress and copy contents into scanline buffer
+                'Where we copy the bytes from varies by compression type (RLE uses a separate buffer)
                 If (.mbm_CompressionType = mbmc_None) Then
                     m_Stream.ReadBytesToBarePointer VarPtr(pxScanline(0)), scanlineSize
+                ElseIf (.mbm_CompressionType = mbmc_RLE_8bit) Then
+                    CopyMemoryStrict VarPtr(pxScanline(0)), VarPtr(pxPostRLE(0)) + y * scanlineSize, scanlineSize
                 Else
-                    Debug.Print "compression isn't ready"
+                    Debug.Print "this compression mode isn't supported"
                 End If
                 
-                'With the line decompressed, we can now convert it to RGBA
+                'With the line decompressed, we can now convert it to RGB/A
                 
                 'For low bit-depth images, immediately upsample to 8-bpp
                 If (pxBitCount < 8) Then
