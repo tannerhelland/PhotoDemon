@@ -22,6 +22,10 @@ Option Explicit
 ' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 
+'A custom MBM import engine is under construction in 9.0 nightly builds.  You can use this constant
+' to disable the engine if necessary.
+Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
+
 'A custom OpenRaster import/export engine was added to 8.0 nightly builds.  You can use this constant
 ' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
@@ -991,6 +995,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'A custom MBM parser was provisionally added in v9.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_MBM Then
+        CascadeLoadGenericImage = LoadMBM(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_MBMParser
+            dstImage.SetOriginalFileFormat PDIF_MBM
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1115,7 +1128,7 @@ Private Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
     LoadICO = False
     
-    'pdICOhandles all the dirty work for us
+    'pdICO handles all the dirty work for us
     Dim cIconReader As pdICO
     Set cIconReader = New pdICO
     
@@ -1130,6 +1143,38 @@ Private Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         dstImage.SetOriginalFileFormat PDIF_ICO
         dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
+    
+End Function
+
+Private Function LoadMBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadMBM = False
+    
+    'pdMBM handles all the dirty work for us
+    Dim cReader As pdMBM
+    Set cReader = New pdMBM
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadMBM = cReader.LoadMBM_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadMBM Then
+        
+        dstImage.SetOriginalFileFormat PDIF_MBM
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        'TODO
         dstImage.SetOriginalColorDepth 32
         dstImage.SetOriginalGrayscale False
         dstImage.SetOriginalAlpha True

@@ -295,15 +295,16 @@ Public Enum PD_ImageDecoder
     id_GDIPlus = 1
     id_ICOParser = 2
     id_Internal = 3
-    id_ORAParser = 4
-    id_PNGParser = 5
-    id_PSDParser = 6
-    id_SVGParser = 7
-    id_WIC = 8
+    id_MBMParser = 4
+    id_ORAParser = 5
+    id_PNGParser = 6
+    id_PSDParser = 7
+    id_SVGParser = 8
+    id_WIC = 9
 End Enum
 
 #If False Then
-    Private Const id_Failure = -1, id_FreeImage = 0, id_GDIPlus = 1, id_ICOParser = 2, id_Internal = 3, id_ORAParser = 4, id_PNGParser = 5, id_PSDParser = 6, id_SVGParser = 7, id_WIC = 8
+    Private Const id_Failure = -1, id_FreeImage = 0, id_GDIPlus = 1, id_ICOParser = 2, id_Internal = 3, id_MBMParser = 4, id_ORAParser = 5, id_PNGParser = 6, id_PSDParser = 7, id_SVGParser = 8, id_WIC = 9
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
@@ -484,18 +485,6 @@ End Enum
     Private Const PDLM_ListBox = 0, PDLM_DropDown = 1, PDLM_LB_Inside_DD = 2
 #End If
 
-Public Type PD_Dynamic_Region
-    RegionID As Integer
-    RegionValid As Boolean
-    RegionLeft As Long
-    RegionTop As Long
-    RegionWidth As Long
-    RegionHeight As Long
-    RegionPixelCount As Long
-    SeedPixelX As Long
-    SeedPixelY As Long
-End Type
-
 'Color definition.  If one of the non-BaseColor values is missing in the theme, it will be replaced by the
 ' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
 Public Type PDThemeColor
@@ -571,6 +560,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
     PDIF_ORA = 114      'OpenRaster support was added in 8.0 nightly builds
     PDIF_HEIF = 115     'Loaded via WIC; requires Win 8.1 or later and possible downloads from the MS store
+    PDIF_MBM = 116      'MBM support was added in 9.0 nightly builds
     
 End Enum
 
@@ -582,7 +572,7 @@ End Enum
     Const PDIF_HDR = 26, PDIF_FAXG3 = 27, PDIF_SGI = 28, PDIF_EXR = 29, PDIF_J2K = 30, PDIF_JP2 = 31, PDIF_PFM = 32
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
-    Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115
+    Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

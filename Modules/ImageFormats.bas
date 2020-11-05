@@ -256,6 +256,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
     End If
     
+    AddInputFormat "MBM - Psion Series 5 Bitmap", "*.mbm", PDIF_MBM
     AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
     
     If m_FreeImageEnabled Then
@@ -472,6 +473,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "koa"
         Case PDIF_LBM
             GetExtensionFromPDIF = "lbm"
+        Case PDIF_MBM
+            GetExtensionFromPDIF = "mbm"
         Case PDIF_MNG
             GetExtensionFromPDIF = "mng"
         Case PDIF_ORA
@@ -583,6 +586,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_KOALA
         Case "lbm"
             GetPDIFFromExtension = PDIF_LBM
+        Case "mbm"
+            GetPDIFFromExtension = PDIF_MBM
         Case "mng"
             GetPDIFFromExtension = PDIF_MNG
         Case "ora"
@@ -653,6 +658,9 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_JXR
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         
+        Case PDIF_MBM
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
         Case PDIF_PDI
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         
@@ -699,51 +707,21 @@ End Function
 Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
-    
-        Case PDIF_BMP
-            IsExifAllowedForPDIF = False
-        
-        Case PDIF_GIF
-            IsExifAllowedForPDIF = False
-        
-        Case PDIF_HDR
-            IsExifAllowedForPDIF = False
-        
-        Case PDIF_ICO
-            IsExifAllowedForPDIF = False
-        
-        Case PDIF_JP2
-            IsExifAllowedForPDIF = False
         
         Case PDIF_JPEG
             IsExifAllowedForPDIF = True
         
         Case PDIF_JXR
             IsExifAllowedForPDIF = True
-        
-        Case PDIF_ORA
-            IsExifAllowedForPDIF = False
             
         Case PDIF_PDI
             IsExifAllowedForPDIF = True
         
-        Case PDIF_PNG
-            IsExifAllowedForPDIF = False
-        
-        Case PDIF_PNM
-            IsExifAllowedForPDIF = False
-        
         Case PDIF_PSD
             IsExifAllowedForPDIF = True
         
-        Case PDIF_TARGA
-            IsExifAllowedForPDIF = False
-        
         Case PDIF_TIFF
             IsExifAllowedForPDIF = True
-        
-        Case PDIF_WEBP
-            IsExifAllowedForPDIF = False
         
         Case Else
             IsExifAllowedForPDIF = False

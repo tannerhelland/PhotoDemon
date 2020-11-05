@@ -239,6 +239,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'If the source file was already designed as a multi-layer format (e.g. OpenRaster, PSD), this step is unnecessary.
             Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSD)
             If (Not layersAlreadyLoaded) Then
@@ -278,6 +279,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "Internal ICO parser"
             Case id_Internal
                 decoderName = "Internal PDI parser"
+            Case id_MBMParser
+                decoderName = "Internal MBM parser"
             Case id_ORAParser
                 decoderName = "Internal OpenRaster parser"
             Case id_PNGParser
