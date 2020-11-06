@@ -15,11 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon MBM (Psion, Symbian) Image I/O
 'Copyright 2020-2020 by Tanner Helland
 'Created: 03/November/20
-'Last updated: 05/November/20
-'Last update: wrapped up provisional support for non-compressed images of every possible color-depth and
-'             color model combination.  I *think* they all work but since testing images are hard to
-'             come by, I'm disproportionately relying on a large collection of testing images from this
-'             GitHub repo: https://github.com/SymbianSource/oss.FCL.sf.os.mmimaging
+'Last updated: 06/November/20
+'Last update: all 1000+ files in the symbian test corpus now load without crashing!  Some do not
+'             load "correctly" but that's because I have no idea how to handle compression values
+'             of 5 and 6 (which appear with some frequency in the test repo).  I'll try and track
+'             down the folders where these images occur to see if I can solve how to handle them.
 '
 'This class is a WIP with no guarantee of ever reaching "release" state.
 '
@@ -38,10 +38,16 @@ Private Enum MBM_Compression
     mbmc_RLE_12bit = 2
     mbmc_RLE_16bit = 3
     mbmc_RLE_24bit = 4
+    mbmc_RLE_32bit = 5  'IMPORTANT: this compression type is not documented anywhere online, but it exists in
+                        ' 32-bpp files from the Symbian test suite.  It's behavior seems self-explanatory, so
+                        ' I've gone ahead and added support for it.
+                        
+                        'ALSO IMPORTANT: symbian's image test suite has images with a compression value of 6;
+                        ' this is not documented anywhere, so PD treats other values as errors.
 End Enum
 
 #If False Then
-    Private Const mbmc_None = 0, mbmc_RLE_8bit = 1, mbmc_RLE_12bit = 2, mbmc_RLE_16bit = 3, mbmc_RLE_24bit = 4
+    Private Const mbmc_None = 0, mbmc_RLE_8bit = 1, mbmc_RLE_12bit = 2, mbmc_RLE_16bit = 3, mbmc_RLE_24bit = 4, mbmc_RLE_32bit = 5
 #End If
 
 Private Type MBMFrame
@@ -54,7 +60,7 @@ Private Type MBMFrame
     mbm_HeightTwips As Long
     mbm_BPP As Long
     mbm_IsColor As Boolean
-    mbm_FrameOK As Boolean  'Internal value; set to TRUE if this frame was successfully parsed
+    mbm_FrameOK As Boolean  'Internal value; set to TRUE if this frame was successfully parsed.  (FALSE tells us to discard the frame because something about it is broken.)
     mbm_PaletteSize As Long
     mbm_CompressionType As MBM_Compression
     mbm_DIB As pdDIB
@@ -99,14 +105,17 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     m_FrameCount = m_Stream.ReadLong()
     Debug.Print "frames: " & m_FrameCount
     
-    If (m_FrameCount <= 0) Then
-        InternalError "LoadMBM_FromFile", "bad frame count"
+    'I don't think there's an upper limit on frames, but some of the files in symbian's test suite
+    ' contain extremely large values (e.g. 0x0fffffff), so it seems necessary to enforce some kind
+    ' of limit here.  I can revisit as needed.
+    If (m_FrameCount <= 0) Or (m_FrameCount >= 256) Then
+        InternalError "LoadMBM_FromFile", "bad frame count: " & m_FrameCount
         Exit Function
     End If
     
     'Retrieve all frame offsets
     ReDim m_Frames(0 To m_FrameCount - 1) As MBMFrame
-    Dim i As Long
+    Dim i As Long, j As Long, k As Long
     For i = 0 To m_FrameCount - 1
         m_Frames(i).mbm_Offset = m_Stream.ReadLong()
     Next i
@@ -157,119 +166,73 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             .mbm_PaletteSize = m_Stream.ReadLong()
             Debug.Print .mbm_BPP, .mbm_IsColor, .mbm_PaletteSize
             
-            'Retrieve compression
+            'Retrieve compression, with a sanity check for correct values
             .mbm_CompressionType = m_Stream.ReadLong()
             Debug.Print "Compression", .mbm_CompressionType
             
+            'Compression values >= 5 (e.g. undocumented compression values) show up in symbian's
+            ' test suite with some regularity.  This compression model isn't described anywhere,
+            ' and using the same rules for 8/16/24-bit compression, just expanded to 32-bpp,
+            ' don't produce useable results.  It's possible *someone* online knows how to handle
+            ' these images, but I don't.  (Further complicating matters is that there is some
+            ' repetition in the data, but it tends to occur every *6* bytes which is just weird.
+            ' Also, there is no obvious marker at the start of the stream for zip or gz compression,
+            ' and the size of the data is so large that those models seem unlikely anyway... idk.)
+            '
+            'For now, I just throw a 32-bit RLE decompressor at them and let them run until they
+            ' hit an error (typically a bad RLE marker that extends beyond the end of the file).
+            If (.mbm_CompressionType > mbmc_RLE_32bit) Then
+                InternalError "LoadMBM_FromFile", "bad compression type: " & .mbm_CompressionType
+                .mbm_CompressionType = .mbm_CompressionType And &H3&
+            End If
+            
             'Hypothetically we should be pointing at pixel data now
             If (m_Stream.GetPosition <> .mbm_Offset + .mbm_HeaderLength) Then m_Stream.SetPosition .mbm_Offset + .mbm_HeaderLength
+            Debug.Print "starting pixel data retrieval at " & m_Stream.GetPosition()
             
             'Prep our target DIB and make it opaque (most images in this format will be < 32-bpp)
             Set .mbm_DIB = New pdDIB
             .mbm_DIB.CreateBlank .mbm_Width, .mbm_Height, 32, vbWhite, 255
             
             'Build palette?
-            Dim srcPalette(0 To 255) As RGBQuad
+            Dim srcPalette() As RGBQuad
+            ReDim srcPalette(0 To 255) As RGBQuad
             
             'Palettes appear to be hard-coded depending on color depth?
-            Dim j As Long, r As Long, g As Long, b As Long
+            Dim r As Long, g As Long, b As Long, a As Long
             If .mbm_IsColor Then
                 
-                'Fixed palettes have been reverse-engineered for 4- and 8-bpp; other bit-depths are TBD
-                If (.mbm_BPP = 4) Then
-                    FillQuadFromRGB srcPalette(0), 0, 0, 0
-                    FillQuadFromRGB srcPalette(1), 85, 85, 85
-                    FillQuadFromRGB srcPalette(2), 128, 0, 0
-                    FillQuadFromRGB srcPalette(3), 128, 128, 0
-                    FillQuadFromRGB srcPalette(4), 0, 128, 0
-                    FillQuadFromRGB srcPalette(5), 255, 0, 0
-                    FillQuadFromRGB srcPalette(6), 255, 255, 0
-                    FillQuadFromRGB srcPalette(7), 0, 255, 0
-                    FillQuadFromRGB srcPalette(8), 255, 0, 255
-                    FillQuadFromRGB srcPalette(9), 0, 0, 255
-                    FillQuadFromRGB srcPalette(10), 0, 255, 255
-                    FillQuadFromRGB srcPalette(11), 128, 0, 128
-                    FillQuadFromRGB srcPalette(12), 0, 0, 128
-                    FillQuadFromRGB srcPalette(13), 0, 128, 128
-                    FillQuadFromRGB srcPalette(14), 170, 170, 170
-                    FillQuadFromRGB srcPalette(15), 255, 255, 255
+                'Fixed palettes have been reverse-engineered for 4- and 8-bpp; bit-depths below two
+                ' can exist but aren't well-defined; for these, we currently default to the 4-bpp palette.
+                If (.mbm_BPP <= 4) Then
+                    BuildPalette_4 srcPalette
                 ElseIf (.mbm_BPP = 8) Then
-                    Dim palIndex As Long
-                    
-                    For b = 0 To 5
-                    For g = 0 To 5
-                    For r = 0 To 5
-                        
-                        palIndex = b * 36 + g * 6 + r
-                        
-                        'For inexplicable reasons, the middle of their palette is filled with a bunch
-                        ' of custom values, while the expected pattern colors continue 40 indices later.
-                        If (palIndex <= 107) Then
-                            FillQuadFromRGB srcPalette(palIndex), r * 51, g * 51, b * 51
-                        Else
-                            FillQuadFromRGB srcPalette(palIndex + 40), r * 51, g * 51, b * 51
-                        End If
-                        
-                    Next r
-                    Next g
-                    Next b
-                    
-                    'We now need to fill a bunch of custom values in the middle of this palette because
-                    ' fuck whoever designed this format! :p
-                    FillQuadFromRGBHex srcPalette(108), &H111111
-                    FillQuadFromRGBHex srcPalette(109), &H222222
-                    FillQuadFromRGBHex srcPalette(110), &H444444
-                    FillQuadFromRGBHex srcPalette(111), &H555555
-                    FillQuadFromRGBHex srcPalette(112), &H777777
-                    FillQuadFromRGBHex srcPalette(113), &H110000
-                    FillQuadFromRGBHex srcPalette(114), &H220000
-                    FillQuadFromRGBHex srcPalette(115), &H440000
-                    FillQuadFromRGBHex srcPalette(116), &H550000
-                    FillQuadFromRGBHex srcPalette(117), &H770000
-                    FillQuadFromRGBHex srcPalette(118), &H1100&
-                    FillQuadFromRGBHex srcPalette(119), &H2200&
-                    FillQuadFromRGBHex srcPalette(120), &H4400&
-                    FillQuadFromRGBHex srcPalette(121), &H5500&
-                    FillQuadFromRGBHex srcPalette(122), &H7700&
-                    FillQuadFromRGBHex srcPalette(123), &H11&
-                    FillQuadFromRGBHex srcPalette(124), &H22&
-                    FillQuadFromRGBHex srcPalette(125), &H44&
-                    FillQuadFromRGBHex srcPalette(126), &H55&
-                    FillQuadFromRGBHex srcPalette(127), &H77&
-                    FillQuadFromRGBHex srcPalette(128), &H88&
-                    FillQuadFromRGBHex srcPalette(129), &HAA&
-                    FillQuadFromRGBHex srcPalette(130), &HBB&
-                    FillQuadFromRGBHex srcPalette(131), &HDD&
-                    FillQuadFromRGBHex srcPalette(132), &HEE&
-                    FillQuadFromRGBHex srcPalette(133), &H8800&
-                    FillQuadFromRGBHex srcPalette(134), &HAA00&
-                    FillQuadFromRGBHex srcPalette(135), &HBB00&
-                    FillQuadFromRGBHex srcPalette(136), &HDD00&
-                    FillQuadFromRGBHex srcPalette(137), &HEE00&
-                    FillQuadFromRGBHex srcPalette(138), &H880000
-                    FillQuadFromRGBHex srcPalette(139), &HAA0000
-                    FillQuadFromRGBHex srcPalette(140), &HBB0000
-                    FillQuadFromRGBHex srcPalette(141), &HDD0000
-                    FillQuadFromRGBHex srcPalette(142), &HEE0000
-                    FillQuadFromRGBHex srcPalette(143), &H888888
-                    FillQuadFromRGBHex srcPalette(144), &HAAAAAA
-                    FillQuadFromRGBHex srcPalette(145), &HBBBBBB
-                    FillQuadFromRGBHex srcPalette(146), &HDDDDDD
-                    FillQuadFromRGBHex srcPalette(147), &HEEEEEE
+                    BuildPalette_8 srcPalette
                 End If
             
             'Grayscale palettes follow standard rules
             Else
-                Dim numShades As Long, scaleFactor As Long
-                numShades = 2 ^ .mbm_BPP
-                scaleFactor = 255 / (numShades - 1)
-                For j = 0 To numShades - 1
-                    g = j * scaleFactor
-                    srcPalette(j).Red = g
-                    srcPalette(j).Green = g
-                    srcPalette(j).Blue = g
-                    srcPalette(j).Alpha = 255
-                Next j
+                
+                'Failsafe check for too-large depth values (symbian's test suite has images that
+                ' are listed as grayscale and 16-bpp??)
+                If (.mbm_BPP <= 8) Then
+                    
+                    Dim numShades As Long, scaleFactor As Long
+                    numShades = 2 ^ .mbm_BPP
+                    scaleFactor = 255 / (numShades - 1)
+                    For j = 0 To numShades - 1
+                        g = j * scaleFactor
+                        srcPalette(j).Red = g
+                        srcPalette(j).Green = g
+                        srcPalette(j).Blue = g
+                        srcPalette(j).Alpha = 255
+                    Next j
+                    
+                'For bad color-depths, force to non-grayscale mode
+                Else
+                    .mbm_IsColor = True
+                End If
+                
             End If
             
             'How we retrieve pixels depends on color-depth, obviously.  We're going to do this
@@ -361,8 +324,11 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             End If
             
             'RLE compression requires a second buffer for decompression; individual scanlines do
-            ' not have their own markers, vs say PSD's PackBits RLE scheme, so it's significantly
-            ' easier to just decode the full image in advance.
+            ' not have their own markers (like e.g. PSD's PackBits), so it's significantly easier
+            ' to just decode the full image in advance, since padding bytes will *also* be encoded
+            ' inside the RLE data, and we need to account for those to get proper pixel offsets.
+            ' (XNView does not do this on 24-bpp MBM files, for example, and the resulting images
+            ' become obviously skewed.)
             Dim numScanlines As Long
             numScanlines = .mbm_Height - 1
             
@@ -379,16 +345,53 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 numSafeBytes = scanlineSize * .mbm_Height
                 ReDim pxPostRLE(0 To numSafeBytes + scanlineSize - 1) As Byte
                 
+                'RLE markers define how many pixel-sized values we copy and/or repeat (based on the
+                ' value of the RLE marker byte).  This obviously varies by RLE compression strategy.
+                ' One interesting thing to note is that I don't know if the RLE compression used must
+                ' match the color-depth of the image - e.g. could you use 16-bit compression on 8-bit
+                ' data, for potentially better results?  I haven't seen any such mismatches in my
+                ' collection of 1000+ test images from Symbian, but if that possibility exists, I may
+                ' need to rework the code below to account for it.
+                Dim copyPxSize As Long, pxTemp(0 To 3) As Byte
+                If (.mbm_CompressionType = mbmc_RLE_8bit) Then
+                    copyPxSize = 1
+                ElseIf (.mbm_CompressionType = mbmc_RLE_16bit) Then
+                    copyPxSize = 2
+                ElseIf (.mbm_CompressionType = mbmc_RLE_24bit) Then
+                    copyPxSize = 3
+                ElseIf (.mbm_CompressionType = mbmc_RLE_32bit) Then
+                    copyPxSize = 4
+                End If
+                
                 'Ignore scanlines and just treat the data as an arbitrary source of bytes.
                 ' Note that this function is *not* guaranteed to be robust against malformed data;
                 ' e.g. it may crash if fed deliberately corrupted RLE data that produces runs
-                ' extending beyond the end of the image.
+                ' extending beyond the end of the image.  (I've tried to account for this as best I
+                ' can, but I don't have an easy way to aggressively fuzz the decompressor!)
                 curOffset = 0
                 Do While curOffset < numSafeBytes
                     
-                    'Retrieve the next marker from the stream.  The size of this marker varies
-                    ' based on RLE compression model.
-                    If (.mbm_CompressionType = mbmc_RLE_8bit) Then
+                    '12-bit RLE uses special rules (only a nibble is used for RLE flags)
+                    If (.mbm_CompressionType = mbmc_RLE_12bit) Then
+                        
+                        'Retrieve both bytes
+                        r = m_Stream.ReadByte()
+                        g = m_Stream.ReadByte()
+                        
+                        'Mask off the RLE bits
+                        srcLong = (g And &HF0&) \ 16
+                        
+                        'If the value is larger than 0, repeat this integer (n - 1) times
+                        For j = 0 To srcLong
+                            pxPostRLE(curOffset + j * 2) = r
+                            pxPostRLE(curOffset + j * 2 + 1) = g
+                        Next j
+                        
+                        curOffset = curOffset + (srcLong + 1) * 2
+                        
+                    'Other compression models behave similarly; the only difference is how
+                    ' many bytes we repeat for each RLE indicator (1, 2, or 3 for 8, 16, 24-bpp respectively)
+                    Else
                         
                         'Get the RLE byte
                         srcLong = m_Stream.ReadByte()
@@ -398,32 +401,57 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                             
                             'This is a run.  Fill the byte value manually (n+1 times)
                             srcLong = srcLong + 1
-                            srcByte = m_Stream.ReadByte()
-                            If (curOffset + srcLong <= numSafeBytes) Then
-                                VBHacks.FillMemory VarPtr(pxPostRLE(curOffset)), srcLong, srcByte
-                            Else
-                                InternalError "LoadMBM_FromFile", "bad RLE run: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytes)
-                                srcLong = numSafeBytes - curOffset
-                                VBHacks.FillMemory VarPtr(pxPostRLE(curOffset)), srcLong, srcByte
+                            
+                            'Overflow safeguard
+                            If (curOffset + srcLong * copyPxSize > numSafeBytes) Then
+                                InternalError "LoadMBM_FromFile", "bad RLE run: " & CStr(curOffset + srcLong * copyPxSize) & " vs " & CStr(numSafeBytes) & ", " & CStr(trailerOffset - m_Stream.GetPosition()) & " bytes remaining in stream"
+                                srcLong = (numSafeBytes - curOffset) \ copyPxSize
                             End If
                             
-                            curOffset = curOffset + srcLong
+                            '8-bit can be handled more quickly, c/o FillMemory
+                            If (.mbm_CompressionType = mbmc_RLE_8bit) Then
+                                
+                                srcByte = m_Stream.ReadByte()
+                                
+                                VBHacks.FillMemory VarPtr(pxPostRLE(curOffset)), srcLong, srcByte
+                                curOffset = curOffset + srcLong
+                            
+                            '16/24/32 bpp require different behavior, owing to the custom number of bytes
+                            ' we must retrieve and then copy into place
+                            Else
+                                
+                                'Retrieve the pixel bytes that must be copied
+                                For k = 0 To copyPxSize - 1
+                                    pxTemp(k) = m_Stream.ReadByte()
+                                Next k
+                                
+                                'Perform the copy
+                                For j = 0 To srcLong - 1
+                                    For k = 0 To copyPxSize - 1
+                                        pxPostRLE(curOffset + j * copyPxSize + k) = pxTemp(k)
+                                    Next k
+                                Next j
+                                
+                                curOffset = curOffset + srcLong * copyPxSize
+                                
+                            End If
                             
                         Else
                         
                             'This is a segment (size 0x100 - value) of uncompressed bytes.  Read the bytes
                             ' directly into the target buffer.
                             srcLong = 256 - srcLong
-                            If (curOffset + srcLong <= numSafeBytes) Then
-                                m_Stream.ReadBytesToBarePointer VarPtr(pxPostRLE(curOffset)), srcLong
-                            Else
-                                InternalError "LoadMBM_FromFile", "bad RLE chunk: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytes)
-                                srcLong = numSafeBytes - curOffset
-                                m_Stream.ReadBytesToBarePointer VarPtr(pxPostRLE(curOffset)), srcLong
+                            
+                            'All pixel widths can be handled identically, since it's just a CopyMemory size
+                            ' that needs to be modified.
+                            If (curOffset + srcLong * copyPxSize > numSafeBytes) Then
+                                InternalError "LoadMBM_FromFile", "bad RLE chunk: " & CStr(curOffset + srcLong * copyPxSize) & " vs " & CStr(numSafeBytes) & ", " & CStr(trailerOffset - m_Stream.GetPosition()) & " bytes remaining in stream"
+                                srcLong = (numSafeBytes - curOffset) \ copyPxSize
                             End If
                             
-                            curOffset = curOffset + srcLong
-                        
+                            m_Stream.ReadBytesToBarePointer VarPtr(pxPostRLE(curOffset)), srcLong * copyPxSize
+                            curOffset = curOffset + srcLong * copyPxSize
+                            
                         End If
                         
                     End If
@@ -443,10 +471,8 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 'Where we copy the bytes from varies by compression type (RLE uses a separate buffer)
                 If (.mbm_CompressionType = mbmc_None) Then
                     m_Stream.ReadBytesToBarePointer VarPtr(pxScanline(0)), scanlineSize
-                ElseIf (.mbm_CompressionType = mbmc_RLE_8bit) Then
-                    CopyMemoryStrict VarPtr(pxScanline(0)), VarPtr(pxPostRLE(0)) + y * scanlineSize, scanlineSize
                 Else
-                    Debug.Print "this compression mode isn't supported"
+                    CopyMemoryStrict VarPtr(pxScanline(0)), VarPtr(pxPostRLE(0)) + y * scanlineSize, scanlineSize
                 End If
                 
                 'With the line decompressed, we can now convert it to RGB/A
@@ -487,9 +513,15 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     
                         For x = 0 To scanlineSize - 1
                             
-                            srcByte = pxScanline(x)
-                            preConvert(numPixelsProcessed) = srcByte And &HF
-                            numPixelsProcessed = numPixelsProcessed + 1
+                            'Weird alignment requirements mean that scanlines can extend quite far
+                            ' beyond pixel boundaries at lower bit-depths - so we must always check
+                            ' to ensure we're still inside pixel boundaries, even though we're safely
+                            ' inside the bounds of the upsampled scanline in the file.
+                            If (numPixelsProcessed <= xFinal) Then
+                                srcByte = pxScanline(x)
+                                preConvert(numPixelsProcessed) = srcByte And &HF
+                                numPixelsProcessed = numPixelsProcessed + 1
+                            End If
                             
                             If (numPixelsProcessed <= xFinal) Then
                                 preConvert(numPixelsProcessed) = (srcByte \ 16) And &HF
@@ -649,6 +681,93 @@ NextFrame:
     End If
     
 End Function
+
+Private Sub BuildPalette_4(ByRef srcPalette() As RGBQuad)
+    FillQuadFromRGB srcPalette(0), 0, 0, 0
+    FillQuadFromRGB srcPalette(1), 85, 85, 85
+    FillQuadFromRGB srcPalette(2), 128, 0, 0
+    FillQuadFromRGB srcPalette(3), 128, 128, 0
+    FillQuadFromRGB srcPalette(4), 0, 128, 0
+    FillQuadFromRGB srcPalette(5), 255, 0, 0
+    FillQuadFromRGB srcPalette(6), 255, 255, 0
+    FillQuadFromRGB srcPalette(7), 0, 255, 0
+    FillQuadFromRGB srcPalette(8), 255, 0, 255
+    FillQuadFromRGB srcPalette(9), 0, 0, 255
+    FillQuadFromRGB srcPalette(10), 0, 255, 255
+    FillQuadFromRGB srcPalette(11), 128, 0, 128
+    FillQuadFromRGB srcPalette(12), 0, 0, 128
+    FillQuadFromRGB srcPalette(13), 0, 128, 128
+    FillQuadFromRGB srcPalette(14), 170, 170, 170
+    FillQuadFromRGB srcPalette(15), 255, 255, 255
+End Sub
+
+Private Sub BuildPalette_8(ByRef srcPalette() As RGBQuad)
+    
+    Dim palIndex As Long
+    Dim r As Long, g As Long, b As Long
+                    
+    For b = 0 To 5
+    For g = 0 To 5
+    For r = 0 To 5
+        
+        palIndex = b * 36 + g * 6 + r
+        
+        'For inexplicable reasons, the middle of their palette is filled with a bunch
+        ' of custom values, while the expected pattern colors continue 40 indices later.
+        If (palIndex <= 107) Then
+            FillQuadFromRGB srcPalette(palIndex), r * 51, g * 51, b * 51
+        Else
+            FillQuadFromRGB srcPalette(palIndex + 40), r * 51, g * 51, b * 51
+        End If
+        
+    Next r
+    Next g
+    Next b
+    
+    'We now need to fill a bunch of custom values in the middle of this palette because
+    ' fuck whoever designed this format! :p
+    FillQuadFromRGBHex srcPalette(108), &H111111
+    FillQuadFromRGBHex srcPalette(109), &H222222
+    FillQuadFromRGBHex srcPalette(110), &H444444
+    FillQuadFromRGBHex srcPalette(111), &H555555
+    FillQuadFromRGBHex srcPalette(112), &H777777
+    FillQuadFromRGBHex srcPalette(113), &H110000
+    FillQuadFromRGBHex srcPalette(114), &H220000
+    FillQuadFromRGBHex srcPalette(115), &H440000
+    FillQuadFromRGBHex srcPalette(116), &H550000
+    FillQuadFromRGBHex srcPalette(117), &H770000
+    FillQuadFromRGBHex srcPalette(118), &H1100&
+    FillQuadFromRGBHex srcPalette(119), &H2200&
+    FillQuadFromRGBHex srcPalette(120), &H4400&
+    FillQuadFromRGBHex srcPalette(121), &H5500&
+    FillQuadFromRGBHex srcPalette(122), &H7700&
+    FillQuadFromRGBHex srcPalette(123), &H11&
+    FillQuadFromRGBHex srcPalette(124), &H22&
+    FillQuadFromRGBHex srcPalette(125), &H44&
+    FillQuadFromRGBHex srcPalette(126), &H55&
+    FillQuadFromRGBHex srcPalette(127), &H77&
+    FillQuadFromRGBHex srcPalette(128), &H88&
+    FillQuadFromRGBHex srcPalette(129), &HAA&
+    FillQuadFromRGBHex srcPalette(130), &HBB&
+    FillQuadFromRGBHex srcPalette(131), &HDD&
+    FillQuadFromRGBHex srcPalette(132), &HEE&
+    FillQuadFromRGBHex srcPalette(133), &H8800&
+    FillQuadFromRGBHex srcPalette(134), &HAA00&
+    FillQuadFromRGBHex srcPalette(135), &HBB00&
+    FillQuadFromRGBHex srcPalette(136), &HDD00&
+    FillQuadFromRGBHex srcPalette(137), &HEE00&
+    FillQuadFromRGBHex srcPalette(138), &H880000
+    FillQuadFromRGBHex srcPalette(139), &HAA0000
+    FillQuadFromRGBHex srcPalette(140), &HBB0000
+    FillQuadFromRGBHex srcPalette(141), &HDD0000
+    FillQuadFromRGBHex srcPalette(142), &HEE0000
+    FillQuadFromRGBHex srcPalette(143), &H888888
+    FillQuadFromRGBHex srcPalette(144), &HAAAAAA
+    FillQuadFromRGBHex srcPalette(145), &HBBBBBB
+    FillQuadFromRGBHex srcPalette(146), &HDDDDDD
+    FillQuadFromRGBHex srcPalette(147), &HEEEEEE
+    
+End Sub
 
 Private Sub FillQuadFromRGB(ByRef dstQuad As RGBQuad, ByVal r As Long, ByVal g As Long, ByVal b As Long)
     dstQuad.Red = r
