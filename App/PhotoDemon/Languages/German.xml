@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.149</langversion>
+<langversion>9.0.150</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11551,6 +11551,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>lock aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>transform quality</original>
 <translation>Transformationsqualität</translation>
 </phrase>
@@ -11635,7 +11640,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) dauerhaft machen. Diese Aktion ist nie erforderlich, aber wenn das Viewport-Rendering träge ist, kann es die Performance verbessern.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -13246,10 +13251,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2507</phrasecount>
+<phrasecount>2508</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5102 phrases. -->
-<!-- 2595 are duplicates, so only 2507 unique phrases have been written to file. -->
-<!-- These 2507 phrases contain approximately 11574 total words. -->
+<!-- As of this build, PhotoDemon contains 5103 phrases. -->
+<!-- 2595 are duplicates, so only 2508 unique phrases have been written to file. -->
+<!-- These 2508 phrases contain approximately 11577 total words. -->
 
 </pdData>

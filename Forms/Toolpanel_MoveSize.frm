@@ -47,14 +47,25 @@ Begin VB.Form toolpanel_MoveSize
       Width           =   14055
       _ExtentX        =   0
       _ExtentY        =   0
+      Begin PhotoDemon.pdCheckBox chkAspectRatio 
+         Height          =   375
+         Left            =   5265
+         TabIndex        =   16
+         Top             =   885
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   661
+         Caption         =   "lock aspect ratio"
+         Value           =   0   'False
+      End
       Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
-         Height          =   660
+         Height          =   690
          Left            =   5190
          TabIndex        =   2
          Top             =   60
          Width           =   2775
          _ExtentX        =   4895
-         _ExtentY        =   1164
+         _ExtentY        =   1217
          Caption         =   "transform quality"
          FontSizeCaption =   10
       End
@@ -298,9 +309,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2020 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/August/20
-'Last update: manually save some tool settings between sessions (e.g. those settings not
-'             tied to an active layer's properties)
+'Last updated: 09/November/20
+'Last update: add a dedicated lock for layer aspect ratio (see https://github.com/tannerhelland/PhotoDemon/issues/342)
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -377,6 +387,40 @@ Private Sub cboLayerResizeQuality_SetCustomTabTarget(ByVal shiftTabWasPressed As
     Else
         If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = btsMoveOptions.hWnd
     End If
+End Sub
+
+Private Sub chkAspectRatio_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+    
+    'When clicked, lock the Y aspect ratio to the X aspect ratio
+    If chkAspectRatio.Value Then PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier()
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'Also, activate the "make transforms permanent" button(s) as necessary
+    If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+
+End Sub
+
+Private Sub chkAspectRatio_GotFocusAPI()
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(3).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub chkAspectRatio_LostFocusAPI()
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
+    Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(3).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
 End Sub
 
 'En/disable the "ignore transparent layer bits on click activations" setting if the auto-activate clicked layer setting changes
@@ -523,6 +567,7 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
         .AddPresetData "move-size-show-layer-borders", chkLayerBorder.Value
         .AddPresetData "move-size-show-resize-nodes", chkLayerNodes.Value
         .AddPresetData "move-size-show-rotate-nodes", chkRotateNode.Value
+        .AddPresetData "move-size-lock-aspect-ratio", chkAspectRatio.Value
     End With
 
 End Sub
@@ -535,6 +580,23 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         chkLayerBorder.Value = .RetrievePresetData("move-size-show-layer-borders", True)
         chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
         chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
+        
+        'The "lock aspect ratio" control is tricky, because we don't want to set this value
+        ' if the current image has variable aspect ratio enabled; otherwise, it will forcibly
+        ' modify the active layer's size value(s).
+        Dim okToLoad As Boolean
+        okToLoad = True
+        
+        If Tools.CanvasToolsAllowed(False) Then
+            okToLoad = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier = 1#) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier = 1#)
+        End If
+        
+        If okToLoad Then
+            chkAspectRatio.Value = .RetrievePresetData("move-size-lock-aspect-ratio", False)
+        Else
+            chkAspectRatio.Value = False
+        End If
+        
     End With
     
 End Sub
@@ -684,10 +746,18 @@ Private Sub tudLayerMove_Change(Index As Integer)
         'Layer width
         Case 2
             PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+            If chkAspectRatio.Value Then
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier()
+                toolpanel_MoveSize.tudLayerMove(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True)
+            End If
             
         'Layer height
         Case 3
             PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
+            If chkAspectRatio.Value Then
+                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier()
+                toolpanel_MoveSize.tudLayerMove(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True)
+            End If
         
     End Select
     

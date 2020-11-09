@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools"
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2020 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 25/June/14
-'Last update: add new makeQuickFixesPermanent() function
+'Last updated: 09/November/20
+'Last update: add support for new "lock aspect ratio" checkbox on the Move/Size toolpanel
 '
 'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -275,7 +275,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'Set the new left/top position to match the mouse coordinates, while also accounting for the shift key
                 ' (which locks the current aspect ratio).
                 If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
-                If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
+                If isShiftDown Or toolpanel_MoveSize.chkAspectRatio.Value Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
                 If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
                 
                 'Immediately relay the new coordinates to the source layer
@@ -291,7 +291,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newBottom = m_InitLayerCoords_Pure(2).y
                 
                 If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
-                If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
+                If isShiftDown Or toolpanel_MoveSize.chkAspectRatio.Value Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
                 If ((newBottom - newTop) < 1#) Then newTop = newBottom - 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
@@ -304,7 +304,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y
                 
                 If ((newRight - curLayerX) > 1#) Then newLeft = curLayerX Else newLeft = newRight - 1#
-                If isShiftDown Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If isShiftDown Or toolpanel_MoveSize.chkAspectRatio.Value Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
                 If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
@@ -317,7 +317,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y
                 
                 If ((curLayerX - newLeft) > 1#) Then newRight = curLayerX Else newRight = newLeft + 1#
-                If isShiftDown Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If isShiftDown Or toolpanel_MoveSize.chkAspectRatio.Value Then newBottom = newTop + (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
                 If ((newBottom - newTop) < 1#) Then newBottom = newTop + 1#
                 
                 srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom

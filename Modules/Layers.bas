@@ -1445,8 +1445,8 @@ End Sub
 'If a layer has been transformed using the on-canvas tools, this will reset it to its default size.
 Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
 
-    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier 1
-    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier 1#
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1#
     
     'Notify the parent image of the change
     PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
@@ -1464,6 +1464,10 @@ End Sub
 Public Sub FitLayerToImageSize(ByVal srcLayerIndex As Long)
     
     If (srcLayerIndex < 0) Then srcLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'If the move/size tool is currently active, forcibly disable the "lock aspect ratio"
+    ' setting, as it may prevent us from sizing the layer to match the current image
+    If (g_CurrentTool = NAV_MOVE) Then toolpanel_MoveSize.chkAspectRatio.Value = False
     
     'Reset to position (0, 0)
     PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerOffsetX 0#
