@@ -1756,7 +1756,9 @@ Public Sub AlignCanvasView()
         .Height = ucRect.Height - hRulerRectF.Height
     End With
     
-    If m_RulersVisible Then
+    'Account for ruler space - or if an image is *not* loaded, leave a ruler-sized border around
+    ' the canvas area (for aesthetic reasons)
+    If m_RulersVisible Or (Not PDImages.IsImageActive) Then
         ucRect.Top = ucRect.Top + hRulerRectF.Height
         ucRect.Height = ucRect.Height - hRulerRectF.Height
         ucRect.Left = ucRect.Left + vRulerRectF.Width
