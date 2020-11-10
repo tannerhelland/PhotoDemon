@@ -73,6 +73,32 @@ Private m_Frames() As MBMFrame
 'All parsing duties are handled by pdStream
 Private m_Stream As pdStream
 
+Friend Function ISFileMBM(ByRef srcFile As String, Optional ByVal calledInternally As Boolean = False) As Boolean
+
+    ISFileMBM = False
+    
+    'Wrap a stream around the file, as necessary
+    If (Not calledInternally) Then Set m_Stream = New pdStream
+    
+    Dim okToProceed As Boolean
+    okToProceed = True
+    If (Not calledInternally) Then okToProceed = m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile)
+    
+    If okToProceed Then
+        
+        'Validate the first 12 bytes (which have fixed values)
+        ISFileMBM = (m_Stream.ReadLong_BE() = &H37000010)
+        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = &H42000010)
+        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = 0&)
+        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = &H39643947)
+    
+    End If
+    
+    'Free the stream before exiting
+    If (Not calledInternally) Then Set m_Stream = Nothing
+    
+End Function
+
 'Validate and load a candidate MBM file
 Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
@@ -85,12 +111,12 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Exit Function
     End If
     
-    'Validate the first 12 bytes (which have fixed values)
-    Dim isMBM As Boolean
-    isMBM = (m_Stream.ReadLong_BE() = &H37000010)
-    If isMBM Then isMBM = (m_Stream.ReadLong_BE() = &H42000010)
-    If isMBM Then isMBM = (m_Stream.ReadLong_BE() = 0&)
-    If isMBM Then isMBM = (m_Stream.ReadLong_BE() = &H39643947)
+    'Validate the file
+    If (Not Me.ISFileMBM(srcFile, True)) Then
+        Set m_Stream = Nothing
+        LoadMBM_FromFile = False
+        Exit Function
+    End If
     
     'If the file has validated, continue parsing.  Next offset is trailer position.
     Dim trailerOffset As Long
