@@ -46,7 +46,7 @@ End Enum
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "11.90"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
-Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.6"
+Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.7"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.9.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10901"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
