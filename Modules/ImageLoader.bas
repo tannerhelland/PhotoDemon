@@ -1174,15 +1174,25 @@ Private Function LoadMBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalFileFormat PDIF_MBM
         dstImage.NotifyImageChanged UNDO_Everything
         
-        'TODO
-        dstImage.SetOriginalColorDepth 32
-        dstImage.SetOriginalGrayscale False
-        dstImage.SetOriginalAlpha True
+        'Retrieve alpha, grayscale, and color-depth data from the pdMBM object
+        If (cReader.GetColorDepth > 0) Then
+            dstImage.SetOriginalColorDepth cReader.GetColorDepth
+        Else
+            dstImage.SetOriginalColorDepth 32
+        End If
         
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        dstImage.SetOriginalGrayscale cReader.IsGrayscale()
+        
+        'Assume alpha is present on 32-bpp images; assume it is *not* present on lower bit-depths
+        dstImage.SetOriginalAlpha (dstImage.GetOriginalColorDepth = 32)
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns
+        ' a width/height of zero, the upstream load function will think the load process failed.
+        ' Because of that, we must initialize the DIB to *something*.
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank 16, 16, 32, 0
+        
+        'MBM files don't support color management
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If

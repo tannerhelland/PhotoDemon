@@ -73,9 +73,21 @@ Private m_Frames() As MBMFrame
 'All parsing duties are handled by pdStream
 Private m_Stream As pdStream
 
-Friend Function ISFileMBM(ByRef srcFile As String, Optional ByVal calledInternally As Boolean = False) As Boolean
+'Only valid *after* an image has been loaded.  Because an image can contain multiple frames
+' (of varying color depth), this will return the largest-found color depth, by design.
+Friend Function GetColorDepth() As Long
+    If (m_FrameCount > 0) Then
+        Dim i As Long
+        For i = 0 To m_FrameCount - 1
+            If (m_Frames(i).mbm_BPP > GetColorDepth) Then GetColorDepth = m_Frames(i).mbm_BPP
+        Next i
+    End If
+End Function
 
-    ISFileMBM = False
+'See if a file is MBM.  File extension is *not* relevant.
+Friend Function IsFileMBM(ByRef srcFile As String, Optional ByVal calledInternally As Boolean = False) As Boolean
+
+    IsFileMBM = False
     
     'Wrap a stream around the file, as necessary
     If (Not calledInternally) Then Set m_Stream = New pdStream
@@ -87,16 +99,21 @@ Friend Function ISFileMBM(ByRef srcFile As String, Optional ByVal calledInternal
     If okToProceed Then
         
         'Validate the first 12 bytes (which have fixed values)
-        ISFileMBM = (m_Stream.ReadLong_BE() = &H37000010)
-        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = &H42000010)
-        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = 0&)
-        If ISFileMBM Then ISFileMBM = (m_Stream.ReadLong_BE() = &H39643947)
+        IsFileMBM = (m_Stream.ReadLong_BE() = &H37000010)
+        If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = &H42000010)
+        If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = 0&)
+        If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = &H39643947)
     
     End If
     
     'Free the stream before exiting
     If (Not calledInternally) Then Set m_Stream = Nothing
     
+End Function
+
+'Only valid *after* an image has been loaded, and returns data for the first frame *only*
+Friend Function IsGrayscale() As Boolean
+    If (m_FrameCount > 0) Then IsGrayscale = (Not m_Frames(0).mbm_IsColor)
 End Function
 
 'Validate and load a candidate MBM file
@@ -112,7 +129,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     End If
     
     'Validate the file
-    If (Not Me.ISFileMBM(srcFile, True)) Then
+    If (Not Me.IsFileMBM(srcFile, True)) Then
         Set m_Stream = Nothing
         LoadMBM_FromFile = False
         Exit Function
@@ -129,13 +146,12 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
     m_Stream.SetPosition trailerOffset, FILE_BEGIN
     m_FrameCount = m_Stream.ReadLong()
-    Debug.Print "frames: " & m_FrameCount
     
     'I don't think there's an upper limit on frames, but some of the files in symbian's test suite
     ' contain extremely large values (e.g. 0x0fffffff), so it seems necessary to enforce some kind
     ' of limit here.  I can revisit as needed.
     If (m_FrameCount <= 0) Or (m_FrameCount >= 256) Then
-        InternalError "LoadMBM_FromFile", "bad frame count: " & m_FrameCount
+        InternalError "LoadMBM_FromFile", "unexpected frame count: " & m_FrameCount
         Exit Function
     End If
     
@@ -164,7 +180,6 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             'Retrieve total frame length
             .mbm_Length = m_Stream.ReadLong()
             If (.mbm_Length <= 40) Then GoTo NextFrame
-            Debug.Print m_Frames(i).mbm_Length
             
             'Failsafe validation against end-of-stream failure
             If (.mbm_Length + m_Stream.GetPosition() > m_Stream.GetStreamSize()) Then
@@ -172,29 +187,25 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 Exit Function
             End If
             
-            'Retrieve header size (should always be 40; consider validating this?)
+            'Retrieve header size (should always be 40)
             .mbm_HeaderLength = m_Stream.ReadLong()
             If (.mbm_HeaderLength < 40) Then GoTo NextFrame
-            Debug.Print m_Frames(i).mbm_HeaderLength
             
             'Retrieve x/y dimensions in both pixels and twips
             .mbm_Width = m_Stream.ReadLong()
             .mbm_Height = m_Stream.ReadLong()
-            .mbm_WidthTwips = m_Stream.ReadLong()   'In the wild, these appear to frequently (always?) be 0
+            .mbm_WidthTwips = m_Stream.ReadLong()   'In the wild, these appear to always (?) be 0
             .mbm_HeightTwips = m_Stream.ReadLong()
             If (.mbm_Width <= 0) Or (.mbm_Height <= 0) Then GoTo NextFrame
-            Debug.Print .mbm_Width, .mbm_Height, .mbm_WidthTwips, .mbm_WidthTwips
             
             'Retrieve color space data
             .mbm_BPP = m_Stream.ReadLong()
             If (.mbm_BPP <= 0) Then GoTo NextFrame
             .mbm_IsColor = (m_Stream.ReadLong <> 0)
             .mbm_PaletteSize = m_Stream.ReadLong()
-            Debug.Print .mbm_BPP, .mbm_IsColor, .mbm_PaletteSize
             
             'Retrieve compression, with a sanity check for correct values
             .mbm_CompressionType = m_Stream.ReadLong()
-            Debug.Print "Compression", .mbm_CompressionType
             
             'Compression values >= 5 (e.g. undocumented compression values) show up in symbian's
             ' test suite with some regularity.  This compression model isn't described anywhere,
@@ -214,7 +225,6 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             
             'Hypothetically we should be pointing at pixel data now
             If (m_Stream.GetPosition <> .mbm_Offset + .mbm_HeaderLength) Then m_Stream.SetPosition .mbm_Offset + .mbm_HeaderLength
-            Debug.Print "starting pixel data retrieval at " & m_Stream.GetPosition()
             
             'Prep our target DIB and make it opaque (most images in this format will be < 32-bpp)
             Set .mbm_DIB = New pdDIB
@@ -307,15 +317,12 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             ElseIf (.mbm_BPP = 24) Then
                 scanlineSize = ((scanlineSize + 11) \ 12) * 12
             
-            '32-bpp is a mess; on most images, it produces useable images with 4-byte alignment;
-            ' on a rare subset, it appears to require 8-bpp boundaries?  I do not know how to
-            ' differentiate these, or if the results are even meant to be useable (and not just
-            ' deliberately broken test images).  Based on a sampling of images from the Symbian test
-            ' suite on GitHub, 4-byte alignment produces good images 95+% of the time, and it also
-            ' makes much more sense from a technical standpoint, so I'm inclined to commit to it here.
+            'Based on a sampling of images from the Symbian test suite on GitHub, 4-byte alignment
+            ' on 32-bpp data produces good images 99+% of the time (and the remaining 1% are potentially
+            ' test-specific images for fuzzing), so I'm inclined to commit to it here, despite informal
+            ' specs being unclear on the matter.
             ElseIf (.mbm_BPP > 24) Then
                 scanlineSize = (scanlineSize + 3) And &HFFFFFFFC
-                'scanlineSize = (scanlineSize + 7) And &HFFFFFFF8
             End If
             
             'The icon's size appears to be valid.  Initialize the destination DIB and a temporary
@@ -641,7 +648,7 @@ NextFrame:
     If (maxWidth > 0) And (maxHeight > 0) Then
         
         'We have enough data to produce a usable image.  Start by initializing basic pdImage attributes.
-        'dstImage.SetOriginalFileFormat PDIF_ICO
+        dstImage.SetOriginalFileFormat PDIF_MBM
         dstImage.Width = maxWidth
         dstImage.Height = maxHeight
         dstImage.SetDPI 96#, 96#
