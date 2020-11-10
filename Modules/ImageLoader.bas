@@ -1181,7 +1181,7 @@ Private Function LoadMBM(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             dstImage.SetOriginalColorDepth 32
         End If
         
-        dstImage.SetOriginalGrayscale cReader.IsGrayscale()
+        dstImage.SetOriginalGrayscale cReader.IsMBMGrayscale()
         
         'Assume alpha is present on 32-bpp images; assume it is *not* present on lower bit-depths
         dstImage.SetOriginalAlpha (dstImage.GetOriginalColorDepth = 32)

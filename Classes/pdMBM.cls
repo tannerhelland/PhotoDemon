@@ -12,18 +12,22 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon MBM (Psion, Symbian) Image I/O
+'PhotoDemon MBM (Psion, Symbian) Image Importer (export not currently supported)
 'Copyright 2020-2020 by Tanner Helland
 'Created: 03/November/20
-'Last updated: 06/November/20
-'Last update: all 1000+ files in the symbian test corpus now load without crashing!  Some do not
-'             load "correctly" but that's because I have no idea how to handle compression values
-'             of 5 and 6 (which appear with some frequency in the test repo).  I'll try and track
-'             down the folders where these images occur to see if I can solve how to handle them.
+'Last updated: 10/November/20
+'Last update: finish import code clean-up; export support is not currently planned
 '
-'This class is a WIP with no guarantee of ever reaching "release" state.
+'This class imports legacy Symbian "MBM" files.  All well-defined color-depths and compression types
+' are supported.  (I say "well-defined" because there are many MBM files in the wild with non-standard
+' color-depth, grayscale/color, and compression values, and PD is only guaranteed to load files
+' produced by official SDKs.)
 '
-'For details, see https://github.com/tannerhelland/PhotoDemon/issues/341
+'For details on how this class came to be, see https://github.com/tannerhelland/PhotoDemon/issues/341
+'
+'Currently this class only supports importing MBM images.  Export support could be added with
+' minimal investment code-wise, but there are significant UI implications (especially localization)
+' for a matching export dialog, so I do not currently have plans to add this.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -112,8 +116,8 @@ Friend Function IsFileMBM(ByRef srcFile As String, Optional ByVal calledInternal
 End Function
 
 'Only valid *after* an image has been loaded, and returns data for the first frame *only*
-Friend Function IsGrayscale() As Boolean
-    If (m_FrameCount > 0) Then IsGrayscale = (Not m_Frames(0).mbm_IsColor)
+Friend Function IsMBMGrayscale() As Boolean
+    If (m_FrameCount > 0) Then IsMBMGrayscale = (Not m_Frames(0).mbm_IsColor)
 End Function
 
 'Validate and load a candidate MBM file
