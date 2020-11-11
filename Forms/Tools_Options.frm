@@ -1585,7 +1585,7 @@ Private Sub Form_Load()
             End If
             
             'Add the monitor's physical size
-            displayEntry = displayEntry & g_Displays.Displays(i).GetMonitorSizeAsString
+            displayEntry = displayEntry & " " & g_Displays.Displays(i).GetMonitorSizeAsString
             
             'Add the monitor's name
             displayEntry = displayEntry & " " & g_Displays.Displays(i).GetBestMonitorName

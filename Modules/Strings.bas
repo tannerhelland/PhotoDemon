@@ -921,7 +921,7 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
         alphabetSize = 256
     End If
     
-    If (alphabetSize <> m_lastAlphabetSize) Then
+    If (alphabetSize > m_lastAlphabetSize) Then
         m_lastAlphabetSize = alphabetSize
         ReDim m_charOccur(0 To alphabetSize - 1) As Long
     End If
@@ -945,7 +945,7 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
         .cElements = lenNeedle
         .pvData = StrPtr(strNeedle)
     End With
-    CopyMemory ByVal VarPtrArray(needle()), VarPtr(needleSA), 4&
+    PutMem4 VarPtrArray(needle()), VarPtr(needleSA)
     
     Dim haystack() As Integer, haystackSA As SafeArray1D
     With haystackSA
@@ -956,7 +956,7 @@ Public Function StrStrBM(ByRef strHaystack As String, ByRef strNeedle As String,
         .cElements = lenHaystack
         .pvData = StrPtr(strHaystack)
     End With
-    CopyMemory ByVal VarPtrArray(haystack()), VarPtr(haystackSA), 4&
+    PutMem4 VarPtrArray(haystack()), VarPtr(haystackSA)
     
     'Boyer-Moore requires lookup tables for the needle string.  These lookup tables tell us how far
     ' we can skip ahead during favorable comparisons.  Two tables are used: one for shift lengths of

@@ -885,12 +885,12 @@ End Function
 
 'Given a tag name and contents, return a pointer to the location of a specified "parent" tag.  (This is used by the
 ' translation engine to find the "phrase" tag enclosing an original/translation tag pair.)
-Friend Function GetLocationOfParentTag(ByRef parentTagName As String, ByRef tagName As String, ByRef tagContents As String) As Long
+Friend Function GetLocationOfParentTag(ByRef parentTagName As String, ByRef tagName As String, ByRef tagContents As String, Optional ByVal useWideChars As Boolean = True) As Long
 
     'First, find the requested tag's location
     Dim searchLocation As Long
     If (m_TextCompareMode = vbBinaryCompare) Then
-        searchLocation = Strings.StrStrBM(m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", , True)
+        searchLocation = Strings.StrStrBM(m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", , useWideChars)
     Else
         searchLocation = InStr(1, m_xmlContents, "<" & tagName & ">" & tagContents & "</" & tagName & ">", m_TextCompareMode)
     End If

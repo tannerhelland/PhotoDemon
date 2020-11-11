@@ -26,6 +26,7 @@ Begin VB.Form FormWait
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   601
    ShowInTaskbar   =   0   'False
+   StartUpPosition =   1  'CenterOwner
    Visible         =   0   'False
    Begin PhotoDemon.pdProgressBar pbMarquee 
       Height          =   495

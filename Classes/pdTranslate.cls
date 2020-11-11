@@ -367,7 +367,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             'Look for an existing checksum
             chkXMLName = m_LangCacheXML.GetXMLSafeTagName(Files.FileGetName(chkFile, True))
             chkCachedValue = Trim$(m_LangCacheXML.GetUniqueTag_String(chkXMLName))
-            If (Len(chkCachedValue) <> 0) Then
+            If (LenB(chkCachedValue) <> 0) Then
             
                 'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
                 fileValidationRequired = Strings.StringsNotEqual(chkCachedValue, GetLangFileChecksum(chkFile), False)
@@ -723,20 +723,12 @@ Private Sub PreProcessText(ByRef srcString As String)
     srcString = Trim$(srcString)
     
     '2) Check for a trailing "..."
-    If (Right$(srcString, 3) = "...") Then
-        m_hasDotDotDot = True
-        srcString = Left$(srcString, Len(srcString) - 3)
-    Else
-        m_hasDotDotDot = False
-    End If
+    m_hasDotDotDot = (Right$(srcString, 3) = "...")
+    If m_hasDotDotDot Then srcString = Left$(srcString, Len(srcString) - 3)
     
     '3) Check for a trailing colon ":"
-    If (Right$(srcString, 1) = ":") Then
-        m_hasTrailingColon = True
-        srcString = Left$(srcString, Len(srcString) - 1)
-    Else
-        m_hasTrailingColon = False
-    End If
+    m_hasTrailingColon = (Right$(srcString, 1) = ":")
+    If m_hasTrailingColon Then srcString = Left$(srcString, Len(srcString) - 1)
     
 End Sub
 
@@ -746,7 +738,7 @@ Private Sub PostProcessText(ByRef srcString As String)
     srcString = Trim$(srcString)
     
     '2) If the string is now empty, return a blank string rather than attempting to reconstruct it
-    If (Len(srcString) <> 0) Then
+    If (LenB(srcString) <> 0) Then
     
         '2) If the original had a trailing "...", restore it now
         If m_hasDotDotDot Then
@@ -805,7 +797,7 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
     PreProcessText origCaption
     
     Dim phraseLocation As Long
-    phraseLocation = m_XMLEngine.GetLocationOfParentTag("phrase", "original", origCaption)
+    phraseLocation = m_XMLEngine.GetLocationOfParentTag("phrase", "original", origCaption, True)
     
     'Make sure a phrase tag was found
     If (phraseLocation > 0) Then
@@ -893,7 +885,7 @@ Friend Function RestoreMessage(ByRef srcMessage As String) As String
     newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If (Len(newString) <> 0) Then RestoreMessage = newString Else RestoreMessage = srcMessage
+    If (LenB(newString) <> 0) Then RestoreMessage = newString Else RestoreMessage = srcMessage
     
 End Function
 
@@ -910,7 +902,7 @@ Friend Sub TranslateObjectCaption(ByRef srcObject As Control)
     End If
     
     'If a new string was found, apply it to the object's caption
-    If (Len(newString) <> 0) Then
+    If (LenB(newString) <> 0) Then
         
         'Form captions look better with a prepended space
         If (TypeOf srcObject Is Form) Then
@@ -930,7 +922,7 @@ Friend Sub RestoreObjectCaption(ByRef srcObject As Control)
     newString = GetOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If (Len(newString) <> 0) Then
+    If (LenB(newString) <> 0) Then
         
         'Form captions look better with a prepended space
         If (TypeOf srcObject Is Form) Then
