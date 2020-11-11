@@ -4,7 +4,7 @@ Begin VB.Form FormAnimBackground
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animation background"
-   ClientHeight    =   7230
+   ClientHeight    =   6780
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   12060
@@ -22,27 +22,16 @@ Begin VB.Form FormAnimBackground
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   482
+   ScaleHeight     =   452
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   0
-      Left            =   120
-      Top             =   120
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   661
-      Caption         =   "preview"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   0
       Left            =   120
       TabIndex        =   2
-      Top             =   6000
+      Top             =   5520
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -53,7 +42,7 @@ Begin VB.Form FormAnimBackground
       Height          =   375
       Left            =   600
       TabIndex        =   1
-      Top             =   6000
+      Top             =   5520
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
@@ -61,7 +50,7 @@ Begin VB.Form FormAnimBackground
    Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   5295
       Left            =   120
-      Top             =   555
+      Top             =   120
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   9340
@@ -71,7 +60,7 @@ Begin VB.Form FormAnimBackground
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6480
+      Top             =   6030
       Width           =   12060
       _ExtentX        =   21273
       _ExtentY        =   1323
@@ -81,7 +70,7 @@ Begin VB.Form FormAnimBackground
       Index           =   1
       Left            =   5640
       TabIndex        =   3
-      Top             =   6000
+      Top             =   5520
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -123,10 +112,6 @@ Private m_DoNotUpdate As Boolean
 Private WithEvents m_Timer As pdTimerAnimation
 Attribute m_Timer.VB_VarHelpID = -1
 
-'Window size is tracked via subclassing (so we can enforce min width/height)
-Private WithEvents m_WindowSize As pdWindowSize
-Attribute m_WindowSize.VB_VarHelpID = -1
-
 'Animation frames are stored in a spritesheet control, but to simplify display, we also cache a bunch
 ' of frame-related details.
 Private Type PD_AnimationFrame
@@ -148,10 +133,6 @@ Private m_AniThumbBounds As RectF
 
 'Animation updates are rendered to a temporary DIB, which is then forwarded to the preview window
 Private m_AniFrame As pdDIB
-
-'Because reflowing the UI is energy-intensive, it can be manually suspended until all UI elements
-' are in place.
-Private m_AllowReflow As Boolean, m_DisplayWaitingMsg As Boolean
 
 'Apply an arbitrary background layer to other layers
 Public Sub ApplyAnimationBackground(ByVal effectParams As String)
@@ -204,26 +185,15 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Prevent UI reflows until we've initialized certain UI elements
-    'm_AllowReflow = False
-    
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
     
-    'Initialize a window size tracker
-    'Set m_WindowSize = New pdWindowSize
-    'm_WindowSize.AttachToHWnd Me.hWnd, True, True
-    
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
     UpdateAgainstCurrentTheme
     
-    'With theming handled, reflow the interface one final time before displaying the window
-    'm_AllowReflow = True
-    'ReflowInterface
-    
-    'Update animation frames (so the user can preview them)
+    'Update animation frames (so the user can preview them, obviously!)
     If PDImages.IsImageActive() Then UpdateAnimationSettings
     
     'Render the first frame of the animation
@@ -401,7 +371,6 @@ Private Sub RenderAnimationFrame()
     
     If m_DoNotUpdate Then Exit Sub
     If (m_AniFrame Is Nothing) Then Exit Sub
-    If m_DisplayWaitingMsg Then Exit Sub
     
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()
@@ -450,26 +419,6 @@ Private Sub m_Timer_EndOfAnimation()
     m_DoNotUpdate = False
 End Sub
 
-Private Sub m_WindowSize_WindowMaxMinRequested(minWidth As Long, minHeight As Long, maxWidth As Long, maxHeight As Long)
-    minWidth = (picPreview.GetLeft + picPreview.GetWidth) * 2
-    minHeight = Interface.FixDPI(480)
-End Sub
-
-Private Sub m_WindowSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    ReflowInterface False
-End Sub
-
-Private Sub m_WindowSize_WindowResizeFinal(ByVal newWidth As Long, ByVal newHeight As Long)
-    m_DisplayWaitingMsg = False
-    ReflowInterface True
-End Sub
-
-Private Sub m_WindowSize_WindowResizeInitial()
-    m_DisplayWaitingMsg = True
-    If btnPlay(0).Value Then btnPlay(0).Value = False
-    If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
-End Sub
-
 'If the user clicks the preview window (for some reason), it'll trigger a redraw.
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     RenderAnimationFrame
@@ -480,51 +429,6 @@ Private Sub sldFrame_Change()
         m_Timer.StopTimer
         m_Timer.SetCurrentFrame sldFrame.Value
     End If
-End Sub
-
-Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False)
-        
-    'If (Not m_AllowReflow) Then Exit Sub
-    
-    'Handle the left side of the interface first
-    Dim yPadding As Long, yPaddingTitle As Long
-    yPadding = Interface.FixDPI(8)
-    yPaddingTitle = Interface.FixDPI(12)
-    
-    Dim yOffset As Long
-    yOffset = yPadding
-    
-    'With the left side complete, we can now move to the right side.  Importantly, if the width of
-    ' the right side changes, we need to rebuild our animation preview to match.
-    
-    'Start with the top label
-    Dim myWidth As Long, myHeight As Long
-    If (Not g_WindowManager Is Nothing) Then
-        myWidth = g_WindowManager.GetClientWidth(Me.hWnd)
-        myHeight = g_WindowManager.GetClientHeight(Me.hWnd)
-    Else
-        myWidth = Me.ScaleWidth
-        myHeight = Me.ScaleHeight
-    End If
-    
-    lblTitle(0).SetWidth myWidth - lblTitle(0).GetLeft
-    
-    'Next, set the *bottom* playback controls
-    btnPlay(0).SetTop myHeight - cmdBar.GetHeight - yPadding - btnPlay(0).GetHeight
-    btnPlay(1).SetPosition myWidth - yPadding - btnPlay(1).GetWidth, btnPlay(0).GetTop
-    sldFrame.SetPositionAndSize btnPlay(0).GetLeft + btnPlay(0).GetWidth + yPadding, btnPlay(0).GetTop, (btnPlay(1).GetLeft - (btnPlay(0).GetLeft + btnPlay(0).GetWidth)) - (yPadding * 2), sldFrame.GetHeight
-    
-    'Stretch the preview box to fit between the top label and bottom playback controls
-    picPreview.SetSize lblTitle(0).GetWidth - yPadding, (btnPlay(0).GetTop - picPreview.GetTop) - yPadding
-    
-    'We may need to generate new animation settings.  This is resource-intensive, so only
-    ' do it when the preview area size changes
-    If m_DisplayWaitingMsg Then
-        picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
-    Else
-        picPreview.RequestRedraw
-    End If
-    
 End Sub
 
 Private Sub NotifyNewFrameTimes()

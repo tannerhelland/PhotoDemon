@@ -38,7 +38,7 @@ Private m_NumOfForms As Long, m_LastForm As Long
 
 'Before loading individual controls, notify this module of the parent form preceding the loop.  (This improves
 ' performance because we don't have to look-up the form in our table for subsequent calls.)
-Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean)
+Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
 
     'At present, PD guarantees that forms will not be double-loaded - e.g. only one instance is allowed at a time.
     ' As such, we don't have to search our table for existing entries.
@@ -52,7 +52,7 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As
         End If
         
         Set m_Forms(m_NumOfForms) = New pdObjectList
-        m_Forms(m_NumOfForms).SetParentHWnd parentForm.hWnd, handleAutoResize
+        m_Forms(m_NumOfForms).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
         
         m_LastForm = m_NumOfForms
         m_NumOfForms = m_NumOfForms + 1
@@ -87,13 +87,10 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
         
         'If we removed this from the middle of the list, shift subsequent entries down
         If (indexOfForm < m_NumOfForms - 1) Then
-        
-            For i = indexOfForm To m_NumOfForms - 2
+            m_NumOfForms = m_NumOfForms - 1
+            For i = indexOfForm To m_NumOfForms - 1
                 Set m_Forms(i) = m_Forms(i + 1)
             Next i
-            
-            m_NumOfForms = m_NumOfForms - 1
-        
         End If
         
     End If

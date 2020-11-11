@@ -102,6 +102,14 @@ Private m_numOfControls As Long
 'Some control indices are stored specially; this is useful for subsequent loops
 Private m_CommandBarIndex As Long, m_PreviewIndex As Long
 
+'Some windows (animation effects, at present) may implement custom preview methods that don't utilize
+' a traditional pdPreviewFX control.  These windows can specify a different control to use as the
+' "anchor" during resizing events; as long as that control provides PD's traditional position interface,
+' it'll work just fine.
+'
+'If this value is zero, no special window exists; rely on m_PreviewIndex above, instead.
+Private m_SpecialPreviewHWnd As Long
+
 'When tab is pressed, we sort the current control list according to each control's top-left position.
 ' This sorted list can then be used to easily determine the next/prev control in order.
 Private Type PD_ControlSort
@@ -117,7 +125,7 @@ Private m_numOfControlsSort As Long
 'Subclasser for intercepting window messages
 Implements ISubclass
 
-Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean)
+Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
     
     If (PDMain.IsProgramRunning() And (hWnd <> 0)) Then
     
@@ -125,6 +133,10 @@ Friend Sub SetParentHWnd(ByVal hWnd As Long, ByVal handleAutoResize As Boolean)
         GetWindowRect m_ParentHWnd, VarPtr(m_ParentRectScreen)
         GetClientRect m_ParentHWnd, VarPtr(m_ParentRectClient)
         m_AutoResize = handleAutoResize
+        
+        'Some dialogs use custom preview windows; they need to notify us of this, so we can anchor
+        ' that control specially
+        m_SpecialPreviewHWnd = hWndCustomAnchor
         
         'We also subclass the parent control so we can capture ENTER and ESCAPE keypresses (to facilitate
         ' keyboard navigation)
@@ -206,6 +218,7 @@ Friend Sub NotifyChildControl(ByRef childControl As Object, ByVal canReceiveFocu
         .ctlCanGetFocus = canReceiveFocus
         If (.ctlType = pdct_CommandBar) Or (.ctlType = pdct_CommandBarMini) Then m_CommandBarIndex = m_numOfControls
         If (.ctlType = pdct_FxPreviewCtl) Then m_PreviewIndex = m_numOfControls
+        If (m_SpecialPreviewHWnd <> 0) And (.hWnd = m_SpecialPreviewHWnd) Then m_PreviewIndex = m_numOfControls
     End With
     
     m_numOfControls = m_numOfControls + 1
@@ -427,16 +440,12 @@ Private Function GetControlNameFromHWnd(ByVal srcHwnd As Long) As String
 End Function
 
 Friend Sub PrintDebugList()
-    
     If (m_numOfControls > 0) Then
-        
         Dim i As Long
         For i = 0 To m_numOfControls - 1
             Debug.Print m_Controls(i).ctlName, m_Controls(i).hWnd, UserControls.GetNameOfControlType(m_Controls(i).ctlType)
         Next i
-        
     End If
-    
 End Sub
 
 Private Sub PerformAutoResize()
@@ -464,7 +473,7 @@ Private Sub PerformAutoResize()
                 SetWindowPos .hWnd, 0, 0, curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1), curParentClientWidth, curParentClientHeight, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
             
             'Preview boxes are the only control that gets resized in both directions
-            ElseIf (.ctlType = pdct_FxPreviewCtl) Then
+            ElseIf (i = m_PreviewIndex) Then
             
                 'Resize to an identical proportional amount of the dialog
                 newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1))
@@ -485,19 +494,33 @@ Private Sub PerformAutoResize()
                         ' preview box.  These require horizontal resizing to match whatever we've done
                         'to the preview box.
                         Dim changeHorizontalSize As Boolean
-                        If (m_PreviewIndex >= 0) Then changeHorizontalSize = (.ctlRectLoadTime.x1 < (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - 10))   '10px is an arbitrary failsafe for tight-fitting controls
+                        If (m_PreviewIndex >= 0) Then changeHorizontalSize = (.ctlRectLoadTime.x1 < (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - 8))   '8px is an arbitrary failsafe for tight-fitting controls
                         
                         If changeHorizontalSize Then
                             
-                            'Left stays the same, height stays the same.
+                            'Height stays the same.
+                            
+                            'Figure out preview window width (which may not have been calculated yet, since it
+                            ' depends on the order of control enumeration according to VB)
+                            newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1))
+                            
+                            'Left only gets changed if it is *not* aligned with the preview object
+                            If (.ctlRectLoadTime.x1 > (m_Controls(m_PreviewIndex).ctlRectLoadTime.x1 + 8)) Then
+                                newLeft = (.ctlRectLoadTime.x1 * (newWidth + m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) / m_Controls(m_PreviewIndex).ctlRectLoadTime.x2
+                            Else
+                                newLeft = .ctlRectLoadTime.x1
+                            End If
                             
                             'Top gets moved to an identical offset from the parent window's *bottom*
                             newTop = curParentClientHeight - (m_ParentRectClient.y2 - .ctlRectLoadTime.y1)
                             
-                            'Width also gets modified using the same formula as the preview box
-                            newWidth = curParentClientWidth - ((m_ParentRectClient.x2 - m_ParentRectClient.x1) - (.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1))
+                            'Width is modified as a fraction of the original preview control's width
+                            ' (relative to the new preview control width); this allows complex arrangements
+                            ' to *mostly* look good - see e.g. the Effects > Animation menu.
+                            newWidth = ((.ctlRectLoadTime.x2 - .ctlRectLoadTime.x1) / (m_Controls(m_PreviewIndex).ctlRectLoadTime.x2 - m_Controls(m_PreviewIndex).ctlRectLoadTime.x1)) * newWidth
                             
-                            SetWindowPos .hWnd, 0, .ctlRectLoadTime.x1, newTop, newWidth, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
+                            'Apply the changes!
+                            SetWindowPos .hWnd, 0, newLeft, newTop, newWidth, .ctlRectLoadTime.y2 - .ctlRectLoadTime.y1, SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOACTIVATE
                             
                         'Change left parameter only; top/width/height can remain as-is.
                         Else
@@ -611,7 +634,18 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'Immediately notify the preview control, if any, of the finished resize event; it will use
         ' this to immediately generate a new preview.
-        If (m_PreviewIndex >= 0) Then SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
+        If (m_PreviewIndex >= 0) Then
+            
+            'If this is a normal preview control, send the message directly to it
+            If (m_SpecialPreviewHWnd = 0) Then
+                SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
+            
+            'Otherwise, we need to do something special (TODO?)
+            Else
+                'TODO
+            End If
+            
+        End If
      
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then

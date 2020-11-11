@@ -1249,7 +1249,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handleFormPainting As Boolean = True, Optional ByVal handleAutoResize As Boolean = False)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handleFormPainting As Boolean = True, Optional ByVal handleAutoResize As Boolean = False, Optional ByVal hWndCustomAnchor As Long = 0)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
@@ -1272,7 +1272,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     ' can relay it to various child controls.
     Dim hostFormhWnd As Long
     hostFormhWnd = dstForm.hWnd
-    NavKey.NotifyFormLoading dstForm, handleAutoResize
+    NavKey.NotifyFormLoading dstForm, handleAutoResize, hWndCustomAnchor
     
     Dim ctlThemedOK As Boolean
     
@@ -1281,28 +1281,26 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     
     For Each eControl In dstForm.Controls
         
-        'This is a bit weird, but PD still uses generic picture boxes in various places.  Picture boxes get confused
-        ' by all the weird run-time UI APIs we call, so to ensure that their cursors work properly, we use the API
+        'We now want to ignore all built-in VB6 controls.  PhotoDemon doesn't use many of these
+        ' (menus are the exception) but a few picture boxes may still linger in the project...
+        If (TypeOf eControl Is Menu) Then
+            
+            'Don't do anything; we just need the Else at the end to not trigger on this control
+            
+        'PD still uses generic picture boxes in a few places.  Picture boxes get confused by all the
+        ' weird run-time UI APIs we call, so to ensure that their cursors work properly, we use an API
         ' to reset their cursors as well.
-        If (TypeOf eControl Is PictureBox) Then
+        ElseIf (TypeOf eControl Is PictureBox) Then
         
             IconsAndCursors.SetArrowCursor eControl
             
             'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus,
             ' but I often forget to change this at design-time.
             eControl.TabStop = False
-        
-        'Next, shortcut the only non-custom control we use.  (This accelerates the load-time of FormMain,
-        ' which has a whole bunch of menu controls.)
-        ElseIf (TypeOf eControl Is Menu) Then
             
-            'Do nothing!
+            'Picture boxes should be replaced with pdPictureBox!
+            PDDebug.LogAction "Found a legacy picturebox control on " & dstForm.Name & ": consider removing it!"
             
-        'I still haven't found all the old windowless controls in the project, so I'm keeping an eye out
-        ' for them.
-        ElseIf (TypeOf eControl Is Line) Then
-            PDDebug.LogAction "Found a legacy line control on " & dstForm.Name & ": consider removing it!"
-        
         Else
             
             On Error GoTo ControlIsNotPD
