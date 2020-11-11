@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/January/19
-'Last update: integrate our new homebrew PSD decoder
+'Last updated: 10/November/20
+'Last update: integrate our new homebrew MBM decoder
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
@@ -18,29 +18,17 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
-'A custom icon import/export engine was added to 8.0 nightly builds.  You can use this constant
-' to disable the engine if necessary.
+'PhotoDemon now provides many of its own image format parsers.  You can disable these for testing purposes,
+' but note that fallback methods like GDI+ *cannot* understand many of these formats.  If you encounter
+' problems with a specific image format, PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
-
-'A custom MBM import engine is under construction in 9.0 nightly builds.  You can use this constant
-' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
-
-'A custom OpenRaster import/export engine was added to 8.0 nightly builds.  You can use this constant
-' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
-
-'A custom PNG/APNG import/export engine was added to 8.0 nightly builds.  You can use this constant
-' to disable the engine if necessary.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
-Private m_PNG As pdPNG
-
-'A custom Photoshop (PSD) import/export engine was added to 8.0 nightly builds.
-' You can use this constant to disable the engine if necessary.
-' If you try to load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.
-' I don't have a modern copy of Photoshop for testing, so outside help is essential for
-' fixing esoteric PSD bugs!
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
+
+'PNGs get some special preference due to their ubiquity; a persistent class enabled better caching
+Private m_PNG As pdPNG
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL
 

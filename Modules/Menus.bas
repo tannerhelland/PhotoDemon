@@ -511,7 +511,10 @@ Public Sub InitializeMenus()
         AddMenuItem "Shear...", "effects_shear", 6, 11, 4
         AddMenuItem "Spherize...", "effects_spherize", 6, 11, 5
     AddMenuItem "-", "-", 6, 12
-    AddMenuItem "Custom filter...", "effects_customfilter", 6, 13
+    AddMenuItem "Animation...", "effects_animation", 6, 13
+        AddMenuItem "Background...", "effects_animation_background", 6, 13, 0
+        AddMenuItem "Foreground...", "effects_animation_foreground", 6, 13, 1
+    AddMenuItem "Custom filter...", "effects_customfilter", 6, 14
     
     'Tools Menu
     AddMenuItem "Tools", "tools_top", 7
@@ -2915,6 +2918,13 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_spherize"
                 Process "Spherize", True
+                
+        Case "effects_animation"
+            Case "effects_animation_background"
+                Process "Animation background", True
+                
+            Case "effects_animation_foreground"
+                Process "Animation foreground", True
                 
         Case "effects_customfilter"
             Process "Custom filter", True

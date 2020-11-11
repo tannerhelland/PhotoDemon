@@ -1888,7 +1888,16 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     ElseIf Strings.StringsEqual(processID, "Spherize", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormSpherize Else FormSpherize.SpherizeImage processParameters
         Process_EffectsMenu = True
-        
+    
+    'Animation filters
+    ElseIf Strings.StringsEqual(processID, "Animation background", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAnimBackground Else FormAnimBackground.ApplyAnimationBackground processParameters
+        Process_EffectsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Animation foreground", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormAnimBackground Else FormAnimBackground.ApplyAnimationBackground processParameters
+        Process_EffectsMenu = True
+    
     'Custom filters
     ElseIf Strings.StringsEqual(processID, "Custom filter", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters

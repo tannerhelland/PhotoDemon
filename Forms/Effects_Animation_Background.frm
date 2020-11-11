@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form FormAnimation 
+Begin VB.Form FormAnimBackground 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
-   Caption         =   " Animation options"
+   Caption         =   " Animation background"
    ClientHeight    =   7230
    ClientLeft      =   120
    ClientTop       =   465
@@ -26,20 +26,10 @@ Begin VB.Form FormAnimation
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsAnimated 
-      Height          =   975
-      Left            =   120
-      TabIndex        =   8
-      Top             =   120
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1720
-      Caption         =   "animation enabled for this image"
-   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
-      Index           =   1
-      Left            =   5880
+      Index           =   0
+      Left            =   120
       Top             =   120
       Width           =   6015
       _ExtentX        =   10610
@@ -47,20 +37,10 @@ Begin VB.Form FormAnimation
       Caption         =   "preview"
       FontSize        =   12
    End
-   Begin PhotoDemon.pdButtonStrip btsLoop 
-      Height          =   975
-      Left            =   120
-      TabIndex        =   5
-      Top             =   1200
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1720
-      Caption         =   "repeat"
-   End
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   0
-      Left            =   5880
+      Left            =   120
       TabIndex        =   2
       Top             =   6000
       Width           =   375
@@ -71,7 +51,7 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdSliderStandalone sldFrame 
       Height          =   375
-      Left            =   6360
+      Left            =   600
       TabIndex        =   1
       Top             =   6000
       Width           =   4935
@@ -80,7 +60,7 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   5295
-      Left            =   5880
+      Left            =   120
       Top             =   555
       Width           =   5895
       _ExtentX        =   10398
@@ -99,7 +79,7 @@ Begin VB.Form FormAnimation
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   1
-      Left            =   11400
+      Left            =   5640
       TabIndex        =   3
       Top             =   6000
       Width           =   375
@@ -107,63 +87,18 @@ Begin VB.Form FormAnimation
       _ExtentY        =   661
       StickyToggle    =   -1  'True
    End
-   Begin PhotoDemon.pdSlider sldLoop 
-      Height          =   735
-      Left            =   480
-      TabIndex        =   4
-      Top             =   2280
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1296
-      Caption         =   "repeat count"
-      FontSizeCaption =   10
-      Min             =   1
-      Max             =   65535
-      ScaleStyle      =   2
-      Value           =   1
-      DefaultValue    =   1
-   End
-   Begin PhotoDemon.pdButtonStrip btsFrameTimes 
-      Height          =   975
-      Left            =   120
-      TabIndex        =   6
-      Top             =   3120
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1720
-      Caption         =   "animation speed"
-   End
-   Begin PhotoDemon.pdSlider sldFrameTime 
-      Height          =   735
-      Left            =   480
-      TabIndex        =   7
-      Top             =   4200
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1296
-      Caption         =   "animation speed"
-      FontSizeCaption =   10
-      Max             =   100000
-      ScaleStyle      =   1
-      ScaleExponent   =   4
-      Value           =   100
-      GradientColorRight=   1703935
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
 End
-Attribute VB_Name = "FormAnimation"
+Attribute VB_Name = "FormAnimBackground"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Animation settings dialog
+'Effect > Animation > Add background
 'Copyright 2019-2020 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 27/August/20
-'Last update: split off from the animation export dialogs, which already cover a lot of these tasks
-'             but require the user to export a new file to make the changes!
+'Last updated: 11/November/20
+'Last update: spin off from the central Image > Animation dialog
 '
 'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  This dialog exposes relevant
 ' animation settings to the user, including allowing them to turn multilayer non-animated images into
@@ -180,10 +115,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
-' the dialog from the batch process dialog, as no image is associated with that preview.
-Private m_SrcImage As pdImage
 
 'To avoid circular updates on animation state changes, we use this tracker
 Private m_DoNotUpdate As Boolean
@@ -214,7 +145,6 @@ Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long
 Private m_AniThumbBounds As RectF
-Private m_FrameTimesUndefined As Boolean
 
 'Animation updates are rendered to a temporary DIB, which is then forwarded to the preview window
 Private m_AniFrame As pdDIB
@@ -222,6 +152,11 @@ Private m_AniFrame As pdDIB
 'Because reflowing the UI is energy-intensive, it can be manually suspended until all UI elements
 ' are in place.
 Private m_AllowReflow As Boolean, m_DisplayWaitingMsg As Boolean
+
+'Apply an arbitrary background layer to other layers
+Public Sub ApplyAnimationBackground(ByVal effectParams As String)
+
+End Sub
 
 Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
@@ -253,27 +188,6 @@ Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
 End Sub
 
-Private Sub btsAnimated_Click(ByVal buttonIndex As Long)
-    
-    'Stop any running animations when "animated?" is switched to FALSE
-    If (btsAnimated.ListIndex = 0) Then
-        If btnPlay(0).Value Then btnPlay(0).Value = False
-        If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
-    End If
-    
-    ReflowInterface (btsAnimated.ListIndex = 1)
-    
-End Sub
-
-Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
-    NotifyNewFrameTimes
-    ReflowInterface
-End Sub
-
-Private Sub btsLoop_Click(ByVal buttonIndex As Long)
-    ReflowInterface
-End Sub
-
 Private Sub cmdBar_CancelClick()
     m_Timer.StopTimer
 End Sub
@@ -284,128 +198,33 @@ Private Sub cmdBar_OKClick()
     m_Timer.StopTimer
     
     'Process changes
-    Process "Animation options", , GetLocalParamString(), UNDO_Image_VectorSafe
-    
-End Sub
-
-Private Sub cmdBar_ReadCustomPresetData()
-
-    'If a source image exists, preferentially use its animation loop setting
-    If (Not m_SrcImage Is Nothing) Then
-        If m_SrcImage.ImgStorage.DoesKeyExist("animation-loop-count") Then SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
-    End If
-    
-    'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
-    ' default to a "fixed" frame time suggestion
-    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
-    
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    
-    'If a source image exists, synchronize output settings to match whatever its original animation
-    ' settings were (if any)
-    If (Not m_SrcImage Is Nothing) Then
-        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
-        
-    'Otherwise, default to reasonable values
-    Else
-        SyncLoopButton 1
-    End If
-    
-    'If all frames have undefined frame times (e.g. none embedded a frame time in the layer name),
-    ' default to a "fixed" frame time suggestion
-    If m_FrameTimesUndefined Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
+    Process "Animation background", , GetLocalParamString(), UNDO_Image
     
 End Sub
 
 Private Sub Form_Load()
     
     'Prevent UI reflows until we've initialized certain UI elements
-    m_AllowReflow = False
-    
-    'Cache a reference to the currently active main pdImage object, and determine whether it's
-    ' flagged as animated.  (This property affects the way we initialize almost all UI elements.)
-    Set m_SrcImage = PDImages.GetActiveImage
-    
-    Dim isImgAnimated As Boolean
-    If (Not m_SrcImage Is Nothing) Then isImgAnimated = m_SrcImage.IsAnimated()
+    'm_AllowReflow = False
     
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
     
     'Initialize a window size tracker
-    Set m_WindowSize = New pdWindowSize
-    m_WindowSize.AttachToHWnd Me.hWnd, True, True
-    
-    'Prep any UI elements.  Note that a number of controls explicitly request that the command bar
-    ' (which handles save/load of last-used presets) does *not* restore them to their last-used
-    ' settings.  Instead, if the current image is animated, we want to sync those controls to
-    ' the current image's settings, to avoid confusion.
-    
-    '"Is image animated" always defaults to current main image state
-    btsAnimated.AddItem "no", 0
-    btsAnimated.AddItem "yes", 1
-    cmdBar.RequestPresetNoLoad btsAnimated
-    If isImgAnimated Then btsAnimated.ListIndex = 1 Else btsAnimated.ListIndex = 0
-    
-    'Loop count is initialized to current image loop count IF current image is animated;
-    ' last-used setting otherwise.
-    btsLoop.AddItem "none", 0
-    btsLoop.AddItem "forever", 1
-    btsLoop.AddItem "custom", 2
-    btsLoop.ListIndex = 0
-    If isImgAnimated Then
-        cmdBar.RequestPresetNoLoad btsLoop
-        cmdBar.RequestPresetNoLoad sldLoop
-        SyncLoopButton m_SrcImage.ImgStorage.GetEntry_Long("animation-loop-count", 1)
-    End If
-    
-    'Frame times requires heuristics which are a little more convoluted
-    btsFrameTimes.AddItem "fixed", 0
-    btsFrameTimes.AddItem "pull from layer names", 1
-    btsFrameTimes.ListIndex = 0
-    If isImgAnimated Then
-        
-        cmdBar.RequestPresetNoLoad btsFrameTimes
-        
-        'Figure out if the image already has valid frame rates assigned to at least one frame.
-        ' If it doesn't, we'll default to a single fixed frame rate for the entire animation;
-        ' otherwise, we'll assume most layers have valid frame data, and we'll default to existing
-        ' layer framerate data.  (Note that this setting still exposes a "default value for
-        ' missing frame times" option.)
-        Dim validFramesFound As Boolean
-        validFramesFound = False
-        
-        Dim i As Long
-        For i = 0 To m_SrcImage.GetNumOfLayers - 1
-            If (Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0) <> 0) Then
-                validFramesFound = True
-                Exit For
-            End If
-        Next i
-        
-        If validFramesFound Then btsFrameTimes.ListIndex = 0 Else btsFrameTimes.ListIndex = 1
-        
-    End If
-    
-    'Default "infinite loop playback button" to current image state
-    If (Not m_SrcImage Is Nothing) Then
-        If (btsLoop.ListIndex = 1) Then btnPlay(1).Value = True
-        m_Timer.SetRepeat btnPlay(1).Value
-    End If
+    'Set m_WindowSize = New pdWindowSize
+    'm_WindowSize.AttachToHWnd Me.hWnd, True, True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     UpdateAgainstCurrentTheme
     
     'With theming handled, reflow the interface one final time before displaying the window
-    m_AllowReflow = True
-    ReflowInterface
+    'm_AllowReflow = True
+    'ReflowInterface
     
     'Update animation frames (so the user can preview them)
-    If (Not m_SrcImage Is Nothing) Then UpdateAnimationSettings
+    If PDImages.IsImageActive() Then UpdateAnimationSettings
     
     'Render the first frame of the animation
     RenderAnimationFrame
@@ -413,20 +232,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    Set m_SrcImage = Nothing
     ReleaseFormTheming Me
-End Sub
-
-Private Sub SyncLoopButton(ByVal loopAmount As Long)
-    If (loopAmount = 0) Then
-        btsLoop.ListIndex = 1
-    ElseIf (loopAmount >= 2) Then
-        btsLoop.ListIndex = 2
-        sldLoop.Value = loopAmount
-    Else
-        btsLoop.ListIndex = 0
-    End If
-    ReflowInterface
 End Sub
 
 Private Function GetLocalParamString() As String
@@ -434,22 +240,7 @@ Private Function GetLocalParamString() As String
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     
-    cParams.AddParam "animation-enabled", (btsAnimated.ListIndex = 1)
-    
-    'The loop setting is a little weird.  Flags are identical for animated GIFs and PNGs:
-    ' 0 = loop infinitely
-    ' 1 = loop once
-    ' 2+ = loop that many times exactly
-    If (btsLoop.ListIndex = 0) Then
-        cParams.AddParam "animation-loop-count", 1
-    ElseIf (btsLoop.ListIndex = 1) Then
-        cParams.AddParam "animation-loop-count", 0
-    Else
-        cParams.AddParam "animation-loop-count", CLng(sldLoop.Value + 1)
-    End If
-    
-    cParams.AddParam "use-fixed-frame-delay", (btsFrameTimes.ListIndex = 0)
-    cParams.AddParam "frame-delay-default", sldFrameTime.Value
+    'TODO!
     
     GetLocalParamString = cParams.GetParamString
     
@@ -482,10 +273,9 @@ Private Sub UpdateAgainstCurrentTheme()
     ' *not* rely on the neighboring looping setting.  (I have mixed feelings about the
     ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
     ' animation as a loop without actually committing to it... idk, I may revisit.)
-    Dim tTitle As String, tText As String
-    tTitle = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
-    tText = g_Language.TranslateMessage("This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.")
-    btnPlay(1).AssignTooltip tText, tTitle
+    Dim tText As String
+    tText = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    btnPlay(1).AssignTooltip tText
     
 End Sub
 
@@ -505,7 +295,7 @@ End Sub
 ' like frame delay times)
 Private Sub UpdateAnimationSettings()
     
-    If (m_SrcImage Is Nothing) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'Suspend automatic control-based updates while we get everything synchronized
     m_DoNotUpdate = True
@@ -523,19 +313,19 @@ Private Sub UpdateAnimationSettings()
     
     'Figure out what size to use for the animation thumbnails
     Dim thumbImageWidth As Long, thumbImageHeight As Long
-    PDMath.ConvertAspectRatio m_SrcImage.Width, m_SrcImage.Height, bWidth, bHeight, thumbImageWidth, thumbImageHeight
+    PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, bWidth, bHeight, thumbImageWidth, thumbImageHeight
     
     'Ensure the thumb isn't larger than the actual image
-    If (thumbImageWidth > m_SrcImage.Width) Or (thumbImageHeight > m_SrcImage.Height) Then
-        thumbImageWidth = m_SrcImage.Width
-        thumbImageHeight = m_SrcImage.Height
+    If (thumbImageWidth > PDImages.GetActiveImage.Width) Or (thumbImageHeight > PDImages.GetActiveImage.Height) Then
+        thumbImageWidth = PDImages.GetActiveImage.Width
+        thumbImageHeight = PDImages.GetActiveImage.Height
     End If
     
     'If the thumb image width/height is the same as our current settings, we can keep our existing cache.
-    If (thumbImageWidth <> m_AniThumbBounds.Width) Or (thumbImageHeight <> m_AniThumbBounds.Height) Or (m_FrameCount <> m_SrcImage.GetNumOfLayers) Then
+    If (thumbImageWidth <> m_AniThumbBounds.Width) Or (thumbImageHeight <> m_AniThumbBounds.Height) Or (m_FrameCount <> PDImages.GetActiveImage.GetNumOfLayers) Then
         
         'Load all animation frames.
-        m_FrameCount = m_SrcImage.GetNumOfLayers
+        m_FrameCount = PDImages.GetActiveImage.GetNumOfLayers
         ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
         
         m_Thumbs.ResetCache
@@ -580,18 +370,14 @@ Private Sub UpdateAnimationSettings()
             m_Frames(i).afWidth = thumbImageWidth
             m_Frames(i).afHeight = thumbImageHeight
             
-            m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, PDMath.Max2Int(thumbImageWidth, thumbImageHeight), False, VarPtr(m_AniThumbBounds)
+            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, PDImages.GetActiveImage, PDMath.Max2Int(thumbImageWidth, thumbImageHeight), False, VarPtr(m_AniThumbBounds)
             m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbImageWidth))
             
             'Retrieve layer frame times and relay them to the animation object
-            m_Frames(i).afFrameDelayOrig = m_SrcImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
+            m_Frames(i).afFrameDelayOrig = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
             If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
             
         Next i
-        
-        'If one or more valid frame time amounts were discovered, default to "pull frame times from
-        ' layer names" - otherwise, default to a fixed delay for *all* frames.
-        m_FrameTimesUndefined = (numZeroFrameDelays = m_FrameCount)
         
         'Relay frame times to the animator
         NotifyNewFrameTimes
@@ -665,7 +451,7 @@ Private Sub m_Timer_EndOfAnimation()
 End Sub
 
 Private Sub m_WindowSize_WindowMaxMinRequested(minWidth As Long, minHeight As Long, maxWidth As Long, maxHeight As Long)
-    minWidth = (btsAnimated.GetLeft + btsAnimated.GetWidth) * 2
+    minWidth = (picPreview.GetLeft + picPreview.GetWidth) * 2
     minHeight = Interface.FixDPI(480)
 End Sub
 
@@ -686,11 +472,7 @@ End Sub
 
 'If the user clicks the preview window (for some reason), it'll trigger a redraw.
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
-    If (btsAnimated.ListIndex = 0) Then
-        picPreview.PaintText g_Language.TranslateMessage("previews disabled"), 12, True
-    Else
-        RenderAnimationFrame
-    End If
+    RenderAnimationFrame
 End Sub
 
 Private Sub sldFrame_Change()
@@ -702,56 +484,15 @@ End Sub
 
 Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False)
         
-    If (Not m_AllowReflow) Then Exit Sub
-        
+    'If (Not m_AllowReflow) Then Exit Sub
+    
     'Handle the left side of the interface first
     Dim yPadding As Long, yPaddingTitle As Long
     yPadding = Interface.FixDPI(8)
     yPaddingTitle = Interface.FixDPI(12)
     
     Dim yOffset As Long
-    yOffset = btsAnimated.GetTop + btsAnimated.GetHeight + yPadding
-    
-    'If this image doesn't support animation, hide most UI elements
-    Dim imgAnimated As Boolean
-    imgAnimated = (btsAnimated.ListIndex = 1)
-    
-    btsLoop.Visible = imgAnimated
-    sldLoop.Visible = imgAnimated
-    btsFrameTimes.Visible = imgAnimated
-    sldFrameTime.Visible = imgAnimated
-    
-    btnPlay(0).Visible = imgAnimated
-    btnPlay(1).Visible = imgAnimated
-    sldFrame.Visible = imgAnimated
-    
-    'If this image *does* support animation, we need to enable and reflow all controls
-    If imgAnimated Then
-    
-        btsLoop.SetTop yOffset
-        yOffset = yOffset + btsLoop.GetHeight + yPadding
-        
-        sldLoop.Visible = (btsLoop.ListIndex = 2)
-        If sldLoop.Visible Then
-            sldLoop.SetTop yOffset
-            yOffset = yOffset + sldLoop.GetHeight + yPaddingTitle
-        Else
-            yOffset = yOffset - yPadding + yPaddingTitle
-        End If
-    
-        btsFrameTimes.SetTop yOffset
-        yOffset = yOffset + btsFrameTimes.GetHeight + yPadding
-        
-        If (btsFrameTimes.ListIndex = 0) Then
-            sldFrameTime.Caption = g_Language.TranslateMessage("frame time (in ms)")
-        ElseIf (btsFrameTimes.ListIndex = 1) Then
-            sldFrameTime.Caption = g_Language.TranslateMessage("frame time for undefined layers (in ms)")
-        End If
-        
-        sldFrameTime.SetTop yOffset
-        yOffset = yOffset + sldFrameTime.GetHeight + yPaddingTitle
-    
-    End If
+    yOffset = yPadding
     
     'With the left side complete, we can now move to the right side.  Importantly, if the width of
     ' the right side changes, we need to rebuild our animation preview to match.
@@ -766,7 +507,7 @@ Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False
         myHeight = Me.ScaleHeight
     End If
     
-    lblTitle(1).SetWidth myWidth - lblTitle(1).GetLeft
+    lblTitle(0).SetWidth myWidth - lblTitle(0).GetLeft
     
     'Next, set the *bottom* playback controls
     btnPlay(0).SetTop myHeight - cmdBar.GetHeight - yPadding - btnPlay(0).GetHeight
@@ -774,94 +515,21 @@ Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False
     sldFrame.SetPositionAndSize btnPlay(0).GetLeft + btnPlay(0).GetWidth + yPadding, btnPlay(0).GetTop, (btnPlay(1).GetLeft - (btnPlay(0).GetLeft + btnPlay(0).GetWidth)) - (yPadding * 2), sldFrame.GetHeight
     
     'Stretch the preview box to fit between the top label and bottom playback controls
-    picPreview.SetSize lblTitle(1).GetWidth - yPadding, (btnPlay(0).GetTop - picPreview.GetTop) - yPadding
+    picPreview.SetSize lblTitle(0).GetWidth - yPadding, (btnPlay(0).GetTop - picPreview.GetTop) - yPadding
     
     'We may need to generate new animation settings.  This is resource-intensive, so only
     ' do it when the preview area size changes
     If m_DisplayWaitingMsg Then
         picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
     Else
-        If imgAnimated Then
-            If updateAnimationToo Then UpdateAnimationSettings
-        Else
-            picPreview.RequestRedraw
-        End If
+        picPreview.RequestRedraw
     End If
     
-End Sub
-
-Private Sub sldFrameTime_Change()
-    NotifyNewFrameTimes
 End Sub
 
 Private Sub NotifyNewFrameTimes()
-    
-    Dim useFixedTime As Boolean, fixedTimeMS As Long
-    useFixedTime = (btsFrameTimes.ListIndex = 0)
-    fixedTimeMS = sldFrameTime.Value
-    
     Dim i As Long
     For i = 0 To m_FrameCount - 1
-        If (m_Frames(i).afFrameDelayOrig = 0) Or useFixedTime Then
-            m_Timer.NotifyFrameTime fixedTimeMS, i
-        Else
-            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
-        End If
+        m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
     Next i
-    
-End Sub
-
-Public Sub ApplyAnimationChanges(ByRef listSettings As String)
-    
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    cParams.SetParamString listSettings
-    
-    'Two branches, depending on whether animation is enabled or disabled in the target image
-    PDImages.GetActiveImage.SetAnimated cParams.GetBool("animation-enabled", False, True)
-    
-    'Animation enabled
-    If PDImages.GetActiveImage.IsAnimated() Then
-        
-        'Loop count gets stored in the parent object
-        PDImages.GetActiveImage.ImgStorage.AddEntry "animation-loop-count", cParams.GetLong("animation-loop-count", 1, True)
-        
-        'Frame delays are more cumbersome.  We need to store new frame delay data inside each layer
-        ' (both in the layer's settings dictionaries, and in the layer's names).  If existing frame
-        ' data exists in either place, we need to overwrite it.
-        Dim fixedFrameTimes As Boolean, fixedFrameMS As Long
-        fixedFrameTimes = cParams.GetBool("use-fixed-frame-delay", False, True)
-        fixedFrameMS = cParams.GetLong("frame-delay-default", 100, True)
-        
-        Dim i As Long
-        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
-            
-            'Overwrite missing frame delay data (or *all* frame delay data, if that setting
-            ' is enabled) with our fixed frame value.
-            With PDImages.GetActiveImage.GetLayerByIndex(i)
-                
-                If fixedFrameTimes Then
-                    .SetLayerFrameTimeInMS fixedFrameMS
-                Else
-                    If (.GetLayerFrameTimeInMS <= 0) Then .SetLayerFrameTimeInMS fixedFrameMS
-                End If
-                
-                'After setting frame time, we need to synchronize each layer's name to its frame time.
-                If (Animation.GetFrameTimeFromLayerName(.GetLayerName, 0) <> .GetLayerFrameTimeInMS) Then
-                    .SetLayerName Animation.UpdateFrameTimeInLayerName(.GetLayerName, .GetLayerFrameTimeInMS())
-                End If
-                
-            End With
-            
-        Next i
-        
-    'Animation disabled
-    Else
-    
-        'If they exist, animation settings can remain in the source image's settings dictionary.
-        ' (Same for individual layers.)  Such settings are ignored at export time if the parent
-        ' image isn't flagged as animated.
-        
-    End If
-    
 End Sub

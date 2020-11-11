@@ -1425,8 +1425,20 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Custom filter..."
+         Caption         =   "Animation"
          Index           =   13
+         Begin VB.Menu MnuEffectAnimation 
+            Caption         =   "Background..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuEffectAnimation 
+            Caption         =   "Foreground..."
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Custom filter..."
+         Index           =   14
       End
    End
    Begin VB.Menu MnuTools 
@@ -1891,6 +1903,22 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
     
 End Sub
 
+Private Sub MnuEffectAnimation_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'Background
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_animation_background"
+        
+        'Foreground
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_animation_foreground"
+        
+    End Select
+    
+End Sub
+
 Private Sub MnuEffectUpper_Click(Index As Integer)
 
     Select Case Index
@@ -1922,6 +1950,8 @@ Private Sub MnuEffectUpper_Click(Index As Integer)
         Case 12
             '(separator)
         Case 13
+            'Animation
+        Case 15
             Menus.ProcessDefaultAction_ByName "effects_customfilter"
     End Select
 
