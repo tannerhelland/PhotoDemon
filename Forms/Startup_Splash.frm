@@ -60,11 +60,12 @@ Private Declare Function UpdateLayeredWindow Lib "user32" (ByVal hWnd As Long, B
 'Unfortunately, GDI doesn't render text onto 32-bpp surfaces correctly (the alpha channel gets ignored).
 ' We need to use a more convoluted GDI+ approach, and because I don't have a safe wrapper class for
 ' GDI+ font rendering, everything gets called manually.
-Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As Long, ByVal srcMeasurementUnit As Long, ByRef dstCreatedFont As Long) As GP_Result
-Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
+'Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As Long, ByVal srcMeasurementUnit As Long, ByRef dstCreatedFont As Long) As GP_Result
+'Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
+Private Declare Function GdipCreateFontFromDC Lib "gdiplus" (ByVal srcDC As Long, ByRef dstCreatedFont As Long) As GP_Result
 Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As Long, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
-Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
+'Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As GP_Result
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RectF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As Long) As GP_Result
@@ -163,15 +164,37 @@ Public Sub PrepareRestOfSplash()
         
         'Next, we need to create various GDI+ font objects.  These may fail (particularly on
         ' non-standard configs like Wine), so abandon font rendering if anything goes badly.
-        Dim fontOK As Boolean
+        Dim fontOK As Boolean, gpFontHandle As Long
         
-        Dim gpFontFamily As Long, gpFontHandle As Long
-        fontOK = (GdipCreateFontFamilyFromName(StrPtr(logoFontName), 0&, gpFontFamily) = GP_OK)
+        'YIKES!  For ages I have used the normal GDI+ pathway of GdipCreateFontFamily > GdipCreateFont,
+        ' but after experiencing random startup stutters on Win 10, I profiled and tracked down the
+        ' CreateFontFamily call as the culprit.  It occasionally takes hundreds of ms, with occasional
+        ' lurches above ONE SECOND for that single function call!  I have no idea when this changed,
+        ' but I've got a reliable workaround - turns out it's much much MUCH faster (e.g. < 10 ms vs
+        ' 500+ ms) to initialize a GDI font, attach it to a GDI DC, then indirectly create a GDI+ font
+        ' from said DC.  Go figure.
         
-        Const GP_FONTBOLD As Long = 1
-        If fontOK Then fontOK = (GdipCreateFont(gpFontFamily, logoFontSize, GP_FONTBOLD, GP_U_Point, gpFontHandle) = GP_OK)
+        'Original code here in case I ever need to revert this approach:
+        'Dim gpFontFamily As Long
+        'fontOK = (GdipCreateFontFamilyFromName(StrPtr(logoFontName), 0&, gpFontFamily) = GP_OK)
+        'Const GP_FONTBOLD As Long = 1
+        'If fontOK Then fontOK = (GdipCreateFont(gpFontFamily, logoFontSize, GP_FONTBOLD, GP_U_Point, gpFontHandle) = GP_OK)
         
-        'Next, we need a text formatter.  Minimal options are used, but we do need right-aligned
+        'New approach: use pdFont to create a font, because it's ~50x faster!
+        Dim tmpFont As pdFont
+        Set tmpFont = New pdFont
+        tmpFont.SetFontFace logoFontName
+        tmpFont.SetFontSize logoFontSize
+        tmpFont.SetFontBold True
+        tmpFont.CreateFontObject
+        tmpFont.AttachToDC m_splashDIB.GetDIBDC
+        fontOK = (GdipCreateFontFromDC(m_splashDIB.GetDIBDC, gpFontHandle) = GP_OK)
+        
+        'Kill the temporary GDI font copy
+        tmpFont.ReleaseFromDC
+        Set tmpFont = Nothing
+        
+        'Next, we need a text formatter.  Minimal options are used, but we do need right-alignment
         Dim gpStringFormat As Long
         If fontOK Then fontOK = (GdipCreateStringFormat(0&, 0&, gpStringFormat) = GP_OK)
         
@@ -222,7 +245,9 @@ Public Sub PrepareRestOfSplash()
         Set cSurface = Nothing
         If (gpStringFormat <> 0) Then GdipDeleteStringFormat gpStringFormat
         If (gpFontHandle <> 0) Then GdipDeleteFont gpFontHandle
-        If (gpFontFamily <> 0) Then GdipDeleteFontFamily gpFontFamily
+        
+        'A GDI+ font family object is no longer allocated; see above comments for details
+        'If (gpFontFamily <> 0) Then GdipDeleteFontFamily gpFontFamily
         
         'We now have a back buffer with everything the splash screen requires
         ' (except the progress bar, which will be drawn later).  Create a front buffer
