@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.164</langversion>
+<langversion>9.0.174</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2243,12 +2243,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>Animations-Hintergrund</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>Animations-Vordergrund</translation>
 </phrase>
 
 <phrase>
@@ -4967,12 +4967,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>Hintergrund</translation>
 </phrase>
 
 <phrase>
 <original>Foreground</original>
-<translation></translation>
+<translation>Vordergrund</translation>
 </phrase>
 
 <phrase>
@@ -5237,7 +5237,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>This copy of PhotoDemon is up to date.</original>
-<translation>Dieses Exemplar von PhotoDemon ist auf dem neuesten Stand.</translation>
+<translation>Dieses Exemplar von PhotoDemon ist auf dem neuesten Stand (up-to-date).</translation>
 </phrase>
 
 <phrase>
@@ -5246,7 +5246,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
 <translation>Eine neue Version von PhotoDemon ist verfügbar! 
 
-Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Benachrichtigung erhalten, wenn es abgeschlossen ist.</translation>
+Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Benachrichtigung erhalten, wenn dies abgeschlossen ist.</translation>
 </phrase>
 
 <phrase>
@@ -7073,11 +7073,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>background layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>waiting</original>
 <translation>Warten</translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Animation_Background.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>random seed</original>
@@ -13117,7 +13122,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>installed, enabled, and up to date</original>
-<translation>Installiert, aktiviert und auf dem neuesten Stand</translation>
+<translation>Installiert, aktiviert, und auf dem neuesten Stand</translation>
 </phrase>
 
 <phrase>
@@ -13273,10 +13278,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2513</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5114 phrases. -->
-<!-- 2602 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 11583 total words. -->
+<!-- As of this build, PhotoDemon contains 5115 phrases. -->
+<!-- 2602 are duplicates, so only 2513 unique phrases have been written to file. -->
+<!-- These 2513 phrases contain approximately 11585 total words. -->
 
 </pdData>

@@ -82,25 +82,6 @@ Private m_LastMouseX As Single, m_LastMouseY As Single
 'If our parent image is animated, we need to track a whole bunch of exciting things
 Private m_Animated As Boolean
 
-Private Type PD_AnimationFrame
-    
-    'DIB parameters
-    afThumbKey As Long
-    afWidth As Long
-    afHeight As Long
-    
-    'Metadata
-    afFrameDelayMS As Long
-    
-    'Timestamps are used to avoid unnecessary thumbnail updates
-    afTimeStamp As Currency
-    
-    'At present, all animation frames default to the same size.  This may change in the future.
-    afOffsetX As Single
-    afOffsetY As Single
-    
-End Type
-
 Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long
@@ -577,10 +558,6 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         'Use the larger dimension to construct the thumb.  (For simplicity, thumbs are always square.)
         If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
         
-        Dim xThumb As Long, yThumb As Long
-        xThumb = (bWidth - thumbSize) \ 2
-        yThumb = (bHeight - thumbSize) \ 2
-        
         'Load all thumbnails
         Dim i As Long, loopStart As Long, loopEnd As Long
         loopStart = 0
@@ -610,8 +587,6 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
                 
                 m_Frames(i).afWidth = thumbSize
                 m_Frames(i).afHeight = thumbSize
-                m_Frames(i).afOffsetX = xThumb
-                m_Frames(i).afOffsetY = yThumb
                 
                 srcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, srcImage, thumbSize, True
                 m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))

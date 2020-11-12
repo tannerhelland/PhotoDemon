@@ -18,6 +18,25 @@ Attribute VB_Name = "Animation"
 
 Option Explicit
 
+'Many dialogs render animations in some fashion.  A standard struct is used for retrieving
+' animation frames (typically from a pdSpriteSheet object), but there's no reason you can't
+' use your own custom struct if this one doesn't meet your needs.  (This struct is not
+' currently passed anywhere; it's only used for local caching of key animation data.)
+Public Type PD_AnimationFrame
+    
+    'DIB parameters
+    afThumbKey As Long
+    afWidth As Long
+    afHeight As Long
+    
+    'Metadata
+    afFrameDelayMS As Long
+    
+    'For perf-sensitive rendering tasks, timestamps can be used to avoid unnecessary thumbnail updates
+    afTimeStamp As Currency
+    
+End Type
+
 'Used to temporarily cache the location of a temporary animation-related file.
 Private m_TmpAnimationFile As String
 

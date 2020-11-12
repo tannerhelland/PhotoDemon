@@ -198,24 +198,6 @@ Private m_DoNotUpdate As Boolean
 Private WithEvents m_Timer As pdTimerAnimation
 Attribute m_Timer.VB_VarHelpID = -1
 
-'Animation frames are stored in a spritesheet control, but to simplify display, we also cache a bunch
-' of frame-related details.
-Private Type PD_AnimationFrame
-    
-    'DIB parameters
-    afThumbKey As Long
-    afWidth As Long
-    afHeight As Long
-    
-    'Metadata
-    afFrameDelayOrig As Long
-    
-    'At present, all animation frames default to the same size.  This may change in the future.
-    afOffsetX As Single
-    afOffsetY As Single
-    
-End Type
-
 Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long
@@ -512,10 +494,6 @@ Private Sub UpdateAnimationSettings()
     If (m_AniFrame Is Nothing) Then Set m_AniFrame = New pdDIB
     m_AniFrame.CreateBlank thumbSize, thumbSize, 32, 0, 0
     
-    Dim xThumb As Long, yThumb As Long
-    xThumb = Int((bWidth * 0.5) - (thumbSize * 0.5) + 0.5)
-    yThumb = Int((bHeight * 0.5) - (thumbSize * 0.5) + 0.5)
-    
     'Store the boundary rect of where the thumb will actually appear; we need this for rendering
     ' a transparency checkerboard
     With m_AniThumbBounds
@@ -537,15 +515,13 @@ Private Sub UpdateAnimationSettings()
         
         m_Frames(i).afWidth = thumbSize
         m_Frames(i).afHeight = thumbSize
-        m_Frames(i).afOffsetX = xThumb
-        m_Frames(i).afOffsetY = yThumb
         
         m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, thumbSize, False, VarPtr(m_AniThumbBounds)
         m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
         
         'Retrieve layer frame times and relay them to the animation object
-        m_Frames(i).afFrameDelayOrig = Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0)
-        If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
+        m_Frames(i).afFrameDelayMS = Animation.GetFrameTimeFromLayerName(m_SrcImage.GetLayerByIndex(i).GetLayerName(), 0)
+        If (m_Frames(i).afFrameDelayMS = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
         
     Next i
     
@@ -669,10 +645,10 @@ Private Sub NotifyNewFrameTimes()
     
     Dim i As Long
     For i = 0 To m_FrameCount - 1
-        If (m_Frames(i).afFrameDelayOrig = 0) Or useFixedTime Then
+        If (m_Frames(i).afFrameDelayMS = 0) Or useFixedTime Then
             m_Timer.NotifyFrameTime fixedTimeMS, i
         Else
-            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
+            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
         End If
     Next i
     

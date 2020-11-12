@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Animation Timer
 'Copyright 2016-2020 by Tanner Helland
 'Created: 07/February/16
-'Last updated: 26/August/19
-'Last update: spin off from original pdTimer class, as animation has specific requirements
+'Last updated: 12/November/20
+'Last update: minor tweaks to prepare for the new Animation > Effects menu
 '
 'This class is an animation-centric wrapper to a normal pdTimer instance.  It handles frame calculation
 ' and timer interval setting in order to achieve a steady FPS target.
@@ -26,8 +26,8 @@ Attribute VB_Exposed = False
 '
 'Note that this class performs very few validations on things like frame indices and frame times.
 ' If you pass bad values, you will get bad results - this is done because timing is incredibly
-' perf-sensitive, and checking every value on every access just complicates timing calculations.
-' If bad values are a concern, be proactive and do initial validations on the caller's end.
+' perf-sensitive, and checking every value on every access just complicates timing accuracy.
+' If bad values are a concern, be proactive and do initial validations on your end.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -46,9 +46,10 @@ Attribute m_Timer.VB_VarHelpID = -1
 
 'Animated GIF and PNG files are incredibly obnoxious, because they allow you to specify
 ' per-frame delays.  This means that each frame may have a different delay, ranging from as low
-' as 0 ms to 65k ms.  Many use a 30-fps-ish target of 30 ms delays.  Because delays may be quite
-' large, we don't want to waste resources with a 60-fps timer - instead, we constantly modify our
-' timer interval(s) to try and achieve a "perfect" match for requested frame times.
+' as 0 ms to 65k ms.  Many use a 30-fps-ish target of ~30 ms delays.  Because delays can be large,
+' we don't want to waste resources with a 60-fps timer - instead, we constantly modify our timer
+' interval(s) to try and achieve a "perfect" match for requested frame times.  (This also allows
+' us to better respect system timer patterns on e.g. power-constrained laptops.)
 Private m_FrameCount As Long
 Private m_FrameTimesMS() As Long
 Private m_CurrentFrame As Long
@@ -81,13 +82,14 @@ Friend Sub NotifyFrameCount(ByVal newFrameCount As Long)
     
     'Reset frame time trackers (debug only)
     m_FramesDisplayed = 0
-    m_FrameTimes = 0
+    m_FrameTimes = 0#
     
 End Sub
 
 'Notify the class of a given frame time for a specific frame.  If a frame is not specified,
-' all frames will be set to the requested time.
+' *ALL* frames will be set to the requested time.
 Friend Sub NotifyFrameTime(ByVal frameTime As Long, Optional ByVal idxFrame As Long = -1)
+    If (m_FrameCount <= 0) Then Exit Sub
     If (idxFrame >= 0) Then
         m_FrameTimesMS(idxFrame) = frameTime
     Else

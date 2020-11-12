@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.478</langversion>
+<langversion>6.6.479</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -7073,11 +7073,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>background layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>waiting</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Animation_Background.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>random seed</original>
@@ -13275,10 +13280,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2513</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5114 phrases. -->
-<!-- 2602 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 11583 total words. -->
+<!-- As of this build, PhotoDemon contains 5115 phrases. -->
+<!-- 2602 are duplicates, so only 2513 unique phrases have been written to file. -->
+<!-- These 2513 phrases contain approximately 11585 total words. -->
 
 </pdData>

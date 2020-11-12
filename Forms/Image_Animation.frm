@@ -196,20 +196,6 @@ Attribute m_Timer.VB_VarHelpID = -1
 Private WithEvents m_WindowSize As pdWindowSize
 Attribute m_WindowSize.VB_VarHelpID = -1
 
-'Animation frames are stored in a spritesheet control, but to simplify display, we also cache a bunch
-' of frame-related details.
-Private Type PD_AnimationFrame
-    
-    'DIB parameters
-    afThumbKey As Long
-    afWidth As Long
-    afHeight As Long
-    
-    'Metadata
-    afFrameDelayOrig As Long
-    
-End Type
-
 Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long
@@ -584,8 +570,8 @@ Private Sub UpdateAnimationSettings()
             m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbImageWidth))
             
             'Retrieve layer frame times and relay them to the animation object
-            m_Frames(i).afFrameDelayOrig = m_SrcImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
-            If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
+            m_Frames(i).afFrameDelayMS = m_SrcImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
+            If (m_Frames(i).afFrameDelayMS = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
             
         Next i
         
@@ -802,10 +788,10 @@ Private Sub NotifyNewFrameTimes()
     
     Dim i As Long
     For i = 0 To m_FrameCount - 1
-        If (m_Frames(i).afFrameDelayOrig = 0) Or useFixedTime Then
+        If (m_Frames(i).afFrameDelayMS = 0) Or useFixedTime Then
             m_Timer.NotifyFrameTime fixedTimeMS, i
         Else
-            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
+            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
         End If
     Next i
     

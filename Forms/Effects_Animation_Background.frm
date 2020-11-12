@@ -26,6 +26,16 @@ Begin VB.Form FormAnimBackground
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdDropDown ddLayer 
+      Height          =   855
+      Left            =   6240
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1508
+      Caption         =   "background layer"
+   End
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   0
@@ -110,19 +120,8 @@ Private m_DoNotUpdate As Boolean
 Private WithEvents m_Timer As pdTimerAnimation
 Attribute m_Timer.VB_VarHelpID = -1
 
-'Animation frames are stored in a spritesheet control, but to simplify display, we also cache a bunch
-' of frame-related details.
-Private Type PD_AnimationFrame
-    
-    'DIB parameters
-    afThumbKey As Long
-    afWidth As Long
-    afHeight As Long
-    
-    'Metadata
-    afFrameDelayOrig As Long
-    
-End Type
+'Thumb width/height is fixed
+Private m_ThumbWidth As Long, m_ThumbHeight As Long
 
 Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
@@ -131,6 +130,11 @@ Private m_AniThumbBounds As RectF
 
 'Animation updates are rendered to a temporary DIB, which is then forwarded to the preview window
 Private m_AniFrame As pdDIB
+
+'A copy of the current "background" layer (i.e. the user's requested background) is persistently
+' maintained; depending on animation settings, it may be redrawn on each render, but efforts should
+' be made to avoid reallocating it (as that's where performance will suffer most)
+Private m_BackgroundFrame As pdDIB, m_BackgroundFrameIndex As Long
 
 'Apply an arbitrary background layer to other layers
 Public Sub ApplyAnimationBackground(ByVal effectParams As String)
@@ -144,17 +148,11 @@ Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
         'Play/pause
         Case 0
             
+            'When playing an animation, perform a failsafe frame check in case the user previously
+            ' paused on the last frame, but has since enabled infinite looping playback.
             If btnPlay(Index).Value Then
-                
-                'Reset the current animation frame, as necessary
                 If (m_Timer.GetCurrentFrame() >= m_FrameCount - 1) Then m_Timer.SetCurrentFrame 0
-                
-                'Relay animation settings to the animation timer
-                RelayAnimationSettings
-                
-                'The animation timer handles the rest!
                 m_Timer.StartTimer
-                
             Else
                 m_Timer.StopTimer
             End If
@@ -181,11 +179,33 @@ Private Sub cmdBar_OKClick()
     
 End Sub
 
+Private Sub ddLayer_Click()
+    RenderAnimationFrame
+End Sub
+
 Private Sub Form_Load()
     
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
+    
+    'Set some animation default values
+    m_BackgroundFrameIndex = -1
+    
+    'Populate the layer listbox.  (The user will select their desired background layer from this box.)
+    Dim i As Long
+    If PDImages.IsImageActive() Then
+        
+        ddLayer.SetAutomaticRedraws False
+        
+        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+            ddLayer.AddItem PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName, i
+        Next i
+        
+        ddLayer.ListIndex = 0
+        ddLayer.SetAutomaticRedraws True, True
+    
+    End If
     
     'Apply translations and visual themes
     Interface.ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
@@ -248,7 +268,7 @@ Private Sub UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
-
+    
     'Render the current frame
     RenderAnimationFrame
     
@@ -280,17 +300,16 @@ Private Sub UpdateAnimationSettings()
     m_AniFrame.CreateBlank bWidth, bHeight, 32, 0, 0
     
     'Figure out what size to use for the animation thumbnails
-    Dim thumbImageWidth As Long, thumbImageHeight As Long
-    PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, bWidth, bHeight, thumbImageWidth, thumbImageHeight
+    PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, bWidth, bHeight, m_ThumbWidth, m_ThumbHeight
     
     'Ensure the thumb isn't larger than the actual image
-    If (thumbImageWidth > PDImages.GetActiveImage.Width) Or (thumbImageHeight > PDImages.GetActiveImage.Height) Then
-        thumbImageWidth = PDImages.GetActiveImage.Width
-        thumbImageHeight = PDImages.GetActiveImage.Height
+    If (m_ThumbWidth > PDImages.GetActiveImage.Width) Or (m_ThumbHeight > PDImages.GetActiveImage.Height) Then
+        m_ThumbWidth = PDImages.GetActiveImage.Width
+        m_ThumbHeight = PDImages.GetActiveImage.Height
     End If
     
     'If the thumb image width/height is the same as our current settings, we can keep our existing cache.
-    If (thumbImageWidth <> m_AniThumbBounds.Width) Or (thumbImageHeight <> m_AniThumbBounds.Height) Or (m_FrameCount <> PDImages.GetActiveImage.GetNumOfLayers) Then
+    If (m_ThumbWidth <> m_AniThumbBounds.Width) Or (m_ThumbHeight <> m_AniThumbBounds.Height) Or (m_FrameCount <> PDImages.GetActiveImage.GetNumOfLayers) Then
         
         'Load all animation frames.
         m_FrameCount = PDImages.GetActiveImage.GetNumOfLayers
@@ -306,8 +325,8 @@ Private Sub UpdateAnimationSettings()
         With m_AniThumbBounds
             .Left = 0
             .Top = 0
-            .Width = thumbImageWidth
-            .Height = thumbImageHeight
+            .Width = m_ThumbWidth
+            .Height = m_ThumbHeight
         End With
         
         'Before generating our preview images, we need to figure out how many frames we
@@ -321,7 +340,7 @@ Private Sub UpdateAnimationSettings()
         sheetSizeLimit = 16777216
         
         Dim numFramesPerSheet As Long
-        numFramesPerSheet = sheetSizeLimit / (thumbImageWidth * thumbImageHeight * 4)
+        numFramesPerSheet = sheetSizeLimit / (m_ThumbWidth * m_ThumbHeight * 4)
         If (numFramesPerSheet < 2) Then numFramesPerSheet = 2
         m_Thumbs.SetMaxSpritesInColumn numFramesPerSheet
         
@@ -333,17 +352,17 @@ Private Sub UpdateAnimationSettings()
             
             'Retrieve an updated thumbnail
             If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-            tmpDIB.CreateBlank thumbImageWidth, thumbImageHeight, 32, 0, 0
+            tmpDIB.CreateBlank m_ThumbWidth, m_ThumbHeight, 32, 0, 0
             
-            m_Frames(i).afWidth = thumbImageWidth
-            m_Frames(i).afHeight = thumbImageHeight
+            m_Frames(i).afWidth = m_ThumbWidth
+            m_Frames(i).afHeight = m_ThumbHeight
             
-            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, PDImages.GetActiveImage, PDMath.Max2Int(thumbImageWidth, thumbImageHeight), False, VarPtr(m_AniThumbBounds)
-            m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbImageWidth))
+            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, PDImages.GetActiveImage, PDMath.Max2Int(m_ThumbWidth, m_ThumbHeight), False, VarPtr(m_AniThumbBounds)
+            m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(m_ThumbWidth))
             
             'Retrieve layer frame times and relay them to the animation object
-            m_Frames(i).afFrameDelayOrig = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
-            If (m_Frames(i).afFrameDelayOrig = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
+            m_Frames(i).afFrameDelayMS = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
+            If (m_Frames(i).afFrameDelayMS = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
             
         Next i
         
@@ -359,14 +378,10 @@ Private Sub UpdateAnimationSettings()
     
 End Sub
 
-Private Sub RelayAnimationSettings()
-    m_Timer.NotifyFrameCount m_FrameCount
-    NotifyNewFrameTimes
-End Sub
-
 'Render the current animation frame
 Private Sub RenderAnimationFrame()
     
+    'For performance reasons, we skip updates under a variety of circumstances
     If m_DoNotUpdate Then Exit Sub
     If (m_AniFrame Is Nothing) Then Exit Sub
     If Interface.GetDialogResizeFlag() Then
@@ -374,7 +389,29 @@ Private Sub RenderAnimationFrame()
         Exit Sub
     End If
     
+    'Recreate the background, as necessary
     Dim idxFrame As Long
+    idxFrame = ddLayer.ListIndex
+    
+    If (m_BackgroundFrameIndex <> idxFrame) Then
+        
+        'Restore the correct frame time of the old background frame index
+        If (m_BackgroundFrameIndex >= 0) Then m_Timer.NotifyFrameTime m_Frames(m_BackgroundFrameIndex).afFrameDelayMS, m_BackgroundFrameIndex
+        
+        'Ensure background DIB is allocated
+        If (m_BackgroundFrame Is Nothing) Then Set m_BackgroundFrame = New pdDIB
+        m_BackgroundFrame.CreateBlank m_ThumbWidth, m_ThumbHeight, 32, 0, 0
+        
+        'Retrieve a copy of this layer at the current preview size
+        PDImages.GetActiveImage.GetLayerByIndex(idxFrame).RequestThumbnail_ImageCoords m_BackgroundFrame, PDImages.GetActiveImage, PDMath.Max2Int(m_ThumbWidth, m_ThumbHeight), False, VarPtr(m_AniThumbBounds)
+        
+        'Update the frame pointer, and set the animation delay of the new background frame to 0
+        m_BackgroundFrameIndex = idxFrame
+        m_Timer.NotifyFrameTime 0, idxFrame
+        
+    End If
+    
+    'Now we start work on the current frame
     idxFrame = m_Timer.GetCurrentFrame()
     
     'We need to calculate x/y offsets relative to the current preview area
@@ -392,10 +429,11 @@ Private Sub RenderAnimationFrame()
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         m_AniFrame.ResetDIB 0
         
-        'Paint a checkerboard background only over the relevant image region, followed by the frame itself
+        'Paint a stack consisting of: checkerboard background, background layer, current frame
         With m_Frames(idxFrame)
             
             GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
+            m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
             
             'Make sure we have the necessary image in the spritesheet cache
             If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
@@ -440,6 +478,6 @@ End Sub
 Private Sub NotifyNewFrameTimes()
     Dim i As Long
     For i = 0 To m_FrameCount - 1
-        m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayOrig, i
+        m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
     Next i
 End Sub
