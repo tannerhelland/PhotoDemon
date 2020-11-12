@@ -61,8 +61,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright 2013-2020 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 13/February/16
-'Last update: migrate large portions of the control into a separate pdPreview control
+'Last updated: 13/October/20
+'Last update: rework resize code to allow for efficient run-time resizing of previews
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program

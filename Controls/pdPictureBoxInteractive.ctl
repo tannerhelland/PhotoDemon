@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Interactive PictureBox Replacement control
 'Copyright 2018-2020 by Tanner Helland
 'Created: 21/March/18
-'Last updated: 13/October/20
-'Last update: split off from the display-only picture box variant
+'Last updated: 12/November/20
+'Last update: new event after a window resize has occurred; the owner may need to perform a special redraw
 '
 'For interactive UI elements that don't warrant a dedicated user-control, use this control instead.
 ' It basically acts as a thin operator to a pdUCSupport instance, but you'll need to manually handle
@@ -46,20 +46,23 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control cannot receive focus, by design.
+'This control is always owner-drawn
 Public Event DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
 
-'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
-' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
 
 Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
+
+'After a window resize, this control may require a special redraw (because its dimensions may
+' have changed).  A special event exists for notifying this state, as not all dialogs need to
+' implement it.
+Public Event WindowResizeDetected()
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -292,6 +295,10 @@ Public Sub SetCursorCustom_Resource(ByVal pngResourceName As String, Optional By
     ucSupport.RequestCursor_Resource pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_DIALOG_RESIZE_FINISHED) Then RaiseEvent WindowResizeDetected
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
     RedrawBackBuffer
@@ -337,6 +344,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True, False
     ucSupport.RequestExtraFunctionality True
+    ucSupport.SubclassCustomMessage WM_PD_DIALOG_RESIZE_FINISHED, True
     
 End Sub
 

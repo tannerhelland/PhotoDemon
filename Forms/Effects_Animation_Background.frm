@@ -89,14 +89,12 @@ Attribute VB_Exposed = False
 'Last updated: 11/November/20
 'Last update: spin off from the central Image > Animation dialog
 '
-'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  This dialog exposes relevant
-' animation settings to the user, including allowing them to turn multilayer non-animated images into
-' animated ones (or vice-versa).
+'In v9.0, PhotoDemon started gaining effects involving animated images.  This necessitated a bunch
+' of new preview and UI code, since previewing effects in real-time is such an intensive process,
+' and PD's existing solution was only ever designed for static images.
 '
-'Significantly, it also offers a large, resizable canvas for previewing animations.
-'
-'TODO: remember window size.  I don't have a nice, centralized way to do this at present, but once I
-' do, I'll make sure this dialog remembers its position when closed!
+'This dialog served as the testbed for the first animation-related effect, and its code is now
+' mirrored across many other places in the project.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -371,6 +369,10 @@ Private Sub RenderAnimationFrame()
     
     If m_DoNotUpdate Then Exit Sub
     If (m_AniFrame Is Nothing) Then Exit Sub
+    If Interface.GetDialogResizeFlag() Then
+        picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
+        Exit Sub
+    End If
     
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()
@@ -422,6 +424,10 @@ End Sub
 'If the user clicks the preview window (for some reason), it'll trigger a redraw.
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     RenderAnimationFrame
+End Sub
+
+Private Sub picPreview_WindowResizeDetected()
+    UpdateAnimationSettings
 End Sub
 
 Private Sub sldFrame_Change()

@@ -640,9 +640,9 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             If (m_SpecialPreviewHWnd = 0) Then
                 SendNotifyMessage m_Controls(m_PreviewIndex).hWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
             
-            'Otherwise, we need to do something special (TODO?)
+            'Otherwise, we need to notify the arbitrary control specified by the user
             Else
-                'TODO
+                SendNotifyMessage m_SpecialPreviewHWnd, WM_PD_DIALOG_RESIZE_FINISHED, 0&, 0&
             End If
             
         End If

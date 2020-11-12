@@ -32,12 +32,12 @@ Attribute VB_Exposed = False
 'PhotoDemon PictureBox Replacement control (lightweight non-interactive version)
 'Copyright 2018-2020 by Tanner Helland
 'Created: 21/March/18
-'Last updated: 13/October/20
-'Last update: spin off interactive bits into their own control
+'Last updated: 12/November/20
+'Last update: new event after a window resize has occurred; the owner may need to perform a special redraw
 '
 'For non-interactive images in various dialogs and controls, please use this control.  It support theming,
-' high-DPI monitors, flicker-free rendering (across all Windows versions), and consumes less resources than
-' a built-in VB picture box.
+' high-DPI monitors, flicker-free rendering (across all Windows versions), and consumes fewer resources
+' than a built-in VB picture box.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -49,12 +49,15 @@ Option Explicit
 'This control cannot receive focus, by design.
 Public Event DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
 
-'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
-' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
 Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
+
+'After a window resize, this control may require a special redraw (because its dimensions may
+' have changed).  A special event exists for notifying this state, as not all dialogs need to
+' implement it.
+Public Event WindowResizeDetected()
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -279,6 +282,10 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
     
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_DIALOG_RESIZE_FINISHED) Then RaiseEvent WindowResizeDetected
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
     RedrawBackBuffer
@@ -311,6 +318,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, False, False
     ucSupport.RequestExtraFunctionality True, , , False
+    ucSupport.SubclassCustomMessage WM_PD_DIALOG_RESIZE_FINISHED, True
     
 End Sub
 

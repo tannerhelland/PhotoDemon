@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.36</langversion>
+<langversion>8.0.37</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -2238,6 +2238,16 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
+<original>Animation background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Animation foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Custom filter</original>
 <translation>filtro personalizado</translation>
 </phrase>
@@ -2282,7 +2292,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Borrar lista macro reciente</translation>
 </phrase>
 
-<!-- Menus.bas contains 266 phrases. 30 were duplicates of existing phrases, so only 236 new phrases were written to file. -->
+<!-- Menus.bas contains 268 phrases. 30 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3369,6 +3379,13 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Layer %1</original>
+<translation>Capa 1%</translation>
+</phrase>
+
+<!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
@@ -4943,6 +4960,16 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
+<original>Background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Tools</original>
 <translation>Herramientas</translation>
 </phrase>
@@ -5260,7 +5287,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 367 phrases. 190 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- MainWindow.frm contains 370 phrases. 191 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7038,6 +7065,13 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>waiting</original>
+<translation>esperando</translation>
+</phrase>
+
+<!-- Effects_Animation_Background.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>random seed</original>
@@ -10300,12 +10334,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>animación habilitada para esta imagen</translation>
 </phrase>
 
-<phrase>
-<original>waiting</original>
-<translation>esperando</translation>
-</phrase>
-
-<!-- Image_Animation.frm contains 27 phrases. 25 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Image_Animation.frm contains 27 phrases. 26 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -10757,11 +10786,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Layer %1</original>
-<translation>Capa 1%</translation>
-</phrase>
-
-<phrase>
 <original>default (above current layer)</original>
 <translation>por defecto (por encima de la capa actual)</translation>
 </phrase>
@@ -10781,7 +10805,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>parte inferior de la pila de capas</translation>
 </phrase>
 
-<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>flatten behavior</original>
@@ -13243,14 +13267,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- pdMBM.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5103 phrases. -->
-<!-- 2595 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 11577 total words. -->
+<!-- As of this build, PhotoDemon contains 5114 phrases. -->
+<!-- 2602 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 11583 total words. -->
 
 </pdData>
