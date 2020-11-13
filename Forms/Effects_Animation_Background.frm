@@ -26,6 +26,16 @@ Begin VB.Form FormAnimBackground
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkDelete 
+      Height          =   495
+      Left            =   6240
+      TabIndex        =   5
+      Top             =   1080
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   873
+      Caption         =   "after processing, delete this layer"
+   End
    Begin PhotoDemon.pdDropDown ddLayer 
       Height          =   855
       Left            =   6240
@@ -96,8 +106,8 @@ Attribute VB_Exposed = False
 'Effect > Animation > Add background
 'Copyright 2019-2020 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 11/November/20
-'Last update: spin off from the central Image > Animation dialog
+'Last updated: 13/November/20
+'Last update: actually implement permanent version of the effect!
 '
 'In v9.0, PhotoDemon started gaining effects involving animated images.  This necessitated a bunch
 ' of new preview and UI code, since previewing effects in real-time is such an intensive process,
@@ -106,12 +116,23 @@ Attribute VB_Exposed = False
 'This dialog served as the testbed for the first animation-related effect, and its code is now
 ' mirrored across many other places in the project.
 '
+'Note that unlike static effects, animated effects use very different code for preview vs final
+' execution.  This is necessary because pre-computing the effect for all frames is very energy
+' intensive, so instead, we generate the preview "on the fly" and use totally different code for
+' the final effect.  I am open to ideas for improving this, but remember - effects need to be
+' preview-able in real-time on 20-year-old XP PCs.  It's a challenge.
+'
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
 Option Explicit
+
+'To simplify my life, this dialog handles both background and foreground effects.
+' (They're fundamentally the exact same effect - the only difference is whether we merge the target
+' layer above or beneath each other frame in the animation.)
+Private m_InBackgroundMode As Boolean
 
 'To avoid circular updates on animation state changes, we use this tracker
 Private m_DoNotUpdate As Boolean
@@ -138,7 +159,100 @@ Private m_BackgroundFrame As pdDIB, m_BackgroundFrameIndex As Long
 
 'Apply an arbitrary background layer to other layers
 Public Sub ApplyAnimationBackground(ByVal effectParams As String)
+    
+    If m_InBackgroundMode Then
+        Message "Applying background..."
+    Else
+        Message "Applying foreground..."
+    End If
+    
+    SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers()
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString effectParams
+    
+    'Retrieve parameters
+    m_InBackgroundMode = cParams.GetBool("background-effect", True, True)
+    
+    Dim idxLayer As Long
+    idxLayer = cParams.GetLong("target-layer-index", 0, True)
+    
+    Dim deleteLayerAfter As Boolean
+    deleteLayerAfter = cParams.GetBool("delete-after", False, True)
+    
+    'Convert the target layer (background or foreground) to a null-padded layer
+    ' (a layer at image size with no active transforms).  This makes it trivially mergeable.
+    Dim fxDIB As pdDIB
+    PDImages.GetActiveImage.GetLayerByIndex(idxLayer).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+    Set fxDIB = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).layerDIB
+    
+    'We also need a scratch layer for compositing.
+    Dim scratchDIB As pdDIB
+    Set scratchDIB = New pdDIB
+    scratchDIB.CreateBlank fxDIB.GetDIBWidth, fxDIB.GetDIBHeight, 32, 0, 0
+    scratchDIB.SetInitialAlphaPremultiplicationState True
+    
+    'pdCompositor handles compositing duties.
+    Dim cCompositor As pdCompositor
+    Set cCompositor = New pdCompositor
+    
+    Dim i As Long
+    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+        
+        ProgressBars.SetProgBarVal i + 1
+        
+        'Skip the target layer (obviously)
+        If (i <> idxLayer) Then
+            
+            'Convert the DIB to a null-padded layer
+            PDImages.GetActiveImage.GetLayerByIndex(i).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+            
+            'Merge the transformed DIB with the effect DIB, c/o pdCompositor.
+            ' (The order of merge is literally the only thing different between background and foreground mode!)
+            scratchDIB.ResetDIB 0
+            
+            If m_InBackgroundMode Then
+                fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
+                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, BM_Normal, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
+            Else
+                PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
+                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, BM_Normal
+                'Opacity is TODO... I'm not sure if it should be custom-set, or just use the existing layer's opacity...
+                ', PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
+            End If
+            
+            'Replace the layer with the newly composited image, then shrink the top layer to its smallest
+            ' possible size (un-null-pad it)
+            PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.CreateFromExistingDIB scratchDIB
+            PDImages.GetActiveImage.GetLayerByIndex(i).CropNullPaddedLayer
+            
+            'Notify the parent image of the change
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
+            
+        End If
+        
+    Next i
+    
+    'If the caller wants the target layer deleted, do that now
+    If deleteLayerAfter Then PDImages.GetActiveImage.DeleteLayerByIndex idxLayer
+    
+    'Notify the parent image of the final change
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image
+    
+    'Redraw the screen and finalize the effect
+    toolbar_Layers.NotifyLayerChange
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    Message "Finished."
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
+    
+End Sub
 
+'Pass TRUE for background mode; FALSE for foreground mode
+Public Sub SetBackgroundMode(ByVal newMode As Boolean)
+    m_InBackgroundMode = newMode
 End Sub
 
 Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -192,6 +306,17 @@ Private Sub Form_Load()
     'Set some animation default values
     m_BackgroundFrameIndex = -1
     
+    'Prep the UI (which changes a bit depending on background/foreground mode)
+    If (Not g_Language Is Nothing) And (Not g_WindowManager Is Nothing) Then
+        If m_InBackgroundMode Then
+            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation background")
+            ddLayer.Caption = g_Language.TranslateMessage("background layer")
+        Else
+            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation foreground")
+            ddLayer.Caption = g_Language.TranslateMessage("foreground layer")
+        End If
+    End If
+    
     'Populate the layer listbox.  (The user will select their desired background layer from this box.)
     Dim i As Long
     If PDImages.IsImageActive() Then
@@ -202,7 +327,8 @@ Private Sub Form_Load()
             ddLayer.AddItem PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerName, i
         Next i
         
-        ddLayer.ListIndex = 0
+        ddLayer.ListIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+        cmdBar.RequestPresetNoLoad ddLayer
         ddLayer.SetAutomaticRedraws True, True
     
     End If
@@ -221,50 +347,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Function GetLocalParamString() As String
-
-    Dim cParams As pdSerialize
-    Set cParams = New pdSerialize
-    
-    'TODO!
-    
-    GetLocalParamString = cParams.GetParamString
-    
-End Function
-
-'Load button icons and other various UI bits
-Private Sub UpdateAgainstCurrentTheme()
-    
-    'Play and pause icons are generated at run-time, using the current UI accent color
-    Dim btnIconSize As Long
-    btnIconSize = btnPlay(0).GetWidth - Interface.FixDPI(4)
-    
-    Dim icoPlay As pdDIB
-    Set icoPlay = Interface.GetRuntimeUIDIB(pdri_Play, btnIconSize)
-    
-    Dim icoPause As pdDIB
-    Set icoPause = Interface.GetRuntimeUIDIB(pdri_Pause, btnIconSize)
-    
-    'Assign the icons
-    btnPlay(0).AssignImage vbNullString, icoPlay
-    btnPlay(0).AssignImage_Pressed vbNullString, icoPause
-    
-    'The 1x/repeat icons use prerendered graphics
-    btnIconSize = btnIconSize - 4
-    Dim tmpDIB As pdDIB
-    If g_Resources.LoadImageResource("1x", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage vbNullString, tmpDIB
-    If g_Resources.LoadImageResource("infinity", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage_Pressed vbNullString, tmpDIB
-    
-    'Add a special note to this particular 1x/repeat button, pointing out that it does
-    ' *not* rely on the neighboring looping setting.  (I have mixed feelings about the
-    ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
-    ' animation as a loop without actually committing to it... idk, I may revisit.)
-    Dim tText As String
-    tText = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
-    btnPlay(1).AssignTooltip tText
-    
 End Sub
 
 Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
@@ -433,12 +515,14 @@ Private Sub RenderAnimationFrame()
         With m_Frames(idxFrame)
             
             GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
-            m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
+            If m_InBackgroundMode Then m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
             
             'Make sure we have the necessary image in the spritesheet cache
             If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
                 m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey
             End If
+            
+            If (Not m_InBackgroundMode) Then m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
             
         End With
         
@@ -480,4 +564,50 @@ Private Sub NotifyNewFrameTimes()
     For i = 0 To m_FrameCount - 1
         m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
     Next i
+End Sub
+
+Private Function GetLocalParamString() As String
+
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    With cParams
+        .AddParam "background-effect", m_InBackgroundMode
+        .AddParam "target-layer-index", ddLayer.ListIndex
+        .AddParam "delete-after", chkDelete.Value
+    End With
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function
+
+'Load button icons and other various UI bits
+Private Sub UpdateAgainstCurrentTheme()
+    
+    'Play and pause icons are generated at run-time, using the current UI accent color
+    Dim btnIconSize As Long
+    btnIconSize = btnPlay(0).GetWidth - Interface.FixDPI(4)
+    
+    Dim icoPlay As pdDIB
+    Set icoPlay = Interface.GetRuntimeUIDIB(pdri_Play, btnIconSize)
+    
+    Dim icoPause As pdDIB
+    Set icoPause = Interface.GetRuntimeUIDIB(pdri_Pause, btnIconSize)
+    
+    'Assign the icons
+    btnPlay(0).AssignImage vbNullString, icoPlay
+    btnPlay(0).AssignImage_Pressed vbNullString, icoPause
+    
+    'The 1x/repeat icons use prerendered graphics
+    btnIconSize = btnIconSize - 4
+    Dim tmpDIB As pdDIB
+    If g_Resources.LoadImageResource("1x", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage vbNullString, tmpDIB
+    If g_Resources.LoadImageResource("infinity", tmpDIB, btnIconSize, btnIconSize, , False, g_Themer.GetGenericUIColor(UI_Accent)) Then btnPlay(1).AssignImage_Pressed vbNullString, tmpDIB
+    
+    'Add a special note to this particular 1x/repeat button, pointing out that it does
+    ' *not* rely on the neighboring looping setting.  (I have mixed feelings about the
+    ' intuitiveness of this, but I feel like there needs to be *some* way to preview the
+    ' animation as a loop without actually committing to it... idk, I may revisit.)
+    Dim tText As String
+    tText = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
+    btnPlay(1).AssignTooltip tText
+    
 End Sub

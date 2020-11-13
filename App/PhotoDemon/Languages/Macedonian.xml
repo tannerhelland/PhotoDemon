@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.333</langversion>
+<langversion>1.0.335</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7067,7 +7067,27 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>after processing, delete this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>background layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>foreground layer</original>
 <translation></translation>
 </phrase>
 
@@ -7076,7 +7096,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>random seed</original>
@@ -13274,10 +13294,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5115 phrases. -->
-<!-- 2602 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 11585 total words. -->
+<!-- As of this build, PhotoDemon contains 5127 phrases. -->
+<!-- 2610 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 11596 total words. -->
 
 </pdData>
