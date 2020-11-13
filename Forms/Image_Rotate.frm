@@ -225,7 +225,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         For i = lInit To lFinal
         
             If (thingToRotate = pdat_Image) Then SetProgBarVal i
-        
+            
             'Retrieve a pointer to the layer of interest
             Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
             

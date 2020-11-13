@@ -411,32 +411,30 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'The median dialog is reused for several tools: minimum, median, maximum.
-Public Sub ShowMedianDialog(ByVal initPercentage As Long)
+Public Sub SetMedianCutoff(ByVal initPercentage As Long)
 
     If (initPercentage = 1) Then
-        Me.Caption = g_Language.TranslateMessage("Erode")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Erode")
         sltPercent.Value = 1
         sltPercent.Visible = False
         cmdBar.SetToolName "Erode"
         curMode = MEDIAN_ERODE
         
     ElseIf (initPercentage = 100) Then
-        Me.Caption = g_Language.TranslateMessage("Dilate")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Dilate")
         sltPercent.Value = 100
         sltPercent.Visible = False
         cmdBar.SetToolName "Dilate"
         curMode = MEDIAN_DILATE
         
     Else
-        Me.Caption = g_Language.TranslateMessage("Median")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Median")
         sltPercent.Value = initPercentage
         sltPercent.Visible = True
         curMode = MEDIAN_DEFAULT
         
     End If
     
-    ShowPDDialog vbModal, Me
-
 End Sub
 
 Private Sub sltPercent_Change()

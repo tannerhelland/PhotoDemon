@@ -671,3 +671,15 @@ Public Function PromptExportAnimatedPNG(ByRef srcImage As pdImage, ByRef dstForm
     
 End Function
 
+Public Sub PromptEffect_Animation(ByVal useBackgroundMode As Boolean)
+    Load FormAnimBackground
+    FormAnimBackground.SetBackgroundMode useBackgroundMode
+    Interface.ShowPDDialog vbModal, FormAnimBackground
+End Sub
+
+Public Sub PromptEffect_Median(ByVal medianCutoff As Single)
+    Load FormMedian
+    FormMedian.SetMedianCutoff medianCutoff
+    Interface.ShowPDDialog vbModal, FormMedian
+End Sub
+

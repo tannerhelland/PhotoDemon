@@ -1714,11 +1714,11 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Dilate (maximum rank)", True) Then
-        If raiseDialog Then FormMedian.ShowMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then Dialogs.PromptEffect_Median 100 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Erode (minimum rank)", True) Then
-        If raiseDialog Then FormMedian.ShowMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then Dialogs.PromptEffect_Median 1 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
         
     'Natural filters
@@ -1781,7 +1781,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Median", True) Then
-        If raiseDialog Then FormMedian.ShowMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then Dialogs.PromptEffect_Median 50 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Symmetric nearest-neighbor", True) Then
@@ -1891,11 +1891,11 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     
     'Animation filters
     ElseIf Strings.StringsEqual(processID, "Animation background", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormAnimBackground Else FormAnimBackground.ApplyAnimationBackground processParameters
+        If raiseDialog Then Dialogs.PromptEffect_Animation True Else FormAnimBackground.ApplyAnimationBackground processParameters
         Process_EffectsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Animation foreground", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormAnimBackground Else FormAnimBackground.ApplyAnimationBackground processParameters
+        If raiseDialog Then Dialogs.PromptEffect_Animation False Else FormAnimBackground.ApplyAnimationBackground processParameters
         Process_EffectsMenu = True
     
     'Custom filters
