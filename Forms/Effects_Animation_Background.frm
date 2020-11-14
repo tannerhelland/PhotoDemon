@@ -205,7 +205,7 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
         'Skip the target layer (obviously)
         If (i <> idxLayer) Then
             
-            'Convert the DIB to a null-padded layer
+            'Convert this layer to a null-padded layer
             PDImages.GetActiveImage.GetLayerByIndex(i).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
             
             'Merge the transformed DIB with the effect DIB, c/o pdCompositor.
@@ -217,9 +217,7 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
                 cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, BM_Normal, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
             Else
                 PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
-                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, BM_Normal
-                'Opacity is TODO... I'm not sure if it should be custom-set, or just use the existing layer's opacity...
-                ', PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
+                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, BM_Normal, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
             End If
             
             'Replace the layer with the newly composited image, then shrink the top layer to its smallest
@@ -252,7 +250,19 @@ End Sub
 
 'Pass TRUE for background mode; FALSE for foreground mode
 Public Sub SetBackgroundMode(ByVal newMode As Boolean)
+    
     m_InBackgroundMode = newMode
+    
+    'Apply translations and visual themes
+    Interface.ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
+    UpdateAgainstCurrentTheme
+    
+    'Update animation frames (so the user can preview them, obviously!)
+    If PDImages.IsImageActive() Then UpdateAnimationSettings
+    
+    'Render the first frame of the animation
+    RenderAnimationFrame
+    
 End Sub
 
 Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -306,17 +316,6 @@ Private Sub Form_Load()
     'Set some animation default values
     m_BackgroundFrameIndex = -1
     
-    'Prep the UI (which changes a bit depending on background/foreground mode)
-    If (Not g_Language Is Nothing) And (Not g_WindowManager Is Nothing) Then
-        If m_InBackgroundMode Then
-            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation background")
-            ddLayer.Caption = g_Language.TranslateMessage("background layer")
-        Else
-            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation foreground")
-            ddLayer.Caption = g_Language.TranslateMessage("foreground layer")
-        End If
-    End If
-    
     'Populate the layer listbox.  (The user will select their desired background layer from this box.)
     Dim i As Long
     If PDImages.IsImageActive() Then
@@ -332,16 +331,6 @@ Private Sub Form_Load()
         ddLayer.SetAutomaticRedraws True, True
     
     End If
-    
-    'Apply translations and visual themes
-    Interface.ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
-    UpdateAgainstCurrentTheme
-    
-    'Update animation frames (so the user can preview them, obviously!)
-    If PDImages.IsImageActive() Then UpdateAnimationSettings
-    
-    'Render the first frame of the animation
-    RenderAnimationFrame
     
 End Sub
 
@@ -426,8 +415,6 @@ Private Sub UpdateAnimationSettings()
         If (numFramesPerSheet < 2) Then numFramesPerSheet = 2
         m_Thumbs.SetMaxSpritesInColumn numFramesPerSheet
         
-        Dim numZeroFrameDelays As Long
-        
         'Load all thumbnails
         Dim i As Long, tmpDIB As pdDIB
         For i = 0 To m_FrameCount - 1
@@ -436,15 +423,20 @@ Private Sub UpdateAnimationSettings()
             If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
             tmpDIB.CreateBlank m_ThumbWidth, m_ThumbHeight, 32, 0, 0
             
-            m_Frames(i).afWidth = m_ThumbWidth
-            m_Frames(i).afHeight = m_ThumbHeight
+            With m_Frames(i)
             
-            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, PDImages.GetActiveImage, PDMath.Max2Int(m_ThumbWidth, m_ThumbHeight), False, VarPtr(m_AniThumbBounds)
-            m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(m_ThumbWidth))
-            
-            'Retrieve layer frame times and relay them to the animation object
-            m_Frames(i).afFrameDelayMS = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
-            If (m_Frames(i).afFrameDelayMS = 0) Then numZeroFrameDelays = numZeroFrameDelays + 1
+                .afWidth = m_ThumbWidth
+                .afHeight = m_ThumbHeight
+                
+                PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, PDImages.GetActiveImage, PDMath.Max2Int(m_ThumbWidth, m_ThumbHeight), False, VarPtr(m_AniThumbBounds)
+                .afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(m_ThumbWidth))
+                
+                'Retrieve layer frame times and other metadata
+                .afFrameDelayMS = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
+                .afFrameOpacity = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
+                .afFrameBlendMode = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode()
+                
+            End With
             
         Next i
         
@@ -496,6 +488,17 @@ Private Sub RenderAnimationFrame()
     'Now we start work on the current frame
     idxFrame = m_Timer.GetCurrentFrame()
     
+    'If the scrubber points at the background frame, point at it the next layer in line (if possible).
+    ' This fixes an issue where the desired background layer is also the first frame, and upon loading
+    ' this dialog, the animation preview just shows the background frame.
+    If (idxFrame = m_BackgroundFrameIndex) Then
+        If (idxFrame < m_FrameCount - 1) Then
+            idxFrame = idxFrame + 1
+        ElseIf (idxFrame > 0) Then
+            idxFrame = idxFrame - 1
+        End If
+    End If
+    
     'We need to calculate x/y offsets relative to the current preview area
     Dim bWidth As Long, bHeight As Long
     bWidth = picPreview.GetWidth - 2
@@ -504,6 +507,14 @@ Private Sub RenderAnimationFrame()
     Dim xOffset As Long, yOffset As Long
     xOffset = (bWidth - m_AniThumbBounds.Width) \ 2
     yOffset = (bHeight - m_AniThumbBounds.Height) \ 2
+    
+    'To support blend and alpha modes, we must use our internal compositor
+    Dim cCompositor As pdCompositor
+    Set cCompositor = New pdCompositor
+    
+    Dim targetBlendMode As PD_BlendMode, targetOpacity As Long
+    targetBlendMode = BM_Normal
+    targetOpacity = Int(m_Frames(m_BackgroundFrameIndex).afFrameOpacity * 2.55 + 0.5)
     
     'Make sure the frame request is valid; if it isn't, exit immediately
     If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
@@ -515,14 +526,32 @@ Private Sub RenderAnimationFrame()
         With m_Frames(idxFrame)
             
             GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
-            If m_InBackgroundMode Then m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
+            
+            'Background mode respects target layer alpha, but *not* blend mode (blend mode only affects *top* layers)
+            If m_InBackgroundMode Then
+                m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
+            End If
             
             'Make sure we have the necessary image in the spritesheet cache
             If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
-                m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey
+                
+                'Blend mode is TODO
+                If (targetBlendMode = BM_Normal) Then
+                    m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
+                Else
+                    '???
+                End If
+                
             End If
             
-            If (Not m_InBackgroundMode) Then m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, dstX:=xOffset, dstY:=yOffset
+            'Blend mode is TODO
+            If (Not m_InBackgroundMode) Then
+                If (targetBlendMode = BM_Normal) Then
+                    m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
+                Else
+                    '???
+                End If
+            End If
             
         End With
         
@@ -609,5 +638,16 @@ Private Sub UpdateAgainstCurrentTheme()
     Dim tText As String
     tText = g_Language.TranslateMessage("Toggle between 1x and repeating previews")
     btnPlay(1).AssignTooltip tText
+    
+    'Some captions also vary based on background/foreground mode
+    If (Not g_Language Is Nothing) And (Not g_WindowManager Is Nothing) Then
+        If m_InBackgroundMode Then
+            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation background")
+            ddLayer.Caption = g_Language.TranslateMessage("background layer")
+        Else
+            g_WindowManager.SetWindowCaptionW Me.hWnd, " " & g_Language.TranslateMessage("Animation foreground")
+            ddLayer.Caption = g_Language.TranslateMessage("foreground layer")
+        End If
+    End If
     
 End Sub

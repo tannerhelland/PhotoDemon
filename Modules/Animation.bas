@@ -29,8 +29,11 @@ Public Type PD_AnimationFrame
     afWidth As Long
     afHeight As Long
     
-    'Metadata
+    'Metadata; not all animation instances make use of all these properties (e.g. some are only
+    ' required for animation effects, like blendmode/opacity)
     afFrameDelayMS As Long
+    afFrameOpacity As Single
+    afFrameBlendMode As PD_BlendMode
     
     'For perf-sensitive rendering tasks, timestamps can be used to avoid unnecessary thumbnail updates
     afTimeStamp As Currency
