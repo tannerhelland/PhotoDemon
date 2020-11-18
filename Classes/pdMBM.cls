@@ -239,7 +239,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             ReDim srcPalette(0 To 255) As RGBQuad
             
             'Palettes appear to be hard-coded depending on color depth?
-            Dim r As Long, g As Long, b As Long, a As Long
+            Dim r As Long, g As Long
             If .mbm_IsColor Then
                 
                 'Fixed palettes have been reverse-engineered for 4- and 8-bpp; bit-depths below two

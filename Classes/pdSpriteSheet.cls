@@ -280,6 +280,28 @@ Private Function GetCombinedIndexAndID(ByVal targetIndex As Long, ByVal targetID
     GetMem4 VarPtr(tmpDWord), GetCombinedIndexAndID
 End Function
 
+'BitBlt equivalent
+Friend Function CopyCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
+
+    'Resolve the image number into a sprite row and column
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        
+        'Paint the result!
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
+            With m_ImageCache(targetIndex)
+                GDI.BitBltWrapper dstDC, dstX, dstY, .spriteWidth, .spriteHeight, .imgSpriteSheets(targetColumn).GetDIBDC, 0, targetRow * .spriteHeight, vbSrcCopy
+                .imgSpriteSheets(targetColumn).FreeFromDC
+            End With
+        Else
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.CopyCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+        
+    End If
+        
+End Function
+
+'AlphaBlend equivalent
 Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long, Optional ByVal customAlpha As Long = 255) As Boolean
 
     'Resolve the image number into a sprite row and column
@@ -293,14 +315,14 @@ Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
                 .imgSpriteSheets(targetColumn).FreeFromDC
             End With
         Else
-            PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
         End If
         
     End If
         
 End Function
 
-'Similar to the PaintCachedImage() function, above, but with full support for GDI+ stretching
+'GDI+ StretchBlt equivalent
 Friend Function StretchBltCachedImage(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcImgID As Long, Optional ByVal newAlpha As Single = 1!, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False) As Boolean
     
     'Resolve the image number into a sprite row and column
@@ -314,7 +336,7 @@ Friend Function StretchBltCachedImage(ByRef dstDIB As pdDIB, ByVal x1 As Single,
                 .imgSpriteSheets(targetColumn).FreeFromDC
             End With
         Else
-            PDDebug.LogAction "WARNING!  UIImages.StretchBltCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.StretchBltCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
         End If
         
     End If
@@ -326,18 +348,18 @@ Private Function GetRowColumnPos(ByVal srcImgID As Long, ByRef dstIndex As Long,
     GetRowColumnPos = True
     
     Dim imgNumber As Long, tmpDWord As FakeDWord
-    CopyMemoryStrict VarPtr(tmpDWord), VarPtr(srcImgID), 4
+    PutMem4 VarPtr(tmpDWord), srcImgID
     dstIndex = tmpDWord.wordOne
     imgNumber = tmpDWord.wordTwo - 1
     
-    'Failsafe checks
+    'Failsafe check
     If (dstIndex > UBound(m_ImageCache)) Then
         GetRowColumnPos = False
-        Exit Function
-    End If
     
     'Resolve the image number into a sprite row and column
-    GetNumRowsColumns imgNumber, dstRow, dstColumn
+    Else
+        GetNumRowsColumns imgNumber, dstRow, dstColumn
+    End If
     
 End Function
 

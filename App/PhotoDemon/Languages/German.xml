@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.176</langversion>
+<langversion>9.0.182</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7074,27 +7074,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation></translation>
+<translation>Nach Verarbeitung diesen Layer löschen</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation></translation>
+<translation>Hintergrund-Layer</translation>
 </phrase>
 
 <phrase>
 <original>Applying background</original>
-<translation></translation>
+<translation>Hintergrund wird angewendet</translation>
 </phrase>
 
 <phrase>
 <original>Applying foreground</original>
-<translation></translation>
+<translation>Vordergrund wird angewendet</translation>
 </phrase>
 
 <phrase>
 <original>foreground layer</original>
-<translation></translation>
+<translation>Vordergrund-Layer</translation>
 </phrase>
 
 <phrase>

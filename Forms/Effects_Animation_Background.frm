@@ -157,6 +157,12 @@ Private m_AniFrame As pdDIB
 ' be made to avoid reallocating it (as that's where performance will suffer most)
 Private m_BackgroundFrame As pdDIB, m_BackgroundFrameIndex As Long
 
+'To improve animation performance on larger images, a persistent blend DIB is used
+Private m_BlendDIB As pdDIB
+
+'For non-standard blend-modes, a compositor object is required
+Private m_Compositor As pdCompositor
+
 'Apply an arbitrary background layer to other layers
 Public Sub ApplyAnimationBackground(ByVal effectParams As String)
     
@@ -194,8 +200,7 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
     scratchDIB.SetInitialAlphaPremultiplicationState True
     
     'pdCompositor handles compositing duties.
-    Dim cCompositor As pdCompositor
-    Set cCompositor = New pdCompositor
+    If (m_Compositor Is Nothing) Then Set m_Compositor = New pdCompositor
     
     Dim i As Long
     For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
@@ -214,10 +219,10 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
             
             If m_InBackgroundMode Then
                 fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
-                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, BM_Normal, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
+                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
             Else
                 PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
-                cCompositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, BM_Normal, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
+                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
             End If
             
             'Replace the layer with the newly composited image, then shrink the top layer to its smallest
@@ -388,6 +393,7 @@ Private Sub UpdateAnimationSettings()
         
         m_Thumbs.ResetCache
         m_Timer.NotifyFrameCount m_FrameCount
+        Set m_BackgroundFrame = Nothing
         
         sldFrame.Max = m_FrameCount - 1
         
@@ -467,14 +473,19 @@ Private Sub RenderAnimationFrame()
     Dim idxFrame As Long
     idxFrame = ddLayer.ListIndex
     
-    If (m_BackgroundFrameIndex <> idxFrame) Then
+    If (m_BackgroundFrameIndex <> idxFrame) Or (m_BackgroundFrame Is Nothing) Then
         
         'Restore the correct frame time of the old background frame index
         If (m_BackgroundFrameIndex >= 0) Then m_Timer.NotifyFrameTime m_Frames(m_BackgroundFrameIndex).afFrameDelayMS, m_BackgroundFrameIndex
         
-        'Ensure background DIB is allocated
+        'Ensure background DIB and temporary DIBs are allocated
         If (m_BackgroundFrame Is Nothing) Then Set m_BackgroundFrame = New pdDIB
         m_BackgroundFrame.CreateBlank m_ThumbWidth, m_ThumbHeight, 32, 0, 0
+        m_BackgroundFrame.SetInitialAlphaPremultiplicationState True
+        
+        If (m_BlendDIB Is Nothing) Then Set m_BlendDIB = New pdDIB
+        m_BlendDIB.CreateBlank m_AniFrame.GetDIBWidth, m_AniFrame.GetDIBHeight, 32, 0, 0
+        m_BlendDIB.SetInitialAlphaPremultiplicationState True
         
         'Retrieve a copy of this layer at the current preview size
         PDImages.GetActiveImage.GetLayerByIndex(idxFrame).RequestThumbnail_ImageCoords m_BackgroundFrame, PDImages.GetActiveImage, PDMath.Max2Int(m_ThumbWidth, m_ThumbHeight), False, VarPtr(m_AniThumbBounds)
@@ -509,11 +520,18 @@ Private Sub RenderAnimationFrame()
     yOffset = (bHeight - m_AniThumbBounds.Height) \ 2
     
     'To support blend and alpha modes, we must use our internal compositor
-    Dim cCompositor As pdCompositor
-    Set cCompositor = New pdCompositor
+    If (m_Compositor Is Nothing) Then Set m_Compositor = New pdCompositor
     
     Dim targetBlendMode As PD_BlendMode, targetOpacity As Long
-    targetBlendMode = BM_Normal
+    
+    'Figure out blend mode and opacity of this operation; in background mode, these come from the current frame;
+    ' in foreground mode, they come from the fixed foreground layer
+    If m_InBackgroundMode Then
+        targetBlendMode = m_Frames(idxFrame).afFrameBlendMode
+    Else
+        targetBlendMode = m_Frames(m_BackgroundFrameIndex).afFrameBlendMode
+    End If
+    
     targetOpacity = Int(m_Frames(m_BackgroundFrameIndex).afFrameOpacity * 2.55 + 0.5)
     
     'Make sure the frame request is valid; if it isn't, exit immediately
@@ -521,36 +539,69 @@ Private Sub RenderAnimationFrame()
         
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         m_AniFrame.ResetDIB 0
+        m_AniFrame.SetInitialAlphaPremultiplicationState True
         
         'Paint a stack consisting of: checkerboard background, background layer, current frame
         With m_Frames(idxFrame)
             
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
-            
-            'Background mode respects target layer alpha, but *not* blend mode (blend mode only affects *top* layers)
-            If m_InBackgroundMode Then
-                m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
-            End If
-            
-            'Make sure we have the necessary image in the spritesheet cache
-            If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
+            'Normal blend mode allows us to just alpha-blend everything; this is faster than using
+            ' a compositor, and we can do it directly atop a checkerboard background
+            If (targetBlendMode = BM_Normal) Then
                 
-                'Blend mode is TODO
-                If (targetBlendMode = BM_Normal) Then
-                    m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
-                Else
-                    '???
-                End If
+                'Checkerboard background
+                GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
                 
-            End If
-            
-            'Blend mode is TODO
-            If (Not m_InBackgroundMode) Then
-                If (targetBlendMode = BM_Normal) Then
+                'When in background mode, paint the fixed background layer now
+                If m_InBackgroundMode Then
                     m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
-                Else
-                    '???
                 End If
+                
+                'Regardless of mode, paint the current frame directly into the animation buffer
+                If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
+                    m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
+                End If
+                
+                'If in foreground mode, we now need to paint the fixed top layer
+                If (Not m_InBackgroundMode) Then
+                    m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
+                End If
+                
+            'Non-standard blend-mode
+            Else
+                
+                m_BlendDIB.ResetDIB 0
+                m_BlendDIB.SetInitialAlphaPremultiplicationState True
+                
+                'We now need to copy the background layer (whatever it is) into the m_BlendMode DIB,
+                ' at the background layer's expected opacity.
+                If m_InBackgroundMode Then
+                    m_BackgroundFrame.AlphaBlendToDC m_BlendDIB.GetDIBDC, targetOpacity, xOffset, yOffset
+                Else
+                    If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
+                        m_Thumbs.PaintCachedImage m_BlendDIB.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
+                    End If
+                End If
+                
+                'm_BlendDIB now contains the background layer.  Generate a similar foreground layer,
+                ' using m_AniFrame
+                If m_InBackgroundMode Then
+                    If m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth)) Then
+                        m_Thumbs.PaintCachedImage m_AniFrame.GetDIBDC, xOffset, yOffset, m_Frames(idxFrame).afThumbKey, Int(m_Frames(idxFrame).afFrameOpacity * 2.55 + 0.5)
+                    End If
+                Else
+                    m_BackgroundFrame.AlphaBlendToDC m_AniFrame.GetDIBDC, targetOpacity, xOffset, yOffset
+                End If
+                
+                'NOTE: opacity has already been handled for all frames.
+                
+                'Use pdCompositor to blend the two layers using the expected blendmode
+                m_Compositor.QuickMergeTwoDibsOfEqualSize m_BlendDIB, m_AniFrame, targetBlendMode
+                
+                'Finally, replace the contents of the top layer with the expected checkerboard background,
+                ' then merge the composited result atop that
+                GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
+                m_BlendDIB.AlphaBlendToDC m_AniFrame.GetDIBDC
+                
             End If
             
         End With
