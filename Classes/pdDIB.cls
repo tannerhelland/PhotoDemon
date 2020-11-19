@@ -35,18 +35,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'DIB Types
-'In PD, GDI bitmaps are declared inside the GDI module; to use this as a standalone class, uncomment this type dec
-'Private Type GDI_Bitmap
-'    Type As Long
-'    Width As Long
-'    Height As Long
-'    WidthBytes As Long
-'    Planes As Integer
-'    BitsPerPixel As Integer
-'    Bits As Long
-'End Type
-
+'Note that some critical structs, declares and enums are used in other ways throughout PD so they
+' are not declared here.  To use this as a standalone class, you will need to do some copy+paste work
+' from other PD modules.
 Private Type BITMAPINFOHEADER
     Size As Long
     Width As Long
@@ -69,23 +60,6 @@ Private Type BITMAPFILEHEADER
     OffBits As Long
 End Type
 
-'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data).
-' (Inside PhotoDemon, we declare these types elsewhere, as they're used in a whole bunch of functions,
-' but to use this class as a standalone instance you will need to uncomment these.)
-'Public Type SAFEARRAYBOUND
-'    cElements As Long
-'    lBound As Long
-'End Type
-'
-'Public Type SAFEARRAY2D
-'    cDims As Integer
-'    fFeatures As Integer
-'    cbElements As Long
-'    cLocks As Long
-'    pvData As Long
-'    Bounds(1) As SAFEARRAYBOUND
-'End Type
-
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
@@ -94,7 +68,6 @@ Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
 
 'DIB API functions
-' (Note that these are currently declared in EffectPrep as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, ByRef lpBits As Long, ByVal hSection As Long, ByVal dwOffset As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
@@ -154,11 +127,6 @@ Private m_XResolution As Double, m_YResolution As Double, m_dibDPI As Double
 ' mode at present, but this value may contain other bit-depths (e.g. 8bpp if the source data was a GIF).
 Private m_originalColorDepth As Long
 
-'If FreeImage is active, it allows us to retrieve even more detailed color depth information (vs GDI+, which downsamples unpredictably).
-' While I don't really make use of this value at present, it could be helpful in the future, for example when editing icons (which contain
-' multiple icons at varying sizes and original color depths).
-Private m_OriginalFreeImageColorDepth As Long
-
 'If the alpha is currently premultiplied, this will be set to TRUE
 Private m_IsAlphaPremultiplied As Boolean
 
@@ -199,15 +167,6 @@ End Function
 
 Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
     m_originalColorDepth = origColorDepth
-End Sub
-
-'Get/set original file color depth.  This is set prior to any tone-mapping or explicit FreeImage conversions.  As such, it may be quite large.
-Friend Function GetOriginalFreeImageColorDepth() As Long
-    GetOriginalFreeImageColorDepth = m_OriginalFreeImageColorDepth
-End Function
-
-Friend Sub SetOriginalFreeImageColorDepth(ByVal origFIColorDepth As Long)
-    m_OriginalFreeImageColorDepth = origFIColorDepth
 End Sub
 
 'Set the DPI of this DIB.  This is only relevant if this DIB has been created directly from an image file.

@@ -111,10 +111,6 @@ Private Function FI_LoadImageU(ByVal srcFilename As String, ByVal fileFIF As FRE
         
     End If
     
-    'Store the original, untouched color depth now.  (We may modify this depth in the future, so this is our first and
-    ' last chance to grab the original value.)
-    If (fi_hDIB <> 0) Then dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
-    
     FI_LoadImageU = fi_hDIB
     
 End Function
@@ -712,7 +708,6 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
         If (fi_hDIB <> 0) Then
             
             'Store various bits of file metadata before proceeding
-            dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
             fi_DataType = FreeImage_GetImageType(fi_hDIB)
             dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)

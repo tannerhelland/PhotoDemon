@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.481</langversion>
+<langversion>6.6.482</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -866,21 +866,11 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 </phrase>
 
 <phrase>
-<original>Icon (%1x%2)</original>
-<translation>Ikon ( %1x %2)</translation>
-</phrase>
-
-<phrase>
-<original>Icon (%1x%2, %3 bpp)</original>
-<translation>Ikon ( %1x %2, %3 bpp)</translation>
-</phrase>
-
-<phrase>
 <original>Page %1</original>
 <translation>Halaman 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -7093,12 +7083,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>foreground layer</original>
+<original>waiting</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>waiting</original>
+<original>foreground layer</original>
 <translation></translation>
 </phrase>
 
@@ -10365,7 +10355,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 26 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -13300,10 +13290,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2515</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2610 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11596 total words. -->
+<!-- As of this build, PhotoDemon contains 5122 phrases. -->
+<!-- 2607 are duplicates, so only 2515 unique phrases have been written to file. -->
+<!-- These 2515 phrases contain approximately 11593 total words. -->
 
 </pdData>

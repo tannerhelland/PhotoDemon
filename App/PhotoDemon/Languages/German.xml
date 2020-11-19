@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.182</langversion>
+<langversion>9.0.183</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -868,21 +868,11 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>Icon (%1x%2)</original>
-<translation>Icon (%1 x %2)</translation>
-</phrase>
-
-<phrase>
-<original>Icon (%1x%2, %3 bpp)</original>
-<translation>Icon (%1 x %2, %3 bpp)</translation>
-</phrase>
-
-<phrase>
 <original>Page %1</original>
 <translation>Seite %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -7093,13 +7083,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>foreground layer</original>
-<translation>Vordergrund-Layer</translation>
+<original>waiting</original>
+<translation>Warten</translation>
 </phrase>
 
 <phrase>
-<original>waiting</original>
-<translation>Warten</translation>
+<original>foreground layer</original>
+<translation>Vordergrund-Layer</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -10363,7 +10353,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Animation aktiviert für dieses Bild</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 26 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -13298,10 +13288,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2515</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2610 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11596 total words. -->
+<!-- As of this build, PhotoDemon contains 5122 phrases. -->
+<!-- 2607 are duplicates, so only 2515 unique phrases have been written to file. -->
+<!-- These 2515 phrases contain approximately 11593 total words. -->
 
 </pdData>

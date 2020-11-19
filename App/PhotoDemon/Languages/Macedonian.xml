@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.335</langversion>
+<langversion>1.0.336</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -865,21 +865,11 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
-<original>Icon (%1x%2)</original>
-<translation>Иконата ( %1x %2)</translation>
-</phrase>
-
-<phrase>
-<original>Icon (%1x%2, %3 bpp)</original>
-<translation>Иконата ( %1x %2 %3 м)</translation>
-</phrase>
-
-<phrase>
 <original>Page %1</original>
 <translation>Страница %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -7087,12 +7077,12 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>foreground layer</original>
+<original>waiting</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>waiting</original>
+<original>foreground layer</original>
 <translation></translation>
 </phrase>
 
@@ -10359,7 +10349,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 26 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -13294,10 +13284,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2515</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2610 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11596 total words. -->
+<!-- As of this build, PhotoDemon contains 5122 phrases. -->
+<!-- 2607 are duplicates, so only 2515 unique phrases have been written to file. -->
+<!-- These 2515 phrases contain approximately 11593 total words. -->
 
 </pdData>

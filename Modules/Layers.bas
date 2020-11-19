@@ -1985,14 +1985,6 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
             Case PDIF_GIF, PDIF_PNG
                 GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex + 1))
                 
-            'Icons have their actual dimensions added to the layer name
-            Case FIF_ICO
-                If srcDIB.GetOriginalFreeImageColorDepth = 0 Then
-                    GenerateInitialLayerName = g_Language.TranslateMessage("Icon (%1x%2)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight))
-                Else
-                    GenerateInitialLayerName = g_Language.TranslateMessage("Icon (%1x%2, %3 bpp)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight), CStr(srcDIB.GetOriginalFreeImageColorDepth))
-                End If
-                
             'Any other format is treated as "pages" (0-based index)
             Case Else
                 GenerateInitialLayerName = g_Language.TranslateMessage("Page %1", CStr(currentPageIndex + 1))

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.33</langversion>
+<langversion>8.0.34</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -868,21 +868,11 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 </phrase>
 
 <phrase>
-<original>Icon (%1x%2)</original>
-<translation>Icona (%1x%2)</translation>
-</phrase>
-
-<phrase>
-<original>Icon (%1x%2, %3 bpp)</original>
-<translation>Icona (%1x%2, %3 bpp)</translation>
-</phrase>
-
-<phrase>
 <original>Page %1</original>
 <translation>Pagina %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -7091,13 +7081,13 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>foreground layer</original>
-<translation></translation>
+<original>waiting</original>
+<translation>in attesa</translation>
 </phrase>
 
 <phrase>
-<original>waiting</original>
-<translation>in attesa</translation>
+<original>foreground layer</original>
+<translation></translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -10367,7 +10357,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>animazione abilitata per questa immagine</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 27 phrases. 26 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Image_Animation.frm contains 26 phrases. 25 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
@@ -13307,10 +13297,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2515</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5127 phrases. -->
-<!-- 2610 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 11596 total words. -->
+<!-- As of this build, PhotoDemon contains 5122 phrases. -->
+<!-- 2607 are duplicates, so only 2515 unique phrases have been written to file. -->
+<!-- These 2515 phrases contain approximately 11593 total words. -->
 
 </pdData>
