@@ -4,7 +4,7 @@ Begin VB.Form FormAnimation
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Animation options"
-   ClientHeight    =   7230
+   ClientHeight    =   6300
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   12060
@@ -22,13 +22,13 @@ Begin VB.Form FormAnimation
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   482
+   ScaleHeight     =   420
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsAnimated 
       Height          =   975
-      Left            =   120
+      Left            =   6240
       TabIndex        =   8
       Top             =   120
       Width           =   5655
@@ -36,20 +36,9 @@ Begin VB.Form FormAnimation
       _ExtentY        =   1720
       Caption         =   "animation enabled for this image"
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   1
-      Left            =   5880
-      Top             =   120
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   661
-      Caption         =   "preview"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdButtonStrip btsLoop 
       Height          =   975
-      Left            =   120
+      Left            =   6240
       TabIndex        =   5
       Top             =   1200
       Width           =   5655
@@ -60,9 +49,9 @@ Begin VB.Form FormAnimation
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   0
-      Left            =   5880
+      Left            =   120
       TabIndex        =   2
-      Top             =   6000
+      Top             =   5040
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -71,27 +60,27 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdSliderStandalone sldFrame 
       Height          =   375
-      Left            =   6360
+      Left            =   600
       TabIndex        =   1
-      Top             =   6000
+      Top             =   5040
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdPictureBox picPreview 
-      Height          =   5295
-      Left            =   5880
-      Top             =   555
+      Height          =   4815
+      Left            =   120
+      Top             =   120
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   9340
+      _ExtentY        =   8493
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6480
+      Top             =   5550
       Width           =   12060
       _ExtentX        =   21273
       _ExtentY        =   1323
@@ -99,9 +88,9 @@ Begin VB.Form FormAnimation
    Begin PhotoDemon.pdButtonToolbox btnPlay 
       Height          =   375
       Index           =   1
-      Left            =   11400
+      Left            =   5640
       TabIndex        =   3
-      Top             =   6000
+      Top             =   5040
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -109,7 +98,7 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdSlider sldLoop 
       Height          =   735
-      Left            =   480
+      Left            =   6600
       TabIndex        =   4
       Top             =   2280
       Width           =   5295
@@ -125,7 +114,7 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdButtonStrip btsFrameTimes 
       Height          =   975
-      Left            =   120
+      Left            =   6240
       TabIndex        =   6
       Top             =   3120
       Width           =   5655
@@ -135,7 +124,7 @@ Begin VB.Form FormAnimation
    End
    Begin PhotoDemon.pdSlider sldFrameTime 
       Height          =   735
-      Left            =   480
+      Left            =   6600
       TabIndex        =   7
       Top             =   4200
       Width           =   5295
@@ -161,18 +150,14 @@ Attribute VB_Exposed = False
 'Animation settings dialog
 'Copyright 2019-2020 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 27/August/20
-'Last update: split off from the animation export dialogs, which already cover a lot of these tasks
-'             but require the user to export a new file to make the changes!
+'Last updated: 19/November/20
+'Last update: convert to new, modernized run-time resize engine
 '
 'In v8.0, PhotoDemon gained full support for animated GIF and PNG files.  This dialog exposes relevant
 ' animation settings to the user, including allowing them to turn multilayer non-animated images into
 ' animated ones (or vice-versa).
 '
 'Significantly, it also offers a large, resizable canvas for previewing animations.
-'
-'TODO: remember window size.  I don't have a nice, centralized way to do this at present, but once I
-' do, I'll make sure this dialog remembers its position when closed!
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -186,15 +171,11 @@ Option Explicit
 Private m_SrcImage As pdImage
 
 'To avoid circular updates on animation state changes, we use this tracker
-Private m_DoNotUpdate As Boolean
+Private m_DoNotUpdate As Boolean, m_AllowReflow As Boolean
 
 'A dedicated animation timer is used; it auto-corrects for frame time variations during rendering
 Private WithEvents m_Timer As pdTimerAnimation
 Attribute m_Timer.VB_VarHelpID = -1
-
-'Window size is tracked via subclassing (so we can enforce min width/height)
-Private WithEvents m_WindowSize As pdWindowSize
-Attribute m_WindowSize.VB_VarHelpID = -1
 
 Private m_Thumbs As pdSpriteSheet
 Private m_Frames() As PD_AnimationFrame
@@ -204,10 +185,6 @@ Private m_FrameTimesUndefined As Boolean
 
 'Animation updates are rendered to a temporary DIB, which is then forwarded to the preview window
 Private m_AniFrame As pdDIB
-
-'Because reflowing the UI is energy-intensive, it can be manually suspended until all UI elements
-' are in place.
-Private m_AllowReflow As Boolean, m_DisplayWaitingMsg As Boolean
 
 Private Sub btnPlay_Click(Index As Integer, ByVal Shift As ShiftConstants)
 
@@ -321,10 +298,6 @@ Private Sub Form_Load()
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
     
-    'Initialize a window size tracker
-    Set m_WindowSize = New pdWindowSize
-    m_WindowSize.AttachToHWnd Me.hWnd, True, True
-    
     'Prep any UI elements.  Note that a number of controls explicitly request that the command bar
     ' (which handles save/load of last-used presets) does *not* restore them to their last-used
     ' settings.  Instead, if the current image is animated, we want to sync those controls to
@@ -383,7 +356,7 @@ Private Sub Form_Load()
     End If
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
     UpdateAgainstCurrentTheme
     
     'With theming handled, reflow the interface one final time before displaying the window
@@ -601,7 +574,10 @@ Private Sub RenderAnimationFrame()
     
     If m_DoNotUpdate Then Exit Sub
     If (m_AniFrame Is Nothing) Then Exit Sub
-    If m_DisplayWaitingMsg Then Exit Sub
+    If Interface.GetDialogResizeFlag() Then
+        picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
+        Exit Sub
+    End If
     
     Dim idxFrame As Long
     idxFrame = m_Timer.GetCurrentFrame()
@@ -650,26 +626,6 @@ Private Sub m_Timer_EndOfAnimation()
     m_DoNotUpdate = False
 End Sub
 
-Private Sub m_WindowSize_WindowMaxMinRequested(minWidth As Long, minHeight As Long, maxWidth As Long, maxHeight As Long)
-    minWidth = (btsAnimated.GetLeft + btsAnimated.GetWidth) * 2
-    minHeight = Interface.FixDPI(480)
-End Sub
-
-Private Sub m_WindowSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    ReflowInterface False
-End Sub
-
-Private Sub m_WindowSize_WindowResizeFinal(ByVal newWidth As Long, ByVal newHeight As Long)
-    m_DisplayWaitingMsg = False
-    ReflowInterface True
-End Sub
-
-Private Sub m_WindowSize_WindowResizeInitial()
-    m_DisplayWaitingMsg = True
-    If btnPlay(0).Value Then btnPlay(0).Value = False
-    If (Not m_Timer Is Nothing) Then m_Timer.StopTimer
-End Sub
-
 'If the user clicks the preview window (for some reason), it'll trigger a redraw.
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     If (btsAnimated.ListIndex = 0) Then
@@ -677,6 +633,10 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     Else
         RenderAnimationFrame
     End If
+End Sub
+
+Private Sub picPreview_WindowResizeDetected()
+    UpdateAnimationSettings
 End Sub
 
 Private Sub sldFrame_Change()
@@ -690,7 +650,7 @@ Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False
         
     If (Not m_AllowReflow) Then Exit Sub
         
-    'Handle the left side of the interface first
+    'Determine default padding and top-alignment
     Dim yPadding As Long, yPaddingTitle As Long
     yPadding = Interface.FixDPI(8)
     yPaddingTitle = Interface.FixDPI(12)
@@ -737,41 +697,6 @@ Private Sub ReflowInterface(Optional ByVal updateAnimationToo As Boolean = False
         sldFrameTime.SetTop yOffset
         yOffset = yOffset + sldFrameTime.GetHeight + yPaddingTitle
     
-    End If
-    
-    'With the left side complete, we can now move to the right side.  Importantly, if the width of
-    ' the right side changes, we need to rebuild our animation preview to match.
-    
-    'Start with the top label
-    Dim myWidth As Long, myHeight As Long
-    If (Not g_WindowManager Is Nothing) Then
-        myWidth = g_WindowManager.GetClientWidth(Me.hWnd)
-        myHeight = g_WindowManager.GetClientHeight(Me.hWnd)
-    Else
-        myWidth = Me.ScaleWidth
-        myHeight = Me.ScaleHeight
-    End If
-    
-    lblTitle(1).SetWidth myWidth - lblTitle(1).GetLeft
-    
-    'Next, set the *bottom* playback controls
-    btnPlay(0).SetTop myHeight - cmdBar.GetHeight - yPadding - btnPlay(0).GetHeight
-    btnPlay(1).SetPosition myWidth - yPadding - btnPlay(1).GetWidth, btnPlay(0).GetTop
-    sldFrame.SetPositionAndSize btnPlay(0).GetLeft + btnPlay(0).GetWidth + yPadding, btnPlay(0).GetTop, (btnPlay(1).GetLeft - (btnPlay(0).GetLeft + btnPlay(0).GetWidth)) - (yPadding * 2), sldFrame.GetHeight
-    
-    'Stretch the preview box to fit between the top label and bottom playback controls
-    picPreview.SetSize lblTitle(1).GetWidth - yPadding, (btnPlay(0).GetTop - picPreview.GetTop) - yPadding
-    
-    'We may need to generate new animation settings.  This is resource-intensive, so only
-    ' do it when the preview area size changes
-    If m_DisplayWaitingMsg Then
-        picPreview.PaintText g_Language.TranslateMessage("waiting..."), 24
-    Else
-        If imgAnimated Then
-            If updateAnimationToo Then UpdateAnimationSettings
-        Else
-            picPreview.RequestRedraw
-        End If
     End If
     
 End Sub
