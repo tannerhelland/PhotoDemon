@@ -519,14 +519,6 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
     
     If m_Animated Then
     
-        'Load all animation frames.
-        If (m_FrameCount <> srcImage.GetNumOfLayers()) Then
-            m_FrameCount = srcImage.GetNumOfLayers
-            ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
-            m_Thumbs.ResetCache
-            m_Timer.NotifyFrameCount m_FrameCount
-        End If
-        
         'Retrieving thumbnails uses the same math as the regular thumbnail; in animation files,
         ' we assume all frames are the same size as the image itself, because this is how
         ' PD pre-processes them.  (This may change in the future.)
@@ -557,6 +549,34 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         
         'Use the larger dimension to construct the thumb.  (For simplicity, thumbs are always square.)
         If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
+        
+        'With all important measurements prepped, we can now load one (or more) animation frames.
+        
+        'First, initialize the current frame collection, as necessary
+        If (m_FrameCount <> srcImage.GetNumOfLayers()) Then
+            
+            'Reset the collection
+            m_FrameCount = srcImage.GetNumOfLayers
+            ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
+            m_Thumbs.ResetCache
+            m_Timer.NotifyFrameCount m_FrameCount
+            
+            'Before generating our preview images, we need to figure out how many frames we
+            ' can fit on a shared spritesheet.  (We use sheets to cut down on resource usage;
+            ' otherwise we may produce a horrifying number of GDI objects.)  The key here is
+            ' that we don't want sheets to grow too large; if they're huge, they risk not
+            ' having enough available memory to generate them at all.
+            
+            'For now, I use a (conservative?) upper limit of ~16mb per sheet (2x1920x1080x4)
+            Dim sheetSizeLimit As Long
+            sheetSizeLimit = 16777216
+            
+            Dim numFramesPerSheet As Long
+            numFramesPerSheet = sheetSizeLimit / (thumbImageWidth * thumbImageHeight * 4)
+            If (numFramesPerSheet < 2) Then numFramesPerSheet = 2
+            m_Thumbs.SetMaxSpritesInColumn numFramesPerSheet
+            
+        End If
         
         'Load all thumbnails
         Dim i As Long, loopStart As Long, loopEnd As Long

@@ -2152,7 +2152,9 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         Else
             
             'If the update check fails on XP due to known secure channel issues - error 0x80072F7D -
-            ' display a meaningful message to the user.
+            ' display a meaningful message to the user.  (Note that this message is deliberately left
+            ' unlocalized - it's a lot of text, and it will only ever be displayed to XP users, who
+            ' comprise an increasingly tiny percentage of PD users.)
             If (AsyncDownloader.GetLastErrorNumber = -2147012739) Then
                 
                 PDDebug.LogAction "Can't download update file; Windows XP is likely the problem."
@@ -2172,6 +2174,7 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             Else
                 PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & AsyncDownloader.GetLastErrorNumber & " - " & AsyncDownloader.GetLastErrorDescription
             End If
+            
         End If
     
     'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
