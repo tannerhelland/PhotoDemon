@@ -34,6 +34,7 @@ Public Type PD_AnimationFrame
     afFrameDelayMS As Long
     afFrameOpacity As Single
     afFrameBlendMode As PD_BlendMode
+    afFrameAlphaMode As PD_AlphaMode
     
     'For perf-sensitive rendering tasks, timestamps can be used to avoid unnecessary thumbnail updates
     afTimeStamp As Currency

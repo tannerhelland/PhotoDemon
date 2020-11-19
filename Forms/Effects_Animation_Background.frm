@@ -187,8 +187,9 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
     Dim deleteLayerAfter As Boolean
     deleteLayerAfter = cParams.GetBool("delete-after", False, True)
     
-    'Convert the target layer (background or foreground) to a null-padded layer
-    ' (a layer at image size with no active transforms).  This makes it trivially mergeable.
+    'Convert the target layer (background or foreground) to a null-padded layer, which is just a
+    ' a layer at the same size as its parent image with no active transforms.
+    ' (This makes it trivially mergeable.)
     Dim fxDIB As pdDIB
     PDImages.GetActiveImage.GetLayerByIndex(idxLayer).ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
     Set fxDIB = PDImages.GetActiveImage.GetLayerByIndex(idxLayer).layerDIB
@@ -219,10 +220,10 @@ Public Sub ApplyAnimationBackground(ByVal effectParams As String)
             
             If m_InBackgroundMode Then
                 fxDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity * 2.55 + 0.5)
-                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
+                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
             Else
                 PDImages.GetActiveImage.GetLayerByIndex(i).layerDIB.AlphaBlendToDC scratchDIB.GetDIBDC, Int(PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity() * 2.55 + 0.5)
-                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity
+                m_Compositor.QuickMergeTwoDibsOfEqualSize scratchDIB, fxDIB, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerBlendMode, PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerOpacity, PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode(), PDImages.GetActiveImage.GetLayerByIndex(idxLayer).GetLayerAlphaMode()
             End If
             
             'Replace the layer with the newly composited image, then shrink the top layer to its smallest
@@ -441,6 +442,7 @@ Private Sub UpdateAnimationSettings()
                 .afFrameDelayMS = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerFrameTimeInMS()
                 .afFrameOpacity = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerOpacity()
                 .afFrameBlendMode = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerBlendMode()
+                .afFrameAlphaMode = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerAlphaMode()
                 
             End With
             
@@ -534,6 +536,19 @@ Private Sub RenderAnimationFrame()
     
     targetOpacity = Int(m_Frames(m_BackgroundFrameIndex).afFrameOpacity * 2.55 + 0.5)
     
+    'Alpha mode is a bit more complicated than blend mode, because we need to use non-standard paths if either
+    ' the top *or* bottom layer have a non-standard setting.
+    Dim alphaModeNormal As Boolean, bottomAlphaMode As PD_AlphaMode, topAlphaMode As PD_AlphaMode
+    If m_InBackgroundMode Then
+        bottomAlphaMode = m_Frames(m_BackgroundFrameIndex).afFrameAlphaMode
+        topAlphaMode = m_Frames(idxFrame).afFrameAlphaMode
+    Else
+        bottomAlphaMode = m_Frames(idxFrame).afFrameAlphaMode
+        topAlphaMode = m_Frames(m_BackgroundFrameIndex).afFrameAlphaMode
+    End If
+    
+    alphaModeNormal = (bottomAlphaMode = AM_Normal) And (topAlphaMode = AM_Normal)
+    
     'Make sure the frame request is valid; if it isn't, exit immediately
     If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
         
@@ -546,7 +561,7 @@ Private Sub RenderAnimationFrame()
             
             'Normal blend mode allows us to just alpha-blend everything; this is faster than using
             ' a compositor, and we can do it directly atop a checkerboard background
-            If (targetBlendMode = BM_Normal) Then
+            If (targetBlendMode = BM_Normal) And alphaModeNormal Then
                 
                 'Checkerboard background
                 GDI_Plus.GDIPlusFillDIBRect_Pattern m_AniFrame, xOffset, yOffset, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, , True, True
@@ -594,8 +609,8 @@ Private Sub RenderAnimationFrame()
                 
                 'NOTE: opacity has already been handled for all frames.
                 
-                'Use pdCompositor to blend the two layers using the expected blendmode
-                m_Compositor.QuickMergeTwoDibsOfEqualSize m_BlendDIB, m_AniFrame, targetBlendMode
+                'Use pdCompositor to blend the two layers using the expected blendmode and alpha modes
+                m_Compositor.QuickMergeTwoDibsOfEqualSize m_BlendDIB, m_AniFrame, targetBlendMode, 100#, bottomAlphaMode, topAlphaMode
                 
                 'Finally, replace the contents of the top layer with the expected checkerboard background,
                 ' then merge the composited result atop that
