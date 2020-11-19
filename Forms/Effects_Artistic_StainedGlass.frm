@@ -149,7 +149,7 @@ Attribute VB_Exposed = False
 'I should give a special thanks to Robert Rayment, who did extensive profiling and research on this filter before I ever
 ' began work on it.  His comments were invaluable in determining the shape and style of this class.  FYI, Robert's PaintRR
 ' project has a faster and simpler version of this routine worth checking out if PD's methods seem like overkill!
-' Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
+' Link here: http://rrprogs.com/
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

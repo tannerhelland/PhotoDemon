@@ -48,7 +48,7 @@ Attribute VB_Exposed = False
 'Finally, many thanks to Robert Rayment, who did extensive profiling and research on Voronoi implementations before I ever
 ' began work on this class.  His comments were invaluable in determining the shape and style of this class's interface.
 ' FYI, Robert's PaintRR project has a faster and simpler version of this routine worth checking out if PD's method seems like
-' overkill! Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
+' overkill! Link here: http://rrprogs.com/
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

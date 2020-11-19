@@ -10,8 +10,8 @@ Attribute VB_Name = "OS"
 ' tries to make use of them when relevant.  Similarly, some OS-level features are not easily mimicked from within VB
 ' (like Unicode-aware command-line processing), and I've tried to encapsulate those features here.
 '
-'Special thanks for this module include:
-' - "AndRAY": http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=72856&lngWId=1
+'The thunks used for Win 7+ taskbar integration are based off AndRAY's original implementation here:
+' https://github.com/Planet-Source-Code/andray-itaskbarlist3-implementing-windows-7-taskbar-features__1-72856
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -508,7 +508,7 @@ Private Sub CacheOSVersion()
 End Sub
 
 'Request an OLE interface from within VB.  I apologize for a lack of comments in this function, but I did not write it.
-' For additional details, please see the original project, available here: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=72856&lngWId=1
+' For additional details, please see the original project, available here: https://github.com/Planet-Source-Code/andray-itaskbarlist3-implementing-windows-7-taskbar-features__1-72856
 Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, ByVal ParamsCount As Long, Optional ByVal p1 As Long = 0, Optional ByVal p2 As Long = 0, Optional ByVal p3 As Long = 0, Optional ByVal p4 As Long = 0, Optional ByVal p5 As Long = 0, Optional ByVal p6 As Long = 0, Optional ByVal p7 As Long = 0, Optional ByVal p8 As Long = 0, Optional ByVal p9 As Long = 0, Optional ByVal p10 As Long = 0) As Long
         
     Dim i As Long, t As Long

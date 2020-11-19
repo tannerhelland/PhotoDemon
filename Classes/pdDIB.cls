@@ -28,9 +28,6 @@ Attribute VB_Exposed = False
 ' that DC under a wide variety of circumstances, so you *cannot* cache GDI-type properties
 ' externally.  Instead, always call .Get-prefixed properties when you need GDI-compatible handles.
 '
-'For a simpler example of a Windows-DIB-specific class, you might check out Carles PV's work here:
-' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-'
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
 '
