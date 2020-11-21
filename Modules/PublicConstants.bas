@@ -106,15 +106,14 @@ Public Const WM_PD_TAB_KEY_TARGET As Long = (WM_APP + 21&)
 Public Const WM_PD_SHIFT_TAB_KEY_TARGET As Long = (WM_APP + 22&)
 Public Const WM_PD_FLASH_ACTIVE_LAYER As Long = (WM_APP + 23&)
 Public Const WM_PD_DIALOG_RESIZE_FINISHED As Long = (WM_APP + 24&)
+Public Const WM_PD_HIDECHILD As Long = (WM_APP + 25&)
 
 'Inside the IDE, we can't rely on PD's central themer for color decisions (as it won't be initialized).
 ' A few constants are used instead.
 Public Const IDE_WHITE As String = "#ffffff"
 Public Const IDE_BLUE As String = "#3296dc"
-Public Const IDE_LIGHTBLUE As String = "#3cafe6"
 Public Const IDE_GRAY As String = "#404040"
 Public Const IDE_BLACK As String = "#000000"
-Public Const IDE_RED As String = "#0000ff"
 
 'Default alpha cut-off when "auto" is selected
 Public Const PD_DEFAULT_ALPHA_CUTOFF As Long = 64

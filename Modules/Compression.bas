@@ -136,24 +136,28 @@ End Sub
 'Want to know if a given compression engine is available?  Call this function.  It will (obviously) return FALSE for
 ' any engines that weren't initialized properly.
 Public Function IsFormatSupported(ByVal cmpFormat As PD_CompressionFormat) As Boolean
-    Select Case cmpFormat
-        Case cf_None
-            IsFormatSupported = m_CompressorAvailable(ce_None)
-        Case cf_Zlib
-            IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
-        Case cf_Zstd
-            IsFormatSupported = m_CompressorAvailable(ce_Zstd)
-        Case cf_Lz4
-            IsFormatSupported = m_CompressorAvailable(ce_Lz4)
-        Case cf_Lz4hc
-            IsFormatSupported = m_CompressorAvailable(ce_Lz4)
-        Case cf_Deflate
-            IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
-        Case cf_Gzip
-            IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
-        Case Else
-            IsFormatSupported = False
-    End Select
+    If VBHacks.IsArrayInitialized(m_CompressorAvailable) Then
+        Select Case cmpFormat
+            Case cf_None
+                IsFormatSupported = m_CompressorAvailable(ce_None)
+            Case cf_Zlib
+                IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
+            Case cf_Zstd
+                IsFormatSupported = m_CompressorAvailable(ce_Zstd)
+            Case cf_Lz4
+                IsFormatSupported = m_CompressorAvailable(ce_Lz4)
+            Case cf_Lz4hc
+                IsFormatSupported = m_CompressorAvailable(ce_Lz4)
+            Case cf_Deflate
+                IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
+            Case cf_Gzip
+                IsFormatSupported = m_CompressorAvailable(ce_LibDeflate)
+            Case Else
+                IsFormatSupported = False
+        End Select
+    Else
+        IsFormatSupported = (cmpFormat = cf_None)
+    End If
 End Function
 
 'Compress some arbitrary pointer to a destination array.

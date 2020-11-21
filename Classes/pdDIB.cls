@@ -130,6 +130,14 @@ Private m_originalColorDepth As Long
 'If the alpha is currently premultiplied, this will be set to TRUE
 Private m_IsAlphaPremultiplied As Boolean
 
+'New in 9.0 is the option to "suspend" a DIB to a compressed memory stream.  The advantage of this is
+' (obviously) less memory, but also freeing one or more GDI handles associated with a DIB.  Note that
+' doing this repeatedly comes with obvious performance penalties, but for e.g. UI DIBs whose appearance
+' doesn't change frequently, the performance savings can be large.  Also, header bits like DIB size can
+' still be queried freely - only the pixel bits themselves get "suspended".
+Private m_IsSuspended As Boolean, m_SuspensionBuffer() As Byte, m_SizeSuspended As Long, m_SizeUnsuspended As Long
+Private m_SuspendFormat As PD_CompressionFormat
+
 'Get/set alpha premultiplication.
 ' IMPORTANT NOTE!  To make it explicitly clear that modifying this property DOES NOT ACTUALLY MODIFY THE IMAGE, the Set instruction is
 ' labeled differently.  It is only meant to be used by DIB creation functions, where the premultiplication state is explicitly known prior
@@ -208,6 +216,9 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         'The point lies inside the DIB, which means we need to figure out the color at this position
         GetPixelRGBQuad = True
         
+        'Unsuspend this DIB (as necessary)
+        If m_IsSuspended Then UnsuspendDIB
+        
         Dim tmpData() As Byte, tSA As SafeArray2D
         Me.WrapArrayAroundDIB tmpData, tSA
         
@@ -263,6 +274,9 @@ Friend Sub GetThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbSize
         dstThumbnailDIB.ResetDIB 0
     End If
     
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+        
     'Paint the thumbnail into place
     GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, Me, 0!, 0!, Me.GetDIBWidth, Me.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     dstThumbnailDIB.SetInitialAlphaPremultiplicationState Me.GetAlphaPremultiplication()
@@ -372,6 +386,7 @@ Friend Sub FreeFromDC()
         SelectObject m_dibDC, m_dibHandleOriginal
         GDI.FreeMemoryDC m_dibDC
         m_dibDC = 0
+        m_dibHandleOriginal = 0
     End If
 End Sub
 
@@ -397,7 +412,12 @@ End Function
 
 'Return whether or not this DIB has image data associated with it
 Friend Function HasImage() As Boolean
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     HasImage = (m_dibHandle <> 0)
+    
 End Function
 
 'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
@@ -408,30 +428,52 @@ End Function
 'Return this DIB's hDC.  DIBs receive a DC by default, at creation-time.  However, the caller can remove the DIB from its DC by
 ' calling the FreeFromDC() sub.  If you subsequently request a DC for the DIB, one will be auto-created for you.
 Friend Function GetDIBDC() As Long
+    
     GetDIBDC = m_dibDC
     If (GetDIBDC = 0) Then
+    
+        'Unsuspend this DIB (as necessary)
+        If m_IsSuspended Then UnsuspendDIB
+        
         If (m_dibHandle <> 0) Then
             m_dibDC = GDI.GetMemoryDC()
             m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
             GetDIBDC = m_dibDC
         End If
+        
     End If
+    
 End Function
 
 'Return a pointer to this DIB's actual DIB
 Friend Function GetDIBHandle() As Long
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     GetDIBHandle = m_dibHandle
+    
 End Function
 
 'Return a pointer to this DIB's pixel data (no header)
 Friend Function GetDIBPointer() As Long
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     GetDIBPointer = m_dibBits
+    
 End Function
 
 'Return a pointer to an individual scanline.  For performance reasons, this function does not perform bounds checking -
 ' so use it carefully!
 Friend Function GetDIBScanline(ByVal targetScanline As Long) As Long
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     GetDIBScanline = m_dibBits + (targetScanline * m_dibStride)
+    
 End Function
 
 'Return a pointer to this DIB's header
@@ -559,10 +601,13 @@ Friend Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
     
     'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
     If (m_dibColorDepth = 32) Then
-
+        
+        'Unsuspend this DIB (as necessary)
+        If m_IsSuspended Then UnsuspendDIB
+        
         'Make sure this DIB isn't empty
         If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-    
+            
             'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
@@ -596,6 +641,9 @@ End Function
 Friend Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
     
     ConvertTo32bpp = False
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
     
     'Make sure this DIB isn't empty
     If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) And (Me.GetDIBColorDepth <> 32) Then
@@ -881,9 +929,12 @@ End Function
 'Replace the entire DIB's contents with some solid color
 Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0!)
 
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+        
     'If the DIB is 24bpp, apply the background color now
     If (m_dibColorDepth = 24) Then
-    
+        
         'There are two cases where we can "cheat" and simply fill the entire DIB area with a single value:
         ' filling with black (everything gets set to 0), and filling with white (everything gets set to 255).
         If (fillColor = vbBlack) Then
@@ -941,7 +992,10 @@ End Sub
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
 Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
-
+    
+    'TODO: if DIB is suspended, kill the suspended data first?
+    'If m_IsSuspended Then ???
+    
     'If we have image data, clear it out
     If (m_dibHandle <> 0) Then
         
@@ -971,6 +1025,12 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     'Reset alpha premultiplication
     m_IsAlphaPremultiplied = False
     
+    'Release any suspension-related values
+    m_SizeSuspended = 0
+    m_SizeUnsuspended = 0
+    Erase m_SuspensionBuffer
+    m_IsSuspended = 0
+    
     'Finally, release the memory-mapped file backing the DIB, if one exists
     m_FileMM.CloseFile
     
@@ -992,9 +1052,68 @@ Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
     
 End Sub
 
+'"Suspend" this DIB by converting it to a compressed memory stream and freeing all associated GDI handles.
+Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True)
+    
+    'If this DIB doesn't exist (or if it's already suspended), quit now
+    If m_IsSuspended Then Exit Sub
+    If (m_dibHandle = 0) Or (m_dibBits = 0) Then Exit Sub
+    
+    'Very large DIBs (like the main canvas backbuffer) are expensive to compress/decompress on-the-fly,
+    ' even with a very fast engine like lz4.  (It doesn't help that we have to reallocate the memory at
+    ' decompression time, or that we have to use CopyMemory to move it between buffers.)
+    
+    'As such, PD's various resource minimizers are set to automatically ignore suspend requests for
+    ' DIBs larger than some arbitrary size (currently 500kb).  This prevents noticeable UI lags.
+    If autoKeepIfLarge And (m_dibHeader.ImageSize > 500000) Then Exit Sub
+    
+    'We need to store original and compressed sizes
+    m_SizeUnsuspended = m_dibHeader.ImageSize
+    m_SizeSuspended = m_SizeUnsuspended
+    
+    'Because of quirks with the order that some UI elements get loaded, PD may attempt to suspend
+    ' some DIBs before various compression libraries are made available.  If this happens, we'll
+    ' still perform a suspend, but we'll do it *without* compression
+    m_SuspendFormat = cmpFormat
+    If (Not Compression.IsFormatSupported(m_SuspendFormat)) Then m_SuspendFormat = cf_None
+    
+    'Request access to the shared UI compression buffer, then compress our pixel data
+    Dim dstBuffer() As Byte, dstBufferSize As Long
+    UIImages.GetSharedCompressBuffer dstBuffer, dstBufferSize, m_SizeUnsuspended, m_SuspendFormat
+    Compression.CompressPtrToPtr VarPtr(dstBuffer(0)), dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat
+    
+    'Create a precisely sized local buffer to hold the compressed data, then copy it over
+    m_SizeSuspended = dstBufferSize
+    ReDim m_SuspensionBuffer(0 To m_SizeSuspended - 1) As Byte
+    CopyMemoryStrict VarPtr(m_SuspensionBuffer(0)), VarPtr(dstBuffer(0)), m_SizeSuspended
+    
+    '*Selectively* free only our local pixel bits
+    If (m_dibDC <> 0) Then
+        SelectObject m_dibDC, m_dibHandleOriginal
+        GDI.FreeMemoryDC m_dibDC
+        m_dibDC = 0
+        m_dibHandleOriginal = 0
+    End If
+    
+    DeleteObject m_dibHandle
+    m_dibHandle = 0
+    g_DIBsDestroyed = g_DIBsDestroyed + 1
+    m_dibBits = 0
+    
+    'Free the underlying memory-mapped file instance
+    m_FileMM.CloseFile
+    
+    'This DIB has been "suspended"
+    m_IsSuspended = True
+    
+End Sub
+
 'Allow some outside caller to assume ownership of our DIB handle.
 ' IMPORTANT NOTE: the caller is obviously responsible of freeing the DIB after calling this function.
 Friend Sub TransferDIBOwnership(ByRef dstDIB As Long, ByRef dstPtr As Long)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
     
     'Make sure we're not selected into a DC
     Me.FreeFromDC
@@ -1013,6 +1132,65 @@ Friend Sub TransferDIBOwnership(ByRef dstDIB As Long, ByRef dstPtr As Long)
     
     m_IsAlphaPremultiplied = False
     
+End Sub
+
+'Take a suspended DIB, and restore it to a normal GDI DIB object.
+Private Sub UnsuspendDIB()
+    
+    If (Not m_IsSuspended) Then Exit Sub
+    
+    'Make sure we have suspended data
+    If (m_dibWidth = 0) Or (m_dibHeight = 0) Or (m_dibBits <> 0) Or (m_SizeSuspended = 0) Or (m_SizeUnsuspended = 0) Or (m_dibHeader.Size <> Len(m_dibHeader)) Then Exit Sub
+    
+    'The existing DIB header can (and should) be used as-is, by design.  Suspending a DIB only
+    ' clears its pixel bits - *not* any of its other state trackers.
+    
+    'If we don't already have a compatible DC, create one now
+    If (m_dibDC = 0) Then m_dibDC = GDI.GetMemoryDC()
+    If (m_dibDC <> 0) Then
+        
+        'Create a DIB using the system page file to back it
+        If m_FileMM.StartNewFile(m_BackingFile, m_dibHeader.ImageSize, OptimizeNone) Then
+            m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, m_FileMM.GetMMHandle(), 0)
+        
+        'Alternatively, you can let the system manage your backing setup for you
+        Else
+            m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
+        End If
+        
+        'If successful, select the newly created dib into our DC
+        If (m_dibHandle <> 0) Then
+            
+            'Decompress our local copy of pixel data into the newly created DIB
+            If Compression.DecompressPtrToPtr(m_dibBits, m_SizeUnsuspended, VarPtr(m_SuspensionBuffer(0)), m_SizeSuspended, m_SuspendFormat) Then
+                Erase m_SuspensionBuffer
+                m_SizeSuspended = 0
+                m_SizeUnsuspended = 0
+            Else
+                PDDebug.LogAction "WARNING!  pdDIB couldn't unsuspend DIB."
+            End If
+            
+            'Inside debugging mode, increment a global DIB counter.
+            g_DIBsCreated = g_DIBsCreated + 1
+            
+            'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
+            m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
+        
+        'If DIB creation failed, clear out the work we've done so far
+        Else
+            PDDebug.LogAction "WARNING!  pdDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & "); last API error was #" & Err.LastDllError
+            Me.EraseDIB
+        End If
+        
+        'Our parent may not use this DIB right away, so free it from its DC; the DC will be auto-created when
+        ' it's next requested.
+        Me.FreeFromDC
+        
+    End If
+    
+    'This DIB has been restored to its original state!
+    m_IsSuspended = False
+
 End Sub
 
 'INITIALIZE class
@@ -1076,21 +1254,24 @@ Friend Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
     
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
-    ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
+    PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
     If fitPrevented Then
         previewX = (dstPicture.ScaleWidth - srcWidth) * 0.5
         previewY = (dstPicture.ScaleHeight - srcHeight) * 0.5
     Else
         If (srcAspect > dstAspect) Then
-            previewY = CLng((dstHeight - dHeight) * 0.5)
+            previewY = Int((dstHeight - dHeight) * 0.5 + 0.5)
             previewX = 0
         Else
-            previewX = CLng((dstWidth - dWidth) * 0.5)
+            previewX = Int((dstWidth - dWidth) * 0.5 + 0.5)
             previewY = 0
         End If
     End If
-        
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     'We now branch according to active color management.  This is a hackish fix designed to work around some current
     ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 8.2 release.
     If colorManagementMatters Then
@@ -1291,8 +1472,9 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
 End Function
 
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
-' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
-' file handle, with the pointer already moved to the location desired for embedding.
+' Also, if the calling function wants to embed the DIB's data inside an existing file,
+' specify the embedInFile parameter and pass a valid file handle, with the pointer already moved to
+' the location desired for embedding.
 Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
     
     'Before proceeding, make sure this DIB actually exists
@@ -1337,8 +1519,10 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal cmpForma
     cFile.FileWriteData hFile, VarPtr(Me.GetDIBHeight), 4&
     cFile.FileWriteData hFile, VarPtr(Me.GetDIBStride), 4&
     
-    'And finally, the pixel data.  Start by retrieving two key items of business: a pointer to this DIB's raw pixel data,
-    ' and the total length of that pixel data.
+    'And finally, the pixel data.  Start by retrieving two key items of business:
+    ' - a pointer to this DIB's raw pixel data, and...
+    ' - the total length of that pixel data.
+    ' (Note that this call will also unsuspend the DIB, as necessary)
     Dim tmpDIBPointer As Long, tmpDIBLength As Long
     Me.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
         
@@ -1383,7 +1567,8 @@ End Function
 'Write this class's DIB information to a valid BMP file.
 Friend Sub WriteToBitmapFile(ByRef dstFilename As String)
 
-    'First, make sure this DIB actually contains image data
+    'First, make sure this DIB actually contains image data.
+    ' (This step will also unsuspend the DIB, as necessary.)
     If (Not Me.HasImage()) Then Exit Sub
     
     'Calculate the size of a scanline
@@ -1470,12 +1655,21 @@ End Sub
 'Return a pointer to DIB byte 0, and return the net size of the DIB's pixel contents.  (PD frequently
 ' uses this to wrap arbitrary arrays or structs around DIB contents.)
 Friend Sub RetrieveDIBPointerAndSize(ByRef dibPointer As Long, ByRef dibSize As Long)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+        
     dibPointer = m_dibBits
     dibSize = m_dibStride * m_dibHeight
+    
 End Sub
 
 'Sometimes this class needs to access its own DIB bits. Here's how.
 Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SafeArray2D)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     With dstSafeArray
         .cbElements = 1
         .cDims = 2
@@ -1486,9 +1680,14 @@ Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SafeArray2D)
         .Bounds(1).cElements = m_dibStride
         .pvData = m_dibBits
     End With
+    
 End Sub
 
 Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, ByVal dstLine As Long)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     With dstSafeArray
         .cbElements = 1
         .cDims = 1
@@ -1497,9 +1696,14 @@ Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, By
         .cElements = m_dibStride
         .pvData = m_dibBits + (dstLine * m_dibStride)
     End With
+    
 End Sub
 
 Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SafeArray2D)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     With dstSafeArray
         .cbElements = 4
         .cDims = 2
@@ -1510,9 +1714,14 @@ Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SafeArray2D)
         .Bounds(1).cElements = m_dibWidth
         .pvData = m_dibBits
     End With
+    
 End Sub
 
 Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D, ByVal dstLine As Long)
+    
+    'Unsuspend this DIB (as necessary)
+    If m_IsSuspended Then UnsuspendDIB
+    
     With dstSafeArray
         .cbElements = 4
         .cDims = 1
@@ -1521,6 +1730,7 @@ Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SafeArray1D
         .cElements = m_dibWidth
         .pvData = m_dibBits + (dstLine * m_dibStride)
     End With
+    
 End Sub
 
 'Pre-composite an image with an alpha-channel against a background color.
@@ -1535,8 +1745,9 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     finalX = (m_dibWidth - 1) * 4
     finalY = (m_dibHeight - 1)
     
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
-    ' 1D array, which we reset between scanlines.
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access),
+    ' so we cheat and use a 1D array, which we reset between scanlines.  (The pointer retrieval will also
+    ' unsuspend the underlying DIB, as necessary.)
     Dim scanlineSize As Long, dibPointer As Long
     scanlineSize = Me.GetDIBStride
     dibPointer = Me.GetDIBPointer
@@ -1639,8 +1850,9 @@ Friend Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binary
     finalX = (m_dibWidth - 1) * 4
     finalY = (m_dibHeight - 1)
     
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
-    ' 1D array, which we reset between scanlines.
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access),
+    ' so we cheat and use a 1D array, which we reset between scanlines.  The pointer retrieval call will
+    ' also unsuspend each DIB, as necessary.
     Dim srcScanlineSize As Long, srcPointer As Long, dstScanlineSize As Long, dstPointer As Long
     dstScanlineSize = Me.GetDIBStride
     dstPointer = Me.GetDIBPointer
@@ -1751,19 +1963,19 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         
         'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
         ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-        Dim intToFloat() As Single
-        ReDim intToFloat(0 To 255) As Single
+        Dim intToFloat(0 To 255) As Single
         Dim i As Long
         For i = 0 To 255
             If applyPremultiplication Then
                 intToFloat(i) = CSng(CDbl(i) * ONE_DIV_255)
             Else
-                If (i <> 0) Then intToFloat(i) = CSng(255# / CDbl(i))
+                If (i <> 0) Then intToFloat(i) = CSng(255! / CDbl(i))
             End If
         Next i
         
-        '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
-        ' 1D array, which we reset between scanlines.
+        '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access),
+        ' so we cheat and use a 1D array, which we reset between scanlines.  The pointer retrieval will also
+        ' unsuspend this DIB, as necessary.
         Dim scanlineSize As Long, dibPointer As Long
         scanlineSize = Me.GetDIBStride
         dibPointer = Me.GetDIBPointer

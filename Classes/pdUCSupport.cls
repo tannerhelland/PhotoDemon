@@ -580,9 +580,9 @@ Friend Sub SetCustomBackcolor(Optional ByVal newBackColor As Long = -1&)
     m_BackColor = newBackColor
 End Sub
 
-'Want to receive custom window messages?  No problem.  Register them here, then watch for the CustomMessage event.
-' Note, however, that if the message is specific to PD, the caller needs to let us know, as we will need to manually
-' handle message marshaling.
+'Want to receive custom window messages?  No problem.  Register them here, then watch for
+' the CustomMessage event.  Note, however, that if the message is specific to PD, the caller
+' needs to let us know, as we will need to manually handle message marshaling.
 Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInternalToPD As Boolean = False)
     
     If PDMain.IsProgramRunning() Then
@@ -650,9 +650,10 @@ Private Function CacheWindowDimensions() As Boolean
     
 End Function
 
-'The naming of this function is potentially confusing, but it restores the back buffer to the currently specified back color.
-' It does not resize the DIB; it just fill it with a single uniform color.  Optionally, a specific erase rect can be supplied.
-' (If coordinates are *not* supplied, the entire buffer will be wiped.)
+'The naming of this function is potentially confusing, but it restores the back buffer to the
+' currently specified back color.  It does *not* resize the DIB; it just fills it with a single
+' uniform color.  Optionally, a specific erase rect can be supplied.  (If coordinates are *not*
+' supplied, the entire buffer will be wiped.)
 Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional ByVal rpLeft As Single = 0!, Optional ByVal rpTop As Single = 0!, Optional ByVal rpWidth As Single = 0!, Optional ByVal rpHeight As Single = 0!)
     
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
@@ -804,9 +805,14 @@ Private Sub m_FocusDetector_GotFocusReliable()
 End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
+    
     m_MouseButtonState = 0
     If m_MouseInsideUC Then TriggerMouseLeave
     RaiseEvent LostFocusAPI
+    
+    'After losing focus, we typically don't expect redraws - so suspend this DIB for now
+    m_BackBuffer.SuspendDIB
+    
 End Sub
 
 Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -999,7 +1005,7 @@ Private Sub m_WindowPainter_EraseBkgnd()
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
         GDI.BitBltWrapper targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
-        m_BackBuffer.FreeFromDC
+        m_BackBuffer.SuspendDIB
     End If
     
 End Sub
@@ -1028,7 +1034,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
         GDI.BitBltWrapper targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
-        m_BackBuffer.FreeFromDC
+        m_BackBuffer.SuspendDIB
     End If
     
 End Sub
@@ -1301,11 +1307,11 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
     'When running, rely on the painter to paint the control for us
     If PDMain.IsProgramRunning() Then
         
-        'In the event that a paint event is not called right away (because the control is invisible, or some
-        ' other reason), free the back buffer DIB from its DC to free up a bit of resources.  If a paint
-        ' event *is* called right away, this has no ill effects, because the DC is auto-generated as needed.
+        'In the event that a paint event is not called right away (because the control is invisible,
+        ' or some other reason), free the back buffer DIB from its DC to free up a bit of resources.
+        ' If a paint event *is* called right away, this has no ill effects, because the DC is
+        ' auto-generated as needed.
         m_BackBuffer.FreeFromDC
-        
         m_WindowPainter.RequestRepaint raiseImmediateDrawEvent
         
     Else
@@ -1484,6 +1490,10 @@ Private Sub StopAllSubclassing()
     
 End Sub
 
+Private Sub HandleWM_HideChild()
+    If (Not m_NoBackBufferMode) Then m_BackBuffer.SuspendDIB
+End Sub
+
 Private Function HandleWM_WindowPosChanging(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     Dim initVisibility As Boolean
@@ -1503,8 +1513,10 @@ Private Function HandleWM_WindowPosChanging(ByVal hWnd As Long, ByVal uiMsg As L
         
     End If
     
-    'Finally, notify the parent of the pending visibility change (if any)
+    'Finally, notify the parent of the pending visibility change (if any), and suspend our
+    ' back buffer if the window has been made invisible
     If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+    If (Not m_Visibility) Then m_BackBuffer.SuspendDIB
     
 End Function
 
@@ -1519,8 +1531,10 @@ Private Function HandleWM_ShowWindow(ByVal hWnd As Long, ByVal uiMsg As Long, By
     ' one before the control is actually shown.)
     If m_Visibility And (Not initVisibility) And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
     
-    'Finally, notify the parent of the pending visibility change
+    'Finally, notify the parent of the pending visibility change (if any), and suspend our
+    ' back buffer if the window has been made invisible
     If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+    If (Not m_Visibility) Then m_BackBuffer.SuspendDIB
     
 End Function
 
@@ -1549,9 +1563,16 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             m_hWnd = 0
         End If
     
+    'Child windows don't normally receive WM_SHOWWINDOW notifications.  In PD, we manually
+    ' forward these messages so that we can free up various UI-related bits to keep memory
+    ' as low as humanly possible.
+    ElseIf (uiMsg = WM_PD_HIDECHILD) Then
+        HandleWM_HideChild
+        
     Else
         
-        'See if this message is a message that our parent control wants notification for.  If it is, relay it accordingly.
+        'See if this message is a message that our parent control wants notification for.
+        ' If it is, relay it accordingly.
         If (Not m_CustomMessages Is Nothing) Then
             If m_CustomMessages.DoesKeyExist(uiMsg) Then
                 

@@ -57,6 +57,12 @@ End Type
 Private m_ImageCache() As ImgCacheEntry
 Private m_NumOfCacheObjects As Long
 
+'During a given session, we periodically compress latent UI images to memory buffers, which frees
+' up previous resources.  Because compression requires a temporary target buffer of some safe
+' minimally acceptable size (for uncompressible data), we can greatly reduce memory thrashing by
+' reusing a single temp buffer for this.
+Private m_TempCompressBuffer() As Byte, m_CompressBufferSize As Long
+
 'Add an image to the cache.  The returned Long is the handle into the cache; you MUST remember it,
 ' as it's the only way to access the image again!
 '
@@ -237,6 +243,29 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     
 End Function
 
+Public Sub FreeSharedCompressBuffer()
+    Erase m_TempCompressBuffer
+    m_CompressBufferSize = 0
+End Sub
+
+'Get access to the shared compression buffer for UI images.  Do *not* use this buffer for other purposes,
+' as it may grow excessively large (and it's not easily freed).
+Public Sub GetSharedCompressBuffer(ByRef dstBuffer() As Byte, ByRef dstBufferSize As Long, ByVal requiredSize As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal cmpLevel As Long = -1)
+
+    'Figure out worst-case scenario size for this format, then resize the buffer accordingly
+    dstBufferSize = Compression.GetWorstCaseSize(requiredSize, cmpFormat, cmpLevel)
+    
+    If (dstBufferSize > m_CompressBufferSize) Then
+        ReDim m_TempCompressBuffer(0 To dstBufferSize - 1) As Byte
+        m_CompressBufferSize = dstBufferSize
+    Else
+        dstBufferSize = m_CompressBufferSize
+    End If
+    
+    dstBuffer = m_TempCompressBuffer
+
+End Sub
+
 Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
 
     'Resolve the image ID into a target index and image number
@@ -259,7 +288,7 @@ Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
     If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
         With m_ImageCache(targetIndex)
             .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .spriteWidth, .spriteHeight, targetColumn * .spriteWidth, targetRow * .spriteHeight, .spriteWidth, .spriteHeight
-            .ImgSpriteSheet.FreeFromDC
+            .ImgSpriteSheet.SuspendDIB
         End With
     Else
         PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & imgNumber & " in spritesheet " & targetIndex

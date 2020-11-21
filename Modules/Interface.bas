@@ -1265,7 +1265,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     
-    'TODO: solve icon issues here
+    'TODO: solve icon issues here?
     If (Not (dstForm.Name = "FormMain")) Then Set dstForm.icon = Nothing
     
     'While we're here, notify the tab manager of the newly loaded form, and make a note of the form's hWnd so we

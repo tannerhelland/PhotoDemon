@@ -1325,7 +1325,7 @@ Private Sub UpdateColorList()
         .LoadThemeColor PDS_ButtonArrow, "ButtonArrow", IDE_GRAY
         .LoadThemeColor PDS_ButtonBorder, "ButtonBorder", IDE_BLUE
         .LoadThemeColor PDS_ButtonFill, "ButtonFill", IDE_WHITE
-        .LoadThemeColor PDS_ErrorBorder, "ErrorBorder", IDE_RED
+        .LoadThemeColor PDS_ErrorBorder, "ErrorBorder", IDE_GRAY
     End With
     
     RelayUpdatedColorsToEditBox

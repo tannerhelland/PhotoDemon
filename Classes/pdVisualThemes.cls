@@ -73,12 +73,16 @@ Private m_ThemeAccent As PD_THEME_ACCENT
 Private m_MonochromeIcons As Boolean
 
 'Extra API functions for painting form backgrounds
-Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Const WM_PAINT As Long = &HF
+Private Const WM_SHOWWINDOW As Long = &H18
+
 Private Declare Function BeginPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function EnumChildWindows Lib "user32" (ByVal hWndParent As Long, ByVal lpEnumProc As Long, ByVal lParam As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
 Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'As part of the painting process, we're gonna be generating a looot of paint messages.  To avoid churn, we'll declare
 ' a single paint struct and update rect up front.
@@ -859,6 +863,11 @@ Friend Sub BuildThemePackage()
     
 End Sub
 
+Friend Function EnumChildProc(ByVal hWnd As Long) As Long
+    SendNotifyMessage hWnd, WM_PD_HIDECHILD, 0&, 0&
+    EnumChildProc = 1
+End Function
+
 'Helper for BuildThemePackage(), above.  Not intended or designed for any other use.
 Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackageChunky, ByRef srcFilename As String)
     
@@ -976,6 +985,23 @@ Private Function HandleFormWMEraseBkgnd(ByVal hWnd As Long, ByVal uiMsg As Long,
     
 End Function
 
+Private Function HandleFormWMShowWindow(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    'For purposes of this sub, we only care about windows getting hidden
+    If (wParam = 0) Then
+    
+        'This window is getting hidden.  Enumerate its child windows, and notify them of this event.
+        ' (By default, child windows do not receive visibility notification changes, but in PD, we use
+        ' visibility changes to suspend a bunch of UI resources.)
+        EnumChildWindows hWnd, AddressOf VBHacks.StandInEnumChildWndProc, ObjPtr(Me)
+        
+    End If
+    
+    'We don't actually handle the visibility toggle, so we need to call DefWindowProc
+    HandleFormWMShowWindow = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function
+
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
 
     If (uiMsg = WM_PAINT) Then
@@ -984,6 +1010,9 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     ElseIf (uiMsg = WM_ERASEBKGND) Then
         ISubclass_WindowMsg = HandleFormWMEraseBkgnd(hWnd, uiMsg, wParam, lParam)
         
+    ElseIf (uiMsg = WM_SHOWWINDOW) Then
+        ISubclass_WindowMsg = HandleFormWMShowWindow(hWnd, uiMsg, wParam, lParam)
+    
     ElseIf (uiMsg = WM_NCDESTROY) Then
         
         m_SubclassedHWnds.DeleteEntry hWnd

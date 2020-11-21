@@ -918,7 +918,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
                 ElseIf (m_KnobStyle = SquareStyle) Then
                     m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2) + 1, 0
                 End If
-                m_GradientDIB.FreeFromDC
+                m_GradientDIB.SuspendDIB
                 
         End Select
         
@@ -1416,8 +1416,8 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
     If (bufferDC = 0) Then Exit Sub
     
-    'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
-    ' we don't need any blending.)
+    'Copy the previously assembled track onto the back buffer.
+    ' (This is faster than AlphaBlending the result, and we don't need blending.)
     GDI.BitBltWrapper bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
     m_SliderBackgroundDIB.FreeFromDC
     

@@ -383,7 +383,7 @@ End Function
 'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.
 ' This is relevant for Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed
 ' those values to be stored, the user could never proceed with an operation in the future!
-Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal useIcon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -399,7 +399,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
-        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, useIcon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
         PromptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult

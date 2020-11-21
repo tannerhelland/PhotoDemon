@@ -28,8 +28,9 @@ Attribute VB_Name = "NavKey"
 
 Option Explicit
 
-'Remember: when passing messages to PD controls, do not call PostMessage directly, as it sends messages to the thread's
-' message queue.  Instead, asynchronously relay messages to target windows via SendNotifyMessage.
+'Remember: when passing messages to PD controls, do not call PostMessage directly, as it sends
+' messages to the thread's message queue.  Instead, asynchronously relay messages to target windows
+' via SendNotifyMessage.
 Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Const INIT_NUM_OF_FORMS As Long = 8

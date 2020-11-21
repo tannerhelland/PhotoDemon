@@ -2019,7 +2019,7 @@ End Function
 ' so for small layers, it may use a ton of dead space.  This is by design.
 '
 'Note that this specialized function cannot physically make use of the current thumbnail cache, as it
-' requires specialized transforms.  As such, its performance will possibly be (much) slower than the
+' requires specialized transforms.  As such, its performance will possibly be (much?) slower than the
 ' normal thumbnail function.
 '
 'TODO: color-management

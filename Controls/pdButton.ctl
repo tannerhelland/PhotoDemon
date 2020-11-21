@@ -675,7 +675,7 @@ Private Sub RedrawBackBuffer()
             End If
             
             m_Images.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
-            m_Images.FreeFromDC
+            m_Images.SuspendDIB
             
         End If
         

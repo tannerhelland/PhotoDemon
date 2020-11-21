@@ -1172,10 +1172,10 @@ Private Sub UpdateColorList()
         .LoadThemeColor BTS_SelectedText, "SelectedText", IDE_WHITE
         .LoadThemeColor BTS_UnselectedText, "UnselectedText", IDE_GRAY
         .LoadThemeColor BTS_Light_Background, "BackgroundLightMode", IDE_WHITE
-        .LoadThemeColor BTS_Light_SelectedItemFill, "SelectedItemFillLightMode", IDE_LIGHTBLUE
+        .LoadThemeColor BTS_Light_SelectedItemFill, "SelectedItemFillLightMode", IDE_BLUE
         .LoadThemeColor BTS_Light_UnselectedItemFill, "UnselectedItemFillLightMode", IDE_WHITE
-        .LoadThemeColor BTS_Light_SelectedItemBorder, "SelectedItemBorderLightMode", IDE_LIGHTBLUE
-        .LoadThemeColor BTS_Light_UnselectedItemBorder, "UnselectedItemBorderLightMode", IDE_LIGHTBLUE
+        .LoadThemeColor BTS_Light_SelectedItemBorder, "SelectedItemBorderLightMode", IDE_BLUE
+        .LoadThemeColor BTS_Light_UnselectedItemBorder, "UnselectedItemBorderLightMode", IDE_BLUE
         .LoadThemeColor BTS_Light_SelectedText, "SelectedTextLightMode", IDE_BLUE
         .LoadThemeColor BTS_Light_UnselectedText, "UnselectedTextLightMode", IDE_GRAY
     End With

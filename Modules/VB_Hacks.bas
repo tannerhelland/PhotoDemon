@@ -177,6 +177,10 @@ Public Sub StandInTimerProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal cTimer
     If (Not cTimer Is Nothing) Then cTimer.TimerEventArrived
 End Sub
 
+Public Function StandInEnumChildWndProc(ByVal hWnd As Long, ByVal cTheme As pdTheme) As Long
+    StandInEnumChildWndProc = cTheme.EnumChildProc(hWnd)
+End Function
+
 'This beautiful little function comes courtesy of coder Merri:
 ' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
 Public Function InControlArray(Ctl As Object) As Boolean
