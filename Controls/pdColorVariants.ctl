@@ -661,9 +661,9 @@ Private Sub CalculateVariantColors()
         
         If (i = CV_HueUp) Then
             hNew = hNew + hChange
-            If (hNew > 1#) Then hNew = 1# - hNew
+            If (hNew > 1#) Then hNew = hNew - 1#
             Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
-                
+            
         ElseIf (i = CV_SaturationUp) Then
                 
             'Use a fake saturation calculation
@@ -711,7 +711,7 @@ Private Sub CalculateVariantColors()
             
         ElseIf (i = CV_HueDown) Then
             hNew = hNew - hChange
-            If (hNew < 0#) Then hNew = 1 + hNew
+            If (hNew < 0#) Then hNew = 1# + hNew
             Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
         
         ElseIf (i = CV_BlueDown) Then
