@@ -32,14 +32,16 @@ Attribute VB_Name = "Plugin_lz4"
 
 Option Explicit
 
-'This constant was originally declared in lz4.c.  Note that lz4 does *not* support variable compression levels.
-' Instead, it supports variable *acceleration* levels.  The difference is that bigger values = worse compression.
+'This constant was originally declared in lz4.c.
+' Note that lz4 does *not* support variable compression levels.
+' Instead, it supports variable *acceleration* levels.
+' The difference is that bigger values = worse compression.
 Private Const LZ4_MIN_ALEVEL As Long = 1
 Private Const LZ4_DEFAULT_ALEVEL As Long = 1
 
-'This value is not declared by the lz4 library, and technically, there is no maximum value.  Compression just
-' approaches 0% as you increase the level.  I provide a "magic number" cap simply so it supports the same
-' default/min/max functions as the other libraries
+'This value is not declared by the lz4 library, and technically, there is no maximum value.
+' Compression just approaches 0% as you increase the level.  I provide a "magic number" cap
+' simply so it supports the same default/min/max functions as other compression libraries in PD.
 Private Const LZ4_MAX_ALEVEL As Long = 500
 
 'These constants were originally declared in lz4_hc.h
@@ -80,7 +82,6 @@ Private m_ProcAddresses() As Long
 ' to the maximum relevant size (see InitializeEngine, below).
 Private Const MAX_PARAM_COUNT As Long = 8
 Private m_vType() As Integer, m_vPtr() As Long
-
 
 'Initialize lz4.  Do not call this until you have verified its existence (typically via the PluginManager module)
 Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
@@ -307,7 +308,7 @@ Private Function CallCDeclW(ByVal lProc As LZ4_ProcAddress, ByVal fRetType As Vb
     If IsMissing(pa) Then
         ReDim vTemp(0) As Variant
     Else
-        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+        vTemp = pa 'make a copy of the params to prevent problems with VT_ByRef members in the ParamArray
     End If
     
     For i = 0 To numParams - 1
@@ -318,7 +319,6 @@ Private Function CallCDeclW(ByVal lProc As LZ4_ProcAddress, ByVal fRetType As Vb
     
     Const CC_CDECL As Long = 1
     hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
-    If hResult Then Err.Raise hResult
     
 End Function
 

@@ -347,7 +347,6 @@ Private Function CallCDeclW(ByVal lProc As Zstd_ProcAddress, ByVal fRetType As V
     
     Const CC_CDECL As Long = 1
     hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
-    If hResult Then Err.Raise hResult
     
 End Function
 

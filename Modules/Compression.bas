@@ -3,8 +3,8 @@ Attribute VB_Name = "Compression"
 'Unified Compression Interface for PhotoDemon
 'Copyright 2016-2020 by Tanner Helland
 'Created: 02/December/16
-'Last updated: 13/February/19
-'Last update: overhaul our internal compression API as part of embedding libdeflate for deflate/zlib/gzip tasks
+'Last updated: 24/November/20
+'Last update: remove old workarounds for libdeflate lacking 0-mode compression; v1.7 now supports this
 'Dependencies: - standalone plugin modules for whatever compression engines you want to use.  This module
 '              simply wraps those dedicated wrappers in a more convenient format.
 '
@@ -212,30 +212,32 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     
     CompressPtrToPtr = False
     
-    If (cmpFormat = cf_None) Then
-        'Do nothing; the catch at the end of the function will handle this case for us
-    ElseIf (cmpFormat = cf_Zlib) Then
-        
-        'libdeflate doesn't expose a "0" compression mode (it's treated as "default" compression),
-        ' so for now, silently switch to compression mode 1.
-        If (compressionLevel = 0) Then compressionLevel = 1
-        CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Zlib)
+    Select Case cmpFormat
+        Case cf_None
+            'Do nothing; the catch at the end of the function will handle this case for us
+        Case cf_Zlib
             
-        'Want to compare against zLib?  FreeImage exposes a zlib default compress call
-        'dstSizeInBytes = FreeImage_ZLibCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
-        CompressPtrToPtr = (dstSizeInBytes <> 0)
+            'libdeflate doesn't expose a "0" compression mode (it's treated as "default" compression),
+            ' so for now, silently switch to compression mode 1.
+            ' (NOTE: libdeflate changed this behavior in v1.7, and 0-mode is now supported.)
+            'If (compressionLevel = 0) Then compressionLevel = 1
+            CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Zlib)
+                
+            'Want to compare against zLib?  FreeImage exposes a zlib default compress call
+            'dstSizeInBytes = FreeImage_ZLibCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
+            CompressPtrToPtr = (dstSizeInBytes <> 0)
         
-    ElseIf (cmpFormat = cf_Zstd) Then
-        CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
-    ElseIf (cmpFormat = cf_Lz4) Then
-        CompressPtrToPtr = Plugin_lz4.Lz4CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
-    ElseIf (cmpFormat = cf_Lz4hc) Then
-        CompressPtrToPtr = Plugin_lz4.Lz4HCCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
-    ElseIf (cmpFormat = cf_Deflate) Then
-        CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Deflate)
-    ElseIf (cmpFormat = cf_Gzip) Then
-        CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Gzip)
-    End If
+        Case cf_Zstd
+            CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+        Case cf_Lz4
+            CompressPtrToPtr = Plugin_lz4.Lz4CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+        Case cf_Lz4hc
+            CompressPtrToPtr = Plugin_lz4.Lz4HCCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+        Case cf_Deflate
+            CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Deflate)
+        Case cf_Gzip
+            CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Gzip)
+    End Select
     
     'If compression failed, perform a direct source-to-dst copy
     If (Not CompressPtrToPtr) Then
@@ -287,38 +289,22 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     
     DecompressPtrToPtr = False
     
-    If (cmpFormat = cf_None) Then
-        'Do nothing; the failsafe catch at the end of this function handles this case for us
-    ElseIf (cmpFormat = cf_Zlib) Then
-        
-        'While I don't doubt libdeflate's capabilities, I've added an emergency zlib fallback for now... "just in case"
-        DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Zlib)
-        If (Not DecompressPtrToPtr) Then
-        
-            'libdeflate failed.  FreeImage embeds a copy of zlib; try it, and if it works, proceed as normal
-            InternalErrorMsg "WARNING: libdeflate failed on a stream. cmp size: " & constSrcSizeInBytes & ", orig size: " & dstSizeInBytes
-            
-            Dim lRet As Long
-            lRet = FreeImage_ZLibUncompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
-            DecompressPtrToPtr = (lRet = dstSizeInBytes)
-            
-            If DecompressPtrToPtr Then
-                InternalErrorMsg "zlib fallback was successful; data decompressed OK"
-            Else
-                InternalErrorMsg "WARNING: zlib fallback failed!  Data is corrupt."
-            End If
-            
-        End If
-        
-    ElseIf (cmpFormat = cf_Zstd) Then
-        DecompressPtrToPtr = (Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
-    ElseIf ((cmpFormat = cf_Lz4) Or (cmpFormat = cf_Lz4hc)) Then
-        DecompressPtrToPtr = (Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
-    ElseIf (cmpFormat = cf_Deflate) Then
-        DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Deflate)
-    ElseIf (cmpFormat = cf_Gzip) Then
-        DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Gzip)
-    End If
+    Select Case cmpFormat
+        Case cf_None
+            'Do nothing; the failsafe catch at the end of this function handles this case for us
+        Case cf_Zlib
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Zlib)
+        Case cf_Zstd
+            DecompressPtrToPtr = (Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+        Case cf_Lz4
+            DecompressPtrToPtr = (Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+        Case cf_Lz4hc
+            DecompressPtrToPtr = (Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+        Case cf_Deflate
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Deflate)
+        Case cf_Gzip
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Gzip)
+    End Select
     
     'If compression failed, perform a direct source-to-dst copy
     If (Not DecompressPtrToPtr) Then
