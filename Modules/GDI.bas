@@ -123,7 +123,7 @@ End Function
 Public Function GetMemoryDC(Optional ByVal compatDC As Long = 0&) As Long
     GetMemoryDC = CreateCompatibleDC(compatDC)
     If (GetMemoryDC <> 0) Then
-        g_DCsCreated = g_DCsCreated + 1
+        PDDebug.UpdateResourceTracker PDRT_hDC, 1
     Else
         PDDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
     End If
@@ -132,7 +132,7 @@ End Function
 Public Sub FreeMemoryDC(ByRef srcDC As Long)
     If (srcDC <> 0) Then
         If (DeleteDC(srcDC) <> 0) Then
-            g_DCsDestroyed = g_DCsDestroyed + 1
+            PDDebug.UpdateResourceTracker PDRT_hDC, -1
             srcDC = 0
         Else
             PDDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
@@ -169,6 +169,8 @@ Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
             FillRect targetDC, VarPtr(tmpRect), tmpBrush
             If (DeleteObject(tmpBrush) = 0) Then PDDebug.LogAction "WARNING!  GDI.FillRectToDC failed to free the brush it allocated."
             
+        Else
+            PDDebug.LogAction "WARNING!  GDI.FillRectToDC failed to create a solid brush"
         End If
         
     End If

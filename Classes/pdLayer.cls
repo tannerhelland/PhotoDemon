@@ -2022,7 +2022,7 @@ End Function
 ' requires specialized transforms.  As such, its performance will possibly be (much?) slower than the
 ' normal thumbnail function.
 '
-'TODO: color-management
+'TODO: color-management?
 Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef srcImage As pdImage, Optional ByVal thumbnailSize As Long = LAYER_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
     
     RequestThumbnail_ImageCoords = False

@@ -103,15 +103,6 @@ Public g_DisplayTimingReports As Boolean
 ' functions from mistakenly displaying the same message!
 Public g_FreeImageErrorMessages() As String
 
-'As part of an improved memory efficiency initiative, some global variables are used (during debug mode) to track how many
-' GDI objects PD creates and destroys.
-Public g_DIBsCreated As Long
-Public g_DIBsDestroyed As Long
-Public g_FontsCreated As Long
-Public g_FontsDestroyed As Long
-Public g_DCsCreated As Long
-Public g_DCsDestroyed As Long
-
 'If an update notification is ready, but we can't display it (for example, because a modal dialog is active) this flag will
 ' be set to TRUE.  PD's central processor uses this to display the update notification as soon as it reasonably can.
 Public g_ShowUpdateNotification As Boolean

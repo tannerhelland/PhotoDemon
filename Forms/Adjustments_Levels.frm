@@ -646,7 +646,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     'Valid preset data was *not* found, possibly because the user just upgraded from a past version of the Levels tool.
     ' Reset everything to default values
     Else
-        Call cmdBar_ResetClick
+        cmdBar_ResetClick
     End If
     
 End Sub

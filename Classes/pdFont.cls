@@ -361,8 +361,8 @@ Friend Function CreateFontObject(Optional ByVal createWithAngle As Long = 0) As 
     m_hFont = CreateFontIndirect(VarPtr(m_currentLogFont))
     CreateFontObject = (m_hFont <> 0)
     
-    'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
-    If CreateFontObject Then g_FontsCreated = g_FontsCreated + 1
+    'Inside debug mode, update a global counter (for leak tracking)
+    If CreateFontObject Then PDDebug.UpdateResourceTracker PDRT_hFont, 1
     
 End Function
 
@@ -699,13 +699,13 @@ Friend Sub DeleteCurrentFont()
             Me.ReleaseFromDC
         End If
         
-        If (DeleteObject(m_hFont) = 0) Then
-            PDDebug.LogAction "WARNING! Could not delete font resource - is it selected into a DC??"
+        'Inside debug mode, update a global counter (for leak tracking)
+        If (DeleteObject(m_hFont) <> 0) Then
+            PDDebug.UpdateResourceTracker PDRT_hFont, -1
+            m_hFont = 0
         Else
-            g_FontsDestroyed = g_FontsDestroyed + 1
+            PDDebug.LogAction "WARNING! Could not delete font resource - is it selected into a DC??"
         End If
-        
-        m_hFont = 0
         
     End If
     

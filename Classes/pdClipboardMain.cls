@@ -141,8 +141,6 @@ Private Const RGBA_BLUE_MASK As Long = &HFF&
 Private Const RGBA_ALPHA_MASK As Long = &HFF000000
 
 Private Declare Function CopyEnhMetaFileW Lib "gdi32" (ByVal hEmfSrc As Long, ByVal ptrToDstFilename As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteEnhMetaFile Lib "gdi32" (ByVal hEmf As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
@@ -1924,7 +1922,7 @@ Private Sub RenderClipboard_BITMAP()
         'Create a DDB compatible with the current desktop. This will receive the actual pixel data of the current DIB,
         ' downsampled to 24-bpp.
         Dim clipboardDC As Long, clipboardBMP As Long
-        clipboardDC = CreateCompatibleDC(tmpDC)
+        clipboardDC = GDI.GetMemoryDC(tmpDC)
         
         If (clipboardDC <> 0) Then
         
@@ -1968,7 +1966,7 @@ Private Sub RenderClipboard_BITMAP()
                 ' (see: http://stackoverflow.com/questions/32086618/who-releases-handle-in-setclipboarddatacf-bitmap-hbitmap)
                 ' but since deleting it causes no problems, I figure that's safest.
                 DeleteObject clipboardBMP
-                DeleteDC clipboardDC
+                GDI.FreeMemoryDC clipboardDC
                 
             End If
             

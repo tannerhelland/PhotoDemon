@@ -215,8 +215,7 @@ End Property
 Friend Function RemoveImage(ByVal Index As Long) As Boolean
     
     If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Function
-    
-    Call DeleteObject(mDIB(Index).hDIB)
+    If (DeleteObject(mDIB(Index).hDIB) <> 0) Then PDDebug.UpdateResourceTracker PDRT_hDIB, -1
         
     Dim i As Long
     For i = Index To m_NumOfDIBs - 2
@@ -321,13 +320,13 @@ Friend Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
         
         If imageID = -1 Then
             .hbmpItem = 0
-            If KeyExists(sKey) Then Call cColl.Remove(sKey)
+            If KeyExists(sKey) Then cColl.Remove sKey
         Else
             If OS.IsVistaOrLater Then
                 .hbmpItem = mDIB(imageID).hDIB
             Else
                 .hbmpItem = HBMMENU_CALLBACK
-                If KeyExists(sKey) Then Call cColl.Remove(sKey)
+                If KeyExists(sKey) Then cColl.Remove sKey
                 cColl.Add imageID, sKey
             End If
         End If
@@ -388,7 +387,7 @@ Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal
     
     SelectObject hDC, oldPen
     DeleteObject hPen
-    Call SelectObject(hDC, oldBrush)
+    SelectObject hDC, oldBrush
     
 End Sub
 
@@ -418,8 +417,9 @@ Private Function CreateNewDib() As Long
         .hDIB = CreateDIBSection(tmpDC, tBITMAPINFO, DIB_RGB_COLORS, .ptr, 0&, 0&)
         ReleaseDC 0&, tmpDC
         
-        If .hDIB <> 0 Then
+        If (.hDIB <> 0) Then
             CreateNewDib = Index
+            PDDebug.UpdateResourceTracker PDRT_hDIB, 1
         Else
             CreateNewDib = -1
             Exit Function
@@ -436,7 +436,12 @@ Friend Sub Clear()
     Dim i As Long
     
     For i = 0 To m_NumOfDIBs - 1
-        If (mDIB(i).hDIB <> 0) Then DeleteObject mDIB(i).hDIB
+        If (mDIB(i).hDIB <> 0) Then
+            If (DeleteObject(mDIB(i).hDIB) <> 0) Then
+                PDDebug.UpdateResourceTracker PDRT_hDIB, -1
+                mDIB(i).hDIB = 0
+            End If
+        End If
     Next
     
     m_NumOfDIBs = 0
@@ -486,8 +491,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
             
             GdipDrawImageRectRectI hGraphics, hImage, x, y, m_lWidth, m_lHeight, 0, 0, m_lWidth, m_lHeight, &H2, hAttributes, 0&, 0&
             
-            If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
-    
+            If (hAttributes <> 0) Then GdipDisposeImageAttributes hAttributes
             If (hGraphics <> 0) Then GdipDeleteGraphics hGraphics
         
         End If
@@ -574,12 +578,12 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
 
             GdipDrawImageRectRectI hGraphics, hImage, 0, 0, m_lWidth, m_lHeight, 0, 0, imgWidth, imgHeight, &H2, hAttributes, 0&, 0&
             
-            If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
+            If (hAttributes <> 0) Then GdipDisposeImageAttributes hAttributes
     
             GdipDisposeImage hImage
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(tmpDC, oldHDib)
+            SelectObject tmpDC, oldHDib
             GDI.FreeMemoryDC tmpDC
             
             pvAddImagen = True
@@ -733,7 +737,7 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
         isDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
         
         If Not isCheckStyle And isChecked Then
-            Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, isDisabled)
+            DrawCheck DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, isDisabled
         End If
         
         'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled

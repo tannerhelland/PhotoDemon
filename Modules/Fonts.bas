@@ -707,11 +707,13 @@ End Function
 Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
     CreateGDIFont = (dstFontHandle <> 0)
+    If CreateGDIFont Then PDDebug.UpdateResourceTracker PDRT_hFont, 1
 End Function
 
 'Delete a GDI font; returns TRUE if successful
 Public Function DeleteGDIFont(ByVal srcFontHandle As Long) As Boolean
     DeleteGDIFont = (DeleteObject(srcFontHandle) <> 0)
+    If DeleteGDIFont Then PDDebug.UpdateResourceTracker PDRT_hFont, -1
 End Function
 
 'Given a GDI font handle and a Unicode code point, return an ABC float for the corresponding glyph.
@@ -756,16 +758,12 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     
     Dim tmpLogFont As LOGFONTW
     FillLogFontW_Basic tmpLogFont, srcFontName, False, False, False, False
-    If CreateGDIFont(tmpLogFont, dstFont) Then
-        
-        'Create a temporary DC and select the font into it
+    QuickCreateFontAndDC = CreateGDIFont(tmpLogFont, dstFont)
+    
+    'Create a temporary DC and select the font into it
+    If QuickCreateFontAndDC Then
         dstDC = GDI.GetMemoryDC()
         SelectObject dstDC, dstFont
-        
-        QuickCreateFontAndDC = True
-        
-    Else
-        QuickCreateFontAndDC = False
     End If
     
 End Function
@@ -776,7 +774,7 @@ Public Sub QuickDeleteFontAndDC(ByRef srcFont As Long, ByRef srcDC As Long)
     SelectObject srcDC, GetStockObject(SYSTEM_FONT)
     
     'Kill both the font and the DC
-    DeleteObject srcFont
+    If (DeleteObject(srcFont) <> 0) Then PDDebug.UpdateResourceTracker PDRT_hFont, -1
     GDI.FreeMemoryDC srcDC
     
 End Sub

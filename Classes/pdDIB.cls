@@ -851,10 +851,10 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             'If successful, select the newly created dib into our DC
             If (m_dibHandle <> 0) Then
                 
-                'Inside debugging mode, increment a global DIB counter.
-                If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
+                'Inside debug mode, update a global counter (for leak tracking)
+                PDDebug.UpdateResourceTracker PDRT_hDIB, 1
                 
-                'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
+                'Select the DIB into a DC so we can fill it with the requested background color
                 m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
             
                 'If the DIB is 24bpp, apply the background color now
@@ -1003,8 +1003,8 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
         DeleteObject m_dibHandle
         m_dibHandle = 0
         
-        'Inside debug mode, decrement a global DIB counter
-        g_DIBsDestroyed = g_DIBsDestroyed + 1
+        'Inside debug mode, update a global counter (for leak tracking)
+        PDDebug.UpdateResourceTracker PDRT_hDIB, -1
         
     End If
     
@@ -1097,8 +1097,10 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     
     DeleteObject m_dibHandle
     m_dibHandle = 0
-    g_DIBsDestroyed = g_DIBsDestroyed + 1
     m_dibBits = 0
+    
+    'Inside debug mode, update a global counter (for leak tracking)
+    PDDebug.UpdateResourceTracker PDRT_hDIB, -1
     
     'Free the underlying memory-mapped file instance
     m_FileMM.CloseFile
@@ -1161,6 +1163,9 @@ Private Sub UnsuspendDIB()
         'If successful, select the newly created dib into our DC
         If (m_dibHandle <> 0) Then
             
+            'Inside debug mode, update a global counter (for leak tracking)
+            PDDebug.UpdateResourceTracker PDRT_hDIB, 1
+            
             'Decompress our local copy of pixel data into the newly created DIB
             If Compression.DecompressPtrToPtr(m_dibBits, m_SizeUnsuspended, VarPtr(m_SuspensionBuffer(0)), m_SizeSuspended, m_SuspendFormat) Then
                 Erase m_SuspensionBuffer
@@ -1169,9 +1174,6 @@ Private Sub UnsuspendDIB()
             Else
                 PDDebug.LogAction "WARNING!  pdDIB couldn't unsuspend DIB."
             End If
-            
-            'Inside debugging mode, increment a global DIB counter.
-            g_DIBsCreated = g_DIBsCreated + 1
             
             'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
             m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)

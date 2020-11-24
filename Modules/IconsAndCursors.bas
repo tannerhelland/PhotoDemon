@@ -418,6 +418,11 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
     
 End Function
 
+Public Function GetMenuImageCount() As Long
+    If (Not cMenuImage Is Nothing) Then GetMenuImageCount = GetMenuImageCount + cMenuImage.ImageCount
+    If (Not cMRUIcons Is Nothing) Then GetMenuImageCount = GetMenuImageCount + cMRUIcons.ImageCount
+End Function
+
 'Create a custom form icon for a target pdImage object
 Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
 

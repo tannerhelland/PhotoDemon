@@ -49,6 +49,22 @@ End Enum
     Private Const PDM_Normal = 0, PDM_User_Message = 1, PDM_Mem_Report = 2, PDM_HDD_Report = 3, PDM_Processor = 4, PDM_External_Lib = 5, PDM_Startup_Message = 6, PDM_Timer_Report = 7
 #End If
 
+'As part of aggressive leak prevention, PD tracks creation and destruction of various
+' leak-prone resources.
+Public Enum PD_ResourceTracker
+    PDRT_hDC = 0
+    PDRT_hDIB = 1
+    PDRT_hFont = 2
+End Enum
+
+#If False Then
+    Private Const PDRT_hDC = 0, PDRT_hDIB = 1, PDRT_hFont = 2
+#End If
+
+Private m_GDI_DIBs As Long
+Private m_GDI_Fonts As Long
+Private m_GDI_DCs As Long
+
 'Has this instance been initialized?  This will be set to true if the StartDebugger function has executed successfully.
 Private m_debuggerActive As Boolean
 
@@ -181,47 +197,52 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             
             'Format the return objects into something readable
             If (curMemUsage <> 0) Then
-            
+                
+                Const NUMBER_FORMAT_GENERIC As String = "###,###,###,##0"
+                
                 m_LogString.Append "CURRENT: "
-                m_LogString.Append Format$(curMemUsage, "###,###,###,##0") & " K"
+                m_LogString.Append Format$(curMemUsage, NUMBER_FORMAT_GENERIC) & " K"
                 m_LogString.Append " | DELTA: "
                 If (deltaMem > 0) Then m_LogString.Append "+"
-                m_LogString.Append Format$(deltaMem, "###,###,###,##0") & " K"
+                m_LogString.Append Format$(deltaMem, NUMBER_FORMAT_GENERIC) & " K"
                 m_LogString.Append " | SESSION MAX: "
-                m_LogString.Append Format$(maxMemUsage, "###,###,###,##0") & " K"
+                m_LogString.Append Format$(maxMemUsage, NUMBER_FORMAT_GENERIC) & " K"
                 m_LogString.Append " | GDI: "
-                m_LogString.Append Format$(curGDIObjects, "###,##0") & " (" & Format$(gdiObjectPeak, "###,##0") & ")"
+                m_LogString.Append Format$(curGDIObjects, NUMBER_FORMAT_GENERIC) & " (" & Format$(gdiObjectPeak, NUMBER_FORMAT_GENERIC) & ")"
                 m_LogString.Append " | USER: "
-                m_LogString.Append Format$(curUserObjects, "###,##0") & " (" & Format$(userObjectPeak, "###,##0") & ")"
+                m_LogString.Append Format$(curUserObjects, NUMBER_FORMAT_GENERIC) & " (" & Format$(userObjectPeak, NUMBER_FORMAT_GENERIC) & ")"
                 m_LogString.AppendLineBreak
                 
                 'Also report some internal program object counts (DCs, hWnds, hFonts, etc)
                 m_LogString.Append Space$(22) & "DC: "
-                m_LogString.Append Format$(g_DCsCreated - g_DCsDestroyed, "###,##0") & " (" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(m_GDI_DCs, NUMBER_FORMAT_GENERIC)
                 
                 Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long
                 apiWindowsNet = UserControls.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
                 m_LogString.Append " | HWND: "
-                m_LogString.Append Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(apiWindowsNet, NUMBER_FORMAT_GENERIC) & " (" & Format$(apiWindowsCreated, NUMBER_FORMAT_GENERIC) & ":" & Format$(apiWindowsDestroyed, NUMBER_FORMAT_GENERIC) & ")"
                 
                 m_LogString.Append " | FONT: "
-                m_LogString.Append Format$(g_FontsCreated - g_FontsDestroyed, "###,##0") & " (" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(m_GDI_Fonts, NUMBER_FORMAT_GENERIC)
                 
                 m_LogString.Append " | DIB: "
-                m_LogString.Append Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0") & " (" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(m_GDI_DIBs, NUMBER_FORMAT_GENERIC)
+                m_LogString.Append " (MNU: "
+                m_LogString.Append Format$(IconsAndCursors.GetMenuImageCount(), NUMBER_FORMAT_GENERIC)
+                m_LogString.Append ")"
                 
                 Dim icosNet As Long, icosCreated As Long, icosDestroyed As Long
                 icosNet = IconsAndCursors.GetCreatedIconCount(icosCreated, icosDestroyed)
                 m_LogString.Append " | ICON: "
-                m_LogString.Append Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(icosNet, NUMBER_FORMAT_GENERIC) & " (" & Format$(icosCreated, NUMBER_FORMAT_GENERIC) & ":" & Format$(icosDestroyed, NUMBER_FORMAT_GENERIC) & ")"
                 
                 Dim timersNet As Long, timersCreated As Long, timersDestroyed As Long
                 timersNet = UserControls.GetTimerCount(timersCreated, timersDestroyed)
                 m_LogString.Append " | TIMER: "
-                m_LogString.Append Format$(timersNet, "###,##0") & " (" & Format$(timersCreated, "###,##0") & ":" & Format$(timersDestroyed, "###,##0") & ")"
+                m_LogString.Append Format$(timersNet, NUMBER_FORMAT_GENERIC) & " (" & Format$(timersCreated, NUMBER_FORMAT_GENERIC) & ":" & Format$(timersDestroyed, NUMBER_FORMAT_GENERIC) & ")"
                 
                 m_LogString.Append " | UC: "
-                m_LogString.Append Format$(UserControls.GetPDControlCount(), "###,##0")
+                m_LogString.Append Format$(UserControls.GetPDControlCount(), NUMBER_FORMAT_GENERIC)
                 
             Else
                 m_LogString.Append "WARNING: PD was unable to measure its own memory usage.  Please investigate."
@@ -470,6 +491,19 @@ Public Sub TerminateDebugger(Optional ByVal terminationIsNormal As Boolean = Tru
     End If
     
     If m_debuggerActive Then m_debuggerActive = False
+    
+End Sub
+
+Public Sub UpdateResourceTracker(ByVal resID As PD_ResourceTracker, ByVal resCountChange As Long)
+    
+    Select Case resID
+        Case PDRT_hDC
+            m_GDI_DCs = m_GDI_DCs + resCountChange
+        Case PDRT_hDIB
+            m_GDI_DIBs = m_GDI_DIBs + resCountChange
+        Case PDRT_hFont
+            m_GDI_Fonts = m_GDI_Fonts + resCountChange
+    End Select
     
 End Sub
 

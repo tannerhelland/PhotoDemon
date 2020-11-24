@@ -2819,7 +2819,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
                 
                 If (FormMain.MnuRecDocs.Count >= i) Then
                     If FormMain.MnuRecDocs(i).Enabled Then
-                        Call FormMain.mnuRecDocs_Click(i)
+                        FormMain.mnuRecDocs_Click i
                         Exit Sub
                     End If
                 End If
