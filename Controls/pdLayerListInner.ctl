@@ -1053,11 +1053,19 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                         End If
                         
                     Next i
-                
+                    
+                    'Whenever we perform a full refresh of the entire layer thumbnail collection
+                    ' (after e.g. loading a new image), immediately attempt to minimize spritesheet
+                    ' memory usage.  This will suspend all DIBs in the current thumb collection, and in
+                    ' images with very large layer counts (e.g. animated images), this can save a lot
+                    ' of memory because thumbnails outside the current view won't be refreshed for awhile.
+                    ' (And when they are, they'll be silently paged and left in their uncompressed state.)
+                    m_ThumbCollection.MinimizeMemory
+                    
                 End If
                 
             End If
-        
+            
         Else
             m_NumOfThumbnails = 0
             If (UBound(m_LayerThumbnails) <> 0) Then ReDim m_LayerThumbnails(0) As LayerThumbDisplay

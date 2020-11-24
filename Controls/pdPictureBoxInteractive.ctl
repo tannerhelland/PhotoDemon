@@ -345,6 +345,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd, True, False
     ucSupport.RequestExtraFunctionality True
     ucSupport.SubclassCustomMessage WM_PD_DIALOG_RESIZE_FINISHED, True
+    ucSupport.RequestHighPerformanceRendering True
     
 End Sub
 

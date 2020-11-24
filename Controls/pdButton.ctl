@@ -451,7 +451,7 @@ Public Sub AssignImage(Optional ByRef resName As String = vbNullString, Optional
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
         If (LenB(resName) <> 0) Then Set srcDIB = Nothing
-        m_Images.FreeFromDC
+        m_Images.SuspendDIB
         
     'If no DIB is provided, remove any existing images
     Else

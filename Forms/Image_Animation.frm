@@ -297,6 +297,7 @@ Private Sub Form_Load()
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
+    picPreview.RequestHighPerformanceRendering True
     
     'Prep any UI elements.  Note that a number of controls explicitly request that the command bar
     ' (which handles save/load of last-used presets) does *not* restore them to their last-used
@@ -373,6 +374,8 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     Set m_SrcImage = Nothing
+    Set m_Thumbs = Nothing
+    Set m_AniFrame = Nothing
     ReleaseFormTheming Me
 End Sub
 

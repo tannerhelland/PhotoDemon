@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Comprehensive User Control Support class
 'Copyright 2015-2020 by Tanner Helland
 'Created: 25/October/15  (but built from many parts existing earlier)
-'Last updated: 25/January/16
-'Last update: integrate proper theming support
+'Last updated: 24/November/20
+'Last update: improve aggressiveness of freeing resources when able
 '
 'Now that PD provides so many of its own user controls (UCs), we have to repeat a lot of UC management code.
 ' Painting, custom input handling, subclassing custom window messages - the list goes on for awhile.
@@ -187,6 +187,11 @@ Private m_LastThemeID As String
 ' a Form_Resize event.  If they know a lengthy delay is in place, they can ask us to suspend repainting until
 ' they're ready.
 Private m_SuspendAutoRepaint As Boolean
+
+'Similarly, by default, this class is very aggressive about freeing rendering resources whenever
+' it can.  However, some specialized control instances (like animation controls) are very
+' perf-sensitive, and they can ask us to suspend our most aggressive resource-minimizing behavior.
+Private m_HighPerfRequested As Boolean
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -549,6 +554,13 @@ End Function
 ' or no painting will occur.
 Friend Sub SuspendAutoRepaintBehavior(ByVal newSuspendState As Boolean)
     m_SuspendAutoRepaint = newSuspendState
+End Sub
+
+'Ask us to *not* be as aggressive about freeing resources after rendering.  (This should be used sparingly,
+' e.g. animation controls may need it because they need ms-accurate rendering, but few other controls
+' require this, so they should err on the side of minimizing resource consumption.)
+Friend Sub RequestHighPerformanceRendering(ByVal newState As Boolean)
+    m_HighPerfRequested = newState
 End Sub
 
 'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution
@@ -1005,7 +1017,7 @@ Private Sub m_WindowPainter_EraseBkgnd()
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
         GDI.BitBltWrapper targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
-        m_BackBuffer.SuspendDIB
+        If (Not m_HighPerfRequested) Then m_BackBuffer.SuspendDIB
     End If
     
 End Sub
@@ -1034,7 +1046,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
         GDI.BitBltWrapper targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
-        m_BackBuffer.SuspendDIB
+        If (Not m_HighPerfRequested) Then m_BackBuffer.SuspendDIB
     End If
     
 End Sub

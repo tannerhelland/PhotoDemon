@@ -169,6 +169,9 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
                     End If
                     
                 End With
+                
+                'Suspend the previous DIB in line, as it may not be accessed again for awhile
+                If (targetIndex > 0) Then m_ImageCache(targetIndex - 1).ImgSpriteSheet.SuspendDIB
             
             End If
             

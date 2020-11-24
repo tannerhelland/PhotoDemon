@@ -131,6 +131,10 @@ Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestNewSize newWidth, newHeight, True
 End Sub
 
+Public Sub RequestHighPerformanceRendering(ByVal newState As Boolean)
+    ucSupport.RequestHighPerformanceRendering newState
+End Sub
+
 Public Sub RequestRedraw(Optional ByVal paintImmediately As Boolean = False)
     RedrawBackBuffer paintImmediately
 End Sub

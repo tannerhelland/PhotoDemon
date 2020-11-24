@@ -64,6 +64,10 @@ End Type
 Private m_ImageCache() As ImgCacheEntry
 Private m_NumOfCacheObjects As Long
 
+'The last sheet used for adding images and/or painting.  Whenever this value changes, we suspend the
+' old DIB (e.g. suspend it to a compressed memory stream) to minimize resources.
+Private m_LastSheetAccessed As Long
+
 'Add an image to the cache.  The returned Long is the handle into the cache; you MUST remember it,
 ' as it's the only way to access the image again!
 '
@@ -183,6 +187,10 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
                 .numImages = .numImages + 1
                 targetID = .numImages
                 .spriteNames.AddString uniqueImageName
+                
+                'Keep memory usage down by suspending previous sheets
+                If (targetColumn <> m_LastSheetAccessed) And (m_LastSheetAccessed >= 0) And (m_LastSheetAccessed <= UBound(.imgSpriteSheets)) Then .imgSpriteSheets(m_LastSheetAccessed).SuspendDIB cf_Lz4, False
+                m_LastSheetAccessed = targetColumn
                 
             End With
             
@@ -367,6 +375,16 @@ End Function
 Private Sub GetNumRowsColumns(ByVal srcImageIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long)
     dstRow = srcImageIndex Mod m_MaxSpritesInColumn
     dstColumn = srcImageIndex \ m_MaxSpritesInColumn
+End Sub
+
+'Suspend all spritesheets to compressed memory streams; they will auto-recreate as necessary
+Friend Sub MinimizeMemory(Optional ByVal autoKeepIfLarge As Boolean = True)
+    Dim i As Long, j As Long
+    For i = 0 To m_NumOfCacheObjects - 1
+        For j = 0 To m_ImageCache(j).numSheets - 1
+            m_ImageCache(i).imgSpriteSheets(j).SuspendDIB cf_Lz4, autoKeepIfLarge
+        Next j
+    Next i
 End Sub
 
 'Fully reset the cache.  NOTE: this will invalidate all previously returned handles, so you *must*

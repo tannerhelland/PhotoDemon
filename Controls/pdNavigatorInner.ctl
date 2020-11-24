@@ -367,6 +367,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
+    ucSupport.RequestHighPerformanceRendering True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -618,6 +619,14 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
             m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
             
         Next i
+        
+        'Whenever we perform a full refresh of the entire thumbnail collection
+        ' (after e.g. loading a new image), immediately attempt to minimize spritesheet
+        ' memory usage.  This will suspend all DIBs in the current thumb collection, and in
+        ' animated images with very large frame counts, this can save a lot of memory because
+        ' thumbnails outside the current view won't be refreshed for awhile. (And when they are,
+        ' they'll be silently paged in as needed.)
+        If (forciblyUpdateIndex < 0) Then m_Thumbs.MinimizeMemory
     
     Else
         StopAnimation

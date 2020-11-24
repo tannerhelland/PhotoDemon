@@ -318,6 +318,7 @@ Private Sub Form_Load()
     'Make sure our animation objects exist
     Set m_Thumbs = New pdSpriteSheet
     Set m_Timer = New pdTimerAnimation
+    picPreview.RequestHighPerformanceRendering True
     
     'Set some animation default values
     m_BackgroundFrameIndex = -1
