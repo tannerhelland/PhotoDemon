@@ -601,7 +601,7 @@ Private Sub UpdateUIText()
                     Dim cHue As Double, cSat As Double, cVal As Double
                     Colors.fRGBtoHSV m_Red / 255#, m_Green / 255#, m_Blue / 255#, cHue, cSat, cVal
                     
-                    lblValue(i * 4).Caption = Format$((cHue * 360#), "##0.0") & ChrW$(&HB0&)
+                    lblValue(i * 4).Caption = Format$((cHue * 360#), "#0.0") & ChrW$(&HB0&)
                     lblValue(i * 4 + 1).Caption = Format$(cSat, "00.0%")
                     lblValue(i * 4 + 2).Caption = Format$(cVal, "00.0%")
                     lblValue(i * 4 + 3).Caption = Format$(m_Alpha / 255#, "00.0%")

@@ -940,7 +940,7 @@ Private Sub UpdateAspectRatio()
         Else
         
             If (imgHeightPixels > 0) Then
-                lblAspectRatio(1).Caption = " " & numerator & ":" & denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+                lblAspectRatio(1).Caption = " " & numerator & ":" & denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "#0.00#") & ")"
             End If
             
             'While we're here, also update the dimensions caption

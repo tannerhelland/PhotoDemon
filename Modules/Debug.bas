@@ -198,7 +198,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             'Format the return objects into something readable
             If (curMemUsage <> 0) Then
                 
-                Const NUMBER_FORMAT_GENERIC As String = "###,###,###,##0"
+                Const NUMBER_FORMAT_GENERIC As String = "#,#0"
                 
                 m_LogString.Append "CURRENT: "
                 m_LogString.Append Format$(curMemUsage, NUMBER_FORMAT_GENERIC) & " K"
@@ -290,7 +290,7 @@ End Sub
 
 'Shorcut function for logging timing results
 Public Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
-    PDDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
+    PDDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#0") & " ms", PDM_Timer_Report
 End Sub
 
 'If this is the first session after a hard crash, we want to forcibly activate the debugger (if user preferences allow)

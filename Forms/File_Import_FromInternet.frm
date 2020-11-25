@@ -273,9 +273,9 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
                 'Display a download update in the message area, but do not log it in the debugger (as there may be
                 ' many such notifications, and we don't want to inflate the log unnecessarily)
                 If UserPrefs.GenerateDebugLogs Then
-                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "###,###,##0"), Format$(downloadSize, "###,###,##0"), "DONOTLOG"
+                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "#,#0"), Format$(downloadSize, "#,#0"), "DONOTLOG"
                 Else
-                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "###,###,##0"), Format$(downloadSize, "###,###,##0")
+                    Message "Downloading file (%1 of %2 bytes received)...", Format$(totalBytesRead, "#,#0"), Format$(downloadSize, "#,#0")
                 End If
                 
             End If

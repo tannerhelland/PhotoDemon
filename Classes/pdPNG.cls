@@ -2791,9 +2791,9 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Message "Finalizing image..."
     
     If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "APNG export > prep took " & Format$(timeTakenPrep, "#,##0.0") & " ms"
-        PDDebug.LogAction "APNG export > filter took " & Format$(timeTakenFilter, "#,##0.0") & " ms"
-        PDDebug.LogAction "APNG export > deflate took " & Format$(timeTakenDeflate, "#,##0.0") & " ms"
+        PDDebug.LogAction "APNG export > prep took " & Format$(timeTakenPrep, "#,#0.0") & " ms"
+        PDDebug.LogAction "APNG export > filter took " & Format$(timeTakenFilter, "#,#0.0") & " ms"
+        PDDebug.LogAction "APNG export > deflate took " & Format$(timeTakenDeflate, "#,#0.0") & " ms"
         VBHacks.GetHighResTime startTime
     End If
     

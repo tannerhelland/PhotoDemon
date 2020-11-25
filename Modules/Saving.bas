@@ -757,7 +757,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
     If (Not SaveUndoData) Then PDDebug.LogAction "SaveUndoData returned failure; cause unknown."
     'Want to test undo timing?  Uncomment the line below
-    'pdDebug.LogAction "Undo file creation took: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
+    'pdDebug.LogAction "Undo file creation took: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "#0.00") & " ms"
     
 End Function
 

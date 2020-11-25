@@ -309,7 +309,7 @@ Friend Function RefreshDisplays() As Long
         PDDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
     End If
     
-    PDDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
+    PDDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "#0") & "%"
     
 End Function
 

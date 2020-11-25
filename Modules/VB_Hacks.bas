@@ -310,13 +310,13 @@ End Function
 Public Function GetTimeDiffNowAsString(ByVal startTime As Currency) As String
     Dim tmpTime As Currency:    QueryPerformanceCounter tmpTime
     Dim tmpDouble As Double:    tmpDouble = (tmpTime - startTime) * m_TimerFrequency
-    GetTimeDiffNowAsString = Format$(tmpDouble * 1000#, "#,##0.0") & " ms"
+    GetTimeDiffNowAsString = Format$(tmpDouble * 1000#, "#,#0.0") & " ms"
 End Function
 
 Public Function GetTotalTimeAsString(ByVal netTime As Currency) As String
     Dim tmpDouble As Double
     tmpDouble = netTime * m_TimerFrequency
-    GetTotalTimeAsString = Format$(tmpDouble * 1000#, "#,##0.0") & " ms"
+    GetTotalTimeAsString = Format$(tmpDouble * 1000#, "#,#0.0") & " ms"
 End Function
 
 Public Sub GetHighResTime(ByRef dstTime As Currency)

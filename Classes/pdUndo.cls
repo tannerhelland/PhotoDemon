@@ -212,7 +212,7 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
         .srcProcCall = srcProcData
         .undoLayerID = targetLayerID
         .undoFileSize = finalUndoFileSize
-        If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo file size: " & Format$(CDbl(.undoFileSize) / 1000#, "#,##0") & " kb"
+        If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo file size: " & Format$(CDbl(.undoFileSize) / 1000#, "#,#0") & " kb"
     End With
     
     'If the present image is NOT the last image in the undo train (i.e., the user pressed Undo before running
@@ -254,7 +254,7 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
             
     End Select
     
-    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
+    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0.00") & " ms"
     
     'Increase our Undo count
     m_UndoNum = m_UndoNum + 1
@@ -282,7 +282,7 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
-    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
+    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "#0.00") & " ms"
     
     m_UndoRedoActive = False
     
