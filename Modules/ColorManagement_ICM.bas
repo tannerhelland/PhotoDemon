@@ -6,19 +6,20 @@ Attribute VB_Name = "ColorManagement"
 'Last updated: 24/April/18
 'Last update: new helper function for exporting color profiles to file
 '
-'ICC profiles can be embedded in certain image file formats.  These profiles can be used to convert an image into
-' a precisely defined reference space, while taking into account any pecularities of the device that captured the
-' image (typically a camera).  From that reference space, we can then convert the image into any other
-' device-specific color space (typically a monitor or printer).
+'ICC profiles can be embedded in certain image file formats.  These profiles describe how to convert
+' an image to a precisely defined reference space, while taking into account any pecularities of the
+' device that captured the image (typically a camera).  From that reference space, we can then convert
+' the image into any other device-specific color space (typically a monitor or printer).
 '
-'ICC profile handling is broken into three parts: extracting the profile from an image, using the extracted profile
-' to convert an image into a reference "working space" (currently sRGB), and then activating color management for any
-' user-facing DCs using the color profiles specified by the user.
+'ICC profile handling is broken into three parts: extracting the profile from an image, using the
+' extracted profile to convert an image into a reference "working space" (often sRGB, but HDR has
+' different requirements), then activating color management for any user-facing DCs using the color
+' profiles specified by the user.
 '
-'This class interacts heavily with pdICCProfile (a class for managing ICC profile data), and the LittleCMS plugin,
-' which handles the bulk of PD's color management requirements.  (Past versions of this module used the built-in
-' Windows color management module, known as "ICM" or "WCS" depending on the version, but I have since dropped all
-' support for the Windows CMM as it's largely garbage.)
+'This class interacts heavily with pdICCProfile (a class for managing ICC profile data), and the
+' LittleCMS plugin, which handles the bulk of PD's color management requirements.  (Past versions of
+' this module used the built-in Windows color management module, known as "ICM" or "WCS" depending on
+' the version, but I have since dropped all support for the Windows CMM as it's largely garbage.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -845,6 +846,90 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
     End With
 
 End Sub
+
+'Save the current pdImage's list of edits to a standalone 3D lut file.
+Public Function SaveColorLookupToFile(ByRef srcImage As pdImage, Optional ByVal raiseDialog As Boolean, Optional ByRef exportParams As String = vbNullString) As Boolean
+    
+    'Failsafe checks
+    If (srcImage Is Nothing) Then Exit Function
+    
+    Dim dstFilename As String, cParams As pdSerialize
+    
+    If raiseDialog Then
+    
+        'Disable user input until the dialog closes
+        Interface.DisableUserInput
+        
+        'Determine an initial folder.  This is easy - just grab the last "3dlut" path from the preferences file.
+        Dim initialSaveFolder As String
+        initialSaveFolder = UserPrefs.GetLUTPath()
+        
+        'Build common dialog filter lists
+        Dim cdFilter As pdString, cdFilterExtensions As pdString
+        Set cdFilter = New pdString
+        Set cdFilterExtensions = New pdString
+        
+        cdFilter.Append "Adobe / IRIDAS (.cube)|*.cube|"
+        cdFilterExtensions.Append "cube|"
+        cdFilter.Append "Autodesk Lustre (.3dl)|*.3dl"
+        cdFilterExtensions.Append "3dl"
+        
+        Dim cdIndex As Long
+        cdIndex = 2
+        
+        'Suggest a file name.  At present, we just reuse the current image's name.
+        dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+        If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("Color lookup")
+        dstFilename = initialSaveFolder & dstFilename
+        
+        Dim cdTitle As String
+        cdTitle = g_Language.TranslateMessage("Export color lookup")
+        
+        'Prep a common dialog interface
+        Dim saveDialog As pdOpenSaveDialog
+        Set saveDialog = New pdOpenSaveDialog
+        
+        If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+        
+            'Update preferences
+            UserPrefs.SetLUTPath Files.FileGetPath(dstFilename)
+            
+            'Call this function again - with raiseDialog set to *false* - to initiate the actual save.
+            Set cParams = New pdSerialize
+            cParams.AddParam "export-filename", dstFilename
+            
+            Dim targetLutFormat As String
+            Select Case cdIndex
+                Case 1
+                    targetLutFormat = "cube"
+                Case 2
+                    targetLutFormat = "3dl"
+            End Select
+            
+            cParams.AddParam "export-format", targetLutFormat
+            
+            Process "Export color lookup", False, cParams.GetParamString()
+            
+        End If
+    
+    'No dialog, which means we need to generate and export a 3D lut for the current image state
+    Else
+        
+        Set cParams = New pdSerialize
+        cParams.SetParamString exportParams
+        dstFilename = cParams.GetString("export-filename")
+        
+        If (LenB(dstFilename) <> 0) Then
+            
+            'TODO!
+            Dim cExport As pdLUT3D
+            Set cExport = New pdLUT3D
+            
+        End If
+    
+    End If
+
+End Function
 
 'Save a given pdImage's associated color profile to a standalone ICC file.
 Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal raiseDialog As Boolean, Optional ByRef exportParams As String = vbNullString) As Boolean

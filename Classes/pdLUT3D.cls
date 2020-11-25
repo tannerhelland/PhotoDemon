@@ -95,11 +95,14 @@ Private m_subLutPath As String
 ' (loop size is just m_LutSize-1, but it's faster to precalculate it since it's accessed inside many loops).
 Private m_LutSize As Long, m_LutLoopSize As Long
 
-'Domain min and max values can vary; these are typically [0, 1] but the spec allows any arbitrary value
+'Domain min and max values can vary; these are typically [0, 1] but the spec allows any arbitrary value.
+' (Proliferation of HDR compatibility may mean it's more likely to see values outside the normal range
+' in the future.  This class handles such tables just fine.)
 Private m_MinR As Single, m_MinG As Single, m_MinB As Single
 Private m_MaxR As Single, m_MaxG As Single, m_MaxB As Single
 Private m_RangeR As Single, m_RangeG As Single, m_RangeB As Single
 
+'Some luts are loaded across multiple stages.  State-tracking is important to prevent errors.
 Private m_LoadSuccessful As Boolean
 
 'Apply the loaded lUT to an arbitrary DIB

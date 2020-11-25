@@ -159,12 +159,16 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color profile..."
+            Caption         =   "Color lookup..."
             Index           =   3
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "Color profile..."
             Index           =   4
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuFile 
@@ -3562,8 +3566,10 @@ Private Sub MnuFileExport_Click(Index As Integer)
         Case 2
             '(separator)
         Case 3
-            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+            Menus.ProcessDefaultAction_ByName "file_export_colorlookup"
         Case 4
+            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+        Case 5
             Menus.ProcessDefaultAction_ByName "file_export_palette"
     End Select
     

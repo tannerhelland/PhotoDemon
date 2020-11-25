@@ -1341,6 +1341,10 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Saving.Export_AnimatedPNG PDImages.GetActiveImage()
         Process_FileMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Export color lookup", True) Then
+        ColorManagement.SaveColorLookupToFile PDImages.GetActiveImage(), raiseDialog, processParameters
+        Process_FileMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
         ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage(), raiseDialog, processParameters
         Process_FileMenu = True

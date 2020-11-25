@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.336</langversion>
+<langversion>1.0.337</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -50,6 +50,16 @@
 <!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>Color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export color lookup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>ICC profile</original>
 <translation>ICC профил</translation>
 </phrase>
@@ -69,7 +79,7 @@
 <translation></translation>
 </phrase>
 
-<!-- ColorManagement_ICM.bas contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -1749,11 +1759,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Color lookup</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Colorize</original>
 <translation>colorize</translation>
 </phrase>
@@ -2283,7 +2288,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 268 phrases. 30 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
+<!-- Menus.bas contains 269 phrases. 32 were duplicates of existing phrases, so only 237 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5277,7 +5282,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 370 phrases. 191 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 371 phrases. 192 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13284,10 +13289,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2515</phrasecount>
+<phrasecount>2516</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5122 phrases. -->
-<!-- 2607 are duplicates, so only 2515 unique phrases have been written to file. -->
-<!-- These 2515 phrases contain approximately 11593 total words. -->
+<!-- As of this build, PhotoDemon contains 5129 phrases. -->
+<!-- 2613 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 11596 total words. -->
 
 </pdData>
