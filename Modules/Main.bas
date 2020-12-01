@@ -160,17 +160,11 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Prepare splash screen"
     
     'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
-    ' (At present, only GDI+ is used)
+    ' (At present, only GDI+ is required.)
     Interface.InitializeInterfaceBackend
     
-    If Drawing2D.StartRenderingEngine(P2_DefaultBackend) Then
-        
-        Drawing2D.SetLibraryDebugMode UserPrefs.GenerateDebugLogs
-        
-        'Load FormSplash into memory.  (Note that its .Visible property is set to FALSE, so it is not actually displayed here.)
-        Load FormSplash
-        
-    End If
+    'Load the splash screen (but note it's only LOADED here, not actually displayed... yet)
+    If Drawing2D.StartRenderingEngine(P2_DefaultBackend) Then Load FormSplash
     
     
     '*************************************************************************************************************************************

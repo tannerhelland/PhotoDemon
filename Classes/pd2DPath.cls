@@ -43,9 +43,6 @@ Private Const DEFAULT_FILL_RULE As Long = P2_FR_Winding
 ' The default value of 0.25 is identical to the default value in GdiPlusEnums.h.
 Private Const DEFAULT_APPROXIMATION_ERROR As Single = 0.25!
 
-'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
-Private m_DebugMode As Boolean
-
 'The handle to our GDI+ path object.  This handle is automatically created with the class, and released when the
 ' class is terminated.  The caller doesn't have to worry about it at all.
 Private m_PathHandle As Long
@@ -74,7 +71,7 @@ Private Function CreatePath() As Boolean
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
     CreatePath = (m_PathHandle <> 0)
-    If (CreatePath And m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange True
+    If (CreatePath And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyPathCountChange True
     
 End Function
 
@@ -89,7 +86,7 @@ Friend Function ReleasePath() As Boolean
         ' the central Drawing2D module also needs to be notified.
         If ReleasePath Then
             m_PathHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange False
+            If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifyPathCountChange False
         End If
         
     Else
@@ -362,8 +359,7 @@ Friend Sub AddPath(ByRef srcGraphicsPath As pd2DPath, Optional ByVal offsetX As 
         End If
         
     Else
-        InternalError "Empty source path", "WARNING!  pd2DPath.AddPath was handed a non-existent path."
-        Exit Sub
+        InternalError "AddPath", "null source"
     End If
     
 End Sub
@@ -464,12 +460,12 @@ Friend Function ApplyTransformation(ByRef srcTransform As pd2DTransform) As Bool
         If (m_PathHandle = 0) Then CreatePath
         ApplyTransformation = GDI_Plus.GDIPlus_PathTransform(m_PathHandle, srcTransform.GetHandle)
     Else
-        InternalError "Source transformation is empty", "ApplyTransformation requires a valid source transformation object!"
+        InternalError "ApplyTransformation", "null transform"
     End If
 End Function
 
 'Rotate the path around its center point.  The center point is calculated automatically.
-Friend Function RotatePathAroundItsCenter(ByRef rotateAngle As Single) As Boolean
+Friend Function RotatePathAroundItsCenter(ByVal rotateAngle As Single) As Boolean
     
     If (m_PathHandle = 0) Then CreatePath
     ResetInternalTransform
@@ -517,7 +513,7 @@ Friend Function ConvertPath_OutlineOnly(Optional ByVal allowableError As Single 
     If (m_PathHandle <> 0) Then
         ConvertPath_OutlineOnly = GDI_Plus.GDIPlus_PathWindingModeOutline(m_PathHandle, 0&, allowableError)
     Else
-        InternalError "Path doesn't exist", "You can't convert an empty path!"
+        InternalError "ConvertPath_OutlineOnly", "null hPath"
     End If
 End Function
 
@@ -537,7 +533,7 @@ Friend Function ConvertPath_PenTrace(ByRef srcPen As pd2DPen, Optional ByVal all
             ConvertPath_PenTrace = False
         End If
     Else
-        InternalError "Path doesn't exist", "You can't convert an empty path!"
+        InternalError "ConvertPath_PenTrace", "null hPath"
     End If
     
 End Function
@@ -584,7 +580,7 @@ Friend Function ConvertPath_InflateLikeBalloon(ByVal inflateWidth As Single, Opt
         End If
         
     Else
-        InternalError "Path doesn't exist", "You can't convert an empty path!"
+        InternalError "ConvertPath_InflateLikeBalloon", "null path"
     End If
     
 End Function
@@ -597,10 +593,10 @@ Friend Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
         m_PathHandle = GDI_Plus.GDIPlus_PathClone(srcPath.GetHandle)
         CloneExistingPath = (m_PathHandle <> 0)
         
-        If (CloneExistingPath And m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange True
+        If (CloneExistingPath And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyPathCountChange True
     
     Else
-        InternalError "Null source path", "WARNING!  pd2DPath.CloneExistingPath was passed a non-existent path."
+        InternalError "CloneExistingPath", "null source path"
         CloneExistingPath = False
     End If
     
@@ -608,28 +604,20 @@ End Function
 
 Friend Function DoesPointTouchPathOutlineF(ByVal x As Single, ByVal y As Single, ByRef srcPen As pd2DPen) As Boolean
     
-    If (m_PathHandle <> 0) Then
-        If (Not srcPen Is Nothing) Then
-            DoesPointTouchPathOutlineF = GDI_Plus.GDIPlus_PathDoesPointTouchOutlineF(m_PathHandle, x, y, srcPen.GetHandle)
-        Else
-            InternalError "Pen doesn't exist", "DoesPointTouchPathOutlineF is meaningless if you don't supply a pen!"
-        End If
+    If (m_PathHandle <> 0) And (Not srcPen Is Nothing) Then
+        DoesPointTouchPathOutlineF = GDI_Plus.GDIPlus_PathDoesPointTouchOutlineF(m_PathHandle, x, y, srcPen.GetHandle)
     Else
-        InternalError "Path doesn't exist", "DoesPointTouchPathOutlineF is meaningless on an empty path!"
+        InternalError "DoesPointTouchPathOutlineF", "null hPath or hPen"
     End If
     
 End Function
 
 Friend Function DoesPointTouchPathOutlineL(ByVal x As Long, ByVal y As Long, ByRef srcPen As pd2DPen) As Boolean
     
-    If (m_PathHandle <> 0) Then
-        If (Not srcPen Is Nothing) Then
-            DoesPointTouchPathOutlineL = GDI_Plus.GDIPlus_PathDoesPointTouchOutlineL(m_PathHandle, x, y, srcPen.GetHandle)
-        Else
-            InternalError "Pen doesn't exist", "DoesPointTouchPathOutlineF is meaningless if you don't supply a pen!"
-        End If
+    If (m_PathHandle <> 0) And (Not srcPen Is Nothing) Then
+        DoesPointTouchPathOutlineL = GDI_Plus.GDIPlus_PathDoesPointTouchOutlineL(m_PathHandle, x, y, srcPen.GetHandle)
     Else
-        InternalError "Path doesn't exist", "DoesPointTouchPathOutlineL is meaningless on an empty path!"
+        InternalError "DoesPointTouchPathOutlineL", "null hPath or hPen"
     End If
     
 End Function
@@ -664,7 +652,7 @@ Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, 
         GetPathBoundariesF = GDI_Plus.GDIPlus_PathGetPathBoundsF(m_PathHandle, transformHandle, penHandle)
     
     Else
-        InternalError "No path handle!", "GetPathBoundariesF() can't return boundaries if the path doesn't exist"
+        InternalError "GetPathBoundariesF", "null hPath"
     End If
     
 End Function
@@ -688,7 +676,7 @@ Friend Function IsPointInsidePathF(ByVal x As Single, ByVal y As Single) As Bool
     If (m_PathHandle <> 0) Then
         IsPointInsidePathF = GDI_Plus.GDIPlus_PathIsPointInsideF(m_PathHandle, x, y)
     Else
-        InternalError "Path doesn't exist", "IsPointInsidePathF is meaningless on an empty path!"
+        InternalError "IsPointInsidePathF", "null hPath"
     End If
     
 End Function
@@ -698,7 +686,7 @@ Friend Function IsPointInsidePathL(ByVal x As Long, ByVal y As Long) As Boolean
     If (m_PathHandle <> 0) Then
         IsPointInsidePathL = GDI_Plus.GDIPlus_PathIsPointInsideL(m_PathHandle, x, y)
     Else
-        InternalError "Path doesn't exist", "IsPointInsidePathL is meaningless on an empty path!"
+        InternalError "IsPointInsidePathL", "null hPath"
     End If
     
 End Function
@@ -710,25 +698,20 @@ Private Sub ResetInternalTransform()
     m_Transform.Reset
 End Sub
 
-'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Friend Sub SetDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 Private Sub Class_Initialize()
     Me.ResetPath
-    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
     Me.ReleasePath
 End Sub
 
-
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPath"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "pd2DPath", errFunction, errDescription, errNum
 End Sub
+

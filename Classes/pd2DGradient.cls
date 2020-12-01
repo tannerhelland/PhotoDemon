@@ -573,7 +573,7 @@ Friend Function LoadGradientFromFile(ByRef srcFilename As String) As Boolean
         End If
         
     Else
-        InternalError "LoadGradientFromFile: failed to start stream object"
+        InternalError "LoadGradientFromFile", "failed to start stream"
         LoadGradientFromFile = False
     End If
 
@@ -685,7 +685,7 @@ Private Function LoadGradient_GIMP(ByRef srcStream As pdStream) As Boolean
                         
                         'Make sure we retrieved enough values to avoid OOB errors during parsing
                         If (UBound(srcColorText) < 10) Then
-                            InternalError "LoadGradient_GIMP bad color", "bad color found on line " & CStr(i + 3)
+                            InternalError "LoadGradient_GIMP", "bad color found on line " & CStr(i + 3)
                             GoTo BadLineColor
                         End If
                         
@@ -698,7 +698,7 @@ Private Function LoadGradient_GIMP(ByRef srcStream As pdStream) As Boolean
                             'For color, opacity, and position entries, ensure the color value is valid
                             If (j <= 10) Then
                                 If (srcColorFloat(j) < 0#) Or (srcColorFloat(j) > 1#) Then
-                                    InternalError "LoadGradient_GIMP bad color", "bad color found on line " & CStr(i + 3)
+                                    InternalError "LoadGradient_GIMP", "bad color found on line " & CStr(i + 3)
                                     GoTo BadLineColor
                                 End If
                             End If
@@ -913,7 +913,7 @@ BadStopNode:
                     ReDim Preserve m_GradientPoints(0 To m_NumOfPoints - 1) As GradientPoint
                     LoadGradient_SVG = True
                 Else
-                    InternalError "LoadGradient_SVG", "not enough valid stops in file"
+                    InternalError "LoadGradient_SVG", "not enough valid stops"
                     LoadGradient_SVG = False
                 End If
                 
@@ -929,7 +929,7 @@ BadStopNode:
             
         '/end basic file validation; file is not SVG
         Else
-            InternalError "LoadGradient_SVG", "couldn't load XML file"
+            InternalError "LoadGradient_SVG", "couldn't load XML"
             LoadGradient_SVG = False
         End If
     
@@ -1328,11 +1328,11 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
         ' two dummy colors.
         gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 0, P2_WM_TileFlipXY)
         If (gdipBrush = 0) Then
-            InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+            InternalError "GetBrushHandle", "couldn't create linear gradient brush"
         Else
         
             'Now that we have a brush handle, override the dummy colors with our full color array
-            If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+            If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GetBrushHandle", "failed to override default gradient brush colors"
             
             'Set gamma mode, as relevant
             If m_GradientGammaMode Then GDI_Plus.GDIPlus_LineGradientSetGamma gdipBrush, True
@@ -1347,9 +1347,9 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
             Case P2_GS_Linear, P2_GS_Reflection
                 gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 0, m_GradientWrapMode)
                 If (gdipBrush = 0) Then
-                    InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+                    InternalError "GetBrushHandle", "failed during line brush creation"
                 Else
-                    If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GetBrushHandle", "failed to override default gradient brush colors"
                     If m_GradientGammaMode Then GDI_Plus.GDIPlus_LineGradientSetGamma gdipBrush, True
                 End If
                 
@@ -1436,14 +1436,14 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                     GDI_Plus.SetGDIPlusPathBrushCenter gdipBrush, centerX, centerY
                     
                     'Next, override the brush colors with our custom array
-                    If Not GDI_Plus.OverrideGDIPlusPathGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    If Not GDI_Plus.OverrideGDIPlusPathGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GetBrushHandle", "failed to override default gradient brush colors"
                     
                     'Finally, set any/all custom parameters (e.g. wrap mode)
                     GDI_Plus.SetGDIPlusPathBrushWrap gdipBrush, m_GradientWrapMode
                     If m_GradientGammaMode Then GDI_Plus.GDIPlus_PathGradientSetGamma gdipBrush, True
                 
                 Else
-                    InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to create a valid path brush handle."
+                    InternalError "GetBrushHandle", "failed to create path brush handle"
                 End If
                 
         End Select
@@ -1596,10 +1596,12 @@ Private Sub Class_Initialize()
     
 End Sub
 
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal errorNumberIfPresent As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, errorNumberIfPresent, "pd2DGradient"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "pd2DGradient", errFunction, errDescription, errNum
 End Sub
+

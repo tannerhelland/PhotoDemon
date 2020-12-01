@@ -173,7 +173,7 @@ Public Enum PD_2D_DashCap
 End Enum
 
 #If False Then
-    Private Const P2_DC_Flat = 0, P2_DC_Square = 0, P2_DC_Round = 2, P2_DC_Triangle = 3
+    Private Const P2_DC_Flat = 0, P2_DC_Square = 1, P2_DC_Round = 2, P2_DC_Triangle = 3
 #End If
 
 Public Enum PD_2D_DashStyle
@@ -455,9 +455,6 @@ End Type
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
 
-'When debug mode is active, this module will track surface creation+destruction counts.  This is helpful for detecting leaks.
-Private m_DebugMode As Boolean
-
 'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis.  This is crucial for
 ' leak detection - these numbers should always match the number of active class instances.
 Private m_BrushCount_GDIPlus As Long, m_PathCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long, m_SurfaceCount_GDIPlus As Long, m_TransformCount_GDIPlus As Long
@@ -661,7 +658,7 @@ Public Function QuickLoadPicture(ByRef dstObject As Object, ByVal srcPath As Str
     Exit Function
     
 LoadPictureFail:
-    InternalError "VB error inside Drawing2D", Err.Description, Err.Number
+    InternalError "QuickLoadPicture", Err.Description, Err.Number
     QuickLoadPicture = False
 End Function
 
@@ -674,14 +671,6 @@ Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RE
     End Select
 End Function
 
-Public Function GetLibraryDebugMode() As Boolean
-    GetLibraryDebugMode = m_DebugMode
-End Function
-
-Public Sub SetLibraryDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 'Start a new rendering backend
 Public Function StartRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
 
@@ -692,7 +681,7 @@ Public Function StartRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDE
             m_GDIPlusAvailable = StartRenderingEngine
             
         Case Else
-            InternalError "Bad Parameter", "Couldn't start requested backend: backend ID unknown"
+            InternalError "StartRenderingEngine", "unknown backend"
     
     End Select
 
@@ -707,31 +696,31 @@ Public Function StopRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDER
             
             'Prior to release, see if any GDI+ object counts are non-zero; if they are, the caller needs to
             ' be notified, because those resources should be released before the backend disappears.
-            If m_DebugMode Then
-                If (m_BrushCount_GDIPlus <> 0) Then InternalError "Brushes still active", "There are still " & m_BrushCount_GDIPlus & " brush(es) active.  Release these objects before shutting down the drawing backend."
-                If (m_PathCount_GDIPlus <> 0) Then InternalError "Paths still active", "There are still " & m_PathCount_GDIPlus & " path(s) active.  Release these objects before shutting down the drawing backend."
-                If (m_PenCount_GDIPlus <> 0) Then InternalError "Pens still active", "There are still " & m_PenCount_GDIPlus & " pen(s) active.  Release these objects before shutting down the drawing backend."
-                If (m_RegionCount_GDIPlus <> 0) Then InternalError "Regions still active", "There are still " & m_RegionCount_GDIPlus & " region(s) active.  Release these objects before shutting down the drawing backend."
-                If (m_SurfaceCount_GDIPlus <> 0) Then InternalError "Surfaces still active", "There are still " & m_SurfaceCount_GDIPlus & " surface(s) active.  Release these objects before shutting down the drawing backend."
-                If (m_TransformCount_GDIPlus <> 0) Then InternalError "Transforms still active", "There are still " & m_TransformCount_GDIPlus & " transform(s) active.  Release these objects before shutting down the drawing backend."
+            If PD2D_DEBUG_MODE Then
+                If (m_BrushCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_BrushCount_GDIPlus & " brush(es) active.  Release these objects before shutting down the drawing backend."
+                If (m_PathCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_PathCount_GDIPlus & " path(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_PenCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_PenCount_GDIPlus & " pen(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_RegionCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_RegionCount_GDIPlus & " region(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_SurfaceCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_SurfaceCount_GDIPlus & " surface(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_TransformCount_GDIPlus <> 0) Then InternalError "StopRenderingEngine", "There are still " & m_TransformCount_GDIPlus & " transform(s) active.  Release these objects before shutting down the drawing backend."
             End If
             
             StopRenderingEngine = GDI_Plus.GDIP_StopEngine()
             m_GDIPlusAvailable = False
             
         Case Else
-            InternalError "Bad Parameter", "Couldn't stop requested backend: backend ID unknown"
+            InternalError "StopRenderingEngine", "unknown backend"
     
     End Select
     
 End Function
 
 'At present, Drawing2D errors are simply forwarded to the main error handler function at the bottom of this module.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    DEBUG_NotifyExternalError errName, errDescription, ErrNum, "Drawing2d"
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    DEBUG_NotifyError "Drawing2D", errFunction, errDescription, errNum
 End Sub
 
-'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when m_DebugMode = TRUE.
+'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when PD2D_DEBUG_MODE = TRUE.
 Public Sub DEBUG_NotifyBrushCountChange(ByVal objectCreated As Boolean)
     If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
 End Sub
@@ -758,10 +747,9 @@ End Sub
 
 'In a default build, external pd2D classes relay any internal errors to this function.  You may wish to modify those classes
 ' to raise their own error events, or perhaps handle their errors internally.  (By default, pd2D does *not* halt on errors.)
-Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
-    If (LenB(errSource) = 0) Then errSource = "pd2D"
-    PDDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
-    If (ErrNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
+Public Sub DEBUG_NotifyError(ByRef errClassName As String, ByRef errFunctionName As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    PDDebug.LogAction "WARNING!  pd2D error in " & errClassName & "." & errFunctionName & ": " & errDescription
+    If (errNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & errNum & ")"
 End Sub
 
 'These functions exist to help with XML serialization.  They use consistent names against

@@ -13,6 +13,11 @@ Attribute VB_Name = "PD2D"
 
 Option Explicit
 
+'This master debug-mode flag modifies behavior in various pd2D objects (for example, some objects
+' will track create/destroy behavior to make it easier to track down leaks).  I do *not* recommend
+' enabling it in production builds as it has perf repercussions.
+Public Const PD2D_DEBUG_MODE As Boolean = False
+
 'If possible (e.g. painting without stretching), this painter class will drop back to bare AlphaBlend calls
 ' for image rendering.  This provides a meaningful performance improvement over GDI+ draw calls.
 Private Declare Function AlphaBlend Lib "gdi32" Alias "GdiAlphaBlend" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
@@ -279,7 +284,7 @@ End Function
 
 Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
     DrawLineF = GDI_Plus.GDIPlus_DrawLineF(dstSurface.GetHandle, srcPen.GetHandle, x1, y1, x2, y2)
-    If (Not DrawLineF) Then InternalError "LineDrawFailed", "GDIPlus_DrawLineF drew nothing"
+    If (Not DrawLineF) Then InternalError "DrawLineF", "GDI+ failure"
 End Function
 
 Public Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As PointFloat, ByRef srcPoint2 As PointFloat) As Boolean
@@ -367,7 +372,6 @@ Public Function DrawRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, B
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
     Dim tmpPath As pd2DPath
     Set tmpPath = New pd2DPath
-    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
     tmpPath.AddRoundedRectangle_RectF srcRect, cornerRadius
     
     DrawRoundRectangleF_FromRectF = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, tmpPath.GetHandle)
@@ -461,7 +465,6 @@ Public Function FillRoundRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBr
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
     Dim tmpPath As pd2DPath
     Set tmpPath = New pd2DPath
-    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
     tmpPath.AddRoundedRectangle_Relative x, y, rectWidth, rectHeight, cornerRadius
     
     FillRoundRectangleF = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
@@ -473,17 +476,18 @@ Public Function FillRoundRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, B
     'GDI+ has no internal rounded rect function, so we need to manually construct our own path.
     Dim tmpPath As pd2DPath
     Set tmpPath = New pd2DPath
-    tmpPath.SetDebugMode Drawing2D.GetLibraryDebugMode
     tmpPath.AddRoundedRectangle_RectF srcRect, cornerRadius
     
     FillRoundRectangleF_FromRectF = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
     
 End Function
 
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "PD2D module"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "PD2D", errFunction, errDescription, errNum
 End Sub
+

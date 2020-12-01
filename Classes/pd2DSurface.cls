@@ -85,9 +85,6 @@ Private m_SurfaceDIB As pdDIB
 ' GDI+ interop method.  (Wrapped hDCs can't be used as 32-bpp surfaces, because alpha data is unreliable.)
 Private m_SurfaceType As PD_2D_SurfaceType
 
-'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
-Private m_DebugMode As Boolean
-
 'Surface settings that support get/set operations
 Private m_SurfaceAntialiasing As PD_2D_Antialiasing
 Private m_SurfaceBlendUsingSRGBGamma As Boolean
@@ -281,7 +278,7 @@ Friend Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal clo
         End If
         
     Else
-        InternalError "Failed to clone surface", "Source surface was empty"
+        InternalError "CloneSurface", "null source surface"
     End If
 
 End Function
@@ -319,11 +316,11 @@ Friend Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
             If CreateBlankSurface Then SyncAllPropertiesToBackend
                     
             'When debug mode is active, all object creations are reported back to the master Drawing2D module
-            If (CreateBlankSurface And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+            If (CreateBlankSurface And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
     Else
-        InternalError "Invalid surface width/height", "When creating a blank surface, the width and height must be non-zero."
+        InternalError "CreateBlankSurface", "invalid width or height"
     End If
     
 End Function
@@ -360,7 +357,7 @@ Friend Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVa
     End If
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If (CreateSurfaceFromFile And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+    If (CreateSurfaceFromFile And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
 
@@ -423,7 +420,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
                     GDI_Plus.ReleaseGDIPlusImage hGdipImage
                     hGdipImage = newImageHandle
                 Else
-                    InternalError "Metafile upgrade failed", "Could not convert old-style WMF or EMF to new EMF+ format"
+                    InternalError "InternalGDIPlusLoadImage", "Couldn't convert to EMF+"
                 End If
                 
                 'Release all the temporary objects we created for the conversion
@@ -565,7 +562,7 @@ Friend Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal 
     End If
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If (CreateSurfaceFromArray And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+    If (CreateSurfaceFromArray And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
 
@@ -615,16 +612,16 @@ Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
                 End If
                 
             Else
-                InternalError "GDI+ DC wrapper failed", "GDI+ failed to wrap the hDC passed to pd2DSurface.WrapSurfaceAroundDC"
+                InternalError "WrapSurfaceAroundDC", "failed to wrap hDC"
             End If
             
             'When debug mode is active, all object creations are reported back to the master Drawing2D module
-            If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+            If (WrapSurfaceAroundDC And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
     
     Else
-        InternalError "hDC is null", "pd2DSurface.WrapSurfaceAroundDC doesn't work on null DCs."
+        InternalError "WrapSurfaceAroundDC", "null hDC"
     End If
     
 End Function
@@ -651,10 +648,10 @@ Friend Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
         If WrapSurfaceAroundPDDIB Then SyncAllPropertiesToBackend
             
         'When debug mode is active, all object creations are reported back to the master Drawing2D module
-        If (WrapSurfaceAroundPDDIB And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+        If (WrapSurfaceAroundPDDIB And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
         
     Else
-        InternalError "target DIB is null", "pd2DSurface.WrapSurfaceAroundPDDIB doesn't work on non-existent DIBs."
+        InternalError "WrapSurfaceAroundPDDIB", "null DIB"
     End If
     
 End Function
@@ -694,7 +691,7 @@ Friend Function SaveSurfaceToFile(ByVal dstFilename As String, Optional ByVal ds
     If (gdipBitmap <> 0) Then
         SaveSurfaceToFile = GDI_Plus.GDIPlus_ImageSaveToFile(gdipBitmap, dstFilename, dstFileFormat, jpegQuality)
     Else
-        InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToFile() failed because GDI+ failed to create a matching Bitmap object prior to saving."
+        InternalError "SaveSurfaceToFile", "couldn't create GDI+ bitmap"
     End If
     
 End Function
@@ -721,7 +718,7 @@ Friend Function SaveSurfaceToArray(ByRef dstArray() As Byte, Optional ByVal dstF
     If (gdipBitmap <> 0) Then
         SaveSurfaceToArray = GDI_Plus.GDIPlus_ImageSaveToArray(gdipBitmap, dstArray, dstFileFormat, jpegQuality)
     Else
-        InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToArray() failed because GDI+ failed to create a matching Bitmap object prior to saving."
+        InternalError "SaveSurfaceToArray", "couldn't create GDI+ bitmap"
     End If
     
 End Function
@@ -754,7 +751,7 @@ Friend Function GetGdipImageHandle() As Long
             
         End If
         
-        If (Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB)) Then InternalError "GetGdipImageHandle failed", "Could not create a GDI+ Image (bitmap) object from wrapped hDC."
+        If (Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB)) Then InternalError "GetGdipImageHandle", "couldn't create GDI+ bitmap"
         
     'If we already have a handle, but we are in "wrapper" mode, we need to make sure our duplicate DIB copy is still up-to-date.
     Else
@@ -769,7 +766,7 @@ Friend Function GetGdipImageHandle() As Long
             GDI.BitBltWrapper m_SurfaceDIB.GetDIBDC, 0, 0, m_SurfaceDIB.GetDIBWidth, m_SurfaceDIB.GetDIBHeight, m_SurfaceDC, 0, 0, vbSrcCopy
             
             If (m_GdipImageHandle = 0) Then
-                If Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB) Then InternalError "GetGdipImageHandle failed", "Could not create a GDI+ Image (bitmap) object from wrapped hDC."
+                If Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB) Then InternalError "GetGdipImageHandle", "couldn't create GDI+ bitmap"
             End If
             
         End If
@@ -912,7 +909,7 @@ Friend Function ReleaseSurface() As Boolean
         ' the central Drawing2D module also needs to be notified.
         If ReleaseSurface Then
             m_SurfaceHandle = 0
-            If m_DebugMode Then Drawing2D.DEBUG_NotifySurfaceCountChange False
+            If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifySurfaceCountChange False
             
             'Also reset any surface-type-specific values
             If (m_SurfaceType = P2_ST_WrapperOnly) Then
@@ -969,25 +966,21 @@ Private Sub SyncAllPropertiesToBackend()
     Me.SetSurfaceCompositing m_SurfaceCompositeMode
 End Sub
 
-'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Friend Sub SetDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 Private Sub Class_Initialize()
     m_SurfaceType = P2_ST_Uninitialized
     Me.ResetAllProperties
-    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
     Me.ReleaseSurface
 End Sub
 
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DSurface"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "pd2DSurface", errFunction, errDescription, errNum
 End Sub
+

@@ -991,7 +991,6 @@ Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, 
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal pathFillMode As GP_FillMode, ByRef dstPath As Long) As GP_Result
 Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptrToSrcPath As Long, ByRef dstPathGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal srcColor As Long, ByVal srcWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
-Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
 Private Declare Function GdipCreateRegion Lib "gdiplus" (ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, ByRef hRegion As Long) As GP_Result
 'Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RectF, ByRef hRegion As Long) As GP_Result
@@ -1068,16 +1067,6 @@ Private Declare Function GdipGetMetafileHeaderFromMetafile Lib "gdiplus" (ByVal 
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
-Private Declare Function GdipGetPenColor Lib "gdiplus" (ByVal hPen As Long, ByRef dstPARGBColor As Long) As GP_Result
-Private Declare Function GdipGetPenDashCap Lib "gdiplus" Alias "GdipGetPenDashCap197819" (ByVal hPen As Long, ByRef dstCap As GP_DashCap) As GP_Result
-Private Declare Function GdipGetPenDashOffset Lib "gdiplus" (ByVal hPen As Long, ByRef dstOffset As Single) As GP_Result
-Private Declare Function GdipGetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByRef dstDashStyle As GP_DashStyle) As GP_Result
-Private Declare Function GdipGetPenEndCap Lib "gdiplus" (ByVal hPen As Long, ByRef dstLineCap As GP_LineCap) As GP_Result
-Private Declare Function GdipGetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByRef dstLineCap As GP_LineCap) As GP_Result
-Private Declare Function GdipGetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByRef dstLineJoin As GP_LineJoin) As GP_Result
-Private Declare Function GdipGetPenMiterLimit Lib "gdiplus" (ByVal hPen As Long, ByRef dstMiterLimit As Single) As GP_Result
-Private Declare Function GdipGetPenMode Lib "gdiplus" (ByVal hPen As Long, ByRef dstPenMode As GP_PenAlignment) As GP_Result
-Private Declare Function GdipGetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByRef dstWidth As Single) As GP_Result
 Private Declare Function GdipGetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As Long, ByVal srcPropertySize As Long, ByVal ptrToDstBuffer As Long) As GP_Result
 Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As GP_PropertyTag, ByRef dstPropertySize As Long) As GP_Result
@@ -1137,18 +1126,9 @@ Private Declare Function GdipSetPathGradientGammaCorrection Lib "gdiplus" (ByVal
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal pathFillMode As GP_FillMode) As GP_Result
-Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
-Private Declare Function GdipSetPenDashArray Lib "gdiplus" (ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As GP_Result
-Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
-Private Declare Function GdipSetPenDashOffset Lib "gdiplus" (ByVal hPen As Long, ByVal newPenOffset As Single) As GP_Result
-Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByVal newDashStyle As GP_DashStyle) As GP_Result
-Private Declare Function GdipSetPenEndCap Lib "gdiplus" (ByVal hPen As Long, ByVal endCap As GP_LineCap) As GP_Result
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal startCap As GP_LineCap, ByVal endCap As GP_LineCap, ByVal dashCap As GP_DashCap) As GP_Result
 Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByVal newLineJoin As GP_LineJoin) As GP_Result
-Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal hPen As Long, ByVal newMiterLimit As Single) As GP_Result
 Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal hPen As Long, ByVal penMode As GP_PenAlignment) As GP_Result
-Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByVal startCap As GP_LineCap) As GP_Result
-Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
@@ -3959,51 +3939,6 @@ Public Function GetGDIPlusGraphicsFromDC_Fast(ByVal srcDC As Long) As Long
     End If
 End Function
 
-'Shorthand function for quickly creating a new GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-' (Note that a single parameter is used to set both pen and dash endcaps; if you want these to differ, you must call the separate
-' SetPenDashCap function, below.)
-Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penOpacity As Long = 255&, Optional ByVal penWidth As Single = 1!, Optional ByVal penLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal penLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal penDashMode As GP_DashStyle = GP_DS_Solid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penAlignment As GP_PenAlignment = GP_PA_Center) As Long
-
-    'Create the base pen
-    Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(penColor, penOpacity), penWidth, GP_U_Pixel, hPen
-    
-    If (hPen <> 0) Then
-        
-        GdipSetPenLineCap hPen, penLineCap, penLineCap, 0&
-        GdipSetPenLineJoin hPen, penLineJoin
-        
-        If (penDashMode <> GP_DS_Solid) Then
-            
-            GdipSetPenDashStyle hPen, penDashMode
-            
-            'Mirror the line cap across the dashes as well
-            If (penLineCap = GP_LC_ArrowAnchor) Or (penLineCap = GP_LC_DiamondAnchor) Then
-                GdipSetPenDashCap hPen, GP_DC_Triangle
-            ElseIf (penLineCap = GP_LC_Round) Or (penLineCap = GP_LC_RoundAnchor) Then
-                GdipSetPenDashCap hPen, GP_DC_Round
-            Else
-                GdipSetPenDashCap hPen, GP_DC_Flat
-            End If
-            
-        End If
-        
-        'To avoid major miter errors, we default to 3.0 for a miter limit.  (GDI+ defaults to 10, which can easily cause artifacts.)
-        GdipSetPenMiterLimit hPen, penMiterLimit
-        
-        'Finally, if a non-standard alignment was specified, apply it last
-        If (penAlignment <> GP_PA_Center) Then GdipSetPenMode hPen, penAlignment
-        
-    End If
-    
-    GetGDIPlusPenHandle = hPen
-
-End Function
-
-Public Function GetGDIPlusPenFromBrush(ByVal hBrush As Long, ByVal penWidth As Single, Optional ByVal penUnit As GP_Unit = GP_U_Pixel) As Long
-    GdipCreatePenFromBrush hBrush, penWidth, penUnit, GetGDIPlusPenFromBrush
-End Function
-
 Public Function GetGDIPlusRegionHandle() As Long
     GdipCreateRegion GetGDIPlusRegionHandle
 End Function
@@ -4032,15 +3967,6 @@ Public Function ReleaseGDIPlusImage(ByRef srcHandle As Long) As Boolean
         If ReleaseGDIPlusImage Then srcHandle = 0 Else InternalGDIPlusError "ReleaseGDIPlusImage failed", , ReleaseGDIPlusImage
     Else
         ReleaseGDIPlusImage = True
-    End If
-End Function
-
-Public Function ReleaseGDIPlusPen(ByRef srcHandle As Long) As Boolean
-    If (srcHandle <> 0) Then
-        ReleaseGDIPlusPen = (GdipDeletePen(srcHandle) = GP_OK)
-        If ReleaseGDIPlusPen Then srcHandle = 0
-    Else
-        ReleaseGDIPlusPen = True
     End If
 End Function
 
@@ -4251,125 +4177,6 @@ End Function
 
 Public Function SetGDIPlusGraphicsWorldTransform(ByVal hGraphics As Long, ByVal newSetting As Long) As Boolean
     If (hGraphics <> 0) Then SetGDIPlusGraphicsWorldTransform = (GdipSetWorldTransform(hGraphics, newSetting) = GP_OK)
-End Function
-
-'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
-Public Function GetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_PEN_SETTINGS) As Variant
-    
-    If (hPen <> 0) Then
-        
-        Dim gResult As GP_Result
-        Dim tmpLong As Long, tmpSingle As Single
-        
-        Select Case propID
-            
-            Case P2_PenStyle
-                gResult = GdipGetPenDashStyle(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-            
-            Case P2_PenColor
-                gResult = GdipGetPenColor(hPen, tmpLong)
-                GetGDIPlusPenProperty = GetColorFromPARGB(tmpLong, False)
-                
-            Case P2_PenOpacity
-                gResult = GdipGetPenColor(hPen, tmpLong)
-                GetGDIPlusPenProperty = GetOpacityFromPARGB(tmpLong)
-                
-            Case P2_PenWidth
-                gResult = GdipGetPenWidth(hPen, tmpSingle)
-                GetGDIPlusPenProperty = tmpSingle
-                
-            Case P2_PenLineJoin
-                gResult = GdipGetPenLineJoin(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-                
-            Case P2_PenLineCap
-                gResult = GdipGetPenStartCap(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-                
-            Case P2_PenDashCap
-                gResult = GdipGetPenDashCap(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-                
-            Case P2_PenMiterLimit
-                gResult = GdipGetPenMiterLimit(hPen, tmpSingle)
-                GetGDIPlusPenProperty = tmpSingle
-                
-            Case P2_PenAlignment
-                gResult = GdipGetPenMode(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-                
-            Case P2_PenStartCap
-                gResult = GdipGetPenStartCap(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-            
-            Case P2_PenEndCap
-                gResult = GdipGetPenEndCap(hPen, tmpLong)
-                GetGDIPlusPenProperty = tmpLong
-                
-        End Select
-        
-        If (gResult <> GP_OK) Then
-            InternalGDIPlusError "GetGDIPlusPenProperty Error", "Bad GP_RESULT value", gResult
-        End If
-    
-    Else
-        InternalGDIPlusError "GetGDIPlusPenProperty Error", "Null pen handle"
-    End If
-    
-End Function
-
-'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
-Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_PEN_SETTINGS, ByVal newSetting As Variant) As Boolean
-    
-    If (hPen <> 0) Then
-        
-        Dim tmpColor As Long, tmpOpacity As Single, tmpLong As Long
-        
-        Select Case propID
-            
-            Case P2_PenStyle
-                SetGDIPlusPenProperty = (GdipSetPenDashStyle(hPen, CLng(newSetting)) = GP_OK)
-                
-            Case P2_PenColor
-                tmpOpacity = GetGDIPlusPenProperty(hPen, P2_PenOpacity)
-                SetGDIPlusPenProperty = (GdipSetPenColor(hPen, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
-                
-            Case P2_PenOpacity
-                tmpColor = GetGDIPlusPenProperty(hPen, P2_PenColor)
-                SetGDIPlusPenProperty = (GdipSetPenColor(hPen, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
-                
-            Case P2_PenWidth
-                SetGDIPlusPenProperty = (GdipSetPenWidth(hPen, CSng(newSetting)) = GP_OK)
-                
-            Case P2_PenLineJoin
-                SetGDIPlusPenProperty = (GdipSetPenLineJoin(hPen, CLng(newSetting)) = GP_OK)
-                
-            Case P2_PenLineCap
-                tmpLong = GetGDIPlusPenProperty(hPen, P2_PenDashCap)
-                SetGDIPlusPenProperty = (GdipSetPenLineCap(hPen, CLng(newSetting), CLng(newSetting), tmpLong) = GP_OK)
-                
-            Case P2_PenDashCap
-                SetGDIPlusPenProperty = (GdipSetPenDashCap(hPen, CLng(newSetting)) = GP_OK)
-                
-            Case P2_PenMiterLimit
-                SetGDIPlusPenProperty = (GdipSetPenMiterLimit(hPen, CSng(newSetting)) = GP_OK)
-                
-            Case P2_PenAlignment
-                SetGDIPlusPenProperty = (GdipSetPenMode(hPen, CLng(newSetting)) = GP_OK)
-            
-            Case P2_PenStartCap
-                SetGDIPlusPenProperty = (GdipSetPenStartCap(hPen, CLng(newSetting)) = GP_OK)
-            
-            Case P2_PenEndCap
-                SetGDIPlusPenProperty = (GdipSetPenEndCap(hPen, CLng(newSetting)) = GP_OK)
-                
-        End Select
-    
-    Else
-        InternalGDIPlusError "SetGDIPlusPenProperty Error", "Null pen handle"
-    End If
-    
 End Function
 
 Public Function GDIPlus_SetTextureBrushTransform(ByVal hBrush As Long, ByVal hTransform As Long) As Boolean
@@ -5507,20 +5314,6 @@ Public Function GDIPlus_PathWindingModeOutline(ByVal hPath As Long, ByVal hTrans
     tmpReturn = GdipWindingModeOutline(hPath, hTransformMatrix, allowableError)
     GDIPlus_PathWindingModeOutline = (tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_PenGetDashOffset(ByVal hPen As Long) As Single
-    Dim tmpReturn As Long
-    tmpReturn = GdipGetPenDashOffset(hPen, GDIPlus_PenGetDashOffset)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_PenSetDashArray(ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As Boolean
-    GDIPlus_PenSetDashArray = (GdipSetPenDashArray(hPen, ptrToDashArray, numOfDashes) = GP_OK)
-End Function
-
-Public Function GDIPlus_PenSetDashOffset(ByVal hPen As Long, ByVal newOffset As Single) As Boolean
-    GDIPlus_PenSetDashOffset = (GdipSetPenDashOffset(hPen, newOffset) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddRectF(ByVal dstRegion As Long, ByRef srcRectF As RectF, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean

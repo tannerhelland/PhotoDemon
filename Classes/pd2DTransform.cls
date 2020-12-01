@@ -32,9 +32,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 Option Explicit
 
-'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
-Private m_DebugMode As Boolean
-
 'Persistent handle to the transformation associated with this instance
 Private m_TransformHandle As Long
 
@@ -60,7 +57,7 @@ Friend Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As B
         m_TransformHandle = GDI_Plus.GDIPlus_MatrixClone(srcTransform.GetHandle)
         
         CloneExistingTransform = (m_TransformHandle <> 0)
-        If (CloneExistingTransform And m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange True
+        If (CloneExistingTransform And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyTransformCountChange True
         
     Else
         CloneExistingTransform = False
@@ -225,7 +222,7 @@ Private Function CreateTransform() As Boolean
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
     CreateTransform = (m_TransformHandle <> 0)
-    If (CreateTransform And m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange True
+    If (CreateTransform And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyTransformCountChange True
     
 End Function
 
@@ -240,7 +237,7 @@ Friend Function ReleaseTransform() As Boolean
         ' the central Drawing2D module also needs to be notified.
         If ReleaseTransform Then
             m_TransformHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange False
+            If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifyTransformCountChange False
         End If
         
     Else
@@ -249,24 +246,19 @@ Friend Function ReleaseTransform() As Boolean
     
 End Function
 
-'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Friend Sub SetDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 Private Sub Class_Initialize()
     Me.Reset
-    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
     Me.ReleaseTransform
 End Sub
 
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DTransform"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "pd2DTransform", errFunction, errDescription, errNum
 End Sub

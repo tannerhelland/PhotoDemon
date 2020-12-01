@@ -73,9 +73,6 @@ Private m_TextureWrapMode As PD_2D_WrapMode
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdSerialize
 
-'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
-Private m_DebugMode As Boolean
-
 'Once a brush has been created, this handle value will be non-zero
 Private m_BrushHandle As Long
 
@@ -243,9 +240,9 @@ End Sub
 ' of the source transform object.)
 Friend Sub SetBrushTextureTransform(ByRef srcTransform As pd2DTransform)
     If (m_BrushHandle <> 0) Then
-        If (Not GDI_Plus.GDIPlus_SetTextureBrushTransform(m_BrushHandle, srcTransform.GetHandle)) Then InternalError "SetBrushTextureTransform failed"
+        If (Not GDI_Plus.GDIPlus_SetTextureBrushTransform(m_BrushHandle, srcTransform.GetHandle)) Then InternalError "SetBrushTextureTransform", "GDI+ failure"
     Else
-        InternalError "Brush must exist before calling SetBrushTextureTransform"
+        InternalError "SetBrushTextureTransform", "null hBrush"
     End If
 End Sub
 
@@ -419,7 +416,7 @@ Friend Function CreateBrush() As Boolean
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
     CreateBrush = (m_BrushHandle <> 0)
-    If (CreateBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyBrushCountChange True
+    If (CreateBrush And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyBrushCountChange True
     
 End Function
 
@@ -434,7 +431,7 @@ Friend Function ReleaseBrush() As Boolean
         ' the central Drawing2D module also needs to be notified.
         If ReleaseBrush Then
             m_BrushHandle = 0
-            If m_DebugMode Then Drawing2D.DEBUG_NotifyBrushCountChange False
+            If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifyBrushCountChange False
         End If
     
     Else
@@ -464,11 +461,6 @@ Friend Sub ResetAllProperties()
     
 End Sub
 
-'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Friend Sub SetDebugMode(ByVal newMode As Boolean)
-    m_DebugMode = newMode
-End Sub
-
 Private Sub Class_Initialize()
     
     Me.ResetAllProperties
@@ -481,18 +473,18 @@ Private Sub Class_Initialize()
         .Height = 100!
     End With
     
-    m_DebugMode = Drawing2D.GetLibraryDebugMode()
-    
 End Sub
 
 Private Sub Class_Terminate()
     Me.ReleaseBrush
 End Sub
 
-'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
-' better fit your project (e.g. perhaps it could raise an actual error event).
+'All pd2D classes report errors using an internal function similar to this one.
+' Feel free to modify this function to better fit your project
+' (for example, maybe you prefer to raise an actual error event).
 '
-'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DBrush"
+'Note that by default, pd2D build simply dumps all error information to the Immediate window.
+Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    Drawing2D.DEBUG_NotifyError "pd2DBrush", errFunction, errDescription, errNum
 End Sub
+
