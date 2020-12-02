@@ -253,7 +253,7 @@ End Sub
 
 'Get access to the shared compression buffer for UI images.  Do *not* use this buffer for other purposes,
 ' as it may grow excessively large (and it's not easily freed).
-Public Sub GetSharedCompressBuffer(ByRef dstBuffer() As Byte, ByRef dstBufferSize As Long, ByVal requiredSize As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal cmpLevel As Long = -1)
+Public Function GetSharedCompressBuffer(ByRef dstBufferSize As Long, ByVal requiredSize As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal cmpLevel As Long = -1) As Long
 
     'Figure out worst-case scenario size for this format, then resize the buffer accordingly
     dstBufferSize = Compression.GetWorstCaseSize(requiredSize, cmpFormat, cmpLevel)
@@ -265,9 +265,9 @@ Public Sub GetSharedCompressBuffer(ByRef dstBuffer() As Byte, ByRef dstBufferSiz
         dstBufferSize = m_CompressBufferSize
     End If
     
-    dstBuffer = m_TempCompressBuffer
+    GetSharedCompressBuffer = VarPtr(m_TempCompressBuffer(0))
 
-End Sub
+End Function
 
 Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
 

@@ -269,7 +269,7 @@ Public Function Lz4Decompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal know
     End If
     
     Lz4Decompress_UnsafePtr = finalSize
-
+    
 End Function
 
 Public Function Lz4_GetDefaultAccelerationLevel() As Long
@@ -312,7 +312,6 @@ Private Function CallCDeclW(ByVal lProc As LZ4_ProcAddress, ByVal fRetType As Vb
     End If
     
     For i = 0 To numParams - 1
-        If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
         m_vType(i) = VarType(vTemp(i))
         m_vPtr(i) = VarPtr(vTemp(i))
     Next i
