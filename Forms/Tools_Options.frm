@@ -1723,8 +1723,7 @@ Private Sub picGrid_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal
     tmpSurface.WrapSurfaceAroundDC targetDC
     tmpSurface.SetSurfaceAntialiasing P2_AA_None
     tmpSurface.SetSurfacePixelOffset P2_PO_Normal
-    tmpSurface.SetSurfaceRenderingOriginX 1
-    tmpSurface.SetSurfaceRenderingOriginY 1
+    tmpSurface.SetSurfaceRenderingOrigin 1, 1
     
     PD2D.FillRectangleI tmpSurface, tmpBrush, 0, 0, ctlWidth, ctlHeight
     

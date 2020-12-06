@@ -27,28 +27,6 @@ End Enum
     Private Const P2_DefaultBackend = 0, P2_GDIPlusBackend = 1
 #End If
 
-'To simplify property setting across backends, I use generic enums instead of backend-specific descriptors.
-' There are trade-offs with this approach, but I like it because it makes it possible to enumerate object properties.
-Public Enum PD_2D_PEN_SETTINGS
-    P2_PenStyle = 0
-    P2_PenColor = 1
-    P2_PenOpacity = 2
-    P2_PenWidth = 3
-    P2_PenLineJoin = 4
-    P2_PenLineCap = 5     'LineCap is a convenience property that sets StartCap, EndCap, and DashCap all at once
-    P2_PenDashCap = 6
-    P2_PenMiterLimit = 7
-    P2_PenAlignment = 8
-    P2_PenStartCap = 9
-    P2_PenEndCap = 10
-    P2_PenDashOffset = 11
-    [_P2_NumOfPenSettings] = 12
-End Enum
-
-#If False Then
-    Private Const P2_PenStyle = 0, P2_PenColor = 1, P2_PenOpacity = 2, P2_PenWidth = 3, P2_PenLineJoin = 4, P2_PenLineCap = 5, P2_PenDashCap = 6, P2_PenMiterLimit = 7, P2_PenAlignment = 8, P2_PenStartCap = 9, P2_PenEndCap = 10, P2_PenDashOffset = 11, P2_NumOfPenSettings = 12
-#End If
-
 'Brushes support a *lot* of internal settings.
 Public Enum PD_2D_BRUSH_SETTINGS
     P2_BrushMode = 0
@@ -97,23 +75,6 @@ End Enum
 
 #If False Then
     Private Const P2_SizeUnknown = 0, P2_SizeFromHWnd = 1, P2_SizeFromCaller = 2
-#End If
-
-'Surfaces are somewhat limited at present, but this may change in the future
-Public Enum PD_2D_SURFACE_SETTINGS
-    P2_SurfaceAntialiasing = 0
-    P2_SurfacePixelOffset = 1
-    P2_SurfaceRenderingOriginX = 2
-    P2_SurfaceRenderingOriginY = 3
-    P2_SurfaceBlendUsingSRGBGamma = 4
-    P2_SurfaceResizeQuality = 5
-    P2_SurfaceCompositeMode = 6
-    P2_SurfaceWorldTransform = 7
-    [_P2_NumOfSurfaceSettings] = 8
-End Enum
-
-#If False Then
-    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_SurfaceResizeQuality = 5, P2_SurfaceCompositeMode = 6, P2_SurfaceWorldTransform = 7
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of

@@ -1598,9 +1598,12 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     'PD stores text contrast on a 0-10 scale, but GDI+ inexplicably uses a 0-12 scale.
     If (GdipSetTextContrast(dstGraphics, CLng(CDbl(m_TextContrast) * 1.2)) <> GP_OK) Then PDDebug.LogAction "Failed to set text contrast " & m_TextContrast
     
-    'New GDI+ definitions should look like this:
-    If Not GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma(dstGraphics, GP_CQ_AssumeLinear) Then PDDebug.LogAction "Failed to set compositing quality."
+    'Half-pixel offset works better with GDI+ hinting strategy
     If Not GDI_Plus.SetGDIPlusGraphicsPixelOffset(dstGraphics, GP_POM_Half) Then PDDebug.LogAction "Failed to set pixel offset mode."
+    
+    'GDI+ may assume gamma-corrected blending which doesn't always play nicely
+    ' with alpha premultiplication (because it is, by design, non-linear)
+    GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma dstGraphics, GP_CQ_AssumeLinear
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long

@@ -627,8 +627,7 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
     cBrush.SetBrushPattern2Opacity 100
     cBrush.CreateBrush
         
-    cSurface.SetSurfaceRenderingOriginX hatchRect.Left
-    cSurface.SetSurfaceRenderingOriginY hatchRect.Top
+    cSurface.SetSurfaceRenderingOrigin hatchRect.Left, hatchRect.Top
     PD2D.FillRectangleF_FromRectF cSurface, cBrush, hatchRect
     
     cPen.SetPenColor hatchBorderColor

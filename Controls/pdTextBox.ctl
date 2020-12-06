@@ -555,8 +555,21 @@ Private Sub RedrawBackBuffer()
         Else
             borderWidth = 1
         End If
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, GP_LJ_Miter
-    
+        
+        Dim cSurface As pd2DSurface, cPen As pd2DPen
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfaceCompositing P2_CM_Overwrite
+        
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth borderWidth
+        cPen.SetPenColor m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        cPen.SetPenLineJoin P2_LJ_Miter
+        
+        PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding
+        Set cSurface = Nothing
+        
     End If
     
     'Paint the final result to the screen, as relevant

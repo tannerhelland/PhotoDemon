@@ -62,7 +62,7 @@ Public Event LostFocusAPI()
 
 'This control uses two layout rects: one for the clickable primary color region, and another for the rect where the user
 ' can copy over the color from the main screen.  These rects are calculated by the UpdateControlLayout function.
-Private m_PrimaryColorRect As RECT, m_SecondaryColorRect As RECT
+Private m_PrimaryColorRect As RectL, m_SecondaryColorRect As RectL
 
 'The control's current color
 Private curColor As OLE_COLOR
@@ -442,11 +442,11 @@ End Sub
 'Returns TRUE if the mouse is inside the clickable region of the primary color selector
 ' (e.g. NOT the caption area, if one exists)
 Private Function IsMouseInPrimaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInPrimaryButton = PDMath.IsPointInRect(x, y, m_PrimaryColorRect)
+    IsMouseInPrimaryButton = PDMath.IsPointInRectL(x, y, m_PrimaryColorRect)
 End Function
 
 Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInSecondaryButton = PDMath.IsPointInRect(x, y, m_SecondaryColorRect)
+    IsMouseInSecondaryButton = PDMath.IsPointInRectL(x, y, m_SecondaryColorRect)
 End Function
 
 'Redraw the entire control, including the caption (if present)
@@ -459,37 +459,60 @@ Private Sub RedrawBackBuffer()
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable button portion.
     If PDMain.IsProgramRunning() And (bufferDC <> 0) Then
-    
+        
+        'pd2D handles rendering duties
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        
         'Calculate default border colors.  (Note that there are two: one for hover state, and one for default state)
         Dim defaultBorderColor As Long, activeBorderColor As Long
         defaultBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled)
         activeBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled, , True)
         
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth 1!
+        cPen.SetPenLineJoin P2_LJ_Miter
+        cPen.SetPenColor defaultBorderColor
+        
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        
         'Note that primary and second color buttons *are* color-managed, so their appearance changes based
         ' on the current working space.
-        Dim primaryColorCM As Long, secondaryColorCM As Long
         
-        'Render the primary and secondary color button default appearances
-        With m_PrimaryColorRect
-            ColorManagement.ApplyDisplayColorManagement_SingleColor Me.Color, primaryColorCM
-            GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, primaryColorCM, 255
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
-        End With
+        'Render the primary color first
+        Dim primaryColorCM As Long
+        ColorManagement.ApplyDisplayColorManagement_SingleColor Me.Color, primaryColorCM
+        cBrush.SetBrushColor primaryColorCM
+        
+        PD2D.FillRectangleI_FromRectL cSurface, cBrush, m_PrimaryColorRect
+        PD2D.DrawRectangleI_FromRectL cSurface, cPen, m_PrimaryColorRect
         
         If m_ShowMainWindowColor Then
+            
+            Dim secondaryColorCM As Long
             ColorManagement.ApplyDisplayColorManagement_SingleColor layerpanel_Colors.GetCurrentColor(), secondaryColorCM
-            With m_SecondaryColorRect
-                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, secondaryColorCM, 255
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
-            End With
+            cBrush.SetBrushColor secondaryColorCM
+            
+            PD2D.FillRectangleI_FromRectL cSurface, cBrush, m_SecondaryColorRect
+            PD2D.DrawRectangleI_FromRectL cSurface, cPen, m_SecondaryColorRect
+            
         End If
         
         'If either button is hovered, trace it with a bold, colored outline
+        cPen.SetPenColor activeBorderColor
+        cPen.SetPenWidth 3!
+        
         If m_MouseInPrimaryButton Or ucSupport.DoIHaveFocus Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_PrimaryColorRect.Left, m_PrimaryColorRect.Top, m_PrimaryColorRect.Right, m_PrimaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter
+            PD2D.DrawRectangleI_FromRectL cSurface, cPen, m_PrimaryColorRect
         ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_SecondaryColorRect.Left, m_SecondaryColorRect.Top, m_SecondaryColorRect.Right, m_SecondaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter
+            PD2D.DrawRectangleI_FromRectL cSurface, cPen, m_SecondaryColorRect
         End If
+        
+        Set cSurface = Nothing
         
     End If
     

@@ -1266,7 +1266,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal handl
     dstForm.MousePointer = 0
     
     'TODO: solve icon issues here?
-    If (Not (dstForm.Name = "FormMain")) Then Set dstForm.icon = Nothing
+    If (Not (dstForm.Name = "FormMain")) Then Set dstForm.Icon = Nothing
     
     'While we're here, notify the tab manager of the newly loaded form, and make a note of the form's hWnd so we
     ' can relay it to various child controls.
@@ -1750,7 +1750,17 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
     GetRuntimeUIDIB.CreateBlank dibSize, dibSize, 32, 0, 0
     GetRuntimeUIDIB.SetInitialAlphaPremultiplicationState True
     
-    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen, cPath As pd2DPath
+    'pd2D handles rendering duties, as you'd expect.
+    ' (Only the surface is created up-front, however, since not all rendering items require
+    ' the other objects.)
+    Dim cSurface As pd2DSurface
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundPDDIB GetRuntimeUIDIB
+    cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+    
+    Dim cBrush As pd2DBrush, cPen As pd2DPen, cPath As pd2DPath
+    Set cBrush = New pd2DBrush: Set cPen = New pd2DPen: Set cPath = New pd2DPath
+    
     Dim cPoints() As PointFloat, cRadius As Single
     Dim xCenter As Single, yCenter As Single
     Dim paintColor As Long
@@ -1770,8 +1780,9 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
             End If
             
             'Draw a colored circle just within the bounds of the DIB
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
-        
+            cBrush.SetBrushColor paintColor
+            PD2D.FillCircleF cSurface, cBrush, dibSize / 2, dibSize / 2, (dibSize / 2) - dibPadding
+            
         'The RGB DIB is a triad of the individual RGB circles
         Case pdri_ChannelRGB
         
@@ -1779,9 +1790,15 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelBlue), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelGreen), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelRed), True, 210
+            cBrush.SetBrushOpacity 80!
+            cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_ChannelBlue)
+            PD2D.FillEllipseF cSurface, cBrush, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize
+            
+            cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_ChannelGreen)
+            PD2D.FillEllipseF cSurface, cBrush, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize
+            
+            cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_ChannelRed)
+            PD2D.FillEllipseF cSurface, cBrush, dibSize / 2 - circleSize / 2, dibPadding, circleSize, circleSize
             
         'Arrows are all drawn using the same code
         Case pdri_ArrowUp, pdri_ArrowUpR, pdri_ArrowRight, pdri_ArrowDownR, pdri_ArrowDown, pdri_ArrowDownL, pdri_ArrowLeft, pdri_ArrowUpL
@@ -1822,8 +1839,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
             End If
             
             'Render the path
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, GetRuntimeUIDIB.GetDIBDC, True
-            Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_GrayDark)
+            cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_GrayDark)
             PD2D.FillPath cSurface, cBrush, tmpPath
             
         'Play/pause buttons are used by animation windows
@@ -1848,9 +1864,8 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
             'Re-center the path (as the triangle will be biased rightward due to the angles used)
             cPath.TranslatePath -1! * (cRadius - (xCenter - cPoints(1).x)) * 0.5, 0!
             
-            Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Accent)
-            Drawing2D.QuickCreateSurfaceFromDIB cSurface, GetRuntimeUIDIB, True
             cSurface.SetSurfacePixelOffset P2_PO_Half
+            cBrush.SetBrushColor g_Themer.GetGenericUIColor(UI_Accent)
             PD2D.FillPath cSurface, cBrush, cPath
                 
         Case pdri_Pause
@@ -1873,8 +1888,8 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal 
             cPath.AddLines 2, VarPtr(cPoints(2))
             cPath.CloseCurrentFigure
     
-            Drawing2D.QuickCreateSolidPen cPen, dibSize * 0.15, g_Themer.GetGenericUIColor(UI_Accent)
-            Drawing2D.QuickCreateSurfaceFromDIB cSurface, GetRuntimeUIDIB, True
+            cPen.SetPenWidth dibSize * 0.15
+            cPen.SetPenColor g_Themer.GetGenericUIColor(UI_Accent)
             cSurface.SetSurfacePixelOffset P2_PO_Half
             PD2D.DrawPath cSurface, cPen, cPath
         

@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Bar control
 'Copyright 2019-2020 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 16/May/19
-'Last update: continue refining search results list
+'Last updated: 04/December/20
+'Last update: migrate orphaned GDI+ calls to pd2D
 '
 'This is PD's version of a "search box" - an edit box that raises a neighboring list window with a list
 ' of "hits" that match the current search query.  Search matching is left up to the parent window, which
@@ -1040,12 +1040,25 @@ Private Sub RedrawBackBuffer()
         
         Dim borderWidth As Single
         If Not (m_EditBox Is Nothing) Then
-            If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+            If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3! Else borderWidth = 1!
         Else
-            borderWidth = 1
+            borderWidth = 1!
         End If
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, GP_LJ_Miter
-    
+        
+        Dim cSurface As pd2DSurface, cPen As pd2DPen
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfaceCompositing P2_CM_Overwrite
+        
+        Set cPen = New pd2DPen
+        cPen.SetPenWidth borderWidth
+        cPen.SetPenColor m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        cPen.SetPenLineJoin P2_LJ_Miter
+        
+        PD2D.DrawRectangleI_AbsoluteCoords cSurface, cPen, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding
+        Set cSurface = Nothing
+        
     End If
     
     'Paint the final result to the screen, as relevant

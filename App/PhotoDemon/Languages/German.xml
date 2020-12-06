@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.184</langversion>
+<langversion>9.0.227</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -56,7 +56,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Farb-Lookup exportieren</translation>
 </phrase>
 
 <phrase>

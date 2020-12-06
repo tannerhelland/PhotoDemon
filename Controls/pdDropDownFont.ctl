@@ -440,8 +440,20 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     'Paint the fill and border
-    GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor, 255, GP_CM_SourceCopy
-    GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRectF, itemFillBorderColor, , , , GP_LJ_Miter
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+    Set cSurface = New pd2DSurface: Set cBrush = New pd2DBrush: Set cPen = New pd2DPen
+    cSurface.WrapSurfaceAroundDC bufferDC
+    cSurface.SetSurfaceAntialiasing P2_AA_None
+    cSurface.SetSurfaceCompositing P2_CM_Overwrite
+    
+    cBrush.SetBrushColor itemFillColor
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+    
+    cPen.SetPenColor itemFillBorderColor
+    cPen.SetPenWidth 1!
+    PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+    
+    Set cPen = Nothing: Set cBrush = Nothing: Set cSurface = Nothing
     
     'Paint the font name in the default UI font
     Dim tmpFont As pdFont, textPadding As Single

@@ -33,16 +33,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Brush Selector custom control
 'Copyright 2015-2020 by Tanner Helland
 'Created: 30/June/15
-'Last updated: 01/February/16
-'Last update: finalize theming support
+'Last updated: 03/December/20
+'Last update: improve UI rendering
 '
-'This thin user control is basically an empty control that when clicked, displays a brush selection window.  If a
-' brush is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "BrushChanged"
-' event.
+'This thin user control is basically an empty control that when clicked, displays a brush selection window.
+' If a brush is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a
+' "BrushChanged" event.
 '
-'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
-' command bar user control, as it easily supports brush reset/randomize/preset events.  It is also nice to be able
-' to update a single master function for brush selection, then have the change propagate to all tool windows.
+'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction
+' with the command bar user control, as it easily supports brush reset/randomize/preset events.  It is also
+' nice to be able to update a single master function for brush selection, then have the change propagate to
+' all tool windows.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -326,7 +327,7 @@ Private Sub UpdateControlLayout()
         
         'The brush area is placed relative to the caption
         With m_BrushRect
-            .Left = FixDPI(8)
+            .Left = Interface.FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
             .Width = (bWidth - 2) - .Left
             .Height = (bHeight - 2) - .Top
@@ -361,13 +362,14 @@ Private Sub RedrawBackBuffer()
         m_Filler.SetBoundaryRect m_BrushRect
         m_Filler.SetBrushPropertiesFromXML Me.Brush
         
-        Dim tmpBrush As Long
-        tmpBrush = m_Filler.GetHandle
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
         
-        With m_BrushRect
-            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
-        End With
+        PD2D.FillRectangleF_FromRectF cSurface, g_CheckerboardBrush, m_BrushRect
+        PD2D.FillRectangleF_FromRectF cSurface, m_Filler, m_BrushRect
         
         m_Filler.ReleaseBrush
         
@@ -380,7 +382,15 @@ Private Sub RedrawBackBuffer()
         Dim outlineColor As Long, outlineWidth As Single
         outlineColor = m_Colors.RetrieveColor(PDBS_Border, Me.Enabled, m_MouseDownBrushRect, m_MouseInsideBrushRect Or ucSupport.DoIHaveFocus)
         If m_MouseInsideBrushRect Or ucSupport.DoIHaveFocus Then outlineWidth = 3! Else outlineWidth = 1!
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenColor outlineColor
+        cPen.SetPenWidth outlineWidth
+        cPen.SetPenLineJoin P2_LJ_Miter
+        
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_BrushRect
+        Set cPen = Nothing: Set cSurface = Nothing
         
     End If
     

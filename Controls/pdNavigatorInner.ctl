@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Navigation custom control (inner panel)
 'Copyright 2015-2020 by Tanner Helland
 'Created: 16/October/15
-'Last updated: 22/August/19
-'Last update: overhaul control to support new animation mode
+'Last updated: 03/December/20
+'Last update: improve UI behavior during _MouseDown
 '
 'For implementation details, please refer to the main pdNavigator control.
 '
@@ -737,15 +737,21 @@ Private Sub RedrawBackBuffer(Optional ByVal skipAnimationStep As Boolean = False
                 'If the mouse is inside the control, figure out if the last mouse coordinates are inside the region box.
                 ' If they are, we want to highlight it.
                 Dim useHighlightColor As Boolean
-                
-                If m_MouseInsideBox Then
-                    useHighlightColor = PDMath.IsPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
-                Else
-                    useHighlightColor = False
-                End If
+                useHighlightColor = ucSupport.IsMouseButtonDown(pdLeftButton)
+                If (Not useHighlightColor) Then useHighlightColor = (m_MouseInsideBox And PDMath.IsPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect))
                 
                 'Draw a canvas-style border around the relevant viewport rect
-                GDI_Plus.GDIPlusDrawCanvasRectF bufferDC, relativeRect, , useHighlightColor
+                Dim cPenBase As pd2DPen, cPenTop As pd2DPen
+                Drawing.BorrowCachedUIPens cPenBase, cPenTop, useHighlightColor
+                
+                Dim cSurface As pd2DSurface
+                Set cSurface = New pd2DSurface
+                cSurface.WrapSurfaceAroundDC bufferDC
+                cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+                cSurface.SetSurfacePixelOffset P2_PO_Normal
+                PD2D.DrawRectangleF_FromRectF cSurface, cPenBase, relativeRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPenTop, relativeRect
+                Set cSurface = Nothing
                 
             End If
             

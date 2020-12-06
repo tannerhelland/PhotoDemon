@@ -588,9 +588,6 @@
 				<UniversalIconMenuMonochrome>MonochromeIconMenu</UniversalIconMenuMonochrome>
 				<UniversalIconMonochrome>MonochromeIcon</UniversalIconMonochrome>
 				<UniversalImageDisabled>GrayLight</UniversalImageDisabled>
-				<UniversalLineEdge>Black</UniversalLineEdge>
-				<UniversalLineCenter>White</UniversalLineCenter>
-				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
 				<UniversalTextClickable>TextHyperlink</UniversalTextClickable>
 				<UniversalTextClickable-hover>TextHover</UniversalTextClickable-hover>
 				<UniversalTextReadOnly>TextDefault</UniversalTextReadOnly>

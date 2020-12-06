@@ -1399,7 +1399,7 @@ Public Sub KillStrandedExifToolInstances()
     Dim szExename As String
     Dim i As Long
     
-    On Local Error GoTo CouldntKillExiftoolInstances
+    On Error GoTo CouldntKillExiftoolInstances
     
     'Prepare a generic process reference
     uProcess.dwSize = Len(uProcess)

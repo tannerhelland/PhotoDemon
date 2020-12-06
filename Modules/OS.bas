@@ -118,30 +118,30 @@ End Enum
 #End If
 
 Public Enum OS_ProcessorFeature
-    PF_ARM_64BIT_LOADSTORE_ATOMIC = 25 'The 64-bit load/store atomic instructions are available.
-    PF_ARM_DIVIDE_INSTRUCTION_AVAILABLE = 24 'The divide instructions are available.
-    PF_ARM_EXTERNAL_CACHE_AVAILABLE = 26 'The external cache is available.
-    PF_ARM_FMAC_INSTRUCTIONS_AVAILABLE = 27 'The floating-point multiply-accumulate instruction is available.
-    PF_ARM_VFP_32_REGISTERS_AVAILABLE = 18 'The VFP/Neon: 32 x 64bit register bank is present. This flag has the same meaning as PF_ARM_VFP_EXTENDED_REGISTERS.
-    PF_3DNOW_INSTRUCTIONS_AVAILABLE = 7 'The 3D-Now instruction set is available.
-    PF_CHANNELS_ENABLED = 16 'The processor channels are enabled.
-    PF_COMPARE_EXCHANGE_DOUBLE = 2 'The atomic compare and exchange operation (cmpxchg) is available.
-    PF_COMPARE_EXCHANGE128 = 14 'The atomic compare and exchange 128-bit operation (cmpxchg16b) is available.
-    PF_COMPARE64_EXCHANGE128 = 15 'The atomic compare 64 and exchange 128-bit operation (cmp8xchg16) is available.
-    PF_FASTFAIL_AVAILABLE = 23 '_fastfail() is available.
-    PF_FLOATING_POINT_EMULATED = 1 'Floating-point operations are emulated using a software emulator.
-    PF_FLOATING_POINT_PRECISION_ERRATA = 0 'On a Pentium, a floating-point precision error can occur in rare circumstances.
+    'PF_ARM_64BIT_LOADSTORE_ATOMIC = 25 'The 64-bit load/store atomic instructions are available.
+    'PF_ARM_DIVIDE_INSTRUCTION_AVAILABLE = 24 'The divide instructions are available.
+    'PF_ARM_EXTERNAL_CACHE_AVAILABLE = 26 'The external cache is available.
+    'PF_ARM_FMAC_INSTRUCTIONS_AVAILABLE = 27 'The floating-point multiply-accumulate instruction is available.
+    'PF_ARM_VFP_32_REGISTERS_AVAILABLE = 18 'The VFP/Neon: 32 x 64bit register bank is present. This flag has the same meaning as PF_ARM_VFP_EXTENDED_REGISTERS.
+    'PF_3DNOW_INSTRUCTIONS_AVAILABLE = 7 'The 3D-Now instruction set is available.
+    'PF_CHANNELS_ENABLED = 16 'The processor channels are enabled.
+    'PF_COMPARE_EXCHANGE_DOUBLE = 2 'The atomic compare and exchange operation (cmpxchg) is available.
+    'PF_COMPARE_EXCHANGE128 = 14 'The atomic compare and exchange 128-bit operation (cmpxchg16b) is available.
+    'PF_COMPARE64_EXCHANGE128 = 15 'The atomic compare 64 and exchange 128-bit operation (cmp8xchg16) is available.
+    'PF_FASTFAIL_AVAILABLE = 23 '_fastfail() is available.
+    'PF_FLOATING_POINT_EMULATED = 1 'Floating-point operations are emulated using a software emulator.
+    'PF_FLOATING_POINT_PRECISION_ERRATA = 0 'On a Pentium, a floating-point precision error can occur in rare circumstances.
     PF_MMX_INSTRUCTIONS_AVAILABLE = 3 'The MMX instruction set is available.
     PF_NX_ENABLED = 12 'Data execution prevention is enabled.
     PF_PAE_ENABLED = 9 'The processor is PAE-enabled. For more information, see Physical Address Extension.
-    PF_RDTSC_INSTRUCTION_AVAILABLE = 8 'The RDTSC instruction is available.
-    PF_RDWRFSGSBASE_AVAILABLE = 22 'RDFSBASE, RDGSBASE, WRFSBASE, and WRGSBASE instructions are available.
-    PF_SECOND_LEVEL_ADDRESS_TRANSLATION = 20 'Second Level Address Translation is supported by the hardware.
+    'PF_RDTSC_INSTRUCTION_AVAILABLE = 8 'The RDTSC instruction is available.
+    'PF_RDWRFSGSBASE_AVAILABLE = 22 'RDFSBASE, RDGSBASE, WRFSBASE, and WRGSBASE instructions are available.
+    'PF_SECOND_LEVEL_ADDRESS_TRANSLATION = 20 'Second Level Address Translation is supported by the hardware.
     PF_SSE3_INSTRUCTIONS_AVAILABLE = 13 'The SSE3 instruction set is available.
     PF_VIRT_FIRMWARE_ENABLED = 21 'Virtualization is enabled in the firmware.
     PF_XMMI_INSTRUCTIONS_AVAILABLE = 6 'The SSE instruction set is available.
     PF_XMMI64_INSTRUCTIONS_AVAILABLE = 10 'The SSE2 instruction set is available.
-    PF_XSAVE_ENABLED = 17 'The processor implements the XSAVE and XRSTOR instructions.
+    'PF_XSAVE_ENABLED = 17 'The processor implements the XSAVE and XRSTOR instructions.
 End Enum
 
 #If False Then
@@ -837,18 +837,20 @@ End Function
 ' debug reporting purposes, as PD does make use of some SSE and SSE2 features in places.)
 Public Function ProcessorFeatures() As String
 
-    Dim listFeatures As String
-    If (IsProcessorFeaturePresent(PF_3DNOW_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "3DNow!" & ", "
-    If (IsProcessorFeaturePresent(PF_MMX_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "MMX" & ", "
-    If (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE" & ", "
-    If (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE2" & ", "
-    If (IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE3" & ", "
-    If (IsProcessorFeaturePresent(PF_NX_ENABLED) <> 0) Then listFeatures = listFeatures & "DEP" & ", "
-    If (IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) <> 0) Then listFeatures = listFeatures & "Virtualization" & ", "
+    Dim listFeatures As pdString
+    Set listFeatures = New pdString
+    
+    If (IsProcessorFeaturePresent(PF_NX_ENABLED) <> 0) Then listFeatures.Append "DEP, "
+    If (IsProcessorFeaturePresent(PF_MMX_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures.Append "MMX, "
+    If (IsProcessorFeaturePresent(PF_PAE_ENABLED) <> 0) Then listFeatures.Append "PAE, "
+    If (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures.Append "SSE, "
+    If (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures.Append "SSE2, "
+    If (IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures.Append "SSE3, "
+    If (IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) <> 0) Then listFeatures.Append "Virtualization, "
     
     'Trim the trailing comma and blank space before returning
-    If (LenB(listFeatures) <> 0) Then
-        ProcessorFeatures = Left$(listFeatures, Len(listFeatures) - 2)
+    If (listFeatures.GetLength() > 0) Then
+        ProcessorFeatures = Left$(listFeatures.ToString, listFeatures.GetLength() - 2)
     Else
         'NOTE: normally we would apply a translation here, but since this is meant for internal debugging
         ' purposes only, en-US is okay

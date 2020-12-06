@@ -952,8 +952,8 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, 16&
     
     Dim offsetY As Single, offsetX As Single
-    offsetX = tmpRectF.Left + FixDPI(8)
-    offsetY = tmpRectF.Top + FixDPI(4)
+    offsetX = tmpRectF.Left + Interface.FixDPI(8)
+    offsetY = tmpRectF.Top + Interface.FixDPI(4)
     
     Dim thisTag As PDMetadataItem
     thisTag = m_AllTags(blockCategory, itemIndex)
@@ -961,20 +961,31 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     Dim linePadding As Long
     linePadding = Interface.FixDPI(3)
     
+    'pd2D handles rendering duties
+    Dim cSurface As pd2DSurface
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundDC bufferDC
+    cSurface.SetSurfaceAntialiasing P2_AA_None
+    
+    Dim cBrush As pd2DBrush
+    Set cBrush = New pd2DBrush
+    
     'If the user has modified this tag, but the tag is *not* currently selected, we paint it with a different background color.
     If (Not itemIsSelected) Then
         
         'Tags marked for removal get a pink background
         If thisTag.TagMarkedForRemoval Then
             With tmpRectF
-                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Width, .Height + 1#, m_Colors.RetrieveColor(PDMD_TagBackgroundDeleted, Me.Enabled)
+                cBrush.SetBrushColor m_Colors.RetrieveColor(PDMD_TagBackgroundDeleted, Me.Enabled)
+                PD2D.FillRectangleI cSurface, cBrush, .Left, .Top, .Width, .Height + 1!
             End With
             
         'If the user has supplied their own value for this tag, we use a green background
         ElseIf (thisTag.UserModifiedAllSessions) Then
-            If (Strings.StringsNotEqual(thisTag.UserValueNew, thisTag.TagValueFriendly, True) <> 0) Then
+            If Strings.StringsNotEqual(thisTag.UserValueNew, thisTag.TagValueFriendly, True) Then
                 With tmpRectF
-                    GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Width, .Height + 1#, m_Colors.RetrieveColor(PDMD_TagBackgroundEdited, Me.Enabled)
+                    cBrush.SetBrushColor m_Colors.RetrieveColor(PDMD_TagBackgroundEdited, Me.Enabled)
+                    PD2D.FillRectangleI cSurface, cBrush, .Left, .Top, .Width, .Height + 1!
                 End With
             End If
         End If
@@ -1007,9 +1018,14 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     
     Dim spaceWidth As Single
     spaceWidth = m_TitleFont.GetWidthOfString(" ")
+    cBrush.SetBrushColor tagColor
+    
     With tmpRectF
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1#, .Height + 1#, tagColor
+        PD2D.FillRectangleI cSurface, cBrush, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1!, .Height + 1!
     End With
+    
+    '/end GDI+ rendering.  Font duties will be handled by GDI (it's faster + higher-quality)
+    Set cSurface = Nothing
     
     'Start with the simplest field: the tag title (readable form)
     m_TitleFont.AttachToDC bufferDC
@@ -1026,17 +1042,17 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
         'Trim long strings to prevent issues with DrawString
         Const MAX_DRAW_CHAR_LENGTH As Long = 64
         If .UserModifiedAllSessions Then
-            If Len(.UserValueNew) < MAX_DRAW_CHAR_LENGTH Then drawString = .UserValueNew Else drawString = Left$(.UserValueNew, MAX_DRAW_CHAR_LENGTH)
+            If (Len(.UserValueNew) < MAX_DRAW_CHAR_LENGTH) Then drawString = .UserValueNew Else drawString = Left$(.UserValueNew, MAX_DRAW_CHAR_LENGTH)
         Else
             If (btsTechnical(1).ListIndex = 0) Then
-                If Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH Then drawString = .TagValueFriendly Else drawString = Left$(.TagValueFriendly, MAX_DRAW_CHAR_LENGTH)
+                If (Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH) Then drawString = .TagValueFriendly Else drawString = Left$(.TagValueFriendly, MAX_DRAW_CHAR_LENGTH)
             Else
-                If Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH Then drawString = .TagValue Else drawString = Left$(.TagValue, MAX_DRAW_CHAR_LENGTH)
+                If (Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH) Then drawString = .TagValue Else drawString = Left$(.TagValue, MAX_DRAW_CHAR_LENGTH)
             End If
         End If
     
         'List-type tags use a special delimiter (;;).  Change this to commas to make the list a bit prettier
-        If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
+        If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
             If .UserModifiedAllSessions Then
                 drawString = Replace$(drawString, vbCrLf, ", ", , , vbBinaryCompare)
             Else

@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Selector custom control
 'Copyright 2015-2020 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 11/April/19
-'Last update: add a dedicated "reverse gradient" button to the control
+'Last updated: 04/December/20
+'Last update: migrate renderer to pd2D
 '
 'This thin user control is basically an empty control that when clicked, displays a gradient editor window.
 ' If a gradient is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a
@@ -442,13 +442,15 @@ Private Sub RedrawBackBuffer()
         m_Brush.SetBoundaryRect m_GradientRect
         m_Brush.SetBrushGradientAllSettings tmpGradient.GetGradientAsString
         
-        Dim tmpBrush As Long
-        tmpBrush = m_Brush.GetHandle
+        'Start by using the universal checkerboard pattern object to paint a checkerboard background
+        ' (in case the gradient contains low-opacity stops), followed by the gradient itself
+        Dim cSurface As pd2DSurface
+        Set cSurface = New pd2DSurface
+        cSurface.WrapSurfaceAroundDC bufferDC
+        cSurface.SetSurfaceAntialiasing P2_AA_None
         
-        With m_GradientRect
-            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
-        End With
+        PD2D.FillRectangleF_FromRectF cSurface, g_CheckerboardBrush, m_GradientRect
+        PD2D.FillRectangleF_FromRectF cSurface, m_Brush, m_GradientRect
         
         m_Brush.ReleaseBrush
         
@@ -458,37 +460,40 @@ Private Sub RedrawBackBuffer()
         ucSupport.RequestBufferColorManagement VarPtr(m_GradientRect)
         
         'Fill the "reverse" button with the proper color (depending on its mouseover status)
-        Dim fillColor As Long
-        fillColor = m_Colors.RetrieveColor(PDGS_ButtonFill, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
-        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ReverseRect, fillColor
+        Dim cBrush As pd2DBrush
+        Set cBrush = New pd2DBrush
+        cBrush.SetBrushColor m_Colors.RetrieveColor(PDGS_ButtonFill, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_ReverseRect
         
         'Always start by drawing inactive borders around both "buttons" on the control
-        Dim outlineColor As Long, outlineWidth As Long
-        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, False, False)
-        outlineWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ReverseRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        Dim cPen As pd2DPen
+        Set cPen = New pd2DPen
+        cPen.SetPenColor m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, ucSupport.DoIHaveFocus, False)
+        cPen.SetPenWidth 1!
+        cPen.SetPenLineJoin P2_LJ_Miter
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_GradientRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ReverseRect
         
-        'Next, draw highlight borders around either button if they have focus
-        outlineWidth = 3
-        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, True, True)
+        'Next, draw highlight borders around either button if they are actively mouse-hovered
+        ' (or if the control has keyboard focus)
+        cPen.SetPenColor m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, False, True)
+        cPen.SetPenWidth 3!
+        
         If m_MouseInsideGradientRect Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_GradientRect
         ElseIf m_MouseInsideReverseRect Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ReverseRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ReverseRect
         ElseIf ucSupport.DoIHaveFocus Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_GradientRect
         End If
         
-        'Finally, draw arrows to indicate the "reverse" purpose of the button.
-        Dim arrowColor As Long
-        arrowColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
-        
-        Dim cPen As pd2DPen, cSurface As pd2DSurface
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        'Finally, activate antialiasing and draw arrows to indicate the "reverse" purpose of the button.
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         cSurface.SetSurfacePixelOffset P2_PO_Half
-        Drawing2D.QuickCreateSolidPen cPen, 1!, arrowColor
+        
+        cPen.SetPenWidth 1!
         cPen.SetPenEndCap P2_LC_ArrowAnchor
+        cPen.SetPenColor m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
         
         Dim arrFirstPoint As PointFloat, arrSecondPoint As PointFloat
         arrFirstPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.2!)
