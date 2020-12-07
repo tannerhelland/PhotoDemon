@@ -101,19 +101,23 @@ Attribute VB_Exposed = False
 'Crystallize Effect Interface
 'Copyright 2014-2020 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 08/April/17
-'Last update: convert to XML params, performance improvements
+'Last updated: 07/December/20
+'Last update: 2x performance improvements! yay!
 '
-'PhotoDemon's crystallize effect is implemented using Worley Noise (https://en.wikipedia.org/wiki/Worley_noise),
-' which is basically a special algorithmic approach to Voronoi diagrams (https://en.wikipedia.org/wiki/Voronoi_diagram).
+'PhotoDemon's crystallize effect is implemented using Worley Noise...
+' (https://en.wikipedia.org/wiki/Worley_noise)
+' ...which is basically a special algorithmic approach to Voronoi diagrams...
+' (https://en.wikipedia.org/wiki/Voronoi_diagram)
 '
-'The associated pdVoronoi class does most the heavy lifting for this effect.  For details on this class and how it
-' works, I recommend referring to the Stained Glass effect dialog, which details it in much more detail.
+'The associated pdVoronoi class does most the heavy lifting for this effect.
+' For details on this class and how it works, I recommend referring to the Stained Glass
+' effect dialog, which details it in much more detail.
 '
-'I should give a special thanks to Robert Rayment, who did extensive profiling and research on this filter before I ever
-' began work on it.  His comments were invaluable in determining the shape and style of this class.  FYI, Robert's PaintRR
-' project has a faster and simpler version of this routine worth checking out if PD's methods seem like overkill!
-' Link here: http://rrprogs.com/
+'Finally, many thanks to Robert Rayment, who did extensive profiling and research on various
+' Voronoi implementations before I started work on this class.  His comments were invaluable in
+' determining the shape and style of this class's interface.  (FYI, Robert's PaintRR app has a
+' much simpler approach to this filter - check it out if PD's method seems like overkill!
+' Link here: http://rrprogs.com/)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -152,7 +156,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte, dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic, , , True
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -187,32 +191,29 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     cVoronoi.SetDistanceMode distanceMethod
     cVoronoi.SetShadingMode NO_SHADE
     
-    'Create several look-up tables, specifically:
-    ' One table for each color channel (RGBA)
-    ' One table for number of pixels in each Voronoi cell
-    Dim rLookup() As Long, gLookup() As Long, bLookup() As Long, aLookup() As Long
-    Dim numPixels() As Long
-    
     'Finally, we will also make two image-sized look-up tables that store the nearest Voronoi point index for
     ' each pixel in the image, and if certain shading types are active, the second-nearest Voronoi point as well.
     ' While this consumes a lot of memory, it makes our second pass through the image (the recoloring pass) much
     ' faster than it would otherwise be.
     Dim vLookup() As Long
+    ReDim vLookup(initX To finalX, initY To finalY) As Long
     
     'Size all pixels to match the number of possible Voronoi points; the nearest Voronoi point for each pixel
     ' will be used to determine the relevant point in the lookup tables.
     Dim numVoronoiPoints As Long
     numVoronoiPoints = cVoronoi.GetTotalNumOfVoronoiPoints() - 1
     
-    'If the number of unique Voronoi points is less than 32767 (the limit for an unsigned Int), we could get away with
-    ' using an Integer lookup table instead of Longs, but as VB6 doesn't provide an easy way to change array types
-    ' post-declaration, we are stuck using the worst-case scenario of Longs.
+    'Create several look-up tables, specifically:
+    ' One table for each color channel (RGBA)
+    ' One table for number of pixels in each Voronoi cell
+    Dim rLookup() As Long, gLookup() As Long, bLookup() As Long, aLookup() As Long
     ReDim rLookup(0 To numVoronoiPoints) As Long
     ReDim gLookup(0 To numVoronoiPoints) As Long
     ReDim bLookup(0 To numVoronoiPoints) As Long
     ReDim aLookup(0 To numVoronoiPoints) As Long
+    
+    Dim numPixels() As Long
     ReDim numPixels(0 To numVoronoiPoints) As Long
-    ReDim vLookup(initX To finalX, initY To finalY) As Long
     
     'Color values must be individually processed to account for shading, so we need to declare them
     Dim r As Long, g As Long, b As Long, a As Long
@@ -266,7 +267,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     'All lookup tables are now properly initialized.  Depending on the user's color sampling choice, calculate
     ' cell colors now.
     Dim numPixelsCache As Long, invNumPixelsCache As Double
-    Dim thisPoint As PointAPI
+    Dim thisPoint As PointFloat
     
     For x = 0 To numVoronoiPoints
     
@@ -285,11 +286,13 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
             If (thisPoint.y > finalY) Then thisPoint.y = finalY
             
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
-            xStride = thisPoint.x * 4
-            bLookup(x) = dstImageData(xStride, thisPoint.y)
-            gLookup(x) = dstImageData(xStride + 1, thisPoint.y)
-            rLookup(x) = dstImageData(xStride + 2, thisPoint.y)
-            aLookup(x) = dstImageData(xStride + 3, thisPoint.y)
+            xStride = Int(thisPoint.x + 0.5!) * 4
+            y = Int(thisPoint.y + 0.5!)
+            
+            bLookup(x) = dstImageData(xStride, y)
+            gLookup(x) = dstImageData(xStride + 1, y)
+            rLookup(x) = dstImageData(xStride + 2, y)
+            aLookup(x) = dstImageData(xStride + 3, y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
@@ -337,11 +340,11 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
         End If
     Next x
     
-    PutMem4 VarPtrArray(dstImageData), 0&
+    workingDIB.UnwrapArrayFromDIB dstImageData
     
     'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
 '    For x = 0 To numVoronoiPoints
-'        thisPoint = cVoronoi.getVoronoiCoordinates(x)
+'        thisPoint = cVoronoi.GetVoronoiCoordinates(x)
 '        GDIPlusDrawCircleToDC workingDIB.getDIBDC, thisPoint.x, thisPoint.y, 2, RGB(255, 0, 255)
 '    Next x
         
