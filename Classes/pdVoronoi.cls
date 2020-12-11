@@ -73,33 +73,56 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Available distance calculation methods
-Public Enum VORONOI_DISTANCE
-    DIST_CARTESIAN = 0
-    DIST_MANHATTAN = 1
-    DIST_CHEBYSHEV = 2
+Public Enum PD_VoronoiDistance
+    vd_Cartesian = 0
+    vd_Manhattan = 1
+    vd_Chebyshev = 2
 End Enum
 
 #If False Then
-    Const DIST_CARTESIAN = 0, DIST_MANHATTAN = 1, DIST_CHEBYSHEV = 2
+    Private Const vd_Cartesian = 0, vd_Manhattan = 1, vd_Chebyshev = 2
+#End If
+
+'pdVoronoi supports a number of initial point patterns, which makes for more interesting effects
+Public Enum PD_VoronoiPattern
+    vp_Square = 0
+    vp_Diamond = 1
+    vp_Hexagon = 2
+    vp_Braid = 3
+    vp_Chain = 4
+    vp_Cross = 5
+    vp_Leaves = 6
+    vp_Quilt = 7
+    vp_Ragged = 8
+    vp_Weave = 9
+    vp_Experimental = 10     'Don't expose in production!
+    [vp_Count] = 10
+End Enum
+
+#If False Then
+    Private Const vp_Square = 0, vp_Diamond = 1, vp_Hexagon = 2, vp_Braid = 3, vp_Chain = 4, vp_Cross = 5, vp_Leaves = 6, vp_Quilt = 7, vp_Ragged = 8, vp_Weave = 9
+    Private Const vp_Experimental = 10, vp_Count = 11
 #End If
 
 'Available shading methods
-Public Enum VORONOI_SHADING
-    NO_SHADE = 1
-    SHADE_F1 = 2
-    SHADE_F2 = 3
-    SHADE_F2_MINUS_F1 = 4
-    SHADE_F1_DIVIDE_F2 = 5
+Public Enum PD_VoronoiShading
+    vs_NoShade = 1
+    vs_ShadeF1 = 2
+    vs_ShadeF2 = 3
+    vs_ShadeF2MinusF1 = 4
+    vs_ShadeF1DivF2 = 5
+    vs_ShadeSqrF1DivF2 = 6
 End Enum
 
 #If False Then
-    Const NO_SHADE = 1, SHADE_F1 = 2, SHADE_F2 = 3, SHADE_F2_MINUS_F1 = 4, SHADE_F1_DIVIDE_F2 = 5
+    Private Const vs_NoShade = 1, vs_ShadeF1 = 2, vs_ShadeF2 = 3, vs_ShadeF2MinusF1 = 4, vs_ShadeF1DivF2 = 5, vs_ShadeSqrF1DivF2 = 6
 #End If
 
 Private Type VoronoiData
     x As Single     'center-point of this Voronoi cell
     y As Single
     maxDistance As Single   'max distance for this cell, used to easily calculate shading on a [0, 1] scale
+    IsActive As Boolean     'points can be "deactivated", which creates more varied output
 End Type
 
 'This m_vPoints() array will store the coordinates of each point in the Voronoi diagram
@@ -118,10 +141,10 @@ Private m_imgWidth As Long, m_imgHeight As Long
 Private m_PointsInitialized As Boolean
 
 'Technique used to calculate distance between points; this is set via the SetDistanceMode() sub
-Private m_distanceMode As VORONOI_DISTANCE
+Private m_distanceMode As PD_VoronoiDistance
 
 'Technique used to calculate shading; this is set via the SetShadingMode() sub
-Private m_shadingMode As VORONOI_SHADING
+Private m_shadingMode As PD_VoronoiShading
 
 'Because VB6 doesn't short-circuit, it's faster to set some combination-style flags in advance,
 ' to avoid the need for complex branches inside loops
@@ -177,9 +200,12 @@ Friend Sub InitPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     'Manually fill the max distance array with near-zero-but-not-actually-zero values.
     ' (This incurs a static startup cost, but it lets us skip DBZ checks in the inner pixel loop,
     ' where perf is much more sensitive.)
+    '
+    'We also want to mark all points as initially active.  Some may be deactivated as part of optimizations.
     Dim x As Long, y As Long, targetCell As Long
     For x = 0 To m_NumPoints - 1
         m_vPoints(x).maxDistance = 0.000001!
+        m_vPoints(x).IsActive = True
     Next x
     
     'So that each point is centered nicely inside a cell, we'll initialize them to half-width/height values
@@ -261,12 +287,12 @@ End Function
 ' (NOTE: in PhotoDemon, I limit the turbulence factor to 1/2 of the cell size, which saves us from having to extend the
 '        search radius due to turbulence.  Individuals needing greater turbulence will thus need to uncomment the
 '        "If m_Turbulence..." line below.)
-Private Sub DetermineVoronoiSearchRadius()
+Private Sub DetermineVoronoiSearchRadius(Optional ByVal startingRadius As Long = 1)
     
-    'Regardless of input values, we must always search at least 1px in all directions.
-    m_VoronoiSearchRadius = 1
+    'Regardless of input values, we must always search at least +/-1 cell in all directions.
+    m_VoronoiSearchRadius = startingRadius
     
-    If (m_shadingMode > SHADE_F1) Then m_VoronoiSearchRadius = m_VoronoiSearchRadius + 1
+    If (m_shadingMode > vs_ShadeF1) Then m_VoronoiSearchRadius = m_VoronoiSearchRadius + 1
     'If (m_Turbulence > 0.5) Then m_VoronoiSearchRadius = m_VoronoiSearchRadius + 1
     
     'After determining Voronoi search radius, we can precalculate specific bounds for
@@ -297,19 +323,216 @@ Private Sub DetermineVoronoiSearchRadius()
 End Sub
 
 'Set the mode used to calculate distance
-Friend Sub SetDistanceMode(ByVal newMode As VORONOI_DISTANCE)
+Friend Sub SetDistanceMode(ByVal newMode As PD_VoronoiDistance)
     m_distanceMode = newMode
 End Sub
 
-'Set the mode used to calculate shading
-Friend Sub SetShadingMode(ByVal newMode As VORONOI_SHADING)
+Friend Sub SetInitialPattern(ByVal newPattern As PD_VoronoiPattern)
+    
+    Dim i As Long, x As Long, y As Long
+    
+    Select Case newPattern
+    
+        Case vp_Square
+            For i = 0 To m_NumPoints - 1
+                m_vPoints(i).IsActive = True
+            Next i
+        
+        Case vp_Diamond
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                m_vPoints(i).IsActive = ((x + y) And 1)
+            Next i
+        
+        Case vp_Hexagon
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y And 1) Then
+                    m_vPoints(i).IsActive = ((x And 3) = 0)
+                Else
+                    m_vPoints(i).IsActive = (((x + 2) And 3) = 0)
+                End If
+            Next i
+            
+        Case vp_Braid
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y And 1) Then
+                    m_vPoints(i).IsActive = (x And 1)
+                Else
+                    m_vPoints(i).IsActive = ((x + 1) And 3)
+                End If
+            Next i
+            
+        Case vp_Chain
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y And 1) = 0 Then m_vPoints(i).IsActive = (x And 2)
+            Next i
+            
+        Case vp_Cross
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y And 1) = 0 Then
+                    m_vPoints(i).IsActive = (x And 3)
+                Else
+                    m_vPoints(i).IsActive = ((x + 2) And 3)
+                End If
+            Next i
+        
+        Case vp_Leaves
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (x Mod 3) = 1 Then
+                    m_vPoints(i).IsActive = ((y Mod 3) = 0)
+                Else
+                    m_vPoints(i).IsActive = ((y Mod 3) = 1)
+                End If
+            Next i
+            
+        Case vp_Quilt
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                m_vPoints(i).IsActive = (y And 1) Or (x And 1)
+            Next i
+            
+        Case vp_Ragged
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y Mod 3) = 0 Then
+                    m_vPoints(i).IsActive = (x And 3)
+                ElseIf (y Mod 3) = 1 Then
+                    m_vPoints(i).IsActive = ((x + 1) And 3)
+                Else
+                    m_vPoints(i).IsActive = (x And 1)
+                End If
+            Next i
+            
+        Case vp_Weave
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y Mod 3) = 0 Then
+                    m_vPoints(i).IsActive = (x And 1)
+                ElseIf (y Mod 3) = 1 Then
+                    m_vPoints(i).IsActive = ((x + 1) And 1)
+                Else
+                    m_vPoints(i).IsActive = False
+                End If
+            Next i
+            
+        Case vp_Experimental
+            For i = 0 To m_NumPoints - 1
+                y = i \ m_numColumns
+                x = i Mod m_numColumns
+                If (y Mod 3) = 0 Then
+                    m_vPoints(i).IsActive = ((x Mod 3) = 0)
+                ElseIf (y Mod 3) = 1 Then
+                    m_vPoints(i).IsActive = ((x Mod 3) = 1)
+                Else
+                    m_vPoints(i).IsActive = ((x Mod 3) = 0)
+                End If
+                
+            Next i
+        
+    End Select
+    
+End Sub
 
+'Set the mode used to calculate shading
+Friend Sub SetShadingMode(ByVal newMode As PD_VoronoiShading)
     m_shadingMode = newMode
-    m_invertShading = (m_shadingMode = SHADE_F1) Or (m_shadingMode = SHADE_F1_DIVIDE_F2)
+    m_invertShading = (m_shadingMode = vs_ShadeF1) Or (m_shadingMode = vs_ShadeF1DivF2) Or (m_shadingMode = vs_ShadeSqrF1DivF2)
+End Sub
+
+'NOTE: you *MUST* call SetInitialPattern(), above, before calling this function for
+' correct results.
+'
+'Set density on a [0, 1] scale.  At full density, all grid cells will contain 1 point.
+' As you reduce density, cells will be "blanked out".  Note, however, that each cell must
+' have at least two neighboring cells that contain points; without this, the search radius
+' of each cell would need to be made much more aggressive, which has serious perf implications.
+Friend Sub SetDensity(ByVal newDensity As Single)
     
-    'Update the Voronoi search radius to account for the new shading mode
-    DetermineVoronoiSearchRadius
+    Dim i As Long
     
+    If (newDensity < 1!) Then
+        
+        'For perf reasons, don't allow more than 90% of points to be removed
+        If (newDensity < 0.1) Then newDensity = 0.1
+        
+        'Randomly deactivate points at a ratio corresponding to the specified density
+        For i = 0 To m_NumPoints - 1
+            If m_vPoints(i).IsActive Then m_vPoints(i).IsActive = (m_Random.GetRandomFloat_WH() <= newDensity)
+        Next i
+        
+    End If
+    
+    'Note: you MUST call FinalizeParameters() after calling this function, or the class
+    ' will not function correctly.
+
+End Sub
+
+'This function *MUST* be called at least once prior to retrieving actual Voronoi values.
+' It will automatically determine things like grid search radius, without which this
+' class will not function correctly.
+Friend Sub FinalizeParameters()
+
+    'Every cell needs to touch at least two active cells (without this, some rendering models
+    ' break down as they need both an f1 and f2 distance).  To ensure this condition is met,
+    ' we're gonna quickly iterate the table and find the smallest search radius that ensures
+    ' all cells in the collection touch at least two active cells.
+    Dim x As Long, y As Long, i As Long, j As Long, numCellsFound As Long
+    
+    Dim startingRadius As Long
+    startingRadius = 1
+    
+    'Before searching, reset the search radius to its default value
+    DetermineVoronoiSearchRadius startingRadius
+    
+    'Iterate all cells
+    Dim searchMinX As Long, searchMaxX As Long, searchMinY As Long, searchMaxY As Long
+    For y = 0 To m_numRows - 1
+    For x = 0 To m_numColumns - 1
+        
+StartSearchAgain:
+        
+        searchMinX = m_XBounds(x).bcMin
+        searchMaxX = m_XBounds(x).bcMax
+        searchMinY = m_YBounds(y).bcMin
+        searchMaxY = m_YBounds(y).bcMax
+        
+        'Count active cells
+        numCellsFound = 0
+        For j = searchMinY To searchMaxY
+        For i = searchMinX To searchMaxX
+            If m_vPoints(j * m_numColumns + i).IsActive Then
+                numCellsFound = numCellsFound + 1
+                If (numCellsFound >= 2) Then GoTo ContinueSearching
+            End If
+        Next i
+        Next j
+        
+        'If this cell failed the search criteria, increase search radius and immediately try again
+        If (numCellsFound < 2) Then
+            startingRadius = startingRadius + 1
+            DetermineVoronoiSearchRadius startingRadius
+            GoTo StartSearchAgain
+        End If
+
+ContinueSearching:
+
+    Next x
+    Next y
+
 End Sub
 
 'Given a location IN THE SOURCE IMAGE, return the INDEX of the nearest point in the Voronoi diagram.
@@ -345,45 +568,50 @@ Friend Function GetNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long, Opt
     For x = searchMinX To searchMaxX
     
         targetCell = y * m_numColumns + x
-    
-        'Find the distance to this point, using the method requested by the user.
-        ' (Note that these distance calculations have been manually in-lined for performance reasons)
-        Select Case m_distanceMode
-            
-            Case DIST_CARTESIAN
-                xDist = srcX - m_vPoints(targetCell).x
-                yDist = srcY - m_vPoints(targetCell).y
-                curDistance = xDist * xDist + yDist * yDist
-                If (m_shadingMode <> NO_SHADE) Then curDistance = Sqr(curDistance)
-                
-            Case DIST_MANHATTAN
-                curDistance = Abs(srcX - m_vPoints(targetCell).x) + Abs(srcY - m_vPoints(targetCell).y)
-                
-            Case DIST_CHEBYSHEV
-                xDist = Abs(srcX - m_vPoints(targetCell).x)
-                yDist = Abs(srcY - m_vPoints(targetCell).y)
-                If (xDist > yDist) Then curDistance = xDist Else curDistance = yDist
-            
-        End Select
         
-        'Check to see if this is the minimum recorded distance for this Voronoi cell
-        If (curDistance <= minDistance) Then
-        
-            'As we are now updating the nearest point, we can also update the second-nearest point using the existing
-            ' nearest-point distance.
-            If (minDistance < minDistance2) Then
-                minDistance2 = minDistance
-                secondNearestPointIndex = GetNearestPointIndex
+        'Only check active points; inactive ones are ignored
+        If m_vPoints(targetCell).IsActive Then
+            
+            'Find the distance to this point, using the method requested by the user.
+            ' (Note that these distance calculations have been manually in-lined for performance reasons)
+            Select Case m_distanceMode
+                
+                Case vd_Cartesian
+                    xDist = srcX - m_vPoints(targetCell).x
+                    yDist = srcY - m_vPoints(targetCell).y
+                    curDistance = xDist * xDist + yDist * yDist
+                    If (m_shadingMode <> vs_NoShade) Then curDistance = Sqr(curDistance)
+                    
+                Case vd_Manhattan
+                    curDistance = Abs(srcX - m_vPoints(targetCell).x) + Abs(srcY - m_vPoints(targetCell).y)
+                    
+                Case vd_Chebyshev
+                    xDist = Abs(srcX - m_vPoints(targetCell).x)
+                    yDist = Abs(srcY - m_vPoints(targetCell).y)
+                    If (xDist > yDist) Then curDistance = xDist Else curDistance = yDist
+                
+            End Select
+            
+            'Check to see if this is the minimum recorded distance for this Voronoi cell
+            If (curDistance <= minDistance) Then
+            
+                'As we are now updating the nearest point, we can also update the second-nearest point using the existing
+                ' nearest-point distance.
+                If (minDistance < minDistance2) Then
+                    minDistance2 = minDistance
+                    secondNearestPointIndex = GetNearestPointIndex
+                End If
+                
+                'Update the nearest distance and index markers
+                minDistance = curDistance
+                GetNearestPointIndex = targetCell
+            
+            'Second check for 2nd-nearest point (used to calculate cell shading)
+            ElseIf (curDistance <= minDistance2) Then
+                minDistance2 = curDistance
+                secondNearestPointIndex = targetCell
             End If
             
-            'Update the nearest distance and index markers
-            minDistance = curDistance
-            GetNearestPointIndex = targetCell
-        
-        'Second check for 2nd-nearest point (used to calculate cell shading)
-        ElseIf (curDistance <= minDistance2) Then
-            minDistance2 = curDistance
-            secondNearestPointIndex = targetCell
         End If
         
     Next x
@@ -392,17 +620,20 @@ Friend Function GetNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long, Opt
     'After finding the nearest point, update the maximum distance cache for this cell (as necessary)
     ' (This is an in-lined version of "curShadeDistance = GetShadingDistance(minDistance, minDistance2)")
     Select Case m_shadingMode
-        Case NO_SHADE
+        Case vs_NoShade
             curShadeDistance = minDistance
-        Case SHADE_F1
+        Case vs_ShadeF1
             curShadeDistance = minDistance
-        Case SHADE_F2
+        Case vs_ShadeF2
             curShadeDistance = minDistance2
-        Case SHADE_F2_MINUS_F1
+        Case vs_ShadeF2MinusF1
             curShadeDistance = minDistance2 - minDistance
-        Case SHADE_F1_DIVIDE_F2
+        Case vs_ShadeF1DivF2
             'Branchless DBZ fix
-            curShadeDistance = minDistance / (minDistance2 + 0.000001!)
+            curShadeDistance = minDistance / (minDistance2 + 0.0000001!)
+        Case vs_ShadeSqrF1DivF2
+            curShadeDistance = minDistance / (minDistance2 + 0.0000001!)
+            curShadeDistance = curShadeDistance * curShadeDistance
     End Select
     
     If (curShadeDistance > m_vPoints(GetNearestPointIndex).maxDistance) Then m_vPoints(GetNearestPointIndex).maxDistance = curShadeDistance
@@ -418,16 +649,16 @@ Friend Function GetDistance(ByVal srcX As Single, ByVal srcY As Single, ByVal vP
     'Find the distance to this point, using the method requested by the user
     Select Case m_distanceMode
     
-        Case DIST_CARTESIAN
+        Case vd_Cartesian
             srcX = srcX - m_vPoints(vPointIndex).x
             srcY = srcY - m_vPoints(vPointIndex).y
             GetDistance = srcX * srcX + srcY * srcY
-            If (m_shadingMode <> NO_SHADE) Then GetDistance = Sqr(GetDistance)
+            If (m_shadingMode <> vs_NoShade) Then GetDistance = Sqr(GetDistance)
             
-        Case DIST_MANHATTAN
+        Case vd_Manhattan
             GetDistance = Abs(srcX - m_vPoints(vPointIndex).x) + Abs(srcY - m_vPoints(vPointIndex).y)
             
-        Case DIST_CHEBYSHEV
+        Case vd_Chebyshev
             srcX = Abs(srcX - m_vPoints(vPointIndex).x)
             srcY = Abs(srcY - m_vPoints(vPointIndex).y)
             If (srcX > srcY) Then GetDistance = srcX Else GetDistance = srcY
@@ -451,7 +682,7 @@ End Function
 Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, ByVal nearestPointIndex As Long, ByVal secondNearestPointIndex As Long) As Single
 
     'If shading is not active, return 1 and exit
-    If (m_shadingMode = NO_SHADE) Then
+    If (m_shadingMode = vs_NoShade) Then
         GetShadingValue = 1!
         
     Else
@@ -460,7 +691,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, ByVal ne
             
         'Note that in the special case of shading using only the F2 value (the 2nd-closest point),
         ' we can completely avoid calculating the distance to the nearest point!
-        If (m_shadingMode <> SHADE_F2) Then
+        If (m_shadingMode <> vs_ShadeF2) Then
         
             'Find the distance to this point, using the method requested by the user.  (This step could be avoided
             ' by allowing the user to also cache distance - I haven't done that at present, but it's a possibility for
@@ -472,7 +703,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, ByVal ne
         'If the class is using a shading method that also requires knowledge of F2, find that now, using steps
         ' identical to those above, but with F2 instead of F1.  (As before, if the shading method relies only the distance
         ' to the nearest point, we can completely skip this step.
-        If (m_shadingMode <> SHADE_F1) Then
+        If (m_shadingMode <> vs_ShadeF1) Then
         
             'Find the distance to this point, using the method requested by the user.  (This step could be avoided
             ' by allowing the user to also cache distance - I haven't done that at present, but it's a possibility for
@@ -485,19 +716,22 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, ByVal ne
         ' shading method.  (Note that the max distance array was intentionally initialized to non-zero values,
         ' so we do *not* need to perform a DBZ check here.)
         Select Case m_shadingMode
-            Case NO_SHADE
+            Case vs_NoShade
                 GetShadingValue = vDistance1
-            Case SHADE_F1
+            Case vs_ShadeF1
                 GetShadingValue = vDistance1
-            Case SHADE_F2
+            Case vs_ShadeF2
                 GetShadingValue = vDistance2
-            Case SHADE_F2_MINUS_F1
+            Case vs_ShadeF2MinusF1
                 GetShadingValue = vDistance2 - vDistance1
-            Case SHADE_F1_DIVIDE_F2
-                GetShadingValue = vDistance1 / (vDistance2 + 0.000001!) 'Branchless DBZ failsafe
+            Case vs_ShadeF1DivF2
+                GetShadingValue = vDistance1 / (vDistance2 + 0.0000001!) 'Branchless DBZ failsafe
+            Case vs_ShadeSqrF1DivF2
+                GetShadingValue = vDistance1 / (vDistance2 + 0.0000001!)
+                GetShadingValue = GetShadingValue * GetShadingValue
         End Select
     
-        GetShadingValue = (GetShadingValue / m_vPoints(nearestPointIndex).maxDistance)
+        GetShadingValue = GetShadingValue / m_vPoints(nearestPointIndex).maxDistance
         
         'Certain shade functions return inverted results; catch these in advance, so the caller can deal with all
         ' output universally, instead of having to manually reverse values on their end.
@@ -514,11 +748,103 @@ Friend Function GetVoronoiCoordinates(ByVal pointIndex As Long) As PointFloat
     GetVoronoiCoordinates.y = m_vPoints(pointIndex).y
 End Function
 
+'Serialization helpers
+Friend Function GetPatternCount() As Long
+    GetPatternCount = vp_Count
+End Function
+
+Friend Function GetPatternIDFromName(ByRef srcPatternName As String) As PD_VoronoiPattern
+    If Strings.StringsEqual(srcPatternName, "square", True) Then
+        GetPatternIDFromName = vp_Square
+    ElseIf Strings.StringsEqual(srcPatternName, "diamond", True) Then
+        GetPatternIDFromName = vp_Diamond
+    ElseIf Strings.StringsEqual(srcPatternName, "hexagon", True) Then
+        GetPatternIDFromName = vp_Hexagon
+    ElseIf Strings.StringsEqual(srcPatternName, "braid", True) Then
+        GetPatternIDFromName = vp_Braid
+    ElseIf Strings.StringsEqual(srcPatternName, "chain", True) Then
+        GetPatternIDFromName = vp_Chain
+    ElseIf Strings.StringsEqual(srcPatternName, "cross", True) Then
+        GetPatternIDFromName = vp_Cross
+    ElseIf Strings.StringsEqual(srcPatternName, "leaves", True) Then
+        GetPatternIDFromName = vp_Leaves
+    ElseIf Strings.StringsEqual(srcPatternName, "quilt", True) Then
+        GetPatternIDFromName = vp_Quilt
+    ElseIf Strings.StringsEqual(srcPatternName, "ragged", True) Then
+        GetPatternIDFromName = vp_Ragged
+    ElseIf Strings.StringsEqual(srcPatternName, "weave", True) Then
+        GetPatternIDFromName = vp_Weave
+    ElseIf Strings.StringsEqual(srcPatternName, "experimental", True) Then
+        GetPatternIDFromName = vp_Experimental
+    Else
+        GetPatternIDFromName = vp_Square
+    End If
+End Function
+
+Friend Function GetPatternNameFromID(ByVal srcPattern As PD_VoronoiPattern) As String
+    Select Case srcPattern
+        Case vp_Square
+            GetPatternNameFromID = "square"
+        Case vp_Diamond
+            GetPatternNameFromID = "diamond"
+        Case vp_Hexagon
+            GetPatternNameFromID = "hexagon"
+        Case vp_Braid
+            GetPatternNameFromID = "braid"
+        Case vp_Chain
+            GetPatternNameFromID = "chain"
+        Case vp_Cross
+            GetPatternNameFromID = "cross"
+        Case vp_Leaves
+            GetPatternNameFromID = "leaves"
+        Case vp_Quilt
+            GetPatternNameFromID = "quilt"
+        Case vp_Ragged
+            GetPatternNameFromID = "ragged"
+        Case vp_Weave
+            GetPatternNameFromID = "weave"
+        Case vp_Experimental
+            GetPatternNameFromID = "experimental"
+        Case Else
+            GetPatternNameFromID = "square"
+    End Select
+End Function
+
+Friend Function GetPatternUINameFromID(ByVal srcPattern As PD_VoronoiPattern) As String
+    If (g_Language Is Nothing) Then Exit Function
+    Select Case srcPattern
+        Case vp_Square
+            GetPatternUINameFromID = g_Language.TranslateMessage("square")
+        Case vp_Diamond
+            GetPatternUINameFromID = g_Language.TranslateMessage("diamond")
+        Case vp_Hexagon
+            GetPatternUINameFromID = g_Language.TranslateMessage("hexagon")
+        Case vp_Braid
+            GetPatternUINameFromID = g_Language.TranslateMessage("braid")
+        Case vp_Chain
+            GetPatternUINameFromID = g_Language.TranslateMessage("chain")
+        Case vp_Cross
+            GetPatternUINameFromID = g_Language.TranslateMessage("cross")
+        Case vp_Leaves
+            GetPatternUINameFromID = g_Language.TranslateMessage("leaves")
+        Case vp_Quilt
+            GetPatternUINameFromID = g_Language.TranslateMessage("quilt")
+        Case vp_Ragged
+            GetPatternUINameFromID = g_Language.TranslateMessage("ragged")
+        Case vp_Weave
+            GetPatternUINameFromID = g_Language.TranslateMessage("weave")
+        Case vp_Experimental
+            GetPatternUINameFromID = "experimental"
+        Case Else
+            GetPatternUINameFromID = g_Language.TranslateMessage("square")
+    End Select
+End Function
+
 Private Sub Class_Initialize()
     
     m_PointsInitialized = False
-    m_distanceMode = DIST_CARTESIAN
-    m_shadingMode = NO_SHADE
+    m_distanceMode = vd_Cartesian
+    m_shadingMode = vs_NoShade
     m_invertShading = False
     Set m_Random = New pdRandomize
     
