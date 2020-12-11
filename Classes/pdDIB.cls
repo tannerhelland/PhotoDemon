@@ -961,25 +961,21 @@ Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
         If ((fillColor = vbWhite) And (fillAlphaL = 255)) Then
             Me.ResetDIB 255
             m_IsAlphaPremultiplied = True
+        ElseIf ((fillColor = vbBlack) And (fillAlphaL = 0)) Then
+            Me.ResetDIB 0
+            m_IsAlphaPremultiplied = True
         Else
             
-            Me.ResetDIB 0
+            Dim tmpSurface As Long, tmpBrush As Long
+            tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(Me.GetDIBDC)
+            tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
+                
+            GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
+            GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, -1, -1, m_dibWidth + 2, m_dibHeight + 2
+            GDI_Plus.ReleaseGDIPlusBrush tmpBrush
+            GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
             
-            If ((fillColor <> vbBlack) And (fillAlphaL <> 0)) Then
-                
-                Dim tmpSurface As Long, tmpBrush As Long
-                tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(Me.GetDIBDC)
-                tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
-                GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
-                GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, -1, -1, m_dibWidth + 2, m_dibHeight + 2
-                GDI_Plus.ReleaseGDIPlusBrush tmpBrush
-                GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
-                
-                m_IsAlphaPremultiplied = (fillAlphaL = 255)
-                
-            Else
-                m_IsAlphaPremultiplied = True
-            End If
+            m_IsAlphaPremultiplied = (fillAlphaL = 255)
             
         End If
         
