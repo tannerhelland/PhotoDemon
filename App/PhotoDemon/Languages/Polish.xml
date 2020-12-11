@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>8.0.44</langversion>
+<langversion>8.0.45</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ryszard</author>
@@ -3727,6 +3727,48 @@ Wprowadź wartość liczbową.</translation>
 <!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
+<original>hexagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>braid</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cross</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>leaves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ragged</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<phrase>
 <original>quick start</original>
 <translation>Szybki start</translation>
 </phrase>
@@ -7373,23 +7415,8 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>distance method</original>
-<translation>Metoda odległości</translation>
-</phrase>
-
-<phrase>
-<original>color sampling</original>
-<translation>Próbkowanie koloru</translation>
-</phrase>
-
-<phrase>
 <original>cell size</original>
 <translation>Rozmiar komórki</translation>
-</phrase>
-
-<phrase>
-<original>edge thickness</original>
-<translation>Grubość krawędzi</translation>
 </phrase>
 
 <phrase>
@@ -7398,8 +7425,33 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 </phrase>
 
 <phrase>
+<original>distance method</original>
+<translation>Metoda odległości</translation>
+</phrase>
+
+<phrase>
+<original>edge thickness</original>
+<translation>Grubość krawędzi</translation>
+</phrase>
+
+<phrase>
+<original>color sampling</original>
+<translation>Próbkowanie koloru</translation>
+</phrase>
+
+<phrase>
+<original>edge color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Carving image from stained glass</original>
 <translation>Rzeźbiony obraz z witrażu</translation>
+</phrase>
+
+<phrase>
+<original>accurate</original>
+<translation>Dokładny</translation>
 </phrase>
 
 <phrase>
@@ -7408,8 +7460,8 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 </phrase>
 
 <phrase>
-<original>accurate</original>
-<translation>Dokładny</translation>
+<original>random</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7427,7 +7479,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>Czebyszewa (szachownica)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8272,7 +8324,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>Krystalizowanie obrazu</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Crystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Pixelate_Crystallize.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>number of fragments</original>
@@ -13286,10 +13338,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5129 phrases. -->
-<!-- 2613 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 11596 total words. -->
+<!-- As of this build, PhotoDemon contains 5161 phrases. -->
+<!-- 2635 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 11609 total words. -->
 
 </pdData>
