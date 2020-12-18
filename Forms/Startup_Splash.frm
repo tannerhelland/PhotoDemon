@@ -42,8 +42,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Splash Screen
 'Copyright 2001-2020 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 10/June/20
-'Last update: rewrite as a proper layered window with alpha effects
+'Last updated: 18/December/20
+'Last update: remove GDI+ font code from splash rendering; GDI+ font creation functions have
+'             unpredictable perf impacts, and it's reliably faster to use GDI on 24-bpp surfaces
+'             (then produce a 32-bpp copy ourselves)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -56,20 +58,6 @@ Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVa
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RectL) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function UpdateLayeredWindow Lib "user32" (ByVal hWnd As Long, ByVal hdcDst As Long, ByVal pptDst As Long, ByVal psize As Long, ByVal hdcSrc As Long, ByVal pptSrc As Long, ByVal crKey As Long, ByVal pblend As Long, ByVal dwFlags As Long) As Long
-
-'Unfortunately, GDI doesn't render text onto 32-bpp surfaces correctly (the alpha channel gets ignored).
-' We need to use a more convoluted GDI+ approach, and because I don't have a safe wrapper class for
-' GDI+ font rendering, everything gets called manually.
-'Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As Long, ByVal srcMeasurementUnit As Long, ByRef dstCreatedFont As Long) As GP_Result
-'Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As GP_Result
-Private Declare Function GdipCreateFontFromDC Lib "gdiplus" (ByVal srcDC As Long, ByRef dstCreatedFont As Long) As GP_Result
-Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As Long, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
-Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
-'Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As GP_Result
-Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As GP_Result
-Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcStringPtr As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RectF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As GP_Result
-Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As Long) As GP_Result
-Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As Long) As GP_Result
 
 'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once m_splashDIB (below)
 ' has been successfully assembled.
@@ -162,92 +150,55 @@ Public Sub PrepareRestOfSplash()
         Dim logoFontName As String
         If OS.IsVistaOrLater Then logoFontName = "Segoe UI" Else logoFontName = "Tahoma"
         
-        'Next, we need to create various GDI+ font objects.  These may fail (particularly on
-        ' non-standard configs like Wine), so abandon font rendering if anything goes badly.
-        Dim fontOK As Boolean, gpFontHandle As Long
+        'Font color varies by build version.
+        ' (As a convenience, non-production builds are tagged RED; normal builds, BLUE.)
+        Dim logoFontColor As Long
+        If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then logoFontColor = RGB(255, 50, 50) Else logoFontColor = RGB(50, 127, 255)
         
-        'YIKES!  For ages I have used the normal GDI+ pathway of GdipCreateFontFamily > GdipCreateFont,
-        ' but after experiencing random startup stutters on Win 10, I profiled and tracked down the
-        ' CreateFontFamily call as the culprit.  It occasionally takes hundreds of ms, with occasional
-        ' lurches above ONE SECOND for that single function call!  I have no idea when this changed,
-        ' but I've got a reliable workaround - turns out it's much much MUCH faster (e.g. < 10 ms vs
-        ' 500+ ms) to initialize a GDI font, attach it to a GDI DC, then indirectly create a GDI+ font
-        ' from said DC.  Go figure.
-        
-        'Original code here in case I ever need to revert this approach:
-        'Dim gpFontFamily As Long
-        'fontOK = (GdipCreateFontFamilyFromName(StrPtr(logoFontName), 0&, gpFontFamily) = GP_OK)
-        'Const GP_FONTBOLD As Long = 1
-        'If fontOK Then fontOK = (GdipCreateFont(gpFontFamily, logoFontSize, GP_FONTBOLD, GP_U_Point, gpFontHandle) = GP_OK)
-        
-        'New approach: use pdFont to create a font, because it's ~50x faster!
+        'Create a GDI font with the desired settings
         Dim tmpFont As pdFont
         Set tmpFont = New pdFont
         tmpFont.SetFontFace logoFontName
         tmpFont.SetFontSize logoFontSize
         tmpFont.SetFontBold True
         tmpFont.CreateFontObject
-        tmpFont.AttachToDC m_splashDIB.GetDIBDC
-        fontOK = (GdipCreateFontFromDC(m_splashDIB.GetDIBDC, gpFontHandle) = GP_OK)
         
-        'Kill the temporary GDI font copy
+        'Assemble the current version and description strings
+        Dim versionString As String
+        versionString = Trim$(g_Language.TranslateMessage("version %1", Updates.GetPhotoDemonVersion()))
+        
+        'Create a dummy 24-bpp DIB and paint the version to it.  (This is required for reliable
+        ' antialiasing behavior; GDI can't render text to 32-bpp surfaces if antialiasing is active,
+        ' so we need to paitn to a 24-bpp surface, then upsample to 32-bpp and fill in alpha manually.)
+        Dim fntWidth As Long, fntHeight As Long
+        fntWidth = tmpFont.GetWidthOfString(versionString)
+        fntHeight = tmpFont.GetHeightOfString(versionString)
+        
+        'Create a temporary 24-bpp target for the text.  (We'll use white-on-black text to
+        ' simplify the process of manually upsampling to 32-bpp.)
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank fntWidth, fntHeight, 24, vbBlack
+        
+        'Paint the version string
+        tmpFont.SetFontColor vbWhite
+        tmpFont.AttachToDC tmpDIB.GetDIBDC
+        tmpFont.FastRenderText 0, 0, versionString
         tmpFont.ReleaseFromDC
         Set tmpFont = Nothing
         
-        'Next, we need a text formatter.  Minimal options are used, but we do need right-alignment
-        Dim gpStringFormat As Long
-        If fontOK Then fontOK = (GdipCreateStringFormat(0&, 0&, gpStringFormat) = GP_OK)
+        'Convert the temporary DIB to 32-bpp, using the grayscale channel as the alpha guide
+        tmpDIB.ConvertTo32bpp
+        Dim grayArray() As Byte
+        ReDim grayArray(0 To fntWidth - 1, 0 To fntHeight - 1) As Byte
+        DIBs.GetDIBGrayscaleMap tmpDIB, grayArray, False
         
-        Const GP_STRINGALIGNFAR As Long = 2
-        If fontOK Then fontOK = (GdipSetStringFormatAlign(gpStringFormat, GP_STRINGALIGNFAR) = GP_OK)
+        tmpDIB.CreateBlank fntWidth, fntHeight, 32, logoFontColor, 255
+        DIBs.ApplyTransparencyTable tmpDIB, grayArray
+        tmpDIB.SetAlphaPremultiplication True
         
-        'Everything else uses prebuilt PD classes
-        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-        
-        'If we created everything correctly, render version text
-        If fontOK And (m_splashDIB.GetDIBDC <> 0) Then
-            
-            'Next, we need a layout rect
-            Dim fontRect As RectF
-            fontRect.Top = pdLogoBottom + Interface.FixDPI(8)
-            fontRect.Left = 0
-            fontRect.Width = pdLogoRight
-            fontRect.Height = fontRect.Top + 100
-        
-            'Assemble the current version and description strings
-            Dim versionString As String
-            versionString = Trim$(g_Language.TranslateMessage("version %1", Updates.GetPhotoDemonVersion()))
-            
-            'Wrap a GDI+ surface around the destination DIB
-            Set cSurface = New pd2DSurface
-            cSurface.WrapSurfaceAroundPDDIB m_splashDIB
-            
-            'Activate grayscale antialiasing + hinting
-            Const GP_TextRenderingHintAntiAliasGridFit As Long = 3
-            GdipSetTextRenderingHint cSurface.GetHandle, GP_TextRenderingHintAntiAliasGridFit
-            
-            'Next, font color.
-            ' (As a convenience, non-production builds are tagged RED; normal builds, BLUE.)
-            Dim logoFontColor As Long
-            If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then logoFontColor = RGB(255, 50, 50) Else logoFontColor = RGB(50, 127, 255)
-            
-            'Text gets painted by a stock GDI+ brush
-            Set cBrush = New pd2DBrush
-            cBrush.SetBrushColor logoFontColor
-        
-            'Render the finished text!
-            GdipDrawString cSurface.GetHandle, StrPtr(versionString), Len(versionString), gpFontHandle, fontRect, gpStringFormat, cBrush.GetHandle
-            
-        End If
-        
-        'Free various font and string objects
-        Set cBrush = Nothing
-        Set cSurface = Nothing
-        If (gpStringFormat <> 0) Then GdipDeleteStringFormat gpStringFormat
-        If (gpFontHandle <> 0) Then GdipDeleteFont gpFontHandle
-        
-        'A GDI+ font family object is no longer allocated; see above comments for details
-        'If (gpFontFamily <> 0) Then GdipDeleteFontFamily gpFontFamily
+        'Paint the final 32-bpp version image onto the splash screen
+        tmpDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, dstX:=pdLogoRight - fntWidth, dstY:=pdLogoBottom + Interface.FixDPI(8)
         
         'We now have a back buffer with everything the splash screen requires
         ' (except the progress bar, which will be drawn later).  Create a front buffer
