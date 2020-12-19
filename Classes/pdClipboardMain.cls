@@ -344,7 +344,16 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
             '
             'As always, PNG is the preferred interchange format for images.  If you use a program that
             ' doesn't copy/paste PNG-format data, get them to fix their software!
-            'm_Clipboard.SetClipboardData_DelayedRendering CF_DIB
+            
+            'UPDATE December 2020: due to clipboard issues in Google Chrome, I've reenabled explicit DIB
+            ' availability on the clipboard.  This allows pasting into Chrome, and my hope is that as of
+            ' this year, any programs that support alpha channels will be smart enough to grab PNG or
+            ' DIBv5 data instead of bare DIB data (which is pre-composited against a white background to
+            ' ensure correct behavior in alpha-unaware software like MS Paint).  This does break 32-bpp
+            ' pasting into some legacy software.  As a workaround, PD's Edit > Special Copy/Cut menu allows
+            ' you to explicitly paste DIBv5 data which is an expensive workaround, but hey - at least it's
+            ' there if you need it.
+            m_Clipboard.SetClipboardData_DelayedRendering CF_DIB
             
         ElseIf (cFormat = pdcf_Bitmap) Then
             m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
@@ -1770,13 +1779,20 @@ Friend Sub RenderAllClipboardFormatsManually()
             RenderClipboard_PNG
             RenderClipboard_BITMAP
             
-            'DIBs have some special considerations.  For details, check out the comments in the ClipboardCopy function, but in a nutshell,
-            ' PD doesn't render CF_DIB images because various programs handle alpha in varying ways, making it impossible to please everyone.
-            ' Instead, as far as standard formats go, PD renders CF_BITMAP and CF_DIBv5 ONLY, with the assumption that "advanced" image
-            ' editors can pick up the DIBv5 without trouble, while "basic" editors (like MS Paint) will take the CF_BITMAP copy.
-            ' (This approach also spares the user's system a good chunk of resources, as we're not copying a crapload of mega-sized images
-            '  in varying DIB formats.)
+            'DIBs have some special considerations.  For details, check out the comments in the
+            ' ClipboardCopy() function, but in a nutshell, PD doesn't render CF_DIB images because
+            ' various programs handle alpha in varying ways, making it impossible to please everyone.
+            ' Instead, as far as standard formats go, PD renders CF_BITMAP and CF_DIBv5 ONLY, with the
+            ' assumption that "advanced" image editors can pick up the DIBv5 without trouble, while "basic"
+            ' editors (like MS Paint) will take the CF_BITMAP copy.  (This approach also spares the user's
+            ' system a good chunk of resources, as we're not copying a crapload of mega-sized images in
+            ' varying DIB formats.)
             RenderClipboard_DIB True
+            
+            'NOTE: regular DIB rendering has been reinstated to workaround issues with Chrome,
+            ' which apparently won't grab BITMAP, DIBv5, or PNG formats if available (instead always
+            ' defaulting to DIB regardless of its success or failure when retrieving)
+            RenderClipboard_DIB False
             
             'Close the clipboard
             m_Clipboard.ClipboardClose
@@ -2002,9 +2018,22 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
         PDDebug.LogAction "Clipboard copy update: allocating global memory for DIB object..."
     End If
     
-    'DIBs should be unpremultiplied prior to copying; note that some esoteric software (*cough* XNView *cough*) wants
-    ' premultiplied alpha, but the general consensus seems to be "use unpremultiplied", so that's what we do too.
-    If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
+    'DIBs should be unpremultiplied prior to copying; note that some esoteric software
+    ' (*cough* XNView *cough*) wants premultiplied alpha, but the general consensus seems to be
+    ' "use unpremultiplied", so that's what we do too.
+    '
+    'Note that alpha state is only relevant for DIBv5 DIBs; for compatibility reasons, PD always
+    ' composites plain DIBs against a white backdrop, since alpha channel compatibility is so
+    ' variable between apps.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    If useV5Header Then
+        If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
+    Else
+        tmpDIB.CreateFromExistingDIB m_ClipboardDIB
+        tmpDIB.CompositeBackgroundColor 255, 255, 255
+    End If
     
     'Figure out how much size is required for the global allocation.  This is just (size_of_header + size_of_pixels).
     Dim headerSize As Long
@@ -2016,7 +2045,11 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     End If
     
     Dim dibPointer As Long, dibSize As Long
-    m_ClipboardDIB.RetrieveDIBPointerAndSize dibPointer, dibSize
+    If useV5Header Then
+        m_ClipboardDIB.RetrieveDIBPointerAndSize dibPointer, dibSize
+    Else
+        tmpDIB.RetrieveDIBPointerAndSize dibPointer, dibSize
+    End If
     
     Dim memSize As Long
     memSize = headerSize + dibSize

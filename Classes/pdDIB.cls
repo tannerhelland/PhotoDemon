@@ -1829,6 +1829,9 @@ Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     'With our alpha channel complete, point dibPixels() away from the DIB
     Me.UnwrapArrayFromDIB dibPixels
     
+    'A composited image is always premultiplied
+    Me.SetInitialAlphaPremultiplicationState True
+    
 End Sub
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
