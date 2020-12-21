@@ -6,13 +6,13 @@ Attribute VB_Name = "Menus"
 'Last updated: 04/September/20
 'Last update: cool new algorithm for automatically determining (localized!) mnemonics at run-time
 '
-'PhotoDemon has an extensive menu system.  Managing all those menus is a cumbersome task.  This module exists
-' to tackle the worst parts of run-time maintenance, so other functions don't need to.
+'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.  This module
+' handles the worst parts of run-time maintenance.
 '
-'Because the menus provide a nice hierarchical collection of program features, this module also handles
-' some module-adjacent tasks, like the ProcessDefaultAction-prefixed functions.  You can pass these functions
-' either the name or caption of a menu, and they will automatically initiate the corresponding program action.
-' (FormMain makes extensive use of this, obviously.)
+'Because PD's menus provide an organized collection of program features, this module also handles
+' some module-adjacent tasks, like the ProcessDefaultAction-prefixed functions.  You can pass these
+' functions a menu name (or caption), and they will automatically initiate the corresponding
+' program action.  The long-term goal is to use these links to handle run-time hotkey mapping.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -602,14 +602,16 @@ Public Sub InitializeMenus()
     AddMenuItem "Support us on Patreon...", "help_patreon", 10, 0, , "help_heart"
     AddMenuItem "Support us with a one-time donation...", "help_donate", 10, 1, , "help_heart"
     AddMenuItem "-", "-", 10, 2
-    AddMenuItem "Check for updates...", "help_checkupdates", 10, 3, , "help_update"
-    AddMenuItem "Submit bug report or feedback...", "help_reportbug", 10, 4, , "help_reportbug"
-    AddMenuItem "-", "-", 10, 5
-    AddMenuItem "Visit PhotoDemon website...", "help_website", 10, 6, , "help_website"
-    AddMenuItem "Download PhotoDemon source code...", "help_sourcecode", 10, 7, , "help_github"
-    AddMenuItem "Read license and terms of use...", "help_license", 10, 8, , "help_license"
-    AddMenuItem "-", "-", 10, 9
-    AddMenuItem "About...", "help_about", 10, 10, , "help_about"
+    AddMenuItem "Ask a question...", "help_forum", 10, 3, , "generic_question"
+    AddMenuItem "Check for updates...", "help_checkupdates", 10, 4, , "help_update"
+    AddMenuItem "Submit bug report or feedback...", "help_reportbug", 10, 5, , "help_reportbug"
+    AddMenuItem "-", "-", 10, 6
+    AddMenuItem "PhotoDemon forum...", "help_website", 10, 7, , "help_forum"
+    AddMenuItem "PhotoDemon license and terms of use...", "help_forum", 10, 8, , "help_license"
+    AddMenuItem "PhotoDemon source code...", "help_sourcecode", 10, 9, , "help_github"
+    AddMenuItem "PhotoDemon website...", "help_website", 10, 10, , "help_website"
+    AddMenuItem "-", "-", 10, 11
+    AddMenuItem "About...", "help_about", 10, 12, , "help_about"
     
     'After all menu items have been added, we need to manually go through and fill the "has children" boolean
     ' for each menu entry.  (This is important because we use it when producing a searchable list of menu items,
@@ -3153,6 +3155,9 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
         Case "help_donate"
             Web.OpenURL "https://photodemon.org/donate"
             
+        Case "help_forum"
+            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/discussions"
+            
         Case "help_checkupdates"
             
             'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
@@ -3164,14 +3169,14 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
         Case "help_reportbug"
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
             
-        Case "help_website"
-            Web.OpenURL "https://photodemon.org"
+        Case "help_license"
+            Web.OpenURL "https://photodemon.org/license/"
             
         Case "help_sourcecode"
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon"
             
-        Case "help_license"
-            Web.OpenURL "https://photodemon.org/license/"
+        Case "help_website"
+            Web.OpenURL "https://photodemon.org"
             
         Case "help_about"
             ShowPDDialog vbModal, FormAbout

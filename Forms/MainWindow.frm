@@ -1751,36 +1751,44 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Check for updates..."
+         Caption         =   "Ask a question..."
          Index           =   3
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Submit bug report or feedback..."
+         Caption         =   "Check for updates..."
          Index           =   4
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "-"
+         Caption         =   "Submit bug report or feedback..."
          Index           =   5
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Visit PhotoDemon website..."
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Download PhotoDemon source code..."
+         Caption         =   "PhotoDemon forum..."
          Index           =   7
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Read license and terms of use..."
+         Caption         =   "PhotoDemon license and terms of use..."
          Index           =   8
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "-"
+         Caption         =   "PhotoDemon source code..."
          Index           =   9
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "About..."
+         Caption         =   "PhotoDemon website..."
          Index           =   10
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "-"
+         Index           =   11
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "About..."
+         Index           =   12
       End
    End
 End
@@ -3577,7 +3585,34 @@ End Sub
 
 'All help menu entries are launched from here
 Private Sub MnuHelp_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuHelp(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "help_patreon"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "help_donate"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "help_forum"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "help_checkupdates"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "help_reportbug"
+        Case 6
+            'separator
+        Case 7
+            Menus.ProcessDefaultAction_ByName "help_forum"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "help_license"
+        Case 9
+            Menus.ProcessDefaultAction_ByName "help_sourcecode"
+        Case 10
+            Menus.ProcessDefaultAction_ByName "help_website"
+        Case 11
+            'separator
+        Case 12
+            Menus.ProcessDefaultAction_ByName "help_about"
+    End Select
 End Sub
 
 Private Sub MnuHistogram_Click(Index As Integer)

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>8.0.43</langversion>
+<langversion>8.0.44</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (with help from DeepL.com)</author>
@@ -5232,6 +5232,11 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
+<original>Ask a question</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Check for updates</original>
 <translation>Buscar actualizaciones</translation>
 </phrase>
@@ -5242,18 +5247,23 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Visit PhotoDemon website</original>
-<translation>Visita el sitio web de PhotoDemon</translation>
+<original>PhotoDemon forum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon source code</original>
+<original>PhotoDemon license and terms of use</original>
+<translation>Lea la licencia y las condiciones de uso</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon source code</original>
 <translation>Descargar el código fuente de PhotoDemon</translation>
 </phrase>
 
 <phrase>
-<original>Read license and terms of use</original>
-<translation>Lea la licencia y las condiciones de uso</translation>
+<original>PhotoDemon website</original>
+<translation>Visita el sitio web de PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5324,7 +5334,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 371 phrases. 192 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- MainWindow.frm contains 373 phrases. 192 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13341,10 +13351,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2528</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5161 phrases. -->
-<!-- 2635 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 11609 total words. -->
+<!-- As of this build, PhotoDemon contains 5163 phrases. -->
+<!-- 2635 are duplicates, so only 2528 unique phrases have been written to file. -->
+<!-- These 2528 phrases contain approximately 11612 total words. -->
 
 </pdData>
