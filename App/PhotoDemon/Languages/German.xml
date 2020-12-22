@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.229</langversion>
+<langversion>9.0.297</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -844,7 +844,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation>Nein. Text- und Vektor-Layer lassen wie sie sind.</translation>
+<translation>Nein. Text- und Vektor-Layer so lassen, wie sie sind.</translation>
 </phrase>
 
 <phrase>
@@ -859,7 +859,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation>Nein. Diesen Text-Layer lassen wie er ist.</translation>
+<translation>Nein. Diesen Text-Layer so lassen, wie er ist.</translation>
 </phrase>
 
 <phrase>
@@ -3734,42 +3734,42 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>hexagon</original>
-<translation></translation>
+<translation>Hexagon</translation>
 </phrase>
 
 <phrase>
 <original>braid</original>
-<translation></translation>
+<translation>Geflecht</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>Kette</translation>
 </phrase>
 
 <phrase>
 <original>cross</original>
-<translation></translation>
+<translation>Kreuz</translation>
 </phrase>
 
 <phrase>
 <original>leaves</original>
-<translation></translation>
+<translation>Blätter</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>Steppen</translation>
 </phrase>
 
 <phrase>
 <original>ragged</original>
-<translation></translation>
+<translation>Gezackt</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>Gewebe</translation>
 </phrase>
 
 <!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -5259,17 +5259,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>PhotoDemon license and terms of use</original>
-<translation>Lizenz und Nutzungsbedingungen lesen</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon source code</original>
-<translation>Quellcode von PhotoDemon herunterladen</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon website</original>
-<translation>Website von PhotoDemon besuchen</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7460,7 +7460,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge color and opacity</original>
-<translation></translation>
+<translation>Kantenfarbe und Opazität</translation>
 </phrase>
 
 <phrase>
@@ -7480,7 +7480,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random</original>
-<translation></translation>
+<translation>Zufällig</translation>
 </phrase>
 
 <phrase>
@@ -7907,7 +7907,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation>Künstlerische Konturkantenerkennung</translation>
+<translation>Künstlerische Kontur-Kantenerkennung</translation>
 </phrase>
 
 <phrase>
@@ -7932,7 +7932,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Roberts cross edge detection</original>
-<translation>Roberts Cross -Kantenerkennung</translation>
+<translation>Roberts-Cross-Kantenerkennung</translation>
 </phrase>
 
 <phrase>
@@ -7947,7 +7947,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Roberts cross</original>
-<translation>Roberts Cross</translation>
+<translation>Roberts-Cross</translation>
 </phrase>
 
 <!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -8043,7 +8043,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Searching each pixel range for edges</original>
-<translation>Jeden Pixelbereich nach Kanten durchsuchen</translation>
+<translation>Durchsuchen jedes Pixelbereichs nach Kanten</translation>
 </phrase>
 
 <!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -13123,7 +13123,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
 <translation>Sie haben PhotoDemon in einem eingeschränkten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner (wie Desktop, Documents oder Downloads) verschieben.
 
-(Wenn Sie PhotoDemon lassen, wo es ist, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
+(Wenn Sie PhotoDemon dort lassen, wo es ist, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
 </phrase>
 
 <phrase>
