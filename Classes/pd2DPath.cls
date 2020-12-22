@@ -33,22 +33,46 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Unlike GDI+ and DirectX, pd2DPath follows the Cairo convention and defaults to winding mode.  You can see a visualization
-' of what this means at this MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/dd368110(v=vs.85).aspx
+Private Declare Function GdipAddPathRectangle Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As GP_Result
+Private Declare Function GdipAddPathRectangleI Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As GP_Result
+Private Declare Function GdipAddPathEllipse Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As GP_Result
+Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As GP_Result
+Private Declare Function GdipAddPathLineI Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As GP_Result
+Private Declare Function GdipAddPathCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathCurve2I Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathClosedCurve2I Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathBezier Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As GP_Result
+Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathLine2I Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToIntArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathPolygonI Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
+Private Declare Function GdipAddPathPath Lib "gdiplus" (ByVal hPath As Long, ByVal pathToAdd As Long, ByVal connectToPreviousPoint As Long) As GP_Result
+
+Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal pathFillMode As GP_FillMode, ByRef dstPath As Long) As GP_Result
+Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
+Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
+
+'Unlike GDI+ and DirectX, pd2DPath follows the Cairo convention and defaults to winding mode.
+' You can see a visualization of what this means at this MSDN page:
+' https://msdn.microsoft.com/en-us/library/windows/desktop/dd368110(v=vs.85).aspx
 ' If you want the old behavior, you can change it here.
 Private Const DEFAULT_FILL_RULE As Long = P2_FR_Winding
 
-'Allowable error (in pixels) when flattening a path.  This value is poorly explained on MSDN, but lower values equal a more
-' precise approximation.  See http://msdn.microsoft.com/en-us/library/ms535572%28v=vs.85%29.aspx
+'Allowable error (in pixels) when flattening a path.  This value is poorly explained on MSDN,
+' but lower values equal a more precise approximation.
+' See http://msdn.microsoft.com/en-us/library/ms535572%28v=vs.85%29.aspx
 ' The default value of 0.25 is identical to the default value in GdiPlusEnums.h.
 Private Const DEFAULT_APPROXIMATION_ERROR As Single = 0.25!
 
-'The handle to our GDI+ path object.  This handle is automatically created with the class, and released when the
-' class is terminated.  The caller doesn't have to worry about it at all.
+'The handle to our GDI+ path object.  This handle is automatically created with the class,
+' and released when the class is terminated.  The caller shouldn't worry about it.
 Private m_PathHandle As Long
 
-'As a convenience, this class exposes some basic "transform" functions that don't require the caller to supply their own
-' pd2DTransform object.  To apply said transformations, we use an internal instance of that class.
+'As a convenience, this class exposes some basic "transform" functions that don't require
+' the caller to supply their own pd2DTransform object.  To apply said transformations,
+' we use an internal instance of that class.
 Private m_Transform As pd2DTransform
 
 Friend Function GetHandle() As Long
@@ -67,10 +91,10 @@ End Function
 Private Function CreatePath() As Boolean
 
     If (m_PathHandle <> 0) Then Me.ReleasePath
-    m_PathHandle = GDI_Plus.GDIPlus_PathCreate(DEFAULT_FILL_RULE)
+    CreatePath = (GdipCreatePath(DEFAULT_FILL_RULE, m_PathHandle) = GP_OK)
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreatePath = (m_PathHandle <> 0)
+    CreatePath = CreatePath And (m_PathHandle <> 0)
     If (CreatePath And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyPathCountChange True
     
 End Function
@@ -78,19 +102,19 @@ End Function
 'Free the current path handle.
 Friend Function ReleasePath() As Boolean
     
+    ReleasePath = True
+    
     If (m_PathHandle <> 0) Then
         
-        ReleasePath = GDI_Plus.GDIPlus_PathDelete(m_PathHandle)
+        ReleasePath = (GdipDeletePath(m_PathHandle) = GP_OK)
         
-        'After a successful release, we must always reset the class-level handle to match, and during debug mode,
-        ' the central Drawing2D module also needs to be notified.
+        'After a successful release, we must always reset the class-level handle to match,
+        ' and during debug mode, the central Drawing2D module also needs to be notified.
         If ReleasePath Then
             m_PathHandle = 0
             If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifyPathCountChange False
         End If
         
-    Else
-        ReleasePath = False
     End If
     
 End Function
@@ -98,14 +122,13 @@ End Function
 'Reset the path to a blank state.  Note that this may also reset the fill mode to a backend-specific value; for consistency,
 ' we override this with PD's currently specified default fill rule (which is WINDING, although the coder can change it using
 ' the constant at the top of this class).
-Friend Sub ResetPath()
-
+Friend Function ResetPath() As Boolean
+    ResetPath = True
     If (m_PathHandle <> 0) Then
-        GDI_Plus.GDIPlus_PathReset m_PathHandle
+        ResetPath = (GdipResetPath(m_PathHandle) = GP_OK)
         Me.SetFillRule DEFAULT_FILL_RULE
     End If
-    
-End Sub
+End Function
 
 'Circles are just a subset of ellipses, so we don't include any circle-specific backend code here
 Friend Sub AddCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
@@ -714,4 +737,3 @@ End Sub
 Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
     Drawing2D.DEBUG_NotifyError "pd2DPath", errFunction, errDescription, errNum
 End Sub
-
