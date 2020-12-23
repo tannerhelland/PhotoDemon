@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.297</langversion>
+<langversion>9.0.303</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2518,7 +2518,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>public domain</original>
-<translation>Public Domain</translation>
+<translation>Public-Domain</translation>
 </phrase>
 
 <phrase>
@@ -5239,7 +5239,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Ask a question</original>
-<translation></translation>
+<translation>Eine Frage stellen</translation>
 </phrase>
 
 <phrase>
@@ -5254,22 +5254,22 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>PhotoDemon forum</original>
-<translation></translation>
+<translation>PhotoDemon - Forum</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon license and terms of use</original>
-<translation></translation>
+<translation>PhotoDemon - Lizenz und Nutzungsbedingungen</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon source code</original>
-<translation></translation>
+<translation>PhotoDemon - Quellcode</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon website</original>
-<translation></translation>
+<translation>PhotoDemon - Website</translation>
 </phrase>
 
 <phrase>

@@ -728,12 +728,38 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                     End If
                     
                     'm_CharInflation widens the character paths using the generic GDI+ path widening algorithm
-                    If (m_CharInflation <> 0) Then tmpGlyphOutlineCopy.ConvertPath_InflateLikeBalloon m_CharInflation, P2_LJ_Round, P2_LC_Round
+                    If (m_CharInflation <> 0) Then
+                        
+                        'So, new series of steps.
+                        
+                        'First, we want to flatten this path (e.g. convert it to a series of lines *only*,
+                        ' no curves).  If we don't do this manually, GDI+ will do it for us.
+                        
+                        'TODO
+                        
+                        'Next, divide the path into standalone subpaths (necessary for letters like "o",
+                        ' which have holes cut out).  Each subpath will be individually optimized.
+                        
+                        'TODO
+                        
+                        'Next, optimize each subpath by removing segments too small to see on a display
+                        
+                        'TODO
+                        
+                        'Finally, reassemble the original glyph by combining all subpaths into a single
+                        ' "master" path object.
+                        
+                        'TODO
+                        
+                        'Calculate the outline of the optimized path, as drawn by a pen with width m_CharInflation
+                        tmpGlyphOutlineCopy.ConvertPath_InflateLikeBalloon m_CharInflation, P2_LJ_Round, P2_LC_Round
+                        
+                    End If
                     
                     'Finally, jitter applies some randomness to the character's position in the x and/or y directions.
                     With m_Glyphs(curGlyph)
                                             
-                        If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
+                        If (m_CharJitterX <> 0!) Or (m_CharJitterY <> 0!) Then
                             dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .glyphOffset.du + ((cRandom.GetRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .glyphOffset.dv + ((cRandom.GetRandomFloat_VB * maxJitterY) - halfJitterY)
                         Else
                             dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .glyphOffset.du, .finalY - .glyphOffset.dv

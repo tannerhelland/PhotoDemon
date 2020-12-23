@@ -638,7 +638,7 @@ Public Function SimplifyLine(ByRef listOfPoints() As PointFloat, ByRef numOfPoin
     Dim i As Long
     For i = 1 To numOfPoints - 2
         
-        'Compare the current point to the point at startIndex to endIndex.
+        'Compare the current point to the line running from startIndex to endIndex.
         ' (For improved performance, we manually in-line the perpendicular distance calculation.
         ' Note that we also do *not* apply absolute value until after the running error is updated.)
         y1 = (listOfPoints(rightIndex).y - listOfPoints(leftIndex).y)
@@ -688,6 +688,66 @@ Public Function SimplifyLine(ByRef listOfPoints() As PointFloat, ByRef numOfPoin
     'Return the number of points removed, and modify the current point count to reflect removals
     numOfPoints = numOfPoints - numPointsRemoved
     SimplifyLine = numPointsRemoved
+
+End Function
+
+'Simplify an arbitrary polyline of arbitrary length in preparation for UI display.  Points that are
+' some amount closer together (user-specified, defaults to 1/10th of a pixel) will be merged to
+' improve performance and display quality.
+'
+'Pass your list of points and the number of points in the array.  (Upper array bound doesn't matter;
+' it's ignored.)  This function will return the number of points removed; if it returns 0, no points
+' were removed.  Also, the numOfPoints value - passed BYREF - will be updated to the current number
+' of points in the final, simplified polyline array.  (Note that points beyond the final index of the
+' simplified polyline *are not guaranteed to be zeroed-out*; their value is technically "undefined".)
+Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal minDistance As Single = 0.1!) As Long
+    
+    'If we want to (possibly) remove points, we need at least three points to start!
+    If (numOfPoints < 3) Then Exit Function
+    Dim numPointsRemoved As Long
+    
+    'Start with the first line segment, comparing point (1) to the segment between (0) and (2)
+    Dim leftIndex As Long
+    leftIndex = 0
+    
+    'Direct distance between two points is used to determine removal, plus some temp variables
+    ' to improve performance vs array accesses.
+    Dim curDistance As Single, x1 As Single, y1 As Single, x2 As Single, y2 As Single
+    
+    'Iterate all points except the endpoints (which are essential and non-removable)
+    Dim i As Long
+    For i = 1 To numOfPoints - 2
+        
+        'Calculate distance between the current point and the previous point.
+        ' (For improved performance, we manually in-line the distance calculation.)
+        x1 = (listOfPoints(i).x - listOfPoints(leftIndex).x)
+        y1 = (listOfPoints(i).y - listOfPoints(leftIndex).y)
+        curDistance = Sqr(x1 * x1 + y1 * y1)
+        
+        'Perform removal check
+        If (curDistance < minDistance) Then
+        
+            'This point can be removed.  Increment the point removal counter, but otherwise do nothing;
+            ' this point will be automatically "removed" by the left-shift code in the other branch.
+            numPointsRemoved = numPointsRemoved + 1
+            
+        'This point cannot be removed.  Increment the *left* point index only, and shift the current
+        ' point left-ward so that it's now located at the end of our running list of "good" points.
+        ' (The shift step can obviously be skipped if no points have been removed yet.)  We also
+        ' need to reset our running error whenever the current point is kept.
+        Else
+            leftIndex = leftIndex + 1
+            If (numPointsRemoved > 0) Then listOfPoints(i - numPointsRemoved) = listOfPoints(i)
+        End If
+        
+    Next i
+    
+    'Shift the final polyline endpoint leftward by the number of removed points
+    If (numPointsRemoved > 0) Then listOfPoints(numOfPoints - 1 - numPointsRemoved) = listOfPoints(numOfPoints - 1)
+    
+    'Return the number of points removed, and modify the current point count to reflect removals
+    numOfPoints = numOfPoints - numPointsRemoved
+    SimplifyLineForScreen = numPointsRemoved
 
 End Function
 

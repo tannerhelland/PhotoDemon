@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.526</langversion>
+<langversion>6.7.527</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -51,12 +51,12 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Correspondance de couleur</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Exportation de la correspondance de couleur</translation>
 </phrase>
 
 <phrase>
@@ -207,7 +207,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 
 <phrase>
 <original>Error</original>
-<translation></translation>
+<translation>Erreur</translation>
 </phrase>
 
 <phrase>
@@ -2239,12 +2239,12 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>Arrière plan d'animation</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>Premier plan d'animation</translation>
 </phrase>
 
 <phrase>
@@ -3371,12 +3371,12 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>Tous les LUTs supportés</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>Sélectionner un fichier LUT</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3734,42 +3734,42 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>hexagon</original>
-<translation></translation>
+<translation>hexagone</translation>
 </phrase>
 
 <phrase>
 <original>braid</original>
-<translation></translation>
+<translation>tresse</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>chaine</translation>
 </phrase>
 
 <phrase>
 <original>cross</original>
-<translation></translation>
+<translation>croix</translation>
 </phrase>
 
 <phrase>
 <original>leaves</original>
-<translation></translation>
+<translation>feuilles</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>courtepointe</translation>
 </phrase>
 
 <phrase>
 <original>ragged</original>
-<translation></translation>
+<translation>lambeaux</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>entrelacé</translation>
 </phrase>
 
 <!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -5004,12 +5004,12 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>Arrière plan</translation>
 </phrase>
 
 <phrase>
 <original>Foreground</original>
-<translation></translation>
+<translation>Avant plan</translation>
 </phrase>
 
 <phrase>
@@ -5239,7 +5239,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Ask a question</original>
-<translation></translation>
+<translation>Poser une question</translation>
 </phrase>
 
 <phrase>
@@ -5254,7 +5254,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>PhotoDemon forum</original>
-<translation></translation>
+<translation>Forum PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5640,12 +5640,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>available LUTs</original>
-<translation></translation>
+<translation>LUTs disponibles</translation>
 </phrase>
 
 <phrase>
 <original>import LUT file</original>
-<translation></translation>
+<translation>importation du fichier LUT</translation>
 </phrase>
 
 <phrase>
@@ -5655,22 +5655,22 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Applying color lookup</original>
-<translation></translation>
+<translation>Application de la correspondance couleur</translation>
 </phrase>
 
 <phrase>
 <original>%1 is not a valid 3D lookup table (LUT).</original>
-<translation></translation>
+<translation>%1 n'est pas une table de correspondance 3D valide (LUT).</translation>
 </phrase>
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>Votre collection LUT est stockée dans le dossier "%1"</translation>
 </phrase>
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation></translation>
+<translation>cliquer pour ouvrir ce dossier dans l'Explorateur Windows</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6073,7 +6073,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>filter</original>
-<translation></translation>
+<translation>filtre</translation>
 </phrase>
 
 <phrase>
@@ -6083,77 +6083,77 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Warming filter (%1)</original>
-<translation></translation>
+<translation>Filtre chaud (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Cooling filter (%1)</original>
-<translation></translation>
+<translation>Filtre froid (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Red</original>
-<translation></translation>
+<translation>Rouge</translation>
 </phrase>
 
 <phrase>
 <original>Orange</original>
-<translation></translation>
+<translation>Orangé</translation>
 </phrase>
 
 <phrase>
 <original>Yellow</original>
-<translation></translation>
+<translation>Jaune</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation></translation>
+<translation>Vert</translation>
 </phrase>
 
 <phrase>
 <original>Cyan</original>
-<translation></translation>
+<translation>Cyan</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation></translation>
+<translation>Bleu</translation>
 </phrase>
 
 <phrase>
 <original>Violet</original>
-<translation></translation>
+<translation>Violet</translation>
 </phrase>
 
 <phrase>
 <original>Magenta</original>
-<translation></translation>
+<translation>Magenta</translation>
 </phrase>
 
 <phrase>
 <original>Deep red</original>
-<translation></translation>
+<translation>Rouge foncé</translation>
 </phrase>
 
 <phrase>
 <original>Deep blue</original>
-<translation></translation>
+<translation>Bleu foncé</translation>
 </phrase>
 
 <phrase>
 <original>Deep emerald</original>
-<translation></translation>
+<translation>Vert foncé</translation>
 </phrase>
 
 <phrase>
 <original>Deep yellow</original>
-<translation></translation>
+<translation>Jaune foncé</translation>
 </phrase>
 
 <phrase>
 <original>Custom</original>
-<translation></translation>
+<translation>Au choix</translation>
 </phrase>
 
 <phrase>
@@ -7121,22 +7121,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation></translation>
+<translation>après effectuation, supprimer ce calque</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation></translation>
+<translation>calque d'arrière plan</translation>
 </phrase>
 
 <phrase>
 <original>Applying background</original>
-<translation></translation>
+<translation>Application de l'arrière plan</translation>
 </phrase>
 
 <phrase>
 <original>Applying foreground</original>
-<translation></translation>
+<translation>Application du premier plan</translation>
 </phrase>
 
 <phrase>
@@ -7146,7 +7146,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>foreground layer</original>
-<translation></translation>
+<translation>calque de premier plan</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -7460,7 +7460,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge color and opacity</original>
-<translation></translation>
+<translation>Couleur de bordure et opacité</translation>
 </phrase>
 
 <phrase>
@@ -7480,7 +7480,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random</original>
-<translation></translation>
+<translation>aléatoire</translation>
 </phrase>
 
 <phrase>
@@ -7981,7 +7981,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>smoothing</original>
-<translation>lissage</translation>
+<translation>atténuation des bords</translation>
 </phrase>
 
 <phrase>
@@ -11666,7 +11666,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>lock aspect ratio</original>
-<translation></translation>
+<translation>bloquer le ratio d'aspect</translation>
 </phrase>
 
 <phrase>
