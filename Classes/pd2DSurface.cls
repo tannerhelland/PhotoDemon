@@ -356,7 +356,7 @@ End Function
 '                        only if the source file contains faulty EXIF data.
 Friend Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
     
-    If (m_SurfaceHandle <> 0) Then ReleaseSurface
+    If (m_SurfaceHandle <> 0) Then Me.ReleaseSurface
     
     'To simplify handling of surface(s) created from file, we are only going to lean on GDI+ for the initial image
     ' file parsing.  Once the image is loaded, we will transfer it to an internally managed DIB; this frees us from
@@ -664,7 +664,11 @@ Friend Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
         Set m_SurfaceDIB = srcDIB
         m_SurfaceType = P2_ST_Bitmap
         
-        m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
+        If (GdipCreateFromHDC(m_SurfaceDIB.GetDIBDC, m_SurfaceHandle) <> GP_OK) Then
+            m_SurfaceHandle = 0
+            InternalError "WrapSurfaceAroundPDDIB", "GDI+ failure"
+        End If
+        
         WrapSurfaceAroundPDDIB = (m_SurfaceHandle <> 0)
         
         'Apply any other stored settings to the newly created surface

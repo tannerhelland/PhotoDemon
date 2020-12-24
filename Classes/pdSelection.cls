@@ -853,34 +853,38 @@ Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable
     End If
 End Function
 
-'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
-' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
-Friend Function GetGdipRegionForSelection() As Long
+'For lasso and polygon selections, this function will return the current selecton region
+' as a pd2DRegion instance.  The mouse coordinate checker code uses this to see if the
+' mouse cursor is currently within the bounds of the selection area.  (This is only
+' implemented for polygon and lasso selections; other selection types use much simpler
+' interior detection code.)
+Friend Function GetSelectionAsRegion() As pd2DRegion
+    
     If (m_SelectionShape = ss_Polygon) Then
-        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Float(sp_PolygonCurvature))
+        If (m_NumOfPolygonPoints < 3) Then Exit Function
+    ElseIf (m_SelectionShape = ss_Lasso) Then
+        If (m_NumOfLassoPoints < 3) Then Exit Function
     Else
-        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Float(sp_SmoothStroke))
+        PDDebug.LogAction "WARNING!  Not implemented for this selection shape!"
+        Exit Function
     End If
+    
+    Set GetSelectionAsRegion = New pd2DRegion
+    
+    'Use a path to construct the initial region
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    tmpPath.SetFillRule P2_FR_Winding
+    
+    If (m_SelectionShape = ss_Polygon) Then
+        tmpPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, GetSelectionProperty_Float(sp_PolygonCurvature)
+    Else
+        tmpPath.AddPolygon m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), GetSelectionProperty_Float(sp_SmoothStroke)
+    End If
+    
+    GetSelectionAsRegion.AddPath tmpPath, P2_CM_Replace
+    
 End Function
-
-'For lasso and polygon selections, this function will calculate a boundary rect using GDI+.  This is relevant when curvature is active,
-' because the curvature bounds may extend outside the points used to create the selection shape.
-Friend Sub FillBoundsUsingGDIPlus()
-    
-    'This function is only relevant for lasso and polygon selections
-    If ((m_SelectionShape = ss_Lasso) Or (m_SelectionShape = ss_Polygon)) Then
-    
-        If (m_SelectionShape = ss_Polygon) Then
-            m_CornersLocked = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), m_parentPDImage, GP_FM_Winding, True, GetSelectionProperty_Float(sp_PolygonCurvature))
-        Else
-            m_CornersLocked = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), m_parentPDImage, GP_FM_Winding, True, GetSelectionProperty_Float(sp_SmoothStroke))
-        End If
-        
-        m_Bounds = m_CornersLocked
-        
-    End If
-    
-End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
 ' Note that this this should only be called after a transformation type has been set (via SetActiveSelectionPOI(), above).
@@ -1564,11 +1568,6 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 m_CornersLocked.Width = selMaxX - m_CornersLocked.Left
                 m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
-                'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
-                ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
-                'If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_PolygonCurvature) > 0)) Then Me.FillBoundsUsingGDIPlus
-            
             'Like polygon selection, lasso selections require us to search all lasso points in order to construct
             ' a bounding rect.
             Case ss_Lasso
@@ -1596,11 +1595,6 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 m_CornersLocked.Width = selMaxX - m_CornersLocked.Left
                 m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
-                'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
-                ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
-                'If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_SmoothStroke) > 0)) Then Me.FillBoundsUsingGDIPlus
-            
             'Wand selections require manual bounds-checking
             Case ss_Wand
                 If Me.IsLockedIn Then
@@ -1642,10 +1636,6 @@ Friend Function AreAllCoordinatesInvalid() As Boolean
         ' but if it is active, we need to perform a manual search for boundaries.
         Case ss_Polygon, ss_Lasso
         
-            'If curvature is active, use GDI+ to update the current boundaries.
-            '09 August 2017: this step has been disabled pending further testing; boundaries are already checked correctly
-            ' during the mask render step, so this is redundant - and worse yet, it's somehow fucking up the boundary rects!
-            'If ((m_SelectionShape = ss_Polygon) And (GetSelectionProperty_Float(sp_PolygonCurvature) <> 0)) Or ((m_SelectionShape = ss_Lasso) And (GetSelectionProperty_Float(sp_SmoothStroke) <> 0)) Then Me.FillBoundsUsingGDIPlus
             If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True

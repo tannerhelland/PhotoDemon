@@ -593,7 +593,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     closestPoint = poi_Undefined
     
     'Some selection types (lasso, polygon) must use a more complicated region for hit-testing.  GDI+ will be used for this.
-    Dim gdipRegionHandle As Long, gdipHitCheck As Boolean
+    Dim complexRegion As pd2DRegion
     
     'Other selection types will use a generic list of points (like the corners of the current selection)
     Dim poiListFloat() As PointFloat
@@ -721,32 +721,26 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             ' a move transformation.
             Else
                 
-                'Create a GDI+ region from the current selection points
-                gdipRegionHandle = PDImages.GetActiveImage.MainSelection.GetGdipRegionForSelection()
-                
-                'Check the point for a hit
-                gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
-                
-                'Release the GDI+ region
-                GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
-                
-                If gdipHitCheck Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                'Use a region object for hit-detection
+                Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
+                If (Not complexRegion Is Nothing) Then
+                    If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+                Else
+                    IsCoordSelectionPOI = poi_Undefined
+                End If
                 
             End If
         
         Case ss_Lasso
         
-            'Create a GDI+ region from the current selection points
-            gdipRegionHandle = PDImages.GetActiveImage.MainSelection.GetGdipRegionForSelection()
-            
-            'Check the point for a hit
-            gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
-            
-            'Release the GDI+ region
-            GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
-            
-            If gdipHitCheck Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
-        
+            'Use a region object for hit-detection
+            Set complexRegion = PDImages.GetActiveImage.MainSelection.GetSelectionAsRegion()
+            If (Not complexRegion Is Nothing) Then
+                If complexRegion.IsPointInRegion(imgX, imgY) Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
+            Else
+                IsCoordSelectionPOI = poi_Undefined
+            End If
+                
         Case ss_Wand
             
             'Wand selections do actually support a single point of interest - the wand's "clicked" location

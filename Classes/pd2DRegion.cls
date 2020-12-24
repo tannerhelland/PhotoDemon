@@ -34,6 +34,26 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'GDI+ declares
+Private Declare Function GdipCloneRegion Lib "gdiplus" (ByVal srcRegion As Long, ByRef dstRegion As Long) As GP_Result
+Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectF As RectF, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionRectI Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectL As RectL, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionRegion Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcRegion As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionPath Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcPath As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCreateRegion Lib "gdiplus" (ByRef dstRegion As Long) As GP_Result
+'Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, ByRef hRegion As Long) As GP_Result
+Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
+Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectF As RectF) As GP_Result
+Private Declare Function GdipGetRegionBoundsI Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectL As RectL) As GP_Result
+Private Declare Function GdipGetRegionHRgn Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstHRgn As Long) As GP_Result
+Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsEqualRegion Lib "gdiplus" (ByVal srcRegion1 As Long, ByVal srcRegion2 As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsVisibleRegionPointI Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipSetEmpty Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
+Private Declare Function GdipSetInfinite Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
+
 'This class is not yet capable of serializing itself to/from XML strings, but it may be possible in the future...
 'Private cSerialize As pdSerialize
 
@@ -50,55 +70,95 @@ Friend Function AddRectangleF(ByVal rLeft As Single, ByVal rTop As Single, ByVal
     tmpRectF.Width = rWidth
     tmpRectF.Height = rHeight
     
-    AddRectangleF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, tmpRectF, useCombineMode)
+    AddRectangleF = (GdipCombineRegionRect(m_RegionHandle, tmpRectF, useCombineMode) = GP_OK)
+    If (Not AddRectangleF) Then InternalError "AddRectangleF", "GDI+ failure"
     
 End Function
 
 Friend Function AddRectangle_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    AddRectangle_FromRectF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, srcRectF, useCombineMode)
+    AddRectangle_FromRectF = (GdipCombineRegionRect(m_RegionHandle, srcRectF, useCombineMode) = GP_OK)
+    If (Not AddRectangle_FromRectF) Then InternalError "AddRectangle_FromRectF", "GDI+ failure"
 End Function
 
 Friend Function AddRectangle_FromRectL(ByRef srcRectL As RectL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    AddRectangle_FromRectL = GDI_Plus.GDIPlus_RegionAddRectL(m_RegionHandle, srcRectL, useCombineMode)
+    AddRectangle_FromRectL = (GdipCombineRegionRectI(m_RegionHandle, srcRectL, useCombineMode) = GP_OK)
+    If (Not AddRectangle_FromRectL) Then InternalError "AddRectangle_FromRectL", "GDI+ failure"
 End Function
 
 Friend Function AddRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    AddRegion = GDI_Plus.GDIPlus_RegionAddRegion(m_RegionHandle, srcRegion.GetHandle, useCombineMode)
+    AddRegion = (GdipCombineRegionRegion(m_RegionHandle, srcRegion.GetHandle, useCombineMode) = GP_OK)
+    If (Not AddRegion) Then InternalError "AddRegion", "GDI+ failure"
 End Function
 
 Friend Function AddPath(ByRef srcPath As pd2DPath, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    AddPath = GDI_Plus.GDIPlus_RegionAddPath(m_RegionHandle, srcPath.GetHandle, useCombineMode)
+    AddPath = (GdipCombineRegionPath(m_RegionHandle, srcPath.GetHandle, useCombineMode) = GP_OK)
+    If (Not AddPath) Then InternalError "AddPath", "GDI+ failure"
 End Function
 
 Friend Function CloneRegion(ByRef srcRegion As pd2DRegion) As Boolean
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
-    CloneRegion = GDI_Plus.GDIPlus_RegionClone(srcRegion.GetHandle, m_RegionHandle)
+    CloneRegion = (GdipCloneRegion(srcRegion.GetHandle, m_RegionHandle) = GP_OK)
+    If (Not CloneRegion) Then InternalError "CloneRegion", "GDI+ failure"
 End Function
 
 Friend Function GetRegionBoundsF() As RectF
-    If (m_RegionHandle <> 0) Then GetRegionBoundsF = GDI_Plus.GDIPlus_RegionGetClipRectF(m_RegionHandle)
+    If (m_RegionHandle <> 0) Then
+        Dim tmpReturn As GP_Result
+        tmpReturn = GdipGetRegionBounds(m_RegionHandle, 0&, GetRegionBoundsF)
+        If (tmpReturn <> GP_OK) Then InternalError "GetRegionBoundsF", "GDI+ failure", tmpReturn
+    Else
+        InternalError "GetRegionBoundsF", "null handle"
+    End If
 End Function
 
 Friend Function GetRegionBoundsL() As RectL
-    If (m_RegionHandle <> 0) Then GetRegionBoundsL = GDI_Plus.GDIPlus_RegionGetClipRectI(m_RegionHandle)
+    If (m_RegionHandle <> 0) Then
+        Dim tmpReturn As GP_Result
+        tmpReturn = GdipGetRegionBoundsI(m_RegionHandle, 0&, GetRegionBoundsL)
+        If (tmpReturn <> GP_OK) Then InternalError "GetRegionBoundsL", "GDI+ failure", tmpReturn
+    Else
+        InternalError "GetRegionBoundsL", "null handle"
+    End If
 End Function
 
+'TODO: is graphics object required by GDI+ call?  Docs are unclear...
 Friend Function IsPointInRegion(ByVal srcX As Single, ByVal srcY As Single) As Boolean
-    If (m_RegionHandle <> 0) Then IsPointInRegion = GDI_Plus.GDIPlus_RegionContainsPoint(m_RegionHandle, srcX, srcY)
+    If (m_RegionHandle <> 0) Then
+        Dim tmpResult As Long, tmpReturn As GP_Result
+        tmpReturn = GdipIsVisibleRegionPoint(m_RegionHandle, srcX, srcY, 0&, tmpResult)
+        If (tmpReturn = GP_OK) Then
+            IsPointInRegion = (tmpResult <> 0)
+        Else
+            InternalError "IsPointInRegion", "GDI+ failure", tmpReturn
+        End If
+    Else
+        InternalError "IsPointInRegion", "null handle"
+    End If
 End Function
 
-Friend Function IsPointInRegionInt(ByVal srcX As Long, ByVal srcY As Long) As Boolean
-    If (m_RegionHandle <> 0) Then IsPointInRegionInt = GDI_Plus.GDIPlus_RegionContainsPointI(m_RegionHandle, srcX, srcY)
+'TODO: is graphics object required by GDI+ call?  Docs are unclear...
+Friend Function IsPointInRegionL(ByVal srcX As Long, ByVal srcY As Long) As Boolean
+    If (m_RegionHandle <> 0) Then
+        Dim tmpResult As Long, tmpReturn As GP_Result
+        tmpReturn = GdipIsVisibleRegionPointI(m_RegionHandle, srcX, srcY, 0&, tmpResult)
+        If (tmpReturn = GP_OK) Then
+            IsPointInRegionL = (tmpResult <> 0)
+        Else
+            InternalError "IsPointInRegionL", "GDI+ failure", tmpReturn
+        End If
+    Else
+        InternalError "IsPointInRegionL", "null handle"
+    End If
 End Function
 
-'Don't use this function unless you know what you're doing.  This will copy (*not* clone) an external handle from the
-' current backend.  That handle *must not be in use elsewhere*, because if it is deleted, this class has no way of
-' detecting that.  (This function is only used when a convoluted API does not allow us to directly grab a returned
-' handle ourselves.)
+'Don't use this function unless you know what you're doing.  This will copy (*NOT* clone)
+' an external GDI+ region handle.  That handle *must not be in use elsewhere*, because if
+' it is deleted, this class has no way of detecting that.  (This function is only used when
+' a convoluted API does not allow us to directly grab a returned handle ourselves.)
 Friend Sub AssignExternalHandleDirectly(ByVal srcHandle As Long)
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
     m_RegionHandle = srcHandle
@@ -106,32 +166,59 @@ End Sub
 
 Friend Function MakeRegionInfinite() As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    MakeRegionInfinite = GDI_Plus.GDIPlus_RegionSetInfinite(m_RegionHandle)
+    MakeRegionInfinite = (GdipSetInfinite(m_RegionHandle) = GP_OK)
 End Function
 
 Friend Function MakeRegionEmpty() As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    MakeRegionEmpty = GDI_Plus.GDIPlus_RegionSetEmpty(m_RegionHandle)
+    MakeRegionEmpty = (GdipSetEmpty(m_RegionHandle) = GP_OK)
 End Function
 
+'TODO: is graphics object required by GDI+ call?  Docs are unclear...
 Friend Function IsRegionInfinite() As Boolean
-    If (m_RegionHandle = 0) Then Me.CreateRegion
-    IsRegionInfinite = GDI_Plus.GDIPlus_RegionIsInfinite(m_RegionHandle)
+    If (m_RegionHandle <> 0) Then
+        Dim tmpResult As Long, tmpReturn As GP_Result
+        tmpReturn = GdipIsInfiniteRegion(m_RegionHandle, 0&, tmpResult)
+        If (tmpReturn = GP_OK) Then
+            IsRegionInfinite = (tmpResult <> 0)
+        Else
+            InternalError "IsRegionInfinite", "GDI+ failure", tmpReturn
+        End If
+    Else
+        InternalError "IsRegionInfinite", "null handle"
+    End If
 End Function
 
+'TODO: is graphics object required by GDI+ call?  Docs are unclear...
 Friend Function IsRegionEmpty() As Boolean
-    If (m_RegionHandle = 0) Then Me.CreateRegion
-    IsRegionEmpty = GDI_Plus.GDIPlus_RegionIsEmpty(m_RegionHandle)
+    If (m_RegionHandle <> 0) Then
+        Dim tmpResult As Long, tmpReturn As GP_Result
+        tmpReturn = GdipIsEmptyRegion(m_RegionHandle, 0&, tmpResult)
+        If (tmpReturn = GP_OK) Then
+            IsRegionEmpty = (tmpResult <> 0)
+        Else
+            InternalError "IsRegionEmpty", "GDI+ failure", tmpReturn
+        End If
+    Else
+        InternalError "IsRegionEmpty", "null handle"
+    End If
 End Function
 
+'TODO: is graphics object required by GDI+ call?  Docs are unclear...
 Friend Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    IsEqual = GDI_Plus.GDIPlus_RegionsAreEqual(srcRegion.GetHandle, m_RegionHandle)
+    Dim tmpResult As Long, tmpReturn As GP_Result
+    tmpReturn = GdipIsEqualRegion(m_RegionHandle, srcRegion.GetHandle, 0&, tmpResult)
+    If (tmpReturn = GP_OK) Then
+        IsEqual = (tmpResult <> 0)
+    Else
+        InternalError "IsEqual", "GDI+ failure", tmpReturn
+    End If
 End Function
 
 Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
     If (createAsNecessary And (m_RegionHandle = 0)) Then
-        If CreateRegion() Then GetHandle = m_RegionHandle Else GetHandle = 0
+        If Me.CreateRegion() Then GetHandle = m_RegionHandle Else GetHandle = 0
     Else
         GetHandle = m_RegionHandle
     End If
@@ -140,7 +227,9 @@ End Function
 'Retrieve a copy of this region in GDI format.  Note that the caller is responsible for freeing the hRgn
 ' via DeleteObject when finished.
 Friend Function GetRegionAsHRgn() As Long
-    GetRegionAsHRgn = GDI_Plus.GDIPlus_RegionGetHRgn(m_RegionHandle)
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipGetRegionHRgn(m_RegionHandle, 0&, GetRegionAsHRgn)
+    If (tmpReturn <> GP_OK) Then InternalError "GetRegionAsHRgn", "GDI+ failure", tmpReturn
 End Function
 
 Friend Function HasRegion() As Boolean
@@ -153,29 +242,36 @@ End Function
 Friend Function CreateRegion() As Boolean
 
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
-    m_RegionHandle = GDI_Plus.GetGDIPlusRegionHandle()
+    If (GdipCreateRegion(m_RegionHandle) = GP_OK) Then
     
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreateRegion = (m_RegionHandle <> 0)
-    If (CreateRegion And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyRegionCountChange True
+        CreateRegion = (m_RegionHandle <> 0)
+        
+        'When debug mode is active, all object creations are reported back to the master Drawing2D module
+        If (CreateRegion And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyRegionCountChange True
+        
+    Else
+        InternalError "CreateRegion", "GDI+ failure"
+    End If
     
 End Function
 
 Friend Function ReleaseRegion() As Boolean
     
+    ReleaseRegion = True
+    
     If (m_RegionHandle <> 0) Then
         
-        ReleaseRegion = GDI_Plus.ReleaseGDIPlusRegion(m_RegionHandle)
+        ReleaseRegion = (GdipDeleteRegion(m_RegionHandle) = GP_OK)
         
-        'After a successful release, we must always reset the class-level handle to match, and during debug mode,
-        ' the central Drawing2D module also needs to be notified.
+        'After a successful release, we must always reset the class-level handle to match,
+        ' and during debug mode the central Drawing2D module also needs to be notified.
         If ReleaseRegion Then
             m_RegionHandle = 0
             If PD2D_DEBUG_MODE Then Drawing2D.DEBUG_NotifyRegionCountChange False
+        Else
+            InternalError "ReleaseRegion", "GDI+ failure"
         End If
     
-    Else
-        ReleaseRegion = True
     End If
     
 End Function

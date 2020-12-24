@@ -151,13 +151,11 @@ Friend Function LoadICCFromLCMSProfile(ByRef srcProfile As pdLCMSProfile) As Boo
 End Function
 
 Friend Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
-
     If (srcProfile.GetICCDataSize = Me.GetICCDataSize) Then
         IsEqual = VBHacks.MemCmp(Me.GetICCDataPointer, srcProfile.GetICCDataPointer, Me.GetICCDataSize)
     Else
         IsEqual = False
     End If
-
 End Function
 
 Friend Function HasICCData() As Boolean
