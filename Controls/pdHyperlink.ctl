@@ -234,7 +234,7 @@ Public Property Get ForeColor() As OLE_COLOR
 End Property
 
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
-    If m_ForeColor <> newColor Then
+    If (m_ForeColor <> newColor) Then
         m_ForeColor = newColor
         RedrawBackBuffer
     End If
@@ -271,7 +271,7 @@ Public Property Get UseCustomBackColor() As Boolean
 End Property
 
 Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
-    If newSetting <> m_UseCustomBackColor Then
+    If (newSetting <> m_UseCustomBackColor) Then
         m_UseCustomBackColor = newSetting
         RedrawBackBuffer
     End If
@@ -282,7 +282,7 @@ Public Property Get UseCustomForeColor() As Boolean
 End Property
 
 Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
-    If newSetting <> m_UseCustomForeColor Then
+    If (newSetting <> m_UseCustomForeColor) Then
         m_UseCustomForeColor = newSetting
         RedrawBackBuffer
     End If
@@ -399,7 +399,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     
     'In its default configuration, URLs are shelled automatically
     Else
-        If (Len(m_URL) <> 0) Then Web.OpenURL m_URL
+        If (LenB(m_URL) <> 0) Then Web.OpenURL m_URL
     End If
     
 End Sub
@@ -423,7 +423,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     ucSupport.RequestCursor IDC_HAND
     
     'Repaint the control as necessary
-    If Not m_MouseInsideUC Then
+    If (Not m_MouseInsideUC) Then
         m_MouseInsideUC = True
         RedrawBackBuffer
     End If
@@ -520,11 +520,7 @@ Private Sub UpdateControlLayout()
             
             'If the caption still does not fit within the available area (because it's so damn large that we can't physically
             ' shrink the font enough to compensate), set the failure state to TRUE.
-            If stringWidth > controlWidth Then
-                m_FitFailure = True
-            Else
-                m_FitFailure = False
-            End If
+            m_FitFailure = (stringWidth > controlWidth)
             
         'Resize the control horizontally to fit the caption, with no changes made to current font size.
         Case AutoSizeControl
@@ -534,8 +530,8 @@ Private Sub UpdateControlLayout()
             stringWidth = ucSupport.GetCaptionWidth(False)
             stringHeight = ucSupport.GetCaptionHeight(False)
             
-            If stringWidth = 0 Then stringWidth = 1
-            If stringHeight = 0 Then stringHeight = 1
+            If (stringWidth <= 0) Then stringWidth = 1
+            If (stringHeight <= 0) Then stringHeight = 1
             
             'Request a matching size from the support class.
             ucSupport.RequestNewSize stringWidth, stringHeight, True
