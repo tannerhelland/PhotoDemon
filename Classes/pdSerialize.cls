@@ -425,25 +425,27 @@ Private Function UnDelimitParamValue(ByRef srcString As String) As String
     If (InStr(1, srcString, "&amp;") <> 0) Then UnDelimitParamValue = Replace$(UnDelimitParamValue, "&amp;", "&")
 End Function
 
-'A custom CDbl function that accepts both commas and decimals as a separator; this is important when moving floating-point data,
-' represented as strings, between locales.
-Private Function CDblCustom(ByVal srcString As String) As Double
-
-    'Replace commas with periods
-    If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
-    
-    'We can now use Val() to convert to Double
-    If TextSupport.IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
-    
+'A custom CDbl function that accepts both commas and decimals as a separator; this
+' is relevant when moving floating-point data, represented as strings, between locales.
+' (PhotoDemon no longer uses local-dependent string conversions, but ancient pre-Unicode-support
+' versions did, so this exists primarily for backward-compatibility.)
+Private Function CDblCustom(ByRef srcString As String) As Double
+    If (InStr(1, srcString, ",") = 0) Then
+        If TextSupport.IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
+    Else
+        CDblCustom = FixLocaleDependentNumber(srcString)
+    End If
 End Function
 
-Private Function CSngCustom(ByVal srcString As String) As Single
-
-    'Replace commas with periods
-    If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
-    
-    'We can now use Val() to convert to Double
-    If TextSupport.IsNumberLocaleUnaware(srcString) Then CSngCustom = Val(srcString) Else CSngCustom = 0!
-    
+Private Function CSngCustom(ByRef srcString As String) As Single
+    If (InStr(1, srcString, ",") = 0) Then
+        If TextSupport.IsNumberLocaleUnaware(srcString) Then CSngCustom = Val(srcString) Else CSngCustom = 0!
+    Else
+        CSngCustom = FixLocaleDependentNumber(srcString)
+    End If
 End Function
 
+Private Function FixLocaleDependentNumber(ByVal srcString As String) As Double
+    srcString = Replace$(srcString, ",", ".")
+    If TextSupport.IsNumberLocaleUnaware(srcString) Then FixLocaleDependentNumber = Val(srcString) Else FixLocaleDependentNumber = 0#
+End Function

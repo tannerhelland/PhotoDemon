@@ -712,7 +712,7 @@ Public Function SimplifyLineForScreen(ByRef listOfPoints() As PointFloat, ByRef 
     
     'Direct distance between two points is used to determine removal, plus some temp variables
     ' to improve performance vs array accesses.
-    Dim curDistance As Single, x1 As Single, y1 As Single, x2 As Single, y2 As Single
+    Dim curDistance As Single, x1 As Single, y1 As Single
     
     'Iterate all points except the endpoints (which are essential and non-removable)
     Dim i As Long

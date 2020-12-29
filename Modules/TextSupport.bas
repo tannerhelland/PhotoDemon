@@ -125,9 +125,9 @@ Public Function IsNumberLocaleUnaware(ByRef srcExpression As String) As Boolean
     Dim txtIsNumber As Boolean, txtIsPeriod As Boolean, txtIsExponent As Boolean
     
     Dim x As Long
-    For x = 1& To Len(srcExpression)
+    For x = 1 To Len(srcExpression)
     
-        Select Case Mid$(srcExpression, x, 1&)
+        Select Case Mid$(srcExpression, x, 1)
             
             Case "0" To "9"
                 txtIsNumber = True
