@@ -256,7 +256,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
     End If
     
-    AddInputFormat "MBM - Symbian Bitmap", "*.mbm;*.mbw;*.mcl", PDIF_MBM
+    AddInputFormat "MBM - Symbian Bitmap", "*.mbm;*.mbw;*.mcl;*.aif", PDIF_MBM
     AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
     
     If m_FreeImageEnabled Then

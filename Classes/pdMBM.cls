@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon MBM (Psion, Symbian) Image Importer (export not currently supported)
 'Copyright 2020-2020 by Tanner Helland
 'Created: 03/November/20
-'Last updated: 10/November/20
-'Last update: finish import code clean-up; export support is not currently planned
+'Last updated: 30/December/20
+'Last update: add support for AIF files (which embed MBMs in a slightly altered layout)
 '
 'This class imports legacy Symbian "MBM" files.  All well-defined color-depths and compression types
 ' are supported.  (I say "well-defined" because there are many MBM files in the wild with non-standard
@@ -74,6 +74,9 @@ End Type
 Private m_FrameCount As Long
 Private m_Frames() As MBMFrame
 
+'AIF files are a minor MBM variant; they require slightly different parsing behavior
+Private m_IsAIF As Boolean
+
 'All parsing duties are handled by pdStream
 Private m_Stream As pdStream
 
@@ -107,7 +110,22 @@ Friend Function IsFileMBM(ByRef srcFile As String, Optional ByVal calledInternal
         If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = &H42000010)
         If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = 0&)
         If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = &H39643947)
-    
+        
+        'If the file is *not* MBM, reset the stream pointer and check for an AIF signature instead
+        If (Not IsFileMBM) Then
+        
+            m_Stream.SetPosition 0, FILE_BEGIN
+            IsFileMBM = (m_Stream.ReadLong_BE() = &H37000010)
+            If IsFileMBM Then IsFileMBM = (m_Stream.ReadLong_BE() = &H6A000010)
+            
+            'The next 8 bytes are App ID a checksum; we can skip them
+            m_Stream.SetPosition 8, FILE_CURRENT
+            
+            'If the previous checks succeeded, this is an AIF file with potential MBM contents
+            m_IsAIF = IsFileMBM
+            
+        End If
+        
     End If
     
     'Free the stream before exiting
@@ -139,17 +157,39 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Exit Function
     End If
     
+    'Parsing this format requires nested loops in various places
+    Dim i As Long, j As Long, k As Long
+    
     'If the file has validated, continue parsing.  Next offset is trailer position.
     Dim trailerOffset As Long
     trailerOffset = m_Stream.ReadLong()
     
-    'The trailer tells us how many images are in this file, and what their offsets are.
-    ' First value is number of frames
+    'Note our current location, then jump to the start of the trailer
     Dim origPosition As Long
     origPosition = m_Stream.GetPosition()
-    
     m_Stream.SetPosition trailerOffset, FILE_BEGIN
-    m_FrameCount = m_Stream.ReadLong()
+    
+    'Trailer contents vary between traditional MBM and AIF files.  MBMs are simpler.
+    'Regardless of file type, what we ultimately want to determine here is how many images
+    ' are in this file, and what their offsets are.
+    If m_IsAIF Then
+        
+        'Number of captions * 2.  Each caption has a 4-byte offset and a 2-byte language code;
+        ' we simply want to skip all these bytes
+        Dim numCaptions As Long
+        numCaptions = m_Stream.ReadByte() \ 2
+        m_Stream.SetPosition numCaptions * 6, FILE_CURRENT
+        
+        '*Now* we are pointing at the image directory.  One byte describes number of icons
+        ' in the file * 2.
+        m_FrameCount = m_Stream.ReadByte() \ 2
+        
+    Else
+    
+        'First trailer value is number of frames
+        m_FrameCount = m_Stream.ReadLong()
+        
+    End If
     
     'I don't think there's an upper limit on frames, but some of the files in symbian's test suite
     ' contain extremely large values (e.g. 0x0fffffff), so it seems necessary to enforce some kind
@@ -161,13 +201,28 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
     'Retrieve all frame offsets
     ReDim m_Frames(0 To m_FrameCount - 1) As MBMFrame
-    Dim i As Long, j As Long, k As Long
-    For i = 0 To m_FrameCount - 1
-        m_Frames(i).mbm_Offset = m_Stream.ReadLong()
-    Next i
     
-    'The first offset should always be 20 (0x14)
-    If (m_Frames(0).mbm_Offset <> 20) Then
+    If m_IsAIF Then
+    
+        'For each pair, retrieve a 4-byte offset, and a 2-byte width+height value.
+        ' (This width/height value is effectively ignored; each MBM entry will repeat this
+        '  information, and we want to use the embedded width/height values over this top-level
+        '  OS cue.)
+        For i = 0 To m_FrameCount - 1
+            m_Frames(i).mbm_Offset = m_Stream.ReadLong()
+            m_Stream.ReadInt
+        Next i
+        
+    Else
+    
+        For i = 0 To m_FrameCount - 1
+            m_Frames(i).mbm_Offset = m_Stream.ReadLong()
+        Next i
+        
+    End If
+    
+    'In a normal MBM file, the first offset should always be 20 (0x14).  If it isn't, abandon ship.
+    If (Not m_IsAIF) And (m_Frames(0).mbm_Offset <> 20) Then
         InternalError "LoadMBM_FromFile", "bad first offset"
         Exit Function
     End If
