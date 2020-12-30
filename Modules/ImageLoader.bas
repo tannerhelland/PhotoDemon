@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2020 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/November/20
-'Last update: integrate our new homebrew MBM decoder
+'Last updated: 30/December/20
+'Last update: start roughing out PaintShop Pro import support
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
@@ -18,16 +18,18 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
-'PhotoDemon now provides many of its own image format parsers.  You can disable these for testing purposes,
-' but note that fallback methods like GDI+ *cannot* understand many of these formats.  If you encounter
-' problems with a specific image format, PLEASE FILE AN ISSUE ON GITHUB.
+'PhotoDemon now provides many of its own image format parsers.  You can disable individual
+' formats for testing purposes, but note that fallback methods like FreeImage and GDI+
+' *CANNOT* read most of these formats.  If you encounter problems with a specific image format,
+' PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
+Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
 
-'PNGs get some special preference due to their ubiquity; a persistent class enabled better caching
+'PNGs get some special preference due to their ubiquity; a persistent class enables better caching
 Private m_PNG As pdPNG
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL
@@ -964,6 +966,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'PSP support was added in v9.0.
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PSP Then
+        CascadeLoadGenericImage = LoadPSP(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_PSPParser
+            dstImage.SetOriginalFileFormat PDIF_PSP
+        End If
+    End If
+    
     'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
     ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
     If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
@@ -1318,6 +1329,57 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             
         End If
         
+    End If
+    
+End Function
+
+'Use PD's internal PSP parser to attempt to load a target PaintShop Pro file.
+Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadPSP = False
+    
+    'pdpsd handles all the dirty work for us
+    Dim cPSP As pdPSP
+    Set cPSP = New pdPSP
+    
+    'Validate the potential psd file
+    LoadPSP = cPSP.IsFilePSP(srcFile)
+    
+    'If validation passes, attempt a full load
+    If LoadPSP Then LoadPSP = (cPSP.LoadPSP(srcFile, dstImage, dstDIB) < psp_Failure)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadPSP And (Not dstImage Is Nothing) Then
+        
+        dstImage.SetOriginalFileFormat PDIF_PSP
+        dstImage.NotifyImageChanged UNDO_Everything
+        'dstImage.SetOriginalColorDepth cPSD.GetBitsPerPixel()
+        'dstImage.SetOriginalGrayscale cPSD.IsGrayscaleColorMode()
+        'dstImage.SetOriginalAlpha cPSD.HasAlpha()
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+
+        'Color-management is TODO!
+        
+'        'Before exiting, ensure all color management data has been added to PD's central cache
+'        Dim profHash As String
+'        If cPSD.HasICCProfile() Then
+'            profHash = ColorManagement.AddProfileToCache(cPSD.GetICCProfile(), True, False, False)
+'            dstImage.SetColorProfile_Original profHash
+'
+'            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it - will have been
+'            ' hard-converted to sRGB, so we don't want to associate the destination DIB with its source profile.
+'            ' Instead, note that it is currently sRGB.
+'            profHash = ColorManagement.GetSRGBProfileHash()
+'            dstDIB.SetColorProfileHash profHash
+'            dstDIB.SetColorManagementState cms_ProfileConverted
+'
+'        End If
+'
     End If
     
 End Function

@@ -4,7 +4,7 @@ Attribute VB_Name = "ImageFormats"
 'Copyright 2012-2020 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 30/December/20
-'Last update: expand MBM support to include AIF variants
+'Last update: start roughing out support for PaintShop Pro images
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -285,6 +285,9 @@ Public Sub GenerateInputFormats()
     'In v8.0, PhotoDemon received a custom PSD parser
     AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
     
+    'In v9.0, PhotoDemon received a custom PSP parser
+    AddInputFormat "PSP - PaintShop Pro", "*.psp;*.pspimage", PDIF_PSP
+    
     If m_FreeImageEnabled Then
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
         AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
@@ -507,6 +510,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
         '    GetExtensionFromPDIF = "ppm"
         Case PDIF_PSD
             GetExtensionFromPDIF = "psd"
+        Case PDIF_PSP
+            GetExtensionFromPDIF = "psp"
         Case PDIF_RAS
             GetExtensionFromPDIF = "ras"
         'RAW is an interesting case; because PD can write HDR images, which support nearly all features of all major RAW formats,
@@ -586,7 +591,7 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_KOALA
         Case "lbm"
             GetPDIFFromExtension = PDIF_LBM
-        Case "mbm"
+        Case "mbm", "aif"
             GetPDIFFromExtension = PDIF_MBM
         Case "mng"
             GetPDIFFromExtension = PDIF_MNG
@@ -606,6 +611,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_PNM
         Case "psd"
             GetPDIFFromExtension = PDIF_PSD
+        Case "psp", "pspimage"
+            GetPDIFFromExtension = PDIF_PSP
         Case "ras"
             GetPDIFFromExtension = PDIF_RAS
         Case "sgi"
@@ -673,6 +680,10 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_PSD
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         
+        Case PDIF_PSP
+            'TODO!
+            'GetIdealMetadataFormatFromPDIF = PDMF_XMP
+        
         Case PDIF_TARGA
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         
@@ -719,6 +730,9 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
         
         Case PDIF_PSD
             IsExifAllowedForPDIF = True
+        
+        Case PDIF_PSD
+            'TODO!
         
         Case PDIF_TIFF
             IsExifAllowedForPDIF = True
@@ -770,6 +784,10 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         
         Case PDIF_PSD
             IsExportDialogSupported = True
+        
+        Case PDIF_PSP
+            'TODO!
+            'IsExportDialogSupported = True
         
         Case PDIF_TARGA
             IsExportDialogSupported = False

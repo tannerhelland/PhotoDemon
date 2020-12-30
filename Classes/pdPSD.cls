@@ -77,14 +77,14 @@ Private m_ExportGroups As Boolean
 '
 'As I get deeper into this class, I may expand this enum to include more detailed states.
 Public Enum PD_PSDResult
-    psd_Success = 0
-    psd_Warning = 256
-    psd_Failure = 65536
-    psd_FileNotPSD = 16777217
+    psd_Success = &H0
+    psd_Warning = &H10
+    psd_Failure = &H100
+    psd_FileNotPSD = &H1000
 End Enum
 
 #If False Then
-    Private Const psd_Success = 0, psd_Warning = 256, psd_Failure = 65536, psd_FileNotPSD = 16777217
+    Private Const psd_Success = &H0, psd_Warning = &H10, psd_Failure = &H100, psd_FileNotPSD = &H1000
 #End If
 
 'PSDs support many different color modes.  Some color modes (e.g. Duotone) are proprietary and not
