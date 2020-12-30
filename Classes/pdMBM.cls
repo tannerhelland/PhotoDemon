@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2020-2020 by Tanner Helland
 'Created: 03/November/20
 'Last updated: 30/December/20
-'Last update: add support for AIF files (which embed MBMs in a slightly altered layout)
+'Last update: add support for AIF files, including embedded masks
 '
 'This class imports legacy Symbian "MBM" files.  All well-defined color-depths and compression types
 ' are supported.  (I say "well-defined" because there are many MBM files in the wild with non-standard
@@ -210,7 +210,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         '  OS cue.)
         For i = 0 To m_FrameCount - 1
             m_Frames(i).mbm_Offset = m_Stream.ReadLong()
-            m_Stream.ReadInt
+            m_Stream.ReadInt    'Skip reported width/height
         Next i
         
     Else
@@ -227,6 +227,18 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Exit Function
     End If
     
+    'In AIF files, each frame is followed by a transparency mask.  We want to parse each mask and
+    ' "merge" it with the preceding image to create a 32-bpp entry.
+    Dim inMaskMode As Boolean
+    inMaskMode = False
+    
+    Dim maskDIB As pdDIB
+    If m_IsAIF Then Set maskDIB = New pdDIB
+    
+    'On AIF files, every-other-frame switches between targeting actual pixel values, and mask values.
+    ' We'll use this reference to switch between the two.
+    Dim targetDIB As pdDIB
+    
     'Start loading all frames.  (Failures will simply skip ahead to the next frame; because of this,
     ' you need to double-check that frame data is good before
     For i = 0 To m_FrameCount - 1
@@ -236,7 +248,21 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             'Start by pointing the stream at this frame's offset
             m_Stream.SetPosition .mbm_Offset, FILE_BEGIN
             
-            'Retrieve total frame length
+StartOfFrame:
+                        
+            'IMPORTANT NOTE ON AIF FILES.
+            
+            'AIF files behave a little differently from plain MBM files.  They contain additional
+            ' frames with mask data for the associated application icons.  These frames are parsed
+            ' correctly by this reader, but each transparency mask header will overwrite the header
+            ' of the frame it is associated with (by design).  This is 100% okay because the frame
+            ' itself no longer requires its header once its associated bitmap has been created.
+            '
+            'I'm just noting that here because the index i will *always* point to the index of
+            ' the underlying bitmap data, but depending on the value of "inMaskMode", we may
+            ' actually be parsing a mask instead of a a bitmap.
+                        
+            'Retrieve total frame length.  (It needs to be at least 40 bytes long.)
             .mbm_Length = m_Stream.ReadLong()
             If (.mbm_Length <= 40) Then GoTo NextFrame
             
@@ -282,12 +308,23 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 .mbm_CompressionType = .mbm_CompressionType And &H3&
             End If
             
-            'Hypothetically we should be pointing at pixel data now
-            If (m_Stream.GetPosition <> .mbm_Offset + .mbm_HeaderLength) Then m_Stream.SetPosition .mbm_Offset + .mbm_HeaderLength
+            'Hypothetically we should be pointing at pixel data now.  (This failsafe is helpful for malformed
+            ' files - which are prevalent "in the wild" - but it is only relevant for non-AIF files, because AIF
+            ' files contain an additional mask without an explicit offset.)
+            If (Not inMaskMode) Then
+                If (m_Stream.GetPosition <> .mbm_Offset + .mbm_HeaderLength) Then m_Stream.SetPosition .mbm_Offset + .mbm_HeaderLength
+            End If
             
             'Prep our target DIB and make it opaque (most images in this format will be < 32-bpp)
-            Set .mbm_DIB = New pdDIB
-            .mbm_DIB.CreateBlank .mbm_Width, .mbm_Height, 32, vbWhite, 255
+            If inMaskMode Then
+                If (maskDIB Is Nothing) Then Set maskDIB = New pdDIB
+                maskDIB.CreateBlank .mbm_Width, .mbm_Height, 32, vbWhite, 255
+                Set targetDIB = maskDIB
+            Else
+                Set .mbm_DIB = New pdDIB
+                .mbm_DIB.CreateBlank .mbm_Width, .mbm_Height, 32, vbWhite, 255
+                Set targetDIB = .mbm_DIB
+            End If
             
             'Build palette?
             Dim srcPalette() As RGBQuad
@@ -557,6 +594,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             alphaFound = False
             
             Dim tmpSA1D As SafeArray1D, dstPixels() As RGBQuad
+            Dim tmpSA1DSrc As SafeArray1D, srcPixels() As RGBQuad
             
             For y = 0 To numScanlines
                 
@@ -628,7 +666,7 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 End If
                 
                 'Point a destination array at the target DIB
-                .mbm_DIB.WrapRGBQuadArrayAroundScanline dstPixels, tmpSA1D, y
+                targetDIB.WrapRGBQuadArrayAroundScanline dstPixels, tmpSA1D, y
                 
                 'Used on 12, 16-bpp images to avoid byte overflow issues when masking
                 Dim tmpInteger As Long
@@ -676,18 +714,84 @@ Friend Function LoadMBM_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             Next y
             
             'Release our unsafe DIB array wrapper
-            .mbm_DIB.UnwrapRGBQuadArrayFromDIB dstPixels
+            targetDIB.UnwrapRGBQuadArrayFromDIB dstPixels
             
             'Premultiply our finished alpha channel
-            .mbm_DIB.SetAlphaPremultiplication True
+            targetDIB.SetAlphaPremultiplication True
             
-            'Mark this frame as successful!
-            .mbm_FrameOK = True
+            'If this is plain bitmap data, mark this frame as successful!
+            If (Not inMaskMode) Then
+                .mbm_FrameOK = True
+                
+            'If we have just parsed a mask, however, we now need to merge the mask's data with the
+            ' associated bitmap frame.  Masks make no guarantees about bit-depth or color-model
+            ' (e.g. they can be 24-bpp RGB format!), and they also are not guaranteed to be the
+            ' same size as their associated frame, so all we can do is try and copy over relevant
+            ' bytes as best we can.
+            Else
+            
+                'Start by finding the smallest width/height value between the mask and associated image.
+                Dim minWidth As Long, minHeight As Long
+                minWidth = PDMath.Min2Int(maskDIB.GetDIBWidth, .mbm_DIB.GetDIBWidth)
+                minHeight = PDMath.Min2Int(maskDIB.GetDIBHeight, .mbm_DIB.GetDIBHeight)
+                If (minWidth <= 0) Or (minHeight <= 0) Then
+                    InternalError "LoadMBM_FromFile", "mask or frame has invalid dimensions; abandoning merge"
+                    inMaskMode = False
+                    GoTo NextFrame
+                End If
+                
+                'Unpremultiply the target DIB
+                .mbm_DIB.SetAlphaPremultiplication False
+                
+                'Iterate through mask pixels and replace destination image pixels with their value
+                ' (where black equals opaque, white equals transparent, and grayscale values
+                ' in-between are treated as variable opacity).
+                Dim newOpacity As Long
+                For y = 0 To minHeight - 1
+                    maskDIB.WrapRGBQuadArrayAroundScanline srcPixels, tmpSA1DSrc, y
+                    .mbm_DIB.WrapRGBQuadArrayAroundScanline dstPixels, tmpSA1D, y
+                For x = 0 To minWidth - 1
+                
+                    newOpacity = Colors.GetLuminance(srcPixels(x).Red, srcPixels(x).Green, srcPixels(x).Blue)
+                    dstPixels(x).Alpha = (255 - newOpacity)
+                
+                Next x
+                Next y
+                
+                'Free both wrappers before exiting, obviously
+                maskDIB.UnwrapRGBQuadArrayFromDIB srcPixels
+                .mbm_DIB.UnwrapRGBQuadArrayFromDIB dstPixels
+                
+                'Re-apply premultiplication
+                .mbm_DIB.SetAlphaPremultiplication True
+                
+            End If
+            
+            'If this is an AIF file, each frame will be followed by a transparency mask.
+            ' We want to parse that mask now.
+            If m_IsAIF Then
+                
+                'Every-other-frame toggles between image and mask
+                inMaskMode = Not inMaskMode
+                
+                'If we are about to parse a mask, forcibly set the frame offset to the end-of-frame.
+                ' (Masks do not specify an offset, oddly, so the only way to orient ourselves is to
+                '  forcibly add frame length to original offset for non-mask-frames.)
+                If inMaskMode Then
+                    m_Stream.SetPosition (.mbm_Offset + .mbm_Length), FILE_BEGIN
+                    GoTo StartOfFrame
+                End If
+                
+            End If
             
         End With
     
 NextFrame:
     Next i
+    
+    'If a temporary mask DIB exists, free it
+    Set targetDIB = Nothing
+    Set maskDIB = Nothing
     
     'With all frames parsed, we now need to construct a new layer for each frame in the
     ' destination pdImage object.

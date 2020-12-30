@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 30/August/20
-'Last update: update this module to track animated image support as a special case
+'Last updated: 30/December/20
+'Last update: expand MBM support to include AIF variants
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -256,7 +256,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
     End If
     
-    AddInputFormat "MBM - Symbian Bitmap", "*.mbm;*.mbw;*.mcl;*.aif", PDIF_MBM
+    AddInputFormat "MBM - Symbian Bitmap", "*.mbm;*.mbw;*.mcl;*.aif;*.abw;*.acl", PDIF_MBM
     AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
     
     If m_FreeImageEnabled Then
