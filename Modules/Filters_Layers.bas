@@ -85,14 +85,15 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
 
     If (blurRadius > 0) Then
     
-        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one of our internal blur functions.
+        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one
+        ' of our internal blur functions.
         '
-        'ADDENDUM JAN '15: GDI+ exhibits broken behavior on Windows 8+, if the radius is less than 20px.  (Only a horizontal blur
-        ' is applied, for reasons unknown.)  This problem has persisted throug multiple Windows 10 builds as well, so I think it's
-        ' unlikely to be fixed.
+        'ADDENDUM JAN '15: GDI+ exhibits broken behavior on Windows 8+, if the radius is less than 20px.
+        ' (Only a horizontal blur is applied, for reasons unknown.)  This problem has persisted through
+        ' multiple Windows 10 builds as well, so I think it's unlikely to be fixed any time soon.
         '
-        'Either way, we provide necessary internal fallbacks to compensate, and external functions can always request that we
-        ' avoid GDI+ if they don't want to deal with the headache.
+        'Either way, we provide necessary internal fallbacks to compensate, and external functions can
+        ' always request that we avoid GDI+ if they don't want to deal with the headache.
         Dim gdiPlusIsAcceptable As Boolean
         
         'Attempt to see if GDI+ v1.1 (or later) is available.
@@ -100,12 +101,17 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         
             'Next, make sure one of two things are true:
             ' 1) We are on Windows 7, OR...
-            ' 2) We are on Windows 8+ and the blur radius is > 20.  Below this radius, Windows 8 doesn't blur correctly,
-            '    and we've gone long enough without a patch (years!) that I don't expect MS to fix it.
-            If OS.IsWin8OrLater And (blurRadius <= 20) Then
-                gdiPlusIsAcceptable = False
+            ' 2) We are on Windows 8+ and the blur radius is > 20.  Below this radius,
+            '    Windows 8 doesn't blur correctly, and we've gone long enough without
+            '    a patch (years!) that I don't expect MS to fix it any time soon.
+            If (blurRadius <= 255) Then
+                If OS.IsWin8OrLater And (blurRadius <= 20) Then
+                    gdiPlusIsAcceptable = False
+                Else
+                    gdiPlusIsAcceptable = True
+                End If
             Else
-                gdiPlusIsAcceptable = True
+                gdiPlusIsAcceptable = False
             End If
         
         'On XP or Vista, don't bother with GDI+

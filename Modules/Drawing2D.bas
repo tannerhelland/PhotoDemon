@@ -27,40 +27,6 @@ End Enum
     Private Const P2_DefaultBackend = 0, P2_GDIPlusBackend = 1
 #End If
 
-'Brushes support a *lot* of internal settings.
-Public Enum PD_2D_BRUSH_SETTINGS
-    P2_BrushMode = 0
-    P2_BrushColor = 1
-    P2_BrushOpacity = 2
-    P2_BrushPatternStyle = 3
-    P2_BrushPattern1Color = 4
-    P2_BrushPattern1Opacity = 5
-    P2_BrushPattern2Color = 6
-    P2_BrushPattern2Opacity = 7
-    
-    'As a convenience, gradient brushes can be fully get/set as a whole XML packet (e.g. the XML returned by
-    ' the pd2DGradient class).  This overrides all existing gradient settings.
-    P2_BrushGradientAllSettings = 8
-    
-    'Most individual gradient settings can also be get/set individually (with the exception of nodes, which must
-    ' be handled as an entire group - this is a limitation of pdGradient, specifically)
-    P2_BrushGradientShape = 9
-    P2_BrushGradientAngle = 10
-    P2_BrushGradientWrapMode = 11
-    P2_BrushGradientNodes = 12
-    
-    'Textures are somewhat problematic because we store them inside a DIB, which is not easily serializable.
-    ' Solving this is TODO; there's always Base-64, obviously, although performance ain't gonna be great.
-    P2_BrushTextureWrapMode = 13
-    
-    [_P2_NumOfBrushSettings] = 14
-End Enum
-
-#If False Then
-    Private Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientAllSettings = 8, P2_BrushGradientShape = 9, P2_BrushGradientAngle = 10
-    Private Const P2_BrushGradientWrapMode = 11, P2_BrushGradientNodes = 12, P2_BrushTextureWrapMode = 13, P2_NumOfBrushSettings = 14
-#End If
-
 'When wrapping a DC, a surface needs to know the size of the object being painted on.  If an hWnd is supplied alongside
 ' the DC, we'll use that to auto-detect dimensions; otherwise, the caller needs to provide them.  (If the size is
 ' unknown, we'll use the size of the bitmap currently selected into the DC, but that's *not* reliable - so don't use it

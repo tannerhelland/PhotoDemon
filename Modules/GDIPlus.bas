@@ -942,17 +942,14 @@ Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal hImage As Long,
 Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal hImage As Long, ByRef srcBitmapData As GP_BitmapData) As GP_Result
 
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal newPixelFormat As GP_PixelFormat, ByVal hSrcBitmap As Long, ByRef hDstBitmap As Long) As GP_Result
-Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long, ByRef dstMatrix As Long) As GP_Result
 
-Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDIBitmapInfo As BITMAPINFO, ByRef srcBitmapData As Any, ByRef dstGdipBitmap As Long) As GP_Result
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByRef Scan0 As Any, ByRef dstGdipBitmap As Long) As GP_Result
+Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDIBitmapInfo As BITMAPINFO, ByVal ptrToPixels As Long, ByRef dstGdipBitmap As Long) As GP_Result
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByVal ptrToPixels As Long, ByRef dstGdipBitmap As Long) As GP_Result
 'Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
-Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImageAttributes As Long) As GP_Result
 'Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
-Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptrToSrcPath As Long, ByRef dstPathGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As GP_Result
@@ -1019,8 +1016,6 @@ Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, 
 Private Declare Function GdipGetMetafileHeaderFromMetafile Lib "gdiplus" (ByVal hMetafile As Long, ByRef dstHeader As GP_MetafileHeader) As GP_Result
 Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As Long, ByVal srcPropertySize As Long, ByVal ptrToDstBuffer As Long) As GP_Result
 Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As GP_PropertyTag, ByRef dstPropertySize As Long) As GP_Result
-Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
-Private Declare Function GdipGetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByRef dstWrapMode As GP_WrapMode) As GP_Result
 
 Private Declare Function GdipImageGetFrameCount Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByRef dstCount As Long) As GP_Result
 Private Declare Function GdipImageGetFrameDimensionsCount Lib "gdiplus" (ByVal hImage As Long, ByRef dstCount As Long) As GP_Result
@@ -1028,18 +1023,11 @@ Private Declare Function GdipImageGetFrameDimensionsList Lib "gdiplus" (ByVal hI
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rotateFlipType As GP_RotateFlip) As GP_Result
 Private Declare Function GdipImageSelectActiveFrame Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByVal frameIndex As Long) As GP_Result
 
-Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
-
-Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
-
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal ptrSrcFilename As Long, ByRef dstGdipImage As Long) As GP_Result
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal srcIStream As Long, ByRef dstGdipImage As Long) As GP_Result
 
-Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
-
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToFilename As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
 Private Declare Function GdipSaveImageToStream Lib "gdiplus" (ByVal hImage As Long, ByVal dstIStream As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
-Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
 
 Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingMode As GP_CompositingMode) As GP_Result
@@ -1056,15 +1044,7 @@ Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBr
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
-Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
 Private Declare Function GdipSetTextureTransform Lib "gdiplus" (ByVal hBrush As Long, ByVal hMatrix As Long) As GP_Result
-Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
-Private Declare Function GdipSetWorldTransform Lib "gdiplus" (ByVal hGraphics As Long, ByVal hMatrix As Long) As GP_Result
-
-Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
-
-Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
-Private Declare Function GdipTransformMatrixPoints Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As GP_Result
 
 'Some GDI+ functions are *only* supported on GDI+ 1.1, which first shipped with Vista (but requires explicit activation
 ' via manifest, and as such, is unavailable to PD until Win 7).  Take care to confirm the availability of these functions
@@ -1253,10 +1233,10 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
     GetGdipBitmapHandleFromDIB tBitmap, dstDIB
-        
+    
     'Create a GDI+ blur effect object
     Dim hEffect As Long
-    If GdipCreateEffect(&H633C80A4, &H482B1843, &H28BEF29E, &HD4FDC534, hEffect) = 0 Then
+    If (GdipCreateEffect(&H633C80A4, &H482B1843, &H28BEF29E, &HD4FDC534, hEffect) = 0) Then
         
         'Next, create a compatible set of blur parameters and pass those to the GDI+ blur object
         Dim tmpParams As GP_BlurParams
@@ -1273,18 +1253,18 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
             tmpRect.Height = rHeight
             
             'Create a temporary GDI+ transformation matrix as well
-            Dim tmpMatrix As Long
-            GdipCreateMatrix2 1&, 0&, 0&, 1&, 0&, 0&, tmpMatrix
+            Dim tmpMatrix As pd2DTransform
+            Set tmpMatrix = New pd2DTransform
             
             'Attempt to render the blur effect
             Dim GDIPlusDebug As GP_Result
-            GDIPlusDebug = GdipDrawImageFX(hGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, GP_U_Pixel)
+            GDIPlusDebug = GdipDrawImageFX(hGraphics, tBitmap, tmpRect, tmpMatrix.GetHandle(True), hEffect, 0&, GP_U_Pixel)
             
             GDIPlusBlurDIB = (GDIPlusDebug = GP_OK)
             If (Not GDIPlusBlurDIB) Then PDDebug.LogAction "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
             
             'Delete our temporary transformation matrix
-            If (tmpMatrix <> 0) Then GdipDeleteMatrix tmpMatrix
+            Set tmpMatrix = Nothing
             
         Else
             GDIPlusBlurDIB = False
@@ -1434,7 +1414,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
         .Height = -srcDIB.GetDIBHeight
     End With
     
-    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, srcBitmap
+    GdipCreateBitmapFromGdiDib imgHeader, srcDIB.GetDIBPointer, srcBitmap
     
     'Next, recreate the destination DIB as 32bpp
     dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, , 255
@@ -2392,32 +2372,12 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
     If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = P2_FFE_JPEG Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-
-    'Begin by creating a generic bitmap header for the current DIB
-    Dim imgHeader As BITMAPINFO
-    With imgHeader.Header
-        .Size = LenB(imgHeader.Header)
-        .Planes = 1
-        .BitCount = tmpDIB.GetDIBColorDepth
-        .Width = tmpDIB.GetDIBWidth
-        .Height = -tmpDIB.GetDIBHeight
-    End With
-
-    'Use GDI+ to create a GDI+-compatible bitmap
-    Dim GDIPlusReturn As GP_Result
-    Dim hImage As Long
     
+    'Create a GDI+ bitmap handle for the source image
     PDDebug.LogAction "Creating GDI+ image copy..."
         
-    'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
-    ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
-    If (tmpDIB.GetDIBColorDepth = 32) Then
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, GP_PF_32bppARGB, ByVal tmpDIB.GetDIBPointer, hImage)
-    Else
-        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetDIBPointer, hImage)
-    End If
-    
-    If (GDIPlusReturn <> GP_OK) Then
+    Dim hImage As Long
+    If (Not GetGdipBitmapHandleFromDIB(hImage, tmpDIB)) Then
         GDI_Plus.ReleaseGDIPlusImage hImage
         GDIPlusSavePicture = False
         Exit Function
@@ -2599,16 +2559,19 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End If
     
     'Pass all completed structs to GDI+ and let it handle everything from here
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exportGuid(0)), VarPtr(tmpEncodeParams(0)))
+    Dim gpReturn As GP_Result
+    gpReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exportGuid(0)), VarPtr(tmpEncodeParams(0)))
     
-    If (GDIPlusReturn <> GP_OK) Then
+    If (gpReturn <> GP_OK) Then
+        InternalGDIPlusError "GdipSaveImageToFile", "GDI+ failure", gpReturn
         GDI_Plus.ReleaseGDIPlusImage hImage
         GDIPlusSavePicture = False
         Exit Function
     End If
     
     'Release the GDI+ copy of the image
-    GDIPlusReturn = GdipDisposeImage(hImage)
+    gpReturn = GdipDisposeImage(hImage)
+    If (gpReturn <> GP_OK) Then InternalGDIPlusError "GdipDisposeImage", "GDI+ failure", gpReturn
     
     Message "Save complete."
     
@@ -3416,10 +3379,6 @@ Public Function GetGDIPlusSolidBrushHandle(ByVal brushColor As Long, Optional By
     GdipCreateSolidFill FillQuadWithVBRGB(brushColor, brushOpacity), GetGDIPlusSolidBrushHandle
 End Function
 
-Public Function GetGDIPlusPatternBrushHandle(ByVal brushPattern As GP_PatternStyle, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
-    GdipCreateHatchBrush brushPattern, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
-End Function
-
 Public Function GetGDIPlusLinearBrushHandle(ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As PD_2D_WrapMode) As Long
     Dim gdiReturn As Long
     gdiReturn = GdipCreateLineBrushFromRectWithAngle(srcRect, firstRGBA, secondRGBA, gradAngle, isAngleScalable, gradientWrapMode, GetGDIPlusLinearBrushHandle)
@@ -3457,7 +3416,7 @@ Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef 
     If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBColorDepth = 32) Then
-        GetGdipBitmapHandleFromDIB = (GdipCreateBitmapFromScan0(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, GP_PF_32bppPARGB, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
+        GetGdipBitmapHandleFromDIB = (GdipCreateBitmapFromScan0(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBStride, GP_PF_32bppPARGB, srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
     Else
     
         'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
@@ -3473,18 +3432,6 @@ Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef 
         
     End If
 
-End Function
-
-'Because of the way GDI+ texture brushes work, it is significantly easier to initialize one from a full DIB object
-' (which *always* guarantees bitmap bits will be available) vs a GDI+ Graphics object, which is more like a DC in
-' that it could be a non-bitmap, or dimensionless, or other weird criteria.
-Public Function GetGDIPlusTextureBrush(ByRef srcDIB As pdDIB, Optional ByVal brushWrapMode As GP_WrapMode = GP_WM_Tile) As Long
-    Dim srcBitmap As Long, tmpReturn As GP_Result
-    GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
-    tmpReturn = GdipCreateTexture(srcBitmap, brushWrapMode, GetGDIPlusTextureBrush)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError , , tmpReturn
-    tmpReturn = GdipDisposeImage(srcBitmap)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError , , tmpReturn
 End Function
 
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
@@ -3535,125 +3482,6 @@ Public Function ReleaseGDIPlusImage(ByRef srcHandle As Long) As Boolean
     End If
 End Function
 
-'NOTE!  ALL OPACITY SETTINGS are treated as singles on the range [0, 100], *not* as bytes on the range [0, 255].
-'NOTE!  When getting or setting brush settings, you need to make sure the current brush type matches.  For example: if your
-'       brush handle points to a solid brush, getting/setting its pattern style is meaningless.  You need to set the
-'       relevant brush mode PRIOR to getting/setting other settings.
-'NOTE!  Some brush settings cannot be set or retrieved.  For example, GDI+ does not allow you to change hatch style, color,
-'       or opacity after brush creation.  You must create a new brush from scratch.  If you use the pd2DBrush class instead
-'       of interfacing with these functions directly, nuances like this are handled automatically.
-Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD_2D_BRUSH_SETTINGS) As Variant
-    
-    If (hBrush <> 0) Then
-        
-        Dim gResult As GP_Result
-        Dim tmpLong As Long
-        
-        Select Case propID
-            
-            'GDI+ does provide a function for this, but their enums differ from ours (by design).
-            ' As such, you cannot set brush mode with this function; use the pd2DBrush class, instead.
-            Case P2_BrushMode
-                GetGDIPlusBrushProperty = 0&
-                
-           Case P2_BrushColor
-                gResult = GdipGetSolidFillColor(hBrush, tmpLong)
-                GetGDIPlusBrushProperty = GetColorFromPARGB(tmpLong, False)
-                
-            Case P2_BrushOpacity
-                gResult = GdipGetSolidFillColor(hBrush, tmpLong)
-                GetGDIPlusBrushProperty = GetOpacityFromPARGB(tmpLong)
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPatternStyle
-                GetGDIPlusBrushProperty = 0&
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern1Color
-                GetGDIPlusBrushProperty = 0&
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern1Opacity
-                GetGDIPlusBrushProperty = 0#
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern2Color
-                GetGDIPlusBrushProperty = 0&
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushPattern2Opacity
-                GetGDIPlusBrushProperty = 0#
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientAllSettings
-                GetGDIPlusBrushProperty = vbNullString
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientShape
-                GetGDIPlusBrushProperty = P2_GS_Linear
-                
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientAngle
-                GetGDIPlusBrushProperty = 0#
-            
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientWrapMode
-                GetGDIPlusBrushProperty = P2_WM_TileFlipXY
-            
-            'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientNodes
-                GetGDIPlusBrushProperty = vbNullString
-                
-            Case P2_BrushTextureWrapMode
-                gResult = GdipGetTextureWrapMode(hBrush, tmpLong)
-                GetGDIPlusBrushProperty = tmpLong
-                
-        End Select
-        
-        If (gResult <> GP_OK) Then
-            InternalGDIPlusError "GetGDIPlusBrushProperty Error", "Bad GP_RESULT value", gResult
-        End If
-    
-    Else
-        InternalGDIPlusError "GetGDIPlusBrushProperty Error", "Null brush handle"
-    End If
-    
-End Function
-
-Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetting As Variant) As Boolean
-    
-    If (hBrush <> 0) Then
-        
-        Dim tmpColor As Long, tmpOpacity As Single
-        
-        Select Case propID
-            
-            Case P2_BrushColor
-                tmpOpacity = GetGDIPlusBrushProperty(hBrush, P2_BrushOpacity)
-                If (tmpOpacity > 100!) Then tmpOpacity = 100!
-                SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
-                
-            Case P2_BrushOpacity
-                tmpColor = GetGDIPlusBrushProperty(hBrush, P2_BrushColor)
-                If (newSetting > 100!) Then newSetting = 100!
-                SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
-                
-            Case P2_BrushTextureWrapMode
-                SetGDIPlusBrushProperty = (GdipSetTextureWrapMode(hBrush, CLng(newSetting)) = GP_OK)
-                
-            'A number of settings are not directly supported by GDI+; instead, the pd2DBrush class handles
-            ' these settings internally
-            Case Else
-                SetGDIPlusBrushProperty = False
-                
-        End Select
-    
-    Else
-        InternalGDIPlusError "SetGDIPlusBrushProperty Error", "Null brush handle"
-    End If
-    
-End Function
-                
 Public Function SetGDIPlusGraphicsPixelOffset(ByVal hGraphics As Long, ByVal newSetting As GP_PixelOffsetMode) As Boolean
     If (hGraphics <> 0) Then SetGDIPlusGraphicsPixelOffset = (GdipSetPixelOffsetMode(hGraphics, newSetting) = GP_OK)
 End Function
@@ -4468,74 +4296,6 @@ Public Sub GDIPlus_LineGradientSetGamma(ByVal hGradientBrush As Long, ByVal newG
     tmpReturn = GdipSetLineGammaCorrection(hGradientBrush, IIf(newGamma, 1, 0))
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Sub
-
-Public Function GDIPlus_MatrixCreate() As Long
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipCreateMatrix(GDIPlus_MatrixCreate)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixClone(ByVal srcMatrix As Long) As Long
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipCloneMatrix(srcMatrix, GDIPlus_MatrixClone)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixDelete(ByVal hMatrix As Long) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipDeleteMatrix(hMatrix)
-    GDIPlus_MatrixDelete = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixInvert(ByVal hMatrix As Long) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipInvertMatrix(hMatrix)
-    GDIPlus_MatrixInvert = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixIsInvertible(ByVal hMatrix As Long) As Boolean
-    Dim tmpResult As Long, tmpReturn As GP_Result
-    tmpReturn = GdipIsMatrixInvertible(hMatrix, tmpResult)
-    GDIPlus_MatrixIsInvertible = (tmpResult <> 0)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixRotate(ByVal hMatrix As Long, ByVal rotateAngle As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipRotateMatrix(hMatrix, rotateAngle, operationOrder)
-    GDIPlus_MatrixRotate = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixScale(ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipScaleMatrix(hMatrix, scaleX, scaleY, operationOrder)
-    GDIPlus_MatrixScale = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixShear(ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipShearMatrix(hMatrix, shearX, shearY, operationOrder)
-    GDIPlus_MatrixShear = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixTransformListOfPoints(ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipTransformMatrixPoints(hMatrix, ptrToFirstPointF, numOfPoints)
-    GDIPlus_MatrixTransformListOfPoints = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
-
-Public Function GDIPlus_MatrixTranslate(ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, Optional ByVal operationOrder As GP_MatrixOrder = GP_MO_Append) As Boolean
-    Dim tmpReturn As GP_Result
-    tmpReturn = GdipTranslateMatrix(hMatrix, offsetX, offsetY, operationOrder)
-    GDIPlus_MatrixTranslate = (tmpReturn = GP_OK)
-    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-End Function
 
 Public Sub GDIPlus_PathGradientSetGamma(ByVal hGradientBrush As Long, ByVal newGamma As Boolean)
     Dim tmpReturn As GP_Result

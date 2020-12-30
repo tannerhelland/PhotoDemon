@@ -490,4 +490,3 @@ End Function
 Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
     Drawing2D.DEBUG_NotifyError "PD2D", errFunction, errDescription, errNum
 End Sub
-

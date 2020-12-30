@@ -32,16 +32,29 @@ Attribute VB_Exposed = False
 '***************************************************************************
 Option Explicit
 
+'GDI+ declares
+Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long, ByRef dstMatrix As Long) As GP_Result
+Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
+Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef dstMatrix As Long) As GP_Result
+Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
+Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+Private Declare Function GdipTransformMatrixPoints Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+
 'Persistent handle to the transformation associated with this instance
 Private m_TransformHandle As Long
 
 'Return a copy of the handle.  The caller should not free or otherwise modify the handle; this function exists solely
 ' for interop with other pd2D objects.
 Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
-    If (createAsNecessary And (m_TransformHandle = 0)) Then
-        If CreateTransform Then GetHandle = m_TransformHandle Else GetHandle = 0
-    Else
+    If (m_TransformHandle <> 0) Then
         GetHandle = m_TransformHandle
+    ElseIf createAsNecessary Then
+        If CreateTransform() Then GetHandle = m_TransformHandle
     End If
 End Function
 
@@ -54,9 +67,15 @@ Friend Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As B
     If (Not srcTransform Is Nothing) Then
     
         Me.ReleaseTransform
-        m_TransformHandle = GDI_Plus.GDIPlus_MatrixClone(srcTransform.GetHandle)
         
-        CloneExistingTransform = (m_TransformHandle <> 0)
+        CloneExistingTransform = (GdipCloneMatrix(srcTransform.GetHandle, m_TransformHandle) = GP_OK)
+        
+        If CloneExistingTransform Then
+            CloneExistingTransform = (m_TransformHandle <> 0)
+        Else
+            InternalError "CloneExistingTransform", "GDI+ failure"
+        End If
+        
         If (CloneExistingTransform And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyTransformCountChange True
         
     Else
@@ -67,109 +86,145 @@ End Function
 
 'Apply a translation amount to the matrix; any x/y amounts are valid
 Friend Function ApplyTranslation(ByVal xDistance As Single, ByVal yDistance As Single, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
+    
+    'For all transform operations, a transform object must first exist
     If (m_TransformHandle = 0) Then CreateTransform
-    ApplyTranslation = GDI_Plus.GDIPlus_MatrixTranslate(m_TransformHandle, xDistance, yDistance, transformOrder)
+    
+    Dim gpResult As GP_Result
+    gpResult = GdipTranslateMatrix(m_TransformHandle, xDistance, yDistance, transformOrder)
+    ApplyTranslation = (gpResult = GP_OK)
+    If (Not ApplyTranslation) Then InternalError "ApplyTranslation", "GDI+ failure", gpResult
+    
 End Function
 
-'Translate the entire path by some amount in polar coordinates (angle + radius).  Radius is in degrees.
+'Translate the entire path by some amount in polar coordinates (angle + radius).
 Friend Function ApplyTranslation_Polar(ByVal translateAngle As Single, ByVal translateRadius As Single, Optional ByVal angleIsInDegrees As Boolean = True, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     If angleIsInDegrees Then translateAngle = PDMath.DegreesToRadians(translateAngle)
     ApplyTranslation_Polar = Me.ApplyTranslation(translateRadius * Cos(translateAngle), translateRadius * Sin(translateAngle), transformOrder)
 End Function
 
-'Apply a scaling amount to the matrix; any x/y amounts are valid
+'Apply a scaling amount to the matrix
 Friend Function ApplyScaling(ByVal xScaleFactor As Single, ByVal yScaleFactor As Single, Optional ByVal centerX As Single = 0!, Optional ByVal centerY As Single = 0!, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     
     If (m_TransformHandle = 0) Then CreateTransform
+    
+    Dim gpResult As GP_Result
     
     'If a different center point is desired, we must translate the matrix before and after rotation.
     ' (The optional transformOrder parameter is ignored out of necessity.)
     If (centerX <> 0!) Or (centerY <> 0!) Then
         
         'Center the matrix over the rotation center point
-        Me.ApplyTranslation -1! * centerX, -1! * centerY, P2_TO_Append
+        ApplyScaling = Me.ApplyTranslation(-1! * centerX, -1! * centerY, P2_TO_Append)
         
         'Apply scaling
-        ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+        gpResult = GdipScaleMatrix(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+        ApplyScaling = ApplyScaling And (gpResult = GP_OK)
         
         'Translate back into its original position
-        Me.ApplyTranslation centerX, centerY, P2_TO_Append
+        ApplyScaling = ApplyScaling And Me.ApplyTranslation(centerX, centerY, P2_TO_Append)
     
     Else
-        ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+        gpResult = GdipScaleMatrix(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+        ApplyScaling = (gpResult = GP_OK)
     End If
+    
+    If (Not ApplyScaling) Then InternalError "ApplyScaling", "GDI+ failure", gpResult
     
 End Function
 
 'Mirror the matrix in the x and/or y direction
 Friend Function ApplyMirror(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
-    If (m_TransformHandle = 0) Then CreateTransform
     If mirrorHorizontal Then ApplyMirror = Me.ApplyScaling(-1!, 1!, , , transformOrder)
     If mirrorVertical Then ApplyMirror = Me.ApplyScaling(1!, -1!, , , transformOrder)
 End Function
 
 'Apply a rotation to the matrix; units are degrees, and positive degrees indicate clockwise transformations.
 ' An optional center x/y can be provided as well.
-' IMPORTANT NOTE: if a custom center point is specified, the optional transformOrder parameter is ignored.  (This is necessary
-'                 because we must prepend and append custom translation operations.)
-Friend Function ApplyRotation(ByVal rotationAngle As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
+' IMPORTANT NOTE: if a custom center point is specified, the optional transformOrder parameter is ignored.
+'                 (This is necessary because we must prepend and append custom translation operations.)
+Friend Function ApplyRotation(ByVal rotationAngle As Single, Optional ByVal centerX As Single = 0!, Optional ByVal centerY As Single = 0!, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     
     If (m_TransformHandle = 0) Then CreateTransform
     
+    Dim gpResult As GP_Result
+    
     'If a different center point is desired, we must translate the matrix before and after rotation.
     ' (The optional transformOrder parameter is ignored out of necessity.)
-    If (centerX <> 0#) Or (centerY <> 0#) Then
+    If (centerX <> 0!) Or (centerY <> 0!) Then
         
         'Center the matrix over the rotation center point
-        Me.ApplyTranslation -1! * centerX, -1! * centerY, P2_TO_Append
+        ApplyRotation = Me.ApplyTranslation(-1! * centerX, -1! * centerY, P2_TO_Append)
         
         'Apply the rotation
-        ApplyRotation = GDI_Plus.GDIPlus_MatrixRotate(m_TransformHandle, rotationAngle, P2_TO_Append)
+        gpResult = GdipRotateMatrix(m_TransformHandle, rotationAngle, P2_TO_Append)
+        ApplyRotation = ApplyRotation And (gpResult = GP_OK)
         
         'Translate back into its original position
-        Me.ApplyTranslation centerX, centerY, P2_TO_Append
+        ApplyRotation = ApplyRotation And Me.ApplyTranslation(centerX, centerY, P2_TO_Append)
     
     Else
-        ApplyRotation = GDI_Plus.GDIPlus_MatrixRotate(m_TransformHandle, rotationAngle, transformOrder)
+        gpResult = GdipRotateMatrix(m_TransformHandle, rotationAngle, transformOrder)
+        ApplyRotation = (gpResult = GP_OK)
     End If
+    
+    If (Not ApplyRotation) Then InternalError "ApplyRotation", "GDI+ failure", gpResult
     
 End Function
 
 'Apply x/y shear factors to the matrix.  An optional center x/y can also be specified.
 ' IMPORTANT NOTE: if a custom center point is specified, the optional transformOrder parameter is ignored.  (This is necessary
 '                 because we must prepend and append custom translation operations.)
-Friend Function ApplyShear(ByVal shearX As Single, ByVal shearY As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
+Friend Function ApplyShear(ByVal shearX As Single, ByVal shearY As Single, Optional ByVal centerX As Single = 0!, Optional ByVal centerY As Single = 0!, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     
     If (m_TransformHandle = 0) Then CreateTransform
-
+    
+    Dim gpResult As GP_Result
+    
     'If a different center point is desired, we must translate the matrix before and after shearing.
     ' (The optional transformOrder parameter is ignored out of necessity.)
-    If (centerX <> 0) Or (centerY <> 0) Then
+    If (centerX <> 0!) Or (centerY <> 0!) Then
         
         'Center the matrix over the shear center point
-        Me.ApplyTranslation -1! * centerX, -1! * centerY, P2_TO_Append
+        ApplyShear = Me.ApplyTranslation(-1! * centerX, -1! * centerY, P2_TO_Append)
         
         'Apply the shear
-        ApplyShear = GDI_Plus.GDIPlus_MatrixShear(m_TransformHandle, shearX, shearY, P2_TO_Append)
+        gpResult = GdipShearMatrix(m_TransformHandle, shearX, shearY, P2_TO_Append)
+        ApplyShear = ApplyShear And (gpResult = GP_OK)
         
         'Translate back into its original position
-        Me.ApplyTranslation centerX, centerY, P2_TO_Append
+        ApplyShear = ApplyShear And Me.ApplyTranslation(centerX, centerY, P2_TO_Append)
     
     Else
-        ApplyShear = GDI_Plus.GDIPlus_MatrixShear(m_TransformHandle, shearX, shearY, transformOrder)
+        gpResult = GdipShearMatrix(m_TransformHandle, shearX, shearY, transformOrder)
+        ApplyShear = (gpResult = GP_OK)
     End If
+    
+    If (Not ApplyShear) Then InternalError "ApplyShear", "GDI+ failure", gpResult
     
 End Function
 
 'Apply the current transform to any number of arbitrary (x, y) coordinate pair(s)
 Friend Function ApplyTransformToPointFs(ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Boolean
+    
     If (m_TransformHandle = 0) Then CreateTransform
-    ApplyTransformToPointFs = GDI_Plus.GDIPlus_MatrixTransformListOfPoints(m_TransformHandle, ptrToFirstPointF, numOfPoints)
+    
+    Dim gpResult As GP_Result
+    gpResult = GdipTransformMatrixPoints(m_TransformHandle, ptrToFirstPointF, numOfPoints)
+    ApplyTransformToPointFs = (gpResult = GP_OK)
+    If (Not ApplyTransformToPointFs) Then InternalError "ApplyTransformToPointFs", "GDI+ failure", gpResult
+    
 End Function
 
 Friend Function ApplyTransformToPointF(ByRef srcPoint As PointFloat) As Boolean
+    
     If (m_TransformHandle = 0) Then CreateTransform
-    ApplyTransformToPointF = GDI_Plus.GDIPlus_MatrixTransformListOfPoints(m_TransformHandle, VarPtr(srcPoint), 1&)
+    
+    Dim gpResult As GP_Result
+    gpResult = GdipTransformMatrixPoints(m_TransformHandle, VarPtr(srcPoint), 1)
+    ApplyTransformToPointF = (gpResult = GP_OK)
+    If (Not ApplyTransformToPointF) Then InternalError "ApplyTransformToPointF", "GDI+ failure", gpResult
+    
 End Function
 
 Friend Function ApplyTransformToXY(ByRef srcX As Single, ByRef srcY As Single) As Boolean
@@ -182,7 +237,7 @@ Friend Function ApplyTransformToXY(ByRef srcX As Single, ByRef srcY As Single) A
     tmpPoint.y = srcY
     
     'Apply the matrix transformation
-    ApplyTransformToXY = GDI_Plus.GDIPlus_MatrixTransformListOfPoints(m_TransformHandle, VarPtr(tmpPoint), 1&)
+    ApplyTransformToXY = Me.ApplyTransformToPointF(tmpPoint)
     
     'Return the translated values
     srcX = tmpPoint.x
@@ -195,19 +250,21 @@ End Function
 Friend Function InvertTransform() As Boolean
     
     If (m_TransformHandle = 0) Then CreateTransform
-
+    InvertTransform = False
+    
     'Make sure the matrix is invertible
-    If GDI_Plus.GDIPlus_MatrixIsInvertible(m_TransformHandle) Then
-        InvertTransform = GDI_Plus.GDIPlus_MatrixInvert(m_TransformHandle)
+    Dim tmpLong As Long
+    If (GdipIsMatrixInvertible(m_TransformHandle, tmpLong) = GP_OK) Then
+        If (tmpLong <> 0) Then InvertTransform = (GdipInvertMatrix(m_TransformHandle) = GP_OK)
     Else
-        InvertTransform = False
+        InternalError "InvertTransform", "GDI+ failure"
     End If
     
 End Function
 
 'Reset the matrix.  Note that this a new matrix will be auto-created by other functions, as necessary.
 Friend Sub Reset()
-    If (m_TransformHandle <> 0) Then ReleaseTransform
+    If (m_TransformHandle <> 0) Then Me.ReleaseTransform
 End Sub
 
 'Create an actual transform handle using the current backend and the current transform settings.
@@ -218,10 +275,12 @@ End Sub
 Private Function CreateTransform() As Boolean
 
     If (m_TransformHandle <> 0) Then Me.ReleaseTransform
-    m_TransformHandle = GDI_Plus.GDIPlus_MatrixCreate()
+    
+    Dim gpResult As GP_Result
+    gpResult = GdipCreateMatrix(m_TransformHandle)
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreateTransform = (m_TransformHandle <> 0)
+    CreateTransform = (gpResult = GP_OK) And (m_TransformHandle <> 0)
     If (CreateTransform And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyTransformCountChange True
     
 End Function
@@ -231,7 +290,7 @@ Friend Function ReleaseTransform() As Boolean
     
     If (m_TransformHandle <> 0) Then
         
-        ReleaseTransform = GDI_Plus.GDIPlus_MatrixDelete(m_TransformHandle)
+        ReleaseTransform = (GdipDeleteMatrix(m_TransformHandle) = GP_OK)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
@@ -241,7 +300,7 @@ Friend Function ReleaseTransform() As Boolean
         End If
         
     Else
-        ReleaseTransform = False
+        ReleaseTransform = True
     End If
     
 End Function

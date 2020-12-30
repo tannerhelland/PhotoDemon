@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Fill ("Brush" in GDI/GDI+ parlance) Class
 'Copyright 2014-2020 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 26/February/20
-'Last update: future-proof XML serialization by using text descriptors of enums
+'Last updated: 29/December/20
+'Last update: inline a bunch of GDI+ calls for improved performance
 '
 'This class manages a single brush (fill) instance.  Brushes are used to fill shapes, regions, and/or paths.
 '
@@ -41,20 +41,27 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'GDI+ declares
+Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal brushHatchStyle As GP_PatternStyle, ByVal brushForegroundRGBA As Long, ByVal brushBackgroundRGBA As Long, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef dstTexture As Long) As GP_Result
+Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
+Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GP_Result
+'Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As RGBQuad) As GP_Result
+Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
+Private Declare Function GdipSetTextureTransform Lib "gdiplus" (ByVal hBrush As Long, ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 
 'Current brush mode (solid fill, gradient, texture, etc)
 Private m_BrushMode As PD_2D_BrushMode
 
 'Solid brush settings
-Private m_PrimaryColor As Long
-Private m_PrimaryOpacity As Single
+Private m_BrushRGBA As RGBQuad    'GDI+ requires RGB quads; we translate between this format as necessary
 
 'Pattern brush settings
 Private m_PatternStyle As PD_2D_PatternStyle
-Private m_Pattern1Color As Long
-Private m_Pattern1Opacity As Single
-Private m_Pattern2Color As Long
-Private m_Pattern2Opacity As Single
+Private m_PatternRGBA1 As RGBQuad
+Private m_PatternRGBA2 As RGBQuad
 
 'Gradient brushes are more complicated, as they rely on a variable number of settings.
 ' We use a specialized class to manage those settings.
@@ -84,11 +91,15 @@ Friend Function GetBrushMode() As PD_2D_BrushMode
 End Function
 
 Friend Function GetBrushColor() As Long
-    GetBrushColor = m_PrimaryColor
+    GetBrushColor = RGB(m_BrushRGBA.Red, m_BrushRGBA.Green, m_BrushRGBA.Blue)
+End Function
+
+Friend Function GetBrushColorRGBA() As RGBQuad
+    GetBrushColorRGBA = m_BrushRGBA
 End Function
 
 Friend Function GetBrushOpacity() As Single
-    GetBrushOpacity = m_PrimaryOpacity
+    GetBrushOpacity = CSng(m_BrushRGBA.Alpha) / 2.55!
 End Function
 
 Friend Function GetBrushPatternStyle() As PD_2D_PatternStyle
@@ -96,19 +107,19 @@ Friend Function GetBrushPatternStyle() As PD_2D_PatternStyle
 End Function
 
 Friend Function GetBrushPattern1Color() As Long
-    GetBrushPattern1Color = m_Pattern1Color
+    GetBrushPattern1Color = RGB(m_PatternRGBA1.Red, m_PatternRGBA1.Green, m_PatternRGBA1.Blue)
 End Function
 
 Friend Function GetBrushPattern1Opacity() As Single
-    GetBrushPattern1Opacity = m_Pattern1Opacity
+    GetBrushPattern1Opacity = CSng(m_PatternRGBA1.Alpha) / 2.55!
 End Function
 
 Friend Function GetBrushPattern2Color() As Long
-    GetBrushPattern2Color = m_Pattern2Color
+    GetBrushPattern2Color = RGB(m_PatternRGBA2.Red, m_PatternRGBA2.Green, m_PatternRGBA2.Blue)
 End Function
 
 Friend Function GetBrushPattern2Opacity() As Single
-    GetBrushPattern2Opacity = m_Pattern2Opacity
+    GetBrushPattern2Opacity = CSng(m_PatternRGBA2.Alpha) / 2.55!
 End Function
 
 Friend Function GetBrushGradientAllSettings() As String
@@ -137,95 +148,191 @@ End Function
 
 'Brush mode is an internal pd2D setting; as such, the entire brush needs to be re-created after changing this setting.
 Friend Sub SetBrushMode(ByVal newSetting As PD_2D_BrushMode)
-    
-    If (m_BrushMode <> newSetting) Then
-        ReleaseBrush
+    If (newSetting <> m_BrushMode) Then
         m_BrushMode = newSetting
+        If (m_BrushHandle <> 0) Then Me.ReleaseBrush
     End If
-    
 End Sub
 
-Friend Sub SetBrushColor(ByVal newSetting As Long)
+Friend Function SetBrushColor(ByVal newSetting As Long) As Boolean
     
-    m_PrimaryColor = newSetting
+    'This function does *not* currently support OLE color constants; you need to manually uncomment
+    ' the OleTranslateColor call, below, if you care about this.  (PD does not, and it's faster to
+    ' skip the function call).  Also, you should read the MSDN docs for OleTranslateColor before
+    ' enabling this line, as its return may be meaningful.
+    'If OleTranslateColor(newSetting, 0, newSetting) Then 'failure - do what you want!
     
-    'After setting a parameter, if a brush already exists, we must relay the new setting to the active backend
+    'Extract RGB components
+    m_BrushRGBA.Red = Colors.ExtractRed(newSetting)
+    m_BrushRGBA.Green = Colors.ExtractGreen(newSetting)
+    m_BrushRGBA.Blue = Colors.ExtractBlue(newSetting)
+    
+    'Apply immediately as necessary
+    SetBrushColor = True
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Solid) Then
+        
+        'Workaround for ByVal UDTs
+        Dim tmpLong As Long
+        GetMem4 VarPtr(m_BrushRGBA), tmpLong
+        SetBrushColor = (GdipSetSolidFillColor(m_BrushHandle, tmpLong) = GP_OK)
+        
+    End If
+    
+End Function
+
+'Color does *not* currently support OLE color constants; you need to manually add a call to
+' OleTranslateColor if you want to blindly use system color constants
+Friend Function SetBrushColorRGBA(ByRef newSetting As RGBQuad) As Boolean
+    
+    'If the current brush is *not* a solid-fill brush, we only need to reset it if
+    ' the alpha-value changes.  (RGB changes do not affect gradient brushes, for example.)
+    Dim origOpacity As Byte
+    origOpacity = m_BrushRGBA.Alpha
+    
+    m_BrushRGBA = newSetting
+    
+    'Apply immediately as necessary
+    SetBrushColorRGBA = True
     If (m_BrushHandle <> 0) Then
-        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
+        
+        If (m_BrushMode = P2_BM_Solid) Then
+        
+            'Workaround for ByVal UDTs
+            Dim tmpLong As Long
+            GetMem4 VarPtr(m_BrushRGBA), tmpLong
+            SetBrushColorRGBA = (GdipSetSolidFillColor(m_BrushHandle, tmpLong) = GP_OK)
+            
+        Else
+            If (origOpacity <> newSetting.Alpha) Then Me.ReleaseBrush
+        End If
+        
     End If
     
-End Sub
+End Function
 
-Friend Sub SetBrushOpacity(ByVal newSetting As Single)
+Friend Function SetBrushOpacity(ByVal newSetting As Single) As Boolean
     
-    m_PrimaryOpacity = newSetting
+    Dim origOpacity As Byte
+    origOpacity = m_BrushRGBA.Alpha
     
+    m_BrushRGBA.Alpha = Int(newSetting * 2.55! + 0.5!)
+    
+    'Apply immediately as necessary
+    SetBrushOpacity = True
     If (m_BrushHandle <> 0) Then
-        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
+        
+        If (m_BrushMode = P2_BM_Solid) Then
+            
+            'Workaround for ByVal UDTs
+            Dim tmpLong As Long
+            GetMem4 VarPtr(m_BrushRGBA), tmpLong
+            SetBrushOpacity = (GdipSetSolidFillColor(m_BrushHandle, tmpLong) = GP_OK)
+        
+        'For non-solid brushes, the entire brush must be recreated
+        Else
+            If (origOpacity <> m_BrushRGBA.Alpha) Then Me.ReleaseBrush
+        End If
+            
     End If
     
-End Sub
+End Function
 
+'GDI+ does not allow changes to hatch-brush settings.  Instead, the brush must be
+' destroyed and re-created.
 Friend Sub SetBrushPatternStyle(ByVal newSetting As PD_2D_PatternStyle)
     m_PatternStyle = newSetting
-    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Pattern) Then Me.ReleaseBrush
 End Sub
 
 Friend Sub SetBrushPattern1Color(ByVal newSetting As Long)
-    m_Pattern1Color = newSetting
-    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
+    
+    'This function does *not* currently support OLE color constants; you need to manually uncomment
+    ' the OleTranslateColor call, below, if you care about this.  (PD does not, and it's faster to
+    ' skip the function call).  Also, you should read the MSDN docs for OleTranslateColor before
+    ' enabling this line, as its return may be meaningful.
+    'If OleTranslateColor(newSetting, 0, newSetting) Then 'failure - do what you want!
+    
+    'Extract RGB components
+    m_PatternRGBA1.Red = Colors.ExtractRed(newSetting)
+    m_PatternRGBA1.Green = Colors.ExtractGreen(newSetting)
+    m_PatternRGBA1.Blue = Colors.ExtractBlue(newSetting)
+    
+    'If the brush exists, it needs to be destroyed and recreated.  Since the user may be setting
+    ' multiple properties at once, it's faster to just kill the brush; it will be re-created when
+    ' its handle is next requested.
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Pattern) Then Me.ReleaseBrush
+    
 End Sub
 
 Friend Sub SetBrushPattern1Opacity(ByVal newSetting As Single)
-    m_Pattern1Opacity = newSetting
-    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
+    m_PatternRGBA1.Alpha = Int(newSetting * 2.55! + 0.5!)
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Pattern) Then Me.ReleaseBrush
 End Sub
 
 Friend Sub SetBrushPattern2Color(ByVal newSetting As Long)
-    m_Pattern2Color = newSetting
-    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
+    
+    'This function does *not* currently support OLE color constants; you need to manually uncomment
+    ' the OleTranslateColor call, below, if you care about this.  (PD does not, and it's faster to
+    ' skip the function call).  Also, you should read the MSDN docs for OleTranslateColor before
+    ' enabling this line, as its return may be meaningful.
+    'If OleTranslateColor(newSetting, 0, newSetting) Then 'failure - do what you want!
+    
+    'Extract RGB components
+    m_PatternRGBA2.Red = Colors.ExtractRed(newSetting)
+    m_PatternRGBA2.Green = Colors.ExtractGreen(newSetting)
+    m_PatternRGBA2.Blue = Colors.ExtractBlue(newSetting)
+    
+    'If the brush exists, it needs to be destroyed and recreated.  Since the user may be setting
+    ' multiple properties at once, it's faster to just kill the brush; it will be re-created when
+    ' its handle is next requested.
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Pattern) Then Me.ReleaseBrush
+    
 End Sub
 
 Friend Sub SetBrushPattern2Opacity(ByVal newSetting As Single)
-    m_Pattern2Opacity = newSetting
-    'We don't need to relay certain pattern settings to GDI+, as this class handles that data internally
+    m_PatternRGBA2.Alpha = Int(newSetting * 2.55! + 0.5!)
+    If (m_BrushHandle <> 0) And (m_BrushMode = P2_BM_Pattern) Then Me.ReleaseBrush
 End Sub
 
 Friend Sub SetBrushGradientAllSettings(ByRef newSetting As String)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.CreateGradientFromString newSetting
-    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
+    'We don't need to relay gradient settings to GDI+; the gradient class handles it internally
 End Sub
     
 Friend Sub SetBrushGradientShape(ByVal newSetting As PD_2D_GradientShape)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientShape newSetting
-    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
+    'We don't need to relay gradient settings to GDI+; the gradient class handles it internally
 End Sub
 
 Friend Sub SetBrushGradientAngle(ByVal newSetting As Single)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientAngle newSetting
-    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
+    'We don't need to relay gradient settings to GDI+; the gradient class handles it internally
 End Sub
 
 Friend Sub SetBrushGradientWrapMode(ByVal newSetting As PD_2D_WrapMode)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientWrapMode newSetting
-    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
+    'We don't need to relay gradient settings to GDI+; the gradient class handles it internally
 End Sub
 
 Friend Sub SetBrushGradientNodes(ByRef newSetting As String)
     If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
     m_Gradient.SetGradientNodes newSetting
-    'We don't need to relay gradient settings to GDI+, as our gradient class handles that data internally
+    'We don't need to relay gradient settings to GDI+; the gradient class handles it internally
 End Sub
 
+'Cache the passed texture
 Friend Sub SetBrushTextureFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcColorDepth As Long = 32)
     If (m_TextureSrc Is Nothing) Then Set m_TextureSrc = New pdDIB
     m_TextureSrc.CreateFromDC srcDC, srcX, srcY, srcWidth, srcHeight, srcColorDepth
 End Sub
 
+'Cache the passed texture (if requested).  The useSoftReference parameter will simply use your existing
+' DIB as-is instead of making a local copy.  This cuts memory usage but you *MUST* keep your source DIB
+' alive for the duration of this brush object.
 Friend Sub SetBrushTextureFromDIB(ByRef srcDIB As pdDIB, Optional ByVal useSoftReference As Boolean = True)
     If useSoftReference Then
         Set m_TextureSrc = srcDIB
@@ -238,24 +345,38 @@ End Sub
 'Unlike other brush functions, this one requires that the brush has already been created.
 ' (This is due to the way the transform handle is cached, and our inability to ensure the lifetime
 ' of the source transform object.)
-Friend Sub SetBrushTextureTransform(ByRef srcTransform As pd2DTransform)
+Friend Function SetBrushTextureTransform(ByRef srcTransform As pd2DTransform) As Boolean
+    
+    'Warn the caller that setting a transform on a null-brush isn't technically allowed,
+    ' but attempt to work around that by creating the brush for them anyway
     If (m_BrushHandle <> 0) Then
-        If (Not GDI_Plus.GDIPlus_SetTextureBrushTransform(m_BrushHandle, srcTransform.GetHandle)) Then InternalError "SetBrushTextureTransform", "GDI+ failure"
+        InternalError "SetBrushTextureTransform", "Brush must exist before setting transform; creating now..."
+        Me.CreateBrush
+    End If
+    
+    'A brush handle *must* exist to proceed further
+    If (m_BrushHandle <> 0) Then
+        SetBrushTextureTransform = (GdipSetTextureTransform(m_BrushHandle, srcTransform.GetHandle) = GP_OK)
+        If (Not SetBrushTextureTransform) Then InternalError "SetBrushTextureTransform", "GDI+ failure"
     Else
         InternalError "SetBrushTextureTransform", "null hBrush"
     End If
-End Sub
+    
+End Function
 
-Friend Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
+Friend Function SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode) As Boolean
     m_TextureWrapMode = newSetting
     If (m_BrushHandle <> 0) Then
-        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
+        SetBrushTextureWrapMode = (GdipSetTextureWrapMode(m_BrushHandle, newSetting) = GP_OK)
+        If (Not SetBrushTextureWrapMode) Then InternalError "SetBrushTextureTransform", "GDI+ failure"
+    Else
+        SetBrushTextureWrapMode = True
     End If
-End Sub
+End Function
 
 Friend Sub SetBoundaryRect(ByRef srcRect As RectF)
     m_BoundaryRect = srcRect
-    If (m_BrushMode = P2_BM_Gradient) Then ReleaseBrush
+    If (m_BrushMode = P2_BM_Gradient) Then Me.ReleaseBrush
 End Sub
 
 'For interop purposes, brushes are often passed around PD as strings.  Any brush can be perfectly re-created from just this string.
@@ -267,14 +388,16 @@ Friend Function GetBrushPropertiesAsXML() As String
         'We are now on version 2 of brush parameters (yay?)
         .Reset 2#
         
+        Const MAP_255_TO_100 As Single = 1! / 2.55!
+        
         .AddParam "brush-mode", Drawing2D.XML_GetNameOfBrushMode(m_BrushMode), True, True
-        .AddParam "brush-color", m_PrimaryColor, True, True
-        .AddParam "brush-opacity", m_PrimaryOpacity, True, True
+        .AddParam "brush-color", RGB(m_BrushRGBA.Red, m_BrushRGBA.Green, m_BrushRGBA.Blue), True, True
+        .AddParam "brush-opacity", CSng(m_BrushRGBA.Alpha) * MAP_255_TO_100, True, True
         .AddParam "brush-pattern-id", Drawing2D.XML_GetNameOfPattern(m_PatternStyle), True, True
-        .AddParam "brush-pattern-color-1", m_Pattern1Color, True, True
-        .AddParam "brush-pattern-opacity-1", m_Pattern1Opacity, True, True
-        .AddParam "brush-pattern-color-2", m_Pattern2Color, True, True
-        .AddParam "brush-pattern-opacity-2", m_Pattern2Opacity, True, True
+        .AddParam "brush-pattern-color-1", RGB(m_PatternRGBA1.Red, m_PatternRGBA1.Green, m_PatternRGBA1.Blue), True, True
+        .AddParam "brush-pattern-opacity-1", CSng(m_PatternRGBA1.Alpha) * MAP_255_TO_100, True, True
+        .AddParam "brush-pattern-color-2", RGB(m_PatternRGBA2.Red, m_PatternRGBA2.Green, m_PatternRGBA2.Blue), True, True
+        .AddParam "brush-pattern-opacity-2", CSng(m_PatternRGBA2.Alpha) * MAP_255_TO_100, True, True
         
         'All other gradient parameters derive from this master string, so we do not need to set them individually
         If (Not m_Gradient Is Nothing) Then
@@ -311,13 +434,13 @@ Friend Sub SetBrushPropertiesFromXML(ByRef srcString As String)
         'This is a modern XML entry.
         With cSerialize
             m_BrushMode = Drawing2D.XML_GetBrushModeFromName(.GetString("brush-mode", , True))
-            m_PrimaryColor = .GetLong("brush-color", vbWhite, True)
-            m_PrimaryOpacity = .GetSingle("brush-opacity", 100!, True)
-            m_PatternStyle = Drawing2D.XML_GetPatternFromName(.GetString("brush-pattern-id", , True))
-            m_Pattern1Color = .GetLong("brush-pattern-color-1", vbWhite, True)
-            m_Pattern1Opacity = .GetSingle("brush-pattern-opacity-1", 100!, True)
-            m_Pattern2Color = .GetLong("brush-pattern-color-2", vbBlack, True)
-            m_Pattern2Opacity = .GetSingle("brush-pattern-opacity-2", 100!, True)
+            Me.SetBrushColor .GetLong("brush-color", vbWhite, True)
+            Me.SetBrushOpacity .GetSingle("brush-opacity", 100!, True)
+            Me.SetBrushPatternStyle Drawing2D.XML_GetPatternFromName(.GetString("brush-pattern-id", , True))
+            Me.SetBrushPattern1Color .GetLong("brush-pattern-color-1", vbWhite, True)
+            Me.SetBrushPattern1Opacity .GetSingle("brush-pattern-opacity-1", 100!, True)
+            Me.SetBrushPattern2Color .GetLong("brush-pattern-color-2", vbBlack, True)
+            Me.SetBrushPattern2Opacity .GetSingle("brush-pattern-opacity-2", 100!, True)
             
             'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
             If .DoesParamExist("brush-gradient") Then
@@ -346,13 +469,13 @@ Friend Sub SetBrushPropertiesFromXML_Legacy(ByRef srcString As String)
         
             .SetParamString srcString
             m_BrushMode = .GetLong("BrushMode", P2_BM_Solid)
-            m_PrimaryColor = .GetLong("BrushPrimaryColor", vbWhite)
-            m_PrimaryOpacity = .GetDouble("BrushPrimaryOpacity", 100#)
-            m_PatternStyle = .GetLong("BrushPatternID", P2_PS_Horizontal)
-            m_Pattern1Color = .GetLong("BrushPatternColor1", vbWhite)
-            m_Pattern1Opacity = .GetDouble("BrushPatternColor1Opacity", 100#)
-            m_Pattern2Color = .GetLong("BrushPatternColor2", vbBlack)
-            m_Pattern2Opacity = .GetDouble("BrushPatternColor2Opacity", 100#)
+            Me.SetBrushColor .GetLong("BrushPrimaryColor", vbWhite)
+            Me.SetBrushOpacity .GetSingle("BrushPrimaryOpacity", 100!)
+            Me.SetBrushPatternStyle .GetLong("BrushPatternID", P2_PS_Horizontal)
+            Me.SetBrushPattern1Color .GetLong("BrushPatternColor1", vbWhite)
+            Me.SetBrushPattern1Opacity .GetSingle("BrushPatternColor1Opacity", 100!)
+            Me.SetBrushPattern2Color .GetLong("BrushPatternColor2", vbBlack)
+            Me.SetBrushPattern2Opacity .GetSingle("BrushPatternColor2Opacity", 100!)
             
             'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
             If .DoesParamExist("BrushGradientString") Then
@@ -370,10 +493,10 @@ Friend Sub SetBrushPropertiesFromXML_Legacy(ByRef srcString As String)
 End Sub
 
 Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
-    If (createAsNecessary And (m_BrushHandle = 0)) Then
-        If Me.CreateBrush() Then GetHandle = m_BrushHandle Else GetHandle = 0
-    Else
+    If (m_BrushHandle <> 0) Then
         GetHandle = m_BrushHandle
+    ElseIf createAsNecessary Then
+        If CreateBrush() Then GetHandle = m_BrushHandle
     End If
 End Function
 
@@ -389,33 +512,51 @@ End Function
 '       undesirable results.
 Friend Function CreateBrush() As Boolean
     
-    If (m_BrushHandle <> 0) Then ReleaseBrush
+    If (m_BrushHandle <> 0) Then Me.ReleaseBrush
+    
+    'VB6 doesn't like passing UDTs ByVal; we use a cheap workaround
+    Dim tmpLong As Long, tmpLong2 As Long
     
     Select Case m_BrushMode
     
         'Solid fill
         Case P2_BM_Solid
-            m_BrushHandle = GDI_Plus.GetGDIPlusSolidBrushHandle(m_PrimaryColor, m_PrimaryOpacity * 2.55)
+            GetMem4 VarPtr(m_BrushRGBA), tmpLong
+            CreateBrush = (GdipCreateSolidFill(tmpLong, m_BrushHandle) = GP_OK)
             
         'Pattern fill
         Case P2_BM_Pattern
-            Dim tmpOpacityModifier As Double
-            tmpOpacityModifier = m_PrimaryOpacity * 0.01
-            m_BrushHandle = GDI_Plus.GetGDIPlusPatternBrushHandle(m_PatternStyle, m_Pattern1Color, m_Pattern1Opacity * 2.55 * tmpOpacityModifier, m_Pattern2Color, m_Pattern2Opacity * 2.55 * tmpOpacityModifier)
+            GetMem4 VarPtr(m_PatternRGBA1), tmpLong
+            GetMem4 VarPtr(m_PatternRGBA2), tmpLong2
+            CreateBrush = (GdipCreateHatchBrush(m_PatternStyle, tmpLong, tmpLong2, m_BrushHandle) = GP_OK)
             
         'Gradient fill
         Case P2_BM_Gradient
             If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
-            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity * 0.01)
+            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, CSng(m_BrushRGBA.Alpha) / 255!)
+            CreateBrush = (m_BrushHandle <> 0)
             
-        'Texture fill (TODO)
+        'Texture fill (*not* serialized - works at run-time only!)
         Case P2_BM_Texture
-            m_BrushHandle = GDI_Plus.GetGDIPlusTextureBrush(m_TextureSrc, m_TextureWrapMode)
+            
+            'Because of the way GDI+ texture brushes work, it is significantly easier to initialize
+            ' one from a full DIB object (which *always* guarantees bitmap bits will be available)
+            ' vs a GDI+ Graphics object, which is more like a DC in that it could be a non-bitmap
+            ' (metafile), dimensionless, etc.
+            Dim srcBitmap As Long, tmpReturn As GP_Result
+            If GDI_Plus.GetGdipBitmapHandleFromDIB(srcBitmap, m_TextureSrc) Then
+                tmpReturn = GdipCreateTexture(srcBitmap, m_TextureWrapMode, m_BrushHandle)
+                If (tmpReturn <> GP_OK) Then InternalError "CreateBrush", "GDI+ failure", tmpReturn
+                tmpReturn = GdipDisposeImage(srcBitmap)
+                If (tmpReturn <> GP_OK) Then InternalError "CreateBrush", "GDI+ failure", tmpReturn
+            Else
+                InternalError "CreateBrush", "GDI+ failure", tmpReturn
+            End If
             
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    CreateBrush = (m_BrushHandle <> 0)
+    If CreateBrush Then CreateBrush = (m_BrushHandle <> 0)
     If (CreateBrush And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifyBrushCountChange True
     
 End Function
@@ -425,7 +566,7 @@ Friend Function ReleaseBrush() As Boolean
     If (m_BrushHandle <> 0) Then
         
         'Call the backend-specific release function
-        ReleaseBrush = GDI_Plus.ReleaseGDIPlusBrush(m_BrushHandle)
+        ReleaseBrush = (GdipDeleteBrush(m_BrushHandle) = GP_OK)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
@@ -487,4 +628,3 @@ End Sub
 Private Sub InternalError(ByRef errFunction As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
     Drawing2D.DEBUG_NotifyError "pd2DBrush", errFunction, errDescription, errNum
 End Sub
-

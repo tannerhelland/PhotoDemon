@@ -241,7 +241,11 @@ Friend Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boole
 End Function
 
 Friend Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    If (m_SurfaceHandle <> 0) Then SetSurfaceClip_FromRectangle = (GdipSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode) = GP_OK)
+    If (m_SurfaceHandle <> 0) Then
+        SetSurfaceClip_FromRectangle = (GdipSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode) = GP_OK)
+    Else
+        InternalError "SetSurfaceClip_X", "null handle"
+    End If
 End Function
 
 Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
@@ -251,17 +255,29 @@ Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RectF, Optional ByVal
 End Function
 
 Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RectL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    With srcRectL
-        SetSurfaceClip_FromRectL = Me.SetSurfaceClip_FromRectangle(.Left, .Top, .Right - .Left, .Bottom - .Top)
-    End With
+    If (m_SurfaceHandle <> 0) Then
+        With srcRectL
+            SetSurfaceClip_FromRectL = (GdipSetClipRectI(m_SurfaceHandle, .Left, .Top, .Right - .Left, .Bottom - .Top, useCombineMode) = GP_OK)
+        End With
+    Else
+        InternalError "SetSurfaceClip_X", "null handle"
+    End If
 End Function
 
 Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    If (m_SurfaceHandle <> 0) Then SetSurfaceClip_FromRegion = (GdipSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode) = GP_OK)
+    If (m_SurfaceHandle <> 0) Then
+        SetSurfaceClip_FromRegion = (GdipSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode) = GP_OK)
+    Else
+        InternalError "SetSurfaceClip_X", "null handle"
+    End If
 End Function
 
 Friend Function SetSurfaceClip_None() As Boolean
-    If (m_SurfaceHandle <> 0) Then SetSurfaceClip_None = (GdipResetClip(m_SurfaceHandle) = GP_OK)
+    If (m_SurfaceHandle <> 0) Then
+        SetSurfaceClip_None = (GdipResetClip(m_SurfaceHandle) = GP_OK)
+    Else
+        InternalError "SetSurfaceClip_X", "null handle"
+    End If
 End Function
 
 'Make an exact copy of an existing surface.

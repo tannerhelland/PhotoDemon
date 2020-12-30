@@ -302,10 +302,10 @@ Friend Sub SetPenPropertiesFromXML(ByRef srcString As String)
 End Sub
 
 Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
-    If (createAsNecessary And (m_PenHandle = 0)) Then
-        If Me.CreatePen() Then GetHandle = m_PenHandle Else GetHandle = 0
-    Else
+    If (m_PenHandle <> 0) Then
         GetHandle = m_PenHandle
+    ElseIf createAsNecessary Then
+        If CreatePen() Then GetHandle = m_PenHandle
     End If
 End Function
 

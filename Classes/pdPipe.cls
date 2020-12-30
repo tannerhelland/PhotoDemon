@@ -100,7 +100,7 @@ Private Declare Function DisconnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As
 'Private Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Long, ByRef lpFlags As Long, ByRef outBufferSize As Long, ByRef inBufferSize As Long, ByRef nMaxInstances As Long) As Long
 Private Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long, ByVal lpDstBuffer As Long, ByVal nBufSize As Long, ByVal ptrToOutBytes As Long, ByRef lpTotalBytesAvail As Long, ByVal lpBytesLeftThisMessage As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
-Private Declare Function WaitNamedPipeA Lib "kernel32" (ByVal lpName As String, ByVal nTimeOut As Long) As Long
+'Private Declare Function WaitNamedPipeA Lib "kernel32" (ByVal lpName As String, ByVal nTimeOut As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
 'non-zero if a pipe is active
@@ -176,7 +176,7 @@ Friend Function ConnectToExistingPipe(ByRef pipeName As String, Optional ByVal n
     
     If (Not ConnectToExistingPipe) Then PDDebug.LogAction "WARNING!  pdPipe.ConnectToExistingPipe failed to connect to pipe: " & pipeName & "; lastDLLError: " & Err.LastDllError
     
-    'TODO: implement wait for pipe via WaitNamedPipeA
+    'TODO: implement wait for pipe via WaitNamedPipeA?
     
 End Function
 

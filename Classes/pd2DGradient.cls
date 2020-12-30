@@ -1326,7 +1326,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
     
         'Create a default linear gradient brush.  Note that GDI+ only allows you to supply two colors, so we'll just supply
         ' two dummy colors.
-        gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 0, P2_WM_TileFlipXY)
+        gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0!, 0, P2_WM_TileFlipXY)
         If (gdipBrush = 0) Then
             InternalError "GetBrushHandle", "couldn't create linear gradient brush"
         Else
@@ -1371,7 +1371,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                 centerY = dstRect.Top + halfHeight
                 
                 Dim squareRect As RectF, maxLength As Double, radiusRect As Double, radiusSquare As Double
-                If dstRect.Width > dstRect.Height Then maxLength = halfWidth Else maxLength = halfHeight
+                If (dstRect.Width > dstRect.Height) Then maxLength = halfWidth Else maxLength = halfHeight
                 radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
                 radiusSquare = Sqr(maxLength * maxLength + maxLength * maxLength) + 0.5
                                 
