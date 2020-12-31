@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon PSP (Paint Shop Pro) Container and Parser
+'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
 'Last updated: 30/December/20
@@ -72,7 +72,7 @@ End Enum
 #End If
 
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
-Private Enum PSPBlockID
+Public Enum PSPBlockID
     PSP_IMAGE_BLOCK = 0             '// General Image Attributes Block (main)
     PSP_CREATOR_BLOCK               '// Creator Data Block (main)
     PSP_COLOR_BLOCK                 '// Color Palette Block (main and sub)
@@ -114,6 +114,15 @@ End Enum
     Private Const PSP_TABLE_BANK_BLOCK = 20, PSP_TABLE_BLOCK = 21, PSP_PAPER_BLOCK = 22, PSP_PATTERN_BLOCK = 23, PSP_GRADIENT_BLOCK = 24, PSP_GROUP_EXTENSION_BLOCK = 25, PSP_MASK_EXTENSION_BLOCK = 26, PSP_BRUSH_BLOCK = 27, PSP_ART_MEDIA_BLOCK = 28, PSP_ART_MEDIA_MAP_BLOCK = 29
     Private Const PSP_ART_MEDIA_TILE_BLOCK = 30, PSP_ART_MEDIA_TEXTURE_BLOCK = 31, PSP_COLORPROFILE_BLOCK = 32
 #End If
+
+'PSP images are ultimately comprised of a collection of blocks.  These are analagous to
+' something like "chunks" in a PNG file (although PSP "blocks" can contain sub-blocks and
+' chunks within themselves, which is confusing to say the least).  As an early parse step,
+' we quickly scan all blocks and cache their IDs and offsets.  This is helpful for both
+' validation purposes, and general parsing purposes, because it lets us operate at a
+' more helpful "block" level.
+Private m_numOfBlocks As Long
+Private m_Blocks() As pdPSPBlock
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -158,11 +167,11 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Dim keepLoading As PD_PSPResult
     keepLoading = Step1_ValidateHeader(srcFile)
     
-    If (keepLoading < psp_Failure) Then
-        
-        'TODO!
-        
-    End If
+    'If this identifies as a PSP file, build and validate the block directory
+    If (keepLoading < psp_Failure) Then keepLoading = Step2_BuildBlockDirectory(srcFile)
+    
+    'If the block directory looks good, parse the general image header.
+    
     
     'For now, PSP imports are deliberately marked as failures.  We have a lot more work to do
     ' before we can actually load a useable image!
@@ -271,11 +280,141 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
     
 'Internal VB errors are always treated as catastrophic failures.
 InternalVBError:
-    InternalError "IsFilePSP", "internal VB error #" & Err.Number & ": " & Err.Description
+    InternalError "Step1_ValidateHeader", "internal VB error #" & Err.Number & ": " & Err.Description
     If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 1, #" & Err.Number & ": " & Err.Description
     Step1_ValidateHeader = psp_Failure
+
+End Function
+
+'Do *NOT* call import steps out-of-order!
+Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    
+    Step2_BuildBlockDirectory = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step2_BuildBlockDirectory", "filename has changed since original validation!"
+        Step2_BuildBlockDirectory = psp_Failure
+        Exit Function
+    End If
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'PSP files consist of a series of "blocks".  Total block count is unknown; the only way
+    ' to know how many blocks are in the file is to "walk" the file manually.
+    
+    'In this step, we build an initial "block" collection.  This lets us perform some
+    ' additional validation (like ensuring that critical blocks are in valid order).
+    
+    'Start by resetting our current block collection, if any
+    Const DEFAULT_BLOCK_COUNT As Long = 8
+    m_numOfBlocks = 0
+    ReDim m_Blocks(0 To DEFAULT_BLOCK_COUNT - 1) As pdPSPBlock
+    
+    Dim curBlockID As PSPBlockID, curBlockLength As Long
+    
+    'After validation, we will be pointing at the first block in our collection.
+    
+    'All blocks use a uniform 32-bit "flag" ID, followed by a block ID and length
+    Const PSP_BLOCK_START As Long = &H4B427E
+    
+    Do While (m_Stream.ReadLong() = PSP_BLOCK_START)
+        
+        'Ensure there's room in our block collection
+        If (m_numOfBlocks > UBound(m_Blocks)) Then ReDim Preserve m_Blocks(0 To m_numOfBlocks * 2 - 1) As pdPSPBlock
+        
+        'Retrieve 2-byte ID
+        curBlockID = m_Stream.ReadIntUnsigned()
+        curBlockLength = m_Stream.ReadLong()
+        
+        'Add this block to the collection
+        Set m_Blocks(m_numOfBlocks) = New pdPSPBlock
+        m_Blocks(m_numOfBlocks).InitializeBlock m_Stream.GetPosition(), curBlockID, curBlockLength
+        m_numOfBlocks = m_numOfBlocks + 1
+        
+        'Move the pointer ahead by the specified block length; we should be pointing at either a
+        ' new block, or the end of the file!
+        m_Stream.SetPosition curBlockLength, FILE_CURRENT
+        If (m_Stream.GetPosition() >= m_Stream.GetStreamSize()) Then Exit Do
+        
+    Loop
+    
+    'With all blocks flagged, we can now do a bit of minimal validation on blocks and block order.
+    ' (The PSP spec requires certain blocks appear in certain places and/or orders.)
+    
+    'From the spec:
+    ' With regard to the order of the ten main blocks, there are two hard and fast rules.
+    '  - First, the General Image Attributes block must come immediately after the File Header.
+    '  - Second, the Composite Image Bank Block, if present, must come before the Layer Bank Block.
+    '  - The order of other blocks is not mandated.
+    
+    'Start by ensuring the first block is the General Image Attributes block
+    If (m_numOfBlocks > 0) Then
+        If (Not m_Blocks(0) Is Nothing) Then
+            If (m_Blocks(0).GetBlockID <> PSP_IMAGE_BLOCK) Then
+                okToProceed = psp_Failure
+                InternalError "Step2_BuildBlockDirectory", "first block is not General Image Attributes"
+            End If
+        Else
+            okToProceed = psp_Failure
+            InternalError "Step2_BuildBlockDirectory", "first block is corrupt"
+        End If
+    Else
+        okToProceed = psp_Failure
+        InternalError "Step2_BuildBlockDirectory", "no valid blocks found"
+    End If
+    
+    'If the first block passed, look for the composite image bank block and the layer bank block.
+    ' We need to ensure the former appears before the latter.
+    Dim posCompositeBank As Long, posLayerBank As Long
+    If (okToProceed < psp_Failure) Then
+        
+        'Set the composite and layer bank indices to invalid values
+        posLayerBank = -2
+        posCompositeBank = -1
+        
+        Dim i As Long
+        For i = 0 To m_numOfBlocks - 1
+            If (Not m_Blocks(i) Is Nothing) Then
+                If (m_Blocks(i).GetBlockID = PSP_COMPOSITE_IMAGE_BANK_BLOCK) Then posCompositeBank = i
+                If (m_Blocks(i).GetBlockID = PSP_LAYER_START_BLOCK) Then posLayerBank = i
+            End If
+        Next i
+        
+        If (posLayerBank <= posCompositeBank) Then
+            okToProceed = psp_Failure
+            InternalError "Step2_BuildBlockDirectory", "critical blocks out of order"
+        End If
+        
+    End If
+    
+    'Finally, PSP images could theoretically be "empty" (e.g. containing just a header, but no
+    ' layer or pixel data), but we don't want to mess with this possibility in PD.  Throw out
+    ' such files.
+    If (okToProceed < psp_Failure) Then
+        If (m_numOfBlocks < 2) Then
+            okToProceed = psp_Failure
+            InternalError "Step2_BuildBlockDirectory", "too few blocks"
+        End If
+    End If
+    
+    'Block directory validation and assembly is complete!
+    Step2_BuildBlockDirectory = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError "Step2_BuildBlockDirectory", "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 2, #" & Err.Number & ": " & Err.Description
+    Step2_BuildBlockDirectory = psp_Failure
 
 End Function
 
