@@ -52,6 +52,81 @@ Friend Function GetBlockID() As PSPBlockID
     GetBlockID = m_BlockHeader.blkID
 End Function
 
+Friend Function GetBlockIDAsString() As String
+    
+    Select Case m_BlockHeader.blkID
+        Case PSP_IMAGE_BLOCK
+            GetBlockIDAsString = "General Image Attributes Block (main)"
+        Case PSP_CREATOR_BLOCK
+            GetBlockIDAsString = "Creator Data Block (main)"
+        Case PSP_COLOR_BLOCK
+            GetBlockIDAsString = "Color Palette Block (main and sub)"
+        Case PSP_LAYER_START_BLOCK
+            GetBlockIDAsString = "Layer Bank Block (main)"
+        Case PSP_LAYER_BLOCK
+            GetBlockIDAsString = "Layer Block (sub)"
+        Case PSP_CHANNEL_BLOCK
+            GetBlockIDAsString = "Channel Block (sub)"
+        Case PSP_SELECTION_BLOCK
+            GetBlockIDAsString = "Selection Block (main)"
+        Case PSP_ALPHA_BANK_BLOCK
+            GetBlockIDAsString = "Alpha Bank Block (main)"
+        Case PSP_ALPHA_CHANNEL_BLOCK
+            GetBlockIDAsString = "Alpha Channel Block (sub)"
+        Case PSP_COMPOSITE_IMAGE_BLOCK
+            GetBlockIDAsString = "Composite Image Block (sub)"
+        Case PSP_EXTENDED_DATA_BLOCK
+            GetBlockIDAsString = "Extended Data Block (main)"
+        Case PSP_TUBE_BLOCK
+            GetBlockIDAsString = "Picture Tube Data Block (main)"
+        Case PSP_ADJUSTMENT_EXTENSION_BLOCK
+            GetBlockIDAsString = "Adjustment Layer Block (sub)"
+        Case PSP_VECTOR_EXTENSION_BLOCK
+            GetBlockIDAsString = "Vector Layer Block (sub)"
+        Case PSP_SHAPE_BLOCK
+            GetBlockIDAsString = "Vector Shape Block (sub)"
+        Case PSP_PAINTSTYLE_BLOCK
+            GetBlockIDAsString = "Paint Style Block (sub)"
+        Case PSP_COMPOSITE_IMAGE_BANK_BLOCK
+            GetBlockIDAsString = "Composite Image Bank (main)"
+        Case PSP_COMPOSITE_ATTRIBUTES_BLOCK
+            GetBlockIDAsString = "Composite Image Attr. (sub)"
+        Case PSP_JPEG_BLOCK
+            GetBlockIDAsString = "JPEG Image Block (sub)"
+        Case PSP_LINESTYLE_BLOCK
+            GetBlockIDAsString = "Line Style Block (sub)"
+        Case PSP_TABLE_BANK_BLOCK
+            GetBlockIDAsString = "Table Bank Block (main)"
+        Case PSP_TABLE_BLOCK
+            GetBlockIDAsString = "Table Block (sub)"
+        Case PSP_PAPER_BLOCK
+            GetBlockIDAsString = "Vector Table Paper Block (sub)"
+        Case PSP_PATTERN_BLOCK
+            GetBlockIDAsString = "Vector Table Pattern Block (sub)"
+        Case PSP_GRADIENT_BLOCK
+            GetBlockIDAsString = "Vector Table Gradient Block (not used)"
+        Case PSP_GROUP_EXTENSION_BLOCK
+            GetBlockIDAsString = "Group Layer Block (sub)"
+        Case PSP_MASK_EXTENSION_BLOCK
+            GetBlockIDAsString = "Mask Layer Block (sub)"
+        Case PSP_BRUSH_BLOCK
+            GetBlockIDAsString = "Brush Data Block (main)"
+        Case PSP_ART_MEDIA_BLOCK
+            GetBlockIDAsString = "Art Media Layer Block (main)"
+        Case PSP_ART_MEDIA_MAP_BLOCK
+            GetBlockIDAsString = "Art Media Layer map data Block (main)"
+        Case PSP_ART_MEDIA_TILE_BLOCK
+            GetBlockIDAsString = "Art Media Layer map tile Block (main)"
+        Case PSP_ART_MEDIA_TEXTURE_BLOCK
+            GetBlockIDAsString = "Art Media Layer map texture Block (main)"
+        Case PSP_COLORPROFILE_BLOCK
+            GetBlockIDAsString = "ICC Color profile block"
+        Case Else
+            GetBlockIDAsString = "(unknown)"
+    End Select
+    
+End Function
+
 Friend Function GetBlockLength() As Long
     GetBlockLength = m_BlockHeader.blkLength
 End Function
@@ -64,5 +139,4 @@ Friend Sub InitializeBlock(ByVal srcBlkOffset As Long, ByVal srcBlkID As PSPBloc
     m_BlockHeader.blkOffset = srcBlkOffset
     m_BlockHeader.blkID = srcBlkID
     m_BlockHeader.blkLength = srcBlkLength
-    Debug.Print "Found block: ", srcBlkOffset, srcBlkID, srcBlkLength
 End Sub

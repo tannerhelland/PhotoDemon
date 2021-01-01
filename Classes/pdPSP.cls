@@ -51,7 +51,7 @@ Option Explicit
 'PSP files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSP-adjacent classes have
 ' their own version of this constant.)
-Private Const PSP_DEBUG_VERBOSE As Boolean = False
+Private Const PSP_DEBUG_VERBOSE As Boolean = True
 
 'PSP loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -115,6 +115,55 @@ End Enum
     Private Const PSP_ART_MEDIA_TILE_BLOCK = 30, PSP_ART_MEDIA_TEXTURE_BLOCK = 31, PSP_COLORPROFILE_BLOCK = 32
 #End If
 
+'/* Possible types of compression.  */
+Private Enum PSPCompression
+    PSP_COMP_NONE = 0   '// No compression
+    PSP_COMP_RLE        '// RLE compression
+    PSP_COMP_LZ77       '// LZ77 compression
+    PSP_COMP_JPEG       '// JPEG compression (only used by thumbnail and composite image), invalid in image header
+End Enum
+
+#If False Then
+    Private Const PSP_COMP_NONE = 0, PSP_COMP_RLE = 1, PSP_COMP_LZ77 = 2, PSP_COMP_JPEG = 3
+#End If
+
+'/* Graphic contents flags.
+Private Enum PSPGraphicContents
+    '// Layer types
+    keGCRasterLayers = &H1                  '// At least one raster layer
+    keGCVectorLayers = &H2                  '// At least one vector layer
+    keGCAdjustmentLayers = &H4              '// At least one adjustment layer
+    keGCGroupLayers = &H8                   '// at least one group layer
+    keGCMaskLayers = &H10                   '// at least one mask layer
+    keGCArtMediaLayers = &H20               '// at least one art media layer
+    '// Additional attributes
+    keGCMergedCache = &H800000              '// merged cache (composite image)
+    keGCThumbnail = &H1000000               '// Has a thumbnail
+    keGCThumbnailTransparency = &H2000000   '// Thumbnail transparency
+    keGCComposite = &H4000000               '// Has a composite image
+    keGCCompositeTransparency = &H8000000   '// Composite transparency
+    keGCFlatImage = &H10000000              '// Just a background
+    keGCSelection = &H20000000              '// Has a selection
+    keGCFloatingSelectionLayer = &H40000000 '// Has float. selection
+    keGCAlphaChannels = &H80000000          '// Has alpha channel(s)
+End Enum
+
+#If False Then
+    Private Const keGCRasterLayers = &H1, keGCVectorLayers = &H2, keGCAdjustmentLayers = &H4, keGCGroupLayers = &H8, keGCMaskLayers = &H10, keGCArtMediaLayers = &H20
+    Private Const keGCMergedCache = &H800000, keGCThumbnail = &H1000000, keGCThumbnailTransparency = &H2000000, keGCComposite = &H4000000, keGCCompositeTransparency = &H8000000, keGCFlatImage = &H10000000, keGCSelection = &H20000000, keGCFloatingSelectionLayer = &H40000000, keGCAlphaChannels = &H80000000
+#End If
+
+'/* Possible metrics used to measure resolution.  */
+Private Enum PSP_METRIC
+    PSP_METRIC_UNDEFINED = 0    '// Metric unknown
+    PSP_METRIC_INCH             '// Resolution is in inches
+    PSP_METRIC_CM               '// Resolution is in centimeters
+End Enum
+
+#If False Then
+    Private Const PSP_METRIC_UNDEFINED = 0, PSP_METRIC_INCH = 1, PSP_METRIC_CM = 2
+#End If
+
 'PSP images are ultimately comprised of a collection of blocks.  These are analagous to
 ' something like "chunks" in a PNG file (although PSP "blocks" can contain sub-blocks and
 ' chunks within themselves, which is confusing to say the least).  As an early parse step,
@@ -123,6 +172,35 @@ End Enum
 ' more helpful "block" level.
 Private m_numOfBlocks As Long
 Private m_Blocks() As pdPSPBlock
+
+'Image header, constructed from the "General Image Attributes" block.
+' (Note the similarities to a Windows DIB header, including unused values like "plane count")
+Private Type PSPHeader
+    psph_HeaderSize As Long
+    psph_Width As Long
+    psph_Height As Long
+    psph_Resolution As Double           'Interpretation relies on ResolutionUnit
+    psph_ResolutionUnit As PSP_METRIC   'Inch or cm
+    psph_Compression As PSPCompression  'CANNOT be JPEG-compressed (JPEG is only for the thumbnail)
+    psph_BitDepth As Long               'must be 1, 4, 8, 24, or 48
+    psph_PlaneCount As Long             'must be 1
+    psph_ColorCount As Long             '2 ^ bit-depth
+    psph_IsGrayscale As Boolean         '0 = not greyscale, 1 = greyscale, embedded in file as BYTE
+    psph_TotalSize As Long              'Sum of the sizes of all layer color bitmaps
+    
+    'Layers were added in PSP5, which was also the first appearance of a dedicated "PSP" format
+    psph_ActiveLayer As Long            'Identifies the layer that was active when the image document was saved
+    psph_LayerCount As Long             'Total layer count, embedded in file as WORD
+    
+    'Added in PSP6
+    psph_ContentFlags As PSPGraphicContents 'See enum for flag details
+    
+    'The spec allows for future header expansion, so the top SIZE member is critical for correct reading;
+    ' don't assume a fixed size!
+    
+End Type
+
+Private m_ImageHeader As PSPHeader
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -171,7 +249,7 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     If (keepLoading < psp_Failure) Then keepLoading = Step2_BuildBlockDirectory(srcFile)
     
     'If the block directory looks good, parse the general image header.
-    
+    If (keepLoading < psp_Failure) Then keepLoading = Step3_ReadImageAttributes(srcFile)
     
     'For now, PSP imports are deliberately marked as failures.  We have a lot more work to do
     ' before we can actually load a useable image!
@@ -197,6 +275,7 @@ End Sub
 Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
     
     On Error GoTo InternalVBError
+    Const funcName As String = "Step1_ValidateHeader"
     
     'If the passed path is zero, assume the caller is loading the PSP from memory.
     If (LenB(srcFile) = 0) Then m_SourceFilename = PSP_LOADED_FROM_MEMORY Else m_SourceFilename = srcFile
@@ -252,6 +331,8 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             pspVersionMajor = m_Stream.ReadInt()
             pspVersionMinor = m_Stream.ReadInt()
             
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "PSP file found: version is " & pspVersionMajor & "." & pspVersionMinor
+            
             'Per v8 of the spec, PSP versions are as follows:
             'Current version of the spec (v8) is 6.0
             ' 3.0 = Paint Shop Pro 5
@@ -280,7 +361,7 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
     
 'Internal VB errors are always treated as catastrophic failures.
 InternalVBError:
-    InternalError "Step1_ValidateHeader", "internal VB error #" & Err.Number & ": " & Err.Description
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
     If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 1, #" & Err.Number & ": " & Err.Description
@@ -292,12 +373,13 @@ End Function
 Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPResult
     
     On Error GoTo InternalVBError
+    Const funcName As String = "Step2_BuildBlockDirectory"
     
     Step2_BuildBlockDirectory = psp_Success
     
     'Failsafe check
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step2_BuildBlockDirectory", "filename has changed since original validation!"
+        InternalError funcName, "filename has changed since original validation!"
         Step2_BuildBlockDirectory = psp_Failure
         Exit Function
     End If
@@ -337,6 +419,8 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
         m_Blocks(m_numOfBlocks).InitializeBlock m_Stream.GetPosition(), curBlockID, curBlockLength
         m_numOfBlocks = m_numOfBlocks + 1
         
+        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Block #" & m_numOfBlocks & ": " & m_Blocks(m_numOfBlocks - 1).GetBlockIDAsString()
+        
         'Move the pointer ahead by the specified block length; we should be pointing at either a
         ' new block, or the end of the file!
         m_Stream.SetPosition curBlockLength, FILE_CURRENT
@@ -358,15 +442,15 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
         If (Not m_Blocks(0) Is Nothing) Then
             If (m_Blocks(0).GetBlockID <> PSP_IMAGE_BLOCK) Then
                 okToProceed = psp_Failure
-                InternalError "Step2_BuildBlockDirectory", "first block is not General Image Attributes"
+                InternalError funcName, "first block is not General Image Attributes"
             End If
         Else
             okToProceed = psp_Failure
-            InternalError "Step2_BuildBlockDirectory", "first block is corrupt"
+            InternalError funcName, "first block is corrupt"
         End If
     Else
         okToProceed = psp_Failure
-        InternalError "Step2_BuildBlockDirectory", "no valid blocks found"
+        InternalError funcName, "no valid blocks found"
     End If
     
     'If the first block passed, look for the composite image bank block and the layer bank block.
@@ -388,7 +472,9 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
         
         If (posLayerBank <= posCompositeBank) Then
             okToProceed = psp_Failure
-            InternalError "Step2_BuildBlockDirectory", "critical blocks out of order"
+            InternalError funcName, "critical blocks out of order"
+        Else
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "PSP block directory valid."
         End If
         
     End If
@@ -399,7 +485,7 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
     If (okToProceed < psp_Failure) Then
         If (m_numOfBlocks < 2) Then
             okToProceed = psp_Failure
-            InternalError "Step2_BuildBlockDirectory", "too few blocks"
+            InternalError funcName, "too few blocks"
         End If
     End If
     
@@ -410,11 +496,123 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
     
 'Internal VB errors are always treated as catastrophic failures.
 InternalVBError:
-    InternalError "Step2_BuildBlockDirectory", "internal VB error #" & Err.Number & ": " & Err.Description
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
     If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 2, #" & Err.Number & ": " & Err.Description
     Step2_BuildBlockDirectory = psp_Failure
+
+End Function
+
+'Do *NOT* call import steps out-of-order!
+Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step3_ReadImageAttributes"
+    
+    Step3_ReadImageAttributes = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError funcName, "filename has changed since original validation!"
+        Step3_ReadImageAttributes = psp_Failure
+        Exit Function
+    End If
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'With a block directory now constructed, we can proceed with parsing individual blocks.
+    
+    'First, we need to parse the "General Image Attributes Block", which is the first block
+    ' in all valid PSP files.
+    Dim startOfHeader As Long
+    startOfHeader = m_Blocks(0).GetBlockOffset()
+    m_Stream.SetPosition startOfHeader
+    
+    'Start by simply pulling the header into a VB-friendly struct.  (We'll validate it after.)
+    With m_ImageHeader
+        
+        .psph_HeaderSize = m_Stream.ReadLong()
+        
+        'The header must be at least 36 bytes long (technically 42, but we have workarounds
+        ' for corrupt layer data)
+        If (.psph_HeaderSize < 36) Then
+            InternalError funcName, "bad header"
+            Step3_ReadImageAttributes = psp_Failure
+            Exit Function
+        End If
+        
+        .psph_Width = m_Stream.ReadLong()
+        .psph_Height = m_Stream.ReadLong()
+        .psph_Resolution = m_Stream.ReadDouble()
+        .psph_ResolutionUnit = m_Stream.ReadByte()
+        .psph_Compression = m_Stream.ReadIntUnsigned()
+        .psph_BitDepth = m_Stream.ReadIntUnsigned()
+        .psph_PlaneCount = m_Stream.ReadIntUnsigned()
+        .psph_ColorCount = m_Stream.ReadLong()
+        .psph_IsGrayscale = (m_Stream.ReadByte() = 1)
+        .psph_TotalSize = m_Stream.ReadLong()
+        
+        'Technically these are just paranoid failsafe checks; layer data should *always* exist,
+        ' but it doesn't hurt to account for broken 3rd-party software
+        If (.psph_HeaderSize >= 42) Then
+            .psph_ActiveLayer = m_Stream.ReadLong()
+            .psph_LayerCount = m_Stream.ReadIntUnsigned()
+        Else
+            .psph_ActiveLayer = 0
+            .psph_LayerCount = 1
+        End If
+        
+        'Content flags may not exist in very old PSP versions
+        If (.psph_HeaderSize >= 46) Then
+            .psph_ContentFlags = m_Stream.ReadLong()
+        Else
+            .psph_ContentFlags = 0
+        End If
+        
+        'Future expansion fields are explicitly supported by the spec, but I haven't found
+        ' a spec past v8 so I don't currently know how to interpret any extra bytes here.
+        
+        'With the header successfully imported, validate as many relevant members as we can.
+        If (.psph_Width <= 0) Or (.psph_Height <= 0) Then
+            InternalError funcName, "bad width/height"
+            okToProceed = psp_Failure
+        End If
+        
+        If (.psph_Width <= 0) Or (.psph_Height <= 0) Then
+            InternalError funcName, "bad width/height"
+            okToProceed = psp_Failure
+        End If
+        
+        If (.psph_Compression >= PSP_COMP_JPEG) Then
+            InternalError funcName, "bad compression"
+            okToProceed = psp_Failure
+        End If
+        
+        If (.psph_BitDepth <> 1) And (.psph_BitDepth <> 4) And (.psph_BitDepth <> 8) And (.psph_BitDepth <> 24) And (.psph_BitDepth <> 48) Then
+            InternalError funcName, "bad bit-depth"
+            okToProceed = psp_Failure
+        End If
+        
+        If PSP_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PSP dimensions: " & .psph_Width & "x" & .psph_Height & ", bit-depth: " & .psph_BitDepth & ", " & .psph_LayerCount & " layers, compression=" & GetCompressionName(.psph_Compression) & ", isGrayscale=" & .psph_IsGrayscale
+        End If
+        
+    End With
+    
+    'Block directory validation and assembly is complete!
+    Step3_ReadImageAttributes = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 3, #" & Err.Number & ": " & Err.Description
+    Step3_ReadImageAttributes = psp_Failure
 
 End Function
 
@@ -428,6 +626,21 @@ Private Sub Class_Terminate()
         If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
 End Sub
+
+Private Function GetCompressionName(ByVal cmpType As PSPCompression) As String
+    Select Case cmpType
+        Case PSP_COMP_NONE
+            GetCompressionName = "uncompressed"
+        Case PSP_COMP_RLE
+            GetCompressionName = "RLE"
+        Case PSP_COMP_LZ77
+            GetCompressionName = "zLib"
+        Case PSP_COMP_JPEG
+            GetCompressionName = "JPEG"
+        Case Else
+            GetCompressionName = "(unknown)"
+    End Select
+End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
@@ -454,4 +667,3 @@ Friend Sub Warnings_DumpToDebugger()
         Next i
     End If
 End Sub
-
