@@ -242,6 +242,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSD)
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
+            
             If (Not layersAlreadyLoaded) Then
                 
                 'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
@@ -287,8 +289,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "Internal PNG parser"
             Case id_PSDParser
                 decoderName = "Internal PSD parser"
+            Case id_PSPParser
+                decoderName = "Internal PaintShop Pro parser"
             Case id_WIC
                 decoderName = "Windows Imaging Component"
+            Case Else
+                decoderName = "unknown?!"
         End Select
         
         PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True

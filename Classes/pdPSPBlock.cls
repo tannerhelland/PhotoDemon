@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Block Container
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 30/December/20
-'Last update: start work on initial build
+'Last updated: 02/January/21
+'Last update: add helper function for human-readable block names
 '
 'This class describes a single "block" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 30/December/20
-'Last update: start work on initial build
+'Last updated: 02/January/21
+'Last update: continue work on initial build
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -115,16 +115,14 @@ End Enum
     Private Const PSP_ART_MEDIA_TILE_BLOCK = 30, PSP_ART_MEDIA_TEXTURE_BLOCK = 31, PSP_COLORPROFILE_BLOCK = 32
 #End If
 
-'/* Possible types of compression.  */
-Private Enum PSPCompression
-    PSP_COMP_NONE = 0   '// No compression
-    PSP_COMP_RLE        '// RLE compression
-    PSP_COMP_LZ77       '// LZ77 compression
-    PSP_COMP_JPEG       '// JPEG compression (only used by thumbnail and composite image), invalid in image header
+'/* Type of image in the composite image bank block.  */
+Private Enum PSPCompositeImageType
+    PSP_IMAGE_COMPOSITE = 0 '// Composite Image
+    PSP_IMAGE_THUMBNAIL     '// Thumbnail Image
 End Enum
 
 #If False Then
-    Private Const PSP_COMP_NONE = 0, PSP_COMP_RLE = 1, PSP_COMP_LZ77 = 2, PSP_COMP_JPEG = 3
+    Private Const PSP_IMAGE_COMPOSITE = 0, PSP_IMAGE_THUMBNAIL = 1
 #End If
 
 '/* Graphic contents flags.
@@ -202,6 +200,38 @@ End Type
 
 Private m_ImageHeader As PSPHeader
 
+'PSP files may embed one or more "composite" images, which are either thumbnails or
+' copies of the merged image.  PD can retrieve these, and under certain circumstances it may
+' preferentially choose to use the composite image instead of individual layers
+' (explanation TBD pending true layer support)
+Private Type PSPCompositeImage
+    cih_HeaderSize As Long
+    cih_Width As Long
+    cih_Height As Long
+    cih_BitDepth As Long                        'must be 1, 4, 8, 24, or 48
+    cih_Compression As PSPCompression           'CAN be JPEG-compressed (unlike image layers)
+    cih_PlaneCount As Long                      'must be 1
+    cih_ColorCount As Long                      '2 ^ bit-depth
+    cih_CompositeType As PSPCompositeImageType  'Used to interpret composite contents
+    
+    'The spec allows for future header expansion, so the top SIZE member is critical for correct reading;
+    ' don't assume a fixed size!
+    
+    'This member is PD-specific, and is simply used to flag each composite entry as
+    ' valid or invalid (invalid means something in the header looks awry)
+    cih_LooksOK As Boolean
+    
+    'If commanded to, the composite image parser can retrieve the associated composite image
+    ' and decode it to a standard pdDIB object.  Do *not* attempt to use the DIB unless the
+    ' .cih_DIBOK value is TRUE.
+    cih_DIB As pdDIB
+    cih_DIBOK As Boolean
+    
+End Type
+
+Private m_numCompositeImages As Long
+Private m_CompositeImages() As PSPCompositeImage
+
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
 
@@ -251,9 +281,82 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'If the block directory looks good, parse the general image header.
     If (keepLoading < psp_Failure) Then keepLoading = Step3_ReadImageAttributes(srcFile)
     
-    'For now, PSP imports are deliberately marked as failures.  We have a lot more work to do
-    ' before we can actually load a useable image!
-    keepLoading = psp_Failure
+    'TODO: extended data block (need to figure out what we want to retrieve from it)
+    'TODO: color profile block (need relevant image(s) for testing)
+    'TODO: tube data block (need relevant image(s) for testing)
+    'TODO: creator data block (may be able to rely on ExifTool for now?)
+    
+    'Next, we want to examine the Composite Image block.  Per v8 of the spec,
+    ' "All PSP files with more than one layer or with one layer with transparency
+    '  must have a full size composite image."
+    '
+    'Note that single-opaque-layer images are *not* required to have a composite block.
+    '
+    'Note also that earlier PSP versions don't describe a composite block at all (v5),
+    ' and from v6 onward the composite bank underwent various modifications.  PD accounts
+    ' for all of these subtle details and will simply return a warning (*not* a failure)
+    ' if something goes wrong when reading the composite block.
+    '
+    'TODO: don't retrieve composite images after layer support is added!
+    If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, True)
+    
+    'TEMPORARY IMPLEMENTATION ONLY: if a composite frame exists, and we retrieved it successfully,
+    ' use it as a placeholder while layer retrieval is under construction.
+    If (m_numCompositeImages > 0) Then
+        
+        'For now, PSP imports are deliberately marked as failures.  We have a lot more work to do
+        ' before we can actually load a useable image!
+        keepLoading = psp_Failure
+        
+        'Find the largest composite image that was loaded successfully
+        Dim bestStats As Currency, bestIndex As Long
+        bestIndex = -1
+        
+        Dim i As Long
+        For i = 0 To m_numCompositeImages - 1
+            If m_CompositeImages(i).cih_DIBOK Then
+                
+                'Favor larger images (with a bonus for lossless compression)
+                Dim tmpStats As Currency
+                tmpStats = m_CompositeImages(i).cih_DIB.GetDIBWidth * m_CompositeImages(i).cih_DIB.GetDIBHeight * m_CompositeImages(i).cih_BitDepth
+                If (m_CompositeImages(i).cih_Compression <> PSP_COMP_JPEG) Then tmpStats = tmpStats + 1
+                
+                If (tmpStats > bestStats) Then
+                    bestStats = tmpStats
+                    bestIndex = i
+                End If
+                
+            End If
+        Next i
+        
+        'If we found a useable composite image, dump it into a pdImage struct so we have
+        ' *something* to work with for the moment
+        If (bestIndex >= 0) Then
+            
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Using composite image #" & bestIndex & " (" & GetCompressionName(m_CompositeImages(bestIndex).cih_Compression) & ") to load PSP file..."
+            
+            With m_CompositeImages(bestIndex)
+                
+                'Set basic image attributes
+                dstImage.Width = .cih_Width
+                dstImage.Height = .cih_Height
+                dstImage.SetDPI 96#, 96#
+                
+                'Prep a new layer object and initialize it with the composite image
+                Dim newLayerID As Long
+                newLayerID = dstImage.CreateBlankLayer()
+                
+                Dim tmpLayer As pdLayer
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                tmpLayer.InitializeNewLayer PDL_Image, "PSP composite image", .cih_DIB
+                
+            End With
+            
+            keepLoading = psp_Success
+            
+        End If
+        
+    End If
     
     LoadPSP = keepLoading
     
@@ -341,9 +444,10 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             ' 6.0 = Paint Shop Pro 8
             ' 7.0 = Paint Shop Pro 9
             
-            'PhotoDemon will attempt to import *any* version, but versions outside the above
-            ' list are not guaranteed to load correctly.
-            If (pspVersionMajor < 3) Or (pspVersionMajor > 7) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & pspVersionMinor
+            'Higher major version numbers are expected (e.g. I've encountered "13" in images
+            ' created in 2020 found "in the wild"), but I don't have a spec for those versions
+            ' so correct loading is not necessarily guaranteed.
+            If (pspVersionMajor < 3) Or (pspVersionMajor > 7) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & pspVersionMajor
             If (pspVersionMinor <> 0) Then m_Warnings.AddString "Unexpected PSP minor version encountered: " & pspVersionMinor
             
         Else
@@ -596,7 +700,7 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
         End If
         
         If PSP_DEBUG_VERBOSE Then
-            PDDebug.LogAction "PSP dimensions: " & .psph_Width & "x" & .psph_Height & ", bit-depth: " & .psph_BitDepth & ", " & .psph_LayerCount & " layers, compression=" & GetCompressionName(.psph_Compression) & ", isGrayscale=" & .psph_IsGrayscale
+            PDDebug.LogAction "PSP dimensions: " & .psph_Width & "x" & .psph_Height & ", bit-depth: " & .psph_BitDepth & ", " & .psph_LayerCount & " layer(s), compression: " & GetCompressionName(.psph_Compression) & ", isGrayscale: " & .psph_IsGrayscale
         End If
         
     End With
@@ -613,6 +717,626 @@ InternalVBError:
     
     m_Warnings.AddString "Internal error in step 3, #" & Err.Number & ": " & Err.Description
     Step3_ReadImageAttributes = psp_Failure
+
+End Function
+
+'Do *NOT* call import steps out-of-order!
+Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVal retrieveImages As Boolean = False) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step4_ReadCompositeBlock"
+    
+    Step4_ReadCompositeBlock = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError funcName, "filename has changed since original validation!"
+        Step4_ReadCompositeBlock = psp_Failure
+        Exit Function
+    End If
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'Certain images are not required to have a composite block at all.  Per the spec,
+    ' "The Composite Image Bank Block is a block that contains one or more bitmaps of
+    '  the merged document. Typically, the Composite Image Bank Block will contain one
+    '  miniature bitmap of the merged document (a thumbnail) and one full size bitmap
+    '  of the merged document. The full size bitmap must have the same bit depth and
+    '  resolution as the entire image. All PSP files with more than one layer or with
+    '  one layer with transparency must have a full size composite image."
+    
+    'As such, let's start by seeing if a composite block even exists for this image.
+    Dim compositeBlockIndex As Long
+    
+    Dim i As Long
+    For i = 0 To m_numOfBlocks - 1
+        If (m_Blocks(i).GetBlockID = PSP_COMPOSITE_IMAGE_BANK_BLOCK) Then
+            compositeBlockIndex = i
+            Exit For
+        End If
+    Next i
+    
+    If (compositeBlockIndex <= 0) Then
+        m_Warnings.AddString "No composite block found; this is likely an opaque single-layer image or an old (v5) file."
+        Step4_ReadCompositeBlock = psp_Warning
+        Exit Function
+    End If
+    
+    'If a composite block was found, query the number of composite images in the file
+    Dim origBankInfoPos As Long
+    m_Stream.SetPosition m_Blocks(compositeBlockIndex).GetBlockOffset, FILE_BEGIN
+    origBankInfoPos = m_Stream.GetPosition()
+    
+    Dim cmpBankInfoSize As Long, numCompositeImages As Long
+    cmpBankInfoSize = m_Stream.ReadLong()
+    m_numCompositeImages = m_Stream.ReadLong()
+    
+    'Perform basic validation on both values
+    If (cmpBankInfoSize < 4) Or (m_numCompositeImages <= 0) Then
+        InternalError funcName, "bad composite block header"
+        Step4_ReadCompositeBlock = psp_Warning
+        Exit Function
+    End If
+    
+    'The composite image bank provides for future expansion fields, so it's critical
+    ' to use the chunk size to move the pointer into position.
+    m_Stream.SetPosition origBankInfoPos, FILE_BEGIN
+    m_Stream.SetPosition cmpBankInfoSize, FILE_CURRENT
+    
+    'The stream now points at the Composite Image Attributes sub-block.  This is a list
+    ' of attribute structs, one for each composite image.  The attribute struct bears
+    ' strong similarity to a normal image header, with basic fields like width, height,
+    ' color-depth and compression.  We want to retrieve all structs, then search the list
+    ' for the most appropriate image to pull (typically the largest and/or highest-quality).
+    ReDim m_CompositeImages(0 To m_numCompositeImages - 1) As PSPCompositeImage
+    
+    'Note that each image attribute entry is stored inside a dedicated block, with a full
+    ' block header.  We will validate each block as we read it to ensure our stream pointer
+    ' remains properly aligned.
+    Const PSP_BLOCK_MARKER As Long = &H4B427E
+    Dim startOfBlock As Long, blockLength As Long, blockOK As Boolean
+    
+    For i = 0 To m_numCompositeImages - 1
+        
+        blockOK = True
+        
+        'Validate the universal block ID
+        If (m_Stream.ReadLong() <> PSP_BLOCK_MARKER) Then
+            InternalError funcName, "bad attribute block header"
+            blockOK = False
+        End If
+        
+        'Validate the composite-attributes ID
+        If (m_Stream.ReadIntUnsigned() <> PSP_COMPOSITE_ATTRIBUTES_BLOCK) Then
+            InternalError funcName, "bad attribute block ID"
+            blockOK = False
+        End If
+        
+        'Grab the total block length, then note the current stream pointer
+        blockLength = m_Stream.ReadLong()
+        If (blockLength <= 0) Then
+            InternalError funcName, "bad attribute block length"
+            blockOK = False
+        End If
+        
+        startOfBlock = m_Stream.GetPosition()
+        
+        'If basic block validation fails, stream alignment isn't guaranteed - so we must
+        ' abandon composite parsing entirely.
+        If (Not blockOK) Then
+            InternalError funcName, "Stream pointer misaligned; abandoning composite parsing"
+            Step4_ReadCompositeBlock = psp_Warning
+            Exit Function
+        End If
+        
+        'If we're still here, the block header appears OK.
+        ' Retrieve the composite image attribute information chunk.
+        With m_CompositeImages(i)
+            .cih_HeaderSize = m_Stream.ReadLong()
+            .cih_Width = m_Stream.ReadLong()
+            .cih_Height = m_Stream.ReadLong()
+            .cih_BitDepth = m_Stream.ReadIntUnsigned()
+            .cih_Compression = m_Stream.ReadIntUnsigned()
+            .cih_PlaneCount = m_Stream.ReadIntUnsigned()
+            .cih_ColorCount = m_Stream.ReadLong()
+            .cih_CompositeType = m_Stream.ReadIntUnsigned()
+            
+            'The spec allows for future expansion, so the block size must be used for alignment
+            
+            'Start out assuming this frame is OK
+            .cih_LooksOK = True
+            
+            'Next, perform basic validation on this header
+            If (.cih_HeaderSize > blockLength) Or (.cih_HeaderSize < 24) Then
+                InternalError funcName, "bad composite header size"
+                .cih_LooksOK = False
+            End If
+            
+            If (.cih_Width <= 0) Or (.cih_Height <= 0) Then
+                InternalError funcName, "bad composite image dimensions"
+                .cih_LooksOK = False
+            End If
+            
+            If (.cih_BitDepth <> 1) And (.cih_BitDepth <> 4) And (.cih_BitDepth <> 8) And (.cih_BitDepth <> 24) And (.cih_BitDepth <> 48) Then
+                InternalError funcName, "bad composite image bit-depth"
+                .cih_LooksOK = False
+            End If
+            
+            If (.cih_Compression > PSP_COMP_JPEG) Then
+                InternalError funcName, "bad composite compression"
+                .cih_LooksOK = False
+            End If
+            
+            If (.cih_PlaneCount <> 1) Then InternalError funcName, "bad composite plane count; will attempt to read anyway"
+            
+            If (.cih_CompositeType <> PSP_IMAGE_COMPOSITE) And (.cih_CompositeType <> PSP_IMAGE_THUMBNAIL) Then
+                InternalError funcName, "bad composite type"
+                .cih_LooksOK = False
+            End If
+            
+            'Debug output only
+            If PSP_DEBUG_VERBOSE Then
+                If .cih_LooksOK Then
+                    PDDebug.LogAction "Composite #" & (i + 1) & ": " & .cih_Width & "x" & .cih_Height & ", bit-depth: " & .cih_BitDepth & ", type: " & IIf(.cih_CompositeType = PSP_IMAGE_COMPOSITE, "composite", "thumbnail") & ", compression: " & GetCompressionName(.cih_Compression)
+                Else
+                    PDDebug.LogAction "Composite #" & (i + 1) & ": marked invalid"
+                End If
+            End If
+            
+        End With
+        
+        'Regardless of whether this image looks okay or not, reorient the stream pointer
+        ' using the start-of-block position and the block length.
+        m_Stream.SetPosition startOfBlock, FILE_BEGIN
+        m_Stream.SetPosition blockLength, FILE_CURRENT
+        
+    Next i
+    
+    'With all composite frame attributes parsed, our stream should now be pointing at the
+    ' first composite image sub-block.  These come in two varieties:
+    ' - JPEG blocks (typically used for thumbnails)
+    ' - "Normal" blocks (encoded identically to PSP layers)
+    
+    'Further handling is contingent on the caller requesting us to retrieve composite images.
+    ' (By default, we don't.)
+    If retrieveImages Then
+    
+        'OK, let's retrieve each composite image in turn!
+        For i = 0 To m_numCompositeImages - 1
+            
+            blockOK = True
+            
+            'Validate the universal block ID
+            If (m_Stream.ReadLong() <> PSP_BLOCK_MARKER) Then
+                InternalError funcName, "bad composite image block header"
+                blockOK = False
+            End If
+            
+            'Validate the composite-attributes ID
+            Dim compositeImgType As PSPBlockID
+            compositeImgType = m_Stream.ReadIntUnsigned()
+            If (compositeImgType <> PSP_JPEG_BLOCK) And (compositeImgType <> PSP_COMPOSITE_IMAGE_BLOCK) Then
+                InternalError funcName, "bad composite image block ID"
+                blockOK = False
+            End If
+            
+            If Not ((compositeImgType = PSP_JPEG_BLOCK) Xor (m_CompositeImages(i).cih_Compression <> PSP_COMP_JPEG)) Then
+                InternalError funcName, "bad composite image compression"
+                blockOK = False
+            End If
+            
+            'Grab the total block length, then note the current stream pointer
+            blockLength = m_Stream.ReadLong()
+            If (blockLength <= 0) Then
+                InternalError funcName, "bad composite image block length"
+                blockOK = False
+            End If
+            
+            startOfBlock = m_Stream.GetPosition()
+            
+            'Further handling depends on JPEG vs "normal" block encoding
+            
+            'JPEG frame
+            If (compositeImgType = PSP_JPEG_BLOCK) Then
+                okToProceed = RetrieveComposite_JPEG(i, blockLength)
+                
+            '"Normal" frame
+            Else
+                okToProceed = RetrieveComposite_Normal(i, blockLength)
+                
+            End If
+            
+            'After decoding the block, forcibly move the pointer to the end of the
+            ' current block, using the original block length as our guide.
+            m_Stream.SetPosition startOfBlock + blockLength, FILE_BEGIN
+        
+        Next i
+        
+    End If
+    
+    'Composite block is finished!
+    Step4_ReadCompositeBlock = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 4, #" & Err.Number & ": " & Err.Description
+    Step4_ReadCompositeBlock = psp_Failure
+
+End Function
+
+'Given an index into the m_CompositeImages() array, retrieve and decode the associated JPEG data
+' into a standard pdDIB instance.  The stream pointer *MUST ALREADY BE IN THE CORRECT POSITION*,
+' and *YOU MUST MANUALLY RE-POSITION THE POINTER AFTER CALLING THIS FUNCTION*.  The PSP spec is
+' ambiguous about things like padding between blocks, so block length must *always* be used to
+' forcibly align the stream pointer between blocks.
+Private Function RetrieveComposite_JPEG(ByVal imgIndex As Long, ByVal parentBlockLength As Long) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "RetrieveComposite_JPEG"
+    
+    RetrieveComposite_JPEG = psp_Success
+    
+    'Failsafe check for JPEG format
+    If (m_CompositeImages(imgIndex).cih_Compression <> PSP_COMP_JPEG) Then
+        InternalError funcName, "JPEG compression mismatch"
+        RetrieveComposite_JPEG = psp_Failure
+        Exit Function
+    End If
+    
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to retrieve composite image in JPEG format..."
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'The JPEG information chunk is pretty straightforward: just a few size descriptors,
+    ' and then the entire embedded JPEG file as a byte-stream.
+    Dim startOffset As Long
+    startOffset = m_Stream.GetPosition()
+    
+    'Start by validating the block length against the reported chunk size.
+    ' (The JPEG chunk must always fit within its parent block.)
+    Dim chunkSize As Long
+    chunkSize = m_Stream.ReadLong()
+    If (parentBlockLength < chunkSize) Or (chunkSize <= 0) Then
+        InternalError funcName, "JPEG chunk size mismatch"
+        RetrieveComposite_JPEG = psp_Failure
+        Exit Function
+    End If
+    
+    Dim compressedSize As Long, uncompressedSize As Long, imgType As PSPDIBType
+    compressedSize = m_Stream.ReadLong()
+    uncompressedSize = m_Stream.ReadLong()
+    imgType = m_Stream.ReadIntUnsigned()
+    
+    'Expansion bytes are explicitly allowed by the spec, so reorient the stream pointer manually
+    ' using the previous chunk length.
+    m_Stream.SetPosition startOffset + chunkSize, FILE_BEGIN
+    
+    'The stream now contains [compressedSize] bytes of JPEG data.  Use pd2D to load the image into
+    ' a standard pdDIB.
+    Dim tmpSurface As pd2DSurface
+    Set tmpSurface = New pd2DSurface
+    If tmpSurface.CreateSurfaceFromPtr(m_Stream.Peek_PointerOnly(peekLength:=compressedSize), compressedSize) Then
+        
+        'Point this frame's DIB at the decoded image, then free the underlying surface
+        Set m_CompositeImages(imgIndex).cih_DIB = tmpSurface.GetSurfaceDIB
+        Set tmpSurface = Nothing
+        
+        'Ensure the loaded DIB matches required PD settings
+        m_CompositeImages(imgIndex).cih_DIBOK = (Not m_CompositeImages(imgIndex).cih_DIB Is Nothing)
+        If m_CompositeImages(imgIndex).cih_DIBOK Then
+            If (m_CompositeImages(imgIndex).cih_DIB.GetDIBColorDepth < 32) Then m_CompositeImages(imgIndex).cih_DIB.ConvertTo32bpp
+            If (Not m_CompositeImages(imgIndex).cih_DIB.GetAlphaPremultiplication) Then m_CompositeImages(imgIndex).cih_DIB.SetAlphaPremultiplication True
+            okToProceed = psp_Success
+        Else
+            okToProceed = psp_Warning
+        End If
+    
+    'Failure; possibly a bad JPEG stream, or an esoteric implementation incompatible with GDI+
+    Else
+        m_CompositeImages(imgIndex).cih_DIBOK = False
+        okToProceed = psp_Warning
+    End If
+    
+    'Our work here is done!
+    RetrieveComposite_JPEG = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in JPEG frame retrieval, #" & Err.Number & ": " & Err.Description
+    RetrieveComposite_JPEG = psp_Failure
+    
+End Function
+
+'Given an index into the m_CompositeImages() array, retrieve and decode the associated image data
+' into a standard pdDIB instance.  The stream pointer *MUST ALREADY BE IN THE CORRECT POSITION*,
+' and *YOU MUST MANUALLY RE-POSITION THE POINTER AFTER CALLING THIS FUNCTION*.  The PSP spec is
+' ambiguous about things like padding between blocks, so block length must *always* be used to
+' forcibly align the stream pointer between blocks.
+Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBlockLength As Long) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "RetrieveComposite_Normal"
+    
+    RetrieveComposite_Normal = psp_Success
+    
+    'Failsafe check for valid compression schemes
+    If (m_CompositeImages(imgIndex).cih_Compression <> PSP_COMP_NONE) And (m_CompositeImages(imgIndex).cih_Compression <> PSP_COMP_RLE) And (m_CompositeImages(imgIndex).cih_Compression <> PSP_COMP_LZ77) Then
+        InternalError funcName, "frame compression mismatch"
+        RetrieveComposite_Normal = psp_Failure
+        Exit Function
+    End If
+    
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to retrieve composite image in ""normal"" format..."
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'The composite image information chunk is pretty straightforward: a small header chunk,
+    ' followed by an optional palette chunk, then individual channel blocks (with possible
+    ' alpha channel block following).
+    
+    'Start by noting the initial offset of the stream object (we'll orient all positioning
+    ' decisions against this)
+    Dim startOffset As Long
+    startOffset = m_Stream.GetPosition()
+    
+    'Next, validate the parent block length against the reported chunk size.
+    ' (All subesquent sub-blocks and chunks must always fit within the parent block's boundaries.)
+    Dim chunkSize As Long
+    chunkSize = m_Stream.ReadLong()
+    If (parentBlockLength < chunkSize) Or (chunkSize <= 0) Then
+        InternalError funcName, "composite image chunk size mismatch"
+        RetrieveComposite_Normal = psp_Failure
+        Exit Function
+    End If
+    
+    'The header is small: it simply tells us...
+    ' 1) the number of bitmaps that follow (1 for opaque images, 2 for transparent images)
+    ' 2) the number of channels that follow (1, 2, 3, or 4 for gray/indexed and/or RGB with/without alpha)
+    Dim bitmapCount As Long, channelCount As Long
+    bitmapCount = m_Stream.ReadIntUnsigned()
+    channelCount = m_Stream.ReadIntUnsigned()
+    
+    'Validate both values
+    If (bitmapCount < 1) Or (bitmapCount > 2) Then
+        InternalError funcName, "bad bitmapCount (" & bitmapCount & ")"
+        RetrieveComposite_Normal = psp_Warning
+        Exit Function
+    End If
+    
+    If (channelCount < 1) Or (channelCount > 4) Then
+        InternalError funcName, "bad channelCount (" & channelCount & ")"
+        RetrieveComposite_Normal = psp_Warning
+        Exit Function
+    End If
+    
+    'The spec mentions future expansion fields as an explicit possibility, so use the chunk length
+    ' to position ourselves at the start of the next segment.
+    m_Stream.SetPosition startOffset + chunkSize, FILE_BEGIN
+    
+    'We now point at one of two things: either a palette sub-block (only valid if the parent image
+    ' is non-grayscale with a color-depth less than 24-bit), or the channel sub-blocks themselves.
+    Const PSP_BLOCK_MARKER As Long = &H4B427E
+    Dim blockID As PSPBlockID, blockLength As Long
+    
+    Dim paletteAvailable As Boolean
+    paletteAvailable = PeekNextBlock(PSP_BLOCK_MARKER, blockID, blockLength)
+    paletteAvailable = paletteAvailable And (blockID = PSP_COLOR_BLOCK)
+    
+    If PSP_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Composite image has " & bitmapCount & " bitmaps, " & channelCount & " channels, and palette status is " & paletteAvailable
+    End If
+    
+    'Ensure that palette status matches color-count
+    If (paletteAvailable And ((m_ImageHeader.psph_BitDepth > 8) Or (channelCount > 2))) Then
+        InternalError funcName, "palette exists but shouldn't!"
+        RetrieveComposite_Normal = psp_Warning
+        Exit Function
+    End If
+    
+    'TODO: parse palette.  It may be grayscale?  I don't actually know if grayscale is a valid
+    ' color space for a composite image - the spec is ambiguous on this point.
+    
+    'Palette should now exist, theoretically.  If one was retrieved, ensure stream pointer
+    ' is aligned.
+    
+    'Now we are pointing at the composite image channel sub-blocks.  Per the spec, there will be...
+    ' 1) 1-3 channel sub-blocks with pixel data.  1 channel for paletted bitmap, 3 for RGB data
+    ' 2) optional 1 bonus channel for the transparency mask (stored as an 8-bit greyscale bitmap)
+    '
+    'We first want to retrieve and decompress all channels into their own channel objects
+    Dim cmpChannels() As pdPSPChannel
+    ReDim cmpChannels(0 To channelCount - 1) As pdPSPChannel
+    
+    Dim i As Long
+    For i = 0 To channelCount - 1
+        
+        Set cmpChannels(i) = New pdPSPChannel
+        
+        'Perform a failsafe peek before attempting to load the channel
+        
+        'Block marker found
+        If PeekNextBlock(PSP_BLOCK_MARKER, blockID, blockLength) Then
+            
+            'Block is a channel block
+            If (blockID = PSP_CHANNEL_BLOCK) Then
+            
+                'Populate a temporary header to pass to the target channel.  This contains essential
+                ' details about the parent image, as well as external details relevant to interpreting
+                ' channel contents - like compression type!
+                Dim tmpHeader As PSP_ChannelHeader
+                With tmpHeader
+                    .ch_ParentWidth = m_CompositeImages(imgIndex).cih_Width
+                    .ch_ParentHeight = m_CompositeImages(imgIndex).cih_Height
+                    .ch_ParentBitDepth = m_CompositeImages(imgIndex).cih_BitDepth
+                    .ch_Compression = m_CompositeImages(imgIndex).cih_Compression
+                End With
+        
+                If (cmpChannels(i).LoadChannel(m_Stream, m_Warnings, tmpHeader) < psp_Failure) Then
+                    
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " looks okay"
+                    
+                    'If channel bit-depth is not 8, scale it accordingly
+                    'TODO!
+                    If (m_CompositeImages(imgIndex).cih_BitDepth = 1) Or (m_CompositeImages(imgIndex).cih_BitDepth = 4) Then
+                        If (Not cmpChannels(i).UpsampleLowBitDepth(tmpHeader)) Then InternalError funcName, "couldn't upsample channel " & i
+                    End If
+                    
+                Else
+                    InternalError "RetrieveComposite_Normal", "catastrophic failure; abandoning file entirely..."
+                    RetrieveComposite_Normal = psp_Failure
+                    Exit Function
+                End If
+            
+            '/Channel block ID incorrect
+            Else
+                InternalError funcName, "channel block expected but found " & blockID & " instead??  Attempting recovery..."
+                m_Stream.SetPosition blockLength + 10, FILE_CURRENT
+            End If
+        
+        '/Start-of-block marker incorrect
+        Else
+            InternalError funcName, "channel block expected but bad block marker encountered"
+            RetrieveComposite_Normal = psp_Failure
+            Exit Function
+        End If
+        
+    Next i
+    
+    'With all channels decoded, construct a DIB for this entry!
+    ' TODO: palettes? 48-bpp?
+    If (okToProceed < psp_Failure) Then
+        m_CompositeImages(imgIndex).cih_DIBOK = BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB)
+    End If
+    
+    'Our work here is done!
+    RetrieveComposite_Normal = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in JPEG frame retrieval, #" & Err.Number & ": " & Err.Description
+    RetrieveComposite_Normal = psp_Failure
+    
+End Function
+
+'Given a channel collection and a sample header (from any channel - it's simply used for things
+' like parent image width/height/bit-depth), construct a useable DIB.
+'
+'Returns: TRUE if creation appears successful; FALSE otherwise
+Private Function BuildDIBFromChannels(ByVal numChannels As Long, ByRef srcChannels() As pdPSPChannel, ByRef srcChannelHeader As PSP_ChannelHeader, ByRef dstDIB As pdDIB) As Boolean
+    
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Reconstructing DIB from " & numChannels & " source channels now..."
+    
+    'Start by initializing the DIB (and make it opaque, as many PSP images do not encode an alpha channel)
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank srcChannelHeader.ch_ParentWidth, srcChannelHeader.ch_ParentHeight, 32, 0, 255
+    
+    Dim localCopy() As Byte
+    ReDim localCopy(0) As Byte
+    
+    'Grab pointers to the destination image
+    Dim dstSA As SafeArray2D, dstPixels() As RGBQuad
+    dstDIB.WrapRGBQuadArrayAroundDIB dstPixels, dstSA
+    
+    Dim pxWidth As Long, pxHeight As Long
+    pxWidth = dstDIB.GetDIBWidth - 1
+    pxHeight = dstDIB.GetDIBHeight - 1
+    
+    Dim x As Long, y As Long
+    
+    'PSP stride is still under investigation.  The spec claims 4-byte scanline alignment,
+    ' but 3rd-party readers claim this is untrue.  A final decision here is PENDING TESTING\
+    Dim srcStride As Long
+    srcStride = dstDIB.GetDIBWidth
+    
+    'Iterate through each channel in turn, placing its bits where they belong
+    Dim i As Long
+    For i = 0 To numChannels - 1
+        
+        'Skip broken channels
+        If (Not srcChannels(i).IsChannelOK) Then GoTo NextChannel
+        
+        'Always start by copying the contents of this channel into a local struct (for faster access)
+        If (srcChannels(i).GetChannelSize > UBound(localCopy) + 1) Then ReDim localCopy(0 To srcChannels(i).GetChannelSize - 1) As Byte
+        CopyMemoryStrict VarPtr(localCopy(0)), srcChannels(i).GetChannelPtr(), srcChannels(i).GetChannelSize
+        srcChannels(i).FreeChannelContents
+        
+        'Alpha bytes are not returned as-such; instead, they are a composite channel that is not
+        ' the *first* channel in the image
+        Select Case srcChannels(i).GetChannelType
+            
+            Case PSP_CHANNEL_COMPOSITE
+                
+                'Grayscale and indexed image
+                If (i = 0) Then
+                    
+                    'Build palette for grayscale, then apply universally?
+                    'For y = 0 To pxHeight
+                    'For x = 0 To pxWidth
+                    '    dstPixels(x, y).Red = localCopy(y * srcStride + x)
+                    'Next x
+                    'Next y
+                
+                'Actual alpha channel (i = 1 on gray/indexed images, i = 3 on RGBA)
+                Else
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating alpha channel..."
+                    For y = 0 To pxHeight
+                    For x = 0 To pxWidth
+                        dstPixels(x, y).Alpha = localCopy(y * srcStride + x)
+                    Next x
+                    Next y
+                End If
+            
+            Case PSP_CHANNEL_RED
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating red channel..."
+                For y = 0 To pxHeight
+                For x = 0 To pxWidth
+                    dstPixels(x, y).Red = localCopy(y * srcStride + x)
+                Next x
+                Next y
+                
+            Case PSP_CHANNEL_GREEN
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating green channel..."
+                For y = 0 To pxHeight
+                For x = 0 To pxWidth
+                    dstPixels(x, y).Green = localCopy(y * srcStride + x)
+                Next x
+                Next y
+            
+            Case PSP_CHANNEL_BLUE
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating blue channel..."
+                For y = 0 To pxHeight
+                For x = 0 To pxWidth
+                    dstPixels(x, y).Blue = localCopy(y * srcStride + x)
+                Next x
+                Next y
+            
+        End Select
+    
+NextChannel:
+    Next i
+    
+    dstDIB.UnwrapRGBQuadArrayFromDIB dstPixels
+    dstDIB.SetAlphaPremultiplication True
+    
+    BuildDIBFromChannels = True
 
 End Function
 
@@ -643,12 +1367,46 @@ Private Function GetCompressionName(ByVal cmpType As PSPCompression) As String
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
+    
+    Dim errText As String
+    errText = "pdPSP." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+    
     If UserPrefs.GenerateDebugLogs Then
-        If writeDebugLog Then PDDebug.LogAction "pdPSP." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+        If writeDebugLog Then PDDebug.LogAction errText
     Else
-        Debug.Print "pdPSP." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+        Debug.Print errText
     End If
+    
 End Sub
+
+'Peek the next 10 bytes in the stream to see if...
+' 1) They represent a block (pass expectedHeader with e.g. 0x004b427e)
+' 2) What the block ID is (only relevant if (1) passes)
+' 3) What the block's length is (only relevant if (2) passes)
+'
+'IMPORTANTLY: regardless of what this function returns, the stream pointer will be restored
+' to its original location at load-time.  This removes ambiguity based on the return value
+' of the function or various potential failure states.
+Private Function PeekNextBlock(ByVal expectedHeader As Long, ByRef dstBlockID As PSPBlockID, ByRef dstBlockLength As Long) As Boolean
+    
+    'Make a note of the entry stream position
+    Dim origPosition As Long
+    origPosition = m_Stream.GetPosition()
+    
+    'Check header first
+    PeekNextBlock = (m_Stream.ReadLong() = expectedHeader)
+    If PeekNextBlock Then
+    
+        'Valid block ID.  Retrieve 2-byte ID and 4-byte length.
+        dstBlockID = m_Stream.ReadIntUnsigned()
+        dstBlockLength = m_Stream.ReadLong()
+    
+    End If
+    
+    'Reset the stream pointer before exiting
+    m_Stream.SetPosition origPosition
+    
+End Function
 
 'Want data on warnings?  Use these helper functions.
 Friend Function Warnings_GetCount() As Long
