@@ -3817,6 +3817,46 @@ Public Function GDIPlus_ImageCreateFromFile(ByVal srcFilename As String, Optiona
     End If
 End Function
 
+'Note that this function creates an image from a bare pointer that points to a valid image file
+' (e.g. not a stream of bare RGB values - a valid BMP/GIF/JPEG/TIFF wrapper must be used).
+Public Function GDIPlus_ImageCreateFromPtr(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByRef isImageMetafile As Boolean = False) As Long
+    
+    'GDI+ requires a stream object for import, so we're going to wrap a temporary stream around the pointer.
+    Dim tmpStream As Long
+    
+    Dim tmpHMem As Long
+    Const GMEM_MOVEABLE As Long = &H2&
+    tmpHMem = GlobalAlloc(GMEM_MOVEABLE, srcLen)
+    If (tmpHMem <> 0) Then
+        
+        Dim tmpLockMem As Long
+        tmpLockMem = GlobalLock(tmpHMem)
+        If (tmpLockMem <> 0) Then
+            CopyMemoryStrict tmpLockMem, srcPtr, srcLen
+            GlobalUnlock tmpHMem
+            CreateStreamOnHGlobal tmpHMem, 1&, VarPtr(tmpStream)
+        End If
+        
+    End If
+    
+    If (tmpStream <> 0) Then
+    
+        Dim tmpReturn As GP_Result
+        tmpReturn = GdipLoadImageFromStream(tmpStream, GDIPlus_ImageCreateFromPtr)
+        If (tmpReturn = GP_OK) Then
+            Dim imgType As GP_ImageType
+            GdipGetImageType GDIPlus_ImageCreateFromPtr, imgType
+            isImageMetafile = (imgType = GP_IT_Metafile)
+        Else
+            InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+        End If
+        
+    Else
+        InternalGDIPlusError "IStream failure", "GDIPlus_ImageCreateFromPtr() failed to wrap an IStream around the source pointer; load aborted."
+    End If
+    
+End Function
+
 'This function only works on bitmaps (never metafiles!), and the source image *must* already be in 32-bpp format.
 Public Function GDIPlus_ImageForcePremultipliedAlpha(ByVal hImage As Long, ByVal imgWidth As Long, ByVal imgHeight As Long) As Boolean
     Dim tmpReturn As GP_Result

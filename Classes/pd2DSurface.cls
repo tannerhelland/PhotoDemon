@@ -601,6 +601,31 @@ Friend Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal 
     
 End Function
 
+'If you already have an image file loaded into memory, you can use this function to load it.
+' Note that the source pointer must point to a full, valid image file - not just a bare array of RGB values.
+' (e.g. it must point at a BMP/GIF/JPEG/TIFF structure).
+'
+'Note also that you can free the source data after calling this function;
+' it does not need to be maintained post-load.
+Friend Function CreateSurfaceFromPtr(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
+    
+    If (m_SurfaceHandle <> 0) Then ReleaseSurface
+    
+    'Start by using GDI+ to load the array into a GDI+ container.
+    Dim hGdipImage As Long, isImageMetafile As Boolean
+    hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromPtr(srcPtr, srcLen, isImageMetafile)
+    
+    If (hGdipImage <> 0) Then
+        CreateSurfaceFromPtr = InternalGDIPlusLoadImage(hGdipImage, isImageMetafile, fixJPEGOrientation)
+    Else
+        CreateSurfaceFromPtr = False
+    End If
+    
+    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    If (CreateSurfaceFromPtr And PD2D_DEBUG_MODE) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
+    
+End Function
+
 'Wrap this surface around some existing hDC.  The DC can be any type (display or memory; printer may also work but I haven't
 ' tested them *at all*).
 '
@@ -857,6 +882,16 @@ Friend Function GetSurfaceAlphaSupport() As Boolean
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceAlphaSupport = (m_SurfaceDIB.GetDIBColorDepth = 32)
     Else
         GetSurfaceAlphaSupport = False
+    End If
+End Function
+
+'This function is *ONLY* valid if an internal DIB is being fully managed by the surface
+' (e.g. it doesn't work if wrapped around a DC, since no DIB will exist!)
+Friend Function GetSurfaceDIB() As pdDIB
+    If (m_SurfaceType = P2_ST_Bitmap) Then
+        Set GetSurfaceDIB = m_SurfaceDIB
+    Else
+        Set GetSurfaceDIB = Nothing
     End If
 End Function
 
