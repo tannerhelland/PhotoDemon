@@ -72,6 +72,8 @@ End Enum
 #End If
 
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
+Private Const PSP_BLOCK_MARKER As Long = &H4B427E
+
 Public Enum PSPBlockID
     PSP_IMAGE_BLOCK = 0             '// General Image Attributes Block (main)
     PSP_CREATOR_BLOCK               '// Creator Data Block (main)
@@ -174,7 +176,11 @@ Private m_Blocks() As pdPSPBlock
 'Image header, constructed from the "General Image Attributes" block.
 ' (Note the similarities to a Windows DIB header, including unused values like "plane count")
 Private Type PSPHeader
-    psph_HeaderSize As Long
+
+    psph_VersionMajor As Long           'Some parsing behavior needs to be modified based on version, alas
+    psph_VersionMinor As Long
+    
+    psph_HeaderSize As Long             'Used only for double-checking embedded header in file; do NOT use after validation
     psph_Width As Long
     psph_Height As Long
     psph_Resolution As Double           'Interpretation relies on ResolutionUnit
@@ -231,6 +237,7 @@ End Type
 
 Private m_numCompositeImages As Long
 Private m_CompositeImages() As PSPCompositeImage
+Private m_CompositePalette() As RGBQuad, m_CompositePaletteCount As Long
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -431,10 +438,10 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
         If (okToProceed < psp_Failure) Then
         
             Dim pspVersionMajor As Integer, pspVersionMinor As Integer
-            pspVersionMajor = m_Stream.ReadInt()
-            pspVersionMinor = m_Stream.ReadInt()
+            m_ImageHeader.psph_VersionMajor = m_Stream.ReadInt()
+            m_ImageHeader.psph_VersionMinor = m_Stream.ReadInt()
             
-            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "PSP file found: version is " & pspVersionMajor & "." & pspVersionMinor
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "PSP file found: version is " & m_ImageHeader.psph_VersionMajor & "." & m_ImageHeader.psph_VersionMinor
             
             'Per v8 of the spec, PSP versions are as follows:
             'Current version of the spec (v8) is 6.0
@@ -447,8 +454,8 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             'Higher major version numbers are expected (e.g. I've encountered "13" in images
             ' created in 2020 found "in the wild"), but I don't have a spec for those versions
             ' so correct loading is not necessarily guaranteed.
-            If (pspVersionMajor < 3) Or (pspVersionMajor > 7) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & pspVersionMajor
-            If (pspVersionMinor <> 0) Then m_Warnings.AddString "Unexpected PSP minor version encountered: " & pspVersionMinor
+            If (m_ImageHeader.psph_VersionMajor < 3) Or (m_ImageHeader.psph_VersionMajor > 7) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & m_ImageHeader.psph_VersionMajor
+            If (m_ImageHeader.psph_VersionMinor <> 0) Then m_Warnings.AddString "Unexpected PSP minor version encountered: " & m_ImageHeader.psph_VersionMinor
             
         Else
             m_Warnings.AddString "PSP header failed basic validation.  (This is not a PSP file.)"
@@ -518,6 +525,11 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
         curBlockID = m_Stream.ReadIntUnsigned()
         curBlockLength = m_Stream.ReadLong()
         
+        'IMPORTANTLY: in very old PSP versions, chunks use two length descriptors.  The first describes
+        ' the first sub-chunk, while the second describes the full chunk (dumb as hell, I know).  If we
+        ' don't catch this at import time, it'll upset everything that follows.
+        If (m_ImageHeader.psph_VersionMajor <= 3) Then curBlockLength = m_Stream.ReadLong()
+        
         'Add this block to the collection
         Set m_Blocks(m_numOfBlocks) = New pdPSPBlock
         m_Blocks(m_numOfBlocks).InitializeBlock m_Stream.GetPosition(), curBlockID, curBlockLength
@@ -574,7 +586,7 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
             End If
         Next i
         
-        If (posLayerBank <= posCompositeBank) Then
+        If (posLayerBank <= posCompositeBank) And (posCompositeBank >= 0) Then
             okToProceed = psp_Failure
             InternalError funcName, "critical blocks out of order"
         Else
@@ -637,7 +649,15 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
     'Start by simply pulling the header into a VB-friendly struct.  (We'll validate it after.)
     With m_ImageHeader
         
-        .psph_HeaderSize = m_Stream.ReadLong()
+        'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+        ' a stupid (but necessary) workaround
+        If (m_ImageHeader.psph_VersionMajor <= 3) Then
+            m_Stream.SetPosition -8, FILE_CURRENT
+            .psph_HeaderSize = m_Stream.ReadLong()
+            m_Stream.SetPosition 4, FILE_CURRENT
+        Else
+            .psph_HeaderSize = m_Stream.ReadLong()
+        End If
         
         'The header must be at least 36 bytes long (technically 42, but we have workarounds
         ' for corrupt layer data)
@@ -706,6 +726,9 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
     End With
     
     'Block directory validation and assembly is complete!
+    
+    'Forcibly align the stream pointer before continuing
+    m_Stream.SetPosition startOfHeader, m_Blocks(0).GetBlockLength()
     Step3_ReadImageAttributes = okToProceed
     
     Exit Function
@@ -757,10 +780,24 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
         End If
     Next i
     
+    'Old PSP files didn't use a full "composite bank" with combination merged and thumbnail files;
+    ' instead, they just provided a thumbnail segment.  Hypothetically we could retrieve these
+    ' thumbnails some day, but for now, it's a distraction - TODO!
+    Dim veryOldVersion As Long
+    veryOldVersion = (m_ImageHeader.psph_VersionMajor <= 3)
+    'If veryOldVersion Then   ...special handling, etc...
+    
     If (compositeBlockIndex <= 0) Then
-        m_Warnings.AddString "No composite block found; this is likely an opaque single-layer image or an old (v5) file."
+        
+        If veryOldVersion Then
+            m_Warnings.AddString "This is an ancient PSP file; composite blocks don't exist in this version!"
+        Else
+            m_Warnings.AddString "No composite block found; this may be an opaque single-layer image?"
+        End If
+        
         Step4_ReadCompositeBlock = psp_Warning
         Exit Function
+        
     End If
     
     'If a composite block was found, query the number of composite images in the file
@@ -769,7 +806,17 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     origBankInfoPos = m_Stream.GetPosition()
     
     Dim cmpBankInfoSize As Long, numCompositeImages As Long
-    cmpBankInfoSize = m_Stream.ReadLong()
+    
+    'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+    ' a stupid (but necessary) workaround
+    If (m_ImageHeader.psph_VersionMajor <= 3) Then
+        m_Stream.SetPosition -8, FILE_CURRENT
+        cmpBankInfoSize = m_Stream.ReadLong()
+        m_Stream.SetPosition 4, FILE_CURRENT
+    Else
+        cmpBankInfoSize = m_Stream.ReadLong()
+    End If
+    
     m_numCompositeImages = m_Stream.ReadLong()
     
     'Perform basic validation on both values
@@ -794,7 +841,6 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     'Note that each image attribute entry is stored inside a dedicated block, with a full
     ' block header.  We will validate each block as we read it to ensure our stream pointer
     ' remains properly aligned.
-    Const PSP_BLOCK_MARKER As Long = &H4B427E
     Dim startOfBlock As Long, blockLength As Long, blockOK As Boolean
     
     For i = 0 To m_numCompositeImages - 1
@@ -1128,7 +1174,6 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
     
     'We now point at one of two things: either a palette sub-block (only valid if the parent image
     ' is non-grayscale with a color-depth less than 24-bit), or the channel sub-blocks themselves.
-    Const PSP_BLOCK_MARKER As Long = &H4B427E
     Dim blockID As PSPBlockID, blockLength As Long
     
     Dim paletteAvailable As Boolean
@@ -1146,11 +1191,37 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
         Exit Function
     End If
     
-    'TODO: parse palette.  It may be grayscale?  I don't actually know if grayscale is a valid
-    ' color space for a composite image - the spec is ambiguous on this point.
+    'If a palette is not available, but the image is monochrome or grayscale,
+    ' generate a default gray palette.
+    If (m_ImageHeader.psph_IsGrayscale Or m_ImageHeader.psph_BitDepth <= 8) And (Not paletteAvailable) Then
+        
+        If (m_ImageHeader.psph_BitDepth = 8) Then
+            m_CompositePaletteCount = 256
+            Palettes.GetPalette_Grayscale m_CompositePalette
+        ElseIf (m_ImageHeader.psph_BitDepth = 4) Then
+            m_CompositePaletteCount = 16
+            Palettes.GetPalette_GrayscaleCustom m_CompositePalette, m_CompositePaletteCount
+        Else
+            m_CompositePaletteCount = 2
+            Palettes.GetPalette_GrayscaleCustom m_CompositePalette, m_CompositePaletteCount
+        End If
+        
+    End If
     
-    'Palette should now exist, theoretically.  If one was retrieved, ensure stream pointer
-    ' is aligned.
+    'If the palette exists, immediately parse it - we'll need it momentarily to interpret
+    ' channel data.
+    If paletteAvailable Then
+        If (Not RetrievePalette(m_CompositePalette, m_CompositePaletteCount)) Then
+            InternalError funcName, "bad palette - can't retrieve composite image"
+            RetrieveComposite_Normal = psp_Warning
+            Exit Function
+        End If
+    End If
+    
+    'A gray or color palette should now exist for any image that requires it.
+    
+    'Note also that the palette reader forcibly aligns the stream reader correctly, so we don't
+    ' need to mess with that here.
     
     'Now we are pointing at the composite image channel sub-blocks.  Per the spec, there will be...
     ' 1) 1-3 channel sub-blocks with pixel data.  1 channel for paletted bitmap, 3 for RGB data
@@ -1178,26 +1249,19 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
                 ' channel contents - like compression type!
                 Dim tmpHeader As PSP_ChannelHeader
                 With tmpHeader
+                    .ch_ParentVersionMajor = m_ImageHeader.psph_VersionMajor
                     .ch_ParentWidth = m_CompositeImages(imgIndex).cih_Width
                     .ch_ParentHeight = m_CompositeImages(imgIndex).cih_Height
                     .ch_ParentBitDepth = m_CompositeImages(imgIndex).cih_BitDepth
                     .ch_Compression = m_CompositeImages(imgIndex).cih_Compression
                 End With
         
-                If (cmpChannels(i).LoadChannel(m_Stream, m_Warnings, tmpHeader) < psp_Failure) Then
-                    
-                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " looks okay"
-                    
-                    'If channel bit-depth is not 8, scale it accordingly
-                    'TODO!
-                    If (m_CompositeImages(imgIndex).cih_BitDepth = 1) Or (m_CompositeImages(imgIndex).cih_BitDepth = 4) Then
-                        If (Not cmpChannels(i).UpsampleLowBitDepth(tmpHeader)) Then InternalError funcName, "couldn't upsample channel " & i
-                    End If
-                    
-                Else
+                If (cmpChannels(i).LoadChannel(m_Stream, m_Warnings, tmpHeader) >= psp_Failure) Then
                     InternalError "RetrieveComposite_Normal", "catastrophic failure; abandoning file entirely..."
                     RetrieveComposite_Normal = psp_Failure
                     Exit Function
+                Else
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " looks okay"
                 End If
             
             '/Channel block ID incorrect
@@ -1218,7 +1282,7 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
     'With all channels decoded, construct a DIB for this entry!
     ' TODO: palettes? 48-bpp?
     If (okToProceed < psp_Failure) Then
-        m_CompositeImages(imgIndex).cih_DIBOK = BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB)
+        m_CompositeImages(imgIndex).cih_DIBOK = BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB, m_CompositePalette, m_CompositePaletteCount)
     End If
     
     'Our work here is done!
@@ -1236,13 +1300,112 @@ InternalVBError:
     
 End Function
 
+'If the stream is pointing at a palette block (PSP_COLOR_BLOCK), call this function to read
+' the palette into an RGBQuad array.
+Private Function RetrievePalette(ByRef dstPalette() As RGBQuad, ByRef dstPaletteSize As Long) As Boolean
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "RetrievePalette"
+    
+    'This function is pessimistic - assume failure unless otherwise noted
+    RetrievePalette = False
+    
+    Dim origStreamPosition As Long
+    origStreamPosition = m_Stream.GetPosition()
+    
+    'Ensure correct chunk ID and size
+    If (m_Stream.ReadLong() <> PSP_BLOCK_MARKER) Then
+        InternalError funcName, "stream misaligned"
+        m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+        Exit Function
+    End If
+    
+    If (m_Stream.ReadIntUnsigned() <> PSP_COLOR_BLOCK) Then
+        InternalError funcName, "not a palette block"
+        m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+        Exit Function
+    End If
+    
+    Dim blockLength As Long, palHeaderSize As Long
+    
+    'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+    ' a stupid (but necessary) workaround
+    If (m_ImageHeader.psph_VersionMajor <= 3) Then
+        palHeaderSize = m_Stream.ReadLong()
+        blockLength = m_Stream.ReadLong()
+    Else
+        blockLength = m_Stream.ReadLong()
+    End If
+    
+    If (blockLength <= 0) Then
+        InternalError funcName, "bad palette length"
+        m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+        Exit Function
+    End If
+    
+    'If we're still here, this appears to be a valid palette block.  Note the current stream position,
+    ' then parse palette information.
+    Dim posPaletteStart As Long
+    posPaletteStart = m_Stream.GetPosition()
+    
+    'Palettes have a brief header.  The spec explicitly allows the header to have variable-size,
+    ' so we must use its embedded length to align the stream at the start of the color list.
+    If (m_ImageHeader.psph_VersionMajor > 3) Then palHeaderSize = m_Stream.ReadLong()
+    If (palHeaderSize <= 0) Then
+        InternalError funcName, "bad palette info header size"
+        m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+        Exit Function
+    End If
+    
+    dstPaletteSize = m_Stream.ReadLong()
+    If (dstPaletteSize <= 0) Then
+        InternalError funcName, "bad palette color count"
+        m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+        Exit Function
+    End If
+    
+    'Manually align the stream pointer
+    m_Stream.SetPosition posPaletteStart + palHeaderSize, FILE_BEGIN
+    
+    'Retrieve (dstPaletteSize) colors, in RGBA format
+    ReDim dstPalette(0 To dstPaletteSize - 1) As RGBQuad
+    
+    Dim i As Long, tmpColor As Long
+    For i = 0 To dstPaletteSize - 1
+    
+        tmpColor = m_Stream.ReadLong()
+        PutMem4 VarPtr(dstPalette(i)), tmpColor
+        
+        'PSP spec defines RGBQuads as RGBx; manually fill alpha to compensate
+        dstPalette(i).Alpha = 255
+        
+    Next i
+    
+    'Palette read successfully!
+    RetrievePalette = True
+    
+    'Before exiting, forcibly align the stream using the original block length
+    m_Stream.SetPosition posPaletteStart + blockLength
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in palette retrieval, #" & Err.Number & ": " & Err.Description
+    RetrievePalette = False
+    
+End Function
+
 'Given a channel collection and a sample header (from any channel - it's simply used for things
 ' like parent image width/height/bit-depth), construct a useable DIB.
 '
 'Returns: TRUE if creation appears successful; FALSE otherwise
-Private Function BuildDIBFromChannels(ByVal numChannels As Long, ByRef srcChannels() As pdPSPChannel, ByRef srcChannelHeader As PSP_ChannelHeader, ByRef dstDIB As pdDIB) As Boolean
+Private Function BuildDIBFromChannels(ByVal NumChannels As Long, ByRef srcChannels() As pdPSPChannel, ByRef srcChannelHeader As PSP_ChannelHeader, ByRef dstDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal dstPaletteSize As Long = 256) As Boolean
     
-    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Reconstructing DIB from " & numChannels & " source channels now..."
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Reconstructing DIB from " & NumChannels & " source channels now..."
     
     'Start by initializing the DIB (and make it opaque, as many PSP images do not encode an alpha channel)
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -1268,7 +1431,7 @@ Private Function BuildDIBFromChannels(ByVal numChannels As Long, ByRef srcChanne
     
     'Iterate through each channel in turn, placing its bits where they belong
     Dim i As Long
-    For i = 0 To numChannels - 1
+    For i = 0 To NumChannels - 1
         
         'Skip broken channels
         If (Not srcChannels(i).IsChannelOK) Then GoTo NextChannel
@@ -1287,12 +1450,12 @@ Private Function BuildDIBFromChannels(ByVal numChannels As Long, ByRef srcChanne
                 'Grayscale and indexed image
                 If (i = 0) Then
                     
-                    'Build palette for grayscale, then apply universally?
-                    'For y = 0 To pxHeight
-                    'For x = 0 To pxWidth
-                    '    dstPixels(x, y).Red = localCopy(y * srcStride + x)
-                    'Next x
-                    'Next y
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating RGB data from gray or indexed channel..."
+                    For y = 0 To pxHeight
+                    For x = 0 To pxWidth
+                        dstPixels(x, y) = dstPalette(localCopy(y * srcStride + x))
+                    Next x
+                    Next y
                 
                 'Actual alpha channel (i = 1 on gray/indexed images, i = 3 on RGBA)
                 Else
@@ -1400,7 +1563,11 @@ Private Function PeekNextBlock(ByVal expectedHeader As Long, ByRef dstBlockID As
         'Valid block ID.  Retrieve 2-byte ID and 4-byte length.
         dstBlockID = m_Stream.ReadIntUnsigned()
         dstBlockLength = m_Stream.ReadLong()
-    
+        
+        'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+        ' a stupid (but necessary) workaround
+        If (m_ImageHeader.psph_VersionMajor <= 3) Then dstBlockLength = m_Stream.ReadLong()
+        
     End If
     
     'Reset the stream pointer before exiting

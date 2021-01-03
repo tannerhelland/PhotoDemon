@@ -739,6 +739,32 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     Next i
 End Sub
 
+Public Sub GetPalette_GrayscaleCustom(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
+    
+    If (numShades > 256) Then numShades = 256
+    
+    Dim maxVal As Long
+    maxVal = numShades - 1
+    
+    ReDim dstPalette(0 To maxVal) As RGBQuad
+    
+    Dim i As Long, finalGray As Long
+    For i = 0 To maxVal
+        
+        finalGray = Int((i * 255#) / maxVal + 0.5)
+        If (finalGray > 255) Then finalGray = 255
+        
+        With dstPalette(i)
+            .Red = finalGray
+            .Green = finalGray
+            .Blue = finalGray
+            .Alpha = 255
+        End With
+        
+    Next i
+    
+End Sub
+
 'Given an arbitrary source palette, apply said palette to the target image.  Dithering is *not* used.
 ' Colors are matched exhaustively, meaning this function slows significantly as palette size increases.
 Public Function ApplyPaletteToImage_Naive(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean

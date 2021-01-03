@@ -817,6 +817,7 @@ End Enum
 #End If
 
 Public Type PSP_ChannelHeader
+    ch_ParentVersionMajor As Long
     ch_ParentWidth As Long
     ch_ParentHeight As Long
     ch_ParentBitDepth As Long

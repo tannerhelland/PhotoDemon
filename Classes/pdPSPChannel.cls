@@ -104,6 +104,10 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     blockID = srcStream.ReadIntUnsigned()
     blockLength = srcStream.ReadLong()
     
+    'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+    ' a stupid (but necessary) workaround
+    If (srcHeader.ch_ParentVersionMajor <= 3) Then blockLength = srcStream.ReadLong()
+    
     'If blockID is bad... I'm honestly not sure what to do.  Probably just report it,
     ' then skip to the end of the block?  (Clearly the reader didn't expect this block,
     ' and recovery code would be challenging... basically I'd need to manually investigate
@@ -135,7 +139,16 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     
     'Store chunk size separately; we'll use it for stream alignment later
     Dim channelChunkSize As Long
-    channelChunkSize = srcStream.ReadLong()
+    
+    'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
+    ' a stupid (but necessary) workaround
+    If (srcHeader.ch_ParentVersionMajor <= 3) Then
+        srcStream.SetPosition -8, FILE_CURRENT
+        channelChunkSize = srcStream.ReadLong()
+        srcStream.SetPosition 4, FILE_CURRENT
+    Else
+        channelChunkSize = srcStream.ReadLong()
+    End If
     
     'Compressed size is critical since this is the only indicator of the length of the
     ' deflate or RLE-compressed stream
@@ -167,8 +180,67 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             
         'PSP's use an extremely simple RLE scheme (TODO)
         Case PSP_COMP_RLE
-            InternalError funcName, "RLE not ready yet", srcWarnings
-            okToProceed = psp_Failure
+            
+            'The PSP spec defines RLE behavior nicely; see it for details
+            Dim srcByte As Byte, srcLong As Long, numBytesProcessed As Long
+            numBytesProcessed = 0
+            
+            Dim numSafeBytesDst As Long, numSafeBytesSrc As Long
+            numSafeBytesDst = srcHeader.ch_UncompressedSize
+            numSafeBytesSrc = srcHeader.ch_CompressedSize
+            
+            'For PSP's RLE encoding, we can effectively ignore scanlines and just treat the data
+            ' as an arbitrary stream of bytes.  Note that this function is *not* necessarily
+            ' guaranteed to be robust against malformed data; e.g. it may crash if fed deliberately
+            ' corrupted RLE data that produces runs extending beyond the end of the image.
+            ' (I've tried to account for this as best I can, but I don't have an easy way to
+            ' aggressively fuzz the decompressor!)
+            Dim curOffset As Long
+            curOffset = 0
+            
+            Do While (curOffset < numSafeBytesDst) And (numBytesProcessed < numSafeBytesSrc)
+            
+                'Get the RLE byte
+                srcLong = srcStream.ReadByte()
+                numBytesProcessed = numBytesProcessed + 1
+                
+                'This is a run.  Repeat the next byte [n-128] times
+                If (srcLong > 128) Then
+                    
+                    srcLong = srcLong - 128
+                    
+                    'Safety check
+                    If (curOffset + srcLong > numSafeBytesDst) Then
+                        InternalError funcName, "bad RLE run: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytesDst), srcWarnings
+                        srcLong = numSafeBytesDst - curOffset
+                    End If
+                    
+                    'Use FillMemory for fast byte-filling
+                    srcByte = srcStream.ReadByte()
+                    numBytesProcessed = numBytesProcessed + 1
+                    
+                    VBHacks.FillMemory VarPtr(m_ChannelContents(curOffset)), srcLong, srcByte
+                    curOffset = curOffset + srcLong
+                
+                'This is a segment of [n] uncompressed bytes.  Read the bytes directly into
+                ' the target buffer.
+                Else
+                    
+                    'Safety check
+                    If (curOffset + srcLong > numSafeBytesDst) Then
+                        InternalError funcName, "bad RLE chunk: " & CStr(curOffset + srcLong) & " vs " & CStr(numSafeBytesDst), srcWarnings
+                        srcLong = numSafeBytesDst - curOffset
+                    End If
+                    
+                    srcStream.ReadBytesToBarePointer VarPtr(m_ChannelContents(curOffset)), srcLong
+                    curOffset = curOffset + srcLong
+                    numBytesProcessed = numBytesProcessed + srcLong
+                    
+                End If
+                
+            Loop
+            
+            okToProceed = psp_Success
             
         'Per the spec, PSP's LZ77 scheme is the same as PNG's - so libdeflate to the rescue!
         Case PSP_COMP_LZ77
@@ -194,8 +266,12 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     'Make a local copy of the passed header, as we may need it on subsequent calls
     m_ChannelHeader = srcHeader
     
-    'If the channel is OK, immediately upsample/downsample it to 8-bits?
-    'TODO
+    'If the channel is OK and < 8-bit, immediately upsample it to 8-bits
+    If srcHeader.ch_ChannelOK Then
+        If (srcHeader.ch_ParentBitDepth < 8) Then srcHeader.ch_ChannelOK = UpsampleLowBitDepth(m_ChannelHeader, srcWarnings)
+    End If
+    
+    'HDR images are still TODO (need some for testing)
     
     'Our work here is done!
     LoadChannel = okToProceed
@@ -212,7 +288,96 @@ End Function
 
 'On 1-bpp and 4-bpp images, we want to upsample their channel data to 8-bpp before
 ' rendering a final DIB.
-Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader) As Boolean
+Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef srcWarnings As pdStringStack) As Boolean
+    
+    Const funcName As String = "UpsampleLowBitDepth"
+    
+    If (srcHeader.ch_ParentBitDepth >= 8) Then
+        InternalError funcName, "can't upsample an 8+bit channel", srcWarnings
+        UpsampleLowBitDepth = True
+        Exit Function
+    End If
+    
+    'Make a local copy of the channel's contents
+    Dim curBytes() As Byte, oldSize As Long
+    oldSize = m_ContentSize
+    
+    ReDim curBytes(0 To oldSize - 1) As Byte
+    CopyMemoryStrict VarPtr(curBytes(0)), VarPtr(m_ChannelContents(0)), oldSize
+    
+    'Figure out what size we want the final array to be
+    m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
+    ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
+    
+    'Upsample the current byte stream
+    Dim pxWidth As Long, pxHeight As Long
+    pxWidth = srcHeader.ch_ParentWidth
+    pxHeight = srcHeader.ch_ParentHeight
+    
+    Dim srcScanlineSize As Long, srcByte As Byte
+    
+    'NOTE: monochrome testing still required; I don't have monochrome images yet,
+    ' so this conversion code is just a placeholder.  (It's possible source scanlines
+    ' break on byte boundaries - if so, different code will be required.)
+    Dim x As Long, y As Long, i As Long, numPixelsProcessed As Long
+    If (srcHeader.ch_ParentBitDepth = 1) Then
+        
+        srcScanlineSize = (pxWidth + 7) \ 8
+        
+        Dim bitFlags(0 To 7) As Byte
+        For i = 0 To 7
+            bitFlags(i) = 2 ^ (7 - i)
+        Next i
+        
+        For y = 0 To pxHeight - 1
+            numPixelsProcessed = 0
+        For x = 0 To srcScanlineSize - 1
+        
+            srcByte = curBytes(y * srcScanlineSize + x)
+            
+            'Ignore empty bytes at the end of each scanline
+            For i = 0 To 7
+                If (numPixelsProcessed < pxWidth) Then
+                    If (bitFlags(i) = (srcByte And bitFlags(i))) Then m_ChannelContents(y * pxWidth + numPixelsProcessed) = 1 Else m_ChannelContents(y * pxWidth + numPixelsProcessed) = 0
+                    numPixelsProcessed = numPixelsProcessed + 1
+                Else
+                    Exit For
+                End If
+            Next i
+            
+        Next x
+        Next y
+    
+    'NOTE: 4-bite testing still required; I don't have 4-bit images yet,
+    ' so this conversion code is just a placeholder.
+    ElseIf (srcHeader.ch_ParentBitDepth = 4) Then
+        
+        srcScanlineSize = (pxWidth + 1) \ 2
+        
+        For y = 0 To pxHeight - 1
+            numPixelsProcessed = 0
+        For x = 0 To srcScanlineSize - 1
+            
+            srcByte = curBytes(y * srcScanlineSize + x)
+            
+            'Ignore empty bytes at the end of each scanline
+            m_ChannelContents(y * pxWidth + x * 2) = (srcByte \ 16) And &HF
+            numPixelsProcessed = numPixelsProcessed + 1
+            
+            If (numPixelsProcessed < pxWidth) Then
+                m_ChannelContents(y * pxWidth + x * 2 + 1) = srcByte And &HF
+                numPixelsProcessed = numPixelsProcessed + 1
+                If (numPixelsProcessed >= pxWidth) Then Exit For
+            End If
+            
+        Next x
+        Next y
+        
+    Else
+        InternalError funcName, "unexpected bit-depth: " & srcHeader.ch_ParentBitDepth, srcWarnings
+        UpsampleLowBitDepth = False
+        Exit Function
+    End If
 
 End Function
 
