@@ -739,7 +739,7 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     Next i
 End Sub
 
-Public Sub GetPalette_GrayscaleCustom(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
+Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
     
     If (numShades > 256) Then numShades = 256
     

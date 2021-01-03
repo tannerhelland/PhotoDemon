@@ -206,6 +206,10 @@ End Type
 
 Private m_ImageHeader As PSPHeader
 
+'Files from PSPv5 use a different block header format.  This causes a lot of parsing headaches
+' so we set a flag up-front and refer to it when reading block headers.
+Private m_PSPisV5 As Boolean
+
 'PSP files may embed one or more "composite" images, which are either thumbnails or
 ' copies of the merged image.  PD can retrieve these, and under certain circumstances it may
 ' preferentially choose to use the composite image instead of individual layers
@@ -237,7 +241,13 @@ End Type
 
 Private m_numCompositeImages As Long
 Private m_CompositeImages() As PSPCompositeImage
+
+'Composite images are allowed to use their own custom palette, separate from the image's master palette
 Private m_CompositePalette() As RGBQuad, m_CompositePaletteCount As Long
+
+'Indexed images will provide a "master" palette for the full image.  If one exists,
+' m_MasterPaletteCount will be some value > 0.
+Private m_MasterPalette() As RGBQuad, m_MasterPaletteCount As Long
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -301,11 +311,17 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     '
     'Note also that earlier PSP versions don't describe a composite block at all (v5),
     ' and from v6 onward the composite bank underwent various modifications.  PD accounts
-    ' for all of these subtle details and will simply return a warning (*not* a failure)
-    ' if something goes wrong when reading the composite block.
+    ' for these subtle differences and will simply return a warning (*not* a failure)
+    ' if something goes wrong when reading the composite block.  You can keep parsing
+    ' the rest of the image just fine, regardless of composite image state.
     '
     'TODO: don't retrieve composite images after layer support is added!
     If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, True)
+    
+    'Next, if the image is < 24-bpp and non-grayscale, we need to retrieve the master palette.
+    ' (At this point, note that block order is no longer guaranteed - so the palette block could
+    ' lie anywhere inside the file.)
+    If (keepLoading < psp_Failure) Then keepLoading = Step5_ReadMasterPalette(srcFile)
     
     'TEMPORARY IMPLEMENTATION ONLY: if a composite frame exists, and we retrieved it successfully,
     ' use it as a placeholder while layer retrieval is under construction.
@@ -398,12 +414,12 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
     
     If (m_SourceFilename = PSP_LOADED_FROM_MEMORY) Then
         If Not m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_SourcePtrLen, m_SourcePtr) Then
-            m_Warnings.AddString "Couldn't start in-memory stream against passed pointer: " & m_SourcePtr
+            InternalError funcName, "can't start in-memory stream on pointer: " & m_SourcePtr
             okToProceed = psp_Failure
         End If
     Else
         If Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
-            m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
+            InternalError funcName, "can't access file; it may be locked or in an inaccessible location."
             okToProceed = psp_Failure
         End If
     End If
@@ -440,6 +456,7 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             Dim pspVersionMajor As Integer, pspVersionMinor As Integer
             m_ImageHeader.psph_VersionMajor = m_Stream.ReadInt()
             m_ImageHeader.psph_VersionMinor = m_Stream.ReadInt()
+            m_PSPisV5 = (m_ImageHeader.psph_VersionMajor <= 3)
             
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "PSP file found: version is " & m_ImageHeader.psph_VersionMajor & "." & m_ImageHeader.psph_VersionMinor
             
@@ -528,7 +545,7 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
         'IMPORTANTLY: in very old PSP versions, chunks use two length descriptors.  The first describes
         ' the first sub-chunk, while the second describes the full chunk (dumb as hell, I know).  If we
         ' don't catch this at import time, it'll upset everything that follows.
-        If (m_ImageHeader.psph_VersionMajor <= 3) Then curBlockLength = m_Stream.ReadLong()
+        If m_PSPisV5 Then curBlockLength = m_Stream.ReadLong()
         
         'Add this block to the collection
         Set m_Blocks(m_numOfBlocks) = New pdPSPBlock
@@ -651,7 +668,7 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
         
         'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
         ' a stupid (but necessary) workaround
-        If (m_ImageHeader.psph_VersionMajor <= 3) Then
+        If m_PSPisV5 Then
             m_Stream.SetPosition -8, FILE_CURRENT
             .psph_HeaderSize = m_Stream.ReadLong()
             m_Stream.SetPosition 4, FILE_CURRENT
@@ -783,13 +800,13 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     'Old PSP files didn't use a full "composite bank" with combination merged and thumbnail files;
     ' instead, they just provided a thumbnail segment.  Hypothetically we could retrieve these
     ' thumbnails some day, but for now, it's a distraction - TODO!
-    Dim veryOldVersion As Long
-    veryOldVersion = (m_ImageHeader.psph_VersionMajor <= 3)
-    'If veryOldVersion Then   ...special handling, etc...
     
+    'If m_PSPisV5 Then   ...special handling, etc...
+    
+    'If a composite block doesn't exist, exit now
     If (compositeBlockIndex <= 0) Then
         
-        If veryOldVersion Then
+        If m_PSPisV5 Then
             m_Warnings.AddString "This is an ancient PSP file; composite blocks don't exist in this version!"
         Else
             m_Warnings.AddString "No composite block found; this may be an opaque single-layer image?"
@@ -809,7 +826,7 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     
     'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
     ' a stupid (but necessary) workaround
-    If (m_ImageHeader.psph_VersionMajor <= 3) Then
+    If m_PSPisV5 Then
         m_Stream.SetPosition -8, FILE_CURRENT
         cmpBankInfoSize = m_Stream.ReadLong()
         m_Stream.SetPosition 4, FILE_CURRENT
@@ -1016,6 +1033,125 @@ InternalVBError:
 
 End Function
 
+'Do *NOT* call import steps out-of-order!
+Private Function Step5_ReadMasterPalette(ByRef srcFile As String) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step5_ReadMasterPalette"
+    
+    Step5_ReadMasterPalette = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError funcName, "filename has changed since original validation!"
+        Step5_ReadMasterPalette = psp_Failure
+        Exit Function
+    End If
+    
+    'Note stream position before proceeding
+    Dim origStreamPosition As Long
+    origStreamPosition = m_Stream.GetPosition()
+    
+    'Not all PSP files will contain a palette block. Per the spec:
+    ' "The Color Palette Block contains a global color palette to be used with the color bitmaps
+    '  in all layers of the document. This block is required for image documents that contain
+    '  paletted bitmaps and should not be written for image documents that contain 24-bit or
+    '  48-bit bitmaps (the block can be ignored in the latter cases)."
+    
+    'PD will always attempt to retrieve a master palette if one exists.  24/48-bpp images
+    ' will simply ignore it when generating layers.
+    Dim paletteBlockIndex As Long
+    paletteBlockIndex = -1
+    
+    Dim i As Long
+    For i = 0 To m_numOfBlocks - 1
+        If (m_Blocks(i).GetBlockID = PSP_COLOR_BLOCK) Then
+            paletteBlockIndex = i
+            Exit For
+        End If
+    Next i
+    
+    'If no palette block is found, that's fine - just mark it as such and carry on!
+    If (paletteBlockIndex < 0) Then
+        
+        Step5_ReadMasterPalette = psp_Success
+        
+        'If the current image is grayscale (regardless of color-depth), generate a default
+        ' gray palette matching the current bit-depth.
+        If m_ImageHeader.psph_IsGrayscale Then
+        
+            If (m_ImageHeader.psph_BitDepth >= 8) Then
+                m_MasterPaletteCount = 256
+                Palettes.GetPalette_Grayscale m_MasterPalette
+            ElseIf (m_ImageHeader.psph_BitDepth = 4) Then
+                m_MasterPaletteCount = 16
+                Palettes.GetPalette_GrayscaleEx m_MasterPalette, m_MasterPaletteCount
+            ElseIf (m_ImageHeader.psph_BitDepth = 1) Then
+                m_MasterPaletteCount = 2
+                Palettes.GetPalette_GrayscaleEx m_MasterPalette, m_MasterPaletteCount
+            Else
+                InternalError funcName, "unknown bit-depth and grayscale combination"
+                Step5_ReadMasterPalette = psp_Failure
+            End If
+            
+            If PSP_DEBUG_VERBOSE Then
+                If (Step5_ReadMasterPalette < psp_Failure) Then PDDebug.LogAction "Master grayscale palette constructed successfully."
+            End If
+        
+        'This is a color image
+        Else
+            
+            m_MasterPaletteCount = 0
+            
+            'The error state of this case depends on parent image bit-depth, obviously.
+            If (m_ImageHeader.psph_BitDepth <= 8) Then
+                InternalError funcName, "no palette found; image is unsaveable"
+                Step5_ReadMasterPalette = psp_Failure
+                
+            'This image is full-color, so just carry on loading!
+            Else
+                Step5_ReadMasterPalette = psp_Success
+            End If
+            
+        End If
+        
+        'If no palette is found, we can exit immediately
+        Exit Function
+    
+    'A palette block was found
+    Else
+        
+        'Set the pointer to this block's offset, then proceed with reading the palette
+        m_Stream.SetPosition m_Blocks(paletteBlockIndex).GetBlockOffset() - 10, FILE_BEGIN
+        
+        'As always, workarounds are required for v5 stream alignment
+        If m_PSPisV5 Then m_Stream.SetPosition -4, FILE_CURRENT
+        
+        If RetrievePalette(m_MasterPalette, m_MasterPaletteCount) Then
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Master palette retrieved successfully (" & m_MasterPaletteCount & " colors)"
+            Step5_ReadMasterPalette = psp_Success
+        Else
+            InternalError funcName, "bad palette block"
+            Step5_ReadMasterPalette = psp_Failure
+        End If
+        
+    End If
+    
+    'Palette retrieval is finished!  Regardless of what happened, reset stream position
+    m_Stream.SetPosition origStreamPosition, FILE_BEGIN
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 5, #" & Err.Number & ": " & Err.Description
+    Step5_ReadMasterPalette = psp_Failure
+
+End Function
+
 'Given an index into the m_CompositeImages() array, retrieve and decode the associated JPEG data
 ' into a standard pdDIB instance.  The stream pointer *MUST ALREADY BE IN THE CORRECT POSITION*,
 ' and *YOU MUST MANUALLY RE-POSITION THE POINTER AFTER CALLING THIS FUNCTION*.  The PSP spec is
@@ -1200,10 +1336,10 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
             Palettes.GetPalette_Grayscale m_CompositePalette
         ElseIf (m_ImageHeader.psph_BitDepth = 4) Then
             m_CompositePaletteCount = 16
-            Palettes.GetPalette_GrayscaleCustom m_CompositePalette, m_CompositePaletteCount
+            Palettes.GetPalette_GrayscaleEx m_CompositePalette, m_CompositePaletteCount
         Else
             m_CompositePaletteCount = 2
-            Palettes.GetPalette_GrayscaleCustom m_CompositePalette, m_CompositePaletteCount
+            Palettes.GetPalette_GrayscaleEx m_CompositePalette, m_CompositePaletteCount
         End If
         
     End If
