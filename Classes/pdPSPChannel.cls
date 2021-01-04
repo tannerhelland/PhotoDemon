@@ -56,6 +56,11 @@ Friend Sub FreeChannelContents()
 End Sub
 
 'Return value isn't meaningful until LoadChannel() has been called
+Friend Function GetChannelDIBType() As PSPDIBType
+    GetChannelDIBType = m_ChannelHeader.ch_dstBitmapType
+End Function
+
+'Return value isn't meaningful until LoadChannel() has been called
 Friend Function GetChannelPtr() As Long
     GetChannelPtr = VarPtr(m_ChannelContents(0))
 End Function
@@ -97,7 +102,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     
     If (srcStream.ReadLong() <> PSP_BLOCK_MARKER) Then
         LoadChannel = psp_Failure
-        InternalError "LoadChannel", "stream misaligned", srcWarnings
+        InternalError funcName, "stream misaligned", srcWarnings
         Exit Function
     End If
     
@@ -115,13 +120,13 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     '
     'For now, we do nothing, and leave it to the caller to decide.
     If (blockID <> PSP_CHANNEL_BLOCK) Then
-        InternalError "LoadChannel", "not a channel!", srcWarnings
+        InternalError funcName, "not a channel!", srcWarnings
         LoadChannel = psp_Failure
         Exit Function
     End If
     
     If (blockLength <= 0) Then
-        InternalError "LoadChannel", "bad block length!", srcWarnings
+        InternalError funcName, "bad block length!", srcWarnings
         LoadChannel = psp_Failure
         Exit Function
     End If
@@ -178,7 +183,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             CopyMemoryStrict VarPtr(m_ChannelContents(0)), srcStream.Peek_PointerOnly(-1, srcHeader.ch_CompressedSize), srcHeader.ch_CompressedSize
             okToProceed = psp_Success
             
-        'PSP's use an extremely simple RLE scheme (TODO)
+        'PSP format defines an extremely simple RLE scheme
         Case PSP_COMP_RLE
             
             'The PSP spec defines RLE behavior nicely; see it for details
@@ -242,15 +247,16 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             
             okToProceed = psp_Success
             
-        'Per the spec, PSP's LZ77 scheme is the same as PNG's - so libdeflate to the rescue!
+        'Per the spec, PSP's LZ77 scheme is the same as PNG's - so it's DEFLATE to the rescue!
         Case PSP_COMP_LZ77
             Compression.DecompressPtrToPtr VarPtr(m_ChannelContents(0)), srcHeader.ch_UncompressedSize, srcStream.Peek_PointerOnly(-1, srcHeader.ch_CompressedSize), srcHeader.ch_CompressedSize, cf_Zlib
             okToProceed = psp_Success
             
-        'NOTE: you may notice that JPEG compression is missing.  That's on purposes, because it's
-        ' invalid for channel encoding.  JPEG compression is only allowed for composite thumbnails,
-        ' and PhotoDemon's decoder has a separate function for handling those.  If we encounter
-        ' JPEG compression here, it's a corrupt file.
+        'NOTE: you may notice that JPEG compression is missing.  That's on purpose, because JPEG
+        ' encoding is invalid for individual channels.  JPEG compression is only allowed for
+        ' composite thumbnails, and PhotoDemon's decoder has a separate function for handling those
+        ' (inside the parent pdPSP class).  If we encounter JPEG compression inside a channel,
+        ' it's a broken file.
         Case Else
             InternalError funcName, "bad compression", srcWarnings
             okToProceed = psp_Failure

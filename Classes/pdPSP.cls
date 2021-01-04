@@ -48,74 +48,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'PSP files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
-' dump all kinds of diagnostic information to the debug log.  (Note that other PSP-adjacent classes have
-' their own version of this constant.)
-Private Const PSP_DEBUG_VERBOSE As Boolean = True
-
-'PSP loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
-' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
-' "Failure" returns are unrecoverable and processing *must* be abandoned.  (As a convenience, you can treat
-' the "warning" and "failure" values as flags; specific warning/failure states in each category will share
-' the same high flag bit.)
-'
-'As I get deeper into this class, I may expand this enum to include more detailed states.
-Public Enum PD_PSPResult
-    psp_Success = &H0
-    psp_Warning = &H10
-    psp_Failure = &H100
-    psp_FileNotPSP = &H1000
-End Enum
-
-#If False Then
-    Private Const psp_Success = &H0, psp_Warning = &H10, psp_Failure = &H100, psp_FileNotPSP = &H1000
-#End If
-
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
 Private Const PSP_BLOCK_MARKER As Long = &H4B427E
-
-Public Enum PSPBlockID
-    PSP_IMAGE_BLOCK = 0             '// General Image Attributes Block (main)
-    PSP_CREATOR_BLOCK               '// Creator Data Block (main)
-    PSP_COLOR_BLOCK                 '// Color Palette Block (main and sub)
-    PSP_LAYER_START_BLOCK           '// Layer Bank Block (main)
-    PSP_LAYER_BLOCK                 '// Layer Block (sub)
-    PSP_CHANNEL_BLOCK               '// Channel Block (sub)
-    PSP_SELECTION_BLOCK             '// Selection Block (main)
-    PSP_ALPHA_BANK_BLOCK            '// Alpha Bank Block (main)
-    PSP_ALPHA_CHANNEL_BLOCK         '// Alpha Channel Block (sub)
-    PSP_COMPOSITE_IMAGE_BLOCK       '// Composite Image Block (sub)
-    PSP_EXTENDED_DATA_BLOCK         '// Extended Data Block (main)
-    PSP_TUBE_BLOCK                  '// Picture Tube Data Block (main)
-    PSP_ADJUSTMENT_EXTENSION_BLOCK  '// Adjustment Layer Block (sub)
-    PSP_VECTOR_EXTENSION_BLOCK      '// Vector Layer Block (sub)
-    PSP_SHAPE_BLOCK                 '// Vector Shape Block (sub)
-    PSP_PAINTSTYLE_BLOCK            '// Paint Style Block (sub)
-    PSP_COMPOSITE_IMAGE_BANK_BLOCK  '// Composite Image Bank (main)
-    PSP_COMPOSITE_ATTRIBUTES_BLOCK  '// Composite Image Attr. (sub)
-    PSP_JPEG_BLOCK                  '// JPEG Image Block (sub)
-    PSP_LINESTYLE_BLOCK             '// Line Style Block (sub)
-    PSP_TABLE_BANK_BLOCK            '// Table Bank Block (main)
-    PSP_TABLE_BLOCK                 '// Table Block (sub)
-    PSP_PAPER_BLOCK                 '// Vector Table Paper Block (sub)
-    PSP_PATTERN_BLOCK               '// Vector Table Pattern Block (sub)
-    PSP_GRADIENT_BLOCK              '// Vector Table Gradient Block (not used)
-    PSP_GROUP_EXTENSION_BLOCK       '// Group Layer Block (sub)
-    PSP_MASK_EXTENSION_BLOCK        '// Mask Layer Block (sub)
-    PSP_BRUSH_BLOCK                 '// Brush Data Block (main)
-    PSP_ART_MEDIA_BLOCK             '// Art Media Layer Block (main)
-    PSP_ART_MEDIA_MAP_BLOCK         '// Art Media Layer map data Block (main)
-    PSP_ART_MEDIA_TILE_BLOCK        '// Art Media Layer map tile Block (main)
-    PSP_ART_MEDIA_TEXTURE_BLOCK     '// AM Layer map texture Block (main)
-    PSP_COLORPROFILE_BLOCK          '// ICC Color profile block
-End Enum
-
-#If False Then
-    Private Const PSP_IMAGE_BLOCK = 0, PSP_CREATOR_BLOCK = 1, PSP_COLOR_BLOCK = 2, PSP_LAYER_START_BLOCK = 3, PSP_LAYER_BLOCK = 4, PSP_CHANNEL_BLOCK = 5, PSP_SELECTION_BLOCK = 6, PSP_ALPHA_BANK_BLOCK = 7, PSP_ALPHA_CHANNEL_BLOCK = 8, PSP_COMPOSITE_IMAGE_BLOCK = 9
-    Private Const PSP_EXTENDED_DATA_BLOCK = 10, PSP_TUBE_BLOCK = 11, PSP_ADJUSTMENT_EXTENSION_BLOCK = 12, PSP_VECTOR_EXTENSION_BLOCK = 13, PSP_SHAPE_BLOCK = 14, PSP_PAINTSTYLE_BLOCK = 15, PSP_COMPOSITE_IMAGE_BANK_BLOCK = 16, PSP_COMPOSITE_ATTRIBUTES_BLOCK = 17, PSP_JPEG_BLOCK = 18, PSP_LINESTYLE_BLOCK = 19
-    Private Const PSP_TABLE_BANK_BLOCK = 20, PSP_TABLE_BLOCK = 21, PSP_PAPER_BLOCK = 22, PSP_PATTERN_BLOCK = 23, PSP_GRADIENT_BLOCK = 24, PSP_GROUP_EXTENSION_BLOCK = 25, PSP_MASK_EXTENSION_BLOCK = 26, PSP_BRUSH_BLOCK = 27, PSP_ART_MEDIA_BLOCK = 28, PSP_ART_MEDIA_MAP_BLOCK = 29
-    Private Const PSP_ART_MEDIA_TILE_BLOCK = 30, PSP_ART_MEDIA_TEXTURE_BLOCK = 31, PSP_COLORPROFILE_BLOCK = 32
-#End If
 
 '/* Type of image in the composite image bank block.  */
 Private Enum PSPCompositeImageType
@@ -127,43 +61,6 @@ End Enum
     Private Const PSP_IMAGE_COMPOSITE = 0, PSP_IMAGE_THUMBNAIL = 1
 #End If
 
-'/* Graphic contents flags.
-Private Enum PSPGraphicContents
-    '// Layer types
-    keGCRasterLayers = &H1                  '// At least one raster layer
-    keGCVectorLayers = &H2                  '// At least one vector layer
-    keGCAdjustmentLayers = &H4              '// At least one adjustment layer
-    keGCGroupLayers = &H8                   '// at least one group layer
-    keGCMaskLayers = &H10                   '// at least one mask layer
-    keGCArtMediaLayers = &H20               '// at least one art media layer
-    '// Additional attributes
-    keGCMergedCache = &H800000              '// merged cache (composite image)
-    keGCThumbnail = &H1000000               '// Has a thumbnail
-    keGCThumbnailTransparency = &H2000000   '// Thumbnail transparency
-    keGCComposite = &H4000000               '// Has a composite image
-    keGCCompositeTransparency = &H8000000   '// Composite transparency
-    keGCFlatImage = &H10000000              '// Just a background
-    keGCSelection = &H20000000              '// Has a selection
-    keGCFloatingSelectionLayer = &H40000000 '// Has float. selection
-    keGCAlphaChannels = &H80000000          '// Has alpha channel(s)
-End Enum
-
-#If False Then
-    Private Const keGCRasterLayers = &H1, keGCVectorLayers = &H2, keGCAdjustmentLayers = &H4, keGCGroupLayers = &H8, keGCMaskLayers = &H10, keGCArtMediaLayers = &H20
-    Private Const keGCMergedCache = &H800000, keGCThumbnail = &H1000000, keGCThumbnailTransparency = &H2000000, keGCComposite = &H4000000, keGCCompositeTransparency = &H8000000, keGCFlatImage = &H10000000, keGCSelection = &H20000000, keGCFloatingSelectionLayer = &H40000000, keGCAlphaChannels = &H80000000
-#End If
-
-'/* Possible metrics used to measure resolution.  */
-Private Enum PSP_METRIC
-    PSP_METRIC_UNDEFINED = 0    '// Metric unknown
-    PSP_METRIC_INCH             '// Resolution is in inches
-    PSP_METRIC_CM               '// Resolution is in centimeters
-End Enum
-
-#If False Then
-    Private Const PSP_METRIC_UNDEFINED = 0, PSP_METRIC_INCH = 1, PSP_METRIC_CM = 2
-#End If
-
 'PSP images are ultimately comprised of a collection of blocks.  These are analagous to
 ' something like "chunks" in a PNG file (although PSP "blocks" can contain sub-blocks and
 ' chunks within themselves, which is confusing to say the least).  As an early parse step,
@@ -173,38 +70,7 @@ End Enum
 Private m_numOfBlocks As Long
 Private m_Blocks() As pdPSPBlock
 
-'Image header, constructed from the "General Image Attributes" block.
-' (Note the similarities to a Windows DIB header, including unused values like "plane count")
-Private Type PSPHeader
-
-    psph_VersionMajor As Long           'Some parsing behavior needs to be modified based on version, alas
-    psph_VersionMinor As Long
-    
-    psph_HeaderSize As Long             'Used only for double-checking embedded header in file; do NOT use after validation
-    psph_Width As Long
-    psph_Height As Long
-    psph_Resolution As Double           'Interpretation relies on ResolutionUnit
-    psph_ResolutionUnit As PSP_METRIC   'Inch or cm
-    psph_Compression As PSPCompression  'CANNOT be JPEG-compressed (JPEG is only for the thumbnail)
-    psph_BitDepth As Long               'must be 1, 4, 8, 24, or 48
-    psph_PlaneCount As Long             'must be 1
-    psph_ColorCount As Long             '2 ^ bit-depth
-    psph_IsGrayscale As Boolean         '0 = not greyscale, 1 = greyscale, embedded in file as BYTE
-    psph_TotalSize As Long              'Sum of the sizes of all layer color bitmaps
-    
-    'Layers were added in PSP5, which was also the first appearance of a dedicated "PSP" format
-    psph_ActiveLayer As Long            'Identifies the layer that was active when the image document was saved
-    psph_LayerCount As Long             'Total layer count, embedded in file as WORD
-    
-    'Added in PSP6
-    psph_ContentFlags As PSPGraphicContents 'See enum for flag details
-    
-    'The spec allows for future header expansion, so the top SIZE member is critical for correct reading;
-    ' don't assume a fixed size!
-    
-End Type
-
-Private m_ImageHeader As PSPHeader
+Private m_ImageHeader As PSPImageHeader
 
 'Files from PSPv5 use a different block header format.  This causes a lot of parsing headaches
 ' so we set a flag up-front and refer to it when reading block headers.
@@ -248,6 +114,12 @@ Private m_CompositePalette() As RGBQuad, m_CompositePaletteCount As Long
 'Indexed images will provide a "master" palette for the full image.  If one exists,
 ' m_MasterPaletteCount will be some value > 0.
 Private m_MasterPalette() As RGBQuad, m_MasterPaletteCount As Long
+
+'Master layer collection.  The total number of layers is mirrored by the image header, but note
+' that PhotoDemon may choose to "deactivate" layers it doesn't understand - so post-parsing,
+' it's critical to defer to this layer count instead of the one embedded in the image header.
+Private m_LayerCount As Long
+Private m_Layers() As pdPSPLayer
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -323,63 +195,14 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     ' lie anywhere inside the file.)
     If (keepLoading < psp_Failure) Then keepLoading = Step5_ReadMasterPalette(srcFile)
     
-    'TEMPORARY IMPLEMENTATION ONLY: if a composite frame exists, and we retrieved it successfully,
-    ' use it as a placeholder while layer retrieval is under construction.
-    If (m_numCompositeImages > 0) Then
-        
-        'For now, PSP imports are deliberately marked as failures.  We have a lot more work to do
-        ' before we can actually load a useable image!
-        keepLoading = psp_Failure
-        
-        'Find the largest composite image that was loaded successfully
-        Dim bestStats As Currency, bestIndex As Long
-        bestIndex = -1
-        
-        Dim i As Long
-        For i = 0 To m_numCompositeImages - 1
-            If m_CompositeImages(i).cih_DIBOK Then
-                
-                'Favor larger images (with a bonus for lossless compression)
-                Dim tmpStats As Currency
-                tmpStats = m_CompositeImages(i).cih_DIB.GetDIBWidth * m_CompositeImages(i).cih_DIB.GetDIBHeight * m_CompositeImages(i).cih_BitDepth
-                If (m_CompositeImages(i).cih_Compression <> PSP_COMP_JPEG) Then tmpStats = tmpStats + 1
-                
-                If (tmpStats > bestStats) Then
-                    bestStats = tmpStats
-                    bestIndex = i
-                End If
-                
-            End If
-        Next i
-        
-        'If we found a useable composite image, dump it into a pdImage struct so we have
-        ' *something* to work with for the moment
-        If (bestIndex >= 0) Then
-            
-            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Using composite image #" & bestIndex & " (" & GetCompressionName(m_CompositeImages(bestIndex).cih_Compression) & ") to load PSP file..."
-            
-            With m_CompositeImages(bestIndex)
-                
-                'Set basic image attributes
-                dstImage.Width = .cih_Width
-                dstImage.Height = .cih_Height
-                dstImage.SetDPI 96#, 96#
-                
-                'Prep a new layer object and initialize it with the composite image
-                Dim newLayerID As Long
-                newLayerID = dstImage.CreateBlankLayer()
-                
-                Dim tmpLayer As pdLayer
-                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                tmpLayer.InitializeNewLayer PDL_Image, "PSP composite image", .cih_DIB
-                
-            End With
-            
-            keepLoading = psp_Success
-            
-        End If
-        
-    End If
+    'With the palette read, it's time to parse layers!
+    If (keepLoading < psp_Failure) Then keepLoading = Step6_LoadLayers(srcFile)
+    
+    'With all layers loaded, we can finally assemble the final image.  Normally, this will consist
+    ' of all layers from the file that PD knows how to interpret.  If errors were encountered
+    ' during import, however, PD may decide to fall back to the embedded composite image (if one
+    ' exists) to provide a more useable image to the user.
+    If (keepLoading < psp_Failure) Then keepLoading = Step7_AssembleFinalImage(srcFile, dstImage, dstDIB)
     
     LoadPSP = keepLoading
     
@@ -661,7 +484,7 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
     ' in all valid PSP files.
     Dim startOfHeader As Long
     startOfHeader = m_Blocks(0).GetBlockOffset()
-    m_Stream.SetPosition startOfHeader
+    m_Stream.SetPosition startOfHeader, FILE_BEGIN
     
     'Start by simply pulling the header into a VB-friendly struct.  (We'll validate it after.)
     With m_ImageHeader
@@ -745,7 +568,7 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
     'Block directory validation and assembly is complete!
     
     'Forcibly align the stream pointer before continuing
-    m_Stream.SetPosition startOfHeader, m_Blocks(0).GetBlockLength()
+    m_Stream.SetPosition startOfHeader + m_Blocks(0).GetBlockLength(), FILE_BEGIN
     Step3_ReadImageAttributes = okToProceed
     
     Exit Function
@@ -1152,6 +975,269 @@ InternalVBError:
 
 End Function
 
+'Do *NOT* call import steps out-of-order!
+Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step6_LoadLayers"
+    
+    Step6_LoadLayers = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError funcName, "filename has changed since original validation!"
+        Step6_LoadLayers = psp_Failure
+        Exit Function
+    End If
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'The last step in loading a PSP file is loading the "layer bank".
+    
+    'Before proceeding, backup the stream position.  (We can restore this if things go
+    ' catastrophically wrong.)
+    Dim entryStreamPosition As Long
+    entryStreamPosition = m_Stream.GetPosition()
+    
+    'Next, look for the layer bank block
+    Dim idxLayerBank As Long
+    idxLayerBank = -1
+    
+    Dim i As Long
+    For i = 0 To m_numOfBlocks - 1
+        If (m_Blocks(i).GetBlockID = PSP_LAYER_START_BLOCK) Then
+            idxLayerBank = i
+            Exit For
+        End If
+    Next i
+    
+    'If layers aren't found, we can perhaps attempt recovery by using an embedded composite image (if any)?
+    ' TODO - caller responsibility
+    If (idxLayerBank < 0) Then
+        InternalError funcName, "no layer bank!"
+        Step6_LoadLayers = psp_Failure
+        Exit Function
+    End If
+    
+    'Move the stream pointer into position at the start of the layer bank block.
+    m_Stream.SetPosition m_Blocks(idxLayerBank).GetBlockOffset(), FILE_BEGIN
+    
+    'TODO: v5 psp files store header length at a different offset!  Fixing is TODO
+    If m_PSPisV5 Then
+        InternalError funcName, "v5 psp layers not supported yet"
+        Step6_LoadLayers = psp_Failure
+        Exit Function
+    End If
+    
+    'Each layer in this image has its own sub-block within this segment.  PSPs support many
+    ' different layer types, and unlike PSDs, they may not supply raster "backup" copies of
+    ' vector, text, or adjustment layers.  As such, we need to be careful about what we
+    ' attempt to load.
+    
+    'To start, we first want to just load some header data for each layer into a master
+    ' layer directory.
+    m_LayerCount = m_ImageHeader.psph_LayerCount
+    ReDim m_Layers(0 To m_LayerCount - 1) As pdPSPLayer
+    
+    Dim numLayersFound As Long
+    numLayersFound = 0
+    
+    'Before doing anything else, ensure we're actually pointing at a layer block now.
+    Dim testBlockID As PSPBlockID, testBlockLength As Long
+    If PeekNextBlock(PSP_BLOCK_MARKER, testBlockID, testBlockLength) Then
+        If (testBlockID <> PSP_LAYER_BLOCK) Then
+            InternalError funcName, "not pointing at the layer bank block!"
+            okToProceed = psp_Failure
+        End If
+    Else
+        InternalError funcName, "not pointing at a block!"
+        okToProceed = psp_Failure
+    End If
+    
+    If (okToProceed >= psp_Failure) Then Exit Function
+    
+    'We're pointing at a layer block.  Initialize
+    Do
+        
+        'It shouldn't be possible to find more layers than the header specifies, but if that happens,
+        ' we'll attempt to deal with it gracefull.
+        If (numLayersFound > UBound(m_Layers)) Then ReDim Preserve m_Layers(0 To numLayersFound * 2 - 1) As pdPSPLayer
+        Set m_Layers(numLayersFound) = New pdPSPLayer
+        
+        'If this layer is parsed successfully, increment the layer counter.  (If something is wrong
+        ' with this layer, or PD doesn't know how to interpret it, we'll just skip it.)
+        If (m_Layers(numLayersFound).LoadLayer(m_Stream, m_Warnings, m_ImageHeader) = psp_Success) Then
+            
+            'If this layer appears to be valid, construct a matching DIB for it
+            ' TODO:  48-bpp?
+            If m_Layers(numLayersFound).IsLayerOK Then
+                If m_Layers(numLayersFound).ConstructMatchingDIB(m_CompositePalette, m_CompositePaletteCount, m_ImageHeader) Then numLayersFound = numLayersFound + 1
+            End If
+            
+        End If
+        
+    'If we're still pointing at a layer block, continue loading!
+    Loop While PeekNextBlock(PSP_BLOCK_MARKER, testBlockID, testBlockLength) And (testBlockID = PSP_LAYER_BLOCK)
+    
+    'All layers loaded!
+    
+    'Reset the master "layer count" to match only the number of *valid* layers found
+    m_LayerCount = numLayersFound
+    
+    'Forcibly align the stream pointer before continuing
+    m_Stream.SetPosition m_Blocks(idxLayerBank).GetBlockOffset() + m_Blocks(idxLayerBank).GetBlockLength(), FILE_BEGIN
+    Step6_LoadLayers = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 6, #" & Err.Number & ": " & Err.Description
+    Step6_LoadLayers = psp_Failure
+
+End Function
+
+'Do *NOT* call import steps out-of-order!
+Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step7_AssembleFinalImage"
+    
+    Step7_AssembleFinalImage = psp_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError funcName, "filename has changed since original validation!"
+        Step7_AssembleFinalImage = psp_Failure
+        Exit Function
+    End If
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We now have enough data to assemble the final image.
+    Dim newLayerID As Long, tmpLayer As pdLayer
+                    
+    'We don't actually need anything from the source PSP file now, so go ahead and close the stream
+    If m_Stream.IsOpen() Then m_Stream.StopStream True
+    
+    'Before proceeding, ensure that at least one good layer was found
+    If (m_LayerCount > 0) Then
+    
+        'We'll now attempt to import as many layers as we can!
+        
+        'Start by setting basic image attributes
+        dstImage.Width = m_ImageHeader.psph_Width
+        dstImage.Height = m_ImageHeader.psph_Height
+        dstImage.SetDPI 96#, 96#    'TODO: fix
+        
+        Dim i As Long
+        For i = 0 To m_LayerCount - 1
+        
+            'Double-check layer is OK
+            If (m_Layers(i) Is Nothing) Then GoTo SkipLayer
+            If (Not m_Layers(i).IsLayerOK) Then GoTo SkipLayer
+            
+            'Prep a new layer object
+            newLayerID = dstImage.CreateBlankLayer()
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            
+            'Initialize the layer DIB (using the source layer's name, too!)
+            tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+            
+            'Set matching layer properties (TODO!)
+            tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
+            tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
+            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+        
+SkipLayer:
+        Next i
+        
+        'All layers have been loaded!
+        okToProceed = psp_Success
+        
+    'Well, this is concerning - we didn't find any valid layers!  Attempt to salvage this import
+    ' by using the embedded composite image (if any)
+    Else
+        
+        If (m_numCompositeImages > 0) Then
+            
+            'Find the largest composite image that was loaded successfully
+            Dim bestStats As Currency, bestIndex As Long
+            bestIndex = -1
+            
+            For i = 0 To m_numCompositeImages - 1
+                If m_CompositeImages(i).cih_DIBOK Then
+                    
+                    'Favor larger images (with a bonus for lossless compression)
+                    Dim tmpStats As Currency
+                    tmpStats = m_CompositeImages(i).cih_DIB.GetDIBWidth * m_CompositeImages(i).cih_DIB.GetDIBHeight * m_CompositeImages(i).cih_BitDepth
+                    If (m_CompositeImages(i).cih_Compression <> PSP_COMP_JPEG) Then tmpStats = tmpStats + 1
+                    
+                    If (tmpStats > bestStats) Then
+                        bestStats = tmpStats
+                        bestIndex = i
+                    End If
+                    
+                End If
+            Next i
+            
+            'If we found a useable composite image, dump it into a pdImage struct so we have
+            ' *something* to work with for the moment
+            If (bestIndex >= 0) Then
+                
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Using composite image #" & bestIndex & " (" & GetCompressionName(m_CompositeImages(bestIndex).cih_Compression) & ") to load PSP file..."
+                
+                With m_CompositeImages(bestIndex)
+                    
+                    'Set basic image attributes
+                    dstImage.Width = .cih_Width
+                    dstImage.Height = .cih_Height
+                    dstImage.SetDPI 96#, 96#
+                    
+                    'Prep a new layer object and initialize it with the composite image
+                    newLayerID = dstImage.CreateBlankLayer()
+                    
+                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                    tmpLayer.InitializeNewLayer PDL_Image, "PSP composite image", .cih_DIB
+                    
+                End With
+                
+                okToProceed = psp_Success
+                
+            '/composite images exist but don't appear to be useable?
+            Else
+                InternalError funcName, "composite image exists, but PD can't decode it"
+                okToProceed = psp_Failure
+            End If
+        
+        '/no composite image found
+        Else
+            InternalError funcName, "no valid layers and no composite image - PD can't load this file!"
+            okToProceed = psp_Failure
+        End If
+    
+    End If
+    
+    'Our work here is done!
+    Step7_AssembleFinalImage = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 7, #" & Err.Number & ": " & Err.Description
+    Step7_AssembleFinalImage = psp_Failure
+
+End Function
+
 'Given an index into the m_CompositeImages() array, retrieve and decode the associated JPEG data
 ' into a standard pdDIB instance.  The stream pointer *MUST ALREADY BE IN THE CORRECT POSITION*,
 ' and *YOU MUST MANUALLY RE-POSITION THE POINTER AFTER CALLING THIS FUNCTION*.  The PSP spec is
@@ -1391,9 +1477,9 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
                     .ch_ParentBitDepth = m_CompositeImages(imgIndex).cih_BitDepth
                     .ch_Compression = m_CompositeImages(imgIndex).cih_Compression
                 End With
-        
+                
                 If (cmpChannels(i).LoadChannel(m_Stream, m_Warnings, tmpHeader) >= psp_Failure) Then
-                    InternalError "RetrieveComposite_Normal", "catastrophic failure; abandoning file entirely..."
+                    InternalError funcName, "catastrophic failure; abandoning file entirely..."
                     RetrieveComposite_Normal = psp_Failure
                     Exit Function
                 Else
@@ -1416,9 +1502,9 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
     Next i
     
     'With all channels decoded, construct a DIB for this entry!
-    ' TODO: palettes? 48-bpp?
+    ' TODO:  48-bpp?
     If (okToProceed < psp_Failure) Then
-        m_CompositeImages(imgIndex).cih_DIBOK = BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB, m_CompositePalette, m_CompositePaletteCount)
+        m_CompositeImages(imgIndex).cih_DIBOK = ImageFormats_PSP.PSP_BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB, m_CompositePalette, m_CompositePaletteCount)
     End If
     
     'Our work here is done!
@@ -1533,110 +1619,6 @@ InternalVBError:
     m_Warnings.AddString "Internal error in palette retrieval, #" & Err.Number & ": " & Err.Description
     RetrievePalette = False
     
-End Function
-
-'Given a channel collection and a sample header (from any channel - it's simply used for things
-' like parent image width/height/bit-depth), construct a useable DIB.
-'
-'Returns: TRUE if creation appears successful; FALSE otherwise
-Private Function BuildDIBFromChannels(ByVal NumChannels As Long, ByRef srcChannels() As pdPSPChannel, ByRef srcChannelHeader As PSP_ChannelHeader, ByRef dstDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal dstPaletteSize As Long = 256) As Boolean
-    
-    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Reconstructing DIB from " & NumChannels & " source channels now..."
-    
-    'Start by initializing the DIB (and make it opaque, as many PSP images do not encode an alpha channel)
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateBlank srcChannelHeader.ch_ParentWidth, srcChannelHeader.ch_ParentHeight, 32, 0, 255
-    
-    Dim localCopy() As Byte
-    ReDim localCopy(0) As Byte
-    
-    'Grab pointers to the destination image
-    Dim dstSA As SafeArray2D, dstPixels() As RGBQuad
-    dstDIB.WrapRGBQuadArrayAroundDIB dstPixels, dstSA
-    
-    Dim pxWidth As Long, pxHeight As Long
-    pxWidth = dstDIB.GetDIBWidth - 1
-    pxHeight = dstDIB.GetDIBHeight - 1
-    
-    Dim x As Long, y As Long
-    
-    'PSP stride is still under investigation.  The spec claims 4-byte scanline alignment,
-    ' but 3rd-party readers claim this is untrue.  A final decision here is PENDING TESTING\
-    Dim srcStride As Long
-    srcStride = dstDIB.GetDIBWidth
-    
-    'Iterate through each channel in turn, placing its bits where they belong
-    Dim i As Long
-    For i = 0 To NumChannels - 1
-        
-        'Skip broken channels
-        If (Not srcChannels(i).IsChannelOK) Then GoTo NextChannel
-        
-        'Always start by copying the contents of this channel into a local struct (for faster access)
-        If (srcChannels(i).GetChannelSize > UBound(localCopy) + 1) Then ReDim localCopy(0 To srcChannels(i).GetChannelSize - 1) As Byte
-        CopyMemoryStrict VarPtr(localCopy(0)), srcChannels(i).GetChannelPtr(), srcChannels(i).GetChannelSize
-        srcChannels(i).FreeChannelContents
-        
-        'Alpha bytes are not returned as-such; instead, they are a composite channel that is not
-        ' the *first* channel in the image
-        Select Case srcChannels(i).GetChannelType
-            
-            Case PSP_CHANNEL_COMPOSITE
-                
-                'Grayscale and indexed image
-                If (i = 0) Then
-                    
-                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating RGB data from gray or indexed channel..."
-                    For y = 0 To pxHeight
-                    For x = 0 To pxWidth
-                        dstPixels(x, y) = dstPalette(localCopy(y * srcStride + x))
-                    Next x
-                    Next y
-                
-                'Actual alpha channel (i = 1 on gray/indexed images, i = 3 on RGBA)
-                Else
-                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating alpha channel..."
-                    For y = 0 To pxHeight
-                    For x = 0 To pxWidth
-                        dstPixels(x, y).Alpha = localCopy(y * srcStride + x)
-                    Next x
-                    Next y
-                End If
-            
-            Case PSP_CHANNEL_RED
-                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating red channel..."
-                For y = 0 To pxHeight
-                For x = 0 To pxWidth
-                    dstPixels(x, y).Red = localCopy(y * srcStride + x)
-                Next x
-                Next y
-                
-            Case PSP_CHANNEL_GREEN
-                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating green channel..."
-                For y = 0 To pxHeight
-                For x = 0 To pxWidth
-                    dstPixels(x, y).Green = localCopy(y * srcStride + x)
-                Next x
-                Next y
-            
-            Case PSP_CHANNEL_BLUE
-                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Generating blue channel..."
-                For y = 0 To pxHeight
-                For x = 0 To pxWidth
-                    dstPixels(x, y).Blue = localCopy(y * srcStride + x)
-                Next x
-                Next y
-            
-        End Select
-    
-NextChannel:
-    Next i
-    
-    dstDIB.UnwrapRGBQuadArrayFromDIB dstPixels
-    dstDIB.SetAlphaPremultiplication True
-    
-    BuildDIBFromChannels = True
-
 End Function
 
 Private Sub Class_Initialize()
