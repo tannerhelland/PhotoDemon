@@ -1289,7 +1289,7 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
     LoadPSD = False
     
-    'pdpsd handles all the dirty work for us
+    'pdPSD handles all the dirty work for us
     Dim cPSD As pdPSD
     Set cPSD = New pdPSD
     
@@ -1338,11 +1338,11 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
 
     LoadPSP = False
     
-    'pdpsd handles all the dirty work for us
+    'pdPSP handles all the dirty work for us
     Dim cPSP As pdPSP
     Set cPSP = New pdPSP
     
-    'Validate the potential psd file
+    'Validate the potential PSP file
     LoadPSP = cPSP.IsFilePSP(srcFile)
     
     'If validation passes, attempt a full load

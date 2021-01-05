@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Block Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 02/January/21
-'Last update: continue work on initial build
+'Last updated: 04/January/21
+'Last update: fix scanline alignment on 1- and 4-bit images (they *ARE* 32-bit aligned after all,
+'             which is what the spec says - but 8/24/32/48/64-bpp images are not!  aaaarrrggghhh)
 '
 'This class describes a single "channel" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -98,11 +99,12 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     
     'Start with basic block validation
     Const PSP_BLOCK_MARKER As Long = &H4B427E
-    Dim blockID As PSPBlockID, blockLength As Long
+    Dim blockCheck As Long, blockID As PSPBlockID, blockLength As Long
     
-    If (srcStream.ReadLong() <> PSP_BLOCK_MARKER) Then
+    blockCheck = srcStream.ReadLong()
+    If (blockCheck <> PSP_BLOCK_MARKER) Then
         LoadChannel = psp_Failure
-        InternalError funcName, "stream misaligned", srcWarnings
+        InternalError funcName, "stream misaligned: " & Hex$(blockCheck) & " @ " & srcStream.GetPosition(), srcWarnings
         Exit Function
     End If
     
@@ -311,14 +313,21 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
     ReDim curBytes(0 To oldSize - 1) As Byte
     CopyMemoryStrict VarPtr(curBytes(0)), VarPtr(m_ChannelContents(0)), oldSize
     
-    'Figure out what size we want the final array to be
-    m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
-    ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
-    
-    'Upsample the current byte stream
+    'Weirdly, testing random images from online seems to show that PSP scanlines
+    ' *ARE* aligned on 4-byte boundaries... but only for 1- and 4-bit images.
+    ' (8-bit and up do *not* obey the spec's requested 4-byte alignment rule,
+    ' and in fact enforcing 4-byte alignment on those images will break otherwise
+    ' good ones.)
     Dim pxWidth As Long, pxHeight As Long
     pxWidth = srcHeader.ch_ParentWidth
     pxHeight = srcHeader.ch_ParentHeight
+    
+    Dim pxWidthAligned As Long
+    pxWidthAligned = ((pxWidth + 3) \ 4) * 4
+    
+    'Figure out what size we want the final array to be
+    m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
+    ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
     
     Dim srcScanlineSize As Long, srcByte As Byte
     
@@ -328,7 +337,7 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
     Dim x As Long, y As Long, i As Long, numPixelsProcessed As Long
     If (srcHeader.ch_ParentBitDepth = 1) Then
         
-        srcScanlineSize = (pxWidth + 7) \ 8
+        srcScanlineSize = (pxWidthAligned + 7) \ 8
         
         Dim bitFlags(0 To 7) As Byte
         For i = 0 To 7
@@ -344,7 +353,7 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
             'Ignore empty bytes at the end of each scanline
             For i = 0 To 7
                 If (numPixelsProcessed < pxWidth) Then
-                    If (bitFlags(i) = (srcByte And bitFlags(i))) Then m_ChannelContents(y * pxWidth + numPixelsProcessed) = 1 Else m_ChannelContents(y * pxWidth + numPixelsProcessed) = 0
+                    If (bitFlags(i) = (srcByte And bitFlags(i))) Then m_ChannelContents(y * pxWidth + numPixelsProcessed) = 1 Else m_ChannelContents(y * pxWidthAligned + numPixelsProcessed) = 0
                     numPixelsProcessed = numPixelsProcessed + 1
                 Else
                     Exit For
@@ -358,7 +367,7 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
     ' so this conversion code is just a placeholder.
     ElseIf (srcHeader.ch_ParentBitDepth = 4) Then
         
-        srcScanlineSize = (pxWidth + 1) \ 2
+        srcScanlineSize = (pxWidthAligned + 1) \ 2
         
         For y = 0 To pxHeight - 1
             numPixelsProcessed = 0
@@ -374,6 +383,8 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
                 m_ChannelContents(y * pxWidth + x * 2 + 1) = srcByte And &HF
                 numPixelsProcessed = numPixelsProcessed + 1
                 If (numPixelsProcessed >= pxWidth) Then Exit For
+            Else
+                Exit For
             End If
             
         Next x

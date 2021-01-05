@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Block Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 03/January/21
+'Last updated: 04/January/21
 'Last update: continue work on initial build
 '
 'This class describes a single "layer" inside a JASC/Corel Paint Shop Pro image file.
@@ -106,13 +106,112 @@ Friend Function ConstructMatchingDIB(ByRef srcPalette() As RGBQuad, ByVal srcPal
         End With
         
         ConstructMatchingDIB = ImageFormats_PSP.PSP_BuildDIBFromChannels(m_ChannelCount, m_Channels, tmpHeader, m_LayerDIB, srcPalette, srcPaletteSize)
-        If (Not ConstructMatchingDIB) Then m_LayerHeader.pspl_LayerOK = False
+        If ConstructMatchingDIB Then
+            
+            'To save space (presumably), PaintShop Pro is clever about "cropping out" only the
+            ' relevant non-transparent rect from each layer, if one exists.  Only those pixels
+            ' get saved to file, while the other transparent region is simply omitted.  (This
+            ' is kind of stupid, because even their garbage RLE compression will effectively
+            ' render those large transparent regions meaningless in terms of filespace - but I
+            ' digress.)
+            '
+            'To correctly restore those transparent regions, PD needs to compare two embedded
+            ' rects inside the layer: both the actual layer rect, and then the "saved" image
+            ' rect.  The union of those two is what needs to be present in the final layer.
+            With m_LayerHeader
+                
+                Dim unionNeeded As Boolean
+                unionNeeded = (.pspl_ImageRect.Left <> .pspl_SavedImageRect.Left)
+                unionNeeded = unionNeeded Or (.pspl_ImageRect.Top <> .pspl_SavedImageRect.Top)
+                unionNeeded = unionNeeded Or (.pspl_ImageRect.Right <> .pspl_SavedImageRect.Right)
+                unionNeeded = unionNeeded Or (.pspl_ImageRect.Bottom <> .pspl_SavedImageRect.Bottom)
+                
+                If unionNeeded Then
+                    
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Restoring original layer boundaries..."
+                    
+                    'Construct a new RGBA DIB at the size of the *image* layer
+                    Dim newDIB As pdDIB
+                    Set newDIB = New pdDIB
+                    newDIB.CreateBlank .pspl_ImageRect.Right - .pspl_ImageRect.Left, .pspl_ImageRect.Bottom - .pspl_ImageRect.Top, 32, 0, 0
+                    newDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    'Copy the already-created DIB into its proper "final" location
+                    Dim newLeft As Long, newTop As Long
+                    newLeft = .pspl_SavedImageRect.Left
+                    newTop = .pspl_SavedImageRect.Top
+                    GDI.BitBltWrapper newDIB.GetDIBDC, newLeft, newTop, m_LayerDIB.GetDIBWidth, m_LayerDIB.GetDIBHeight, m_LayerDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    
+                    'Swap references
+                    Set m_LayerDIB = newDIB
+                    
+                End If
+                
+            End With
+            
+        Else
+            If (Not ConstructMatchingDIB) Then m_LayerHeader.pspl_LayerOK = False
+        End If
         
     End If
     
 End Function
 
 'All Get-prefixed functions are only valid after LoadLayer has been called (and the function has returned)
+Friend Function GetLayerBlendMode() As PD_BlendMode
+    
+    Select Case m_LayerHeader.pspl_BlendMode
+        Case bmLAYER_BLEND_NORMAL
+            GetLayerBlendMode = BM_Normal
+        Case bmLAYER_BLEND_DARKEN
+            GetLayerBlendMode = BM_Darken
+        Case bmLAYER_BLEND_LIGHTEN
+            GetLayerBlendMode = BM_Lighten
+        Case bmLAYER_BLEND_LEGACY_HUE
+            GetLayerBlendMode = BM_Hue
+        Case bmLAYER_BLEND_LEGACY_SATURATION
+            GetLayerBlendMode = BM_Saturation
+        Case bmLAYER_BLEND_LEGACY_COLOR
+            GetLayerBlendMode = BM_Color
+        Case bmLAYER_BLEND_LEGACY_LUMINOSITY
+            GetLayerBlendMode = BM_Luminosity
+        Case bmLAYER_BLEND_MULTIPLY
+            GetLayerBlendMode = BM_Multiply
+        Case bmLAYER_BLEND_SCREEN
+            GetLayerBlendMode = BM_Screen
+        Case bmLAYER_BLEND_DISSOLVE
+            GetLayerBlendMode = BM_Normal
+        Case bmLAYER_BLEND_OVERLAY
+            GetLayerBlendMode = BM_Overlay
+        Case bmLAYER_BLEND_HARD_LIGHT
+            GetLayerBlendMode = BM_HardLight
+        Case bmLAYER_BLEND_SOFT_LIGHT
+            GetLayerBlendMode = BM_SoftLight
+        Case bmLAYER_BLEND_DIFFERENCE
+            GetLayerBlendMode = BM_Difference
+        Case bmLAYER_BLEND_DODGE
+            GetLayerBlendMode = BM_ColorDodge
+        Case bmLAYER_BLEND_BURN
+            GetLayerBlendMode = BM_ColorBurn
+        Case bmLAYER_BLEND_EXCLUSION
+            GetLayerBlendMode = BM_Exclusion
+        Case bmLAYER_BLEND_TRUE_HUE
+            GetLayerBlendMode = BM_Hue
+        Case bmLAYER_BLEND_TRUE_SATURATION
+            GetLayerBlendMode = BM_Saturation
+        Case bmLAYER_BLEND_TRUE_COLOR
+            GetLayerBlendMode = BM_Color
+        Case bmLAYER_BLEND_TRUE_LIGHTNESS
+            GetLayerBlendMode = BM_Luminosity
+        Case bmLAYER_BLEND_ADJUST
+            GetLayerBlendMode = BM_Normal 'No one knows what this actually does :p
+        Case Else
+            InternalError "GetLayerBlendMode", "unknown blendmode: " & m_LayerHeader.pspl_BlendMode, Nothing
+            GetLayerBlendMode = BM_Normal
+    End Select
+    
+End Function
+
 Friend Function GetLayerDIB() As pdDIB
     Set GetLayerDIB = m_LayerDIB
 End Function
@@ -127,6 +226,10 @@ End Function
 
 Friend Function GetLayerOffsetY() As Long
     GetLayerOffsetY = m_LayerHeader.pspl_ImageRect.Top
+End Function
+
+Friend Function GetLayerOpacity() As Single
+    GetLayerOpacity = m_LayerHeader.pspl_Opacity
 End Function
 
 Friend Function GetLayerVisibility() As Boolean
@@ -217,7 +320,9 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'I won't comment all the following fields.  Refer to the spec for details.
     m_LayerHeader.pspl_LayerType = srcStream.ReadByte()
     srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_ImageRect), 16
+    'If PSP_DEBUG_VERBOSE Then Debug.Print m_LayerHeader.pspl_Name, m_LayerHeader.pspl_ImageRect.Left, m_LayerHeader.pspl_ImageRect.Top, m_LayerHeader.pspl_ImageRect.Right, m_LayerHeader.pspl_ImageRect.Bottom
     srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_SavedImageRect), 16
+    'If PSP_DEBUG_VERBOSE Then Debug.Print m_LayerHeader.pspl_Name, m_LayerHeader.pspl_SavedImageRect.Left, m_LayerHeader.pspl_SavedImageRect.Top, m_LayerHeader.pspl_SavedImageRect.Right, m_LayerHeader.pspl_SavedImageRect.Bottom
     m_LayerHeader.pspl_Opacity = CDbl(srcStream.ReadByte()) / 2.55
     m_LayerHeader.pspl_BlendMode = srcStream.ReadByte()
     
@@ -264,25 +369,36 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     endOfHeader = srcStream.GetPosition()
     
     'Next, we need to validate some header components before continuing with layer parsing.
+    ' Note that how we validate depends on the layer type - some layer types (e.g. groups)
+    ' don't need to embed things like saved pixel data, so 0x0 dimensions are OK.
+    Dim dimensionsExpected As Boolean
+    dimensionsExpected = (m_LayerHeader.pspl_LayerType = keGLTRaster)
+    dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTFloatingRasterSelection)
+    dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTMask)
     
     'First, discard any layers with obviously bad attributes.
     If ((m_LayerHeader.pspl_SavedImageRect.Right - m_LayerHeader.pspl_SavedImageRect.Left) <= 0) Then
         okToProceed = psp_Warning
-        InternalError funcName, "invalid width", srcWarnings
+        If dimensionsExpected Then InternalError funcName, "invalid width", srcWarnings
     End If
     
     If ((m_LayerHeader.pspl_SavedImageRect.Bottom - m_LayerHeader.pspl_SavedImageRect.Top) <= 0) Then
         okToProceed = psp_Warning
-        InternalError funcName, "invalid height", srcWarnings
+        If dimensionsExpected Then InternalError funcName, "invalid height", srcWarnings
     End If
     
     'TODO: more validations??
     
-    'If any validation tests failed, exit now
+    'If any validation tests failed, exit now - but critically, remember to restore stream position
+    ' before bailing!
     If (okToProceed <> psp_Success) Then
-        InternalError funcName, "WARNING: one or more critical validations failed.  This layer will not be imported.", srcWarnings
+        If dimensionsExpected Then
+            InternalError funcName, "WARNING: one or more critical validations failed.  This layer will not be imported.", srcWarnings
+        Else
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping layer """ & m_LayerHeader.pspl_Name & """, type: " & ImageFormats_PSP.PSP_GetLayerTypeName(m_LayerHeader.pspl_LayerType) & "..."
+        End If
         LoadLayer = okToProceed
-        Exit Function
+        GoTo EarlyTermination
     End If
     
     'Unfortunately, the PSP spec has another poor implementation decision here.
@@ -321,21 +437,25 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     ' value was different.
     '
     '(TESTING ALL SUGGESTED FIXES IS TBD)
-    Dim subBlockExists As Boolean
-    subBlockExists = (srcStream.ReadLong() = PSP_BLOCK_MARKER)
+    If (Not isPSPv5) Then
     
-    'For now, skip the sub-block; we'll revisit this as we add support for more custom layer types
-    If subBlockExists Then
+        Dim subBlockExists As Boolean
+        subBlockExists = (srcStream.ReadLong() = PSP_BLOCK_MARKER)
         
-        'Retrieve block ID and length, then skip the remainder of the block for now
-        Dim subBlockID As Long, subBlockLength As Long
-        subBlockID = srcStream.ReadIntUnsigned()
-        subBlockLength = srcStream.ReadLong()
-        srcStream.SetPosition subBlockLength, FILE_CURRENT
+        'For now, skip the sub-block; we'll revisit this as we add support for more custom layer types
+        If subBlockExists Then
+            
+            'Retrieve block ID and length, then skip the remainder of the block for now
+            Dim subBlockID As Long, subBlockLength As Long
+            subBlockID = srcStream.ReadIntUnsigned()
+            subBlockLength = srcStream.ReadLong()
+            srcStream.SetPosition subBlockLength, FILE_CURRENT
+        
+        'If a sub-block doesn't exist, retreat the stream pointer
+        Else
+            srcStream.SetPosition -4, FILE_CURRENT
+        End If
     
-    'If a sub-block doesn't exist, retreat the stream pointer
-    Else
-        srcStream.SetPosition -4, FILE_CURRENT
     End If
     
     'Any sub-blocks have now been read or skipped, meaning we're pointing at this layer's
@@ -351,7 +471,7 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         If (bmpHeaderChunkSize <= 0) Then
             InternalError funcName, "bitmap doesn't exist; that's okay for some layer types - exiting now", srcWarnings
             LoadLayer = psp_Warning
-            Exit Function
+            GoTo EarlyTermination
         End If
         
         m_BitmapCount = srcStream.ReadIntUnsigned()
@@ -363,6 +483,8 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         'If bitmaps and/or channels do not exist, exit now
         If (m_BitmapCount <= 0) Or (m_ChannelCount <= 0) Then
             InternalError funcName, "no bitmaps or channels for this layer; ignoring it...", srcWarnings
+            LoadLayer = psp_Warning
+            GoTo EarlyTermination
         End If
         
     End If
@@ -424,11 +546,12 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         okToProceed = psp_Warning
     End If
     
-    'Before exiting, move the stream pointer to the end of this layer block.
-    srcStream.SetPosition m_InitialOffset + m_TotalLength, FILE_BEGIN
-    
     'Our work here is done!
     LoadLayer = okToProceed
+    
+    'Before exiting, move the stream pointer to the end of this layer block.
+EarlyTermination:
+    srcStream.SetPosition m_InitialOffset + m_TotalLength, FILE_BEGIN
     
     Exit Function
     

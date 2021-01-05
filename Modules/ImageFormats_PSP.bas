@@ -38,7 +38,7 @@ Option Explicit
 
 'PSP files contain a *lot* of information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.
-Public Const PSP_DEBUG_VERBOSE As Boolean = True
+Public Const PSP_DEBUG_VERBOSE As Boolean = False
 
 'PSP loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -451,6 +451,31 @@ Public Function PSP_GetDIBTypeName(ByVal srcType As PSPDIBType) As String
             PSP_GetDIBTypeName = "Pattern transparency mask"
         Case Else
             PSP_GetDIBTypeName = "(unknown)"
+    End Select
+    
+End Function
+
+Public Function PSP_GetLayerTypeName(ByVal srcType As PSPLayerType) As String
+    
+    Select Case srcType
+        Case keGLTUndefined
+            PSP_GetLayerTypeName = "Undefined layer type"
+        Case keGLTRaster
+            PSP_GetLayerTypeName = "Standard raster layer"
+        Case keGLTFloatingRasterSelection
+            PSP_GetLayerTypeName = "Floating selection (raster)"
+        Case keGLTVector
+            PSP_GetLayerTypeName = "Vector layer"
+        Case keGLTAdjustment
+            PSP_GetLayerTypeName = "Adjustment layer"
+        Case keGLTGroup
+            PSP_GetLayerTypeName = "Group layer"
+        Case keGLTMask
+            PSP_GetLayerTypeName = "Mask layer"
+        Case keGLTArtMedia
+            PSP_GetLayerTypeName = "Art media layer"
+        Case Else
+            PSP_GetLayerTypeName = "(unknown)"
     End Select
     
 End Function

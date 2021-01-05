@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 02/January/21
+'Last updated: 04/January/21
 'Last update: continue work on initial build
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
@@ -175,7 +175,7 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'TODO: tube data block (need relevant image(s) for testing)
     'TODO: creator data block (may be able to rely on ExifTool for now?)
     
-    'Next, we want to examine the Composite Image block.  Per v8 of the spec,
+    'Next, we previously examined the Composite Image block.  Per v8 of the spec,
     ' "All PSP files with more than one layer or with one layer with transparency
     '  must have a full size composite image."
     '
@@ -187,8 +187,12 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     ' if something goes wrong when reading the composite block.  You can keep parsing
     ' the rest of the image just fine, regardless of composite image state.
     '
-    'TODO: don't retrieve composite images after layer support is added!
-    If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, True)
+    'With all that said, now that PhotoDemon is perfectly capable of importing individual
+    ' PSP layers, it no longer parses the composite block except as a last-resort failsafe
+    ' (if it can't find any useable layers, for example).  If this happens, the composite
+    ' image retrieval will trigger later in the load process, after the importer detects
+    ' that layer parsing isn't going well.
+    'If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, False)
     
     'Next, if the image is < 24-bpp and non-grayscale, we need to retrieve the master palette.
     ' (At this point, note that block order is no longer guaranteed - so the palette block could
@@ -259,12 +263,19 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
         
         '(Note: this hex string translates to “Paint Shop Pro Image File\n\x1a”, padded with zeroes
         ' to 32 bytes).
-        If Strings.BytesFromHex(pspID, "5061696E742053686F702050726F20496D6167652046696C650A1A00000000") Then
+        If Strings.BytesFromHex(pspID, "5061696E742053686F702050726F20496D6167652046696C650A1A0000000000") Then
             If m_Stream.AreBytesAvailable(32) Then
                 If (m_Stream.ReadBytes(checkBytes, 32, True) = 32) Then
                     pspValidated = VBHacks.MemCmp(VarPtr(pspID(0)), VarPtr(checkBytes(0)), 32)
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "File """ & srcFile & """ initial PSP validation: " & pspValidated
+                Else
+                    InternalError funcName, "32 bytes weren't returned?"
                 End If
+            Else
+                If PSP_DEBUG_VERBOSE Then InternalError funcName, "file is <32 bytes - not a PSP file!"
             End If
+        Else
+            InternalError funcName, "BytesFromHex failed?"
         End If
         
         If pspValidated Then
@@ -1023,13 +1034,6 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     'Move the stream pointer into position at the start of the layer bank block.
     m_Stream.SetPosition m_Blocks(idxLayerBank).GetBlockOffset(), FILE_BEGIN
     
-    'TODO: v5 psp files store header length at a different offset!  Fixing is TODO
-    If m_PSPisV5 Then
-        InternalError funcName, "v5 psp layers not supported yet"
-        Step6_LoadLayers = psp_Failure
-        Exit Function
-    End If
-    
     'Each layer in this image has its own sub-block within this segment.  PSPs support many
     ' different layer types, and unlike PSDs, they may not supply raster "backup" copies of
     ' vector, text, or adjustment layers.  As such, we need to be careful about what we
@@ -1072,7 +1076,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
             'If this layer appears to be valid, construct a matching DIB for it
             ' TODO:  48-bpp?
             If m_Layers(numLayersFound).IsLayerOK Then
-                If m_Layers(numLayersFound).ConstructMatchingDIB(m_CompositePalette, m_CompositePaletteCount, m_ImageHeader) Then numLayersFound = numLayersFound + 1
+                If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then numLayersFound = numLayersFound + 1
             End If
             
         End If
@@ -1149,10 +1153,12 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
             'Initialize the layer DIB (using the source layer's name, too!)
             tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
             
-            'Set matching layer properties (TODO!)
+            'Set matching layer properties
+            tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
             tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
             tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
             tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+            tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
         
 SkipLayer:
         Next i
@@ -1164,7 +1170,9 @@ SkipLayer:
     ' by using the embedded composite image (if any)
     Else
         
-        If (m_numCompositeImages > 0) Then
+        okToProceed = Step4_ReadCompositeBlock(srcFile, False)
+        
+        If (okToProceed < psp_Failure) And (m_numCompositeImages > 0) Then
             
             'Find the largest composite image that was loaded successfully
             Dim bestStats As Currency, bestIndex As Long
