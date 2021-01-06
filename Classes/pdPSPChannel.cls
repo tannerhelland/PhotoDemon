@@ -274,8 +274,8 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
         If (srcHeader.ch_ParentBitDepth < 8) Then
             srcHeader.ch_ChannelOK = UpsampleLowBitDepth(m_ChannelHeader, srcWarnings)
         
-        'If the channel is OK and HDR, immediately downsample it to 8-bits
-        ElseIf (srcHeader.ch_ParentBitDepth > 32) Then
+        'If the channel is OK and HDR (including 16-bit grayscale), immediately downsample it to 8-bits
+        ElseIf (srcHeader.ch_ParentBitDepth > 32) Or (srcHeader.ch_ParentBitDepth = 16) Then
             srcHeader.ch_ChannelOK = DownsampleHighBitDepth(m_ChannelHeader, srcWarnings)
         End If
         
@@ -302,7 +302,7 @@ Friend Function DownsampleHighBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByR
     
     Const funcName As String = "DownsampleHighBitDepth"
     
-    If (srcHeader.ch_ParentBitDepth < 32) Then
+    If (srcHeader.ch_ParentBitDepth < 32) And (srcHeader.ch_ParentBitDepth <> 16) Then
         InternalError funcName, "can't downsample SDR images", srcWarnings
         DownsampleHighBitDepth = True
         Exit Function

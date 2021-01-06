@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 05/January/21
-'Last update: continue work on initial build
+'Last updated: 06/January/21
+'Last update: add support for 16-bpp grayscale images
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -619,9 +619,16 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
             okToProceed = psp_Failure
         End If
         
-        If (.psph_BitDepth <> 1) And (.psph_BitDepth <> 4) And (.psph_BitDepth <> 8) And (.psph_BitDepth <> 24) And (.psph_BitDepth <> 48) Then
-            InternalError funcName, "bad bit-depth"
-            okToProceed = psp_Failure
+        If .psph_IsGrayscale Then
+            If (.psph_BitDepth <> 1) And (.psph_BitDepth <> 4) And (.psph_BitDepth <> 8) And (.psph_BitDepth <> 16) Then
+                InternalError funcName, "bad gray bit-depth"
+                okToProceed = psp_Failure
+            End If
+        Else
+            If (.psph_BitDepth <> 1) And (.psph_BitDepth <> 4) And (.psph_BitDepth <> 8) And (.psph_BitDepth <> 24) And (.psph_BitDepth <> 48) Then
+                InternalError funcName, "bad color bit-depth"
+                okToProceed = psp_Failure
+            End If
         End If
         
         If PSP_DEBUG_VERBOSE Then
@@ -886,7 +893,7 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
                 .cih_LooksOK = False
             End If
             
-            If (.cih_BitDepth <> 1) And (.cih_BitDepth <> 4) And (.cih_BitDepth <> 8) And (.cih_BitDepth <> 24) And (.cih_BitDepth <> 48) Then
+            If (.cih_BitDepth <> 1) And (.cih_BitDepth <> 4) And (.cih_BitDepth <> 8) And (.cih_BitDepth <> 16) And (.cih_BitDepth <> 24) And (.cih_BitDepth <> 48) Then
                 InternalError funcName, "bad composite image bit-depth"
                 .cih_LooksOK = False
             End If
@@ -1607,7 +1614,7 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
     ' generate a default gray palette.
     If (m_ImageHeader.psph_IsGrayscale Or m_ImageHeader.psph_BitDepth <= 8) And (Not paletteAvailable) Then
         
-        If (m_ImageHeader.psph_BitDepth = 8) Then
+        If (m_ImageHeader.psph_BitDepth = 8) Or (m_ImageHeader.psph_BitDepth = 16) Then
             m_CompositePaletteCount = 256
             Palettes.GetPalette_Grayscale m_CompositePalette
         ElseIf (m_ImageHeader.psph_BitDepth = 4) Then
