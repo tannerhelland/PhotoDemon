@@ -53,6 +53,18 @@ Option Explicit
 ' saved composite image.
 Private Const PSP_LOAD_COMPOSITE_AS_BASE_LAYER As Boolean = True
 
+'Until PD supports layer groups, we have to resort to workarounds for PSP layer group information.
+' When loading layers, PD will automatically handle things like group opacity (by hiding all members
+' of a layer group if said group is invisible), but as for the groups themselves, there are two options.
+' The easiest option is to just ignore the groups and lose them when importing into PD.  The other
+' option is to mimic groups by importing them as "dummy" layers.  This gives the user a way to
+' rearrange them (and see them, if nothing else), and we can use a specific naming scheme to ensure
+' we preserve group order at export time.  Toggling these behaviors is controlled by this constant,
+' with a matching bool to track whether an exported image contains layers.  (If it does, we need to
+' modify some writing behavior.)
+Private Const PSP_GROUPS_AS_DUMMY_LAYERS As Boolean = True
+Private m_ExportGroups As Boolean
+
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
 Private Const PSP_BLOCK_MARKER As Long = &H4B427E
 

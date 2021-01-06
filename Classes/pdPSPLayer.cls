@@ -68,13 +68,21 @@ Private Type PSP_LayerHeader
     
     'Remember - expansion fields may be added in the future!
     
-    'Any following fields are internal PhotoDemon ones; they are not part of actual PSP Files
+    'Any following fields are internal PhotoDemon ones; they are not part of actual PSP Files.
+    ' (These fields may also be filled using data from embedded sub-blocks in the file)
     pspl_LayerOK As Boolean
     pspl_OriginalActiveLayer As Boolean
+    pspl_IsGroup As Boolean
+    pspl_GroupCount As Long
     
 End Type
 
 Private m_LayerHeader As PSP_LayerHeader
+
+'Some layer types (vector, adjustment, group, etc) store extra layer information in a sub-block
+' following the layer header.  This class is guaranteed to be non-null if a sub-block was found,
+' but it's obviously up to this class to make sense of the information found in the sub-block.
+Private m_LayerSubBlock As pdPSPBlock
 
 'Each layer is comprised of 0-5 channels.  Note that even in a 3-color RGB image, certain layer types
 ' (masks, adjustment layers, etc) may only have one channel - so you can't use the color-type of the
@@ -380,19 +388,18 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     dimensionsExpected = (m_LayerHeader.pspl_LayerType = keGLTRaster)
     dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTFloatingRasterSelection)
     dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTMask)
+    'TODO: check dimensions of vector layers, too - they need to be OK for import
     
     'First, discard any layers with obviously bad attributes.
-    If ((m_LayerHeader.pspl_SavedImageRect.Right - m_LayerHeader.pspl_SavedImageRect.Left) <= 0) Then
+    If ((m_LayerHeader.pspl_SavedImageRect.Right - m_LayerHeader.pspl_SavedImageRect.Left) <= 0) And dimensionsExpected Then
         okToProceed = psp_Warning
         If dimensionsExpected Then InternalError funcName, "invalid width", srcWarnings
     End If
     
-    If ((m_LayerHeader.pspl_SavedImageRect.Bottom - m_LayerHeader.pspl_SavedImageRect.Top) <= 0) Then
+    If ((m_LayerHeader.pspl_SavedImageRect.Bottom - m_LayerHeader.pspl_SavedImageRect.Top) <= 0) And dimensionsExpected Then
         okToProceed = psp_Warning
         If dimensionsExpected Then InternalError funcName, "invalid height", srcWarnings
     End If
-    
-    'TODO: more validations??
     
     'If any validation tests failed, exit now - but critically, remember to restore stream position
     ' before bailing!
@@ -405,6 +412,9 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         LoadLayer = okToProceed
         GoTo EarlyTermination
     End If
+    
+    'potential TODO: more validations depending on layer type?  It's hard to guess at "valid"
+    ' parameters for layers I can't easily render and see... I'll return to this later.
     
     'Unfortunately, the PSP spec has another poor implementation decision here.
     '
@@ -430,31 +440,48 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'Well, we obviously work around these issues as best we can.  PSP sub-blocks do start with a
     ' fixed (for now) 4-byte ID, which we can obviously check.  This ID appears in the same place
     ' that a chunk-length value would appear if a sub-block is *not* present.  So there's only
-    ' potential for issues if a bitmap chunk length in a non-sub-block-containing layer, were to
+    ' potential for issues if a bitmap chunk length in a non-sub-block-containing layer were to
     ' coincedentally equal the fixed 4-byte ID value of a sub-block identifier. The odds of this
-    ' aren't great, but because the ID value is just a normal number (4,932,222), the odds *are*
-    ' non-zero!
+    ' aren't great, but because the ID value is just a normal 4-byte integer (4,932,222), the odds
+    ' *are* non-zero!
     '
     'Anyway, I mention all this because I don't have a reference for how to "best" implement this.
     ' When writing files, I'd probably just never include a sub-block on raster layers (especially
     ' because all publicly available specs explicitly disallow this), and if a raster layer's size
     ' somehow happened to match the sub-block ID, I'd just pad it with dummy bytes to ensure its
     ' value was different.
-    '
-    '(TESTING ALL SUGGESTED FIXES IS TBD)
     If (Not isPSPv5) Then
     
         Dim subBlockExists As Boolean
         subBlockExists = (srcStream.ReadLong() = PSP_BLOCK_MARKER)
         
-        'For now, skip the sub-block; we'll revisit this as we add support for more custom layer types
+        'For now, cache the sub-block's offset, type, and length; this makes it trivial for us to
+        ' add support for additional parsing as I attempt to support more custom layer types
         If subBlockExists Then
             
-            'Retrieve block ID and length, then skip the remainder of the block for now
-            Dim subBlockID As Long, subBlockLength As Long
+            'Cache the contents of the sub-block; we'll decide later what to do with it.
+            Set m_LayerSubBlock = New pdPSPBlock
+            
+            Dim subBlockPos As Long, subBlockID As PSPBlockID, subBlockLength As Long
             subBlockID = srcStream.ReadIntUnsigned()
             subBlockLength = srcStream.ReadLong()
-            srcStream.SetPosition subBlockLength, FILE_CURRENT
+            subBlockPos = srcStream.GetPosition()
+            
+            m_LayerSubBlock.InitializeBlock subBlockPos, subBlockID, subBlockLength
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found layer sub-block: " & m_LayerSubBlock.GetBlockIDAsString() & " (" & subBlockID & "), length=" & subBlockLength
+            
+            'Attempt to deal with certain sub-block types now
+            okToProceed = ParseLayerSubBlock(srcStream, srcWarnings, srcHeader)
+            
+            'In the future, we may want to abandon processing of certain block types if we can't
+            ' make sense of their associated sub-blocks.  But for now, sub-blocks are mostly a
+            ' curiosity, so as long as we didn't outright fail while parsing it, carry on normally.
+            If (okToProceed < psp_Failure) Then okToProceed = psp_Success
+            
+            'Regardless of sub-block contents, always skip to the end of the sub-block after processing.
+            ' (This ensures stream alignment for blocks we don't understand, or new blocks that may be
+            ' added in the future.)
+            srcStream.SetPosition subBlockPos + subBlockLength, FILE_BEGIN
         
         'If a sub-block doesn't exist, retreat the stream pointer
         Else
@@ -466,6 +493,24 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'Any sub-blocks have now been read or skipped, meaning we're pointing at this layer's
     ' first channel block (if a PSPv5 image), or a bitmap header "chunk" (PSPv6+).
     If (Not isPSPv5) Then
+    
+        'Modern versions of PSP may embed additional blocks here!  This can happen on all types
+        ' of layers, including non-raster ones.  The meaning and/or interpretation of these blocks
+        ' is unknown (owing to Corel's unwillingness to release modern format specs, argh).
+        
+        'If we encounter an unexpected block here, simply skip over it.
+        Dim failsafeCheck As Boolean
+        failsafeCheck = (srcStream.ReadLong() = PSP_BLOCK_MARKER)
+        If failsafeCheck Then
+            subBlockID = srcStream.ReadIntUnsigned()
+            subBlockLength = srcStream.ReadLong()
+            srcStream.SetPosition subBlockLength, FILE_CURRENT
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Mystery block encountered in unexpected position; skipping it now..."
+        
+        'No "mystery" block found.  Retreat the cursor and proceed normally.
+        Else
+            srcStream.SetPosition -4, FILE_CURRENT
+        End If
         
         Dim bmpHeaderOffset As Long
         bmpHeaderOffset = srcStream.GetPosition()
@@ -474,7 +519,7 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         bmpHeaderChunkSize = srcStream.ReadLong()
         
         If (bmpHeaderChunkSize <= 0) Then
-            InternalError funcName, "bitmap doesn't exist; that's okay for some layer types - exiting now", srcWarnings
+            If PSP_DEBUG_VERBOSE Then InternalError funcName, "bitmap doesn't exist, which is okay for some layer types; skipping to end of layer chunk...", srcWarnings
             LoadLayer = psp_Warning
             GoTo EarlyTermination
         End If
@@ -487,9 +532,11 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         
         'If bitmaps and/or channels do not exist, exit now
         If (m_BitmapCount <= 0) Or (m_ChannelCount <= 0) Then
-            InternalError funcName, "no bitmaps or channels for this layer; ignoring it...", srcWarnings
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "This layer has no raster data (" & m_BitmapCount & ":" & m_ChannelCount & "); skipping to end of layer block..."
             LoadLayer = psp_Warning
             GoTo EarlyTermination
+        Else
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Layer contains non-zero bitmaps/channels: " & m_BitmapCount & ", " & m_ChannelCount
         End If
         
     End If
@@ -565,6 +612,47 @@ InternalVBError:
     InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
     srcWarnings.AddString "Internal error in pdPSPLayer." & funcName & ", #" & Err.Number & ": " & Err.Description
     LoadLayer = psp_Failure
+    
+End Function
+
+'Note the requirements for stream positioning before calling this function!  It requires
+' specific stream alignment to work.
+Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnings As pdStringStack, ByRef srcHeader As PSPImageHeader) As PD_PSPResult
+    
+    Const funcName As String = "ParseLayerSubBlock"
+    
+    'Failsafe check only
+    If (m_LayerSubBlock Is Nothing) Then
+        InternalError funcName, "sub-block wasn't initialized?", srcWarnings
+        ParseLayerSubBlock = psp_Failure
+        Exit Function
+    End If
+    
+    'Handling is obviously contingent on block type
+    Select Case m_LayerSubBlock.GetBlockID()
+    
+        'Adjustment layer
+        Case PSP_ADJUSTMENT_EXTENSION_BLOCK
+        
+        'Vector layer
+        Case PSP_VECTOR_EXTENSION_BLOCK
+        
+        'Group layer (start markers only)
+        Case PSP_GROUP_EXTENSION_BLOCK
+        
+        'Mask layer
+        Case PSP_MASK_EXTENSION_BLOCK
+        
+        'Art media
+        Case PSP_ART_MEDIA_BLOCK
+        
+        'Future-proofing
+        Case Else
+            InternalError funcName, "unknown layer sub-block: " & m_LayerSubBlock.GetBlockID(), srcWarnings
+            ParseLayerSubBlock = psp_Warning
+            Exit Function
+    
+    End Select
     
 End Function
 
