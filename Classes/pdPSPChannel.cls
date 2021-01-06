@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Block Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 04/January/21
-'Last update: fix scanline alignment on 1- and 4-bit images (they *ARE* 32-bit aligned after all,
-'             which is what the spec says - but 8/24/32/48/64-bpp images are not!  aaaarrrggghhh)
+'Last updated: 05/January/21
+'Last update: add provisional support for HDR images (actual 48-bpp PSP files needed for testing!)
 '
 'This class describes a single "channel" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -40,16 +39,14 @@ Option Explicit
 'This helper struct is passed to the child channel class; it contains all information necessary to
 ' decompress an embedded channel into useable RGBA data.  Some fields are populated by the parent
 ' (e.g. compression type, which is the same for all channels in a frame and is stored in a
-' parent header struct), while others are filled by the child pdPSPChannel class (e.g. compressed
-' and uncompressed size, which are stored directly inside the channel header)
+' parent header struct), while others are filled by this class (e.g. compressed and uncompressed
+' size, which are stored directly inside each channel's header - and which may vary per-channel,
+' since compression affects each channel differently).
 Private m_ChannelHeader As PSP_ChannelHeader
 
 'Contents of the decompressed channel stream.  If LoadChannel() returns psp_Success, this array
 ' is guaranteed to be allocated, initialized, and filled with useable data from the original
-' image stream.  (Note, however, that this data has *not* yet been converted to 8-bit RGBA data,
-' so you'll need to consider e.g. the parent image's palette to interpret the bytes correctly.
-' This is why there's a separate content size tracker - because the data may not have been
-' upsampled from lower bit-depths yet, etc.)
+' image stream (with up/downsampling already applied as necessary)
 Private m_ChannelContents() As Byte, m_ContentSize As Long
 
 Friend Sub FreeChannelContents()
@@ -76,6 +73,7 @@ Friend Function GetChannelType() As PSPChannelType
     GetChannelType = m_ChannelHeader.ch_ChannelType
 End Function
 
+'Return value isn't meaningful until LoadChannel() has been called
 Friend Function IsChannelOK() As Boolean
     IsChannelOK = m_ChannelHeader.ch_ChannelOK
 End Function
@@ -88,7 +86,8 @@ End Function
 'IMPORTANTLY: on psp_Success or psp_Warning, the passed stream pointer will now point at the *end* of
 ' this block.  You can simply continue reading the file as-is.  On failure, however, stream position
 ' is *not* guaranteed (mostly because if initial block validation fails, we have no way to reorient the
-' pointer in a meaningful way - we can only reset it).  On failure, you need to abandon further parsing.
+' pointer in a meaningful way - we can only reset it to whatever position was passed in).
+' On failure, you need to abandon further parsing or somehow realign the pointer on your end.
 Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pdStringStack, ByRef srcHeader As PSP_ChannelHeader) As PD_PSPResult
     
     On Error GoTo InternalVBError
@@ -115,12 +114,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     ' a stupid (but necessary) workaround
     If (srcHeader.ch_ParentVersionMajor <= 3) Then blockLength = srcStream.ReadLong()
     
-    'If blockID is bad... I'm honestly not sure what to do.  Probably just report it,
-    ' then skip to the end of the block?  (Clearly the reader didn't expect this block,
-    ' and recovery code would be challenging... basically I'd need to manually investigate
-    ' the file if this code is being called on a non-channel chunk.)
-    '
-    'For now, we do nothing, and leave it to the caller to decide.
+    'If blockID is bad, it's up to the caller to rectify the problem.
     If (blockID <> PSP_CHANNEL_BLOCK) Then
         InternalError funcName, "not a channel!", srcWarnings
         LoadChannel = psp_Failure
@@ -158,7 +152,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     End If
     
     'Compressed size is critical since this is the only indicator of the length of the
-    ' deflate or RLE-compressed stream
+    ' DEFLATE or RLE-compressed stream
     srcHeader.ch_CompressedSize = srcStream.ReadLong()
     srcHeader.ch_UncompressedSize = srcStream.ReadLong()
     
@@ -176,8 +170,6 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     srcStream.SetPosition origBlockPosition + channelChunkSize, FILE_BEGIN
     
     'The struct now points at channel contents!  Time to decompress it.
-    ' (Obviously, the manner in which we decompress it is entirely dependent on the compression
-    ' scheme used.)
     Select Case srcHeader.ch_Compression
     
         'Uncompressed means we can just copy bytes out as-is
@@ -205,6 +197,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             Dim curOffset As Long
             curOffset = 0
             
+            'OOB errors are accounted for on both source and destination streams
             Do While (curOffset < numSafeBytesDst) And (numBytesProcessed < numSafeBytesSrc)
             
                 'Get the RLE byte
@@ -249,7 +242,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             
             okToProceed = psp_Success
             
-        'Per the spec, PSP's LZ77 scheme is the same as PNG's - so it's DEFLATE to the rescue!
+        'Per the spec, PSP's LZ77 scheme is the same as PNG's - DEFLATE to the rescue!
         Case PSP_COMP_LZ77
             Compression.DecompressPtrToPtr VarPtr(m_ChannelContents(0)), srcHeader.ch_UncompressedSize, srcStream.Peek_PointerOnly(-1, srcHeader.ch_CompressedSize), srcHeader.ch_CompressedSize, cf_Zlib
             okToProceed = psp_Success
@@ -274,12 +267,19 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     'Make a local copy of the passed header, as we may need it on subsequent calls
     m_ChannelHeader = srcHeader
     
-    'If the channel is OK and < 8-bit, immediately upsample it to 8-bits
+    'Upsample or downsample the result as necessary
     If srcHeader.ch_ChannelOK Then
-        If (srcHeader.ch_ParentBitDepth < 8) Then srcHeader.ch_ChannelOK = UpsampleLowBitDepth(m_ChannelHeader, srcWarnings)
+        
+        'If the channel is OK and < 8-bit, immediately upsample it to 8-bits
+        If (srcHeader.ch_ParentBitDepth < 8) Then
+            srcHeader.ch_ChannelOK = UpsampleLowBitDepth(m_ChannelHeader, srcWarnings)
+        
+        'If the channel is OK and HDR, immediately downsample it to 8-bits
+        ElseIf (srcHeader.ch_ParentBitDepth > 32) Then
+            srcHeader.ch_ChannelOK = DownsampleHighBitDepth(m_ChannelHeader, srcWarnings)
+        End If
+        
     End If
-    
-    'HDR images are still TODO (need some for testing)
     
     'Our work here is done!
     LoadChannel = okToProceed
@@ -294,8 +294,51 @@ InternalVBError:
     
 End Function
 
-'On 1-bpp and 4-bpp images, we want to upsample their channel data to 8-bpp before
-' rendering a final DIB.
+'On HDR images, we need to downsample channel data to 8-bpp before rendering a final DIB.
+' Note that PSP files are problematic for this because they rarely (if ever?) include embedded
+' color profiles, so for now, we just use a linear downsample instead of a proper color-managed
+' one.  A better solution for this is TODO pending acquisition of an actual HDR PSP file.
+Friend Function DownsampleHighBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef srcWarnings As pdStringStack) As Boolean
+    
+    Const funcName As String = "DownsampleHighBitDepth"
+    
+    If (srcHeader.ch_ParentBitDepth < 32) Then
+        InternalError funcName, "can't downsample SDR images", srcWarnings
+        DownsampleHighBitDepth = True
+        Exit Function
+    End If
+    
+    'Make a local copy of the channel's contents
+    Dim curBytes() As Byte, oldSize As Long
+    oldSize = m_ContentSize
+    
+    ReDim curBytes(0 To oldSize - 1) As Byte
+    CopyMemoryStrict VarPtr(curBytes(0)), VarPtr(m_ChannelContents(0)), oldSize
+    
+    Dim pxWidth As Long, pxHeight As Long
+    pxWidth = srcHeader.ch_ParentWidth
+    pxHeight = srcHeader.ch_ParentHeight
+    
+    'Figure out what size we want the final array to be (SDR)
+    m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
+    ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
+    
+    Dim srcScanlineSize As Long, srcByte As Byte
+    Dim x As Long, y As Long, i As Long, numPixelsProcessed As Long
+    
+    'In the absence of an ICC profile, all we can do is grab high bytes (little-endian)
+    For y = 0 To pxHeight - 1
+        numPixelsProcessed = 0
+    For x = 0 To pxWidth - 1
+        m_ChannelContents(y * pxWidth + x) = curBytes((y * pxWidth + x) * 2 + 1)
+    Next x
+    Next y
+    
+    DownsampleHighBitDepth = True
+    
+End Function
+
+'On 1-bpp and 4-bpp images, we must upsample their channel data to 8-bpp before rendering a final DIB.
 Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef srcWarnings As pdStringStack) As Boolean
     
     Const funcName As String = "UpsampleLowBitDepth"
@@ -322,22 +365,31 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
     pxWidth = srcHeader.ch_ParentWidth
     pxHeight = srcHeader.ch_ParentHeight
     
-    Dim pxWidthAligned As Long
-    pxWidthAligned = ((pxWidth + 3) \ 4) * 4
+    'Now here's a weird thing: the spec says all image scanlines must be 4-byte aligned.
+    ' Testing on random online images (and comparing notes with other 3rd-party decoders)
+    ' confirmed that this is only true for 1- and 4-bit images.
+    '
+    'After downloading a trial version of PSP to test on a wider range of image sizes,
+    ' it turns out that the scanline alignment refers *NOT* to image dimensions, but to
+    ' the size of each decompressed scanline *in its original 1- or 4-bpp depth, after
+    ' bit-depth gets taken into account*.  I've never seen another format that does this,
+    ' but oh well - first time for everything!
+    
+    'Because of this, you'll see corrections applied to scanline sizes inside the individual
+    ' 1- and 4-bpp routines, below, instead of to the actual image dimensions, above.
     
     'Figure out what size we want the final array to be
     m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
     ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
     
     Dim srcScanlineSize As Long, srcByte As Byte
-    
-    'NOTE: monochrome testing still required; I don't have monochrome images yet,
-    ' so this conversion code is just a placeholder.  (It's possible source scanlines
-    ' break on byte boundaries - if so, different code will be required.)
     Dim x As Long, y As Long, i As Long, numPixelsProcessed As Long
+    
+    'Monochrome images...
     If (srcHeader.ch_ParentBitDepth = 1) Then
         
-        srcScanlineSize = (pxWidthAligned + 7) \ 8
+        srcScanlineSize = (pxWidth + 7) \ 8
+        srcScanlineSize = ((srcScanlineSize + 3) \ 4) * 4
         
         Dim bitFlags(0 To 7) As Byte
         For i = 0 To 7
@@ -350,24 +402,26 @@ Friend Function UpsampleLowBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef 
         
             srcByte = curBytes(y * srcScanlineSize + x)
             
-            'Ignore empty bytes at the end of each scanline
             For i = 0 To 7
+                
+                'Ignore empty bytes at the end of each scanline
                 If (numPixelsProcessed < pxWidth) Then
-                    If (bitFlags(i) = (srcByte And bitFlags(i))) Then m_ChannelContents(y * pxWidth + numPixelsProcessed) = 1 Else m_ChannelContents(y * pxWidthAligned + numPixelsProcessed) = 0
+                    If (bitFlags(i) = (srcByte And bitFlags(i))) Then m_ChannelContents(y * pxWidth + numPixelsProcessed) = 1 Else m_ChannelContents(y * pxWidth + numPixelsProcessed) = 0
                     numPixelsProcessed = numPixelsProcessed + 1
                 Else
                     Exit For
                 End If
+                
             Next i
             
         Next x
         Next y
     
-    'NOTE: 4-bite testing still required; I don't have 4-bit images yet,
-    ' so this conversion code is just a placeholder.
+    '4-bit images
     ElseIf (srcHeader.ch_ParentBitDepth = 4) Then
         
-        srcScanlineSize = (pxWidthAligned + 1) \ 2
+        srcScanlineSize = (pxWidth + 1) \ 2
+        srcScanlineSize = ((srcScanlineSize + 3) \ 4) * 4
         
         For y = 0 To pxHeight - 1
             numPixelsProcessed = 0

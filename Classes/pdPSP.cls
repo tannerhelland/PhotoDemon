@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2020 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 04/January/21
+'Last updated: 05/January/21
 'Last update: continue work on initial build
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
@@ -47,6 +47,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'When debugging, you can use this constant to have PD load the composite (merged) image to its
+' own layer.  I find this helpful for confirming that the multi-layer projection matches the
+' saved composite image.
+Private Const PSP_LOAD_COMPOSITE_AS_BASE_LAYER As Boolean = True
 
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
 Private Const PSP_BLOCK_MARKER As Long = &H4B427E
@@ -105,8 +110,7 @@ Private Type PSPCompositeImage
     
 End Type
 
-Private m_numCompositeImages As Long
-Private m_CompositeImages() As PSPCompositeImage
+Private m_numCompositeImages As Long, m_CompositeImages() As PSPCompositeImage
 
 'Composite images are allowed to use their own custom palette, separate from the image's master palette
 Private m_CompositePalette() As RGBQuad, m_CompositePaletteCount As Long
@@ -118,8 +122,10 @@ Private m_MasterPalette() As RGBQuad, m_MasterPaletteCount As Long
 'Master layer collection.  The total number of layers is mirrored by the image header, but note
 ' that PhotoDemon may choose to "deactivate" layers it doesn't understand - so post-parsing,
 ' it's critical to defer to this layer count instead of the one embedded in the image header.
-Private m_LayerCount As Long
-Private m_Layers() As pdPSPLayer
+Private m_LayerCount As Long, m_Layers() As pdPSPLayer
+
+'If an ICC profile exists, it will be loaded into this object
+Private m_ICCProfile As pdICCProfile
 
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
@@ -136,10 +142,37 @@ Private m_SourcePtr As Long, m_SourcePtrLen As Long
 ' while debugging; see associated Warnings_XYZ functions for details.)
 Private m_Warnings As pdStringStack
 
+Friend Function GetICCProfile() As pdICCProfile
+    Set GetICCProfile = m_ICCProfile
+End Function
+
+Friend Function GetOriginalColorDepth() As Long
+    GetOriginalColorDepth = m_ImageHeader.psph_BitDepth
+    If (GetOriginalColorDepth > 8) And Me.HasAlpha() Then
+        If (GetOriginalColorDepth = 24) Then
+            GetOriginalColorDepth = 32
+        ElseIf (GetOriginalColorDepth = 48) Then
+            GetOriginalColorDepth = 64
+        End If
+    End If
+End Function
+
+Friend Function HasAlpha() As Boolean
+    HasAlpha = ((m_ImageHeader.psph_ContentFlags And keGCAlphaChannels) <> 0)
+End Function
+
+Friend Function HasICCProfile() As Boolean
+    HasICCProfile = (Not m_ICCProfile Is Nothing)
+End Function
+
 'Perform basic validation on a potential PSP file.  For strict file extension matching (e.g. only
 ' .psp or .pspimage extension allowed), set checkExtension to TRUE.
 Friend Function IsFilePSP(ByRef srcFile As String) As Boolean
     IsFilePSP = (Step1_ValidateHeader(srcFile) < psp_Failure)
+End Function
+
+Friend Function IsGrayscale() As Boolean
+    IsGrayscale = m_ImageHeader.psph_IsGrayscale
 End Function
 
 'Simplified wrapper to load a PSD automatically.
@@ -170,6 +203,9 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'If the block directory looks good, parse the general image header.
     If (keepLoading < psp_Failure) Then keepLoading = Step3_ReadImageAttributes(srcFile)
     
+    'If the block directory looks good, load the attached ICC profile (if any - they're rare in PSP files)
+    If (keepLoading < psp_Failure) Then keepLoading = Step3a_ReadICCProfile()
+    
     'TODO: extended data block (need to figure out what we want to retrieve from it)
     'TODO: color profile block (need relevant image(s) for testing)
     'TODO: tube data block (need relevant image(s) for testing)
@@ -189,9 +225,11 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     '
     'With all that said, now that PhotoDemon is perfectly capable of importing individual
     ' PSP layers, it no longer parses the composite block except as a last-resort failsafe
-    ' (if it can't find any useable layers, for example).  If this happens, the composite
-    ' image retrieval will trigger later in the load process, after the importer detects
-    ' that layer parsing isn't going well.
+    ' (if it can't find any useable layers, for example), or if you've activated the debug-only
+    ' "import merged image as layer" constant at the top of this class.  If those conditions
+    ' are met, the composite image retrieval will trigger later in the load process, after the
+    ' importer detects that a composite block *is* actually wanted.  (Obviously, skipping the
+    ' import of a giant image-sized layer can greatly improve import time.)
     'If (keepLoading < psp_Failure) Then keepLoading = Step4_ReadCompositeBlock(srcFile, False)
     
     'Next, if the image is < 24-bpp and non-grayscale, we need to retrieve the master palette.
@@ -224,6 +262,22 @@ End Function
 Friend Sub Reset()
     Set m_Warnings = New pdStringStack
 End Sub
+
+'Only valid after the image header has been parsed (step 2)
+Private Function GetDPI() As Double
+    Dim useEmbeddedResolution As Boolean
+    useEmbeddedResolution = m_ImageHeader.psph_Resolution > 0#
+    useEmbeddedResolution = useEmbeddedResolution And ((m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_INCH) Or (m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_CM))
+    If useEmbeddedResolution Then
+        If (m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_INCH) Then
+            GetDPI = m_ImageHeader.psph_Resolution
+        Else
+            GetDPI = Units.GetCMFromInches(m_ImageHeader.psph_Resolution)
+        End If
+    Else
+        GetDPI = 96#
+    End If
+End Function
 
 Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
     
@@ -595,6 +649,83 @@ InternalVBError:
 End Function
 
 'Do *NOT* call import steps out-of-order!
+Private Function Step3a_ReadICCProfile() As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "Step3a_ReadICCProfile"
+    Step3a_ReadICCProfile = psp_Success
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'Obviously we can only load an ICC profile if one actually exists in the file
+    Dim i As Long, iccIndex As Long
+    For i = 0 To m_numOfBlocks - 1
+        If (m_Blocks(i).GetBlockID = PSP_COLORPROFILE_BLOCK) Then
+            iccIndex = i
+            Exit For
+        End If
+    Next i
+    
+    'If a profile block doesn't exist, exit now.  (Note also that v5 files do *not* support
+    ' embedded color profiles, which is actually awesome as it spares us dealing with their
+    ' bullshit file layout differences!)
+    If (iccIndex <= 0) Then
+        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "No ICC profile found (sRGB assumed)"
+        Set m_ICCProfile = Nothing
+        Step3a_ReadICCProfile = psp_Success
+        Exit Function
+    End If
+    
+    'If a profile block was found, its layout is trivial to parse!
+    Dim origBlockPos As Long
+    m_Stream.SetPosition m_Blocks(iccIndex).GetBlockOffset, FILE_BEGIN
+    origBlockPos = m_Stream.GetPosition()
+    
+    Dim iccChunkSize As Long
+    iccChunkSize = m_Stream.ReadLong()
+    
+    'Description isn't especially relevant to PD
+    Dim iccDescriptionSize As Long, iccDescription As String
+    iccDescriptionSize = m_Stream.ReadIntUnsigned()
+    iccDescription = m_Stream.ReadString_UTF8(iccDescriptionSize)
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile found: " & iccDescription
+    
+    Dim iccLength As Long, iccBytes() As Byte
+    iccLength = m_Stream.ReadLong()
+    If (iccLength = m_Stream.ReadBytes(iccBytes, iccLength, True)) Then
+        
+        'Cache the retrieved ICC bytes inside a dedicated profile class
+        Set m_ICCProfile = New pdICCProfile
+        m_ICCProfile.LoadICCFromPtr iccLength, VarPtr(iccBytes(0))
+        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile loaded successfully!"
+        okToProceed = psp_Success
+    
+    'Read failed
+    Else
+        Set m_ICCProfile = Nothing
+        okToProceed = psp_Warning
+        InternalError funcName, "bad ICC length descriptor"
+    End If
+    
+    'Before exiting, set the pointer to align with the next block.
+    m_Stream.SetPosition origBlockPos + m_Blocks(iccIndex).GetBlockLength()
+    
+    Step3a_ReadICCProfile = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 3a, #" & Err.Number & ": " & Err.Description
+    Step3a_ReadICCProfile = psp_Failure
+    
+End Function
+
+'Do *NOT* call import steps out-of-order!
 Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVal retrieveImages As Boolean = False) As PD_PSPResult
     
     On Error GoTo InternalVBError
@@ -672,7 +803,7 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     
     'Perform basic validation on both values
     If (cmpBankInfoSize < 4) Or (m_numCompositeImages <= 0) Then
-        InternalError funcName, "bad composite block header"
+        InternalError funcName, "bad composite block header: " & cmpBankInfoSize & ", " & m_numCompositeImages
         Step4_ReadCompositeBlock = psp_Warning
         Exit Function
     End If
@@ -1023,8 +1154,8 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
         End If
     Next i
     
-    'If layers aren't found, we can perhaps attempt recovery by using an embedded composite image (if any)?
-    ' TODO - caller responsibility
+    'If layers aren't found, PD will automatically attempt recovery by using an embedded composite image
+    ' (if one exists)
     If (idxLayerBank < 0) Then
         InternalError funcName, "no layer bank!"
         Step6_LoadLayers = psp_Failure
@@ -1044,8 +1175,9 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     m_LayerCount = m_ImageHeader.psph_LayerCount
     ReDim m_Layers(0 To m_LayerCount - 1) As pdPSPLayer
     
-    Dim numLayersFound As Long
+    Dim numLayersFound As Long, numLayersAttempted As Long
     numLayersFound = 0
+    numLayersAttempted = 0
     
     'Before doing anything else, ensure we're actually pointing at a layer block now.
     Dim testBlockID As PSPBlockID, testBlockLength As Long
@@ -1069,17 +1201,34 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
         If (numLayersFound > UBound(m_Layers)) Then ReDim Preserve m_Layers(0 To numLayersFound * 2 - 1) As pdPSPLayer
         Set m_Layers(numLayersFound) = New pdPSPLayer
         
+        
         'If this layer is parsed successfully, increment the layer counter.  (If something is wrong
         ' with this layer, or PD doesn't know how to interpret it, we'll just skip it.)
         If (m_Layers(numLayersFound).LoadLayer(m_Stream, m_Warnings, m_ImageHeader) = psp_Success) Then
             
             'If this layer appears to be valid, construct a matching DIB for it
-            ' TODO:  48-bpp?
             If m_Layers(numLayersFound).IsLayerOK Then
-                If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then numLayersFound = numLayersFound + 1
+                If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
+                    
+                    'Apply color-management, if any
+                    If (Not m_ICCProfile Is Nothing) Then
+                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
+                        ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
+                    End If
+                    
+                    'This layer was successfully constructed!  If its index matches the original "active layer index",
+                    ' mark it as such, and be sure to increment the "good layer count" before exiting
+                    If (numLayersAttempted = m_ImageHeader.psph_ActiveLayer) Then m_Layers(numLayersFound).MarkAsActiveLayer
+                    numLayersFound = numLayersFound + 1
+                    
+                End If
             End If
             
         End If
+        
+        'Keep track of the number of layers we've attempted to load; this is relevant for tracking
+        ' original layer indices, which we need to restore the saved "active" layer index
+        numLayersAttempted = numLayersAttempted + 1
         
     'If we're still pointing at a layer block, continue loading!
     Loop While PeekNextBlock(PSP_BLOCK_MARKER, testBlockID, testBlockLength) And (testBlockID = PSP_LAYER_BLOCK)
@@ -1125,52 +1274,13 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
     
     'We now have enough data to assemble the final image.
     Dim newLayerID As Long, tmpLayer As pdLayer
-                    
-    'We don't actually need anything from the source PSP file now, so go ahead and close the stream
-    If m_Stream.IsOpen() Then m_Stream.StopStream True
+    Dim compositeLayerLoaded As Boolean
     
-    'Before proceeding, ensure that at least one good layer was found
-    If (m_LayerCount > 0) Then
+    Dim i As Long
     
-        'We'll now attempt to import as many layers as we can!
-        
-        'Start by setting basic image attributes
-        dstImage.Width = m_ImageHeader.psph_Width
-        dstImage.Height = m_ImageHeader.psph_Height
-        dstImage.SetDPI 96#, 96#    'TODO: fix
-        
-        Dim i As Long
-        For i = 0 To m_LayerCount - 1
-        
-            'Double-check layer is OK
-            If (m_Layers(i) Is Nothing) Then GoTo SkipLayer
-            If (Not m_Layers(i).IsLayerOK) Then GoTo SkipLayer
-            
-            'Prep a new layer object
-            newLayerID = dstImage.CreateBlankLayer()
-            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-            
-            'Initialize the layer DIB (using the source layer's name, too!)
-            tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
-            
-            'Set matching layer properties
-            tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
-            tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
-            tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
-            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
-            tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
-        
-SkipLayer:
-        Next i
-        
-        'All layers have been loaded!
-        okToProceed = psp_Success
-        
-    'Well, this is concerning - we didn't find any valid layers!  Attempt to salvage this import
-    ' by using the embedded composite image (if any)
-    Else
-        
-        okToProceed = Step4_ReadCompositeBlock(srcFile, False)
+    If (m_LayerCount <= 0) Or PSP_LOAD_COMPOSITE_AS_BASE_LAYER Then
+    
+        okToProceed = Step4_ReadCompositeBlock(srcFile, True)
         
         If (okToProceed < psp_Failure) And (m_numCompositeImages > 0) Then
             
@@ -1205,13 +1315,22 @@ SkipLayer:
                     'Set basic image attributes
                     dstImage.Width = .cih_Width
                     dstImage.Height = .cih_Height
-                    dstImage.SetDPI 96#, 96#
                     
                     'Prep a new layer object and initialize it with the composite image
                     newLayerID = dstImage.CreateBlankLayer()
-                    
                     Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-                    tmpLayer.InitializeNewLayer PDL_Image, "PSP composite image", .cih_DIB
+                    
+                    Dim compositeLayerName As String
+                    If (m_LayerCount <= 0) Then
+                        tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Composite image"), .cih_DIB
+                    Else
+                        tmpLayer.InitializeNewLayer PDL_Image, "Composite image (debug purposes only)", .cih_DIB
+                    End If
+                    
+                    'If layers exist in the file, set the composite layer to invisible (since it's only being
+                    ' loaded for debugging purposes)
+                    tmpLayer.SetLayerVisibility (m_LayerCount <= 0)
+                    compositeLayerLoaded = True
                     
                 End With
                 
@@ -1229,6 +1348,69 @@ SkipLayer:
             okToProceed = psp_Failure
         End If
     
+    '/end composite image handling
+    End If
+    
+    'We don't actually need anything from the source PSP file now, so go ahead and close the stream
+    If m_Stream.IsOpen() Then m_Stream.StopStream True
+    
+    'Before proceeding, ensure that at least one good layer was found
+    If (m_LayerCount > 0) Then
+    
+        'We'll now attempt to import as many layers as we can!
+        
+        'Start by setting basic image attributes
+        dstImage.Width = m_ImageHeader.psph_Width
+        dstImage.Height = m_ImageHeader.psph_Height
+        
+        'If possible, we'll attempt to restore the original active layer index
+        Dim activeLayerIndex As Long
+        activeLayerIndex = -1
+        
+        For i = 0 To m_LayerCount - 1
+        
+            'Double-check layer is OK
+            If (m_Layers(i) Is Nothing) Then GoTo SkipLayer
+            If (Not m_Layers(i).IsLayerOK) Then GoTo SkipLayer
+            
+            'Prep a new layer object
+            newLayerID = dstImage.CreateBlankLayer()
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            
+            'Initialize the layer DIB (using the source layer's name, too!)
+            tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+            
+            'Set matching layer properties
+            tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
+            tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
+            tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
+            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+            tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
+            
+            'Check active layer status (and note that we have to manually increment the index if debug mode
+            ' is active and we loaded the composite layer as a "temporary" base layer)
+            If m_Layers(i).GetLayerWasActiveLayer() Then
+                If compositeLayerLoaded Then activeLayerIndex = i + 1 Else activeLayerIndex = i
+            End If
+        
+SkipLayer:
+        Next i
+        
+        'If an active layer index exists, set it now
+        If (activeLayerIndex >= 0) Then dstImage.SetActiveLayerByIndex activeLayerIndex
+        
+        'All layers have been loaded!
+        okToProceed = psp_Success
+        
+    '/end useable layers exist in file
+    End If
+    
+    'Set any remaining image parameters
+    If (okToProceed < psp_Failure) Then
+        
+        'DPI is automatically converted from PSP's format to PD's by the GetDPI() function in this class
+        dstImage.SetDPI GetDPI(), GetDPI()
+        
     End If
     
     'Our work here is done!
@@ -1265,7 +1447,7 @@ Private Function RetrieveComposite_JPEG(ByVal imgIndex As Long, ByVal parentBloc
         Exit Function
     End If
     
-    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to retrieve composite image in JPEG format..."
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to retrieve composite image (" & m_CompositeImages(imgIndex).cih_Width & "x" & m_CompositeImages(imgIndex).cih_Height & ") in JPEG format..."
     
     Dim okToProceed As PD_PSPResult
     okToProceed = psp_Success
@@ -1510,7 +1692,6 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
     Next i
     
     'With all channels decoded, construct a DIB for this entry!
-    ' TODO:  48-bpp?
     If (okToProceed < psp_Failure) Then
         m_CompositeImages(imgIndex).cih_DIBOK = ImageFormats_PSP.PSP_BuildDIBFromChannels(channelCount, cmpChannels, tmpHeader, m_CompositeImages(imgIndex).cih_DIB, m_CompositePalette, m_CompositePaletteCount)
     End If

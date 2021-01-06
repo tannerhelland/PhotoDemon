@@ -1353,9 +1353,9 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         dstImage.SetOriginalFileFormat PDIF_PSP
         dstImage.NotifyImageChanged UNDO_Everything
-        'dstImage.SetOriginalColorDepth cPSD.GetBitsPerPixel()
-        'dstImage.SetOriginalGrayscale cPSD.IsGrayscaleColorMode()
-        'dstImage.SetOriginalAlpha cPSD.HasAlpha()
+        dstImage.SetOriginalColorDepth cPSP.GetOriginalColorDepth()
+        dstImage.SetOriginalGrayscale cPSP.IsGrayscale()
+        dstImage.SetOriginalAlpha cPSP.HasAlpha()
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
@@ -1363,23 +1363,22 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstDIB.CreateBlank 16, 16, 32, 0
         dstDIB.SetColorManagementState cms_ProfileConverted
 
-        'Color-management is TODO!
-        
-'        'Before exiting, ensure all color management data has been added to PD's central cache
-'        Dim profHash As String
-'        If cPSD.HasICCProfile() Then
-'            profHash = ColorManagement.AddProfileToCache(cPSD.GetICCProfile(), True, False, False)
-'            dstImage.SetColorProfile_Original profHash
-'
-'            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it - will have been
-'            ' hard-converted to sRGB, so we don't want to associate the destination DIB with its source profile.
-'            ' Instead, note that it is currently sRGB.
-'            profHash = ColorManagement.GetSRGBProfileHash()
-'            dstDIB.SetColorProfileHash profHash
-'            dstDIB.SetColorManagementState cms_ProfileConverted
-'
-'        End If
-'
+        'Before exiting, ensure all color management data has been added to PD's central cache
+        Dim profHash As String
+        If cPSP.HasICCProfile() Then
+            profHash = ColorManagement.AddProfileToCache(cPSP.GetICCProfile(), True, False, False)
+            dstImage.SetColorProfile_Original profHash
+
+            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it -
+            ' will have been hard-converted to sRGB, so we don't want to associate the destination
+            ' DIB with its source profile. Instead, note that it is currently sRGB to prevent the
+            ' central color-manager from attempting to correct it on its own.
+            profHash = ColorManagement.GetSRGBProfileHash()
+            dstDIB.SetColorProfileHash profHash
+            dstDIB.SetColorManagementState cms_ProfileConverted
+
+        End If
+
     End If
     
 End Function

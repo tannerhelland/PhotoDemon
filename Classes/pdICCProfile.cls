@@ -89,9 +89,9 @@ Friend Function HasProfileBeenApplied() As Boolean
     HasProfileBeenApplied = m_ICCProfileWasApplied
 End Function
 
-'If external functions (such as our new CMYK conversion code) apply a profile independently, they can use this function
-' to mark the image as successfully converted.  This saves us the extra work of checking the profile again in PD's primary
-' image import function.
+'If external functions (such as our CMYK conversion code) apply a profile independently,
+' they can use this function to mark the image as successfully converted.  This saves us
+' the extra work of checking the profile again in PD's primary image import function.
 Friend Sub MarkSuccessfulProfileApplication()
     m_ICCProfileWasApplied = True
 End Sub

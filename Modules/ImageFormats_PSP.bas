@@ -3,7 +3,7 @@ Attribute VB_Name = "ImageFormats_PSP"
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 04/January/21
+'Last updated: 05/January/21
 'Last update: continue work on initial build
 '
 'This module (and associated pdPSP- classes) handle JASC/Corel Paint Shop Pro image parsing.

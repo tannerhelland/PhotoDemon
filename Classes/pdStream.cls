@@ -883,7 +883,7 @@ Friend Function ReadDouble() As Double
             If (Not m_FileMM Is Nothing) Then
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, 8, srcPtr, srcReadMax) Then
-                    GetMem8_Ptr srcPtr, ByVal VarPtr(ReadDouble)
+                    GetMem8_Ptr srcPtr + m_Pointer, VarPtr(ReadDouble)
                     m_Pointer = m_Pointer + 8&
                 Else
                     InternalStreamError "ReadDouble failed; const pdFileMM for details."

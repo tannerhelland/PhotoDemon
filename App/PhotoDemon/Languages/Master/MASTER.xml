@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.302</langversion>
+		<langversion>8.9.358</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -3669,6 +3669,13 @@ Please enter a numeric value.</original>
 		<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 		<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+		<phrase>
+			<original>Composite image</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- pdPSP.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 		<phrase>
 			<original>Reconstructing image</original>
@@ -13278,10 +13285,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2528</phrasecount>
+		<phrasecount>2529</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5163 phrases. -->
-	<!-- 2635 are duplicates, so only 2528 unique phrases have been written to file. -->
-	<!-- These 2528 phrases contain approximately 11612 total words. -->
+	<!-- As of this build, PhotoDemon contains 5165 phrases. -->
+	<!-- 2636 are duplicates, so only 2529 unique phrases have been written to file. -->
+	<!-- These 2529 phrases contain approximately 11614 total words. -->
 
 	</pdData>

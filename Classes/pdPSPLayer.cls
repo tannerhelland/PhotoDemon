@@ -70,6 +70,7 @@ Private Type PSP_LayerHeader
     
     'Any following fields are internal PhotoDemon ones; they are not part of actual PSP Files
     pspl_LayerOK As Boolean
+    pspl_OriginalActiveLayer As Boolean
     
 End Type
 
@@ -234,6 +235,10 @@ End Function
 
 Friend Function GetLayerVisibility() As Boolean
     GetLayerVisibility = (m_LayerHeader.pspl_Flags And keVisibleFlag) = keVisibleFlag
+End Function
+
+Friend Function GetLayerWasActiveLayer() As Boolean
+    GetLayerWasActiveLayer = m_LayerHeader.pspl_OriginalActiveLayer
 End Function
 
 'Only valid after LoadLayer has been called (and the function has returned)
@@ -528,7 +533,7 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         If (m_Channels(i).LoadChannel(srcStream, srcWarnings, tmpHeader) >= psp_Failure) Then
             InternalError funcName, "catastrophic failure; channel #" & (i + 1) & " will be ignored...", srcWarnings
         Else
-            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " (" & ImageFormats_PSP.PSP_GetDIBTypeName(m_Channels(i).GetChannelDIBType()) & ") looks okay"
+            'If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " (" & ImageFormats_PSP.PSP_GetDIBTypeName(m_Channels(i).GetChannelDIBType()) & ") looks okay"
             numGoodChannels = numGoodChannels + 1
         End If
         
@@ -562,6 +567,10 @@ InternalVBError:
     LoadLayer = psp_Failure
     
 End Function
+
+Friend Sub MarkAsActiveLayer()
+    m_LayerHeader.pspl_OriginalActiveLayer = True
+End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, ByRef parentWarningStack As pdStringStack, Optional ByVal writeDebugLog As Boolean = True)
     
