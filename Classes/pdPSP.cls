@@ -219,7 +219,6 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     If (keepLoading < psp_Failure) Then keepLoading = Step3a_ReadICCProfile()
     
     'TODO: extended data block (need to figure out what we want to retrieve from it)
-    'TODO: color profile block (need relevant image(s) for testing)
     'TODO: tube data block (need relevant image(s) for testing)
     'TODO: creator data block (may be able to rely on ExifTool for now?)
     
@@ -784,11 +783,10 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     
     'Old PSP files didn't use a full "composite bank" with combination merged and thumbnail files;
     ' instead, they just provided a thumbnail segment.  Hypothetically we could retrieve these
-    ' thumbnails some day, but for now, it's a distraction - TODO!
-    
-    'If m_PSPisV5 Then   ...special handling, etc...
-    
-    'If a composite block doesn't exist, exit now
+    ' thumbnails some day, but for now, I don't know that it's worth the trouble.  (Maybe if PD
+    ' someday provides a "Browse" tool I can revisit...)
+    '
+    'Anyway, if a composite block doesn't exist, exit now.
     If (compositeBlockIndex <= 0) Then
         
         If m_PSPisV5 Then

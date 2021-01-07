@@ -296,8 +296,8 @@ End Function
 
 'On HDR images, we need to downsample channel data to 8-bpp before rendering a final DIB.
 ' Note that PSP files are problematic for this because they rarely (if ever?) include embedded
-' color profiles, so for now, we just use a linear downsample instead of a proper color-managed
-' one.  A better solution for this is TODO pending acquisition of an actual HDR PSP file.
+' color profiles, so for now, we just perform a linear downsample instead of a proper
+' color-managed transform.
 Friend Function DownsampleHighBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByRef srcWarnings As pdStringStack) As Boolean
     
     Const funcName As String = "DownsampleHighBitDepth"

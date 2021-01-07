@@ -456,13 +456,15 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     ' future that may or may not use an extension block.
     '
     'But there is no guaranteed-unique special key, or header, or ID for these extension blocks
-    ' (especially ones that "may exist in the future", so there's no foolproof way to tell if
+    ' (especially ones that "may exist in the future"), so there's no foolproof way to tell if
     ' you're looking at a bitmap layer chunk or some kind of extension sub-block.
     '
-    'Even worse, from what I've seen in 3rd-party forums (https://forums.getpaint.net/topic/22817-paint-shop-pro-filetype-2015-01-05/?do=findComment&comment=410768)
-    ' Corel has privately reversed the spec's explicit disallowal of sub-blocks for certain
+    'Even worse, from what I've seen in 3rd-party forums...
+    ' (https://forums.getpaint.net/topic/22817-paint-shop-pro-filetype-2015-01-05/?do=findComment&comment=410768)
+    ' ...Corel at some point reversed the spec's explicit disallowal of sub-blocks for certain
     ' layer types (default raster layers!), which means that none of the current spec's rules
-    ' are guaranteed to be observed in the future.
+    ' are guaranteed to be observed in the future.  (Which sort of defeats the whole purpose
+    ' of a specification, no?)
     '
     'So what is a 3rd-party decoder like PD supposed to do?
     '

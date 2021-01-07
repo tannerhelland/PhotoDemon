@@ -532,7 +532,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_TARGA = 17
     PDIF_TIFF = 18
     PDIF_WBMP = 19
-    PDIF_PSD = 20   'Note that FreeImage is not used to load PSDs; we use our own internal parser
+    PDIF_PSD = 20   'Note that FreeImage is *not* used to load PSDs; we use our own internal parser
     PDIF_CUT = 21
     PDIF_XBM = 22
     PDIF_XPM = 23

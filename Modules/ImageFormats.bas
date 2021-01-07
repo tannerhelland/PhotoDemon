@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2020 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 30/December/20
-'Last update: start roughing out support for PaintShop Pro images
+'Last updated: 07/January/21
+'Last update: finalize list of supported Paintshop Pro extensions (there are many!)
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -286,7 +286,7 @@ Public Sub GenerateInputFormats()
     AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
     
     'In v9.0, PhotoDemon received a custom PSP parser
-    AddInputFormat "PSP - PaintShop Pro", "*.psp;*.pspimage", PDIF_PSP
+    AddInputFormat "PSP - PaintShop Pro", "*.psp;*.pspimage;*.tub;*.psptube;*.pfr;*.pspframe;*.msk;*.pspmask;*.pspbrush", PDIF_PSP
     
     If m_FreeImageEnabled Then
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
@@ -681,8 +681,7 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         
         Case PDIF_PSP
-            'TODO!
-            'GetIdealMetadataFormatFromPDIF = PDMF_XMP
+            GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         
         Case PDIF_TARGA
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
@@ -731,8 +730,8 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
         Case PDIF_PSD
             IsExifAllowedForPDIF = True
         
-        Case PDIF_PSD
-            'TODO!
+        Case PDIF_PSP
+            IsExifAllowedForPDIF = True
         
         Case PDIF_TIFF
             IsExifAllowedForPDIF = True
