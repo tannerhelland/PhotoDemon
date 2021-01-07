@@ -323,12 +323,10 @@ Friend Function DownsampleHighBitDepth(ByRef srcHeader As PSP_ChannelHeader, ByR
     m_ContentSize = srcHeader.ch_ParentWidth * srcHeader.ch_ParentHeight
     ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
     
-    Dim srcScanlineSize As Long, srcByte As Byte
-    Dim x As Long, y As Long, i As Long, numPixelsProcessed As Long
+    Dim x As Long, y As Long
     
     'In the absence of an ICC profile, all we can do is grab high bytes (little-endian)
     For y = 0 To pxHeight - 1
-        numPixelsProcessed = 0
     For x = 0 To pxWidth - 1
         m_ChannelContents(y * pxWidth + x) = curBytes((y * pxWidth + x) * 2 + 1)
     Next x

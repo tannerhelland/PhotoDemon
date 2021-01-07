@@ -353,7 +353,6 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
         'Validate version number only if the original checksum passed
         If (okToProceed < psp_Failure) Then
         
-            Dim pspVersionMajor As Integer, pspVersionMinor As Integer
             m_ImageHeader.psph_VersionMajor = m_Stream.ReadInt()
             m_ImageHeader.psph_VersionMinor = m_Stream.ReadInt()
             m_PSPisV5 = (m_ImageHeader.psph_VersionMajor <= 3)
@@ -370,8 +369,10 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             
             'Higher major version numbers are expected (e.g. I've encountered "13" in images
             ' created in 2020 found "in the wild"), but I don't have a spec for those versions
-            ' so correct loading is not necessarily guaranteed.
-            If (m_ImageHeader.psph_VersionMajor < 3) Or (m_ImageHeader.psph_VersionMajor > 7) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & m_ImageHeader.psph_VersionMajor
+            ' so correct loading is not necessarily guaranteed.  PD won't raise errors on such
+            ' files, but I note that here so that we can add custom handling if something breaks
+            ' in the future
+            If (m_ImageHeader.psph_VersionMajor < 3) Then m_Warnings.AddString "Unexpected PSP major version encountered: " & m_ImageHeader.psph_VersionMajor
             If (m_ImageHeader.psph_VersionMinor <> 0) Then m_Warnings.AddString "Unexpected PSP minor version encountered: " & m_ImageHeader.psph_VersionMinor
             
         Else
@@ -806,7 +807,7 @@ Private Function Step4_ReadCompositeBlock(ByRef srcFile As String, Optional ByVa
     m_Stream.SetPosition m_Blocks(compositeBlockIndex).GetBlockOffset, FILE_BEGIN
     origBankInfoPos = m_Stream.GetPosition()
     
-    Dim cmpBankInfoSize As Long, numCompositeImages As Long
+    Dim cmpBankInfoSize As Long
     
     'Early PSP versions use an asinine mechanism for struct length descriptors, so this is
     ' a stupid (but necessary) workaround
@@ -1212,37 +1213,115 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     
     If (okToProceed >= psp_Failure) Then Exit Function
     
-    'We're pointing at a layer block.  Initialize
+    'Groups are a work in progress.  Note that group behavior is *not* guaranteed
+    ' to work in malformed files, as PSPs use a weird counting mechanism for establishing
+    ' group boundaries, and in broken files, we can't count layers accurately.
+    Dim groupCount() As Long, groupReferences() As pdPSPLayer, idxGroup As Long, addGroupStartMarker As Boolean
+    ReDim groupCount(0 To m_LayerCount - 1) As Long
+    ReDim groupReferences(0 To m_LayerCount - 1) As pdPSPLayer
+    idxGroup = 0
+    
+    'We're pointing at a layer block (hopefully, lol)
     Do
         
-        'It shouldn't be possible to find more layers than the header specifies, but if that happens,
-        ' we'll attempt to deal with it gracefull.
+        addGroupStartMarker = False
+        
+        'It shouldn't be possible to find more layers than the header specifies, but if it happens,
+        ' we attempt to deal with it gracefully.
         If (numLayersFound > UBound(m_Layers)) Then ReDim Preserve m_Layers(0 To numLayersFound * 2 - 1) As pdPSPLayer
         Set m_Layers(numLayersFound) = New pdPSPLayer
-        
         
         'If this layer is parsed successfully, increment the layer counter.  (If something is wrong
         ' with this layer, or PD doesn't know how to interpret it, we'll just skip it.)
         If (m_Layers(numLayersFound).LoadLayer(m_Stream, m_Warnings, m_ImageHeader) = psp_Success) Then
             
-            'If this layer appears to be valid, construct a matching DIB for it
+            'Regardless of layer correctness, we need to deal with group boundaries.
+            ' If we're inside a running group, decrement the current group counter no matter what,
+            ' and flag this layer with the current group ID (if any).  Note that we do this even
+            ' if the current layer is a group marker, so that nested groups work correctly.
+            If (idxGroup > 0) Then
+            
+                groupCount(idxGroup) = groupCount(idxGroup) - 1
+                
+                'Last layer in group; move the index down one
+                If (groupCount(idxGroup) = 0) Then
+                    addGroupStartMarker = True
+                    idxGroup = idxGroup - 1
+                End If
+                
+            End If
+            
+            'If this layer appears to be valid, keep processing it
             If m_Layers(numLayersFound).IsLayerOK Then
-                If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
-                    
-                    'Apply color-management, if any
-                    If (Not m_ICCProfile Is Nothing) Then
-                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
-                        ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
+                
+                'If the layer actually has pixels, generate a DIB for it
+                If m_Layers(numLayersFound).IsLayerPixelBased() Then
+                
+                    If m_Layers(numLayersFound).ConstructMatchingDIB(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
+                        
+                        'Apply color-management, if any
+                        If (Not m_ICCProfile Is Nothing) Then
+                            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
+                            ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
+                        End If
+                        
                     End If
                     
-                    'This layer was successfully constructed!  If its index matches the original "active layer index",
-                    ' mark it as such, and be sure to increment the "good layer count" before exiting
-                    If (numLayersAttempted = m_ImageHeader.psph_ActiveLayer) Then m_Layers(numLayersFound).MarkAsActiveLayer
-                    numLayersFound = numLayersFound + 1
+                'Non-pixel-based layers are fine (e.g. groups), but we don't need to produce
+                ' a DIB for them, obviously!
+                Else
                     
+                    'On group markers, update our running group count table.  (See a few lines up
+                    ' for how we use this to "tag" incoming layers)
+                    If (m_Layers(numLayersFound).GetLayerType = keGLTGroup) Then
+                        
+                        'Increase the depth of the nested group tree
+                        idxGroup = idxGroup + 1
+                        If (idxGroup > UBound(groupCount)) Then
+                            ReDim Preserve groupCount(0 To idxGroup * 2 - 1) As Long
+                            ReDim Preserve groupReferences(0 To idxGroup * 2 - 1) As pdPSPLayer
+                        End If
+                        
+                        'Store a reference to this marker; when we create a matching "start group"
+                        ' layer, we need to copy relevant properties (e.g. visibility) of this layer.
+                        groupCount(idxGroup) = m_Layers(numLayersFound).GetNumLayersInGroup()
+                        Set groupReferences(idxGroup) = m_Layers(numLayersFound)
+                        
+                    End If
+                    
+                End If
+                
+                'This layer was successfully constructed!  If its index matches the original "active layer index",
+                ' mark it as such, and be sure to increment the "good layer count" before exiting
+                If (numLayersAttempted = m_ImageHeader.psph_ActiveLayer) Then m_Layers(numLayersFound).MarkAsActiveLayer
+                numLayersFound = numLayersFound + 1
+                
+            End If
+            
+        '/layer didn't load correctly
+        Else
+            
+            'If we're inside a running group, decrement the current group counter even
+            ' though we didn't load this image.  This ensures that our group boundaries
+            ' persist in the correct places.
+            If (idxGroup > 0) Then
+                groupCount(idxGroup) = groupCount(idxGroup) - 1
+                If (groupCount(idxGroup) = 0) Then
+                    addGroupStartMarker = True
+                    idxGroup = idxGroup - 1
                 End If
             End If
             
+        End If
+        
+        'If we need to add a new "start group" marker, do so now
+        If addGroupStartMarker Then
+            If (numLayersFound > UBound(m_Layers)) Then ReDim Preserve m_Layers(0 To numLayersFound * 2 - 1) As pdPSPLayer
+            Set m_Layers(numLayersFound) = New pdPSPLayer
+            With groupReferences(idxGroup + 1)
+                m_Layers(numLayersFound).LoadLayer_GroupMarker .GetLayerName, .GetLayerVisibility, .GetLayerBlendMode_PSP, .GetLayerOpacity
+            End With
+            numLayersFound = numLayersFound + 1
         End If
         
         'Keep track of the number of layers we've attempted to load; this is relevant for tracking
@@ -1341,10 +1420,11 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                     
                     Dim compositeLayerName As String
                     If (m_LayerCount <= 0) Then
-                        tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Composite image"), .cih_DIB
+                        compositeLayerName = g_Language.TranslateMessage("Composite image")
                     Else
-                        tmpLayer.InitializeNewLayer PDL_Image, "Composite image (debug purposes only)", .cih_DIB
+                        compositeLayerName = "Composite image (debug purposes only)"
                     End If
+                    tmpLayer.InitializeNewLayer PDL_Image, "Composite image (debug purposes only)", .cih_DIB
                     
                     'If layers exist in the file, set the composite layer to invisible (since it's only being
                     ' loaded for debugging purposes)
@@ -1378,10 +1458,39 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
     
         'We'll now attempt to import as many layers as we can!
         
+        'Layer groups are not currently supported by PD, but we do use group data to enable group
+        ' visibility/invisibility when loading groups.  Note that PSPs support nested layer groups,
+        ' so a layer can be within e.g. a whole bunch of parent groups with varying depths.
+        ' I currently use a formula where if *any* of the current parent layers are invisible,
+        ' the current layer gets hidden too.  This produces the most "useful-looking" document
+        ' (in lieu of actually supporting groups ourselves, ha).
+        Dim curGroupDepth As Long
+        curGroupDepth = 0
+        
+        'I don't know if PSPs enforce a "maximum" group depth.  Photoshop limits group depth to 10,
+        ' so we start there.  (Note that PD will auto-increment this if as it encounters complex
+        ' trees; we just need a starting size here!)
+        Const MAX_GROUP_DEPTH As Long = 10
+        Dim groupVisibility() As Boolean
+        ReDim groupVisibility(0 To MAX_GROUP_DEPTH - 1) As Boolean
+        
+        'If any group *above* the current one is invisible, the current layer's visibility flag
+        ' gets overriden with the parent group.  This is my preferred behavior as it ensures that
+        ' layers belonging to invisible groups are not visible by default in the image PD constructs.
+        ' (We update this flag whenever group depth changes.)
+        Dim curGroupVisibility As Boolean
+        curGroupVisibility = True
+        
         'Start by setting basic image attributes
         dstImage.Width = m_ImageHeader.psph_Width
         dstImage.Height = m_ImageHeader.psph_Height
         
+        'Dummy 1x1 DIBs are used for group markers
+        Dim dummyDIB As pdDIB
+        Set dummyDIB = New pdDIB
+        dummyDIB.CreateBlank 1, 1, 32, 0, 0
+        dummyDIB.SetInitialAlphaPremultiplicationState True
+                        
         'If possible, we'll attempt to restore the original active layer index
         Dim activeLayerIndex As Long
         activeLayerIndex = -1
@@ -1392,24 +1501,106 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
             If (m_Layers(i) Is Nothing) Then GoTo SkipLayer
             If (Not m_Layers(i).IsLayerOK) Then GoTo SkipLayer
             
-            'Prep a new layer object
-            newLayerID = dstImage.CreateBlankLayer()
-            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-            
-            'Initialize the layer DIB (using the source layer's name, too!)
-            tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
-            
-            'Set matching layer properties
-            tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
-            tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
-            tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
-            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
-            tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
-            
-            'Check active layer status (and note that we have to manually increment the index if debug mode
-            ' is active and we loaded the composite layer as a "temporary" base layer)
-            If m_Layers(i).GetLayerWasActiveLayer() Then
-                If compositeLayerLoaded Then activeLayerIndex = i + 1 Else activeLayerIndex = i
+            'For layers with pixel contents, load them next
+            If m_Layers(i).IsLayerPixelBased() Then
+                
+                'Prep a new layer object
+                newLayerID = dstImage.CreateBlankLayer()
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                
+                'Initialize the layer DIB (using the source layer's name, too!)
+                tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+                
+                'Set matching layer properties
+                tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
+                tmpLayer.SetLayerOffsetX m_Layers(i).GetLayerOffsetX()
+                tmpLayer.SetLayerOffsetY m_Layers(i).GetLayerOffsetY()
+                tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+                tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
+                
+                'If we're inside a layer group, override the current layer visibility with its
+                ' parent group visibility.
+                If (curGroupDepth > 0) Then
+                    If (Not curGroupVisibility) Then tmpLayer.SetLayerVisibility False
+                End If
+                
+                'Check active layer status (and note that we have to manually increment the index if debug mode
+                ' is active and we loaded the composite layer as a "temporary" base layer)
+                If m_Layers(i).GetLayerWasActiveLayer() Then
+                    If compositeLayerLoaded Then activeLayerIndex = i + 1 Else activeLayerIndex = i
+                End If
+                
+            'This layer doesn't have pixels
+            Else
+                
+                'Is this a group marker?
+                If (m_Layers(i).GetLayerType = keGLTGroup) Then
+                    
+                    'Add this group's visibility and name to our running collection.  (We track this info
+                    ' so we can properly handle complex nested group arrangements.)
+                    If (Not m_Layers(i).IsLayerGroupStart()) Then
+                        
+                        If (curGroupDepth > UBound(groupVisibility)) Then ReDim Preserve groupVisibility(0 To curGroupDepth * 2 - 1) As Boolean
+                        groupVisibility(curGroupDepth) = m_Layers(i).GetLayerVisibility()
+                        curGroupVisibility = curGroupVisibility And groupVisibility(curGroupDepth)
+                        
+                        'Increment nested group counter
+                        curGroupDepth = curGroupDepth + 1
+                    
+                    'Because layers are traversed in reverse-order, we actually use group *end* markers
+                    ' for tracking visibility state.  When we reach a group *start* marker, we need to
+                    ' reset current visibility flags to match the new nested depth.
+                    Else
+                            
+                        'Decrement depth counter, with a failsafe check for malformed files
+                        curGroupDepth = curGroupDepth - 1
+                        If (curGroupDepth < 0) Then
+                            curGroupDepth = 0
+                            InternalError funcName, "malformed layer groups found; curGroupDepth below zero!"
+                        End If
+                        
+                        'Reset the group visibility flag
+                        curGroupVisibility = True
+                        
+                        'If we're still inside a group, look for *any* invisibility flags above us.
+                        ' If any are found, set the current visibility flag to FALSE.
+                        If (curGroupDepth > 0) Then
+                            Dim gvIndex As Long
+                            For gvIndex = 0 To curGroupDepth - 1
+                                If (Not groupVisibility(gvIndex)) Then
+                                    curGroupVisibility = False
+                                    Exit For
+                                End If
+                            Next gvIndex
+                        End If
+                
+                    End If
+                    
+                    'Because layers are traversed from bottom-to-top, this indicator
+                    ' marks the *end* of a group.  Insert a dummy group-end layer.
+                    If PSP_GROUPS_AS_DUMMY_LAYERS Then
+                            
+                        'Prep a new "dummy" layer object to represent this group
+                        newLayerID = dstImage.CreateBlankLayer()
+                        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                        
+                        If m_Layers(i).IsLayerGroupStart Then
+                            tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group start:") & " " & m_Layers(i).GetLayerName(), dummyDIB, True
+                        Else
+                            tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Group end:") & " " & m_Layers(i).GetLayerName(), dummyDIB, True
+                        End If
+                        
+                        'Fill in any remaining layer properties
+                        With m_Layers(i)
+                            tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
+                            tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+                        End With
+                
+                    End If
+                    
+                End If
+                
             End If
         
 SkipLayer:

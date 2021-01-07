@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.340</langversion>
+<langversion>1.0.341</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3720,7 +3720,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSP.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pdPSP.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -13360,8 +13360,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5165 phrases. -->
-<!-- 2636 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5169 phrases. -->
+<!-- 2640 are duplicates, so only 2529 unique phrases have been written to file. -->
 <!-- These 2529 phrases contain approximately 11614 total words. -->
 
 </pdData>

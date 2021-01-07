@@ -38,7 +38,7 @@ Option Explicit
 
 'PSP files contain a *lot* of information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.
-Public Const PSP_DEBUG_VERBOSE As Boolean = True
+Public Const PSP_DEBUG_VERBOSE As Boolean = False
 
 'PSP loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.

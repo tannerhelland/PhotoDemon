@@ -45,7 +45,7 @@ Private m_InitialOffset As Long, m_TotalLength As Long
 ' the prefacing length marker to ensure the header is always loaded correctly.  (Same goes
 ' for old PSP versions that may not fill this entire header struct.)
 Private Type PSP_LayerHeader
-    pspl_Name As String     'PD will automatically generate this from ASCII or UTF-8 source as necessary
+    pspl_Name As String     'PD will automatically generate this from ASCII or UTF-8 source as necessary (it varies by PSP version)
     pspl_LayerType As PSPLayerType
     pspl_ImageRect As RectL
     pspl_SavedImageRect As RectL
@@ -71,9 +71,9 @@ Private Type PSP_LayerHeader
     'Any following fields are internal PhotoDemon ones; they are not part of actual PSP Files.
     ' (These fields may also be filled using data from embedded sub-blocks in the file)
     pspl_LayerOK As Boolean
+    pspl_LayerHasPixels As Boolean
     pspl_OriginalActiveLayer As Boolean
-    pspl_IsGroup As Boolean
-    pspl_GroupCount As Long
+    pspl_GroupStart As Boolean
     
 End Type
 
@@ -83,6 +83,12 @@ Private m_LayerHeader As PSP_LayerHeader
 ' following the layer header.  This class is guaranteed to be non-null if a sub-block was found,
 ' but it's obviously up to this class to make sense of the information found in the sub-block.
 Private m_LayerSubBlock As pdPSPBlock
+
+'Group-type layers behave a differently from their analog in other formats (e.g. PSD).  Group start
+' markers contain a count of how many "child" layers are in that group, *not* counting "grandchildren"
+' (e.g. nested groups).  PhotoDemon will attempt to use this to restore groups in the final image
+' as best it can.
+Private m_NumLayersInGroup As Long, m_GroupLinked As Boolean
 
 'Each layer is comprised of 0-5 channels.  Note that even in a 3-color RGB image, certain layer types
 ' (masks, adjustment layers, etc) may only have one channel - so you can't use the color-type of the
@@ -167,6 +173,10 @@ Friend Function ConstructMatchingDIB(ByRef srcPalette() As RGBQuad, ByVal srcPal
 End Function
 
 'All Get-prefixed functions are only valid after LoadLayer has been called (and the function has returned)
+Friend Function GetLayerBlendMode_PSP() As PSPBlendModes
+    GetLayerBlendMode_PSP = m_LayerHeader.pspl_BlendMode
+End Function
+
 Friend Function GetLayerBlendMode() As PD_BlendMode
     
     Select Case m_LayerHeader.pspl_BlendMode
@@ -213,7 +223,7 @@ Friend Function GetLayerBlendMode() As PD_BlendMode
         Case bmLAYER_BLEND_TRUE_LIGHTNESS
             GetLayerBlendMode = BM_Luminosity
         Case bmLAYER_BLEND_ADJUST
-            GetLayerBlendMode = BM_Normal 'No one knows what this actually does :p
+            GetLayerBlendMode = BM_Normal 'No one knows what this actually does (it's possibly a flag reserved for adjustment layers?)
         Case Else
             InternalError "GetLayerBlendMode", "unknown blendmode: " & m_LayerHeader.pspl_BlendMode, Nothing
             GetLayerBlendMode = BM_Normal
@@ -241,6 +251,10 @@ Friend Function GetLayerOpacity() As Single
     GetLayerOpacity = m_LayerHeader.pspl_Opacity
 End Function
 
+Friend Function GetLayerType() As PSPLayerType
+    GetLayerType = m_LayerHeader.pspl_LayerType
+End Function
+
 Friend Function GetLayerVisibility() As Boolean
     GetLayerVisibility = (m_LayerHeader.pspl_Flags And keVisibleFlag) = keVisibleFlag
 End Function
@@ -249,9 +263,21 @@ Friend Function GetLayerWasActiveLayer() As Boolean
     GetLayerWasActiveLayer = m_LayerHeader.pspl_OriginalActiveLayer
 End Function
 
+Friend Function GetNumLayersInGroup() As Long
+    GetNumLayersInGroup = m_NumLayersInGroup
+End Function
+
+Friend Function IsLayerGroupStart() As Boolean
+    IsLayerGroupStart = m_LayerHeader.pspl_GroupStart
+End Function
+
 'Only valid after LoadLayer has been called (and the function has returned)
 Friend Function IsLayerOK() As Boolean
     IsLayerOK = m_LayerHeader.pspl_LayerOK
+End Function
+
+Friend Function IsLayerPixelBased() As Boolean
+    IsLayerPixelBased = m_LayerHeader.pspl_LayerHasPixels
 End Function
 
 'Assuming the source stream is pointing at the start of a layer block, attempt to load the layer.
@@ -276,8 +302,6 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     
     'The caller should have already performed block validation, but we want to be extra careful.
     Const PSP_BLOCK_MARKER As Long = &H4B427E
-    Dim blockID As PSPBlockID, blockLength As Long
-    
     If (srcStream.ReadLong() <> PSP_BLOCK_MARKER) Then
         LoadLayer = psp_Failure
         InternalError funcName, "stream misaligned", srcWarnings
@@ -404,13 +428,18 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'If any validation tests failed, exit now - but critically, remember to restore stream position
     ' before bailing!
     If (okToProceed <> psp_Success) Then
+        
         If dimensionsExpected Then
             InternalError funcName, "WARNING: one or more critical validations failed.  This layer will not be imported.", srcWarnings
         Else
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping layer """ & m_LayerHeader.pspl_Name & """, type: " & ImageFormats_PSP.PSP_GetLayerTypeName(m_LayerHeader.pspl_LayerType) & "..."
         End If
+        
+        m_LayerHeader.pspl_LayerHasPixels = False
+        
         LoadLayer = okToProceed
         GoTo EarlyTermination
+        
     End If
     
     'potential TODO: more validations depending on layer type?  It's hard to guess at "valid"
@@ -530,11 +559,23 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         'The spec explicitly allows future expansion fields.  Use the chunk length to skip ahead.
         srcStream.SetPosition bmpHeaderOffset + bmpHeaderChunkSize, FILE_BEGIN
         
-        'If bitmaps and/or channels do not exist, exit now
+        'If bitmaps and/or channels do not exist, mark the layer as good (if it's not expected to
+        ' have pixels, obviously) but do not attempt to process it further!
         If (m_BitmapCount <= 0) Or (m_ChannelCount <= 0) Then
+            
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "This layer has no raster data (" & m_BitmapCount & ":" & m_ChannelCount & "); skipping to end of layer block..."
-            LoadLayer = psp_Warning
+            
+            m_LayerHeader.pspl_LayerHasPixels = False
+            If (Not dimensionsExpected) Then
+                m_LayerHeader.pspl_LayerOK = True
+                LoadLayer = psp_Success
+            Else
+                m_LayerHeader.pspl_LayerOK = False
+                LoadLayer = psp_Warning
+            End If
+            
             GoTo EarlyTermination
+            
         Else
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Layer contains non-zero bitmaps/channels: " & m_BitmapCount & ", " & m_ChannelCount
         End If
@@ -592,6 +633,7 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
         
         'We can finally mark this layer as OK; yay!
         m_LayerHeader.pspl_LayerOK = True
+        m_LayerHeader.pspl_LayerHasPixels = True
         
     Else
         InternalError funcName, "no valid channels found; layer will be ignored", srcWarnings
@@ -615,6 +657,26 @@ InternalVBError:
     
 End Function
 
+'This dummy function is used internally by PD to mark the start of layer groups
+' (since PSP files don't embed this automatically; instead, they use ref-counting and only
+' embed *end* markers uuuuuugh).
+Friend Sub LoadLayer_GroupMarker(ByRef srcLayerName As String, ByVal srcLayerVisibility As Long, ByVal srcLayerBlendMode As PSPBlendModes, ByVal srcLayerOpacity As Single)
+    With m_LayerHeader
+        .pspl_BlendMode = srcLayerBlendMode
+        .pspl_LayerHasPixels = False
+        .pspl_LayerOK = True
+        .pspl_LayerType = keGLTGroup
+        .pspl_Name = srcLayerName
+        .pspl_Opacity = srcLayerOpacity
+        If srcLayerVisibility Then .pspl_Flags = keVisibleFlag
+        .pspl_GroupStart = True
+    End With
+End Sub
+
+Friend Sub MarkAsActiveLayer()
+    m_LayerHeader.pspl_OriginalActiveLayer = True
+End Sub
+
 'Note the requirements for stream positioning before calling this function!  It requires
 ' specific stream alignment to work.
 Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnings As pdStringStack, ByRef srcHeader As PSPImageHeader) As PD_PSPResult
@@ -628,6 +690,9 @@ Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnin
         Exit Function
     End If
     
+    Dim streamPosAtEntry As Long
+    streamPosAtEntry = srcStream.GetPosition()
+    
     'Handling is obviously contingent on block type
     Select Case m_LayerSubBlock.GetBlockID()
     
@@ -639,6 +704,15 @@ Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnin
         
         'Group layer (start markers only)
         Case PSP_GROUP_EXTENSION_BLOCK
+            
+            'Group layers are incredibly simple: they just store a chunk size (which we can ignore;
+            ' the parent layer will take care of stream alignment for us), number of layers in the
+            ' group, and whether the group is linked.
+            If (srcStream.ReadLong() > 4) Then
+                m_NumLayersInGroup = srcStream.ReadLong()
+                m_GroupLinked = (srcStream.ReadByte() <> 0)
+                ParseLayerSubBlock = psp_Success
+            End If
         
         'Mask layer
         Case PSP_MASK_EXTENSION_BLOCK
@@ -648,17 +722,16 @@ Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnin
         
         'Future-proofing
         Case Else
-            InternalError funcName, "unknown layer sub-block: " & m_LayerSubBlock.GetBlockID(), srcWarnings
+            
+            'Block "33" shows up constantly in modern PSP files.  No one knows what it does.
+            ' Don't pollute the debug log with reports for that particular mystery ID.
+            If (m_LayerSubBlock.GetBlockID() > 33) Then InternalError funcName, "unknown layer sub-block: " & m_LayerSubBlock.GetBlockID(), srcWarnings
             ParseLayerSubBlock = psp_Warning
             Exit Function
     
     End Select
     
 End Function
-
-Friend Sub MarkAsActiveLayer()
-    m_LayerHeader.pspl_OriginalActiveLayer = True
-End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, ByRef parentWarningStack As pdStringStack, Optional ByVal writeDebugLog As Boolean = True)
     
