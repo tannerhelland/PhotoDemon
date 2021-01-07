@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 18/June/18
 'Last update: unify process property handling between this module and the Undo engine; both now operate directly

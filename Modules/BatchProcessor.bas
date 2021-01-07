@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 '***************************************************************************
 'PhotoDemon Macro Interface
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 10/21/01
 'Last updated: 21/June/18
 'Last update: better segregate functionality into discrete chunks; this lets us reuse things like the

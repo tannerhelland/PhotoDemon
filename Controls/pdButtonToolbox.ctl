@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Toolbox Button control
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 15/May/19
 'Last update: add "flashing" support, for drawing attention to a given button

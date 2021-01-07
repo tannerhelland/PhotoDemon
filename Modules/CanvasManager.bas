@@ -1,7 +1,7 @@
 Attribute VB_Name = "CanvasManager"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
-'Copyright 2002-2020 by Tanner Helland
+'Copyright 2002-2021 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 11/December/18
 'Last update: migrate various PDImage-specific functions to the new PDImage-specific module,

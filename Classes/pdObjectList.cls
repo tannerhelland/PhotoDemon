@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PD Object List Manager
-'Copyright 2017-2020 by Tanner Helland
+'Copyright 2017-2021 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 07/October/20
 'Last update: new support for run-time resizing of any arbitrary child dialog, with full UI reflow

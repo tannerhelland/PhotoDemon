@@ -499,7 +499,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Editor Dialog
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
 'Last updated: 03/March/19
 'Last update: new "collection" panel to simplify the process of reusing gradients
@@ -746,7 +746,7 @@ End Sub
 Private Sub ChangeActivePanel(ByVal buttonIndex As Long)
     
     Dim i As Long
-    For i = picContainer.lBound To picContainer.ubound
+    For i = picContainer.lBound To picContainer.UBound
         
         'Show the primary container for this panel
         picContainer(i).Visible = (i = buttonIndex)

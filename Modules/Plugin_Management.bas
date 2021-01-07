@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 'Core Plugin Manager
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 13/February/19
 'Last update: integrate libdeflate as a permanent plugin

@@ -148,7 +148,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animation settings dialog
-'Copyright 2019-2020 by Tanner Helland
+'Copyright 2019-2021 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 19/November/20
 'Last update: convert to new, modernized run-time resize engine

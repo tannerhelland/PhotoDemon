@@ -1,10 +1,10 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 30/December/20
-'Last update: start roughing out PaintShop Pro import support
+'Last updated: 07/January/21
+'Last update: PSP (PaintShop Pro) import support is pretty much complete!
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
@@ -1342,11 +1342,8 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     Dim cPSP As pdPSP
     Set cPSP = New pdPSP
     
-    'Validate the potential PSP file
-    LoadPSP = cPSP.IsFilePSP(srcFile)
-    
-    'If validation passes, attempt a full load
-    If LoadPSP Then LoadPSP = (cPSP.LoadPSP(srcFile, dstImage, dstDIB) < psp_Failure)
+    'Validate (and if valid, load) the potential PSP file in one fell swoop
+    LoadPSP = (cPSP.LoadPSP(srcFile, dstImage, dstDIB) < psp_Failure)
     
     'Perform some PD-specific object initialization before exiting
     If LoadPSP And (Not dstImage Is Nothing) Then
@@ -1354,7 +1351,7 @@ Private Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalFileFormat PDIF_PSP
         dstImage.NotifyImageChanged UNDO_Everything
         dstImage.SetOriginalColorDepth cPSP.GetOriginalColorDepth()
-        dstImage.SetOriginalGrayscale cPSP.IsGrayscale()
+        dstImage.SetOriginalGrayscale cPSP.IsPSPGrayscale()
         dstImage.SetOriginalAlpha cPSP.HasAlpha()
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,

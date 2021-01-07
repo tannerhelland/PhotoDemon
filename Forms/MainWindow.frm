@@ -1799,13 +1799,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README file for additional information on licensing and redistribution.
 
-'PhotoDemon is Copyright 1999-2020 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2021 by Tanner Helland, tannerhelland.com
 
 'Please visit https://photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Primary PhotoDemon Window
-'Copyright 2002-2020 by Tanner Helland
+'Copyright 2002-2021 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 27/March/18
 'Last update: new export menu items added

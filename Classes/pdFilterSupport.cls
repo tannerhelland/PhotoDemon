@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright 2013-2020 by Tanner Helland
+'Copyright 2013-2021 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 20/February/20
 'Last update: massive performance improvements via new wrapper functions; myriad bug-fixes for weird

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2020 by Tanner Helland
+'Copyright 2012-2021 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 17/August/20
 'Last update: new .GetThumbnail function; I'm tired of writing external wrappers for this behavior!

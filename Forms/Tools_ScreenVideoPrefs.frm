@@ -176,7 +176,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated screen capture dialog
-'Copyright 2020-2020 by Tanner Helland
+'Copyright 2020-2021 by Tanner Helland
 'Created: 01/July/20
 'Last updated: 24/July/20
 'Last update: add preference for a countdown before recording; set to 0 to record immediately

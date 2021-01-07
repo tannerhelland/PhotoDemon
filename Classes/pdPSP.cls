@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
-'Copyright 2020-2020 by Tanner Helland
+'Copyright -2021-2021 by Tanner Helland
 'Created: 30/December/20
 'Last updated: 06/January/21
 'Last update: add support for 16-bpp grayscale images
@@ -21,9 +21,7 @@ Attribute VB_Exposed = False
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
 '
-'As of December 2020, this class is under heavy construction.  Many features are not yet supported.
-'
-'As always, import support is being tackled first.  Export support may be added later.
+'As always, import support was tackled first.  Export support may be added later.
 '
 'As with all 3rd-party PSP engines, Paint Shop Pro has many features that don't have direct analogs
 ' in PhotoDemon.  Such features are still extracted by this class, but they will not "appear" in the
@@ -183,8 +181,8 @@ Friend Function IsFilePSP(ByRef srcFile As String) As Boolean
     IsFilePSP = (Step1_ValidateHeader(srcFile) < psp_Failure)
 End Function
 
-Friend Function IsGrayscale() As Boolean
-    IsGrayscale = m_ImageHeader.psph_IsGrayscale
+Friend Function IsPSPGrayscale() As Boolean
+    IsPSPGrayscale = m_ImageHeader.psph_IsGrayscale
 End Function
 
 'Simplified wrapper to load a PSD automatically.

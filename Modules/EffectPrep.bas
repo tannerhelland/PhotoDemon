@@ -1,7 +1,7 @@
 Attribute VB_Name = "EffectPrep"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 25/July/17
 'Last update: greatly optimize effects when an active selection is present
@@ -63,8 +63,8 @@ Public Type FilterInfo
     'The colorDepth of the current DIB, specified as BITS per pixel; at present, this is always 32.
     colorDepth As Long
     
-    'BytesPerPixel is simply colorDepth / 8.  It is provided for convenience, to help callers calculate stride.
-    BytesPerPixel As Long
+    'bytesPerPixel is simply colorDepth / 8.  It is provided for convenience, to help callers calculate stride.
+    bytesPerPixel As Long
     
     'When in preview mode, the on-screen image is typically shrunk to some smaller-than-actual size.  If an
     ' effect or filter operates on a radius (e.g. "blur radius 20"), the previewed radius value must be shrunk
@@ -223,7 +223,7 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
         .maxX = workingDIB.GetDIBWidth - 1
         .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
-        .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
+        .bytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
         If previewTarget.ViewportFitFullImage Then
             If (srcDIB.GetDIBWidth <> 0) Then
                 .previewModifier = workingDIB.GetDIBWidth / srcDIB.GetDIBWidth
@@ -502,7 +502,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
         .maxX = workingDIB.GetDIBWidth - 1
         .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
-        .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
+        .bytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
         If isPreview Then
             If previewTarget.ViewportFitFullImage Then
                 .previewModifier = workingDIB.GetDIBWidth / PDImages.GetActiveImage.GetActiveDIB().GetDIBWidth

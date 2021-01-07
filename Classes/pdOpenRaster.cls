@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon OpenRaster Container and Parser
-'Copyright 2019-2020 by Tanner Helland
+'Copyright 2019-2021 by Tanner Helland
 'Created: 08/January/19
 'Last updated: 04/February/19
 'Last update: reduce memory consumption at import-time if source PNGs are stored without compression

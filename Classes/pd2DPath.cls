@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Path Wrapper
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
 'Last updated: 23/December/20
 'Last update: large refactor, including inlining of all GDI+ calls

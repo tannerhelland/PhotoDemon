@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "String Stack" Class
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 05/February/15
 'Last updated: 23/October/20
 'Last update: add new function to blank a string in the array; this is useful for freeing memory while

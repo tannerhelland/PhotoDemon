@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Canvas Size Handler
-'Copyright 2013-2020 by Tanner Helland
+'Copyright 2013-2021 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 09/January/17
 'Last update: overhaul anchor point code to use arrows rendered at run-time (instead of fixed resources)
@@ -293,14 +293,14 @@ End Function
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button (at
 ' present), simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
     ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
     ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
 Private Sub cmdBar_ReadCustomPresetData()
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
     m_CurrentAnchor = CLng(cmdBar.RetrievePresetData("currentAnchor"))
     UpdateAnchorButtons
 End Sub
@@ -314,7 +314,7 @@ Private Sub cmdBar_ResetClick()
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.UnitOfMeasurement = mu_Pixels
     ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
         
     'Set the middle position as the anchor
     m_CurrentAnchor = 4

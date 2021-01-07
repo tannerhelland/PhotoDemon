@@ -30,9 +30,9 @@ Begin VB.Form FormStraighten
       TabIndex        =   3
       Top             =   3120
       Width           =   5415
-      _extentx        =   9551
-      _extenty        =   1720
-      caption         =   "grid"
+      _ExtentX        =   9551
+      _ExtentY        =   1720
+      Caption         =   "grid"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750
@@ -40,8 +40,8 @@ Begin VB.Form FormStraighten
       TabIndex        =   0
       Top             =   5790
       Width           =   11655
-      _extentx        =   20558
-      _extenty        =   1323
+      _ExtentX        =   20558
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -49,9 +49,9 @@ Begin VB.Form FormStraighten
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      disablezoompan  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -59,12 +59,12 @@ Begin VB.Form FormStraighten
       TabIndex        =   2
       Top             =   2160
       Width           =   5415
-      _extentx        =   9551
-      _extenty        =   1244
-      caption         =   "angle"
-      sigdigits       =   2
-      max             =   15
-      min             =   -15
+      _ExtentX        =   9551
+      _ExtentY        =   1244
+      Caption         =   "angle"
+      Min             =   -15
+      Max             =   15
+      SigDigits       =   2
    End
 End
 Attribute VB_Name = "FormStraighten"
@@ -74,7 +74,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 29/April/20
 'Last update: allow user to toggle preview grid; use pd2D for grid rendering

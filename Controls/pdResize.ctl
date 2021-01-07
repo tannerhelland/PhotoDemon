@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
 'Last updated: 03/May/18
 'Last update: add esoteric unit support (mm, pt, pc)
@@ -432,11 +432,11 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Lock aspect ratio can be set/retrieved by the owning dialog
-Public Property Get LockAspectRatio() As Boolean
-    LockAspectRatio = cmdAspectRatio.Value
+Public Property Get AspectRatioLock() As Boolean
+    AspectRatioLock = cmdAspectRatio.Value
 End Property
 
-Public Property Let LockAspectRatio(newSetting As Boolean)
+Public Property Let AspectRatioLock(newSetting As Boolean)
     cmdAspectRatio.Value = newSetting
     SyncDimensions True
 End Property
@@ -1007,7 +1007,7 @@ Public Function GetCurrentSettingsAsXML() As String
     
         'We do store the "lock aspect ratio" setting, but note that this setting is deliberately
         ' *not used* by SetAllSettingsFromXML(), below.
-        .AddParam "lockaspectratio", Me.LockAspectRatio
+        .AddParam "lockaspectratio", Me.AspectRatioLock
     
         .AddParam "sizeunit", Me.UnitOfMeasurement
         .AddParam "dpiunit", Me.UnitOfResolution
@@ -1028,10 +1028,10 @@ Public Sub SetAllSettingsFromXML(ByVal xmlData As String)
     Set cParams = New pdSerialize
     cParams.SetParamString xmlData
     
-    'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
-    ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
-    ' aspect ratio!)
-    Me.LockAspectRatio = False
+    'Kind of funny, but we must always set the .AspectRatioLock property to FALSE in order to
+    ' apply a new size to the image.  (If we don't do this, the new sizes will be clamped to
+    ' the current image's aspect ratio!)
+    Me.AspectRatioLock = False
     
     With cParams
         Me.UnitOfMeasurement = .GetLong("sizeunit", mu_Pixels)

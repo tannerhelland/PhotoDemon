@@ -1,7 +1,7 @@
 Attribute VB_Name = "UIImages"
 '***************************************************************************
 'PhotoDemon Central UI image cache
-'Copyright 2018-2020 by Tanner Helland
+'Copyright 2018-2021 by Tanner Helland
 'Created: 13/July/18
 'Last updated: 27/August/20
 'Last update: remove ResetCache function; this was causing issues if the user loaded the theme dialog,

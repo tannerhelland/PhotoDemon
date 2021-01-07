@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Master Palette Interface
-'Copyright 2017-2020 by Tanner Helland
+'Copyright 2017-2021 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 24/April/19
 'Last update: finalize expansion of alpha-capable (RGBA) palette generators

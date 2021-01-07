@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
-'Copyright 2013-2020 by Tanner Helland and contributors
+'Copyright 2013-2021 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
 'Last updated: 21/June/18
 'Last update: new workaround to correctly capture keypress state after PD loses focus via keyboard actions

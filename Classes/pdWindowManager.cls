@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright 2013-2020 by Tanner Helland
+'Copyright 2013-2021 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 04/May/20
 'Last update: remove workarounds for old Win 10 builds (which are no longer relevant)
@@ -156,7 +156,7 @@ Private Type POINTL
     y As Long
 End Type
 
-Private Type MINMAXINFO
+Private Type MinMaxInfo
     Reserved As POINTL
     MaxSize As POINTL
     maxPosition As POINTL
@@ -164,7 +164,7 @@ Private Type MINMAXINFO
     MaxTrackSize As POINTL
 End Type
 
-Private m_tmpMinMax As MINMAXINFO
+Private m_tmpMinMax As MinMaxInfo
 
 '***********************************************************************************************
 '  GENERIC HELPER FUNCTIONS: VB-friendly wrappers to window-related APIs

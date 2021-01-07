@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 10/May/19
 'Last update: raise key events for arrow keys; in rare circumstances (e.g. pdSearchBox) our parent window
@@ -675,7 +675,7 @@ Private Sub Class_Terminate()
     
 End Sub
 
-Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean, ByVal isKeyDown As Boolean) As Long
+Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean, ByVal keyIsDown As Boolean) As Long
     
     'Inside keydown/up messages, we want to cache WM_CHAR, if one exists.  (If we don't do this, VB will eat unicode
     ' character codes inside its TranslateAccelerator handler.)
@@ -689,7 +689,7 @@ Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, By
     If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
     If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
     If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
-    If isKeyDown Then
+    If keyIsDown Then
         RaiseEvent KeyDown(retShiftConstants, wParam, msgEaten)
     Else
         RaiseEvent KeyUp(retShiftConstants, wParam, msgEaten)

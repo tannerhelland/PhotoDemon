@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI"
 '***************************************************************************
 'GDI interop manager
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 03/April/2001
 'Last updated: 28/June/16
 'Last update: continued clean-up of PD-specific code
@@ -202,7 +202,7 @@ Public Function GetDDBFromDIB(ByRef srcDIB As pdDIB) As Long
 End Function
 
 'Add your own error-handling behavior here, as desired
-Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal errNum As Long = 0)
     PDDebug.LogAction "WARNING!  The GDI interface encountered an error: """ & errName & """ - " & errDescription
-    If (ErrNum <> 0) Then PDDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
+    If (errNum <> 0) Then PDDebug.LogAction "(Also, an error number was reported: " & errNum & ")"
 End Sub

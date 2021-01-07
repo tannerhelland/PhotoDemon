@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Manager
-'Copyright 2015-2020 by Tanner Helland
+'Copyright 2015-2021 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 27/February/20
 'Last update: switch XML serializer to use strings instead of hard-coded enums

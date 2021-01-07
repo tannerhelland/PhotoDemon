@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon ICO (Icon) Container and Import/Export engine
-'Copyright 2020-2020 by Tanner Helland
+'Copyright 2020-2021 by Tanner Helland
 'Created: 07/May/20
 'Last updated: 21/May/20
 'Last update: finish up full export support for all color-depths

@@ -67,7 +67,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
@@ -137,7 +137,7 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
     
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
     
     Select Case m_ResizeTarget
     
@@ -168,7 +168,7 @@ Private Sub cmdBar_ResetClick()
     
     End Select
 
-    ucResize.LockAspectRatio = True
+    ucResize.AspectRatioLock = True
     
 End Sub
 
@@ -201,7 +201,7 @@ Private Sub Form_Activate()
     'Warn about flattening if the entire image is being content-aware-resized
     lblFlatten.Visible = (m_ResizeTarget = pdat_Image)
     
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
 
 End Sub
 

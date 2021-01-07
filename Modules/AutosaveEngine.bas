@@ -1,7 +1,7 @@
 Attribute VB_Name = "Autosaves"
 '***************************************************************************
 'Image Autosave Handler
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 18/January/14
 'Last updated: 14/September/20
 'Last update: rely on new Mutex class for detecting parallel sessions and modifying behavior accordingly

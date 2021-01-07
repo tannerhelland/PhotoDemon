@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIBs"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2020 by Tanner Helland
+'Copyright 2012-2021 by Tanner Helland
 'Created: 27/March/15 (though many of the individual functions are much older!)
 'Last updated: 20/May/20
 'Last update: add a dedicated ReverseScanlines function for converting top-down to bottom-up DIBs

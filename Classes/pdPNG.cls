@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Container and Parser
-'Copyright 2018-2020 by Tanner Helland
+'Copyright 2018-2021 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 11/July/20
 'Last update: new streaming interface for generating APNGs.  This works better for animated screen captures,
@@ -5872,12 +5872,12 @@ Private Sub DeInterlaceNonPaletteData(ByVal idatIndex As Long, ByVal pxWidth As 
     ' n-bytes per pixel, plus 1 extra byte per scanline for the silly PNG "filter" byte indicators
     ' (which we don't need, as pixel data has already been unfiltered, but the render functions
     ' expect the bytes to be there).
-    Dim BytesPerPixel As Long, bppLoop As Long
-    BytesPerPixel = (m_Header.BitsPerPixel \ 8)
-    bppLoop = BytesPerPixel - 1
+    Dim bytesPerPixel As Long, bppLoop As Long
+    bytesPerPixel = (m_Header.BitsPerPixel \ 8)
+    bppLoop = bytesPerPixel - 1
     
     Dim newIdatSize As Long
-    newIdatSize = (pxWidth * pxHeight * BytesPerPixel) + pxHeight
+    newIdatSize = (pxWidth * pxHeight * bytesPerPixel) + pxHeight
     finalStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , newIdatSize
     finalStream.SetSizeExternally newIdatSize
     
@@ -5898,7 +5898,7 @@ Private Sub DeInterlaceNonPaletteData(ByVal idatIndex As Long, ByVal pxWidth As 
     ' will change).
     xFinal = pxWidth - 1
     yFinal = pxHeight - 1
-    newStride = (pxWidth * BytesPerPixel) + 1
+    newStride = (pxWidth * bytesPerPixel) + 1
         
     'Loop through each iteration, placing pixels as we go!
     Dim i As Long
@@ -5939,7 +5939,7 @@ Private Sub DeInterlaceNonPaletteData(ByVal idatIndex As Long, ByVal pxWidth As 
                 
             For x = startOffsetX To xFinal Step xLineOffset
                 For j = 0 To bppLoop
-                    dstBytes(1 + (y * newStride) + (x * BytesPerPixel) + j) = srcBytes(srcPxOffset)
+                    dstBytes(1 + (y * newStride) + (x * bytesPerPixel) + j) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
                 Next j
             Next x
@@ -5969,7 +5969,7 @@ Private Sub DeInterlaceNonPaletteData(ByVal idatIndex As Long, ByVal pxWidth As 
     m_YPixelCount(0) = pxHeight
     
     ReDim m_XByteCount(0) As Long
-    m_XByteCount(0) = (pxWidth * BytesPerPixel) + 1
+    m_XByteCount(0) = (pxWidth * bytesPerPixel) + 1
     
 End Sub
 

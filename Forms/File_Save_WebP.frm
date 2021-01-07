@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Google WebP Export Dialog
-'Copyright 2014-2020 by Tanner Helland
+'Copyright 2014-2021 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 09/May/16
 'Last update: convert dialog to new export engine

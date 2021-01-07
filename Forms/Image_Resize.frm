@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2020 by Tanner Helland
+'Copyright 2001-2021 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 10/July/18
 'Last update: expose dedicated options for pre-filtered bilinear and bicubic resampling
@@ -152,7 +152,7 @@ End Sub
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-    ucResize.LockAspectRatio = False
+    ucResize.AspectRatioLock = False
     ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
     ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
 End Sub
@@ -172,7 +172,7 @@ Private Sub cmdBar_ResetClick()
         
     End Select
     
-    ucResize.LockAspectRatio = True
+    ucResize.AspectRatioLock = True
     cboResample.ListIndex = 0
     
     'Stretch to new aspect ratio by default
@@ -198,7 +198,7 @@ Private Sub Form_Activate()
         ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
     End If
     
-    ucResize.LockAspectRatio = True
+    ucResize.AspectRatioLock = True
 
 End Sub
 

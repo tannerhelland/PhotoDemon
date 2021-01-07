@@ -307,7 +307,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Move/Size Tool Panel
-'Copyright 2013-2020 by Tanner Helland
+'Copyright 2013-2021 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 09/November/20
 'Last update: add a dedicated lock for layer aspect ratio (see https://github.com/tannerhelland/PhotoDemon/issues/342)
