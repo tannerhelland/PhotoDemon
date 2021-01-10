@@ -90,6 +90,11 @@ Private m_LayerSubBlock As pdPSPBlock
 ' as best it can.
 Private m_NumLayersInGroup As Long, m_GroupLinked As Boolean
 
+'Vector layers are comprised of one or more vector shapes (which can, in turn, be comprised of
+' one or more vector shapes, ad infinitum).  This collection stores any such shapes.  Note that they
+' can be standard vector shapes, or text items - PSP groups these under the same "vector" heading.
+Private m_NumVectorShapes As Long, m_Shapes() As pdPSPShape
+
 'Each layer is comprised of 0-5 channels.  Note that even in a 3-color RGB image, certain layer types
 ' (masks, adjustment layers, etc) may only have one channel - so you can't use the color-type of the
 ' parent image to interpret individual layer channel contents.  You need to check each channel's
@@ -704,6 +709,38 @@ Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnin
         'Vector layer
         Case PSP_VECTOR_EXTENSION_BLOCK
         
+            'Vector layers comprise both vector shapes *and* text layers.  (Much like PD,
+            ' these layer types are closely related in PSP files.)  We parse them similarly.
+            Dim chunkSize As Long
+            chunkSize = srcStream.ReadLong()
+            
+            If (chunkSize > 4) Then
+                
+                m_NumVectorShapes = srcStream.ReadLong()
+                ReDim m_Shapes(0 To m_NumVectorShapes - 1) As pdPSPShape
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Layer reports " & m_NumVectorShapes & " shapes"
+                
+                'Future expansions fields are explicitly allowed.  Skip to the end of the chunk.
+                srcStream.SetPosition streamPosAtEntry + chunkSize, FILE_BEGIN
+                
+                'Attempt to parse [n] vector shapes
+                Dim i As Long
+                For i = 0 To m_NumVectorShapes - 1
+                    Set m_Shapes(i) = New pdPSPShape
+                    If (m_Shapes(i).LoadShape(srcStream, srcWarnings, srcHeader) >= psp_Failure) Then
+                        InternalError funcName, "failed to parse shape #" & (i + 1), srcWarnings
+                        ParseLayerSubBlock = psp_Failure
+                        Exit Function
+                    Else
+                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Parsed vector shape #" & (i + 1) & " successfully"
+                    End If
+                Next i
+                
+            Else
+                InternalError funcName, "empty vector block?", srcWarnings
+                ParseLayerSubBlock = psp_Success
+            End If
+        
         'Group layer (start markers only)
         Case PSP_GROUP_EXTENSION_BLOCK
             
@@ -738,7 +775,7 @@ End Function
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, ByRef parentWarningStack As pdStringStack, Optional ByVal writeDebugLog As Boolean = True)
     
     Dim errText As String
-    errText = "pdPSPChannel." & funcName & "() reported an error: " & errDescription
+    errText = "pdPSPLayer." & funcName & "() reported an error: " & errDescription
     If (Not parentWarningStack Is Nothing) Then parentWarningStack.AddString errText
     
     If UserPrefs.GenerateDebugLogs Then

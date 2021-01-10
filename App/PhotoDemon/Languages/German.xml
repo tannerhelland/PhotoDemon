@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.305</langversion>
+<langversion>9.0.369</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3722,7 +3722,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Composite image</original>
-<translation></translation>
+<translation>Zusammengesetztes (composite) Bild</translation>
 </phrase>
 
 <!-- pdPSP.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->

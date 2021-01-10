@@ -349,7 +349,9 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
         
         'Validate version number only if the original checksum passed
         If (okToProceed < psp_Failure) Then
-        
+            
+            PDDebug.LogAction "File is Paintshop Pro (PSP) format."
+            
             m_ImageHeader.psph_VersionMajor = m_Stream.ReadInt()
             m_ImageHeader.psph_VersionMinor = m_Stream.ReadInt()
             m_PSPisV5 = (m_ImageHeader.psph_VersionMajor <= 3)
