@@ -74,6 +74,7 @@ Private Type PSP_LayerHeader
     pspl_LayerHasPixels As Boolean
     pspl_OriginalActiveLayer As Boolean
     pspl_GroupStart As Boolean
+    pspl_VectorOK As Boolean
     
 End Type
 
@@ -172,6 +173,39 @@ Friend Function ConstructMatchingDIB(ByRef srcPalette() As RGBQuad, ByVal srcPal
         Else
             If (Not ConstructMatchingDIB) Then m_LayerHeader.pspl_LayerOK = False
         End If
+        
+    End If
+    
+End Function
+
+'Only valid after LoadLayer has been called (and the function has returned),
+' and the header's LayerOK flags has been set to TRUE.
+Friend Function ConstructMatchingDIB_Vector(ByRef srcPalette() As RGBQuad, ByVal srcPaletteSize As Long, ByRef srcHeader As PSPImageHeader) As Boolean
+    
+    Const funcName As String = "ConstructMatchingDIB_Vector"
+    
+    If (Me.IsLayerOK() And (m_NumVectorShapes > 0)) Then
+        
+        'Vector layers do not store layer boundaries, which makes them complicated to convert
+        ' to raster objects.  Start with an image-sized layer; we'll trim it layer if possible.
+        Set m_LayerDIB = New pdDIB
+        m_LayerDIB.CreateBlank srcHeader.psph_Width, srcHeader.psph_Height, 32, 0, 0
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+        
+        'Ask each shape to render itself into the raster layer
+        Dim i As Long, numSuccessfulRenders As Long
+        For i = 0 To m_NumVectorShapes - 1
+            If m_Shapes(i).IsShapeOK Then
+                If m_Shapes(i).RenderShapeIntoDIB(m_LayerDIB, srcPalette, srcPaletteSize, srcHeader) Then
+                    numSuccessfulRenders = numSuccessfulRenders + 1
+                Else
+                    InternalError funcName, "shape render failed: " & i, Nothing
+                End If
+            End If
+        Next i
+        
+        m_LayerHeader.pspl_VectorOK = (numSuccessfulRenders > 0)
+        ConstructMatchingDIB_Vector = m_LayerHeader.pspl_VectorOK
         
     End If
     
@@ -278,11 +312,34 @@ End Function
 
 'Only valid after LoadLayer has been called (and the function has returned)
 Friend Function IsLayerOK() As Boolean
-    IsLayerOK = m_LayerHeader.pspl_LayerOK
+    
+    'Vector layer "OK" status varies by vector layer type
+    If (m_LayerHeader.pspl_LayerType = keGLTVector) Then
+        
+        'On vector layers, we need at least one valid shape object to consider a layer "OK"
+        If (m_NumVectorShapes > 0) Then
+            Dim i As Long
+            For i = 0 To m_NumVectorShapes - 1
+                If m_Shapes(i).IsShapeOK Then
+                    IsLayerOK = True
+                    Exit For
+                End If
+            Next i
+        End If
+        
+    'Raster layers are simpler: if they have good channel data, consider the whole layer OK
+    Else
+        IsLayerOK = m_LayerHeader.pspl_LayerOK
+    End If
+    
 End Function
 
 Friend Function IsLayerPixelBased() As Boolean
     IsLayerPixelBased = m_LayerHeader.pspl_LayerHasPixels
+End Function
+
+Friend Function IsVectorLayerAvailableAsRaster() As Boolean
+    IsVectorLayerAvailableAsRaster = m_LayerHeader.pspl_VectorOK
 End Function
 
 'Assuming the source stream is pointing at the start of a layer block, attempt to load the layer.
@@ -361,10 +418,15 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     
     'I won't comment all the following fields.  Refer to the spec for details.
     m_LayerHeader.pspl_LayerType = srcStream.ReadByte()
+    
+    'Image rects are strange beasts in PSP files.  They are only used for certain layer types, and you
+    ' have to perform union ops between the rects to calculate actual layer contents.  I've left debug
+    ' code related to them as I may need it if/when I implement mask support.
     srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_ImageRect), 16
-    'If PSP_DEBUG_VERBOSE Then Debug.Print m_LayerHeader.pspl_Name, m_LayerHeader.pspl_ImageRect.Left, m_LayerHeader.pspl_ImageRect.Top, m_LayerHeader.pspl_ImageRect.Right, m_LayerHeader.pspl_ImageRect.Bottom
     srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_SavedImageRect), 16
+    'If PSP_DEBUG_VERBOSE Then Debug.Print m_LayerHeader.pspl_Name, m_LayerHeader.pspl_ImageRect.Left, m_LayerHeader.pspl_ImageRect.Top, m_LayerHeader.pspl_ImageRect.Right, m_LayerHeader.pspl_ImageRect.Bottom
     'If PSP_DEBUG_VERBOSE Then Debug.Print m_LayerHeader.pspl_Name, m_LayerHeader.pspl_SavedImageRect.Left, m_LayerHeader.pspl_SavedImageRect.Top, m_LayerHeader.pspl_SavedImageRect.Right, m_LayerHeader.pspl_SavedImageRect.Bottom
+    
     m_LayerHeader.pspl_Opacity = CDbl(srcStream.ReadByte()) / 2.55
     m_LayerHeader.pspl_BlendMode = srcStream.ReadByte()
     
@@ -417,7 +479,9 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     dimensionsExpected = (m_LayerHeader.pspl_LayerType = keGLTRaster)
     dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTFloatingRasterSelection)
     dimensionsExpected = dimensionsExpected Or (m_LayerHeader.pspl_LayerType = keGLTMask)
-    'TODO: check dimensions of vector layers, too - they need to be OK for import
+    
+    'Note that you'd think you'd want to check vector layers here, but vector layers do *not*
+    ' store a layer boundary rect - an egregious oversight, I think, and a nightmare for validation.
     
     'First, discard any layers with obviously bad attributes.
     If ((m_LayerHeader.pspl_SavedImageRect.Right - m_LayerHeader.pspl_SavedImageRect.Left) <= 0) And dimensionsExpected Then

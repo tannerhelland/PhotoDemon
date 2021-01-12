@@ -964,14 +964,13 @@ Public Sub DeleteHiddenLayers()
     'Starting at the top and moving down, delete all hidden layers.
     Dim i As Long
     For i = PDImages.GetActiveImage.GetNumOfLayers - 1 To 0 Step -1
-    
         If Not PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
             PDImages.GetActiveImage.DeleteLayerByIndex i
         End If
     Next i
     
     'Set a new active layer
-    If activeLayerID = -1 Then
+    If (activeLayerID = -1) Then
         SetActiveLayerByIndex 0, False
     Else
         SetActiveLayerByID activeLayerID
@@ -1351,7 +1350,7 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     'With this information, we can now delete all image layers.
     Do
         PDImages.GetActiveImage.DeleteLayerByIndex 0
-    Loop While PDImages.GetActiveImage.GetNumOfLayers > 1
+    Loop While (PDImages.GetActiveImage.GetNumOfLayers > 1)
     
     'Note that the delete operation does not allow us to delete all layers.  (If there is only one layer present,
     ' it will exit without modifying the image.)  Because of that, the image will still retain one layer, which

@@ -15,20 +15,21 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2021 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 05/April/20
-'Last update: perf improvements to selection processing
+'Last updated: 11/January/21
+'Last update: harden against potential errors when rapidly creating/deleting layers on-the-fly
 '
-'The pdImage class is used to store information on each image loaded by the user.  One instance of this class
-' exists for each loaded image.
+'The pdImage class is used to store information on each image loaded by the user.
+' One instance of this class exists for each loaded image.
 '
-'This class doesn't do much its own processing.  At present, it's mainly just a container for key image properties,
-' like size, name, file path, format, Undo/Redo tracking - as well as the all-important array of pdLayer objects
-' that comprise the image's actual bitmap data.
+'This class doesn't do much its own processing.  At present, it's mainly just a container for
+' key image properties like name, file path, format, Undo/Redo tracking - as well as the
+' all-important array of pdLayer objects that comprise an image's actual bitmap data.
 '
-'Generally speaking, this class should rarely be instantiated directly.  If you need a temporary image, use pdDIB,
-' or if layer interactions are required, a single pdLayer instance (and its corresponding layerDIB).  This class
-' is quite heavy as it must track things like metadata, undo/redo handling, and other items, so avoid using it for
-' things like temporary image operations.
+'Generally speaking, this class should rarely be instantiated directly.  If you need a
+' temporary image, use pdDIB, or if layer interactions are required, a single pdLayer instance
+' (and its corresponding layerDIB).  This class is quite heavy as it must track things like
+' metadata, undo/redo handling, and other items, so avoid using it for things like temporary
+' image operations.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -357,19 +358,20 @@ Friend Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As L
         
     End If
     
-    'Initialize the new layer.  (This should already have been done at creation time, but it doesn't hurt to make sure.)
+    'Initialize the new layer.
+    ' (This should already have been done at creation time, but it doesn't hurt to make sure.)
     Set imgLayers(m_curLayer) = New pdLayer
     
     'Assign the layer a canonical ID value.
     imgLayers(m_curLayer).AssignLayerID m_numOfLayersEverCreated
     
+    'Return the new layer's ID value (which is just the number of layers ever created for this image)
+    CreateBlankLayer = imgLayers(m_curLayer).GetLayerID
+    
     'Increment our internal layer counts
     m_numOfLayersEverCreated = m_numOfLayersEverCreated + 1
     m_numOfLayers = m_numOfLayers + 1
     
-    'Return the new layer's ID value (which is the number of layers ever created for this image)
-    CreateBlankLayer = m_numOfLayersEverCreated - 1
-
 End Function
 
 Friend Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long = -1)
@@ -599,7 +601,14 @@ Friend Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     Next i
     
     'If we made it all the way here, the requested layer was not found.  Return Nothing.
-    Debug.Print "WARNING!  GetLayerByID received an invalid ID: " & requestedID
+    PDDebug.LogAction "WARNING!  GetLayerByID received an invalid ID: " & requestedID
+    For i = 0 To m_numOfLayers - 1
+        If (Not imgLayers(i) Is Nothing) Then
+            PDDebug.LogAction i & ": " & imgLayers(i).GetLayerID
+        Else
+            PDDebug.LogAction "(nothing)"
+        End If
+    Next i
     Set GetLayerByID = Nothing
     
 End Function
@@ -750,33 +759,46 @@ End Sub
 
 'Delete a given layer by ID.  The pdLayers stack will automatically be resized to match.
 Friend Sub DeleteLayerByID(ByVal srcLayerID As Long)
+    
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
         If (imgLayers(i).GetLayerID = srcLayerID) Then
-            DeleteLayerByIndex i
-            Exit For
+            Me.DeleteLayerByIndex i
+            Exit Sub
         End If
     Next i
+    
+    'If we reach this function, the ID in question wasn't found
+    PDDebug.LogAction "WARNING! pdImage.DeleteLayerByID couldn't find the requested ID: " & srcLayerID
+    
 End Sub
 
 'Delete a given layer by index.  The pdLayers stack will automatically be resized to match.
 Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
-    If (srcLayerIndex < 0) Or (srcLayerIndex >= m_numOfLayers) Then Exit Sub
+    If (srcLayerIndex < 0) Or (srcLayerIndex >= m_numOfLayers) Then
+        PDDebug.LogAction "WARNING: pdImage.DeleteLayerByIndex received a bad index: " & srcLayerIndex
+        Exit Sub
+    End If
     
     'If this is the last remaining layer, exit
     If (m_numOfLayers = 1) Then Exit Sub
     
     'Shift all layer references above this one downward
     Dim i As Long
-    For i = srcLayerIndex To m_numOfLayers - 2
-        Set imgLayers(i) = imgLayers(i + 1)
-    Next i
+    If (srcLayerIndex < m_numOfLayers - 1) Then
+        For i = srcLayerIndex To m_numOfLayers - 2
+            Set imgLayers(i) = imgLayers(i + 1)
+        Next i
+    End If
     
     'Shrink the layers array
     m_numOfLayers = m_numOfLayers - 1
     ReDim Preserve imgLayers(0 To m_numOfLayers - 1) As pdLayer
+    
+    'If this causes the current layer index to point at an invalid index, adjust it automatically
+    If (m_curLayer > m_numOfLayers - 1) Then m_curLayer = m_numOfLayers - 1
 
 End Sub
 

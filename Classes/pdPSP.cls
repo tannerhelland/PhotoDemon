@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright -2021-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 06/January/21
-'Last update: add support for 16-bpp grayscale images
+'Last updated: 11/January/21
+'Last update: preliminary support for rendering vector objects to PD raster layers
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -1285,6 +1285,19 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
                         groupCount(idxGroup) = m_Layers(numLayersFound).GetNumLayersInGroup()
                         Set groupReferences(idxGroup) = m_Layers(numLayersFound)
                         
+                    'On vector layers, attempt to build a raster version of the underlying vector data
+                    ElseIf (m_Layers(numLayersFound).GetLayerType = keGLTVector) Then
+                        
+                        If m_Layers(numLayersFound).ConstructMatchingDIB_Vector(m_MasterPalette, m_MasterPaletteCount, m_ImageHeader) Then
+                            
+                            'Apply color-management, if any
+                            If (Not m_ICCProfile Is Nothing) Then
+                                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
+                                ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
+                            End If
+                            
+                        End If
+                        
                     End If
                     
                 End If
@@ -1597,6 +1610,44 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                 
                     End If
                     
+                'Is this a vector layer?
+                ElseIf (m_Layers(i).GetLayerType = keGLTVector) Then
+                    
+                    If m_Layers(i).IsVectorLayerAvailableAsRaster() Then
+                        
+                        'Prep a new layer object
+                        newLayerID = dstImage.CreateBlankLayer()
+                        Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                        
+                        'Initialize the layer DIB (using the source layer's name, too!)
+                        tmpLayer.InitializeNewLayer PDL_Image, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+                        
+                        'Trim the layer to its smallest relevant size; this will set x/y offsets automatically.
+                        ' Note that some vector layers may not be rendered correctly by PD (typically due to
+                        ' esoteric brushes being used, which we can't reproduce accurately).  If this occurs,
+                        ' the layer will be fully transparent, with no useable contents.  There's not really a
+                        ' point to keeping layers like this, so delete them on-the-fly if we encounter them.
+                        If (Not tmpLayer.CropNullPaddedLayer) Then
+                            dstImage.DeleteLayerByID newLayerID
+                        
+                        'The layer exists and is useable!
+                        Else
+                        
+                            'Set matching layer properties
+                            tmpLayer.SetLayerOpacity m_Layers(i).GetLayerOpacity()
+                            tmpLayer.SetLayerVisibility m_Layers(i).GetLayerVisibility()
+                            tmpLayer.SetLayerBlendMode m_Layers(i).GetLayerBlendMode()
+                            
+                            'Check active layer status (and note that we have to manually increment the index if debug mode
+                            ' is active and we loaded the composite layer as a "temporary" base layer)
+                            If m_Layers(i).GetLayerWasActiveLayer() Then
+                                If compositeLayerLoaded Then activeLayerIndex = i + 1 Else activeLayerIndex = i
+                            End If
+                            
+                        End If
+                        
+                    End If
+                
                 End If
                 
             End If
@@ -1880,8 +1931,10 @@ Private Function RetrieveComposite_Normal(ByVal imgIndex As Long, ByVal parentBl
                     InternalError funcName, "catastrophic failure; abandoning file entirely..."
                     RetrieveComposite_Normal = psp_Failure
                     Exit Function
-                Else
-                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " looks okay"
+                
+                'This branch was useful during initial channel parse creation, but it's overkill now
+                'Else
+                '    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Channel " & (i + 1) & " looks okay"
                 End If
             
             '/Channel block ID incorrect

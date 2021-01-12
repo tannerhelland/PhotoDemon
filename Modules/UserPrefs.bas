@@ -942,6 +942,9 @@ End Function
 'Read a value from the preferences file and return it (as a string)
 Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariableName As String) As String
     
+    'Failsafe only
+    If (m_XMLEngine Is Nothing) Then Exit Function
+    
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
     Const SPACE_CHAR As String = " "
@@ -955,7 +958,10 @@ End Function
 
 'Write a string value to the preferences file
 Public Function WritePreference(ByVal strSectionHeader As String, ByVal strVariableName As String, ByVal strValue As String) As Boolean
-
+    
+    'Failsafe only
+    If (m_XMLEngine Is Nothing) Then Exit Function
+    
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
     Const SPACE_CHAR As String = " "

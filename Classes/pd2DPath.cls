@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Path Wrapper
 'Copyright 2014-2021 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
-'Last updated: 23/December/20
-'Last update: large refactor, including inlining of all GDI+ calls
+'Last updated: 11/January/21
+'Last update: new helper function for adding a list of bezier curve + control points
 'Dependencies: pd2DTransform, for applying affine transformations to a path.
 '
 'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a comprehensive interface;
@@ -43,6 +43,7 @@ Private Declare Function GdipAddPathCurve2I Lib "gdiplus" (ByVal hPath As Long, 
 Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipAddPathClosedCurve2I Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToLongArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipAddPathBezier Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As GP_Result
+Private Declare Function GdipAddPathBeziers Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipAddPathLine2I Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToIntArray As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
@@ -382,6 +383,12 @@ Friend Function AddBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 
     If (m_PathHandle = 0) Then CreatePath
     AddBezierCurve = (GdipAddPathBezier(m_PathHandle, x1, y1, x2, y2, x3, y3, x4, y4) = GP_OK)
     If (Not AddBezierCurve) Then InternalError "AddBezierCurve", "GDI+ failure"
+End Function
+
+Friend Function AddBezierCurveList(ByVal ptrToPointFs As Long, ByVal numPoints As Long) As Boolean
+    If (m_PathHandle = 0) Then CreatePath
+    AddBezierCurveList = (GdipAddPathBeziers(m_PathHandle, ptrToPointFs, numPoints) = GP_OK)
+    If (Not AddBezierCurveList) Then InternalError "AddBezierCurveList", "GDI+ failure"
 End Function
 
 'Convenience wrapper for triangles

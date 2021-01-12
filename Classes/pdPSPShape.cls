@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Vector Shape Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 07/January/21
-'Last update: split vector handling into its own class, for better nested-shape support
+'Last updated: 11/January/21
+'Last update: polyline-type shapes are now parsed correctly!  This is a big victory.
 '
 'This class describes a single vector "shape" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -290,6 +290,9 @@ End Type
 
 Private m_NodeCount As Long, m_Nodes() As PSP_PolylineNode
 
+'Polyline data is ultimately converted to a pd2D path object
+Private m_PolylineShape As pd2DPath
+
 'Total block length and initial block offset should always be used to realign the stream pointer
 ' before exiting this class (under *any* circumstances, including failure states).
 Private m_BlockOffset As Long, m_TotalLength As Long
@@ -298,6 +301,10 @@ Private m_BlockOffset As Long, m_TotalLength As Long
 ' no natural way to identify these files (e.g. a header size or similar).  Instead, we can only rely
 ' on the header of *the entire file* to try and pick out these files if they occur.
 Private m_FileIsPSPv6 As Boolean
+
+Friend Function IsShapeOK() As Boolean
+    IsShapeOK = m_ShapeOK
+End Function
 
 'Assuming the source stream is pointing at the start of a vector shape block, attempt to load the shape.
 ' Returns psp_Success if successful, psp_Warning if stream alignment is okay but shape data is not,
@@ -382,16 +389,17 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     Select Case m_ShapeAttributes.sa_Type
     
         Case keVSTText
-            Debug.Print "vector: text"
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: text"
             'Do text stuff
             
         Case keVSTPolyline, keVSTEllipse, keVSTPolygon
-            Debug.Print "vector: poly"
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: polyline"
             okToProceed = ReadPolylines(srcStream, srcWarnings, srcHeader)
+            m_ShapeOK = (okToProceed = psp_Success)
             'These all use polyline definitions
         
         Case keVSTGroup
-            Debug.Print "vector: group"
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: vector group marker"
             'Like raster layer groups, this indicator simply reports the number of shapes
             ' that belong in this group.  The spec is very unclear here, just stating:
             ' "Number of shapes in this group (i.e., number of following Vector Shape
@@ -499,34 +507,44 @@ Private Function ReadPolylines(ByRef srcStream As pdStream, ByRef srcWarnings As
     If (chunkSize > 0) Then
         
         m_NodeCount = srcStream.ReadLong()
-        ReDim m_Nodes(0 To m_NodeCount - 1) As PSP_PolylineNode
         
-        'Use chunk size to skip potential expansion fields
-        srcStream.SetPosition origPosition + chunkSize, FILE_BEGIN
-        
-        'Iterate all nodes.  Note that nodes also support future expansion fields,
-        ' so the stream must be manually aligned after each read.
-        Dim i As Long
-        For i = 0 To m_NodeCount - 1
+        If (m_NodeCount > 0) Then
             
-            origPosition = srcStream.GetPosition()
+            ReDim m_Nodes(0 To m_NodeCount - 1) As PSP_PolylineNode
             
-            With m_Nodes(i)
-                .pn_Size = srcStream.ReadLong()
-                .pn_X = srcStream.ReadDouble()
-                .pn_Y = srcStream.ReadDouble()
-                .pn_hX1 = srcStream.ReadDouble()
-                .pn_hY1 = srcStream.ReadDouble()
-                .pn_hX2 = srcStream.ReadDouble()
-                .pn_hY2 = srcStream.ReadDouble()
-                .pn_MoveTo = (srcStream.ReadByte() <> 0)
-                .pn_NodeFlags = srcStream.ReadInt()
-            End With
+            'Use chunk size to skip potential expansion fields
+            srcStream.SetPosition origPosition + chunkSize, FILE_BEGIN
             
-            srcStream.SetPosition origPosition + m_Nodes(i).pn_Size, FILE_BEGIN
+            'Iterate all nodes.  Note that nodes also support future expansion fields,
+            ' so the stream must be manually aligned after each read.
+            Dim i As Long
+            For i = 0 To m_NodeCount - 1
+                
+                origPosition = srcStream.GetPosition()
+                
+                With m_Nodes(i)
+                    .pn_Size = srcStream.ReadLong()
+                    .pn_X = srcStream.ReadDouble()
+                    .pn_Y = srcStream.ReadDouble()
+                    .pn_hX1 = srcStream.ReadDouble()
+                    .pn_hY1 = srcStream.ReadDouble()
+                    .pn_hX2 = srcStream.ReadDouble()
+                    .pn_hY2 = srcStream.ReadDouble()
+                    .pn_MoveTo = (srcStream.ReadByte() <> 0)
+                    .pn_NodeFlags = srcStream.ReadIntUnsigned()
+                End With
+                
+                srcStream.SetPosition origPosition + m_Nodes(i).pn_Size, FILE_BEGIN
+                
+            Next i
             
-        Next i
-        
+            'With the polyline fully read, it's now time to construct a matching pd2D path object
+            okToProceed = BuildPD2DPolygon(srcWarnings, srcHeader)
+            
+        Else
+            InternalError funcName, "no nodes", srcWarnings
+        End If
+            
     Else
         InternalError funcName, "polyline shape definition chunk size invalid", srcWarnings
         okToProceed = psp_Warning
@@ -546,6 +564,106 @@ InternalVBError:
     InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
     srcWarnings.AddString "Internal error in pdPSPShape." & funcName & ", #" & Err.Number & ": " & Err.Description
     ReadPolylines = psp_Failure
+    
+End Function
+
+Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, ByVal srcPaletteSize As Long, ByRef srcHeader As PSPImageHeader) As Boolean
+    
+    Const funcName As String = "RenderShapeIntoDIB"
+    
+    'Failsafe checks only
+    If (dstDIB Is Nothing) Then Exit Function
+    
+    'Palette usage is TODO
+    
+    'If this shape is "invisible", do nothing.  (This may change in the future if we place
+    ' each shape onto its own layer FYI)
+    If ((m_ShapeAttributes.sa_Flags And keShapeVisible) = 0) Then
+        RenderShapeIntoDIB = True
+        Exit Function
+    End If
+    
+    'pd2D is used for rendering
+    Dim dstSurface As pd2DSurface
+    Set dstSurface = New pd2DSurface
+    dstSurface.WrapSurfaceAroundPDDIB dstDIB
+    
+    'Antialiasing is stored in the parent shape attributes flags
+    If ((m_ShapeAttributes.sa_Flags And keShapeAntiAliased) <> 0) Then
+        dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+    Else
+        dstSurface.SetSurfaceAntialiasing P2_AA_None
+    End If
+    
+    'Half-offset pixels tend to look better in GDI+ rendering, but standard pixel offsets produce
+    ' a result closer to PSPs, so we defer to it.
+    dstSurface.SetSurfacePixelOffset P2_PO_Normal
+     
+    'Fill if flagged
+    If m_PolylineAttributes.pa_Filled Then
+    
+        'Make sure our fill brush exists
+        If (Not m_BrushFill Is Nothing) Then
+            PD2D.FillPath dstSurface, m_BrushFill, m_PolylineShape
+            RenderShapeIntoDIB = True
+        Else
+            InternalError funcName, "no fill brush", Nothing
+        End If
+        
+        'TESTING ONLY: use this to stroke the outline of the path
+        'Dim cPen As pd2DPen
+        'Set cPen = New pd2DPen
+        'cPen.SetPenColor vbBlack
+        'cPen.SetPenWidth 1
+        'PD2D.DrawPath dstSurface, cPen, m_PolylineShape
+    
+    'Stroke if flagged
+    ElseIf m_PolylineAttributes.pa_Stroked Then
+        
+        If (Not m_BrushStroke Is Nothing) Then
+        
+            Dim shapePen As pd2DPen
+            Set shapePen = New pd2DPen
+            
+            'If a special "styled" pen exists, use it as our base pen
+            If (Not m_PenStyled Is Nothing) Then
+                shapePen.ClonePen m_PenStyled
+            Else
+                shapePen.SetPenStartCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_StartCapType)
+                shapePen.SetPenEndCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_EndCapType)
+                'Cap multipliers are TODO
+            End If
+            
+            'Apply separate pen settings from the *parent* shape object
+            shapePen.SetPenWidth m_PolylineAttributes.pa_StrokeWidth
+            
+            Dim pdLineJoin As PD_2D_LineJoin
+            Select Case m_PolylineAttributes.pa_LineJoin
+                Case keSJTJoinMiter
+                    pdLineJoin = P2_LJ_Miter
+                Case keSJTJoinRound
+                    pdLineJoin = P2_LJ_Round
+                Case keSJTJoinBevel
+                    pdLineJoin = P2_LJ_Miter
+            End Select
+            shapePen.SetPenLineJoin pdLineJoin
+            
+            shapePen.SetPenMiterLimit m_PolylineAttributes.pa_MiterLimit
+            
+            'Create a pen from the stroking brush specified in the file.
+            ' (Note that gradient pens are TODO; they will require us to calculate a boundary somehow)
+            shapePen.CreatePenFromBrush m_BrushStroke
+            
+            'Finally, perform the damn stroke!
+            PD2D.DrawPath dstSurface, shapePen, m_PolylineShape
+            
+            RenderShapeIntoDIB = True
+        
+        Else
+            InternalError funcName, "no stroke brush", Nothing
+        End If
+        
+    End If
     
 End Function
 
@@ -584,7 +702,7 @@ Private Function BuildBrushForPaintBlock(ByRef srcStream As pdStream, ByRef srcW
         
         Set dstBrush = New pd2DBrush
         
-        'DEBUG ONLY
+        'DEBUG ONLY: prep an opaque, white brush as a fallback in case other methods fail
         dstBrush.SetBrushColor vbWhite
         dstBrush.SetBrushOpacity 100!
         
@@ -598,26 +716,39 @@ Private Function BuildBrushForPaintBlock(ByRef srcStream As pdStream, ByRef srcW
             ' (The spec allows future expansion bytes here, and we must account for them.)
             srcStream.SetPosition endOfBlockHeader + chunkSize, FILE_BEGIN
             
-            'Based on paint style type, we'll branch into a new parser
-            Select Case paintStyleType
-                Case keStyleNone
-                    InternalError funcName, "no paint style", srcWarnings
-                    BuildBrushForPaintBlock = psp_Warning
-                Case keStyleColor
+            'Based on paint style type, we'll branch into a new parser.  Note that multiple
+            ' brushes can be defined!  This allows e.g. a pattern to be mixed with a gradient.
+            If (paintStyleType = keStyleNone) Then
+                InternalError funcName, "no paint styles defined", srcWarnings
+                BuildBrushForPaintBlock = psp_Warning
+            Else
+                
+                If (paintStyleType And keStyleColor) Then
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "solid brush found; retrieving now..."
                     BuildBrushForPaintBlock = BuildBrush_Color(srcStream, srcWarnings, dstBrush)
-                Case keStyleGradient
+                End If
+                
+                If (paintStyleType And keStyleGradient) Then
                     InternalError funcName, "gradient styles are TODO", srcWarnings
                     BuildBrushForPaintBlock = psp_Warning
-                Case keStylePattern
+                End If
+                
+                If (paintStyleType And keStylePattern) Then
                     InternalError funcName, "pattern styles are TODO", srcWarnings
                     BuildBrushForPaintBlock = psp_Warning
-                Case keStylePaper
+                End If
+                
+                If (paintStyleType And keStylePaper) Then
                     InternalError funcName, "paper styles are TODO", srcWarnings
                     BuildBrushForPaintBlock = psp_Warning
-                Case keStylePen
+                End If
+                
+                If (paintStyleType And keStylePen) Then
                     InternalError funcName, "organic pen styles are TODO", srcWarnings
                     BuildBrushForPaintBlock = psp_Warning
-            End Select
+                End If
+                
+            End If
         
         Else
             InternalError funcName, "bad brush-style chunk size: " & chunkSize, srcWarnings
@@ -773,6 +904,99 @@ InternalVBError:
     
 End Function
 
+Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcHeader As PSPImageHeader) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "BuildPD2DPolygon"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'Ensure we have actual nodes to work with
+    If (m_NodeCount <= 1) Then
+        InternalError funcName, "no nodes for polygon constructor", srcWarnings
+        okToProceed = psp_Warning
+        GoTo EarlyTermination
+    End If
+    
+    'Our next goal is to convert all PSP-format polyline nodes to something a pd2D path object
+    ' can work with.  The PSP spec doesn't describe vector contents in any kind of detail,
+    ' so this implementation is entirely based on detective work (...or more accurately,
+    ' blind guesswork lol)
+    Set m_PolylineShape = New pd2DPath
+    m_PolylineShape.SetFillRule P2_FR_Winding
+    
+    'PSP vector data works as a list of nodes, with move-to commands like GDI.  GDI+ works on lines
+    ' and sub-paths, with "stop this sub-path / start a new sub-path" commands instead.  We need to
+    ' convert between these formats as we go.
+    Dim i As Long
+    For i = 0 To m_NodeCount - 1
+        
+        'Skip invisible nodes
+        If ((m_Nodes(i).pn_NodeFlags And keNodeVisible) = 0) Then GoTo NextPoint
+        
+        'When I first implemented this class, it was helpful to display node attributes.
+        ' Here's the code in case you need to review parser behavior in the future:
+        'PDDebug.LogAction i & ": " & m_Nodes(i).pn_MoveTo & " - " & m_Nodes(i).pn_X & ", " & m_Nodes(i).pn_Y & " - " & m_Nodes(i).pn_hX1 & ", " & m_Nodes(i).pn_hY1 & " - " & m_Nodes(i).pn_hX2 & ", " & m_Nodes(i).pn_hY2
+        
+        'On the first point, always start a new sub-path
+        If (i = 0) Then
+            m_PolylineShape.StartNewFigure
+        
+        'n > 1
+        Else
+        
+            'Check the current command.  If it is a MoveTo command, end the current sub-path
+            ' (because we're about to start a new one).
+            If m_Nodes(i).pn_MoveTo Then
+                m_PolylineShape.CloseCurrentFigure
+            
+            'This is not a MoveTo command.  Connect this point to the one in front of it.
+            Else
+                
+                'If the previous point was a MoveTo command, start a new sub-figure.  (We handle
+                ' MoveTo commands like this to prevent errors if a path were to somehow define
+                ' multiple MoveTo commands in a row.)  Note, however, that we don't need to do
+                ' this on the first node; it's covered by the default i = 0 case, above.
+                If (m_Nodes(i - 1).pn_MoveTo And (i <> 1)) Then m_PolylineShape.StartNewFigure
+                
+                'When debugging, it may be helpful to just add nodes to the current figure as
+                ' straight lines.  Here's the code to do that:
+                'm_PolylineShape.AddLine m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
+                
+                'Add the current figure as bezier curves.
+                '
+                'Note that PSP control point definition is a little sketchy.  It took no small amount of
+                ' trial-and-error testing to figure out that you need to use one control point from the
+                ' previous point, and one control point from the current point to make node descriptors
+                ' work like every other graphics library.  (PSPs save node data in a baffling order,
+                ' but if you mix control points from neighboring nodes, the end result looks correct!)
+                m_PolylineShape.AddBezierCurve m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i - 1).pn_hX2, m_Nodes(i - 1).pn_hY2, m_Nodes(i).pn_hX1, m_Nodes(i).pn_hY1, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
+                
+                'If this is the end of the current point collection, close the current path, since there
+                ' are no more points to add.
+                If (i = m_NodeCount - 1) Then m_PolylineShape.CloseCurrentFigure
+                
+            End If
+            
+        End If
+        
+NextPoint:
+    Next i
+    
+EarlyTermination:
+    BuildPD2DPolygon = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
+    srcWarnings.AddString "Internal error in pdPSPShape." & funcName & ", #" & Err.Number & ": " & Err.Description
+    BuildPD2DPolygon = psp_Failure
+    
+End Function
+
 Private Function GetPDLineCapFromPSPLineCap(ByVal pspCapType As PSPStyleCapType) As PD_2D_LineCap
     
     'Set a default; PSP currently defines many line caps that PD does not.
@@ -808,7 +1032,7 @@ End Function
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, ByRef parentWarningStack As pdStringStack, Optional ByVal writeDebugLog As Boolean = True)
     
     Dim errText As String
-    errText = "pdPSPShape." & funcName & "() reported an error: " & errDescription
+    errText = "WARNING! pdPSPShape." & funcName & "() reported an error: " & errDescription
     If (Not parentWarningStack Is Nothing) Then parentWarningStack.AddString errText
     
     If UserPrefs.GenerateDebugLogs Then
@@ -818,3 +1042,4 @@ Private Sub InternalError(ByRef funcName As String, ByRef errDescription As Stri
     End If
     
 End Sub
+
