@@ -1698,7 +1698,7 @@ Friend Function CropNullPaddedLayer() As Boolean
             'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
             layerDIB.UnwrapArrayFromDIB srcImageData
             Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
-            CropNullPaddedLayer = False
+            CropNullPaddedLayer = True
             Exit Function
         
         End If

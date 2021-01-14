@@ -56,6 +56,7 @@ Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal pathFillMode As GP_
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
 Private Declare Function GdipFlattenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As GP_Result
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
+Private Declare Function GdipGetPointCount Lib "gdiplus" (ByVal hPath As Long, ByRef dstCount As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RectL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipIsOutlineVisiblePathPoint Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal hPen As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
@@ -751,6 +752,12 @@ Friend Function DoesPointTouchPathOutlineL(ByVal x As Long, ByVal y As Long, ByR
     
 End Function
 
+Friend Function GetNumPathPoints() As Long
+    If (m_PathHandle <> 0) Then
+        If (GdipGetPointCount(m_PathHandle, GetNumPathPoints) <> GP_OK) Then InternalError "GetNumPathPoints", "GDI+ failure"
+    End If
+End Function
+
 'Retrieve this path's boundaries.  Optionally, you can also receive the path's boundaries as if they were drawn with
 ' a particular pen.  (All pen settings are considered, including tricky things like corner mitering.)
 Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, Optional ByVal testTransform As pd2DTransform = Nothing) As RectF
@@ -777,7 +784,7 @@ Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, 
         
         Dim tmpReturn As GP_Result
         tmpReturn = GdipGetPathWorldBounds(m_PathHandle, GetPathBoundariesF, hTransform, hPen)
-        If (tmpReturn <> GP_OK) Then InternalError "GetPathBoundariesF", "GDI+ faulre"
+        If (tmpReturn <> GP_OK) Then InternalError "GetPathBoundariesF", "GDI+ failure"
         
     Else
         InternalError "GetPathBoundariesF", "null hPath"

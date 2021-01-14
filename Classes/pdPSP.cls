@@ -1628,6 +1628,7 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                         ' the layer will be fully transparent, with no useable contents.  There's not really a
                         ' point to keeping layers like this, so delete them on-the-fly if we encounter them.
                         If (Not tmpLayer.CropNullPaddedLayer) Then
+                            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: skipping vector layer " & m_Layers(i).GetLayerName() & "; no useable render"
                             dstImage.DeleteLayerByID newLayerID
                         
                         'The layer exists and is useable!

@@ -67,8 +67,8 @@ Private m_PatternRGBA2 As RGBQuad
 ' We use a specialized class to manage those settings.
 Private m_Gradient As pd2DGradient
 
-'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.  You *must set this prior
-' to requesting a gradient brush* or the gradient results will look funny!
+'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.
+' You *must set this prior to requesting a gradient brush* or the gradient won't paint to the correct location!
 Private m_BoundaryRect As RectF
 
 'Texture brushes are much simpler if we maintain a copy of the source texture (e.g. this avoids messy cases like the caller

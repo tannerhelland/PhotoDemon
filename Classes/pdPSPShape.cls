@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Vector Shape Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 11/January/21
-'Last update: polyline-type shapes are now parsed correctly!  This is a big victory.
+'Last updated: 13/January/21
+'Last update: lots of little fixes for struct differences across various PSP versions
 '
 'This class describes a single vector "shape" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -85,12 +85,12 @@ End Enum
 
 '/* Paint style types.  */
 Private Enum PSPPaintStyleType
-    keStyleNone = &H0           '// No paint style info applies
-    keStyleColor = &H1          '// Color paint style info
-    keStyleGradient = &H2       '// Gradient paint style info
-    keStylePattern = &H4        '// Pattern paint style info
-    keStylePaper = &H8          '// Paper paint style info
-    keStylePen = &H10           '// Organic pen paint style info
+    keStyleNone = &H0&           '// No paint style info applies
+    keStyleColor = &H1&          '// Color paint style info
+    keStyleGradient = &H2&       '// Gradient paint style info
+    keStylePattern = &H4&        '// Pattern paint style info
+    keStylePaper = &H8&          '// Paper paint style info
+    keStylePen = &H10&           '// Organic pen paint style info
 End Enum
 
 #If False Then
@@ -274,6 +274,38 @@ Private m_PolylineAttributes As PSP_PolylineAttributes
 ' when people find them.
 Private m_BrushStroke As pd2DBrush, m_BrushFill As pd2DBrush, m_PenStyled As pd2DPen
 
+'Gradient brushes have a custom header and specialized attributes
+Private Type PSP_GradientChunk
+    gc_Size As Long
+    gc_Color As RGBQuad
+    gc_Location As Long
+    gc_Midpoint As Long
+End Type
+
+Private Type PSP_GradientDefinition
+    gd_Size As Long
+    gd_Name As String
+    gd_ID As Long
+    gd_Invert As Boolean
+    gd_cX As Long
+    gd_cY As Long
+    gd_fX As Long
+    gd_fY As Long
+    gd_Angle As Double  'Linear gradients only
+    gd_Repeats As Long
+    gd_Type As PSPStyleGradientType
+    gd_NumColorStops As Long
+    gd_NumOpacityStops As Long
+    gd_Colors() As PSP_GradientChunk
+    gd_Opacity() As PSP_GradientChunk   'Only the A value is filled, and it's on the range [0, 100]
+    
+    'PD-specific; this holds a merged RGBA list of both colors *and* opacity
+    gd_NumFinalStops As Long
+    gd_Final() As GradientPoint
+End Type
+
+Private m_GradientDefinition As PSP_GradientDefinition
+
 'Polyline vectors are comprised of a list of nodes
 Private Type PSP_PolylineNode
     pn_Size As Long
@@ -297,10 +329,16 @@ Private m_PolylineShape As pd2DPath
 ' before exiting this class (under *any* circumstances, including failure states).
 Private m_BlockOffset As Long, m_TotalLength As Long
 
-'Files from PSP 6 use a totally different struct.  Because the PSP spec is ill-conceived, there is
-' no natural way to identify these files (e.g. a header size or similar).  Instead, we can only rely
-' on the header of *the entire file* to try and pick out these files if they occur.
-Private m_FileIsPSPv6 As Boolean
+'Files from different PSP versions use totally different structs in places.  Because the PSP spec
+' is incredibly ill-conceived, there is no natural way to identify these changes.  Instead, we can
+' only rely on the header version of *the entire goddamn file* to try and pick out these files if
+' they occur.  (What makes this even more infuriating is their "chunk" file layout explicitly
+' allows for expansion slots at the end of each chunk - but instead of using these, they cram new
+' data types into the middle of the struct, in structs that already have variable-length members,
+' so it's impossible to detect format changes by all the built-in mechanisms they designed
+' EXPLICITLY FOR DETECTING FORMAT CHANGES.  Seriously, this makes the PSD spec look like it was
+' invented by savants by comparison...)
+Private m_FilePSPVersion As Long, m_FileIsPSPv6 As Boolean, m_FileIsPSPv8 As Boolean
 
 Friend Function IsShapeOK() As Boolean
     IsShapeOK = m_ShapeOK
@@ -352,7 +390,9 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     ' (where header size includes a ton of huge, variable-length blocks that follow instead of
     ' just defining the damn header), it's impossible to detect as-we-go.  Instead, we need to
     ' rely on the master version at the head of the file to tell us how to parse.
+    m_FilePSPVersion = srcHeader.psph_VersionMajor
     m_FileIsPSPv6 = (srcHeader.psph_VersionMajor <= 4)
+    m_FileIsPSPv8 = (srcHeader.psph_VersionMajor >= 6)
     
     'Immediately following the block header is a "shape attributes" chunk.  This tells us
     ' the shape name and type, which lead to different blueprints for parsing the remainder
@@ -450,7 +490,7 @@ Private Function ReadPolylines(ByRef srcStream As pdStream, ByRef srcWarnings As
         If m_FileIsPSPv6 Then
             Dim sLen As Long
             sLen = srcStream.ReadIntUnsigned()
-            m_ShapeAttributes.sa_Name = srcStream.ReadString_UTF8(sLen)
+            If (sLen > 0) Then m_ShapeAttributes.sa_Name = srcStream.ReadString_UTF8(sLen)
         End If
         
         .pa_Stroked = (srcStream.ReadByte() <> 0)
@@ -468,7 +508,11 @@ Private Function ReadPolylines(ByRef srcStream As pdStream, ByRef srcWarnings As
         Else
             .pa_Filled = (srcStream.ReadByte() <> 0)
             .pa_StyledLine = (srcStream.ReadByte() <> 0)
-            .pa_StrokeWidth = srcStream.ReadDouble()
+            If (m_FilePSPVersion = 5) Then
+                .pa_StrokeWidth = srcStream.ReadIntUnsigned()
+            Else
+                .pa_StrokeWidth = srcStream.ReadDouble()
+            End If
             .pa_StartCapType = srcStream.ReadByte()
             .pa_StartCapMultiplier = (srcStream.ReadByte() <> 0)
             .pa_StartCapWidthMultiplier = srcStream.ReadDouble()
@@ -599,43 +643,63 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
     ' a result closer to PSPs, so we defer to it.
     dstSurface.SetSurfacePixelOffset P2_PO_Normal
      
+    'PDDebug.LogAction "rendering shape: " & m_ShapeAttributes.sa_Name & ", " & m_PolylineShape.GetNumPathPoints()
+    
+    Dim polylineBoundaries As RectF
+    polylineBoundaries = m_PolylineShape.GetPathBoundariesF()
+    
     'Fill if flagged
     If m_PolylineAttributes.pa_Filled Then
-    
+        
+        'PDDebug.LogAction "filling..." & m_BrushFill.GetBrushOpacity
+        
         'Make sure our fill brush exists
         If (Not m_BrushFill Is Nothing) Then
+            
+            If (m_BrushFill.GetBrushMode = P2_BM_Gradient) Then m_BrushFill.SetBoundaryRect m_PolylineShape.GetPathBoundariesF()
+            
             PD2D.FillPath dstSurface, m_BrushFill, m_PolylineShape
             RenderShapeIntoDIB = True
         Else
             InternalError funcName, "no fill brush", Nothing
         End If
         
-        'TESTING ONLY: use this to stroke the outline of the path
-        'Dim cPen As pd2DPen
-        'Set cPen = New pd2DPen
-        'cPen.SetPenColor vbBlack
-        'cPen.SetPenWidth 1
-        'PD2D.DrawPath dstSurface, cPen, m_PolylineShape
+    End If
     
     'Stroke if flagged
-    ElseIf m_PolylineAttributes.pa_Stroked Then
+    If m_PolylineAttributes.pa_Stroked Then
+        
+        'PDDebug.LogAction "stroking..."
         
         If (Not m_BrushStroke Is Nothing) Then
         
             Dim shapePen As pd2DPen
             Set shapePen = New pd2DPen
             
-            'If a special "styled" pen exists, use it as our base pen
-            If (Not m_PenStyled Is Nothing) Then
-                shapePen.ClonePen m_PenStyled
-            Else
-                shapePen.SetPenStartCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_StartCapType)
-                shapePen.SetPenEndCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_EndCapType)
-                'Cap multipliers are TODO
-            End If
-            
             'Apply separate pen settings from the *parent* shape object
             shapePen.SetPenWidth m_PolylineAttributes.pa_StrokeWidth
+            
+            'Create a pen from the stroking brush specified in the file.
+            ' (Note that gradient pens are TODO; they will require us to calculate a boundary somehow)
+            If (m_BrushStroke.GetBrushMode = P2_BM_Solid) Then
+                shapePen.SetPenColorRGBA m_BrushStroke.GetBrushColorRGBA
+                shapePen.SetPenOpacity 100!
+            Else
+                If (m_BrushFill.GetBrushMode = P2_BM_Gradient) Then m_BrushFill.SetBoundaryRect m_PolylineShape.GetPathBoundariesF(shapePen)
+                shapePen.CreatePenFromBrush m_BrushStroke
+            End If
+            
+            'If a special "styled" pen exists, use it as our base pen.
+            ' NOTE: this needs to be revisited; it won't work because we're creating a pen from
+            ' a brush, so order needs to be observed
+            'If (Not m_PenStyled Is Nothing) Then
+            '    PDDebug.LogAction "cloning style pen"
+            '    shapePen.ClonePen m_PenStyled
+            'Else
+                shapePen.SetPenStartCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_StartCapType)
+                shapePen.SetPenEndCap GetPDLineCapFromPSPLineCap(m_PolylineAttributes.pa_EndCapType)
+                'Cap multipliers are TODO?
+            'End If
             
             Dim pdLineJoin As PD_2D_LineJoin
             Select Case m_PolylineAttributes.pa_LineJoin
@@ -649,10 +713,6 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
             shapePen.SetPenLineJoin pdLineJoin
             
             shapePen.SetPenMiterLimit m_PolylineAttributes.pa_MiterLimit
-            
-            'Create a pen from the stroking brush specified in the file.
-            ' (Note that gradient pens are TODO; they will require us to calculate a boundary somehow)
-            shapePen.CreatePenFromBrush m_BrushStroke
             
             'Finally, perform the damn stroke!
             PD2D.DrawPath dstSurface, shapePen, m_PolylineShape
@@ -702,8 +762,8 @@ Private Function BuildBrushForPaintBlock(ByRef srcStream As pdStream, ByRef srcW
         
         Set dstBrush = New pd2DBrush
         
-        'DEBUG ONLY: prep an opaque, white brush as a fallback in case other methods fail
-        dstBrush.SetBrushColor vbWhite
+        'DEBUG ONLY: prep an opaque, red brush as a fallback in case other methods fail
+        dstBrush.SetBrushColor vbRed
         dstBrush.SetBrushOpacity 100!
         
         chunkSize = srcStream.ReadLong()
@@ -716,36 +776,66 @@ Private Function BuildBrushForPaintBlock(ByRef srcStream As pdStream, ByRef srcW
             ' (The spec allows future expansion bytes here, and we must account for them.)
             srcStream.SetPosition endOfBlockHeader + chunkSize, FILE_BEGIN
             
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Retrieving paint styles (type: " & Hex$(paintStyleType) & ", position: " & srcStream.GetPosition() & ")"
+            
             'Based on paint style type, we'll branch into a new parser.  Note that multiple
             ' brushes can be defined!  This allows e.g. a pattern to be mixed with a gradient.
             If (paintStyleType = keStyleNone) Then
-                InternalError funcName, "no paint styles defined", srcWarnings
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "No paint style defined for this layer (" & chunkSize & "); layer will be ignored"
                 BuildBrushForPaintBlock = psp_Warning
             Else
                 
-                If (paintStyleType And keStyleColor) Then
+                'Color style blocks appear to work across most PSP file versions
+                If ((paintStyleType And keStyleColor) <> 0) Then
                     If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "solid brush found; retrieving now..."
                     BuildBrushForPaintBlock = BuildBrush_Color(srcStream, srcWarnings, dstBrush)
                 End If
                 
-                If (paintStyleType And keStyleGradient) Then
-                    InternalError funcName, "gradient styles are TODO", srcWarnings
-                    BuildBrushForPaintBlock = psp_Warning
-                End If
+                'The order of style blocks appears to vary in later PSP versions.  (That, or the format
+                ' has changed from what's defined in the spec.)
+                If (m_FilePSPVersion <= 6) Then
+                    
+                    If ((paintStyleType And keStyleGradient) <> 0) Then
+                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "gradient brush found; retrieving now..."
+                        BuildBrushForPaintBlock = BuildBrush_Gradient(srcStream, srcWarnings, dstBrush)
+                    End If
+                    
+                    If ((paintStyleType And keStylePattern) <> 0) Then
+                        chunkSize = srcStream.ReadLong()
+                        InternalError funcName, "pattern styles are TODO (" & chunkSize & ")", srcWarnings
+                        BuildBrushForPaintBlock = psp_Warning
+                        If (chunkSize > 4) Then srcStream.SetPosition chunkSize - 4, FILE_CURRENT
+                    End If
+                    
+                    If ((paintStyleType And keStylePaper) <> 0) Then
+                        chunkSize = srcStream.ReadLong()
+                        InternalError funcName, "paper styles are TODO (" & chunkSize & ")", srcWarnings
+                        BuildBrushForPaintBlock = psp_Warning
+                        If (chunkSize > 4) Then srcStream.SetPosition chunkSize - 4, FILE_CURRENT
+                    End If
+                    
+                    If ((paintStyleType And keStylePen) <> 0) Then
+                        chunkSize = srcStream.ReadLong()
+                        InternalError funcName, "organic pen styles are TODO (" & chunkSize & ")", srcWarnings
+                        BuildBrushForPaintBlock = psp_Warning
+                        If (chunkSize > 4) Then srcStream.SetPosition chunkSize - 4, FILE_CURRENT
+                    End If
                 
-                If (paintStyleType And keStylePattern) Then
-                    InternalError funcName, "pattern styles are TODO", srcWarnings
-                    BuildBrushForPaintBlock = psp_Warning
-                End If
-                
-                If (paintStyleType And keStylePaper) Then
-                    InternalError funcName, "paper styles are TODO", srcWarnings
-                    BuildBrushForPaintBlock = psp_Warning
-                End If
-                
-                If (paintStyleType And keStylePen) Then
-                    InternalError funcName, "organic pen styles are TODO", srcWarnings
-                    BuildBrushForPaintBlock = psp_Warning
+                'At some point, the PSP spec was changed and paint styles are now handled completely differently.
+                Else
+                    
+                    If PSP_DEBUG_VERBOSE Then
+                    
+                        PDDebug.LogAction "Paint style chunks ----------"
+                        Do While (srcStream.GetPosition() < endOfBlockHeader + blockLength)
+                            chunkSize = srcStream.ReadLong
+                            PDDebug.LogAction chunkSize
+                            If (chunkSize > 4) Then srcStream.SetPosition chunkSize - 4, FILE_CURRENT
+                        Loop
+                        PDDebug.LogAction "End paint style chunks ----------"
+                        
+                    End If
+                    
                 End If
                 
             End If
@@ -871,17 +961,28 @@ Private Function BuildBrush_Color(ByRef srcStream As pdStream, ByRef srcWarnings
     Dim origStreamPos As Long, chunkSize As Long
     origStreamPos = srcStream.GetPosition()
     chunkSize = srcStream.ReadLong()
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Color brush chunk size: " & chunkSize
     
-    If (chunkSize > 0) Then
-    
+    If (chunkSize > 4) Then
+        
         'All that follows is an RGB color definition, and a color palette index.
         ' Handling a color palette index is TODO
         Dim newColor As RGBQuad, palIndex As Long
-        srcStream.ReadBytesToBarePointer VarPtr(newColor), 4
+        newColor.Red = srcStream.ReadByte
+        newColor.Green = srcStream.ReadByte
+        newColor.Blue = srcStream.ReadByte
+        srcStream.ReadByte
+        'srcStream.ReadBytesToBarePointer VarPtr(newColor), 4
+        newColor.Alpha = 255    'PSP colors do not define opacity (it's handled elsewhere)
         palIndex = srcStream.ReadLong()
         'If (palIndex >= 0) Then...
         okToProceed = psp_Success
-    
+        
+        'Create a matching pd2D brush
+        If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush
+        dstBrush.SetBrushMode P2_BM_Solid
+        dstBrush.SetBrushColorRGBA newColor
+        
     Else
         InternalError funcName, "null color brush chunk size", srcWarnings
         okToProceed = psp_Warning
@@ -892,7 +993,7 @@ EarlyTermination:
     BuildBrush_Color = okToProceed
     
     'Align the stream using the original block header length
-    srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+    If (chunkSize > 4) Then srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
     
     Exit Function
     
@@ -901,6 +1002,439 @@ InternalVBError:
     InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
     srcWarnings.AddString "Internal error in pdPSPShape." & funcName & ", #" & Err.Number & ": " & Err.Description
     BuildBrush_Color = psp_Failure
+    
+End Function
+
+Private Function BuildBrush_Gradient(ByRef srcStream As pdStream, ByRef srcWarnings As pdStringStack, ByRef dstBrush As pd2DBrush) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "BuildBrush_Gradient"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    Dim origStreamPos As Long, chunkSize As Long
+    origStreamPos = srcStream.GetPosition()
+    chunkSize = srcStream.ReadLong()
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Gradient brush chunk size: " & chunkSize
+    
+    If (chunkSize > 4) Then
+        
+        'Failsafe check for malformed gradient headers or future spec changes.
+        ' NOTE: this check is triggered on all PSPs from X6 (chunk size is always, inexplicably, 16).
+        ' I don't know how to interpret gradient commands on such files, and I don't know when the
+        ' spec changed.  As usual, it's incredibly frustrating and idiotic to even have a spec if
+        ' the company using it constantly makes backward-incompatible changes.
+        '
+        'Regardless, if the chunk is too small to define a gradient (as outlined in the spec),
+        ' we'll simply abandon further processing.
+        If (chunkSize < 35) Then
+            InternalError funcName, "gradient header is too small: " & chunkSize & " (" & origStreamPos & ")", srcWarnings
+            srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+            BuildBrush_Gradient = psp_Warning
+            Exit Function
+        End If
+        
+        'Read in the master gradient definition struct
+        With m_GradientDefinition
+            .gd_Size = chunkSize
+            Dim lenName As Long
+            lenName = srcStream.ReadIntUnsigned()
+            If (lenName > 0) Then .gd_Name = srcStream.ReadString_UTF8(lenName)
+            'If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Gradient attributes size: " & .gd_Size & ", " & .gd_Name
+            .gd_ID = srcStream.ReadLong()
+            .gd_Invert = (srcStream.ReadByte() <> 0)
+            .gd_cX = srcStream.ReadLong()
+            .gd_cY = srcStream.ReadLong()
+            If m_FileIsPSPv8 Then
+                .gd_fX = srcStream.ReadLong()
+                .gd_fY = srcStream.ReadLong()
+            End If
+            'If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "center/focal:" & .gd_cX & ", " & .gd_cY & ", " & .gd_fX & ", " & .gd_fY
+            
+            'PSPs use the vertical axis as their angle baseline; rotate the angle accordingly
+            .gd_Angle = srcStream.ReadDouble() - 90#
+            If (.gd_Angle < 0#) Then .gd_Angle = .gd_Angle + 360#
+            
+            'Repeats are currently unsupported - TODO
+            .gd_Repeats = srcStream.ReadIntUnsigned()
+            .gd_Type = srcStream.ReadIntUnsigned()
+            'If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "type: " & .gd_Type
+            
+            'Stops should never be 0, but because an allocation is involved, caution is warranted
+            .gd_NumColorStops = srcStream.ReadIntUnsigned()
+            If (.gd_NumColorStops > 0) Then
+                ReDim .gd_Colors(0 To .gd_NumColorStops - 1) As PSP_GradientChunk
+            Else
+                InternalError funcName, "no color stops??", srcWarnings
+                ReDim .gd_Colors(0) As PSP_GradientChunk
+            End If
+            
+            'Opacity is a separate array of SHORTS on the range [0, 100] (I know, it makes no sense)
+            .gd_NumOpacityStops = srcStream.ReadIntUnsigned()
+            If (.gd_NumOpacityStops > 0) Then
+                ReDim .gd_Opacity(0 To .gd_NumOpacityStops - 1) As PSP_GradientChunk
+            Else
+                InternalError funcName, "no opacity stops??", srcWarnings
+                ReDim .gd_Opacity(0) As PSP_GradientChunk
+            End If
+            
+        End With
+        
+        'Align the stream
+        srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+        
+        'Next, a list of gradient color chunks follow.  Load them all.
+        Dim i As Long
+        If (m_GradientDefinition.gd_NumColorStops > 0) Then
+        
+            For i = 0 To m_GradientDefinition.gd_NumColorStops - 1
+                
+                origStreamPos = srcStream.GetPosition
+                
+                With m_GradientDefinition.gd_Colors(i)
+                    .gc_Size = srcStream.ReadLong()
+                    .gc_Color.Red = srcStream.ReadByte
+                    .gc_Color.Green = srcStream.ReadByte
+                    .gc_Color.Blue = srcStream.ReadByte
+                    
+                    'Alpha is not defined here, but a byte is still allocated for it
+                    .gc_Color.Alpha = 255
+                    srcStream.ReadByte
+                    
+                    .gc_Location = srcStream.ReadIntUnsigned()
+                    .gc_Midpoint = srcStream.ReadIntUnsigned()
+                End With
+                
+                'Align the stream
+                srcStream.SetPosition origStreamPos + m_GradientDefinition.gd_Colors(i).gc_Size
+                
+            Next i
+            
+        Else
+            InternalError funcName, "no gradient nodes; brush can't be created", srcWarnings
+            BuildBrush_Gradient = psp_Warning
+            GoTo EarlyTermination
+        End If
+        
+        'Next, a list of opacity chunks follow.  Load them all.
+        If (m_GradientDefinition.gd_NumOpacityStops > 0) Then
+            
+            For i = 0 To m_GradientDefinition.gd_NumOpacityStops - 1
+                
+                origStreamPos = srcStream.GetPosition
+                
+                With m_GradientDefinition.gd_Opacity(i)
+                    .gc_Size = srcStream.ReadLong()
+                    If (m_FileIsPSPv8 Or (.gc_Size > 9)) Then
+                        .gc_Color.Alpha = (srcStream.ReadIntUnsigned() And &HFF&)
+                    
+                    'NOTE: the PSP spec is incorrect here.  On pre-v8 files, opacity stops are
+                    ' always 1-byte long.  (Post-v8 files may use a different format entirely,
+                    ' potentially stored in the table segment of the file?  Cracking this is
+                    ' TODO.)
+                    Else
+                        .gc_Color.Alpha = srcStream.ReadByte()
+                    End If
+                    
+                    .gc_Location = srcStream.ReadIntUnsigned()
+                    .gc_Midpoint = srcStream.ReadIntUnsigned()
+                    
+                End With
+                
+                'Align the stream
+                srcStream.SetPosition origStreamPos + m_GradientDefinition.gd_Opacity(i).gc_Size
+                
+            Next i
+            
+        End If
+        
+        'With the gradient loaded, we now need to produce a useable brush from it.  First, we need
+        ' to merge the separate color and opacity lists into a single RGBA list.
+        
+        'Start by producing a PD-compatible array of gradient objects from *just* the color values
+        ' in the PSP gradient.  (Note that we make this list 2x longer than we need, by default.
+        ' This is because PSP gradients support a special "midpoint" value, which can move the
+        ' midpoint of the gradient between two nodes.)  We'll trim the list down to the correct
+        ' size after we construct it.
+        Dim tmpGradientList() As GradientPoint
+        ReDim tmpGradientList(0 To (m_GradientDefinition.gd_NumColorStops + 1) * 2) As GradientPoint
+        
+        Dim curPointIndex As Long, numColorStops As Long
+        curPointIndex = 0
+        
+        Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long, tmpPos As Single
+        
+        For i = 0 To m_GradientDefinition.gd_NumColorStops - 1
+            
+            'Failsafe allocation check
+            If (curPointIndex > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To curPointIndex * 2) As GradientPoint
+            
+            'Give the first point a special check.  If its position is *not* 0, we want to create
+            ' a 0-position item.
+            If (i = 0) And (m_GradientDefinition.gd_Colors(0).gc_Location <> 0) Then
+                With m_GradientDefinition.gd_Colors(i)
+                    tmpGradientList(curPointIndex).PointRGB = RGB(.gc_Color.Red, .gc_Color.Green, .gc_Color.Blue)
+                    tmpGradientList(curPointIndex).PointPosition = 0!
+                    tmpGradientList(curPointIndex).PointOpacity = 100!
+                End With
+                curPointIndex = curPointIndex + 1
+            End If
+            
+            'Add the current point to the collection
+            With m_GradientDefinition.gd_Colors(i)
+                tmpGradientList(curPointIndex).PointRGB = RGB(.gc_Color.Red, .gc_Color.Green, .gc_Color.Blue)
+                tmpGradientList(curPointIndex).PointPosition = .gc_Location / 100!
+            End With
+            
+            'PSP files give opacity its own gradient, separate from the RGB one.  We'll deal with it
+            ' in a bit - but for now, default to opaque.
+            tmpGradientList(curPointIndex).PointOpacity = 100!
+            
+            curPointIndex = curPointIndex + 1
+            
+            'Check the midpoint.  If it is *not* 50, we need to manually add another point to the
+            ' collection that splits the distance between this point and the next point in line.
+            If (i < m_GradientDefinition.gd_NumColorStops - 1) Then
+                If (m_GradientDefinition.gd_Colors(i).gc_Midpoint <> 50) Then
+                    If (curPointIndex > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To curPointIndex * 2) As GradientPoint
+                    
+                    With m_GradientDefinition.gd_Colors(i)
+                        tmpR = .gc_Color.Red
+                        tmpR = tmpR + Int(m_GradientDefinition.gd_Colors(i + 1).gc_Color.Red)
+                        tmpG = .gc_Color.Green
+                        tmpG = tmpG + Int(m_GradientDefinition.gd_Colors(i + 1).gc_Color.Green)
+                        tmpB = .gc_Color.Blue
+                        tmpB = tmpB + Int(m_GradientDefinition.gd_Colors(i + 1).gc_Color.Blue)
+                        
+                        tmpGradientList(curPointIndex).PointRGB = RGB(Int(tmpR / 2 + 0.5), Int(tmpG / 2 + 0.5), Int(tmpB / 2 + 0.5))
+                        tmpPos = CSng(m_GradientDefinition.gd_Colors(i + 1).gc_Location - .gc_Location) / 100!
+                        tmpGradientList(curPointIndex).PointPosition = (.gc_Location / 100!) + (tmpPos * (.gc_Midpoint / 100!))
+                        curPointIndex = curPointIndex + 1
+                    End With
+                End If
+            End If
+            
+            'If this is the final point and its position isn't 1.0, create a dummy point in its place.
+            If (i = m_GradientDefinition.gd_NumColorStops - 1) And (m_GradientDefinition.gd_Colors(i).gc_Location <> 100) Then
+                If (curPointIndex > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To curPointIndex * 2) As GradientPoint
+                With m_GradientDefinition.gd_Colors(i)
+                    tmpGradientList(curPointIndex).PointRGB = RGB(.gc_Color.Red, .gc_Color.Green, .gc_Color.Blue)
+                    tmpGradientList(curPointIndex).PointPosition = 1!
+                    tmpGradientList(curPointIndex).PointOpacity = 100!
+                End With
+                curPointIndex = curPointIndex + 1
+            End If
+            
+        Next i
+        
+        numColorStops = curPointIndex
+        curPointIndex = 0
+        
+        'Next, we want to produce a similarly compatible list of opacity points.
+        Dim numOpacityStops As Long
+        
+        Dim tmpOpacityList() As GradientPoint
+        ReDim tmpOpacityList(0 To (m_GradientDefinition.gd_NumOpacityStops + 1) * 2) As GradientPoint
+        
+        For i = 0 To m_GradientDefinition.gd_NumOpacityStops - 1
+            
+            If (curPointIndex > UBound(tmpOpacityList)) Then ReDim Preserve tmpOpacityList(0 To curPointIndex * 2) As GradientPoint
+            
+            'First point
+            If (i = 0) And (m_GradientDefinition.gd_Opacity(0).gc_Location <> 0) Then
+                With m_GradientDefinition.gd_Opacity(i)
+                    tmpOpacityList(curPointIndex).PointPosition = 0!
+                    tmpOpacityList(curPointIndex).PointOpacity = .gc_Color.Alpha
+                End With
+                curPointIndex = curPointIndex + 1
+            End If
+            
+            'Add the current point to the collection
+            With m_GradientDefinition.gd_Opacity(i)
+                tmpOpacityList(curPointIndex).PointOpacity = .gc_Color.Alpha
+                tmpOpacityList(curPointIndex).PointPosition = .gc_Location / 100!
+            End With
+            
+            curPointIndex = curPointIndex + 1
+            
+            'Midpoint
+            If (i < m_GradientDefinition.gd_NumOpacityStops - 1) Then
+                If (m_GradientDefinition.gd_Opacity(i).gc_Midpoint <> 50) Then
+                    If (curPointIndex > UBound(tmpOpacityList)) Then ReDim Preserve tmpOpacityList(0 To curPointIndex * 2) As GradientPoint
+                    
+                    With m_GradientDefinition.gd_Opacity(i)
+                        tmpA = .gc_Color.Alpha
+                        tmpA = tmpA + Int(m_GradientDefinition.gd_Opacity(i + 1).gc_Color.Alpha)
+                        tmpOpacityList(curPointIndex).PointOpacity = Int(tmpA / 2 + 0.5)
+                        tmpPos = CSng(m_GradientDefinition.gd_Opacity(i + 1).gc_Location - .gc_Location) / 100!
+                        tmpOpacityList(curPointIndex).PointPosition = (.gc_Location / 100!) + (tmpPos * (.gc_Midpoint / 100!))
+                        curPointIndex = curPointIndex + 1
+                    End With
+                End If
+            End If
+            
+            'Final point
+            If (i = m_GradientDefinition.gd_NumOpacityStops - 1) And (m_GradientDefinition.gd_Opacity(i).gc_Location <> 100) Then
+                If (curPointIndex > UBound(tmpOpacityList)) Then ReDim Preserve tmpOpacityList(0 To curPointIndex * 2) As GradientPoint
+                With m_GradientDefinition.gd_Opacity(i)
+                    tmpOpacityList(curPointIndex).PointOpacity = .gc_Color.Alpha
+                    tmpOpacityList(curPointIndex).PointPosition = 1!
+                End With
+                curPointIndex = curPointIndex + 1
+            End If
+            
+        Next i
+        
+        numOpacityStops = curPointIndex
+        
+        'We now have properly structured RGB and Opacity gradients.  The problem?  They're each on their
+        ' own scales, and we need to mash 'em together.
+        
+        'There are myriad ways to optimize this, but as these collections aren't large, we do a
+        ' simple variation on an insertion sort.
+        
+        'First, set the opacity of the first point in the color array
+        tmpGradientList(0).PointOpacity = tmpOpacityList(0).PointOpacity
+        
+        'Next, set the opacity of the last point in the color array
+        tmpGradientList(numColorStops - 1).PointOpacity = tmpOpacityList(numOpacityStops - 1).PointOpacity
+        
+        'Now we have to deal with all the values in-between those two.
+        
+        'First, perform a special check for uniform opacity.
+        If (numOpacityStops = 2) Then
+            If (tmpGradientList(0).PointOpacity = tmpGradientList(1).PointOpacity) Then
+                For i = 0 To numColorStops - 1
+                    tmpGradientList(i).PointOpacity = tmpGradientList(0).PointOpacity
+                Next i
+                GoTo OpacityHandled
+            End If
+        End If
+        
+        'If we're still here, opacity is not uniform across the gradient.  We need to manually merge
+        ' opacity values with the underlying RGBA data (sigh).
+        Dim j As Long, k As Long
+        Dim opacityScaleFactor As Single, lastColorIndex As Long
+        lastColorIndex = 0
+        
+        For i = 1 To numOpacityStops - 1
+                
+            'For each opacity stop, loop through the RGBA array until we find the first point
+            ' with a position *after* the current one.
+            For j = lastColorIndex To numColorStops - 1
+                
+                'If this point sits between the current opacity point and the previous one...
+                If (tmpGradientList(j).PointPosition < tmpOpacityList(i).PointPosition) Then
+                    
+                    'Scale this point's opacity between the previous point and this one
+                    opacityScaleFactor = (tmpOpacityList(i).PointPosition - tmpOpacityList(i - 1).PointPosition)
+                    If (opacityScaleFactor <> 0!) Then opacityScaleFactor = (tmpGradientList(j).PointPosition - tmpOpacityList(i - 1).PointPosition) / opacityScaleFactor Else opacityScaleFactor = 1!
+                    tmpGradientList(j).PointOpacity = tmpOpacityList(i).PointOpacity * opacityScaleFactor + (tmpOpacityList(i - 1).PointOpacity * (1! - opacityScaleFactor))
+                
+                'This point sits *ahead* of the current opacity point
+                Else
+                
+                    'First, check equality.  It's easy because we can just assign opacity.
+                    If (tmpGradientList(j).PointPosition = tmpOpacityList(i).PointPosition) Then
+                        tmpGradientList(j).PointOpacity = tmpOpacityList(i).PointOpacity
+                    
+                    'Unequal.  We need to insert this opacity point as a new RGBA stop.
+                    Else
+                    
+                        'Figure out what the RGBA value is at this opacity point's position
+                        opacityScaleFactor = tmpGradientList(j).PointPosition - tmpGradientList(j - 1).PointPosition
+                        If (opacityScaleFactor <> 0!) Then opacityScaleFactor = (tmpOpacityList(i).PointPosition - tmpGradientList(j - 1).PointPosition) / opacityScaleFactor Else opacityScaleFactor = 1!
+                        
+                        Dim newRGBA As RGBQuad
+                        newRGBA.Blue = CSng(Colors.ExtractBlue(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractBlue(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                        newRGBA.Green = CSng(Colors.ExtractGreen(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractGreen(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                        newRGBA.Red = CSng(Colors.ExtractRed(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractRed(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                        
+                        'Create a new point representing what we need to insert
+                        Dim tmpGradientPoint As GradientPoint
+                        tmpGradientPoint.PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
+                        tmpGradientPoint.PointPosition = tmpOpacityList(i).PointPosition
+                        tmpGradientPoint.PointOpacity = tmpOpacityList(i).PointOpacity
+                        
+                        'Insert the new point into the collection
+                        If (numColorStops > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To numColorStops * 2) As GradientPoint
+                        For k = numColorStops To j + 1 Step -1
+                            tmpGradientList(k) = tmpGradientList(k - 1)
+                        Next k
+                        tmpGradientList(j) = tmpGradientPoint
+                        numColorStops = numColorStops + 1
+                        lastColorIndex = j + 1
+                        
+                        'Resume with the next opacity point
+                        Exit For
+                        
+                    End If
+                    
+                End If
+                
+            Next j
+            
+        Next i
+        
+        'RGB and Opacity data has been successfully merged!
+        
+OpacityHandled:
+        
+        'Start by loading all color data into a gradient object.
+        Dim tmpGradient As pd2DGradient
+        Set tmpGradient = New pd2DGradient
+        tmpGradient.CreateGradientFromPointCollection numColorStops, tmpGradientList
+        tmpGradient.SetGradientAngle m_GradientDefinition.gd_Angle
+        tmpGradient.SetGradientShape P2_GS_Linear
+        
+        Select Case m_GradientDefinition.gd_Type
+            Case keSGTLinear
+                tmpGradient.SetGradientShape P2_GS_Linear
+                If m_GradientDefinition.gd_Invert Then tmpGradient.ReverseGradient
+            Case keSGTRectangular
+                tmpGradient.SetGradientShape P2_GS_Rectangle
+                If m_GradientDefinition.gd_Invert Then tmpGradient.ReverseGradient
+            Case keSGTSunburst
+                tmpGradient.SetGradientShape P2_GS_Radial
+                If (Not m_GradientDefinition.gd_Invert) Then tmpGradient.ReverseGradient
+            'Conical gradients are TODO; GDI+ doesn't support them natively
+            Case keSGTRadial
+        End Select
+        
+        'Previously "invert" was handled here, but note in the above select statement
+        ' that its interpretation varies by shape!
+        
+        'For radial brushes, set center position
+        If (m_GradientDefinition.gd_cX <> 50) Or (m_GradientDefinition.gd_cY <> 50) Then
+            tmpGradient.SetCenterOffset m_GradientDefinition.gd_cX / 100!, m_GradientDefinition.gd_cY / 100!
+        Else
+            tmpGradient.SetCenterOffset_Default
+        End If
+        
+        'Finally, create a matching gradient brush!
+        If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush
+        dstBrush.SetBrushMode P2_BM_Gradient
+        dstBrush.SetBrushGradientAllSettings tmpGradient.GetGradientAsString(True)
+        
+        okToProceed = psp_Success
+    
+    Else
+        InternalError funcName, "null gradient brush chunk size", srcWarnings
+        okToProceed = psp_Warning
+        GoTo EarlyTermination
+    End If
+    
+EarlyTermination:
+    BuildBrush_Gradient = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
+    srcWarnings.AddString "Internal error in pdPSPShape." & funcName & ", #" & Err.Number & ": " & Err.Description
+    BuildBrush_Gradient = psp_Failure
     
 End Function
 
@@ -929,11 +1463,14 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
     'PSP vector data works as a list of nodes, with move-to commands like GDI.  GDI+ works on lines
     ' and sub-paths, with "stop this sub-path / start a new sub-path" commands instead.  We need to
     ' convert between these formats as we go.
-    Dim i As Long
+    Dim i As Long, lastMoveTo As Long
+    lastMoveTo = -1
     For i = 0 To m_NodeCount - 1
         
-        'Skip invisible nodes
-        If ((m_Nodes(i).pn_NodeFlags And keNodeVisible) = 0) Then GoTo NextPoint
+        'NOTE: I don't know what node visibility actually means, but skipping "invisible" nodes
+        ' results in some shapes not being rendered, even though they're rendered when the file
+        ' is loaded into Paintshop Pro.  As such, I've disabled this visibility check entirely.
+        'If ((m_Nodes(i).pn_NodeFlags And keNodeVisible) = 0) Then GoTo nextPoint
         
         'When I first implemented this class, it was helpful to display node attributes.
         ' Here's the code in case you need to review parser behavior in the future:
@@ -942,7 +1479,8 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
         'On the first point, always start a new sub-path
         If (i = 0) Then
             m_PolylineShape.StartNewFigure
-        
+            If m_Nodes(i).pn_MoveTo Then lastMoveTo = i
+            
         'n > 1
         Else
         
@@ -950,7 +1488,7 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
             ' (because we're about to start a new one).
             If m_Nodes(i).pn_MoveTo Then
                 m_PolylineShape.CloseCurrentFigure
-            
+                
             'This is not a MoveTo command.  Connect this point to the one in front of it.
             Else
                 
@@ -958,7 +1496,10 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
                 ' MoveTo commands like this to prevent errors if a path were to somehow define
                 ' multiple MoveTo commands in a row.)  Note, however, that we don't need to do
                 ' this on the first node; it's covered by the default i = 0 case, above.
-                If (m_Nodes(i - 1).pn_MoveTo And (i <> 1)) Then m_PolylineShape.StartNewFigure
+                If (m_Nodes(i - 1).pn_MoveTo And (i <> 1)) Then
+                    m_PolylineShape.StartNewFigure
+                    lastMoveTo = i - 1
+                End If
                 
                 'When debugging, it may be helpful to just add nodes to the current figure as
                 ' straight lines.  Here's the code to do that:
@@ -973,6 +1514,11 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
                 ' but if you mix control points from neighboring nodes, the end result looks correct!)
                 m_PolylineShape.AddBezierCurve m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i - 1).pn_hX2, m_Nodes(i - 1).pn_hY2, m_Nodes(i).pn_hX1, m_Nodes(i).pn_hY1, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
                 
+                'If this is a "closed" node, connect it to the last MoveTo node to complete this shape
+                If ((m_Nodes(i).pn_NodeFlags And keNodeClosed) <> 0) And (lastMoveTo >= 0) Then
+                    m_PolylineShape.AddBezierCurve m_Nodes(i).pn_X, m_Nodes(i).pn_Y, m_Nodes(i).pn_hX2, m_Nodes(i).pn_hY2, m_Nodes(lastMoveTo).pn_hX1, m_Nodes(lastMoveTo).pn_hY1, m_Nodes(lastMoveTo).pn_X, m_Nodes(lastMoveTo).pn_Y
+                End If
+                
                 'If this is the end of the current point collection, close the current path, since there
                 ' are no more points to add.
                 If (i = m_NodeCount - 1) Then m_PolylineShape.CloseCurrentFigure
@@ -981,7 +1527,7 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
             
         End If
         
-NextPoint:
+nextPoint:
     Next i
     
 EarlyTermination:
