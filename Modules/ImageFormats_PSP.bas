@@ -330,6 +330,7 @@ Public Function PSP_BuildDIBFromChannels(ByVal numPSPChannels As Long, ByRef src
         CopyMemoryStrict VarPtr(localCopy(0)), srcChannels(i).GetChannelPtr(), srcChannels(i).GetChannelSize
         srcChannels(i).FreeChannelContents
         
+        
         'If this channel is for a mask, it may require special offsets; flag this in advance.
         Dim isMaskChannel As Boolean
         'isMaskChannel = (srcChannels(i).GetChannelDIBType = PSP_DIB_ALPHA_MASK)
@@ -340,6 +341,7 @@ Public Function PSP_BuildDIBFromChannels(ByVal numPSPChannels As Long, ByRef src
         isMaskChannel = isMaskChannel Or (srcChannels(i).GetChannelDIBType = PSP_DIB_USER_MASK)
         
         If PSP_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Channel DIB type is: " & srcChannels(i).GetChannelDIBType
             If isMaskChannel Then PDDebug.LogAction "(Note: this is a mask channel)"
         End If
         
@@ -351,6 +353,14 @@ Public Function PSP_BuildDIBFromChannels(ByVal numPSPChannels As Long, ByRef src
                 
                 'Grayscale and indexed image
                 If (i = 0) Then
+                    
+                    'Failsafe check for palette existence; if it's missing, grab a grayscale one as that's
+                    ' likely what's required.
+                    If (dstPaletteSize = 0) Then
+                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "creating grayscale palette for composite channel..."
+                        dstPaletteSize = 256
+                        Palettes.GetPalette_Grayscale dstPalette
+                    End If
                     
                     If isMaskChannel Then
                         If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "unexpected mask branch"

@@ -126,7 +126,18 @@ Friend Function ConstructMatchingDIB(ByRef srcPalette() As RGBQuad, ByVal srcPal
             .ch_Compression = srcHeader.psph_Compression
         End With
         
-        ConstructMatchingDIB = ImageFormats_PSP.PSP_BuildDIBFromChannels(m_ChannelCount, m_Channels, tmpHeader, m_LayerDIB, srcPalette, srcPaletteSize)
+        'Some DIB types may be relevant in the future (e.g. adjustment layers), but right now, PD doesn't have
+        ' a useful way to render them.  Skip such layers now.
+        Dim skipLayer As Boolean
+        skipLayer = (m_LayerHeader.pspl_LayerType = keGLTAdjustment)
+        skipLayer = skipLayer Or (m_LayerHeader.pspl_LayerType = keGLTUndefined)
+        If skipLayer Then
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping generation of raster data for layer : " & m_LayerHeader.pspl_Name
+        Else
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to generate raster data for layer: " & m_LayerHeader.pspl_Name & ", " & m_LayerHeader.pspl_LayerType
+            ConstructMatchingDIB = ImageFormats_PSP.PSP_BuildDIBFromChannels(m_ChannelCount, m_Channels, tmpHeader, m_LayerDIB, srcPalette, srcPaletteSize)
+        End If
+        
         If ConstructMatchingDIB Then
             
             'To save space (presumably), PaintShop Pro is clever about "cropping out" only the
