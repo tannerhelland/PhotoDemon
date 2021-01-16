@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon ICO (Icon) Container and Import/Export engine
 'Copyright 2020-2021 by Tanner Helland
 'Created: 07/May/20
-'Last updated: 21/May/20
-'Last update: finish up full export support for all color-depths
+'Last updated: 16/January/21
+'Last update: fix layer name generation on frames with a null bit-depth (we can usually extract
+'             a valid bit-depth from the embedded header, despite the original header being broken)
 '
 'This class (and its associated pdICO- child classes) handle import and export of
 ' old-school ICO files.  The class was custom-built for PhotoDemon, with an emphasis on
@@ -1213,7 +1214,16 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
                 headerValid = (tmpBIHeader.Planes = 1)
                 If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header planes: " & tmpBIHeader.Planes
                 headerValid = (tmpBIHeader.BitCount > 0)
-                If (Not headerValid) Then InternalError "LoadICO_GenerateFrames", "bad header bitcount: " & tmpBIHeader.BitCount
+                
+                'Sometimes, the top-level icon header will supply a null bit-depth (which is bad
+                ' and against spec, because it makes selecting the "best" icon problematic in
+                ' e.g. Explorer, but such are Windows icons!).  If this occurs, overwrite that
+                ' null bit-depth with this one, retrieved from the pixel stream.
+                If headerValid Then
+                    If (m_Icons(i).ico_BPP = 0) Then m_Icons(i).ico_BPP = tmpBIHeader.BitCount
+                Else
+                    InternalError "LoadICO_GenerateFrames", "bad header bitcount: " & tmpBIHeader.BitCount
+                End If
                 
                 'biSizeImage doesn't actually matter; per the MSDN spec (https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader)
                 ' "biSizeImage: Specifies the size, in bytes, of the image. This can be set to
