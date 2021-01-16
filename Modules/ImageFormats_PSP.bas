@@ -325,6 +325,9 @@ Public Function PSP_BuildDIBFromChannels(ByVal numPSPChannels As Long, ByRef src
         'Skip broken channels
         If (Not srcChannels(i).IsChannelOK) Then GoTo NextChannel
         
+        'Skip selection channels
+        If (srcChannels(i).GetChannelDIBType = PSP_DIB_SELECTION) Then GoTo NextChannel
+        
         'Always start by copying the contents of this channel into a local struct (for faster access)
         If (srcChannels(i).GetChannelSize > UBound(localCopy) + 1) Then ReDim localCopy(0 To srcChannels(i).GetChannelSize - 1) As Byte
         CopyMemoryStrict VarPtr(localCopy(0)), srcChannels(i).GetChannelPtr(), srcChannels(i).GetChannelSize

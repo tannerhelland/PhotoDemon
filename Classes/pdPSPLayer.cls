@@ -348,7 +348,7 @@ Friend Function IsLayerOK() As Boolean
 End Function
 
 Friend Function IsLayerPixelBased() As Boolean
-    IsLayerPixelBased = m_LayerHeader.pspl_LayerHasPixels
+    IsLayerPixelBased = m_LayerHeader.pspl_LayerHasPixels And (m_LayerHeader.pspl_LayerType <> keGLTVector)
 End Function
 
 Friend Function IsVectorLayerAvailableAsRaster() As Boolean
