@@ -195,11 +195,13 @@ Friend Function ConstructMatchingDIB_Vector(ByRef srcPalette() As RGBQuad, ByVal
         'Ask each shape to render itself into the raster layer
         Dim i As Long, numSuccessfulRenders As Long
         For i = 0 To m_NumVectorShapes - 1
-            If m_Shapes(i).IsShapeOK Then
-                If m_Shapes(i).RenderShapeIntoDIB(m_LayerDIB, srcPalette, srcPaletteSize, srcHeader) Then
-                    numSuccessfulRenders = numSuccessfulRenders + 1
-                Else
-                    InternalError funcName, "shape render failed: " & i, Nothing
+            If (Not m_Shapes(i) Is Nothing) Then
+                If m_Shapes(i).IsShapeOK Then
+                    If m_Shapes(i).RenderShapeIntoDIB(m_LayerDIB, srcPalette, srcPaletteSize, srcHeader) Then
+                        numSuccessfulRenders = numSuccessfulRenders + 1
+                    Else
+                        InternalError funcName, "shape render failed: " & i, Nothing
+                    End If
                 End If
             End If
         Next i

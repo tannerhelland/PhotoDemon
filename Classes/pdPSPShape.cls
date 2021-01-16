@@ -41,6 +41,14 @@ Option Explicit
 'Some shape elements are "blocks".  These use the same magic number as all other PSP blocks.
 Private Const PSP_BLOCK_MARKER As Long = &H4B427E
 
+'When debugging vector layers, it can be helpful to simplify vector shapes to confirm that
+' everything is working as intended.  These debug modes must *not* be activated in production builds.
+Private Const PSP_VECTOR_DEBUG_NO_CURVES As Boolean = False
+Private Const PSP_VECTOR_DEBUG_RNDCOLORS As Boolean = False
+
+'This randomize object is also used purely for debugging.  You can remove it in production code.
+Private m_Randomize As pdRandomize
+
 '/* Vector shape types.  */
 Private Enum PSPVectorShapeType
     keVSTUnknown = 0    '// Undefined vector type
@@ -239,7 +247,7 @@ Private m_ShapeAttributes As PSP_ShapeAttributes
 ' a text layer uses a totally different structure than a polygon.)
 
 'Polylines, ellipses, and polygons use the same format: an attribute header, a definition header
-' (describing node count, basically), then a list of nodes, including control points.
+' (describing node count, basically), then a variable-length list of nodes, including control points.
 Private Type PSP_PolylineAttributes
     pa_Size As Long
     pa_Stroked As Boolean
@@ -260,6 +268,75 @@ Private Type PSP_PolylineAttributes
 End Type
 
 Private m_PolylineAttributes As PSP_PolylineAttributes
+
+'Text layers have their own custom attribute header, followed by a similar definition header
+' (describing node count, same as polylines), then a variable-length list of text element nodes
+Private Type PSP_TextAttributes
+    ta_Size As Long
+    ta_Alignment As PSPTextAlignment
+    ta_XInsertPt As Long
+    ta_YInsertPt As Long
+    ta_DeformationMatrix(0 To 8) As Double  '3x3 deformation matrix
+    
+    'Members past this point may not exist; use SIZE to confirm existence
+    
+    ta_TextFlow As PSPTextFlow
+    ta_PathOffset As Double     'Only used for text-on-path; describes offset from path to text
+    'Future expansion fields possible; use Size member to skip
+End Type
+
+Private m_TextAttributes As PSP_TextAttributes
+
+'After text attributes, PSPs encode a variable-length list of individual text "elements".
+' These can be single-characters, character-style-definitions (fonts, color, etc), or
+' line-style-definitions (the spec only defines "leading width" but allows for future expansion).
+' PD decodes these to an array of the following struct, but note that various struct members
+' are only loaded if they're relevant to a given element type.  Said another way, you *MUST*
+' query the type before attempting to use anything from the rest of the struct!
+Private Type PSP_TextElement
+    te_Type As PSPTextElementType
+    
+    'Only relevant for character definitions:
+    te_CharCode As Long     'The spec calls this "the Unicode value of the character" which is silly - I assume UTF-32 is the actual encoding?
+    
+    'Only relevant for line definitions:
+    te_TextLeadingValue As Long
+    
+    'Only relevant for character style definitions, and not all definitions are guaranteed to
+    ' exist depending on the version of the PSP file (e.g. PSP 6 doesn't describe as many
+    ' attributes as PSP 7 does):
+    te_FontName As String
+    te_CharProperties As PSPCharacterProperties
+    te_CharWeight As Long
+    te_CharSet As Long      'Not currently supported in PD, and it's meaning is unclear given that the text
+                            ' is supposedly Unicode, which is incompatible with the notion of character sets??
+    te_FontSize As Long
+    te_AntialiasMode As PSPAntialiasMode
+    te_Justify As Byte      'Enum isn't described in the spec?
+    te_AutoKern As Boolean
+    te_KerningValue As Double
+    te_TrackingValue As Double
+    te_LineLeadingValue As Double
+    te_Stroked As Boolean
+    te_Filled As Boolean
+    te_Styled As Boolean
+    te_StrokeWidth As Double
+    te_StartCapType As PSPStyleCapType
+    te_StartCapMultiplier As Boolean
+    te_StartCapWidthMultiplier As Double
+    te_StartCapHeightMultiplier As Double
+    te_EndCapType As PSPStyleCapType
+    te_EndCapMultiplier As Boolean
+    te_EndCapWidthMultiplier As Double
+    te_EndCapHeightMultiplier As Double
+    te_LineJoin As PSPStyleJoinType
+    te_MiterLimit As Double
+    'Future expansion fields possible; PD doesn't track a Size member for this struct
+    ' (because there are actually several different size members throughout the struct)
+    ' but it will be accounted for during parsing
+End Type
+
+Private m_numTextElements As Long, m_TextElements() As PSP_TextElement
 
 'When painting vector shapes, PSP files don't use normal "stroke" or "fill" terminology.
 ' Instead, pretty much everything is treated as a "fill", and "fills" are described by
@@ -399,7 +476,7 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     ' of this shape block.
     With m_ShapeAttributes
         .sa_Size = srcStream.ReadLong()
-        If (.sa_Size <= 0) Then
+        If (.sa_Size < 4) Then
             InternalError funcName, "bad shape attribute size: " & .sa_Size, srcWarnings
             okToProceed = psp_Failure
             GoTo EarlyTermination
@@ -428,16 +505,18 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     'What we're pointing out now varies by shape type (above)
     Select Case m_ShapeAttributes.sa_Type
     
+        'Text layers in PSP are treated as a subset of "vector shapes"
         Case keVSTText
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: text"
-            'Do text stuff
+            okToProceed = ReadVectorText(srcStream, srcWarnings, srcHeader)
+            m_ShapeOK = (okToProceed = psp_Success)
             
+        'These all use polyline definitions "under the hood"
         Case keVSTPolyline, keVSTEllipse, keVSTPolygon
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: polyline"
             okToProceed = ReadPolylines(srcStream, srcWarnings, srcHeader)
             m_ShapeOK = (okToProceed = psp_Success)
-            'These all use polyline definitions
-        
+            
         Case keVSTGroup
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Found shape: vector group marker"
             'Like raster layer groups, this indicator simply reports the number of shapes
@@ -597,7 +676,7 @@ Private Function ReadPolylines(ByRef srcStream As pdStream, ByRef srcWarnings As
     
     'Unlike most other read functions in PD's PSP-centric collection, this reader does
     ' *not* align the stream before exiting.  That is up to our parent class due to the
-    ' way PSP embeds chunk vs block sizes (this is a chunk reader, not a block reader).
+    ' way PSP embeds chunk vs block sizes (this function parses a chunk, not a block).
 EarlyTermination:
     ReadPolylines = okToProceed
     
@@ -648,6 +727,26 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
     Dim polylineBoundaries As RectF
     polylineBoundaries = m_PolylineShape.GetPathBoundariesF()
     
+    'Debug mode is helpful for studying vector data as read from file, without the complications
+    ' of brush and pen parsing+generation.
+    If PSP_VECTOR_DEBUG_RNDCOLORS Then
+        
+        Dim tmpBrush As pd2DBrush, tmpPen As pd2DPen
+        
+        Dim randomColor As Long
+        randomColor = m_Randomize.GetRandomInt_VB()
+        
+        Drawing2D.QuickCreateSolidBrush tmpBrush, randomColor, 100!
+        PD2D.FillPath dstSurface, tmpBrush, m_PolylineShape
+        
+        Drawing2D.QuickCreateSolidPen tmpPen, 1!, (Not randomColor) And &HFFFFFF, 100!, P2_LJ_Round
+        PD2D.DrawPath dstSurface, tmpPen, m_PolylineShape
+        
+        RenderShapeIntoDIB = True
+        Exit Function
+        
+    End If
+    
     'Fill if flagged
     If m_PolylineAttributes.pa_Filled Then
         
@@ -655,7 +754,6 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
         
         'Make sure our fill brush exists
         If (Not m_BrushFill Is Nothing) Then
-            
             If (m_BrushFill.GetBrushMode = P2_BM_Gradient) Then m_BrushFill.SetBoundaryRect m_PolylineShape.GetPathBoundariesF()
             
             PD2D.FillPath dstSurface, m_BrushFill, m_PolylineShape
@@ -724,6 +822,231 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
         End If
         
     End If
+    
+End Function
+
+'Text layers bear strong similarity to polyline layers, and PSP treats text as a subset of "vector shapes"
+Private Function ReadVectorText(ByRef srcStream As pdStream, ByRef srcWarnings As pdStringStack, ByRef srcHeader As PSPImageHeader) As PD_PSPResult
+    
+    On Error GoTo InternalVBError
+    Const funcName As String = "ReadVectorText"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'Stream position at entry.  Note that this is a *chunk*, not a *block* so we can't use this
+    ' for absolute alignment.  (It is, however, helpful for debug purposes.)
+    Dim origStreamPos As Long
+    origStreamPos = srcStream.GetPosition()
+    
+    Dim chunkSize As Long
+    chunkSize = srcStream.ReadLong()
+    If (chunkSize < 4) Then
+        InternalError funcName, "bad text attribute size: " & chunkSize & ", " & srcStream.GetPosition(), srcWarnings
+        okToProceed = psp_Failure
+        GoTo EarlyTermination
+    End If
+    
+    'This step starts out pretty simple - just fill the attribute header!
+    With m_TextAttributes
+        
+        .ta_Alignment = srcStream.ReadByte()
+        .ta_XInsertPt = srcStream.ReadLong()
+        .ta_YInsertPt = srcStream.ReadLong()
+        srcStream.ReadBytesToBarePointer VarPtr(.ta_DeformationMatrix(0)), 9 * 8 '9 double-width floats
+        
+        'Subsequent values may not exist; header is inconsistent between versions,
+        ' so use chunk size as a guide
+        If (chunkSize >= 86) Then .ta_TextFlow = srcStream.ReadByte()
+        If (chunkSize >= 94) Then .ta_PathOffset = srcStream.ReadDouble()
+        
+    End With
+    
+    'Align stream using chunk size
+    srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+    
+    'Next comes text shape definition.  In public specs, this simply defines the number
+    ' of text "element" chunks that follow.
+    origStreamPos = srcStream.GetPosition()
+    chunkSize = srcStream.ReadLong()
+    If (chunkSize < 8) Then
+        InternalError funcName, "bad text definition size: " & chunkSize, srcWarnings
+        okToProceed = psp_Failure
+        GoTo EarlyTermination
+    End If
+    
+    m_numTextElements = srcStream.ReadLong()
+    If (m_numTextElements <= 0) Then
+        InternalError funcName, "bad text element count: " & m_numTextElements, srcWarnings
+        okToProceed = psp_Failure
+        GoTo EarlyTermination
+    Else
+        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "found " & m_numTextElements & " text elements (" & srcStream.GetPosition() & ", " & chunkSize & ")"
+    End If
+    ReDim m_TextElements(0 To m_numTextElements - 1) As PSP_TextElement
+    
+    'Again, align the stream using chunk size
+    srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+    
+    'We now need to read in (n) text element chunks.  This count is deceptive because there
+    ' are actually *TWO* chunks per text element - a quasi-header "attributes" chunk, which
+    ' tells us which kind of chunk follows (a Unicode character or a character/line style
+    ' description, which is important because PSP files support multi-style text layers),
+    ' then a "definition" chunk whose layout depends on the value of the preceding
+    ' "attributes" chunk.
+    
+    'Again, because the PSP spec is very badly designed, these are all just separated
+    ' by variable-length chunk length descriptors - no IDs anywhere - so you just gotta
+    ' pray that the file encoder did everything correctly, because any sort of validation
+    ' of stream alignment (or content correctness) is effectively impossible.
+    Dim i As Long
+    For i = 0 To m_numTextElements - 1
+        
+        'Parse the "header" text element attributes chunk
+        origStreamPos = srcStream.GetPosition()
+        chunkSize = srcStream.ReadLong()
+        If (chunkSize >= 6) Then
+            m_TextElements(i).te_Type = srcStream.ReadIntUnsigned()
+        Else
+            InternalError funcName, "bad text element attribute size: " & chunkSize & ", " & srcStream.GetPosition(), srcWarnings
+            okToProceed = psp_Failure
+            GoTo EarlyTermination
+        End If
+        
+        'Realign the pointer using chunk size
+        srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+        
+        'Retrieve new chunk size
+        origStreamPos = srcStream.GetPosition()
+        chunkSize = srcStream.ReadLong()
+        If (chunkSize < 4) Then
+            InternalError funcName, "bad text element definition size: " & chunkSize, srcWarnings
+            okToProceed = psp_Failure
+            GoTo EarlyTermination
+        Else
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Element definition size (" & i & "): " & chunkSize
+        End If
+        
+        'Split further handling based on text element type
+        Select Case m_TextElements(i).te_Type
+            
+            'Characters are easy
+            Case keTextElemChar
+                m_TextElements(i).te_CharCode = srcStream.ReadLong()
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction i & " - char: " & ChrW(m_TextElements(i).te_CharCode)
+                
+                'Always align against the original chunk size
+                srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+                
+            'Character styles are *not* easy
+            Case keTextElemCharStyle
+                
+                Dim lenFontName As Long
+                lenFontName = srcStream.ReadIntUnsigned()
+                With m_TextElements(i)
+                    .te_FontName = srcStream.ReadString_UTF8(lenFontName)
+                    .te_CharProperties = srcStream.ReadLong()
+                    .te_CharWeight = srcStream.ReadLong()
+                    .te_CharSet = srcStream.ReadLong()
+                    .te_FontSize = srcStream.ReadLong()
+                    
+                    'Handling beyond this point changes by PSP file version
+                    If (m_FilePSPVersion = 4) Then
+                        .te_AutoKern = (srcStream.ReadByte() <> 0)
+                        .te_KerningValue = srcStream.ReadDouble()
+                        
+                        'Manually populate filled/stroked flags because the file does not define these
+                        .te_Stroked = False
+                        .te_Filled = True
+                        .te_Styled = False
+                    
+                    Else
+                    
+                        If (m_FilePSPVersion = 5) Then
+                            .te_AutoKern = (srcStream.ReadByte() <> 0)
+                            .te_KerningValue = srcStream.ReadDouble()
+                        
+                        'It's entirely possible that modern PSP versions deviate from the last-available
+                        ' version of the PSP spec (PSPv8).
+                        Else
+                            .te_AntialiasMode = srcStream.ReadByte()
+                            .te_Justify = srcStream.ReadByte()
+                            .te_AutoKern = (srcStream.ReadByte() <> 0)
+                            .te_KerningValue = srcStream.ReadDouble()
+                            .te_TrackingValue = srcStream.ReadDouble()
+                            .te_TextLeadingValue = srcStream.ReadDouble()
+                        End If
+                        
+                        'The remaining values appear to be shared between all versions 5+
+                        .te_Stroked = (srcStream.ReadByte() <> 0)
+                        .te_Filled = (srcStream.ReadByte() <> 0)
+                        .te_Styled = (srcStream.ReadByte() <> 0)
+                        .te_StrokeWidth = srcStream.ReadIntUnsigned()
+                        .te_StartCapType = srcStream.ReadByte()
+                        .te_StartCapMultiplier = (srcStream.ReadByte() <> 0)
+                        .te_StartCapWidthMultiplier = srcStream.ReadDouble()
+                        .te_StartCapHeightMultiplier = srcStream.ReadDouble()
+                        .te_EndCapType = srcStream.ReadByte()
+                        .te_EndCapMultiplier = (srcStream.ReadByte() <> 0)
+                        .te_EndCapWidthMultiplier = srcStream.ReadDouble()
+                        .te_EndCapHeightMultiplier = srcStream.ReadDouble()
+                        .te_LineJoin = srcStream.ReadByte()
+                        .te_MiterLimit = srcStream.ReadDouble()
+                        
+                    End If
+                    
+                End With
+                
+                'Always align against the original chunk size
+                srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+                
+                'A character style block is immediately followed by one or more paint blocks.
+                
+                'v6 only supports a fill block
+                If m_FileIsPSPv6 Then
+                    If (okToProceed < psp_Failure) Then okToProceed = BuildBrushForPaintBlock(srcStream, srcWarnings, m_BrushFill, Nothing)
+                
+                'Post-v6 support all three style blocks
+                Else
+                    If (okToProceed < psp_Failure) Then okToProceed = BuildBrushForPaintBlock(srcStream, srcWarnings, m_BrushStroke, Nothing)
+                    If (okToProceed < psp_Failure) Then okToProceed = BuildBrushForPaintBlock(srcStream, srcWarnings, m_BrushFill, Nothing)
+                    If (okToProceed < psp_Failure) Then okToProceed = BuildBrushForPaintBlock(srcStream, srcWarnings, Nothing, m_PenStyled)
+                End If
+                
+            'Line styles are easy
+            Case keTextElemLineStyle
+                m_TextElements(i).te_LineLeadingValue = srcStream.ReadLong()
+                
+                'Always align against the original chunk size
+                srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+            
+            'keTextElemUnknown is a member of the enum, but I don't know what to do with it...
+            Case Else
+                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "unknown text element encountered (#" & i & "): " & m_TextElements(i).te_Type
+                
+                'Always align against the original chunk size
+                srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
+                
+        End Select
+        
+    Next i
+    
+    'With all chunks read, we can proceed with parsing!
+    okToProceed = psp_Warning
+    
+    'Unlike most other read functions in PD's PSP-centric collection, this reader does
+    ' *not* align the stream before exiting.  That is up to our parent class due to the
+    ' way PSP embeds chunk vs block sizes (this function parses a chunk, not a block).
+EarlyTermination:
+    ReadVectorText = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description, srcWarnings
+    srcWarnings.AddString "Internal error in pdPSPShape." & funcName & ", #" & Err.Number & ": " & Err.Description
+    ReadVectorText = psp_Failure
     
 End Function
 
@@ -1470,7 +1793,7 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
         'NOTE: I don't know what node visibility actually means, but skipping "invisible" nodes
         ' results in some shapes not being rendered, even though they're rendered when the file
         ' is loaded into Paintshop Pro.  As such, I've disabled this visibility check entirely.
-        'If ((m_Nodes(i).pn_NodeFlags And keNodeVisible) = 0) Then GoTo nextPoint
+        'If ((m_Nodes(i).pn_NodeFlags And keNodeVisible) = 0) Then GoTo ResumeNextPoint
         
         'When I first implemented this class, it was helpful to display node attributes.
         ' Here's the code in case you need to review parser behavior in the future:
@@ -1512,11 +1835,24 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
                 ' previous point, and one control point from the current point to make node descriptors
                 ' work like every other graphics library.  (PSPs save node data in a baffling order,
                 ' but if you mix control points from neighboring nodes, the end result looks correct!)
-                m_PolylineShape.AddBezierCurve m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i - 1).pn_hX2, m_Nodes(i - 1).pn_hY2, m_Nodes(i).pn_hX1, m_Nodes(i).pn_hY1, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
-                
-                'If this is a "closed" node, connect it to the last MoveTo node to complete this shape
-                If ((m_Nodes(i).pn_NodeFlags And keNodeClosed) <> 0) And (lastMoveTo >= 0) Then
-                    m_PolylineShape.AddBezierCurve m_Nodes(i).pn_X, m_Nodes(i).pn_Y, m_Nodes(i).pn_hX2, m_Nodes(i).pn_hY2, m_Nodes(lastMoveTo).pn_hX1, m_Nodes(lastMoveTo).pn_hY1, m_Nodes(lastMoveTo).pn_X, m_Nodes(lastMoveTo).pn_Y
+                If PSP_VECTOR_DEBUG_NO_CURVES Then
+                    
+                    m_PolylineShape.AddLine m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
+                    
+                    'If this is a "closed" node, connect it to the last MoveTo node to complete this shape
+                    If ((m_Nodes(i).pn_NodeFlags And keNodeClosed) <> 0) And (lastMoveTo >= 0) Then
+                        m_PolylineShape.AddLine m_Nodes(i).pn_X, m_Nodes(i).pn_Y, m_Nodes(lastMoveTo).pn_X, m_Nodes(lastMoveTo).pn_Y
+                    End If
+                    
+                Else
+                    
+                    m_PolylineShape.AddBezierCurve m_Nodes(i - 1).pn_X, m_Nodes(i - 1).pn_Y, m_Nodes(i - 1).pn_hX2, m_Nodes(i - 1).pn_hY2, m_Nodes(i).pn_hX1, m_Nodes(i).pn_hY1, m_Nodes(i).pn_X, m_Nodes(i).pn_Y
+                    
+                    'If this is a "closed" node, connect it to the last MoveTo node to complete this shape
+                    If ((m_Nodes(i).pn_NodeFlags And keNodeClosed) <> 0) And (lastMoveTo >= 0) Then
+                        m_PolylineShape.AddBezierCurve m_Nodes(i).pn_X, m_Nodes(i).pn_Y, m_Nodes(i).pn_hX2, m_Nodes(i).pn_hY2, m_Nodes(lastMoveTo).pn_hX1, m_Nodes(lastMoveTo).pn_hY1, m_Nodes(lastMoveTo).pn_X, m_Nodes(lastMoveTo).pn_Y
+                    End If
+                    
                 End If
                 
                 'If this is the end of the current point collection, close the current path, since there
@@ -1527,7 +1863,7 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
             
         End If
         
-nextPoint:
+ResumeNextPoint:
     Next i
     
 EarlyTermination:
@@ -1589,3 +1925,11 @@ Private Sub InternalError(ByRef funcName As String, ByRef errDescription As Stri
     
 End Sub
 
+Private Sub Class_Initialize()
+    
+    'Debug purposes only
+    Set m_Randomize = New pdRandomize
+    m_Randomize.SetSeed_AutomaticAndRandom
+    m_Randomize.SetRndIntegerBounds 0, 16777215
+    
+End Sub
