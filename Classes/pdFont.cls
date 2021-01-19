@@ -447,6 +447,10 @@ Friend Sub SetFontStrikeout(ByVal newStrikeout As Boolean)
     m_currentLogFont.lfStrikeOut = -1 * newStrikeout
 End Sub
 
+Friend Function GetFontStrikeout() As Boolean
+    GetFontStrikeout = (m_currentLogFont.lfStrikeOut * -1)
+End Function
+
 Friend Sub SetFontUnderline(ByVal newUnderline As Boolean)
     m_currentLogFont.lfUnderline = -1 * newUnderline
 End Sub

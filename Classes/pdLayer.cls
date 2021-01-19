@@ -2342,7 +2342,7 @@ Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD
             layerDIB.SetInitialAlphaPremultiplicationState True
             
             'Use pdTextRenderer to paint the string onto the backer DIB
-            Const REPORT_TEXT_RENDER_TIME As Boolean = True
+            Const REPORT_TEXT_RENDER_TIME As Boolean = False
             Dim startTime As Currency
             If REPORT_TEXT_RENDER_TIME Then VBHacks.GetHighResTime startTime
             myTextRenderer.RenderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height

@@ -224,6 +224,23 @@ Friend Function ConstructMatchingDIB_Vector(ByRef srcPalette() As RGBQuad, ByVal
     
 End Function
 
+'PSP files are confusing because text can be intermixed with other shapes in a given layer, so it's not
+' as simple as "layer = text" vs "layer = raster".  We have to iterate the shape collection and hunt
+' for text objects.
+Friend Function DoesVectorLayerContainText() As Boolean
+    If (m_LayerHeader.pspl_LayerType = keGLTVector) Then
+        If (m_NumVectorShapes > 0) Then
+            Dim i As Long
+            For i = 0 To m_NumVectorShapes - 1
+                If (Not m_Shapes(i) Is Nothing) Then
+                    DoesVectorLayerContainText = m_Shapes(i).IsShapeText()
+                    If DoesVectorLayerContainText Then Exit Function
+                End If
+            Next i
+        End If
+    End If
+End Function
+
 'All Get-prefixed functions are only valid after LoadLayer has been called (and the function has returned)
 Friend Function GetLayerBlendMode_PSP() As PSPBlendModes
     GetLayerBlendMode_PSP = m_LayerHeader.pspl_BlendMode
@@ -315,8 +332,32 @@ Friend Function GetLayerWasActiveLayer() As Boolean
     GetLayerWasActiveLayer = m_LayerHeader.pspl_OriginalActiveLayer
 End Function
 
+'Places all text shape indices in a pdStack object; return is the number of text shapes found.
+' If return is 0, dstList is *not* guaranteed to be initialized.
+Friend Function GetListOfTextIndices(ByRef dstList As pdStack) As Long
+    
+    If Me.DoesVectorLayerContainText() Then
+    
+        Set dstList = New pdStack
+        
+        Dim i As Long
+        For i = 0 To m_NumVectorShapes - 1
+            If m_Shapes(i).IsShapeText() Then dstList.AddInt i Else Debug.Print "not text: " & i
+        Next i
+        
+        GetListOfTextIndices = dstList.GetNumOfInts()
+        
+    End If
+    
+End Function
+
 Friend Function GetNumLayersInGroup() As Long
     GetNumLayersInGroup = m_NumLayersInGroup
+End Function
+
+'Bad indices will result in a null return.  Plan accordingly!
+Friend Function GetVectorShape(ByVal shpIndex As Long) As pdPSPShape
+    If (shpIndex >= 0) And (shpIndex < m_NumVectorShapes) Then Set GetVectorShape = m_Shapes(shpIndex)
 End Function
 
 Friend Function IsLayerGroupStart() As Boolean

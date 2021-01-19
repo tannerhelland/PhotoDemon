@@ -1050,30 +1050,24 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case TEXT_BASIC, TEXT_ADVANCED
                 
                 'One of two things can happen when the mouse is clicked in text mode:
-                ' 1) The current layer is a text layer, and the user wants to edit it (move it around, resize, etc)
-                ' 2) The user wants to add a new text layer, which they can do by clicking over a non-text layer portion of the image
+                ' 1) The current layer is a text layer, and the user wants to edit it
+                '     (move it around, resize, etc)
+                ' 2) The user wants to add a new text layer, which they can do by clicking
+                '     anywhere on the image that isn't already occupied by a text layer.
                 
                 'Let's start by distinguishing between these two states.
                 Dim userIsEditingCurrentTextLayer As Boolean
+                userIsEditingCurrentTextLayer = PDImages.GetActiveImage.GetActiveLayer.IsLayerText And (m_CurPOI <> poi_Undefined)
                 
-                'Check to see if the current layer is a text layer
-                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
-                
-                    'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
-                    userIsEditingCurrentTextLayer = (m_CurPOI <> poi_Undefined)
-                    
-                'The current active layer is not a text layer.
-                Else
-                    userIsEditingCurrentTextLayer = False
-                End If
-                
-                'If the user is editing the current text layer, we can switch directly into layer transform mode
+                'If the user is editing the current text layer, we can switch directly into
+                ' layer transform mode.
                 If userIsEditingCurrentTextLayer Then
                     
-                    'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
+                    'Initiate the layer transformation engine.  Note that nothing will happen
+                    ' until the user actually moves the mouse.
                     Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
                     
-                'The user is not editing a text layer.  Create a new text layer now.
+                'The user is not editing a text layer.  Create a new text layer for them.
                 Else
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor,

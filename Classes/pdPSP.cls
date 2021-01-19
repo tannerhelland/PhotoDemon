@@ -1509,8 +1509,8 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
         For i = 0 To m_LayerCount - 1
         
             'Double-check layer is OK
-            If (m_Layers(i) Is Nothing) Then GoTo SkipLayer
-            If (Not m_Layers(i).IsLayerOK) Then GoTo SkipLayer
+            If (m_Layers(i) Is Nothing) Then GoTo SkipToNextLayer
+            If (Not m_Layers(i).IsLayerOK) Then GoTo SkipToNextLayer
             
             'For layers with pixel contents, load them next
             If m_Layers(i).IsLayerPixelBased() Then
@@ -1613,6 +1613,7 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                 'Is this a vector layer?
                 ElseIf (m_Layers(i).GetLayerType = keGLTVector) Then
                     
+                    'Load any non-text vector contents first
                     If m_Layers(i).IsVectorLayerAvailableAsRaster() Then
                         
                         'Prep a new layer object
@@ -1648,12 +1649,32 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                         End If
                         
                     End If
+                    
+                    'Run a second pass through the object, looking for (and extracting) text shapes
+                    ' into corresponding PD text layers.
+                    If m_Layers(i).DoesVectorLayerContainText() Then
+                        
+                        Dim listOfTextObjects As pdStack, numOfTextObjects As Long
+                        numOfTextObjects = m_Layers(i).GetListOfTextIndices(listOfTextObjects)
+                        
+                        If (numOfTextObjects > 0) Then
+                            
+                            'Iterate all discovered text layers and add them to the image as PD-format text layers
+                            Dim idxText As Long, idxShape As Long
+                            For idxText = 0 To numOfTextObjects - 1
+                                idxShape = listOfTextObjects.GetInt(idxText)
+                                newLayerID = m_Layers(i).GetVectorShape(idxShape).CreateTextLayerNow(dstImage, m_Layers(i))
+                            Next idxText
+                            
+                        End If
+                        
+                    End If
                 
                 End If
                 
             End If
         
-SkipLayer:
+SkipToNextLayer:
         Next i
         
         'If an active layer index exists, set it now

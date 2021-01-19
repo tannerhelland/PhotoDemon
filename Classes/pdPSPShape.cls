@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Vector Shape Container
 'Copyright 2020-2021 by Tanner Helland
 'Created: 31/December/20
-'Last updated: 13/January/21
-'Last update: lots of little fixes for struct differences across various PSP versions
+'Last updated: 19/January/21
+'Last update: allow for important of text layers!
 '
 'This class describes a single vector "shape" inside a JASC/Corel Paint Shop Pro image file.
 ' It has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -417,8 +417,162 @@ Private m_BlockOffset As Long, m_TotalLength As Long
 ' invented by savants by comparison...)
 Private m_FilePSPVersion As Long, m_FileIsPSPv6 As Boolean, m_FileIsPSPv8 As Boolean
 
+'Do *not* call this unless the underlying shape is a text object, obviously!
+' If successful, the function returns the ID (not the index) of the newly created layer.
+Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As pdPSPLayer) As Long
+    
+    Const funcName As String = "CreateTextLayerNow"
+    
+    CreateTextLayerNow = -1
+    
+    If (m_numTextElements <= 0) Then
+        InternalError funcName, "no text elements to render!", Nothing
+        Exit Function
+    End If
+    
+    'Before creating the actual text layer, we need to do some housekeeping on our existing
+    ' text element list.
+    
+    'For one thing, we first need to produce a contiguous string from the individual
+    ' character collection!
+    Dim finalString As pdString
+    Set finalString = New pdString
+    
+    'We also need to determine things like font name, color, etc.  PSP supports multiple styles
+    ' within a single text layer.  PhotoDemon does not.  For now, all we can do is take the
+    ' first style in a text layer, and apply that to the layer as a whole.
+    Dim styleIndex As Long
+    styleIndex = -1
+    
+    Dim i As Long
+    For i = 0 To m_numTextElements - 1
+        If (m_TextElements(i).te_Type = keTextElemChar) Then
+            finalString.Append ChrW$(m_TextElements(i).te_CharCode)
+        ElseIf (m_TextElements(i).te_Type = keTextElemLineStyle) Then
+            'not used at present
+        ElseIf (m_TextElements(i).te_Type = keTextElemCharStyle) Then
+            If (styleIndex < 0) Then styleIndex = i
+        Else
+            'unknown element block; can't do much with it at present
+        End If
+    Next i
+    
+    'With the string assembled, we can actually place it into a text layer
+    Dim textContents As String
+    textContents = finalString.ToString()
+    
+    'Ask the parent pdImage to create a new layer object
+    Dim newLayerID As Long
+    newLayerID = dstImage.CreateBlankLayer()
+    
+    'Create a placeholder DIB for the new layer (the parent image will regenerate this based
+    ' on the text contents, but it needs a valid DIB to start)
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateBlank 1, 1, 32, 0, 0
+    tmpDIB.SetInitialAlphaPremultiplicationState True
+    
+    'Assign the newly created DIB and layer name to the layer object, and mirror the
+    ' blend mode and opacity of the parent layer.  (This doesn't always produce identical
+    ' results due to the way PSP groups layers, but it's a good approximation on most images.)
+    dstImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_TextAdvanced, textContents, tmpDIB
+    dstImage.GetLayerByID(newLayerID).SetLayerBlendMode dstLayer.GetLayerBlendMode()
+    dstImage.GetLayerByID(newLayerID).SetLayerOpacity dstLayer.GetLayerOpacity()
+    dstImage.GetLayerByID(newLayerID).SetLayerVisibility ((m_ShapeAttributes.sa_Flags And keShapeVisible) <> 0)
+    
+    'Apply the text itself
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_Text, textContents
+    
+    'Apply other text settings from the header
+    Dim convertedTextAlignment As GdiPlusStringAlignment
+    Select Case m_TextAttributes.ta_Alignment
+        Case keTextAlignmentLeft
+            convertedTextAlignment = StringAlignmentNear
+        Case keTextAlignmentCenter
+            convertedTextAlignment = StringAlignmentCenter
+        Case keTextAlignmentRight
+            convertedTextAlignment = StringAlignmentFar
+        Case Else
+            convertedTextAlignment = StringAlignmentNear
+    End Select
+    
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_HorizontalAlignment, convertedTextAlignment
+    dstImage.GetLayerByID(newLayerID).NotifyOfDestructiveChanges
+    
+    'Layer width/height requires font data to solve.  It may not be 100% accurate, owing to rendering
+    ' differences between PD and PSP.
+    Dim tmpFont As pdFont
+    Set tmpFont = New pdFont
+    tmpFont.SetFontFace m_TextElements(styleIndex).te_FontName
+    
+    'Other font parameters also need to be set to calculate layout semi-correctly
+    tmpFont.SetFontBold (m_TextElements(styleIndex).te_CharWeight > 400)    '400 = normal, 700 = bold
+    tmpFont.SetFontItalic ((m_TextElements(styleIndex).te_CharProperties And keStyleItalic) <> 0)
+    tmpFont.SetFontUnderline ((m_TextElements(styleIndex).te_CharProperties And keStyleUnderlined) <> 0)
+    tmpFont.SetFontStrikeout ((m_TextElements(styleIndex).te_CharProperties And keStyleStruck) <> 0)
+    
+    'Font size calculation is complicated because PSP lets you arbitrarily stretch a text layer
+    ' in either direction, so font size is basically meaningless.  We attempt to approximate the
+    ' desired font size by multiplying the embedded font size by the average width/height multiplier
+    ' of the deformation matrix.  (If the user did *not* resize the PSP layer at all, this will
+    ' produce roughly identical size results.)
+    Dim fontSizeInPixels As Single
+    fontSizeInPixels = m_TextElements(styleIndex).te_FontSize * ((m_TextAttributes.ta_DeformationMatrix(0) + m_TextAttributes.ta_DeformationMatrix(4)) / 2)
+    tmpFont.SetFontSize fontSizeInPixels * 0.75     '(72 / 96 DPI)
+    
+    'PSP doesn't actually store text layer offsets.  Instead, it stores a 3x3 deformation matrix
+    ' from which we can roughly reverse-engineer the expected baseline position of the first
+    ' line of text.  (Note that the baseline position only considers the font *ascent*, not its
+    ' *descent*, and I have no idea what font library PSP uses so these results are *not* identical.)
+    Dim srcFontMetrics As TEXTMETRIC
+    tmpFont.AttachToDC tmpDIB.GetDIBDC()
+    Fonts.FillTextMetrics tmpDIB.GetDIBDC, srcFontMetrics
+    
+    'You'll notice a few "+2" additions on font boundaries in this function.  Modern hinting
+    ' algorithms produce rounder characters with improved outline accuracy, which can lead to
+    ' small differences in boundary sizes vs PSP itself.  To ensure boundaries are (roughly)
+    ' similar to PSP, we expand font boundary sizes by a pixel in either direction to account
+    ' for this.
+    Dim approxFontWidth As Single
+    approxFontWidth = tmpFont.GetWidthOfString(textContents) + 2!
+    
+    Dim boundaryRect As RectL
+    tmpFont.GetBoundaryRectOfMultilineString textContents, approxFontWidth, boundaryRect, True
+    tmpFont.ReleaseFromDC
+    
+    dstImage.GetLayerByID(newLayerID).SetLayerWidth (boundaryRect.Right - boundaryRect.Left) + 2
+    dstImage.GetLayerByID(newLayerID).SetLayerHeight (boundaryRect.Bottom - boundaryRect.Top) + 2
+    
+    'Apply layer (x, y) offsets
+    dstImage.GetLayerByID(newLayerID).SetLayerOffsetX m_TextAttributes.ta_DeformationMatrix(2)
+    dstImage.GetLayerByID(newLayerID).SetLayerOffsetY (m_TextAttributes.ta_DeformationMatrix(5) - srcFontMetrics.tmAscent)   'boundaryRect.Bottom    ' approxFontHeight  'Note: offset is to BASELINE; gotta fix this
+    
+    'Apply other font properties
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontFace, tmpFont.GetFontFace()
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontSize, fontSizeInPixels
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontSizeUnit, fu_Pixel
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontBold, tmpFont.GetFontBold()
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontItalic, tmpFont.GetFontItalic()
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontUnderline, tmpFont.GetFontUnderline()
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontStrikeout, tmpFont.GetFontStrikeout()
+    
+    'Set fill/stroke brushes
+    dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FillActive, m_TextElements(styleIndex).te_Filled
+    If m_TextElements(styleIndex).te_Filled Then dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FillBrush, m_BrushFill.GetBrushPropertiesAsXML()
+    
+    'Text stroking is TODO (we need to create a pen from the PSP brush)
+    'If m_TextElements(styleIndex).te_Stroked Then dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_OutlinePen, m_BrushFill
+    
+    CreateTextLayerNow = newLayerID
+    
+End Function
+
 Friend Function IsShapeOK() As Boolean
     IsShapeOK = m_ShapeOK
+End Function
+
+Friend Function IsShapeText() As Boolean
+    IsShapeText = (m_numTextElements > 0)
 End Function
 
 'Assuming the source stream is pointing at the start of a vector shape block, attempt to load the shape.
@@ -699,6 +853,13 @@ Friend Function RenderShapeIntoDIB(ByRef dstDIB As pdDIB, ByRef srcPalette() As 
     
     'Palette usage is TODO
     
+    'If a polygon wasn't produced (this will be true for groups that consist of only text layers,
+    ' for example), skip this render step
+    If (m_PolylineShape Is Nothing) Then
+        RenderShapeIntoDIB = False
+        Exit Function
+    End If
+    
     'If this shape is "invisible", do nothing.  (This may change in the future if we place
     ' each shape onto its own layer FYI)
     If ((m_ShapeAttributes.sa_Flags And keShapeVisible) = 0) Then
@@ -933,7 +1094,6 @@ Private Function ReadVectorText(ByRef srcStream As pdStream, ByRef srcWarnings A
             'Characters are easy
             Case keTextElemChar
                 m_TextElements(i).te_CharCode = srcStream.ReadLong()
-                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction i & " - char: " & ChrW(m_TextElements(i).te_CharCode)
                 
                 'Always align against the original chunk size
                 srcStream.SetPosition origStreamPos + chunkSize, FILE_BEGIN
@@ -944,7 +1104,11 @@ Private Function ReadVectorText(ByRef srcStream As pdStream, ByRef srcWarnings A
                 Dim lenFontName As Long
                 lenFontName = srcStream.ReadIntUnsigned()
                 With m_TextElements(i)
+                    
+                    'Control for vertical-orientation fonts (which PD deliberately hides from the UI)
                     .te_FontName = srcStream.ReadString_UTF8(lenFontName)
+                    If (Left$(.te_FontName, 1) = "@") Then .te_FontName = Right$(.te_FontName, Len(.te_FontName) - 1)
+                    
                     .te_CharProperties = srcStream.ReadLong()
                     .te_CharWeight = srcStream.ReadLong()
                     .te_CharSet = srcStream.ReadLong()
@@ -1031,9 +1195,6 @@ Private Function ReadVectorText(ByRef srcStream As pdStream, ByRef srcWarnings A
         
     Next i
     
-    'With all chunks read, we can proceed with parsing!
-    okToProceed = psp_Warning
-    
     'Unlike most other read functions in PD's PSP-centric collection, this reader does
     ' *not* align the stream before exiting.  That is up to our parent class due to the
     ' way PSP embeds chunk vs block sizes (this function parses a chunk, not a block).
@@ -1085,8 +1246,8 @@ Private Function BuildBrushForPaintBlock(ByRef srcStream As pdStream, ByRef srcW
         
         Set dstBrush = New pd2DBrush
         
-        'DEBUG ONLY: prep an opaque, red brush as a fallback in case other methods fail
-        dstBrush.SetBrushColor vbRed
+        'DEBUG ONLY: prep an opaque, black brush as a fallback in case other methods fail
+        dstBrush.SetBrushColor vbBlack
         dstBrush.SetBrushOpacity 100!
         
         chunkSize = srcStream.ReadLong()

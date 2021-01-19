@@ -60,6 +60,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'When debugging, performance reports can be helpful
+Private Const REPORT_TEXT_RENDER_TIMING As Boolean = False
+
 'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
 Public Enum PD_TEXT_PROPERTY
     ptp_Text = 0
@@ -1529,9 +1532,8 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         
     ElseIf (m_RenderingEngine = te_PhotoDemon) Then
         
-        Const REPORT_RENDER_TIME As Boolean = True
         Dim startTime As Currency
-        If REPORT_RENDER_TIME Then VBHacks.GetHighResTime startTime
+        If REPORT_TEXT_RENDER_TIMING Then VBHacks.GetHighResTime startTime
         
         'PD's internal font engine works by manually translating GDI glyphs into GDI+ paths, then rendering the paths manually.
         ' Because glyph geometry is very energy intensive, we use a separate class that caches glyphs as they are created.
@@ -1544,7 +1546,7 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
         m_GlyphCollection.NotifyOfGDIFontChoice m_GDIFont, m_FontUnderline, m_FontStrikeout
         
-        If REPORT_RENDER_TIME Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "pdTextRenderer - init glyph collection: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1558,7 +1560,7 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         tmpString = m_CurrentText
         m_GlyphCollection.BuildGlyphCollection tmpString, m_TextHinting, m_CharRemap
         
-        If REPORT_RENDER_TIME Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "pdTextRenderer - build glyphs: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1570,7 +1572,7 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         'With the glyph collection successfully assembled, proceed with rendering
         RenderTextToDIB = RenderTextToDIB_Glyphs(dstDIB, tmpString, x1, y1, textWidth, textHeight)
         
-        If REPORT_RENDER_TIME Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "pdTextRenderer - render glyphs: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1668,9 +1670,8 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'TESTING ONLY!  Fill with white prior to rendering
     'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
     
-    Const REPORT_RENDER_TIMING As Boolean = False
     Dim startTime As Currency
-    If REPORT_RENDER_TIMING Then VBHacks.GetHighResTime startTime
+    If REPORT_TEXT_RENDER_TIMING Then VBHacks.GetHighResTime startTime
     
     'Start by acquiring a GDI+ handle to the destination DIB
     Dim dstGraphics As Long
@@ -1819,14 +1820,14 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim finalTextPath As pd2DPath
     m_GlyphCollection.NotifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
     
-    If REPORT_RENDER_TIMING Then
+    If REPORT_TEXT_RENDER_TIMING Then
         PDDebug.LogAction "RenderTextToDIB_Glyphs - init: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     End If
     
     If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
-        If REPORT_RENDER_TIMING Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - assembly: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1864,7 +1865,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawRectangle failed; return code was " & gdipReturn
         End If
         
-        If REPORT_RENDER_TIMING Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - bkgd: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1887,7 +1888,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 
             End If
             
-            If REPORT_RENDER_TIMING Then
+            If REPORT_TEXT_RENDER_TIMING Then
                 PDDebug.LogAction "RenderTextToDIB_Glyphs - fill: " & VBHacks.GetTimeDiffNowAsString(startTime)
                 VBHacks.GetHighResTime startTime
             End If
@@ -1898,7 +1899,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
             End If
             
-        If REPORT_RENDER_TIMING Then
+        If REPORT_TEXT_RENDER_TIMING Then
             PDDebug.LogAction "RenderTextToDIB_Glyphs - stroke: " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -1938,13 +1939,13 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'Enable transparent font rendering
     SetBkMode m_tmpGdiDIB.GetDIBDC, FONT_TRANSPARENT
     
-    'You'd think drawing opaque text to a 32-bpp container would work, but nope, this just means that GDI functions make the
-    ' ENTIRE TEXT AREA transparent. THANKS, MICROSOFT!
+    'You'd think drawing opaque text to a 32-bpp container would work, but nope, this just means that
+    ' GDI functions make the ENTIRE TEXT AREA transparent. THANKS, MICROSOFT!
     'SetBkMode dstDIB.getDIBDC, FONT_OPAQUE
     'SetBkColor dstDIB.getDIBDC, vbWhite
     
-    'We now need to figure out the size of our drawn text.  Wordwrap is supported if the text extends past the horizontal boundary
-    ' of the target DIB.
+    'We now need to figure out the size of our drawn text.  Wordwrap is supported if the text extends
+    ' past the horizontal boundary of the target DIB.
     
     'Start by retrieving default size values
     Dim targetWidth As Long, targetHeight As Long

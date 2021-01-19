@@ -494,6 +494,9 @@ End Function
 'Present a first-run dialog box that gives the user a choice of language and UI theme
 Public Function PromptUITheme() As VbMsgBoxResult
     
+    'Falsafe check
+    If (g_Themer Is Nothing) Then Exit Function
+    
     'Before displaying the dialog, cache the current language and theme settings.  If the user changes
     ' one or more of these via the dialog, we need to repaint the main form after the dialog closes.
     Dim backupLangIndex As Long
