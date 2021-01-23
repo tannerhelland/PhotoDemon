@@ -446,11 +446,7 @@ End Function
 'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
 ' idea if the image contains any.
 Friend Function HaveAttemptedToFindGPSData() As Boolean
-    If (m_NumOfTags = 0) Then
-        HaveAttemptedToFindGPSData = False
-    Else
-        HaveAttemptedToFindGPSData = True
-    End If
+    HaveAttemptedToFindGPSData = (m_NumOfTags > 0)
 End Function
 
 'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
@@ -562,14 +558,6 @@ Friend Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
     End If
     
     'We now know that 1) ExifTool exists, and 2) it returned *something* for this image.
-    
-    'If you want to examine the XML output yourself (e.g. while debugging), you can dump the full XML contents to the clipboard
-    ' by enabling the EXIFTOOL_DEBUGGING_ENABLED constant inside the Exiftool module.  (Note that a forcible ANSI conversion will
-    ' be applied, so extended chars may not survive.)
-    If (EXIFTOOL_DEBUGGING_ENABLED <> 0) Then
-        Clipboard.Clear
-        Clipboard.SetText mdString
-    End If
     
     'Because PD intercepts metadata asynchronously, the returned string will contain trailing text similar to {ready123},
     ' where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
@@ -1416,7 +1404,7 @@ End Function
 
 Private Function PARSE_WholeLine(ByRef srcLine As String, ByRef dstString As String, Optional ByVal tagValidate As String = vbNullString) As Boolean
 
-    If Len(tagValidate) <> 0 Then
+    If (LenB(tagValidate) <> 0) Then
         Dim failedValidation As Boolean
         If (InStr(1, srcLine, "<" & tagValidate & ">", vbBinaryCompare) = 0) Then failedValidation = True
         If (InStr(1, srcLine, "</" & tagValidate & ">", vbBinaryCompare) = 0) Then failedValidation = True
@@ -1441,15 +1429,15 @@ Private Function PARSE_RDFDescription(ByRef srcLine As String, ByRef dstMetadata
     etID = PARSE_GetNamedAttributeValue(srcLine, "et:id")
     
     'Make sure an ID exists. If it doesn't, something is wrong with the XML output
-    If (Len(etID) > 0) Then
+    If (LenB(etID) > 0) Then
     
         dstMetadata.TagID = etID
         
         etTable = PARSE_GetNamedAttributeValue(srcLine, "et:table")
-        If Len(etTable) > 0 Then dstMetadata.TagTable = etTable
+        If (LenB(etTable) > 0) Then dstMetadata.TagTable = etTable
             
         etIndex = PARSE_GetNamedAttributeValue(srcLine, "et:index")
-        If Len(etIndex) > 0 Then
+        If (LenB(etIndex) > 0) Then
             dstMetadata.HasIndex = True
             dstMetadata.TagIndexInternal = CLng(etIndex)
         End If

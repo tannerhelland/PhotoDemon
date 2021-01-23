@@ -313,8 +313,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright 2013-2021 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 29/May/18
-'Last update: add new buttons for copying metadata to the clipboard
+'Last updated: 23/January/21
+'Last update: fix display of some esoteric list-type values
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See https://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -1051,13 +1051,11 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
             End If
         End If
     
-        'List-type tags use a special delimiter (;;).  Change this to commas to make the list a bit prettier
-        If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
-            If .UserModifiedAllSessions Then
-                drawString = Replace$(drawString, vbCrLf, ", ", , , vbBinaryCompare)
-            Else
-                drawString = Replace$(drawString, ";;", ", ", , , vbBinaryCompare)
-            End If
+        'List-type tags use a special delimiter (;;;).  Change this to commas to make the list a bit prettier
+        If .UserModifiedAllSessions Then
+            drawString = Replace$(drawString, vbCrLf, ", ", , , vbBinaryCompare)
+        Else
+            drawString = Replace$(drawString, ";;;", ", ", , , vbBinaryCompare)
         End If
         
     End With
@@ -1170,15 +1168,11 @@ Private Sub UpdateTagView()
                         txtValue.Text = .UserValueNew
                     Else
                         
-                        'If this is a list-type tag, we will replace the default separator (;) with newlines
-                        If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
-                            If (btsTechnical(1).ListIndex = 0) Then
-                                txtValue.Text = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
-                            Else
-                                txtValue.Text = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
-                            End If
+                        'Before displaying, replace the default separator (;;;) with newlines
+                        If (btsTechnical(1).ListIndex = 0) Then
+                            txtValue.Text = Replace$(.TagValueFriendly, ";;;", vbCrLf, , , vbBinaryCompare)
                         Else
-                            If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                            txtValue.Text = Replace$(.TagValue, ";;;", vbCrLf, , , vbBinaryCompare)
                         End If
                         
                     End If
@@ -1190,16 +1184,12 @@ Private Sub UpdateTagView()
                 txtValue.Visible = False
                 lblValue.Visible = True
                 
-                'We still need to check for list-type values. (If this is a list-type tag,
-                ' we will replace the default separator (;) with newlines.)
-                If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
-                    If (btsTechnical(1).ListIndex = 0) Then
-                        lblValue.Caption = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
-                    Else
-                        lblValue.Caption = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
-                    End If
+                'We still need to check for list-type values. (If found, we will replace PD's default
+                ' custom separator (;;;) with newlines.)
+                If (btsTechnical(1).ListIndex = 0) Then
+                    lblValue.Caption = Replace$(.TagValueFriendly, ";;;", vbCrLf, , , vbBinaryCompare)
                 Else
-                    If (btsTechnical(1).ListIndex = 0) Then lblValue.Caption = .TagValueFriendly Else lblValue.Caption = .TagValue
+                    lblValue.Caption = Replace$(.TagValue, ";;;", vbCrLf, , , vbBinaryCompare)
                 End If
                 
                 reflowTop = lblValue.GetTop + lblValue.GetHeight
@@ -1482,16 +1472,12 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
                     
                     Dim testString As String
                     
-                    'List-type tags require a special check, as we will have forcibly converted them from a special
-                    ' delimiter state (;;) to newlines, for the user's convenience
-                    If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
-                        If (btsTechnical(1).ListIndex = 0) Then
-                            testString = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
-                        Else
-                            testString = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
-                        End If
+                    'List-type tags require a special check, as we will have forcibly converted them
+                    ' from a special delimiter state (;;;) to newlines, for the user's convenience
+                    If (btsTechnical(1).ListIndex = 0) Then
+                        testString = Replace$(.TagValueFriendly, ";;;", vbCrLf, , , vbBinaryCompare)
                     Else
-                        If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
+                        testString = Replace$(.TagValue, ";;;", vbCrLf, , , vbBinaryCompare)
                     End If
                     
                     If Strings.StringsNotEqual(txtValue.Text, testString, True) Then

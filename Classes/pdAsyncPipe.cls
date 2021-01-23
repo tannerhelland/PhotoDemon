@@ -510,9 +510,9 @@ Private Sub InternalError(ByVal errMessage As String, Optional ByVal errNumber A
     End If
 End Sub
 
-'Ideally, a class like this would raise meaningful events, but in PD, we only use pipe interactions with one plugin
-' - ExifTool.  Our ExifTool interface is currently sited in a module, which means it can't handle events; as such,
-' we currently handle pipe operations internally.
+'Ideally, a class like this would raise meaningful events, but in PD, we only use pipe interactions with
+' one plugin - ExifTool.  Our ExifTool interface is currently sited in a module, which means it can't
+' handle events; as such, we currently handle pipe operations internally.
 Private Sub InternalDataArrival()
     
     If (m_BufferIn.GetStreamSize() > 0) Then

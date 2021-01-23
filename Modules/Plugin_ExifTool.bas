@@ -337,6 +337,18 @@ Public Sub NewMetadataReceived()
     If m_captureModeActive Then
         m_currentMetadataText = m_currentMetadataText & m_Async.GetDataAsString()
     
+        'Sometimes it is helpful to retrieve metadata from a failed-to-import image.  If you want to
+        ' examine ExifTool's returned XML output yourself (e.g. while debugging), you can dump the
+        ' full XML contents to the clipboard by enabling the EXIFTOOL_DEBUGGING_ENABLED constant
+        ' inside the Exiftool module.  (Note that a forcible ANSI conversion will be applied,
+        ' so extended chars may not survive.)
+        If (EXIFTOOL_DEBUGGING_ENABLED <> 0) Then
+            If ExifTool.IsMetadataFinished() Then
+                Clipboard.Clear
+                Clipboard.SetText m_currentMetadataText
+            End If
+        End If
+        
     'During verification mode, we must also check to see if verification has finished
     ElseIf m_VerificationModeActive Then
         m_VerificationString = m_VerificationString & m_Async.GetDataAsString()
@@ -568,7 +580,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
         
     'Request a custom separator for list-type values
     cmdParams.AppendLine "-sep"
-    cmdParams.AppendLine ";;"
+    cmdParams.AppendLine ";;;"
         
     'If a translation is active, request descriptions in the current language
     If g_Language.TranslationActive Then
@@ -968,7 +980,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     
     'Define the same custom separator we used when initially reading the metadata
     cmdParams.AppendLine "-sep"
-    cmdParams.AppendLine ";;"
+    cmdParams.AppendLine ";;;"
     
     'Next, we need to manually request the update of any tags that the user has manually modified via the metadata editor.
     Dim i As Long, tmpMetadata As PDMetadataItem, tmpEscapedValue As String
@@ -1213,7 +1225,7 @@ Private Function DoesTagValueRequireEscaping(ByRef srcMetadata As PDMetadataItem
         
         'List-type tags are escaped differently!
         If srcMetadata.DBF_IsBag Or srcMetadata.DBF_IsList Or srcMetadata.DBF_IsSequence Then
-            dstEscapedTag = Replace$(srcMetadata.UserValueNew, vbCrLf, ";;", , , vbBinaryCompare)
+            dstEscapedTag = Replace$(srcMetadata.UserValueNew, vbCrLf, ";;;", , , vbBinaryCompare)
         Else
             dstEscapedTag = Replace$(srcMetadata.UserValueNew, vbCrLf, "&#xd;&#xa;", , , vbBinaryCompare)
         End If
@@ -1683,11 +1695,11 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         ' as a single value is the assumed default.)
         Dim tmpString As String
         tmpString = GetXMLAttribute(xmlLines(0), "count")
-        If Len(tmpString) <> 0 Then dstMetadata.DB_TypeCount = CLng(tmpString)
+        If (LenB(tmpString) <> 0) Then dstMetadata.DB_TypeCount = CLng(tmpString)
         
         'Flag retrieval is a bit convoluted, as flags are presented as a comma-delimited list.
         tmpString = GetXMLAttribute(xmlLines(0), "flags")
-        If Len(tmpString) <> 0 Then
+        If (LenB(tmpString) <> 0) Then
             dstMetadata.DBF_IsAvoid = (InStr(1, tmpString, "Avoid", vbBinaryCompare) <> 0)
             dstMetadata.DBF_IsBag = (InStr(1, tmpString, "Bag", vbBinaryCompare) <> 0)
             dstMetadata.DBF_IsBinary = (InStr(1, tmpString, "Binary", vbBinaryCompare) <> 0)
@@ -1702,14 +1714,14 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         End If
         
         'The second line is always a description
-        If UBound(xmlLines) >= 1 Then dstMetadata.DB_Description = ExifTool.PARSE_UnescapeXML(GetXMLValue_SingleLine(xmlLines(1)))
+        If (UBound(xmlLines) >= 1) Then dstMetadata.DB_Description = ExifTool.PARSE_UnescapeXML(GetXMLValue_SingleLine(xmlLines(1)))
         
         'The third line will be one of two things:
         ' 1) A closing tag (literally, "</tag>")
         ' 2) A <values> tag, which indicates that one or more hard-coded key/value pairs follow
-        If UBound(xmlLines) >= 2 Then
-            If InStr(1, xmlLines(2), "</tag>", vbBinaryCompare) = 0 Then
-                If InStr(1, xmlLines(2), "<values>", vbBinaryCompare) <> 0 Then
+        If (UBound(xmlLines) >= 2) Then
+            If (InStr(1, xmlLines(2), "</tag>", vbBinaryCompare) = 0) Then
+                If (InStr(1, xmlLines(2), "<values>", vbBinaryCompare) <> 0) Then
                     
                     dstMetadata.DB_HardcodedList = True
                     Dim numOfKeys As Long: numOfKeys = 0

@@ -2289,7 +2289,7 @@ Private Sub m_MetadataTimer_Timer()
         'Cache the current UI message (if any)
         Dim prevMessage As String
         prevMessage = Interface.GetLastFullMessage()
-                
+        
         Message "Importing metadata..."
         
         'Retrieve the completed metadata string

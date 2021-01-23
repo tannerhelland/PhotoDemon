@@ -505,7 +505,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             targetImage.FreeAllImageResources
             Set targetImage = Nothing
         End If
-    
+        
     End If
     
     '*************************************************************************************************************************************
