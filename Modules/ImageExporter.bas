@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 19/May/20
-'Last update: add export support for icon (ICO) files
+'Last updated: 25/January/21
+'Last update: add support for PSP (Paintshop Pro) export
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.  You will not generally
 ' want to interface with this module directly; instead, rely on the high-level functions in the "Saving" module.
@@ -2150,6 +2150,66 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportPSDError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportPSD = False
+    
+End Function
+
+'Save to PSP (Paintshop Pro) format using PD's internal PSP encoder
+Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportPSPError
+
+    ExportPSP = False
+    Dim sFileType As String: sFileType = "PSP"
+    
+    'Parse all relevant PSP parameters.  (See the PSP export dialog for details on how these are generated.)
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
+    
+    'Most of the heavy lifting for the save will be performed by the pdPSP class
+    Dim cPSP As pdPSP
+    Set cPSP = New pdPSP
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
+    End If
+    
+'    If cPSP.SavePSP(srcPDImage, tmpFilename, useMaxCompatibility, compressionType, False) Then
+'
+'        If Strings.StringsEqual(dstFile, tmpFilename) Then
+'            ExportPSP = True
+'
+'        'If we wrote our data to a temp file, attempt to replace the original file
+'        Else
+'
+'            ExportPSP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+'
+'            If (Not ExportPSP) Then
+'                Files.FileDelete tmpFilename
+'                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSP file; original file is likely open elsewhere."
+'            End If
+'
+'        End If
+'
+'    Else
+'        ExportPSP = False
+'        ExportDebugMsg "WARNING!  pdPSP.SavePSP() failed for reasons unknown; check the debug log for additional details"
+'    End If
+    
+    Exit Function
+    
+ExportPSPError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPSP = False
     
 End Function
 

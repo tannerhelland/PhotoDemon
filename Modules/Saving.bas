@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 08/March/16
-'Last update: refactor various bits of save-related code to make PD's primary save functions much more versatile.
+'Last updated: 25/January/21
+'Last update: add support for PSP (Paintshop Pro) export
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in
 ' the GDI+ module for consistency's sake).  Export functions are sorted by file type, and most serve as relatively
@@ -451,6 +451,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         Case PDIF_PSD
             ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters, metadataParameters)
+            
+        Case PDIF_PSP
+            ExportToSpecificFormat = ImageExporter.ExportPSP(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_TARGA
             ExportToSpecificFormat = ImageExporter.ExportTGA(srcImage, dstPath, saveParameters, metadataParameters)

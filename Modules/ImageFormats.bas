@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 07/January/21
-'Last update: finalize list of supported Paintshop Pro extensions (there are many!)
+'Last updated: 25/January/21
+'Last update: add support for PSP (Paintshop Pro) export
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -388,7 +388,8 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
     If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
-    AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
+    AddOutputFormat "PSD - Adobe Photoshop", "psd", PDIF_PSD
+    AddOutputFormat "PSP - PaintShop Pro", "psp", PDIF_PSP
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
     If m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
@@ -514,8 +515,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "psp"
         Case PDIF_RAS
             GetExtensionFromPDIF = "ras"
-        'RAW is an interesting case; because PD can write HDR images, which support nearly all features of all major RAW formats,
-        ' we use HDR as the default extension for RAW-type images.
+        'RAW is an interesting case; because PD can write HDR images, which support nearly all features
+        ' of all major RAW formats, we use HDR as the default extension for RAW-type images.
         Case PDIF_RAW
             GetExtensionFromPDIF = "hdr"
         Case PDIF_SGI
@@ -542,7 +543,7 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
 End Function
 
-'Given a file extension, return the corresponding best-guess PDIF (PhotoDemon image format constant.
+'Given a file extension, return the corresponding best-guess PDIF (PhotoDemon image format constant).
 Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_FORMAT
     
     'Shortcut check for non-existent extensions
@@ -785,8 +786,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         
         Case PDIF_PSP
-            'TODO!
-            'IsExportDialogSupported = True
+            IsExportDialogSupported = False
         
         Case PDIF_TARGA
             IsExportDialogSupported = False
