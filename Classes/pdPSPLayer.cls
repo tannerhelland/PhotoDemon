@@ -130,9 +130,9 @@ Friend Function ConstructMatchingDIB(ByRef srcPalette() As RGBQuad, ByVal srcPal
         ' a useful way to render them.  Skip such layers now.
         Dim skipLayer As Boolean
         skipLayer = (m_LayerHeader.pspl_LayerType = keGLTAdjustment)
-        skipLayer = skipLayer Or (m_LayerHeader.pspl_LayerType = keGLTUndefined)
+        
         If skipLayer Then
-            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping generation of raster data for layer : " & m_LayerHeader.pspl_Name
+            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping generation of raster data for layer : " & m_LayerHeader.pspl_Name & " because layer type is: " & m_LayerHeader.pspl_LayerType
         Else
             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting to generate raster data for layer: " & m_LayerHeader.pspl_Name & ", " & m_LayerHeader.pspl_LayerType
             ConstructMatchingDIB = ImageFormats_PSP.PSP_BuildDIBFromChannels(m_ChannelCount, m_Channels, tmpHeader, m_LayerDIB, srcPalette, srcPaletteSize)
@@ -472,6 +472,11 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     
     'I won't comment all the following fields.  Refer to the spec for details.
     m_LayerHeader.pspl_LayerType = srcStream.ReadByte()
+    
+    'Very old PSP files (v5?) may use the "undefined" layer type for raster images.  Silently convert
+    ' these to raster layer types to simplify further parsing.  (If the layer has unusable data, the
+    ' raster parser will automatically detect this and abandon processing as necessary.)
+    If (m_LayerHeader.pspl_LayerType = keGLTUndefined) Then m_LayerHeader.pspl_LayerType = keGLTRaster
     
     'Image rects are strange beasts in PSP files.  They are only used for certain layer types, and you
     ' have to perform union ops between the rects to calculate actual layer contents.  I've left debug

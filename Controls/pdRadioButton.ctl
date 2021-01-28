@@ -11,7 +11,7 @@ Begin VB.UserControl pdRadioButton
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   12
+      Size            =   9.75
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False

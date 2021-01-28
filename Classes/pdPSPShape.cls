@@ -597,7 +597,6 @@ Friend Function LoadShape(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     
     'The caller should have already performed block validation, but we need to be extra careful
     ' because all subsequent stream alignment depends on this.
-    Const PSP_BLOCK_MARKER As Long = &H4B427E
     If (srcStream.ReadLong() <> PSP_BLOCK_MARKER) Then
         LoadShape = psp_Failure
         InternalError funcName, "stream misaligned", srcWarnings

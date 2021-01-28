@@ -363,7 +363,7 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     
     '4) If padding issues with strings (or any other data type) seem messy, that's because they are.
     ' Adobe uses many different string alignment/padding practices throughout PSDs, and only by a careful
-    ' reading of the spec can you seewhat is required where.  Any messiness is their doing - not mine.
+    ' reading of the spec can you see what is required where.  Any messiness is their doing - not mine.
     
     '5) All PSD data is big-endian, so you will see a ton of _BE suffixes in stream function calls.
     
@@ -372,7 +372,7 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     
     'Before exporting, we need to run some quick heuristics on exported layer data.  This approach will
     ' likely change as PD is able to reproduce more Photoshop behavior, but for now, we sometimes need
-    ' to perform weird conversions between PD dat and PSD data.
+    ' to perform weird conversions between PD data and PSD data.
     
     'Scan layer names in the source image for group identifiers.  If we find any, set a module-level
     ' flag to note that layer groups need to be exported.  (They require additional header information
@@ -1459,7 +1459,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         For i = 0 To Abs(m_numOfLayers) - 1
             
             'To avoid wasting time, skip layers with null sizes
-            If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then GoTo SkipLayer
+            If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then GoTo skipLayer
             
             If (m_Layers(i).DecodeChannels(m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, Me) < psd_Failure) Then
             
@@ -1479,7 +1479,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 Step4_GatherLayersAndMasks = psd_Failure
                 Exit Function
             End If
-SkipLayer:
+skipLayer:
         Next i
     
     'Layer info section is null-length; layer data has already been located using an alternate strategy

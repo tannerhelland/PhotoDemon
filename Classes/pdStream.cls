@@ -1177,6 +1177,11 @@ Friend Function WriteByte(ByVal srcByte As Byte) As Boolean
     WriteByte = WriteBytesFromPointer(VarPtr(srcByte), 1)
 End Function
 
+'Write a single 64-bit float to the stream
+Friend Function WriteDouble(ByVal srcDouble As Double) As Boolean
+    WriteDouble = WriteBytesFromPointer(VarPtr(srcDouble), 8)
+End Function
+
 'Write a 16-16 fixed-point value to the stream.
 Friend Function WriteFixed1616(ByVal srcFloat As Single) As Boolean
     Dim intPart As Long, floatPart As Long

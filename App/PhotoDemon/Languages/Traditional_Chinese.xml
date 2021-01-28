@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.215</langversion>
+<langversion>7.0.216</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3682,7 +3682,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSP.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -13304,8 +13304,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5169 phrases. -->
-<!-- 2640 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5173 phrases. -->
+<!-- 2644 are duplicates, so only 2529 unique phrases have been written to file. -->
 <!-- These 2529 phrases contain approximately 11614 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.0.34</langversion>
+<langversion>8.0.35</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (8.0 updates by DeepL.com)</author>
@@ -3725,7 +3725,7 @@ Geef een numerieke waarde.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPSP.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -13366,8 +13366,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5169 phrases. -->
-<!-- 2640 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5173 phrases. -->
+<!-- 2644 are duplicates, so only 2529 unique phrases have been written to file. -->
 <!-- These 2529 phrases contain approximately 11614 total words. -->
 
 </pdData>

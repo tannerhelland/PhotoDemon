@@ -272,10 +272,257 @@ Friend Sub Reset()
     Set m_Warnings = New pdStringStack
 End Sub
 
+'Save a new PSP file to disk.  (With minor modifications, this could also be used to save to a memory stream,
+' but this is *not* currently implemented.)
+'
+'If the destination file exists, it will be forcibly overwritten.
+' Safe save measures should be implemented externally.
+Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String) As Boolean
+    
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcPDImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError "SavePSP", "invalid function parameters"
+        SavePSP = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD enforces safe overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'So, a few quick notes before we begin.
+    
+    '1) Saving a PSP file is much easier than loading it, primarily because we don't need to cover every
+    ' color-mode and bit-depth option.  Instead, we focus on exporting 32-bit RGBA data in the cleanest
+    ' manner possible.  Other bit-depths and/or color modes may be covered in future updates.
+    
+    '2) PSPs use many structs with non-DWORD alignments.  This causes issues in VB6 as struct members
+    ' are typically aligned to DWORD boundaries (with some caveats; it's complicated and basically don't
+    ' worry about it if you aren't a VB6 developer).  To avoid complications or convoluted struct-shifting,
+    ' this function manually writes out most struct members individually.  This also aids in writing
+    ' struct members that are defined differently in VB, like bools (which are bytes with 0/1 values in a
+    ' PSP file).
+    
+    '3) This code was designed against the latest public PSP spec at the time of its writing (October 2006,
+    ' available here: ftp://ftp.corel.com/pub/documentation/PSP/).  I make no guarantee that this code is
+    ' compatible with earlier or later spec versions.
+    
+    'All good?  Then let's do this!
+    Dim i As Long
+    
+    'Before exporting, we need to run some quick heuristics on exported layer data.  This approach will
+    ' likely change as PD is able to reproduce more PSP behavior, but for now, we sometimes need to
+    ' perform weird conversions between PD data and PSD data.
+    
+    'Scan layer names in the source image for group identifiers.  If we find any, set a module-level
+    ' flag to note that layer groups need to be exported.  (They require additional header information
+    ' and optional chunks.)  Note that group export behavior can be controlled by a module-level constant.
+    m_ExportGroups = False
+    If PSP_GROUPS_AS_DUMMY_LAYERS Then
+        
+        'When importing PSP files, layer groups are imported as "dummy" 1x1 layers with special names.
+        Dim targetStartName As String, targetEndName As String
+        targetStartName = g_Language.TranslateMessage("Group start:")
+        targetEndName = g_Language.TranslateMessage("Group end:")
+        
+        Dim startTargetsFound As Long: startTargetsFound = 0
+        Dim endTargetsFound As Long: endTargetsFound = 0
+        
+        For i = 0 To srcPDImage.GetNumOfLayers - 1
+            If Strings.StringsEqual(Left$(srcPDImage.GetLayerByIndex(i).GetLayerName(), Len(targetStartName)), targetStartName, True) Then
+                startTargetsFound = startTargetsFound + 1
+            Else
+                If Strings.StringsEqual(Left$(srcPDImage.GetLayerByIndex(i).GetLayerName(), Len(targetEndName)), targetEndName, True) Then endTargetsFound = endTargetsFound + 1
+            End If
+        Next i
+        
+        'We will export groups if:
+        ' 1) At least one group is found in the document, and...
+        ' 2) There are the same number of group start markers as group end markers.  (A mismatch in these
+        '    values means the resulting PSP would be malformed, and we *never* want to risk that.)
+        If (startTargetsFound > 0) And (endTargetsFound > 0) Then
+            m_ExportGroups = (startTargetsFound = endTargetsFound)
+        End If
+        
+    End If
+    
+    'As usual, all writing is handled by a pdStream instance.  Note that we do not request typical
+    ' sequential perf-optimized mode - this is because PSPs use a ton of "length" entries that describe
+    ' following data segments.  Lengths are not easily known in advance, so the writer must periodically
+    ' "retreat" and update previous length entries.  This incurs potentially large penalties when
+    ' sequential mode is requested, and random-access shows no meaningful benefit, so we stick to
+    ' default caching behavior.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, srcPDImage.EstimateRAMUsage()
+    
+    'Start by writing out a basic PSP header.
+    Dim keepGoing As PD_PSPResult
+    keepGoing = ExportStep1_FileHeaderAndGeneralAttributes(cStream, srcPDImage)
+    
+    'Next comes the image resource segment.  This is a variable-length segment comprised of individual "blocks".
+    ' Blocks are similar to chunks in other formats; they are self-contained descriptors of variable length
+    ' and type.  We write much fewer of these than Photoshop typically does, obviously.
+    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep2_WriteImageResources(cStream, srcPDImage, useMaxCompatibility, writePSB)
+    
+    'Next comes the (potentially very large) layer and mask information section.  This is the most time-consuming
+    ' segment to write, on account of writing all layer pixel data.
+    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep3_WriteLayerAndMaskInformation(cStream, srcPDImage, compressionType, writePSB)
+    
+    'Finally, if "maximum compatibility" is selected, write out a copy of the merged image data.
+    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, useMaxCompatibility, writePSB)
+    
+    'The write is finished.  Close the file handle and exit.
+    cStream.StopStream
+    Set cStream = Nothing
+    
+    SavePSP = (keepGoing < psp_Failure)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError "SavePSP", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SavePSP = False
+    
+End Function
+
+Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdStream, ByRef srcImage As pdImage) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep1"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'As noted previously, VB6 struct alignment issues prevent us from easily writing out structs "as-is";
+    ' instead, we write out members one-at-a-time.
+    
+    'Start with the "magic number" 32-byte PSP identifier.
+    Dim pspID() As Byte
+    If Strings.BytesFromHex(pspID, "5061696E742053686F702050726F20496D6167652046696C650A1A0000000000") Then
+        cStream.WriteBytesFromPointer VarPtr(pspID(0)), 32
+    Else
+        InternalError funcName, "BytesFromHex failed?"
+        okToProceed = psp_Failure
+    End If
+    
+    If (okToProceed < psp_Failure) Then
+        
+        'Major/minor versions follow.  PD could theoretically write different values here for
+        ' compatibility purposes, but that would require an export UI and I'm not quite ready
+        ' to tackle that.
+        '
+        'Currently we write files in v8 format, which is the latest version for which a
+        ' public spec is available.
+        cStream.WriteInt 6
+        cStream.WriteInt 0
+        
+    End If
+    
+    'File header is complete.  Exit now if any failures were encountered.
+    If (okToProceed >= psp_Failure) Then Exit Function
+    
+    'Next comes the "general image attributes" block.  This is written as a normal PSP block,
+    ' with a prefixed header ID, block ID, and block length.  We obviously cannot write the
+    ' block length until the header itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_IMAGE_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'The block header is followed by a PSP "chunk", which has its own length marker (sigh).
+    ' Chunks have different rules than blocks.  Chunk sizes include the 4-byte chunk length;
+    ' block sizes do not.
+    ' So this means, we can just mirror the block length, above - so I don't store a separate
+    ' offset calculation here.  (When we return to write block length, we'll just write it 2x.)
+    cStream.WriteLong 0
+    
+    'Image dimensions
+    cStream.WriteLong srcImage.Width
+    cStream.WriteLong srcImage.Height
+    
+    'Resolution value is "pixels per metric", with the metric being a unique ID that follows this value.
+    If (srcImage.GetDPI <= 0#) Then
+        cStream.WriteDouble 96#
+    Else
+        cStream.WriteDouble srcImage.GetDPI
+    End If
+    cStream.WriteByte PSP_METRIC_INCH
+    
+    'Compression type.  As with version descriptors, above, this could be user-controllable, but since
+    ' zlib-compression provides far and away the best compression ratio, we always default to it currently.
+    cStream.WriteInt PSP_COMP_LZ77
+    
+    'Bit-depth is currently always 32-bit, but PSP doesn't include alpha channels in this calculation
+    cStream.WriteInt 24
+    
+    'Planes and color count are silly holdovers from old Windows bmp headers (must always be
+    ' 1 and 2^bit-depth, respectively)
+    cStream.WriteInt 1
+    cStream.WriteLong 2 ^ 24
+    
+    'PD does not currently write grayscale-format images (bool byte)
+    cStream.WriteByte 0
+    
+    'Total image size is sum of the sizes of all layer color bitmaps.  The spec doesn't describe what the
+    ' purposes of this is (or how to calculate it), so I assume it's another nonsense Windows BMP holdover.
+    ' A cursory examination of PSPv6 files shows that it appears to use the formula of [3 * w * h] for
+    ' each layer, summed together over the full image.  I don't know if non-raster layers should appear here.
+    '
+    'Regardless, the value we write doesn't appear to affect compatibility with PSP itself, so this doesn't
+    ' seem especially critical.
+    Dim i As Long, sumOfLayerContents As Long
+    For i = 0 To srcImage.GetNumOfLayers - 1
+        sumOfLayerContents = sumOfLayerContents + 3 * srcImage.GetLayerByIndex(i).GetLayerWidth(True) + 3 * srcImage.GetLayerByIndex(i).GetLayerHeight(True)
+    Next i
+    cStream.WriteLong sumOfLayerContents
+    
+    'Active layer index
+    cStream.WriteLong srcImage.GetActiveLayerIndex
+    
+    'Total layer count
+    cStream.WriteIntU srcImage.GetNumOfLayers
+    
+    'Content flags
+    Dim imgFlags As PSPGraphicContents
+    imgFlags = keGCAlphaChannels And keGCComposite And keGCCompositeTransparency And keGCRasterLayers
+    cStream.WriteLong imgFlags
+    
+    'Future expansion fields are possible.  For now, calculate size of the header up to this point.
+    Dim posEndOfHeader As Long, curSizeOfHeader As Long
+    posEndOfHeader = cStream.GetPosition()
+    curSizeOfHeader = posEndOfHeader - posJustAfterBlockLength
+    
+    'Return to the block header and write the current size *twice* (once as the block size, then again
+    ' as the prefixed chunk size)
+    cStream.SetPosition posJustAfterBlockLength - 4
+    cStream.WriteLong curSizeOfHeader
+    cStream.WriteLong curSizeOfHeader
+    
+    'Restore original stream alignment
+    cStream.SetPosition posEndOfHeader
+    
+    'Header complete, and the struct is correctly aligned for the next block
+    ExportStep1_FileHeaderAndGeneralAttributes = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 1, #" & Err.Number & ": " & Err.Description
+    ExportStep1_FileHeaderAndGeneralAttributes = psp_Failure
+    
+End Function
+
 'Only valid after the image header has been parsed (step 2)
 Private Function GetDPI() As Double
     Dim useEmbeddedResolution As Boolean
-    useEmbeddedResolution = m_ImageHeader.psph_Resolution > 0#
+    useEmbeddedResolution = (m_ImageHeader.psph_Resolution > 0#)
     useEmbeddedResolution = useEmbeddedResolution And ((m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_INCH) Or (m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_CM))
     If useEmbeddedResolution Then
         If (m_ImageHeader.psph_ResolutionUnit = PSP_METRIC_INCH) Then
@@ -431,9 +678,7 @@ Private Function Step2_BuildBlockDirectory(ByRef srcFile As String) As PD_PSPRes
     'After validation, we will be pointing at the first block in our collection.
     
     'All blocks use a uniform 32-bit "flag" ID, followed by a block ID and length
-    Const PSP_BLOCK_START As Long = &H4B427E
-    
-    Do While (m_Stream.ReadLong() = PSP_BLOCK_START)
+    Do While (m_Stream.ReadLong() = PSP_BLOCK_MARKER)
         
         'Ensure there's room in our block collection
         If (m_numOfBlocks > UBound(m_Blocks)) Then ReDim Preserve m_Blocks(0 To m_numOfBlocks * 2 - 1) As pdPSPBlock
@@ -594,6 +839,7 @@ Private Function Step3_ReadImageAttributes(ByRef srcFile As String) As PD_PSPRes
         .psph_ColorCount = m_Stream.ReadLong()
         .psph_IsGrayscale = (m_Stream.ReadByte() = 1)
         .psph_TotalSize = m_Stream.ReadLong()
+        PDDebug.LogAction "TOTAL SIZE: " & .psph_TotalSize
         
         'Technically these are just paranoid failsafe checks; layer data should *always* exist,
         ' but it doesn't hurt to account for broken 3rd-party software
@@ -1452,10 +1698,10 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
                 okToProceed = psp_Failure
             End If
         
-        '/no composite image found
-        Else
-            InternalError funcName, "no valid layers and no composite image - PD can't load this file!"
-            okToProceed = psp_Failure
+        '/no composite image found.  That's just fine - we just won't have the composite image to
+        ' "fall back" on if we can't retrieve any usable layer data.
+        'Else
+            '(do nothing)
         End If
     
     '/end composite image handling
@@ -1465,7 +1711,7 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
     If m_Stream.IsOpen() Then m_Stream.StopStream True
     
     'Before proceeding, ensure that at least one good layer was found
-    If (m_LayerCount > 0) Then
+    If (m_LayerCount > 0) And (okToProceed < psp_Failure) Then
     
         'We'll now attempt to import as many layers as we can!
         

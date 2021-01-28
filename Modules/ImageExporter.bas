@@ -2183,27 +2183,27 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         tmpFilename = dstFile
     End If
     
-'    If cPSP.SavePSP(srcPDImage, tmpFilename, useMaxCompatibility, compressionType, False) Then
-'
-'        If Strings.StringsEqual(dstFile, tmpFilename) Then
-'            ExportPSP = True
-'
-'        'If we wrote our data to a temp file, attempt to replace the original file
-'        Else
-'
-'            ExportPSP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
-'
-'            If (Not ExportPSP) Then
-'                Files.FileDelete tmpFilename
-'                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSP file; original file is likely open elsewhere."
-'            End If
-'
-'        End If
-'
-'    Else
-'        ExportPSP = False
-'        ExportDebugMsg "WARNING!  pdPSP.SavePSP() failed for reasons unknown; check the debug log for additional details"
-'    End If
+    If cPSP.SavePSP(srcPDImage, tmpFilename) Then
+
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportPSP = True
+
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
+
+            ExportPSP = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+
+            If (Not ExportPSP) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSP file; original file is likely open elsewhere."
+            End If
+
+        End If
+
+    Else
+        ExportPSP = False
+        ExportDebugMsg "WARNING!  pdPSP.SavePSP() failed for reasons unknown; check the debug log for additional details"
+    End If
     
     Exit Function
     

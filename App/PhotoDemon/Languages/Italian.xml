@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.39</langversion>
+<langversion>8.0.40</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -3724,7 +3724,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPSP.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -13373,8 +13373,8 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5169 phrases. -->
-<!-- 2640 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5173 phrases. -->
+<!-- 2644 are duplicates, so only 2529 unique phrases have been written to file. -->
 <!-- These 2529 phrases contain approximately 11614 total words. -->
 
 </pdData>
