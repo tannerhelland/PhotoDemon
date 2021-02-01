@@ -1343,7 +1343,7 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optio
             If m_FileMM.EnsureMapAvailable(peekPosition, peekLength, srcPtr) Then
                 Peek_PointerOnly = srcPtr + peekPosition
             Else
-                InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
+                InternalStreamError "Peek_PointerOnly failed; const pdFileMM for details."
             End If
         Else
             InternalStreamError "Peek_PointerOnly failed - you need to supply a length value!"

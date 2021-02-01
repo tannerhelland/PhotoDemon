@@ -503,7 +503,7 @@ Friend Function LoadLayer(ByRef srcStream As pdStream, ByRef srcWarnings As pdSt
     m_LayerHeader.pspl_MaskDisabled = (srcStream.ReadByte() <> 0)
     m_LayerHeader.pspl_MaskInverted = (srcStream.ReadByte() <> 0)
     m_LayerHeader.pspl_BlendRangeCount = srcStream.ReadIntUnsigned()
-    srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_BlendRanges(0)), 40
+    srcStream.ReadBytesToBarePointer VarPtr(m_LayerHeader.pspl_BlendRanges(0)), 40  '4 bytes * 5 ranges * 2 sets
     
     'Now we need to branch for v5 files; they use a totally different encoding scheme.
     ' (Bitmap and channel count are in a totally different chunk in later files.)

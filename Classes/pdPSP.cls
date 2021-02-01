@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright -2021-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 11/January/21
-'Last update: preliminary support for rendering vector objects to PD raster layers
+'Last updated: 31/January/21
+'Last update: first draft of PSP export is working well!
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -49,7 +49,7 @@ Option Explicit
 'When debugging, you can use this constant to have PD load the composite (merged) image to its
 ' own layer.  I find this helpful for confirming that the multi-layer projection matches the
 ' saved composite image.
-Private Const PSP_LOAD_COMPOSITE_AS_BASE_LAYER As Boolean = True
+Private Const PSP_LOAD_COMPOSITE_AS_BASE_LAYER As Boolean = False
 
 'Until PD supports layer groups, we have to resort to workarounds for PSP layer group information.
 ' When loading layers, PD will automatically handle things like group opacity (by hiding all members
@@ -360,17 +360,12 @@ Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     Dim keepGoing As PD_PSPResult
     keepGoing = ExportStep1_FileHeaderAndGeneralAttributes(cStream, srcPDImage)
     
-    'Next comes the image resource segment.  This is a variable-length segment comprised of individual "blocks".
-    ' Blocks are similar to chunks in other formats; they are self-contained descriptors of variable length
-    ' and type.  We write much fewer of these than Photoshop typically does, obviously.
-    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep2_WriteImageResources(cStream, srcPDImage, useMaxCompatibility, writePSB)
+    'Next comes the ICC profile.  This is currently TODO.
     
-    'Next comes the (potentially very large) layer and mask information section.  This is the most time-consuming
-    ' segment to write, on account of writing all layer pixel data.
-    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep3_WriteLayerAndMaskInformation(cStream, srcPDImage, compressionType, writePSB)
+    'Next, we need to write a composite image (merged image).  This is currently TODO.
     
-    'Finally, if "maximum compatibility" is selected, write out a copy of the merged image data.
-    'If (keepGoing < psd_Failure) Then keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, useMaxCompatibility, writePSB)
+    'Next comes the layer bank block
+    If (keepGoing < psp_Failure) Then keepGoing = ExportStep4_LayerBank(cStream, srcPDImage)
     
     'The write is finished.  Close the file handle and exit.
     cStream.StopStream
@@ -477,7 +472,7 @@ Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdS
     ' seem especially critical.
     Dim i As Long, sumOfLayerContents As Long
     For i = 0 To srcImage.GetNumOfLayers - 1
-        sumOfLayerContents = sumOfLayerContents + 3 * srcImage.GetLayerByIndex(i).GetLayerWidth(True) + 3 * srcImage.GetLayerByIndex(i).GetLayerHeight(True)
+        sumOfLayerContents = sumOfLayerContents + 3 * srcImage.GetLayerByIndex(i).GetLayerWidth(True) * srcImage.GetLayerByIndex(i).GetLayerHeight(True)
     Next i
     cStream.WriteLong sumOfLayerContents
     
@@ -519,6 +514,375 @@ InternalVBError:
     
 End Function
 
+Private Function ExportStep4_LayerBank(ByRef cStream As pdStream, ByRef srcImage As pdImage) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep4"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We are 100% reliant on previous steps aligning the stream pointer correctly.  PSP files do not provide
+    ' an easy mechanism for guaranteeing stream alignment, so we are at the mercy of preceding steps.
+    
+    'Start by writing the bank block header.  This is written as a normal PSP block, with a prefixed
+    ' header ID, block ID, and block length.  We obviously cannot write the block length until the block
+    ' itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_LAYER_START_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'Now we need to write each layer as its own layer block.  These are complex multi-part beasts,
+    ' so we'll defer to a separate function.
+    Dim i As Long
+    For i = 0 To srcImage.GetNumOfLayers - 1
+        okToProceed = ExportStep4a_WriteLayer(cStream, srcImage, i)
+        If (okToProceed >= psp_Failure) Then Exit For
+    Next i
+    
+    'With all layers written, we can finally return to the start of the layer block and mark the
+    ' final block length.
+    Dim posEndOfBlock As Long, finalSizeOfBlock As Long
+    posEndOfBlock = cStream.GetPosition()
+    finalSizeOfBlock = posEndOfBlock - posJustAfterBlockLength
+    
+    'Return to the block header and write the current size *twice* (once as the block size, then again
+    ' as the prefixed chunk size)
+    cStream.SetPosition posJustAfterBlockLength - 4
+    cStream.WriteLong finalSizeOfBlock
+    
+    'Restore original stream alignment
+    cStream.SetPosition posEndOfBlock
+    
+    'Layer bank complete, and the struct is correctly aligned for the next block
+    ExportStep4_LayerBank = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 4, #" & Err.Number & ": " & Err.Description
+    ExportStep4_LayerBank = psp_Failure
+    
+End Function
+
+'Write a single layer to file.  Should only be called from its parent ExportStep4 function,
+' because this function relies on stream alignment from its parent to work correctly.
+Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcImage As pdImage, ByVal srcLayerIndex As Long) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep4a_WriteLayer"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We are 100% reliant on previous steps aligning the stream pointer correctly.  PSP files do not provide
+    ' an easy mechanism for guaranteeing stream alignment, so we are at the mercy of preceding steps.
+    
+    'Start by writing the layer's sub-block header.  This is written as a normal PSP block, with a prefixed
+    ' header ID, block ID, and block length.  We obviously cannot write the block length until the block
+    ' itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_LAYER_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'Next comes the layer information chunk.  PSP chunks start with a chunk size that is not known
+    ' in advance (because the header contains variable-length fields, like layer name).  We'll return
+    ' and write a valid length after the chunk is complete.
+    cStream.WriteLong 0
+    
+    'Create a generic target layer.  If the current layer uses non-destructive transforms, we'll create
+    ' a destructively-transformed copy.
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.CopyExistingLayer srcImage.GetLayerByIndex(srcLayerIndex)
+    
+    If tmpLayer.AffineTransformsActive(True) Then
+        tmpLayer.ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
+        tmpLayer.CropNullPaddedLayer
+    End If
+    
+    'Layer name.  Note that the PSP spec does not specify string format.  We write UTF-8 bytes and
+    ' just hope for the best *shrug*
+    cStream.WriteInt Len(tmpLayer.GetLayerName())
+    cStream.WriteString_UTF8 tmpLayer.GetLayerName()
+    
+    'Layer type (groups and vector are TODO)
+    Dim layerType As PSPLayerType
+    layerType = keGLTRaster
+    cStream.WriteByte layerType
+    
+    'Confusingly-named image rectangle.  To save space (presumably), PSP files embed both a layer
+    ' boundary rect, and a separate - different! - "saved image rect" that defines the rect where
+    ' pixel data is actually stored.  Hypothetically this allow you to not save fully transparent
+    ' boundary pixels (which is silly because compression handles such runs brilliantly)... but my
+    ' point is, this rect basically describes layer offset and dimensions.  We don't waste energy
+    ' attempting to trim layer boundaries; instead, we always write these as identical rects.
+    cStream.WriteLong tmpLayer.GetLayerOffsetX()
+    cStream.WriteLong tmpLayer.GetLayerOffsetY()
+    cStream.WriteLong tmpLayer.GetLayerOffsetX() + tmpLayer.GetLayerWidth()
+    cStream.WriteLong tmpLayer.GetLayerOffsetY() + tmpLayer.GetLayerHeight()
+    
+    'Repeat for "significant" image rect, but note that this rect uses *layer* coordinate space
+    cStream.WriteLong 0
+    cStream.WriteLong 0
+    cStream.WriteLong tmpLayer.GetLayerWidth()
+    cStream.WriteLong tmpLayer.GetLayerHeight()
+    
+    'Opacity and blend mode (must use the PSP blend mode enum, obviously)
+    cStream.WriteByte Int(tmpLayer.GetLayerOpacity() * 2.55 + 0.5)
+    cStream.WriteByte GetPSPBlendModeFromPD(tmpLayer.GetLayerBlendMode())
+    
+    'Layer flags (includes visibility)
+    Dim lyrFlags As PSPLayerProperties
+    If tmpLayer.GetLayerVisibility Then lyrFlags = keVisibleFlag
+    cStream.WriteByte lyrFlags
+    
+    'Protected transparency (roughly correlates to locked alpha in PD)
+    If (tmpLayer.GetLayerAlphaMode = AM_Locked) Then cStream.WriteByte 1 Else cStream.WriteByte 0
+    
+    'Group ID (TODO?)
+    cStream.WriteByte 0
+    
+    'Mask rect (unused) and "significant" mask rect
+    cStream.WritePadding 32     '4 * 4 * 2
+    
+    'Mask linked, disabled, invert on blend
+    cStream.WritePadding 3      '1 + 1 + 1
+    
+    'Blend range count and values (unused, but written in a PSP-compatible way for default blending)
+    cStream.WriteIntU 0
+    Dim i As Long
+    For i = 0 To 9
+        cStream.WriteLong -65536    '0xFFFF0000
+    Next i
+    
+    'PSPv8 files also support a "use highlight color" and "highlight color" flag;
+    ' PD doesn't support these, so write null bytes
+    cStream.WriteByte 0
+    cStream.WriteLong 0
+    
+    'Layer information chunk is complete!  Note the chunk size, then return to the start of the
+    ' stream and fill in the preceding "chunk size" parameter.
+    Dim posEndOfChunk As Long
+    posEndOfChunk = cStream.GetPosition()
+    cStream.SetPosition posJustAfterBlockLength
+    cStream.WriteLong posEndOfChunk - posJustAfterBlockLength
+    cStream.SetPosition posEndOfChunk
+    
+    'With the header chunk complete, we could now write a layer extension sub-block for
+    ' non-raster layers.  (PD does not currently do this.)
+    
+    'Instead, we proceed with writing the "layer bitmap chunk"
+    Dim posStartOfChunk As Long
+    posStartOfChunk = cStream.GetPosition()
+    
+    'Chunk length (fixed at 8 - chunk size field is included in the calculation!)
+    cStream.WriteLong 8
+    
+    'Bitmap count (always 2 in PD - one for RGB image, another for transparency mask)
+    cStream.WriteIntU 2
+    
+    'Number of channels (always 4 in PD)
+    cStream.WriteIntU 4
+    
+    'Chunk complete.  Next, we need to write one channel block for each channel in this layer
+    ' (typically 4 channels: RGBA).  To improve performance, we reuse a shared cache for each channel.
+    Dim srcChannelBytes() As Byte
+    
+    'Un-premultiply the source image before writing it to file
+    tmpLayer.layerDIB.SetAlphaPremultiplication False
+    
+    'Write each channel in turn
+    For i = 0 To 3
+        okToProceed = ExportStep4b_WriteChannel(cStream, tmpLayer, i, srcChannelBytes)
+        If (okToProceed >= psp_Failure) Then Exit For
+    Next i
+    
+    'With all channels written, we can finally return to the start of this layer block and mark
+    ' its final size.
+    Dim posEndOfBlock As Long
+    posEndOfBlock = cStream.GetPosition()
+    cStream.SetPosition posJustAfterBlockLength - 4
+    cStream.WriteLong posEndOfBlock - posJustAfterBlockLength
+    cStream.SetPosition posEndOfBlock
+    
+    'This layer is complete, and the struct is correctly aligned for the next block
+    ExportStep4a_WriteLayer = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 4a, #" & Err.Number & ": " & Err.Description
+    ExportStep4a_WriteLayer = psp_Failure
+    
+End Function
+
+'Write a single layer to file.  Should only be called from its parent ExportStep4 function,
+' because this function relies on stream alignment from its parent to work correctly.
+Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByVal idxChannel As Long, srcChannelBytes() As Byte) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep4B_WriteChannel"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We are 100% reliant on previous steps aligning the stream pointer correctly.  PSP files do not provide
+    ' an easy mechanism for guaranteeing stream alignment, so we are at the mercy of preceding steps.
+    
+    'Start by writing the channel block header.  This is written as a normal PSP block, with a prefixed
+    ' header ID, block ID, and block length.  We obviously cannot write the block length until the block
+    ' itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_CHANNEL_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'Next comes the channel information chunk.  PSP chunks typically start with a chunk size that is
+    ' not known in advance (because headers often contain variable-length fields, including future
+    ' expansion fields), but this chunk is an exception.  It has a fixed size for the PSP version PD
+    ' is attempting to support (PSPv8).
+    cStream.WriteLong 16
+    
+    'Next is the compressed and uncompressed size of this channel.  We need to produce an uncompressed
+    ' planar stream first (PD always uses interleaved RGBA data internally), then compress it (obviously)
+    ' to obtain these values.
+    If (Not VBHacks.IsArrayInitialized(srcChannelBytes)) Then
+        ReDim srcChannelBytes(0) As Byte
+        ReDim dstChannelBytes(0) As Byte
+    End If
+    
+    'Only 32-bpp RGBA data is handled at present
+    Dim uncompressedSize As Long
+    uncompressedSize = srcLayer.layerDIB.GetDIBWidth * srcLayer.layerDIB.GetDIBHeight
+    If (UBound(srcChannelBytes) < uncompressedSize - 1) Then ReDim srcChannelBytes(0 To uncompressedSize - 1) As Byte
+    
+    'Compressed size is obviously not known in advance.  Skip this field - we'll return and fill it
+    ' in later, after compression is complete.
+    cStream.WriteLong 0
+    cStream.WriteLong uncompressedSize
+    
+    'The destination buffer must be sized to a "worst-case" scenario for the current uncompressed
+    ' size value.  (Worst-case size may vary by compression level.)
+    Dim cmpLevel As Long
+    cmpLevel = 9    'Compression.GetMaxCompressionLevel(cf_Zlib)
+    
+    Dim compressedSize As Long
+    compressedSize = Compression.GetWorstCaseSize(uncompressedSize, cf_Zlib, cmpLevel)
+    
+    'We now have empty source and destination buffers for this channel.  Fill the source buffer with
+    ' the appropriate color plane.
+    Dim pxOffset As Long, cID As PSPChannelType, bmpType As PSPDIBType
+    If (idxChannel = 0) Then
+        pxOffset = 2
+        cID = PSP_CHANNEL_RED
+        bmpType = PSP_DIB_IMAGE
+    ElseIf (idxChannel = 1) Then
+        pxOffset = 1
+        cID = PSP_CHANNEL_GREEN
+        bmpType = PSP_DIB_IMAGE
+    ElseIf (idxChannel = 2) Then
+        pxOffset = 0
+        cID = PSP_CHANNEL_BLUE
+        bmpType = PSP_DIB_IMAGE
+    ElseIf (idxChannel = 3) Then
+        pxOffset = 3
+        cID = PSP_CHANNEL_COMPOSITE
+        bmpType = PSP_DIB_TRANS_MASK
+    End If
+    
+    'Before compressing the data, write out the rest of the channel information chunk.  This will
+    ' allow us to compress the chnnel stream directly into the saved file, saving the need for a
+    ' (potentially large) extra destination buffer.
+    
+    'Write bitmap type and channel type (precalculated above)
+    cStream.WriteIntU bmpType
+    cStream.WriteIntU cID
+    
+    'The destination stream now points at the start of the channel content chunk.
+    
+    'Create a planar representation of the requested color channel.
+    Dim pxBytes() As Byte, pxSA As SafeArray1D
+    srcLayer.layerDIB.WrapArrayAroundDIB_1D pxBytes, pxSA
+    
+    Dim i As Long
+    For i = 0 To uncompressedSize - 1
+        srcChannelBytes(i) = pxBytes(i * 4 + pxOffset)
+    Next i
+    
+    srcLayer.layerDIB.UnwrapArrayFromDIB pxBytes
+    
+    'We now have a planar representation of the requested color channel.  Compress it directly into
+    ' the target stream.  (But first, ensure the stream has enough room to store any worst-case
+    ' compression results.)
+    cStream.EnsureBufferSpaceAvailable compressedSize
+    If Compression.CompressPtrToPtr(cStream.Peek_PointerOnly(peekLength:=compressedSize), compressedSize, VarPtr(srcChannelBytes(0)), uncompressedSize, cf_Zlib, cmpLevel) Then
+        
+        'Note that the actual compressed size is now stored in "compressedSize"
+        okToProceed = psp_Success
+        cStream.SetSizeExternally cStream.GetPosition() + compressedSize
+        cStream.SetPosition cStream.GetPosition() + compressedSize
+        
+    'If compression fails, we are screwed because PSPs require a uniform compression method for
+    ' *all* channels in a given image (e.g. we can't randomly write an uncompressed channel without
+    ' making *all* channels uncompressed to match).
+    Else
+        InternalError funcName, "Compression failed!  Epic failure, abandoning save."
+        okToProceed = psp_Failure
+    End If
+    
+    'Only proceed if compression succeeded.
+    If (okToProceed < psp_Failure) Then
+        
+        'This block is complete.  Note the end-of-block position.
+        Dim posEndOfBlock As Long
+        posEndOfBlock = cStream.GetPosition()
+        
+        'Return to the initial block header and fill in the final block size.
+        cStream.SetPosition posJustAfterBlockLength - 4
+        cStream.WriteLong posEndOfBlock - posJustAfterBlockLength
+        
+        'The stream now points at the start of the Channel Information Chunk.  Skip 4 bytes
+        ' (these are the chunk header), then fill in the final compressed channel size.
+        cStream.SetPosition 4, FILE_CURRENT
+        cStream.WriteLong compressedSize
+        
+        'Channel chunk is complete!  Realign the stream pointer, then exit
+        cStream.SetPosition posEndOfBlock
+        
+    End If
+    
+    'This layer is complete, and the struct is correctly aligned for the next block
+    ExportStep4b_WriteChannel = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 4b, #" & Err.Number & ": " & Err.Description
+    ExportStep4b_WriteChannel = psp_Failure
+    
+End Function
+
 'Only valid after the image header has been parsed (step 2)
 Private Function GetDPI() As Double
     Dim useEmbeddedResolution As Boolean
@@ -533,6 +897,48 @@ Private Function GetDPI() As Double
     Else
         GetDPI = 96#
     End If
+End Function
+
+Private Function GetPSPBlendModeFromPD(ByVal srcBlendMode As PD_BlendMode) As PSPBlendModes
+
+    Select Case srcBlendMode
+        Case BM_Normal
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_NORMAL
+        Case BM_Darken
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_DARKEN
+        Case BM_Lighten
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_LIGHTEN
+        Case BM_Hue
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_LEGACY_HUE    'Using the legacy variants ensures backward-compatibility for more PSP versions
+        Case BM_Saturation
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_LEGACY_SATURATION
+        Case BM_Color
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_LEGACY_COLOR
+        Case BM_Luminosity
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_LEGACY_LUMINOSITY
+        Case BM_Multiply
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_MULTIPLY
+        Case BM_Screen
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_SCREEN
+        Case BM_Overlay
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_OVERLAY
+        Case BM_HardLight
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_HARD_LIGHT
+        Case BM_SoftLight
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_SOFT_LIGHT
+        Case BM_Difference
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_DIFFERENCE
+        Case BM_ColorDodge
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_DODGE
+        Case BM_ColorBurn
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_BURN
+        Case BM_Exclusion
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_EXCLUSION
+        Case Else
+            InternalError "GetPSPBlendModeFromPD", "PSP doesn't support blendmode: " & srcBlendMode
+            GetPSPBlendModeFromPD = bmLAYER_BLEND_NORMAL
+    End Select
+    
 End Function
 
 Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
