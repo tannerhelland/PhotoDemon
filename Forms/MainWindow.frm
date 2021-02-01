@@ -2956,7 +2956,8 @@ Private Sub Form_Load()
         g_WindowManager.SetAutoRefreshMode False
         
         'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
-        ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't running full Aero.)
+        ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't
+        ' running full Aero, e.g. "Classic Mode" and the like.)
         FormMain.Show vbModeless
         FormMain.Refresh
         DoEvents

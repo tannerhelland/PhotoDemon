@@ -2023,6 +2023,9 @@ End Sub
 'Given a menu name, apply the corresponding default processor action.
 Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
     
+    'Failsafe check
+    If Processor.IsProgramBusy() Then Exit Sub
+    
     'Helper functions exist for each main menu; once a command is located, we can stop searching.
     Dim cmdFound As Boolean: cmdFound = False
     

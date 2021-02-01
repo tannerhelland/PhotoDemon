@@ -1622,7 +1622,7 @@ Public Sub EnableUserInput()
     '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
     'VBHacks.DoEvents_SingleHwnd OS.ThunderMainHWnd
-    VBHacks.PurgeInputMessages OS.ThunderMainHWnd
+    VBHacks.PurgeInputMessages 0&
     
     'Re-enable the main form
     FormMain.Enabled = True

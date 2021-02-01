@@ -395,9 +395,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
 
 MainErrHandler:
     
+    PDDebug.LogAction "WARNING: Processor module had an error (" & Err.Number & "): " & Err.Description
+    
     'Re-enable the main form and restore things like selection animations and proper control focus
     SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
-        
+    
     'Ensure any pending UI syncs are flushed
     Interface.SyncInterfaceToCurrentImage
 

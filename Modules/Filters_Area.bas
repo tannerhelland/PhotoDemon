@@ -1101,11 +1101,10 @@ Public Function GaussianBlur_Deriche(ByRef srcDIB As pdDIB, ByVal radius As Doub
         
     Next curChannel
     
-    If (Not suppressMessages) Then ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
-    
     'Regardless of success/failure, safely deallocate our fake pixel wrapper
     srcDIB.UnwrapArrayFromDIB imageData
     
+    If (Not suppressMessages) Then ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax
     If g_cancelCurrentAction Then GaussianBlur_Deriche = 0 Else GaussianBlur_Deriche = 1
 
 End Function
