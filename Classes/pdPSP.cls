@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
-'Copyright -2021-2021 by Tanner Helland
+'Copyright 2020-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 31/January/21
-'Last update: first draft of PSP export is working well!
+'Last updated: 03/February/21
+'Last update: write composite (merged) and thumbnail blocks when exporting
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -277,7 +277,7 @@ End Sub
 '
 'If the destination file exists, it will be forcibly overwritten.
 ' Safe save measures should be implemented externally.
-Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String) As Boolean
+Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal writeCompositeImage As Boolean = True, Optional ByVal dstCompressionLevel As Long = -1) As Boolean
     
     On Error GoTo CouldNotSaveFile
     
@@ -362,10 +362,13 @@ Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     
     'Next comes the ICC profile.  This is currently TODO.
     
-    'Next, we need to write a composite image (merged image).  This is currently TODO.
+    'Next, we need to write a composite image (merged image).  The spec requires this for all
+    ' multi-layer or alpha-supporting images, e.g. "All PSP files with more than one layer or
+    ' with one layer with transparency must have a full size composite image."
+    If (keepGoing < psp_Failure) And writeCompositeImage Then keepGoing = ExportStep3_CompositeImage(cStream, srcPDImage, dstCompressionLevel)
     
     'Next comes the layer bank block
-    If (keepGoing < psp_Failure) Then keepGoing = ExportStep4_LayerBank(cStream, srcPDImage)
+    If (keepGoing < psp_Failure) Then keepGoing = ExportStep4_LayerBank(cStream, srcPDImage, dstCompressionLevel)
     
     'The write is finished.  Close the file handle and exit.
     cStream.StopStream
@@ -514,7 +517,219 @@ InternalVBError:
     
 End Function
 
-Private Function ExportStep4_LayerBank(ByRef cStream As pdStream, ByRef srcImage As pdImage) As PD_PSPResult
+Private Function ExportStep3_CompositeImage(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal dstCompressionLevel As Long = -1) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep3"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We are 100% reliant on previous steps aligning the stream pointer correctly.  PSP files do not provide
+    ' an easy mechanism for guaranteeing stream alignment, so we are at the mercy of preceding steps.
+    
+    'Start by writing the bank block header.  This is written as a normal PSP block, with a prefixed
+    ' header ID, block ID, and block length.  We obviously cannot write the block length until the block
+    ' itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_COMPOSITE_IMAGE_BANK_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'Now we need to write each composite image as its own chunk.  The PSP format typically likes to
+    ' see a thumbnail (300px max dimensions in JPEG format) and a full-size merged image.
+    ' (The full-size merged image is useful for non-PSP apps that claim to support PSP format but
+    ' don't understand layers.)
+    
+    'PD will always attempt to write both a thumbnail and a merged image, so we fill in "2" as the
+    ' number of composite images.
+    cStream.WriteLong 8     '4 + 4
+    cStream.WriteLong 2     '2 composite images (one thumbnail, one merged)
+    
+    'We now write (n) composite image attribute blocks, followed by (n) composite image blocks.
+    ' (Note that blocks and chunks are constantly intermixed in the PSP format, in endlessly
+    ' obnoxious and nonsensical ways.)
+    
+    '1) Thumbnail attributes
+    
+    'Write the thumbnail attributes block first.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteIntU PSP_COMPOSITE_ATTRIBUTES_BLOCK
+    cStream.WriteLong 24     'Length is fixed and known up-front
+    
+    'Next is image attributes information chunk, which lives inside the image attributes block
+    
+    'Chunk size is fixed
+    cStream.WriteLong 24
+    
+    'Thumbnail size is not specified; PSP itself appears to use 300px (aspect-ratio preserved).
+    ' PD uses 256 because powers-of-two are more satisfying.
+    Dim imgThumbnailDIB As pdDIB
+    srcImage.RequestThumbnail imgThumbnailDIB, 256, False
+    imgThumbnailDIB.ConvertTo24bpp vbWhite
+    
+    cStream.WriteLong imgThumbnailDIB.GetDIBWidth
+    cStream.WriteLong imgThumbnailDIB.GetDIBHeight
+    
+    'Bit-depth never includes alpha channels (and the thumbnail is usually 24-bpp anyway)
+    cStream.WriteIntU 24
+    
+    'Thumbnail is JPEG-compressed
+    cStream.WriteIntU PSP_COMP_JPEG
+    
+    'Plane and color count are dumb leftovers from old Windows BMP headers
+    cStream.WriteIntU 1
+    cStream.WriteLong 2 ^ 24
+    
+    'Composite image type is important for distinguishing between thumbnail and merged copies
+    cStream.WriteIntU PSP_IMAGE_THUMBNAIL
+    
+    '2) Merged image attributes
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteIntU PSP_COMPOSITE_ATTRIBUTES_BLOCK
+    cStream.WriteLong 24     'Length is fixed and known up-front
+    
+    'Next is image attributes information chunk, which lives inside the image attributes block
+    
+    'Chunk size is fixed
+    cStream.WriteLong 24
+    
+    'Image size
+    cStream.WriteLong srcImage.Width
+    cStream.WriteLong srcImage.Height
+    
+    'Bit-depth never includes alpha channels
+    cStream.WriteIntU 24
+    
+    'Merged image is zlib-compressed
+    cStream.WriteIntU PSP_COMP_LZ77
+    
+    'Plane and color count are dumb leftovers from old Windows BMP headers
+    cStream.WriteIntU 1
+    cStream.WriteLong 2 ^ 24
+    
+    'Composite image type is important for distinguishing between thumbnail and merged copies
+    cStream.WriteIntU PSP_IMAGE_COMPOSITE
+    
+    'Both image attribute blocks are now complete.  Time to write the images themselves.
+    ' Note that the format of these blocks is quite different, since the JPEG-format thumbnail has
+    ' different requirements and encoding behavior than a normal zlib-compressed image.
+    
+    '1) Thumbnail image (JPEG format)
+    
+    'Start with a block header
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteIntU PSP_JPEG_BLOCK
+    cStream.WriteLong 0     'Block length is unknown
+    
+    'Note the end of the header
+    Dim posSubImageBlockHeader As Long
+    posSubImageBlockHeader = cStream.GetPosition()
+    
+    'JPEG information chunk is a fixed size
+    cStream.WriteLong 14
+    
+    'We now need to generate the actual JPEG
+    Dim jpegBytes() As Byte
+    
+    Dim tmpSurface As pd2DSurface
+    Set tmpSurface = New pd2DSurface
+    tmpSurface.WrapSurfaceAroundDC imgThumbnailDIB.GetDIBDC, 0, imgThumbnailDIB.GetDIBWidth, imgThumbnailDIB.GetDIBHeight
+    tmpSurface.SaveSurfaceToArray jpegBytes, P2_FFE_JPEG, 85
+    
+    'With JPEG bytes now available, we can write the compressed size (followed by the uncompressed size)
+    cStream.WriteLong UBound(jpegBytes) + 1
+    cStream.WriteLong imgThumbnailDIB.GetDIBStride * imgThumbnailDIB.GetDIBHeight
+    
+    'Image "type" is a unique PSP enum
+    cStream.WriteIntU PSP_DIB_THUMBNAIL
+    
+    'The JPEG information chunk is complete.  Write the JPEG stream next.
+    cStream.WriteByteArray jpegBytes, UBound(jpegBytes) + 1
+    Erase jpegBytes
+    
+    'The thumbnail image is complete.  Return to the start of the block and fill in the final size.
+    Dim posEndOfBlock As Long, finalSizeOfBlock As Long
+    posEndOfBlock = cStream.GetPosition()
+    finalSizeOfBlock = posEndOfBlock - posSubImageBlockHeader
+    
+    cStream.SetPosition posSubImageBlockHeader - 4
+    cStream.WriteLong finalSizeOfBlock
+    cStream.SetPosition posEndOfBlock
+    
+    'We now need to repeat the above steps, but for a much-larger "merged" image copy
+    
+    '1) Merged image (zlib format)
+    
+    'Start with a block header
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteIntU PSP_COMPOSITE_IMAGE_BLOCK
+    cStream.WriteLong 0     'Block length is unknown
+    
+    'Note the end of the header
+    posSubImageBlockHeader = cStream.GetPosition()
+    
+    'Composite information chunk is a fixed size
+    cStream.WriteLong 8
+    cStream.WriteIntU 2     'Number of bitmaps (2 because alpha is treated as a "mask")
+    cStream.WriteIntU 4     'Number of channels (RGBA)
+    
+    'We now need to generate the actual merged image.  Let's reuse the thumbnail DIB object,
+    ' since we don't need the thumbnail itself anymore
+    Set imgThumbnailDIB = New pdDIB
+    srcImage.GetCompositedImage imgThumbnailDIB, False
+    
+    'We now need to iterate all channels and write them individually to the stream, just like we
+    ' do with individual layers.
+    Dim i As Long, srcChannelBytes() As Byte
+    ReDim srcChannelBytes(0) As Byte
+    
+    For i = 0 To 3
+        okToProceed = ExportStep4b_WriteChannel(cStream, imgThumbnailDIB, i, srcChannelBytes, dstCompressionLevel, True)
+        If (okToProceed >= psp_Failure) Then Exit For
+    Next i
+    
+    'Free the merged copy
+    Set imgThumbnailDIB = Nothing
+    
+    'The merged image is complete.  Return to the start of the block and fill in the final size.
+    posEndOfBlock = cStream.GetPosition()
+    finalSizeOfBlock = posEndOfBlock - posSubImageBlockHeader
+    
+    cStream.SetPosition posSubImageBlockHeader - 4
+    cStream.WriteLong finalSizeOfBlock
+    cStream.SetPosition posEndOfBlock
+    
+    'With all composite and thumbnail images written, we can finally return to the start of the
+    ' composite image block and mark the final block length.
+    posEndOfBlock = cStream.GetPosition()
+    finalSizeOfBlock = posEndOfBlock - posJustAfterBlockLength
+    
+    'Return to the block header and fill in the final block size
+    cStream.SetPosition posJustAfterBlockLength - 4
+    cStream.WriteLong finalSizeOfBlock
+    
+    'Restore original stream alignment
+    cStream.SetPosition posEndOfBlock
+    
+    'Composite bank complete, and the struct is correctly aligned for the next block
+    ExportStep3_CompositeImage = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 3, #" & Err.Number & ": " & Err.Description
+    ExportStep3_CompositeImage = psp_Failure
+    
+End Function
+
+Private Function ExportStep4_LayerBank(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal dstCompressionLevel As Long = -1) As PD_PSPResult
 
     On Error GoTo InternalVBError
     Const funcName As String = "ExportStep4"
@@ -541,7 +756,7 @@ Private Function ExportStep4_LayerBank(ByRef cStream As pdStream, ByRef srcImage
     ' so we'll defer to a separate function.
     Dim i As Long
     For i = 0 To srcImage.GetNumOfLayers - 1
-        okToProceed = ExportStep4a_WriteLayer(cStream, srcImage, i)
+        okToProceed = ExportStep4a_WriteLayer(cStream, srcImage, i, dstCompressionLevel)
         If (okToProceed >= psp_Failure) Then Exit For
     Next i
     
@@ -574,7 +789,7 @@ End Function
 
 'Write a single layer to file.  Should only be called from its parent ExportStep4 function,
 ' because this function relies on stream alignment from its parent to work correctly.
-Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcImage As pdImage, ByVal srcLayerIndex As Long) As PD_PSPResult
+Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcImage As pdImage, ByVal srcLayerIndex As Long, Optional ByVal dstCompressionLevel As Long = -1) As PD_PSPResult
 
     On Error GoTo InternalVBError
     Const funcName As String = "ExportStep4a_WriteLayer"
@@ -706,7 +921,7 @@ Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcIma
     
     'Write each channel in turn
     For i = 0 To 3
-        okToProceed = ExportStep4b_WriteChannel(cStream, tmpLayer, i, srcChannelBytes)
+        okToProceed = ExportStep4b_WriteChannel(cStream, tmpLayer.layerDIB, i, srcChannelBytes, dstCompressionLevel)
         If (okToProceed >= psp_Failure) Then Exit For
     Next i
     
@@ -731,9 +946,10 @@ InternalVBError:
     
 End Function
 
-'Write a single layer to file.  Should only be called from its parent ExportStep4 function,
-' because this function relies on stream alignment from its parent to work correctly.
-Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByVal idxChannel As Long, srcChannelBytes() As Byte) As PD_PSPResult
+'Write a single channel from a source DIB to file.  Should only be called from its parent ExportStep4 function,
+' (or in a special case, ExportStep3 for writing a merged image copy) because this function relies on stream
+' alignment from its parent to work correctly.
+Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcDIB As pdDIB, ByVal idxChannel As Long, ByRef srcChannelBytes() As Byte, Optional ByVal dstCompressionLevel As Long = -1, Optional ByVal isCompositeLayer As Boolean = False) As PD_PSPResult
 
     On Error GoTo InternalVBError
     Const funcName As String = "ExportStep4B_WriteChannel"
@@ -772,7 +988,7 @@ Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcL
     
     'Only 32-bpp RGBA data is handled at present
     Dim uncompressedSize As Long
-    uncompressedSize = srcLayer.layerDIB.GetDIBWidth * srcLayer.layerDIB.GetDIBHeight
+    uncompressedSize = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
     If (UBound(srcChannelBytes) < uncompressedSize - 1) Then ReDim srcChannelBytes(0 To uncompressedSize - 1) As Byte
     
     'Compressed size is obviously not known in advance.  Skip this field - we'll return and fill it
@@ -782,11 +998,10 @@ Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcL
     
     'The destination buffer must be sized to a "worst-case" scenario for the current uncompressed
     ' size value.  (Worst-case size may vary by compression level.)
-    Dim cmpLevel As Long
-    cmpLevel = 9    'Compression.GetMaxCompressionLevel(cf_Zlib)
+    If (dstCompressionLevel < 0) Then dstCompressionLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     
     Dim compressedSize As Long
-    compressedSize = Compression.GetWorstCaseSize(uncompressedSize, cf_Zlib, cmpLevel)
+    compressedSize = Compression.GetWorstCaseSize(uncompressedSize, cf_Zlib, dstCompressionLevel)
     
     'We now have empty source and destination buffers for this channel.  Fill the source buffer with
     ' the appropriate color plane.
@@ -794,19 +1009,19 @@ Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcL
     If (idxChannel = 0) Then
         pxOffset = 2
         cID = PSP_CHANNEL_RED
-        bmpType = PSP_DIB_IMAGE
+        If isCompositeLayer Then bmpType = PSP_DIB_COMPOSITE Else bmpType = PSP_DIB_IMAGE
     ElseIf (idxChannel = 1) Then
         pxOffset = 1
         cID = PSP_CHANNEL_GREEN
-        bmpType = PSP_DIB_IMAGE
+        If isCompositeLayer Then bmpType = PSP_DIB_COMPOSITE Else bmpType = PSP_DIB_IMAGE
     ElseIf (idxChannel = 2) Then
         pxOffset = 0
         cID = PSP_CHANNEL_BLUE
-        bmpType = PSP_DIB_IMAGE
+        If isCompositeLayer Then bmpType = PSP_DIB_COMPOSITE Else bmpType = PSP_DIB_IMAGE
     ElseIf (idxChannel = 3) Then
         pxOffset = 3
         cID = PSP_CHANNEL_COMPOSITE
-        bmpType = PSP_DIB_TRANS_MASK
+        If isCompositeLayer Then bmpType = PSP_DIB_COMPOSITE_TRANS_MASK Else bmpType = PSP_DIB_TRANS_MASK
     End If
     
     'Before compressing the data, write out the rest of the channel information chunk.  This will
@@ -821,20 +1036,20 @@ Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcL
     
     'Create a planar representation of the requested color channel.
     Dim pxBytes() As Byte, pxSA As SafeArray1D
-    srcLayer.layerDIB.WrapArrayAroundDIB_1D pxBytes, pxSA
+    srcDIB.WrapArrayAroundDIB_1D pxBytes, pxSA
     
     Dim i As Long
     For i = 0 To uncompressedSize - 1
         srcChannelBytes(i) = pxBytes(i * 4 + pxOffset)
     Next i
     
-    srcLayer.layerDIB.UnwrapArrayFromDIB pxBytes
+    srcDIB.UnwrapArrayFromDIB pxBytes
     
     'We now have a planar representation of the requested color channel.  Compress it directly into
     ' the target stream.  (But first, ensure the stream has enough room to store any worst-case
     ' compression results.)
     cStream.EnsureBufferSpaceAvailable compressedSize
-    If Compression.CompressPtrToPtr(cStream.Peek_PointerOnly(peekLength:=compressedSize), compressedSize, VarPtr(srcChannelBytes(0)), uncompressedSize, cf_Zlib, cmpLevel) Then
+    If Compression.CompressPtrToPtr(cStream.Peek_PointerOnly(peekLength:=compressedSize), compressedSize, VarPtr(srcChannelBytes(0)), uncompressedSize, cf_Zlib, dstCompressionLevel) Then
         
         'Note that the actual compressed size is now stored in "compressedSize"
         okToProceed = psp_Success
@@ -2404,7 +2619,7 @@ Private Function RetrieveComposite_JPEG(ByVal imgIndex As Long, ByVal parentBloc
     compressedSize = m_Stream.ReadLong()
     uncompressedSize = m_Stream.ReadLong()
     imgType = m_Stream.ReadIntUnsigned()
-    
+    Debug.Print "JPEG", compressedSize, uncompressedSize, imgType
     'Expansion bytes are explicitly allowed by the spec, so reorient the stream pointer manually
     ' using the previous chunk length.
     m_Stream.SetPosition startOffset + chunkSize, FILE_BEGIN

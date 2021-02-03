@@ -1086,7 +1086,9 @@ End Sub
 'IMPORTANT NOTE: the returned thumbnail *has already been color-managed for the active display*.  Do not reapply
 ' color-management settings.
 '
-'IMPORTANT NOTE: the full image stack must be re-composited on every request, so please call this function sparingly.
+'IMPORTANT NOTE: the full image stack may need to be re-composited on weird size requests, so please
+' 1) call this function sparingly, and...
+' 2) stick to the default IMAGE_THUMB_SIZE value or smaller
 Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = IMAGE_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
