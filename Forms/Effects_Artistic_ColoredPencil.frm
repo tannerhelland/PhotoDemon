@@ -5,7 +5,7 @@ Begin VB.Form FormPencil
    Caption         =   " Colored pencil"
    ClientHeight    =   6540
    ClientLeft      =   120
-   ClientTop       =   465
+   ClientTop       =   360
    ClientWidth     =   12030
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -25,28 +25,15 @@ Begin VB.Form FormPencil
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdSlider sldAngle 
-      Height          =   705
+   Begin PhotoDemon.pdDropDown cboStyle 
+      Height          =   735
       Left            =   6000
-      TabIndex        =   6
-      Top             =   840
+      TabIndex        =   4
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   1244
-      Caption         =   "angle"
-      Max             =   360
-      Value           =   45
-      DefaultValue    =   45
-   End
-   Begin PhotoDemon.pdRandomizeUI rndSeed 
-      Height          =   855
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   4200
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1508
-      Caption         =   "random seed:"
+      _ExtentY        =   661
+      Caption         =   "style"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750
@@ -66,49 +53,33 @@ Begin VB.Form FormPencil
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.pdSlider sldRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1680
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "tip radius"
-      Min             =   2
-      Max             =   100
-      Value           =   5
-      DefaultValue    =   5
-   End
-   Begin PhotoDemon.pdSlider sldDensity 
-      Height          =   705
-      Left            =   6000
-      TabIndex        =   3
       Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "density"
+      Caption         =   "tip radius"
       Min             =   1
       Max             =   100
+      Value           =   3
+      DefaultValue    =   3
+   End
+   Begin PhotoDemon.pdSlider sltIntensity 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   3600
+      Width           =   5925
+      _ExtentX        =   10451
+      _ExtentY        =   1270
+      Caption         =   "pressure"
+      Max             =   300
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
-   End
-   Begin PhotoDemon.pdSlider sldEdgeThreshold 
-      Height          =   705
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   3360
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "threshold"
-      Min             =   1
-      Max             =   100
-      Value           =   25
-      NotchPosition   =   2
-      NotchValueCustom=   25
    End
 End
 Attribute VB_Name = "FormPencil"
@@ -120,8 +91,8 @@ Attribute VB_Exposed = False
 'Pencil Sketch Image Effect
 'Copyright 2001-2021 by Tanner Helland
 'Created: sometime 2001
-'Last updated: 28/September/20
-'Last update: attempted overhaul
+'Last updated: 26/July/17
+'Last update: performance improvements, migrate to XML params
 '
 'PhotoDemon has provided a pencil sketch tool for a long time, but despite going through many incarnations, it always
 ' used low-quality, "quick and dirty" approximations.
@@ -139,9 +110,6 @@ Option Explicit
 
 'To improve performance, we cache a local temporary DIB when generating previews
 Private m_blurDIB As pdDIB
-
-'Suppress duplicate previews
-Private m_LastPreviewParams As String
 
 'Apply a "colored pencil" effect to an image
 'Inputs:
@@ -161,26 +129,39 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     Set cParams = New pdSerialize
     cParams.SetParamString effectParams
     
-    Dim penRadius As Single, penDensity As Single, penAngle As Double
-    Dim edgeThreshold As Single, rndSeedString As String
+    Dim penRadius As Long, colorIntensity As Double, pencilStyle As Long
     
     With cParams
-        penRadius = .GetSingle("radius", 5!, True)
-        penDensity = .GetSingle("density", 100, True)
-        penAngle = .GetDouble("angle", 45#, True)
-        edgeThreshold = .GetSingle("edge-threshold", 10!, True)
-        rndSeedString = .GetString("seed", vbNullString, True)
+        penRadius = .GetLong("radius", sltRadius.Value)
+        colorIntensity = .GetDouble("intensity", sltIntensity.Value)
+        pencilStyle = .GetLong("style", cboStyle.ListIndex)
     End With
     
-    'Angle needs to be in radians
-    penAngle = PDMath.DegreesToRadians(penAngle)
+    'Reverse the intensity input; this way, positive values make the image more vibrant.  Negative values make it less vibrant.
+    ' Note that the adjustment also varies by pencil style; typically it's used as a vibrance adjustment, but in some modes,
+    ' we switch it out for gamma or contrast control.
+    Select Case pencilStyle
     
-    'Edge threshold needs to be scaled from [0, 100] to [0, 20]
-    edgeThreshold = edgeThreshold * 0.2
+        Case 0, 1
+            colorIntensity = -0.01 * colorIntensity
+            
+        Case 2, 3
+            colorIntensity = (302 - (colorIntensity + 101)) / 300
+            
+    End Select
     
-    'Initialize a working DIB
+    'More color variables - in this case, sums for each color component
+    Dim r As Long, g As Long, b As Long, maxVal As Long
+    Dim amtVal As Double, avgVal As Double
+    
+    'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic, doNotUnPremultiplyAlpha:=True
+    
+    'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
+    ' that copy separate from the original (as the two must be blended as the final step of the filter).
+    If (m_blurDIB Is Nothing) Then Set m_blurDIB = New pdDIB
+    m_blurDIB.CreateFromExistingDIB workingDIB
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -189,254 +170,198 @@ Public Sub fxColoredPencil(ByVal effectParams As String, Optional ByVal toPrevie
     finalY = curDIBValues.Bottom
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    Dim progBarCheck As Long, prevModifier As Single
-    prevModifier = curDIBValues.previewModifier
-    
     If toPreview Then
-        penRadius = penRadius * prevModifier
-        'penDensity = penDensity * curDIBValues.previewModifier
-    End If
-    
-    If (penRadius < 1.6) Then penRadius = 1.6
-    
-    'Density controls the limiting radius that we pass to the poisson disc generator.
-    ' As such, HIGHER density equals a LOWER limiting radius (with a minimum value of
-    ' 1, where we simply use the input radius as-is).
-    penDensity = penDensity * 0.01!
-    penDensity = 1! + (1! - penDensity) * 2!
-    
-    'Use the density value to sample a bunch of random points from the image
-    Dim cPoints As pdPoissonDisc
-    Set cPoints = New pdPoissonDisc
-    
-    Dim listOfPoints() As PointFloat, numOfPoints As Long
-    Dim ptGrid() As Long, gridWidth As Long, gridHeight As Long
-    
-    'The number of points in our sampling disc determines progress bar max
-    If (Not toPreview) Then
-        ProgressBars.SetProgBarMax 100
+        penRadius = penRadius * curDIBValues.previewModifier
+        
+    'If this is not a preview, initialize the main program progress bar
+    Else
+        SetProgBarMax finalY * 3 + finalX * 5
+        Dim progBarCheck As Long
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
-    'Retrieve image gradient and magnitude
-    Dim imgGrad() As Byte, imgMag() As Byte
-    ReDim imgGrad(0 To workingDIB.GetDIBWidth - 1, 0 To workingDIB.GetDIBHeight - 1) As Byte
-    ReDim imgMag(0 To workingDIB.GetDIBWidth - 1, 0 To workingDIB.GetDIBHeight - 1) As Byte
-    Filters_Scientific.GetImageGradAndMag workingDIB, imgGrad, imgMag
+    'Enforce a minimum radius amount
+    If (penRadius < 2) Then penRadius = 2
     
-    'Prep a new destination DIB
-    Dim newDIB As pdDIB
-    Set newDIB = New pdDIB
-    newDIB.CreateFromExistingDIB workingDIB
-    newDIB.ResetDIB 255
-    
-    'We want to randomize angles to make the strokes look more natural
-    Dim cRandomize As pdRandomize
-    Set cRandomize = New pdRandomize
-    cRandomize.SetSeed_String rndSeedString
-    
-    'This function requires a lot of random values to look interesting; we pre-calculate
-    ' a table of random values to improve performance.
-    Const NUM_RND_VALUES As Long = 976  'Prime number - 1
-    Dim listOfGaussRnd(0 To NUM_RND_VALUES) As Single, rndIndex As Long
-    rndIndex = 0
-    For rndIndex = 0 To NUM_RND_VALUES
-        listOfGaussRnd(rndIndex) = cRandomize.GetGaussianFloat_WH()
-    Next rndIndex
-    
-    'pd2D handles the actual line drawing
-    Dim cSurface As pd2DSurface
-    Drawing2D.QuickCreateSurfaceFromDIB cSurface, newDIB, False
-    
-    'We actually use a few different pens of slightly varying sizes;
-    ' this makes for a more interesting effect than a bunch of perfectly uniform strokes.
-    Const PEN_SIZE_VARIATION As Single = 0.5!
-    Const NUM_PEN_OBJECTS As Long = 7
-    Dim cPens(0 To NUM_PEN_OBJECTS) As pd2DPen, curPen As pd2DPen, curPenIndex As Long
-    
-    'Create all pens
-    Dim curRadius As Single
-    For curPenIndex = 0 To NUM_PEN_OBJECTS
+    'Start by creating the blurred DIB
+    If CreateApproximateGaussianBlurDIB(penRadius, workingDIB, m_blurDIB, 3, toPreview, finalY * 3 + finalX * 5) Then
         
-        Set cPens(curPenIndex) = New pd2DPen
-        With cPens(curPenIndex)
-            
-            'Set matching line ends and joins
-            .SetPenLineCap P2_LC_Round
-            .SetPenLineJoin P2_LJ_Round
-            
-        End With
+        Dim progBarOffset As Long
+        progBarOffset = finalY * 3 + finalX * 3
         
-    Next curPenIndex
-    curPenIndex = 0
+        'Now that we have a gaussian DIB created in blurDIB, we can point arrays toward it and the source DIB
+        Dim srcImageData() As Byte, srcSA As SafeArray2D
+        m_blurDIB.SetAlphaPremultiplication False
+        m_blurDIB.WrapArrayAroundDIB srcImageData, srcSA
         
-    'X/Y steps will be randomized as we go
-    Dim curX As Double, curY As Double
-    Dim stepX As Double, stepY As Double
-    Dim pt1 As PointFloat, pt2 As PointFloat
-    
-    Const SQR2 As Double = 1.41421356
-    
-    'We need access to the original image for color-matching
-    Dim srcPixels() As RGBQuad, srcSA2D As SafeArray2D, origColor As RGBQuad
-    workingDIB.WrapRGBQuadArrayAroundDIB srcPixels, srcSA2D
-    
-    Dim xBound As Single, yBound As Single
-    xBound = finalX + 0.49
-    yBound = finalY + 0.49
-    
-    Dim i As Long, j As Long
-    
-    'Strokes are all rendered as 3-point curves; this looks a little more interesting
-    ' than perfectly straight lines
-    Dim drawPoints(0 To 2) As PointFloat
-    
-    'We randomly extend each stroke beyond its natural terminus, for a more interesting look.
-    ' (But the extension amount must be proportionally reduced during previews.)
-    Const LINE_EXTEND_PX As Single = 4!
-    
-    Dim maxExtend As Single, curExtend As Single, lineStep As Single
-    maxExtend = LINE_EXTEND_PX
-    If toPreview Then maxExtend = maxExtend * curDIBValues.previewModifier
-    
-    Dim limitRadius As Single
-    Const ANGLE_VARIATION As Single = 0.1!
-    
-    Const minSizeModifier As Single = 1!
-    Const maxSizeModifier As Single = 10!
-    
-    Const NUM_WAVELETS As Long = 3
-    
-    Dim maxWavelets As Long
-    maxWavelets = NUM_WAVELETS - 1
-    
-    'Iterate through each point in our list, and attempt to draw a nice pen stroke using that point
-    For j = 0 To maxWavelets
-    
-        'Each wavelet uses a predefined multiplier, scaling from 1000% to 100%
-        Dim waveRadius As Single
-        waveRadius = minSizeModifier + ((maxWavelets - j) / maxWavelets) * (maxSizeModifier - minSizeModifier)
+        Dim xStride As Long
+                
+        'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
+        Dim grayLookUp() As Byte
+        ReDim grayLookUp(0 To 765) As Byte
         
-        'Recreate all pens
-        For curPenIndex = 0 To NUM_PEN_OBJECTS
+        For x = 0 To 765
+            grayLookUp(x) = x \ 3
+        Next x
+                
+        'Invert the source DIB, and optionally, apply grayscale as well
+        For x = initX To finalX
+            xStride = x * 4
+        For y = initY To finalY
             
-            'Assign a variable radius
-            curRadius = (penRadius + PEN_SIZE_VARIATION * listOfGaussRnd(curPenIndex)) * waveRadius
-            If (curRadius < 1.6!) Then curRadius = 1.6!
-            cPens(curPenIndex).SetPenWidth curRadius
+            b = srcImageData(xStride, y)
+            g = srcImageData(xStride + 1, y)
+            r = srcImageData(xStride + 2, y)
             
-            'Assign variable opacity depending on the current wavelet size
-            Const MIN_OPACITY As Single = 50!
-            Const MAX_OPACITY As Single = 90!
-            cPens(curPenIndex).SetPenOpacity MIN_OPACITY + (j / maxWavelets) * (MAX_OPACITY - MIN_OPACITY)
-            Debug.Print cPens(curPenIndex).GetPenOpacity
-            
-        Next curPenIndex
-        curPenIndex = 0
-        
-        'Re-create list of points
-        limitRadius = penRadius * Sqr(2#) * penDensity * (waveRadius * 1.5!)
-        cPoints.GetDisc listOfPoints, numOfPoints, ptGrid, gridWidth, gridHeight, limitRadius, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-            
-        For i = 0 To numOfPoints - 1
-        
-            curX = listOfPoints(i).x
-            curY = listOfPoints(i).y
-            drawPoints(1).x = curX
-            drawPoints(1).y = curY
-            origColor = srcPixels(curX, curY)
-            
-            'Ensure we won't run out of values in our random number table
-            Const NUM_OF_RNDS_IN_LOOP As Long = 6
-            If (rndIndex + NUM_OF_RNDS_IN_LOOP > NUM_RND_VALUES) Then rndIndex = (NUM_RND_VALUES + 1 - rndIndex)
-            
-            'Starting at the current point, move in direction (lineAngle) until we reach a strong
-            ' gradient boundary.
-            lineStep = SQR2 * waveRadius * (1! + Abs(listOfGaussRnd(rndIndex)) * 2! * prevModifier)
-            rndIndex = rndIndex + 1
-            stepX = lineStep * Cos(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
-            rndIndex = rndIndex + 1
-            stepY = lineStep * Sin(penAngle)
-            
-            Do
-                curX = curX + stepX
-                curY = curY + stepY
-                If (curX < 0) Or (curX > xBound) Then Exit Do
-                If (curY < 0) Or (curY > yBound) Then Exit Do
-            Loop While (imgMag(Int(curX + 0.5), Int(curY + 0.5)) < edgeThreshold)
-            
-            'curX and curY now point to a pixel that lies on a strong visual boundary.
-            drawPoints(0).x = curX
-            drawPoints(0).y = curY
-            
-            'Extend the end of the line by some random amount, to make it look more natural
-            'curExtend = maxExtend * Abs(listOfGaussRnd(rndIndex)) '* waveRadius
-            'rndIndex = rndIndex + 1
-            'drawPoints(0).x = drawPoints(0).x + curExtend * stepX
-            'drawPoints(0).y = drawPoints(0).y - curExtend * stepY
-            
-            'Next, repeat the above steps, but in the opposite direction from the
-            ' original pixel; this will extend the line in the opposite direction.
-            curX = listOfPoints(i).x
-            curY = listOfPoints(i).y
-            lineStep = SQR2 * waveRadius * (1! + Abs(listOfGaussRnd(rndIndex)) * 2! * prevModifier)
-            rndIndex = rndIndex + 1
-            stepX = -1 * lineStep * Cos(penAngle)
-            stepY = -1 * lineStep * Sin(penAngle + (ANGLE_VARIATION * listOfGaussRnd(rndIndex)))
-            rndIndex = rndIndex + 1
-            
-            Do
-                curX = curX - stepX
-                curY = curY - stepY
-                If (curX < 0) Or (curX > xBound) Then Exit Do
-                If (curY < 0) Or (curY > yBound) Then Exit Do
-            Loop While (imgMag(Int(curX + 0.5), Int(curY + 0.5)) < edgeThreshold)
-            
-            drawPoints(2).x = curX
-            drawPoints(2).y = curY
-            
-            'Again, extend the end of the line by some random amount, to make it look more natural
-            'curExtend = maxExtend * listOfGaussRnd(rndIndex) '* waveRadius
-            'rndIndex = rndIndex + 1
-            'drawPoints(2).x = drawPoints(2).x + curExtend * stepX
-            'drawPoints(2).y = drawPoints(2).y - curExtend * stepY
-            
-            'GDI+ will fail if points are too close together.  Ensure a minimum viable distance?
-            
-            'Draw a line with the color of the source pixel
-            Set curPen = cPens(curPenIndex)
-            curPen.SetPenColor RGB(origColor.Red, origColor.Green, origColor.Blue)
-            If Not PD2D.DrawLinesF_FromPtF(cSurface, curPen, 3, VarPtr(drawPoints(0)), True) Then
-                Dim q As Long
-                For q = 0 To 2
-                    Debug.Print drawPoints(q).x, drawPoints(q).y
-                Next q
+            'Normally, we invert the raw pixel data only...
+            If (pencilStyle <> 1) Then
+                srcImageData(xStride, y) = 255 - b
+                srcImageData(xStride + 1, y) = 255 - g
+                srcImageData(xStride + 2, y) = 255 - r
+                
+            '...but for the "luminous" color mode, we also convert the image to grayscale
+            Else
+                g = 255 - grayLookUp(r + g + b)
+                srcImageData(xStride, y) = g
+                srcImageData(xStride + 1, y) = g
+                srcImageData(xStride + 2, y) = g
             End If
             
-            'Rotate between pens as we go
-            curPenIndex = curPenIndex + 1
-            If (curPenIndex > NUM_PEN_OBJECTS) Then curPenIndex = 0
-            
+        Next y
             If (Not toPreview) Then
-                If (i And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If Interface.UserPressedESC() Then Exit For
-                    ProgressBars.SetProgBarVal i + (j * numOfPoints)
+                    SetProgBarVal progBarOffset + x
                 End If
             End If
-                
-        Next i
+        Next x
+            
+        'Release our array copy
+        m_blurDIB.UnwrapArrayFromDIB srcImageData
         
-    'Next wavelet
-    Next j
-    
-    workingDIB.UnwrapRGBQuadArrayFromDIB srcPixels
-    workingDIB.CreateFromExistingDIB newDIB
-    
-    Set cSurface = Nothing
+        'Apply premultiplication to both layers prior to compositing.  (Note that the working DIB
+        ' is *already* in premultiplied space.)
+        m_blurDIB.SetAlphaPremultiplication True
+        
+        'A pdCompositor class will help us blend the invert+blur image back onto the original image
+        Dim cComposite As pdCompositor
+        Set cComposite = New pdCompositor
+        
+        'Composite our invert+blur image against the base layer (workingDIB) using the COLOR DODGE blend mode;
+        ' this will emphasize areas where the layers differ, while ignoring areas where they're the same.
+        Dim topBlendMode As PD_BlendMode
+        If (pencilStyle <> 2) Then topBlendMode = BM_ColorDodge Else topBlendMode = BM_LinearDodge
+        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_blurDIB, topBlendMode
+        
+        'Remove premultiplied alpha from the result
+        workingDIB.SetAlphaPremultiplication False
+        
+        'Release any temporary DIBs as they are no longer required
+        If (Not toPreview) Then Set m_blurDIB = Nothing
+        
+        'Some modes requires post-production gamma correction.  Build a lookup table now.
+        Dim gammaTable() As Byte
+        ReDim gammaTable(0 To 255) As Byte
+        
+        If (pencilStyle = 2) Or (pencilStyle = 3) Then
+        
+            Dim tmpVal As Double
+            
+            For x = 0 To 255
+                tmpVal = x / 255
+                tmpVal = tmpVal ^ (1# / colorIntensity)
+                tmpVal = tmpVal * 255
+                
+                If (tmpVal > 255) Then
+                    tmpVal = 255
+                ElseIf (tmpVal < 0) Then
+                    tmpVal = 0
+                End If
+                
+                gammaTable(x) = tmpVal
+            Next x
+        
+        End If
+        
+        'Point our byte array at workingDIB, so we can apply a final vibrance pass using the specified color intensity
+        workingDIB.WrapArrayAroundDIB srcImageData, srcSA
+        
+        progBarOffset = finalY * 3 + finalX * 4
+        
+        'Adjust vibrance
+        For x = initX To finalX
+            xStride = x * 4
+        For y = initY To finalY
+            
+            b = srcImageData(xStride, y)
+            g = srcImageData(xStride + 1, y)
+            r = srcImageData(xStride + 2, y)
+                
+            'Calculate the gray value using different methods for each pencil style
+            If (pencilStyle = 0) Or (pencilStyle = 1) Then
+            
+                avgVal = grayLookUp(r + g + b)
+                maxVal = Max3Int(r, g, b)
+                
+                'Calculate a vibrance-adjusted average, using the gray as our base
+                amtVal = ((Abs(maxVal - avgVal) / 127) * colorIntensity)
+                
+                If (r <> maxVal) Then
+                    r = r + (maxVal - r) * amtVal
+                    If (r < 0) Then r = 0
+                    If (r > 255) Then r = 255
+                End If
+                
+                If (g <> maxVal) Then
+                    g = g + (maxVal - g) * amtVal
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                End If
+                
+                If (b <> maxVal) Then
+                    b = b + (maxVal - b) * amtVal
+                    If (b < 0) Then b = 0
+                    If (b > 255) Then b = 255
+                End If
+                    
+            ElseIf (pencilStyle = 2) Then
+            
+                r = gammaTable(r)
+                g = gammaTable(g)
+                b = gammaTable(b)
+            
+            'At present, the only other possibility is pencilStyle = 3
+            Else
+                r = gammaTable(grayLookUp(r + g + b))
+                g = r
+                b = r
+            End If
+            
+            srcImageData(xStride, y) = b
+            srcImageData(xStride + 1, y) = g
+            srcImageData(xStride + 2, y) = r
+            
+        Next y
+            If (Not toPreview) Then
+                If (x And progBarCheck) = 0 Then
+                    If Interface.UserPressedESC() Then Exit For
+                    SetProgBarVal progBarOffset + x
+                End If
+            End If
+        Next x
+        
+        'Release our array once more
+        workingDIB.UnwrapArrayFromDIB srcImageData
+        
+    End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic
     
+End Sub
+
+Private Sub cboStyle_Click()
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -452,13 +377,14 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully loaded
     cmdBar.SetPreviewStatus False
     
-    'These are dummy entries because I don't want to lose these translations yet, as I may add them
-    ' back as options in the future.
-    Dim dummyString As String
-    dummyString = g_Language.TranslateMessage("pressure")
-    dummyString = g_Language.TranslateMessage("Luminous")
-    dummyString = g_Language.TranslateMessage("Pastel")
-    dummyString = g_Language.TranslateMessage("Graphite")
+    'Populate the style drop-down
+    cboStyle.Clear
+    cboStyle.AddItem "Normal", 0
+    cboStyle.AddItem "Luminous", 1
+    cboStyle.AddItem "Pastel", 2
+    cboStyle.AddItem "Graphite", 3
+    
+    cboStyle.ListIndex = 0
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me, True, True
@@ -471,19 +397,22 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub sltIntensity_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sltRadius_Change()
+    UpdatePreview
+End Sub
+
 'Render a new effect preview
-Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
-    If cmdBar.PreviewsAllowed Then
-        If Strings.StringsNotEqual(m_LastPreviewParams, GetLocalParamString(), True) Or forceUpdate Then
-            Me.fxColoredPencil GetLocalParamString(), True, pdFxPreview
-            m_LastPreviewParams = GetLocalParamString()
-        End If
-    End If
+Private Sub UpdatePreview()
+    If cmdBar.PreviewsAllowed Then fxColoredPencil GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
-    UpdatePreview True
+    UpdatePreview
 End Sub
 
 Private Function GetLocalParamString() As String
@@ -492,33 +421,11 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     
     With cParams
-        .AddParam "angle", sldAngle.Value
-        .AddParam "radius", sldRadius.Value
-        .AddParam "density", sldDensity.Value
-        .AddParam "edge-threshold", sldEdgeThreshold.Value
-        .AddParam "seed", rndSeed.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "intensity", (sltIntensity.Value - 100)
+        .AddParam "style", cboStyle.ListIndex
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
 End Function
-
-Private Sub rndSeed_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sldAngle_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sldDensity_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sldEdgeThreshold_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sldRadius_Change()
-    UpdatePreview
-End Sub
