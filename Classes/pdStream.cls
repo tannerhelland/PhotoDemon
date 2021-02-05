@@ -1085,9 +1085,7 @@ Friend Function WriteByteArray(ByRef srcBytes() As Byte, Optional ByVal dataLeng
     srcPointer = VarPtr(srcBytes(lowerBound))
     
     'Figure out how many bytes we'll actually be writing
-    If (dataLength < 0) Then
-        dataLength = UBound(srcBytes) - lowerBound + 1
-    End If
+    If (dataLength < 0) Then dataLength = UBound(srcBytes) - lowerBound + 1
         
     'Wrap the "write from pointer" function, which takes care of the rest (including checking for an open stream)
     WriteByteArray = WriteBytesFromPointer(srcPointer, dataLength)

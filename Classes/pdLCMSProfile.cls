@@ -93,6 +93,10 @@ Friend Function GetHandle() As Long
     GetHandle = m_ProfileHandle
 End Function
 
+Friend Function GetInfoString(ByVal infoType As LCMS_INFOTYPE) As String
+    If (m_ProfileHandle <> 0) Then GetInfoString = LittleCMS.LCMS_GetProfileInfoString(m_ProfileHandle, infoType)
+End Function
+
 'Retrieve the raw ICC profile bytes; return value is the length of the profile, in bytes.
 Friend Function GetRawProfileBytes(ByRef dstBytes() As Byte) As Long
     If (m_ProfileHandle <> 0) Then

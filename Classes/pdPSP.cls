@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 03/February/21
-'Last update: write composite (merged) and thumbnail blocks when exporting
+'Last updated: 04/February/21
+'Last update: get ICC profile embedding working when exporting
 '
 'This class (and its associated pdPSP- child classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
@@ -277,7 +277,7 @@ End Sub
 '
 'If the destination file exists, it will be forcibly overwritten.
 ' Safe save measures should be implemented externally.
-Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal writeCompositeImage As Boolean = True, Optional ByVal dstCompressionLevel As Long = -1) As Boolean
+Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal writeCompositeImage As Boolean = True, Optional ByVal dstCompressionLevel As Long = -1, Optional ByVal writeICCProfile As Boolean = True) As Boolean
     
     On Error GoTo CouldNotSaveFile
     
@@ -358,9 +358,10 @@ Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     
     'Start by writing out a basic PSP header.
     Dim keepGoing As PD_PSPResult
-    keepGoing = ExportStep1_FileHeaderAndGeneralAttributes(cStream, srcPDImage)
+    keepGoing = ExportStep1_FileHeaderAndGeneralAttributes(cStream, srcPDImage, writeCompositeImage)
     
-    'Next comes the ICC profile.  This is currently TODO.
+    'Next comes the ICC profile.
+    If (keepGoing < psp_Failure) And writeICCProfile Then keepGoing = ExportStep2_ColorProfile(cStream, srcPDImage)
     
     'Next, we need to write a composite image (merged image).  The spec requires this for all
     ' multi-layer or alpha-supporting images, e.g. "All PSP files with more than one layer or
@@ -384,7 +385,7 @@ CouldNotSaveFile:
     
 End Function
 
-Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdStream, ByRef srcImage As pdImage) As PD_PSPResult
+Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdStream, ByRef srcImage As pdImage, ByVal writeCompositeImage As Boolean) As PD_PSPResult
 
     On Error GoTo InternalVBError
     Const funcName As String = "ExportStep1"
@@ -487,7 +488,8 @@ Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdS
     
     'Content flags
     Dim imgFlags As PSPGraphicContents
-    imgFlags = keGCAlphaChannels And keGCComposite And keGCCompositeTransparency And keGCRasterLayers
+    imgFlags = keGCAlphaChannels Or keGCRasterLayers
+    If writeCompositeImage Then imgFlags = imgFlags Or keGCComposite Or keGCCompositeTransparency
     cStream.WriteLong imgFlags
     
     'Future expansion fields are possible.  For now, calculate size of the header up to this point.
@@ -514,6 +516,97 @@ InternalVBError:
     InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
     m_Warnings.AddString "Internal error in export step 1, #" & Err.Number & ": " & Err.Description
     ExportStep1_FileHeaderAndGeneralAttributes = psp_Failure
+    
+End Function
+
+Private Function ExportStep2_ColorProfile(ByRef cStream As pdStream, ByRef srcImage As pdImage) As PD_PSPResult
+
+    On Error GoTo InternalVBError
+    Const funcName As String = "ExportStep2"
+    
+    Dim okToProceed As PD_PSPResult
+    okToProceed = psp_Success
+    
+    'We are 100% reliant on previous steps aligning the stream pointer correctly.  PSP files do not provide
+    ' an easy mechanism for guaranteeing stream alignment, so we are at the mercy of preceding steps.
+    
+    'Start by writing the bank block header.  This is written as a normal PSP block, with a prefixed
+    ' header ID, block ID, and block length.  We obviously cannot write the block length until the block
+    ' itself has been written, so we need to flag position in advance.
+    cStream.WriteLong PSP_BLOCK_MARKER
+    cStream.WriteInt PSP_COLORPROFILE_BLOCK
+    
+    'Note stream position *immediately after the offset*; we'll return here to write the block length
+    ' after it's written.
+    cStream.WriteLong 0
+    Dim posJustAfterBlockLength As Long
+    posJustAfterBlockLength = cStream.GetPosition()
+    
+    'Now we need to write a "color profile data chunk".
+    
+    'Chunk size is unknown until the chunk is actually written
+    cStream.WriteLong 0
+    
+    '"Description" comes next (a silly field), but we try to write it correctly.
+    '
+    'Start by pulling a reference to the source image's active color profile
+    Dim srcProfile As pdICCProfile
+    Set srcProfile = ColorManagement.GetProfile_ByHash(srcImage.GetColorProfile_WorkingSpace())
+    If (srcProfile Is Nothing) Then Set srcProfile = ColorManagement.GetProfile_Default()
+    
+    'We need to use LCMS to pull detailed information out of the profile
+    Dim cProfile As pdLCMSProfile
+    Set cProfile = New pdLCMSProfile
+    If (Not cProfile.CreateFromPDICCObject(srcProfile)) Then cProfile.CreateSRGBProfile False
+    Set srcProfile = Nothing
+    
+    Dim strProfileDescription As String
+    strProfileDescription = Trim$(Strings.TrimNull(cProfile.GetInfoString(cmsInfoDescription)))
+    
+    'We can finally write the description out to file
+    cStream.WriteIntU Len(strProfileDescription)
+    If (Len(strProfileDescription) > 0) Then cStream.WriteString_ASCII strProfileDescription
+    
+    'Next comes size of the profile
+    Dim profBytes() As Byte, profSize As Long
+    profSize = cProfile.GetRawProfileBytes(profBytes)
+    cStream.WriteLong profSize
+    
+    'Now the spec is actually wrong here - it shows the ICC color profile being immediately
+    ' written as part of the color profile data chunk, but this is apparently incorrect.
+    ' Instead, we need to end the chunk here (and return to the start of the chunk to fill in
+    ' the current length calculation), then follow the chunk with a separate, not-inside-a-chunk
+    ' copy of the profile itself.
+    Dim posEndOfChunk As Long
+    posEndOfChunk = cStream.GetPosition()
+    cStream.SetPosition posJustAfterBlockLength
+    cStream.WriteLong posEndOfChunk - posJustAfterBlockLength
+    cStream.SetPosition posEndOfChunk
+    
+    'Finally, write the profile itself
+    If (profSize > 0) Then cStream.WriteBytesFromPointer VarPtr(profBytes(0)), profSize
+    Set cProfile = Nothing
+    
+    'The color profile block is complete.  Return to the start of the block and fill in the final size.
+    Dim posEndOfBlock As Long, finalSizeOfBlock As Long
+    posEndOfBlock = cStream.GetPosition()
+    finalSizeOfBlock = posEndOfBlock - posJustAfterBlockLength
+    cStream.SetPosition posJustAfterBlockLength - 4
+    cStream.WriteLong finalSizeOfBlock
+    
+    'Restore original stream alignment
+    cStream.SetPosition posEndOfBlock
+    
+    'Color profile block complete, and the struct is correctly aligned for the next block
+    ExportStep2_ColorProfile = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError funcName, "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in export step 2, #" & Err.Number & ": " & Err.Description
+    ExportStep2_ColorProfile = psp_Failure
     
 End Function
 
@@ -1575,10 +1668,16 @@ Private Function Step3a_ReadICCProfile() As PD_PSPResult
     Dim iccDescriptionSize As Long, iccDescription As String
     iccDescriptionSize = m_Stream.ReadIntUnsigned()
     iccDescription = m_Stream.ReadString_UTF8(iccDescriptionSize)
-    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile found: " & iccDescription
     
     Dim iccLength As Long, iccBytes() As Byte
     iccLength = m_Stream.ReadLong()
+    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile found: " & iccDescription & " (" & iccDescriptionSize & ", " & iccLength & ", " & iccChunkSize & ", " & m_Blocks(iccIndex).GetBlockLength() & ")"
+    
+    'The spec is incorrect here.  The ICC profile looks as though it is part of the "color profile
+    ' data chunk" but it's not.  Instead, it immediately follows the data chunk - so we need to skip
+    ' past the data chunk's length before reading it.
+    m_Stream.SetPosition origBlockPos + iccChunkSize, FILE_BEGIN
+    
     If (iccLength = m_Stream.ReadBytes(iccBytes, iccLength, True)) Then
         
         'Cache the retrieved ICC bytes inside a dedicated profile class

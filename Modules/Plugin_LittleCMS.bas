@@ -10,15 +10,14 @@ Attribute VB_Name = "LittleCMS"
 ' LittleCMS plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "lcms2.dll".
 '
 'LittleCMS is a free, open-source color management library.  You can learn more about it here:
-'
 ' http://www.littlecms.com/
 '
-'PhotoDemon has been designed against v 2.8.0.  It may not work with other versions.
-' Additional documentation regarding the use of LittleCMS is available as part of the official LittleCMS library,
-' available from https://github.com/mm2/Little-CMS.
+'PhotoDemon has been designed against v2.8.0.  It may not work with other versions.
+' Additional documentation regarding the use of LittleCMS is available as part of the official
+' LittleCMS library, available from https://github.com/mm2/Little-CMS.
 '
-'LittleCMS is available under the MIT license.  Please see the App/PhotoDemon/Plugins/lcms2-LICENSE.txt file
-' for questions regarding copyright or licensing.
+'LittleCMS is available under the MIT license.  Please see the App/PhotoDemon/Plugins/lcms2-LICENSE.txt
+' file for questions regarding copyright or licensing.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -27,25 +26,20 @@ Attribute VB_Name = "LittleCMS"
 
 Option Explicit
 
-'Public Type LCMS_XYZ
-'    x As Double
-'    y As Double
-'    z As Double
-'End Type
-
 Public Type LCMS_xyY
     x As Double
     y As Double
     YY As Double
 End Type
 
+'Not all color formats are used at present
+'
 'Public Type LCMS_Lab
 '    l As Double
 '    a As Double
 '    b As Double
 'End Type
-
-'Not all color formats are used at present
+'
 'Public Type LCMS_LCh
 '    l As Double
 '    c As Double
@@ -56,6 +50,12 @@ End Type
 '    j As Double
 '    c As Double
 '    h As Double
+'End Type
+'
+'Public Type LCMS_XYZ
+'    x As Double
+'    y As Double
+'    z As Double
 'End Type
 
 'LCMS allows you to define custom pixel formatters, but they also provide a large collection of pre-formatted values.
@@ -332,49 +332,49 @@ End Enum
 '
 'These values are defined on page 49 of the v2.8 LittleCMS API manual.
 Public Enum LCMS_PROFILE_COLOR_SPACE
-    cmsSigXYZ = 1482250784  'XYZ '
-    cmsSigLab = 1281450528  'Lab '
-    cmsSigLuv = 1282766368  'Luv '
-    cmsSigYCbCr = 1497588338  'YCbr'
-    cmsSigYxy = 1501067552  'Yxy '
-    cmsSigRgb = 1380401696  'RGB '
-    cmsSigGray = 1196573017  'GRAY'
-    cmsSigHsv = 1213421088  'HSV '
-    cmsSigHls = 1212961568  'HLS '
-    cmsSigCmyk = 1129142603  'CMYK'
-    cmsSigCmy = 1129142560  'CMY '
-    cmsSigMCH1 = 1296255025  'MCH1'
-    cmsSigMCH2 = 1296255026  'MCH2'
-    cmsSigMCH3 = 1296255027  'MCH3'
-    cmsSigMCH4 = 1296255028  'MCH4'
-    cmsSigMCH5 = 1296255029  'MCH5'
-    cmsSigMCH6 = 1296255030  'MCH6'
-    cmsSigMCH7 = 1296255031  'MCH7'
-    cmsSigMCH8 = 1296255032  'MCH8'
-    cmsSigMCH9 = 1296255033  'MCH9'
-    cmsSigMCHA = 1296255034  'MCHA'
-    cmsSigMCHB = 1296255035  'MCHB'
-    cmsSigMCHC = 1296255036  'MCHC'
-    cmsSigMCHD = 1296255037  'MCHD'
-    cmsSigMCHE = 1296255038  'MCHE'
-    cmsSigMCHF = 1296255039  'MCHF'
-    cmsSigNamed = 1852662636  'nmcl'
-    cmsSig1color = 826494034  '1CLR'
-    cmsSig2color = 843271250  '2CLR'
-    cmsSig3color = 860048466  '3CLR'
-    cmsSig4color = 876825682  '4CLR'
-    cmsSig5color = 893602898  '5CLR'
-    cmsSig6color = 910380114  '6CLR'
-    cmsSig7color = 927157330  '7CLR'
-    cmsSig8color = 943934546  '8CLR'
-    cmsSig9color = 960711762  '9CLR'
+    cmsSigXYZ = 1482250784      'XYZ '
+    cmsSigLab = 1281450528      'Lab '
+    cmsSigLuv = 1282766368      'Luv '
+    cmsSigYCbCr = 1497588338    'YCbr'
+    cmsSigYxy = 1501067552      'Yxy '
+    cmsSigRgb = 1380401696      'RGB '
+    cmsSigGray = 1196573017     'GRAY '
+    cmsSigHsv = 1213421088      'HSV '
+    cmsSigHls = 1212961568      'HLS '
+    cmsSigCmyk = 1129142603     'CMYK'
+    cmsSigCmy = 1129142560      'CMY '
+    cmsSigMCH1 = 1296255025     'MCH1'
+    cmsSigMCH2 = 1296255026     'MCH2'
+    cmsSigMCH3 = 1296255027     'MCH3'
+    cmsSigMCH4 = 1296255028     'MCH4'
+    cmsSigMCH5 = 1296255029     'MCH5'
+    cmsSigMCH6 = 1296255030     'MCH6'
+    cmsSigMCH7 = 1296255031     'MCH7'
+    cmsSigMCH8 = 1296255032     'MCH8'
+    cmsSigMCH9 = 1296255033     'MCH9'
+    cmsSigMCHA = 1296255034     'MCHA'
+    cmsSigMCHB = 1296255035     'MCHB'
+    cmsSigMCHC = 1296255036     'MCHC'
+    cmsSigMCHD = 1296255037     'MCHD'
+    cmsSigMCHE = 1296255038     'MCHE'
+    cmsSigMCHF = 1296255039     'MCHF'
+    cmsSigNamed = 1852662636    'nmcl'
+    cmsSig1color = 826494034    '1CLR'
+    cmsSig2color = 843271250    '2CLR'
+    cmsSig3color = 860048466    '3CLR'
+    cmsSig4color = 876825682    '4CLR'
+    cmsSig5color = 893602898    '5CLR'
+    cmsSig6color = 910380114    '6CLR'
+    cmsSig7color = 927157330    '7CLR'
+    cmsSig8color = 943934546    '8CLR'
+    cmsSig9color = 960711762    '9CLR'
     cmsSig10color = 1094929490  'ACLR'
     cmsSig11color = 1111706706  'BCLR'
     cmsSig12color = 1128483922  'CCLR'
     cmsSig13color = 1145261138  'DCLR'
     cmsSig14color = 1162038354  'ECLR'
     cmsSig15color = 1178815570  'FCLR'
-    cmsSigLuvK = 1282766411  'LuvK'
+    cmsSigLuvK = 1282766411     'LuvK'
 End Enum
 
 #If False Then
@@ -382,8 +382,8 @@ End Enum
     Private Const cmsSig12color = 1128483922, cmsSig13color = 1145261138, cmsSig14color = 1162038354, cmsSig15color = 1178815570, cmsSigLuvK = 1282766411
 #End If
 
-'Unicode-aware LCMS functions require three-char ISO language and region names.  We use a dummy struct to simply
-' the process of enforcing a trailing null char, regardless of lang/region name length.
+'Unicode-aware LCMS functions require three-char ISO language and region names.  We use a dummy struct
+' to simplify the process of enforcing a trailing null char, regardless of lang/region name length.
 Private Type ThreeAsciiChars
     Chars(0 To 3) As Byte
 End Type

@@ -3,23 +3,22 @@ Attribute VB_Name = "ImageFormats_PSP"
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
 'Copyright 2020-2021 by Tanner Helland
 'Created: 30/December/20
-'Last updated: 05/January/21
-'Last update: continue work on initial build
+'Last updated: 03/February/21
+'Last update: wrap up finishing touches on export support
 '
 'This module (and associated pdPSP- classes) handle JASC/Corel Paint Shop Pro image parsing.
 ' All code has been custom-built for PhotoDemon, with a special emphasis on parsing performance.
 '
-'As of January 2021, this class is under heavy construction.  Many features are not yet supported.
-'
-'As always, import support is being tackled first.  Export support may be added later.
+'Both import and export of PSP files are supported.  I have attempted to support all possible
+' versions of PSP files (PSP 5 was the version that "invented" the PSP format, and all versions
+' since have made slight modifications to the format).  Unfortunately, Corel stopped publishing
+' public specs for the PSP format after PSP 8, so support for all versions beyond that point relies
+' on guesswork and heuristics instead of an authoritative "Spec".
 '
 'As with all 3rd-party PSP engines, Paint Shop Pro has many features that don't have direct analogs
-' in PhotoDemon.  Such features are still extracted by this class, but they will not "appear" in the
-' final loaded image.  My ongoing goal is to expand support in this class as various PSP features are
-' implemented in PD itself.
-'
-'Finally, there is always a possibility that a particular file format may prove too cumbersome to
-' fully support. I make no guarantee that this class will ever reach full integration into PhotoDemon.
+' in PhotoDemon.  Many of these settings are still parsed by PD's PSP engine, but they will not
+' "appear" in the final loaded image.  My ongoing goal is to expand support in this class as various
+' PSP features are implemented in PD itself.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" PSP spec at this URL (link good as of December 2020):

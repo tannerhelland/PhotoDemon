@@ -101,12 +101,12 @@ Private m_sRGBIndex As Long, m_sRGBHash As String
 ' against each other.
 Private Type ICCProfileCache
     
-    'All profiles must be accompanied of a bytestream copy of their ICC profile contents.  This allows us to do things like
-    ' match duplicates, or look for duplicate source paths.
+    'All profiles must be accompanied of a bytestream copy of their ICC profile contents.
+    ' This allows us to do things like match duplicates, or look for duplicate source paths.
     FullProfile As pdICCProfile
     
-    'Generally speaking, all profiles should also be accompanied by a LittleCMS handle to said profile.  Note that these
-    ' handles will leak if not manually released!
+    'Generally speaking, all profiles should also be accompanied by a LittleCMS handle to said profile.
+    ' Note that these handles will leak if not manually released!
     LcmsProfileHandle As Long
     
     'Flags to help us shortcut searches for certain profile types
@@ -397,6 +397,12 @@ Public Function GetProfile_ByIndex(ByVal profileIndex As Long) As ICCProfileCach
     End If
 End Function
 
+Public Function GetProfile_Default() As pdICCProfile
+    Dim i As Long
+    i = ColorManagement.GetSRGBProfileIndex()
+    If (i >= 0) Then Set GetProfile_Default = m_ProfileCache(i).FullProfile
+End Function
+
 Private Function GetProfileIndex_ByHash(ByRef srcHash As String) As Long
     Dim i As Long
     For i = 0 To m_NumOfCachedProfiles - 1
@@ -447,8 +453,9 @@ Public Function GetCachedProfileIndex_ByUniqueStringID(ByRef profileString As St
     
 End Function
 
-'If you want an immutable descriptor for a given profile, use this function.  It takes an index, and returns a (potentially lengthy)
-' string that can be used to uniquely identify an ICC profile across sessions.
+'If you want an immutable descriptor for a given profile, use this function.
+' It takes an INDEX, and returns a (potentially lengthy) STRING that can be used to uniquely identify
+' an ICC profile across sessions.
 Public Function GetUniqueProfileDescriptor_ByIndex(ByVal profileIndex As Long) As String
     
     If (profileIndex >= 0) And (profileIndex < m_NumOfCachedProfiles) Then
