@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.40</langversion>
+<langversion>8.0.41</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -7157,23 +7157,18 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- Effects_Animation_Background.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
-<original>random seed</original>
-<translation>seme casuale</translation>
-</phrase>
-
-<phrase>
 <original>tip radius</original>
 <translation>punto del raggio</translation>
 </phrase>
 
 <phrase>
-<original>Sketching image with pencils</original>
-<translation>Schizzo dell'immagine con le matite</translation>
+<original>pressure</original>
+<translation>pressione</translation>
 </phrase>
 
 <phrase>
-<original>pressure</original>
-<translation>pressione</translation>
+<original>Sketching image with pencils</original>
+<translation>Schizzo dell'immagine con le matite</translation>
 </phrase>
 
 <phrase>
@@ -7191,7 +7186,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Grafite</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -7251,11 +7246,16 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
+<original>random seed</original>
+<translation>seme casuale</translation>
+</phrase>
+
+<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Proiezione dell'imagine attraverso un vetro simulato</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -13369,12 +13369,19 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>target version</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2530</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 5173 phrases. -->
-<!-- 2644 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 11614 total words. -->
+<!-- 2643 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 11616 total words. -->
 
 </pdData>

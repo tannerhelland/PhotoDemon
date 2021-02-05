@@ -60,7 +60,7 @@ Private Const PSP_LOAD_COMPOSITE_AS_BASE_LAYER As Boolean = False
 ' we preserve group order at export time.  Toggling these behaviors is controlled by this constant,
 ' with a matching bool to track whether an exported image contains layers.  (If it does, we need to
 ' modify some writing behavior.)
-Private Const PSP_GROUPS_AS_DUMMY_LAYERS As Boolean = True
+Private Const PSP_GROUPS_AS_DUMMY_LAYERS As Boolean = False
 Private m_ExportGroups As Boolean
 
 'Like many other formats, PSP files consist of "blocks".  Blocks have hard-coded 2-byte IDs.
@@ -82,10 +82,12 @@ End Enum
 ' we quickly scan all blocks and cache their IDs and offsets.  This is helpful for both
 ' validation purposes, and general parsing purposes, because it lets us operate at a
 ' more helpful "block" level.
-Private m_numOfBlocks As Long
-Private m_Blocks() As pdPSPBlock
-
+Private m_numOfBlocks As Long, m_Blocks() As pdPSPBlock
 Private m_ImageHeader As PSPImageHeader
+
+'When exporting PSP files, we set a module-level version flag so we can adjust write behavior
+' as necessary.
+Private m_ExportVersion As Long
 
 'Files from PSPv5 use a different block header format.  This causes a lot of parsing headaches
 ' so we set a flag up-front and refer to it when reading block headers.
@@ -277,7 +279,7 @@ End Sub
 '
 'If the destination file exists, it will be forcibly overwritten.
 ' Safe save measures should be implemented externally.
-Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal writeCompositeImage As Boolean = True, Optional ByVal dstCompressionLevel As Long = -1, Optional ByVal writeICCProfile As Boolean = True) As Boolean
+Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal targetPSPVersion As Long = 8, Optional ByVal writeCompositeImage As Boolean = True, Optional ByVal dstCompressionLevel As Long = -1, Optional ByVal writeICCProfile As Boolean = True) As Boolean
     
     On Error GoTo CouldNotSaveFile
     
@@ -303,11 +305,26 @@ Friend Function SavePSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     ' struct members that are defined differently in VB, like bools (which are bytes with 0/1 values in a
     ' PSP file).
     
-    '3) This code was designed against the latest public PSP spec at the time of its writing (October 2006,
-    ' available here: ftp://ftp.corel.com/pub/documentation/PSP/).  I make no guarantee that this code is
-    ' compatible with earlier or later spec versions.
+    '3) This code was designed against the latest public PSP spec at the time of its writing
+    ' (v8 from October 2006, available here: ftp://ftp.corel.com/pub/documentation/PSP/).  I make no
+    ' guarantee that this code is compatible with earlier or later spec versions, although attempts have
+    ' been made to support PSP files back to v6 and through the most recent modern version at the time of
+    ' this writing (v "2021").
     
     'All good?  Then let's do this!
+    
+    'Start by ensuring that incoming flags match target version capabilities.
+    If (targetPSPVersion > 8) Then
+        targetPSPVersion = 8
+    ElseIf (targetPSPVersion < 6) Then
+        targetPSPVersion = 6
+    End If
+    
+    m_ExportVersion = targetPSPVersion
+    
+    'Color profiles weren't supported until v8
+    If (targetPSPVersion < 8) Then writeICCProfile = False
+    
     Dim i As Long
     
     'Before exporting, we need to run some quick heuristics on exported layer data.  This approach will
@@ -407,13 +424,10 @@ Private Function ExportStep1_FileHeaderAndGeneralAttributes(ByRef cStream As pdS
     
     If (okToProceed < psp_Failure) Then
         
-        'Major/minor versions follow.  PD could theoretically write different values here for
-        ' compatibility purposes, but that would require an export UI and I'm not quite ready
-        ' to tackle that.
-        '
-        'Currently we write files in v8 format, which is the latest version for which a
-        ' public spec is available.
-        cStream.WriteInt 6
+        'Major/minor versions follow.  The version number is always 2 less than the target PSP version,
+        ' starting with PSP 5 as the base (with a corresponding version number of 3).  PD only supports
+        ' versions for which a spec is publicly available, so v8 is the latest format we write.
+        cStream.WriteInt m_ExportVersion - 2
         cStream.WriteInt 0
         
     End If
@@ -978,8 +992,10 @@ Private Function ExportStep4a_WriteLayer(ByRef cStream As pdStream, ByRef srcIma
     
     'PSPv8 files also support a "use highlight color" and "highlight color" flag;
     ' PD doesn't support these, so write null bytes
-    cStream.WriteByte 0
-    cStream.WriteLong 0
+    If (m_ExportVersion >= 8) Then
+        cStream.WriteByte 0
+        cStream.WriteLong 0
+    End If
     
     'Layer information chunk is complete!  Note the chunk size, then return to the start of the
     ' stream and fill in the preceding "chunk size" parameter.
@@ -2177,9 +2193,9 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
     
     If (okToProceed >= psp_Failure) Then Exit Function
     
-    'Groups are a work in progress.  Note that group behavior is *not* guaranteed
-    ' to work in malformed files, as PSPs use a weird counting mechanism for establishing
-    ' group boundaries, and in broken files, we can't count layers accurately.
+    'Groups can be imported, but they're complex to handle correctly.  Note that group behavior
+    ' is *not* guaranteed to work in malformed files, as PSPs use a weird counting mechanism for
+    ' establishing group boundaries, and in broken files, we can't count layers accurately.
     Dim groupCount() As Long, groupReferences() As pdPSPLayer, idxGroup As Long, addGroupStartMarker As Boolean
     ReDim groupCount(0 To m_LayerCount - 1) As Long
     ReDim groupReferences(0 To m_LayerCount - 1) As pdPSPLayer
@@ -2446,7 +2462,7 @@ Private Function Step7_AssembleFinalImage(ByRef srcFile As String, ByRef dstImag
         
         'I don't know if PSPs enforce a "maximum" group depth.  Photoshop limits group depth to 10,
         ' so we start there.  (Note that PD will auto-increment this if as it encounters complex
-        ' trees; we just need a starting size here!)
+        ' trees; we just need an arbitrary starting size for tracking!)
         Const MAX_GROUP_DEPTH As Long = 10
         Dim groupVisibility() As Boolean
         ReDim groupVisibility(0 To MAX_GROUP_DEPTH - 1) As Boolean

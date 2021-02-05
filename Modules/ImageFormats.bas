@@ -3,19 +3,23 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 25/January/21
-'Last update: add support for PSP (Paintshop Pro) export
+'Last updated: 05/February/21
+'Last update: wrap up support for PSP (Paintshop Pro) export
 '
 'This module determines run-time read/write support for various image formats.
 '
-'Based on available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
-' and reading.  These format lists are separately maintained, and the presence of a format in the Import category
-' does not guarantee a similar presence in the Export category.
+'Based on available plugins, this class generates a list of file formats that PhotoDemon is capable
+' of importing and exporting.  Import/export lists are separately maintained, and the presence of a
+' format in the Import category does not guarantee a similar presence in the Export category.
 '
-'Many esoteric formats rely on FreeImage.dll for loading and/or saving.  In some cases, GDI+ is used preferentially
-' over FreeImage (e.g. loading JPEGs; FreeImage has better coverage of non-standard JPEG encodings, but GDI+ is
-' significantly faster).  From this module alone, it won't be clear which plugin, if any, is used to load a given
-' file - for that, you'd need to consult the relevant debug log after loading an image file.
+'Some esoteric formats rely on the external FreeImage.dll for loading and/or saving.  In some cases,
+' GDI+ is used preferentially over FreeImage (e.g. loading JPEGs; FreeImage has better coverage of
+' non-standard JPEG encodings, but GDI+ is significantly faster).  From this module alone, it won't
+' be clear which plugin, if any, is used to load a given file - for that, you'd need to consult the
+' relevant debug log after loading an image file.
+'
+'Note also that as of 2021, many formats use native PhotoDemon-specific encoder/decoder classes.
+' These formats are *always* available regardless of 3rd-party library status.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -786,7 +790,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         
         Case PDIF_PSP
-            IsExportDialogSupported = False
+            IsExportDialogSupported = True
         
         Case PDIF_TARGA
             IsExportDialogSupported = False

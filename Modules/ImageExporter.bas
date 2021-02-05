@@ -2166,6 +2166,37 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
+    'Figure out which PSP version to target.  Format specs are only publicly available through
+    ' PSP 8, so target versions larger than this are unsupported.  (Similarly, the PSP format
+    ' was invented for PSP 5 but v5 files are vastly different from later versions, so PD only
+    ' attempts to support v6 at the earliest.)
+    Dim strPSPVersion As String, targetPSPVersion As Long
+    strPSPVersion = cParams.GetString("compatibility-target", "auto", True)
+    If Strings.StringsEqual(strPSPVersion, "auto", True) Then
+        targetPSPVersion = 8
+    Else
+        If TextSupport.IsNumberLocaleUnaware(strPSPVersion) Then
+            targetPSPVersion = strPSPVersion
+        Else
+            targetPSPVersion = 8
+        End If
+    End If
+    
+    If (targetPSPVersion > 8) Then
+        targetPSPVersion = 8
+    ElseIf (targetPSPVersion < 6) Then
+        targetPSPVersion = 6
+    End If
+    
+    'PSP files use zLib compression.  Figure out which compression level to use.
+    Dim cmpLevel As Long
+    cmpLevel = cParams.GetLong("compression-level", 9, True)
+    If (cmpLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then
+        cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
+    ElseIf (cmpLevel < 0) Then
+        cmpLevel = Compression.GetDefaultCompressionLevel(cf_Zlib)
+    End If
+    
     'Most of the heavy lifting for the save will be performed by the pdPSP class
     Dim cPSP As pdPSP
     Set cPSP = New pdPSP
@@ -2183,7 +2214,7 @@ Public Function ExportPSP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         tmpFilename = dstFile
     End If
     
-    If cPSP.SavePSP(srcPDImage, tmpFilename) Then
+    If cPSP.SavePSP(srcPDImage, tmpFilename, targetPSPVersion, True, cmpLevel, True) Then
 
         If Strings.StringsEqual(dstFile, tmpFilename) Then
             ExportPSP = True
