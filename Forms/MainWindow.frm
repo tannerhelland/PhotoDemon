@@ -2061,32 +2061,48 @@ Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately
     
-    Dim cLUT As pdLUT3D
-    Set cLUT = New pdLUT3D
+    'Use for timing results
+    Dim startTime As Currency, lastTime As Currency
+    VBHacks.GetHighResTime startTime
+    VBHacks.GetHighResTime lastTime
     
-    Dim curTime As Currency
-    VBHacks.GetHighResTime curTime
+    'Test code goes here
     
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\_Orange and Blue 16.cube")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\KH LUT 6.cube")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\DropBlues.3DL")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\IWLTBAP Arapaho - LOG.3dl")
-    Debug.Print cLUT.LoadLUTFromFile("C:\PhotoDemon v4\PhotoDemon\Data\3DLuts\AVC-01-Youngbacca.cube")
+    'Set 8bf path
+    Dim path8bf As String
+    path8bf = UserPrefs.GetProgramPath & "no_sync\8bf\from PS5\"
+    Debug.Print Plugin_8bf.Set8bfPath(path8bf)
     
-    PDDebug.LogAction "LUT load: " & VBHacks.GetTimeDiffNowAsString(curTime)
-    VBHacks.GetHighResTime curTime
+    'Enumerate plugins
+    Dim numPlugins As Long
+    numPlugins = Plugin_8bf.EnumerateAvailable8bf()
+    If (numPlugins > 0) Then
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA, False   'toPreview, dstPic
+        'Filters found.
+        PDDebug.LogAction "Enumerate plugin time: " & VBHacks.GetTimeDiffNowAsString(lastTime)
+        VBHacks.GetHighResTime lastTime
+        
+        'Sort filters alphabetically (first by category, then by filter name)
+        Plugin_8bf.SortAvailable8bf
+        PDDebug.LogAction "Sort plugin time: " & VBHacks.GetTimeDiffNowAsString(lastTime)
+        VBHacks.GetHighResTime lastTime
+        
+        'Show a few About dialogs, for testing
+        'Plugin_8bf.ShowAboutDialog 0
+        'Plugin_8bf.ShowAboutDialog numPlugins - 1
+        
+        'If an image is open, let's attempt to run the plugin!
+        If (PDImages.GetNumOpenImages > 0) Then
+        
+            
+        
+        End If
+        
+    Else
+        PDDebug.LogAction "no filters found"
+    End If
     
-    cLUT.ApplyLUTToDIB workingDIB
-    
-    PDDebug.LogAction "Apply time: " & VBHacks.GetTimeDiffNowAsString(curTime)
-    
-    EffectPrep.FinalizeImageData False
-    
-    'Filters_Scientific.InternalFFTTest
+    PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
     ' then uncomment these two lines:
