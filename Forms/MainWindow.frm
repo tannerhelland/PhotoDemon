@@ -224,7 +224,6 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "Repeat"
-         Enabled         =   0   'False
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
@@ -1963,7 +1962,7 @@ Private Sub MnuEffectUpper_Click(Index As Integer)
             '(separator)
         Case 13
             'Animation
-        Case 15
+        Case 14
             Menus.ProcessDefaultAction_ByName "effects_customfilter"
     End Select
 
