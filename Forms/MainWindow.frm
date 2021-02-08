@@ -2094,7 +2094,23 @@ Private Sub MnuTest_Click()
         'If an image is open, let's attempt to run the plugin!
         If (PDImages.GetNumOpenImages > 0) Then
         
+            'Load a plugin
+            Plugin_8bf.Load8bf 1
             
+            'Create a standard PD working copy of the image, then send it to the plugin
+            Plugin_8bf.SetImage_CurrentWorkingImage
+            
+            'Execute the plugin
+            Plugin_8bf.Execute8bf FormMain.hWnd
+            
+            'Free the passed image
+            Plugin_8bf.FreeImageResources
+            
+            'Unload the plugin
+            Plugin_8bf.Free8bf
+            
+            'Finalize results
+            EffectPrep.FinalizeImageData
         
         End If
         
@@ -2106,8 +2122,8 @@ Private Sub MnuTest_Click()
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
     ' then uncomment these two lines:
-    'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest

@@ -88,8 +88,8 @@ Private Declare Function pspiSetColorPickerCallBack Lib "pspiHost.dll" Alias "_p
 
 'Execute various plugin functions
 Private Declare Function pspiPlugInLoad Lib "pspiHost.dll" Alias "_pspiPlugInLoad@4" (ByVal ptrStrFilterPath As Long) As PSPI_Result
-Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerhWnd As Long) As PSPI_Result
-Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugInExecute@4" (ByVal ownerhWnd As Long) As PSPI_Result
+Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerHWnd As Long) As PSPI_Result
+Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugInExecute@4" (ByVal ownerHWnd As Long) As PSPI_Result
 
 'Prep plugin features and image access
 'Plugins support a "region of interest" in the source image
@@ -138,12 +138,16 @@ Private m_Plugins() As PD_Plugin8bf, m_numPlugins As Long
 ' "availability" state by setting m_LibAvailable to FALSE
 Private m_LibHandle As Long, m_LibAvailable As Boolean
 
+'Index of currently loaded plugin, if any (-1 if no plugin loaded)
+Private m_Active8bf As Long
+
 'Returns the number of discovered 8bf plugins; 0 means no plugins found
 Public Function EnumerateAvailable8bf() As Long
     
     Const funcName As String = "EnumerateAvailable8bf"
     
     'Failsafes
+    m_Active8bf = -1
     If (Not m_LibAvailable) Then Exit Function
     If (LenB(m_8bfPath) = 0) Then Exit Function
     
@@ -190,8 +194,29 @@ Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As L
     
 End Sub
 
+Public Function Execute8bf(ByVal ownerHWnd As Long) As Boolean
+    
+    Dim retPspi As PSPI_Result
+    retPspi = pspiPlugInExecute(ownerHWnd)
+    Execute8bf = (retPspi = PSPI_OK)
+    If (Not Execute8bf) Then InternalError "Execute8bf", "plugin execution failed", retPspi
+    
+End Function
+
 Public Sub ForciblySetAvailability(ByVal newState As Boolean)
     m_LibAvailable = newState
+End Sub
+
+'This is a hacky way to "free" a loaded plugin, but it ensures that FreeLibrary gets called on the
+' currently loaded 8bf (if any)
+Public Sub Free8bf()
+    m_Active8bf = -1
+    Dim retPspi As PSPI_Result
+    retPspi = pspiPlugInLoad(StrPtr(""))    'Cannot be null string, must be *empty* string!
+End Sub
+
+Public Sub FreeImageResources()
+    pspiReleaseAllImages
 End Sub
 
 Public Function GetPspiVersion() As String
@@ -216,6 +241,26 @@ End Function
 
 Public Function IsPspiEnabled() As Boolean
     IsPspiEnabled = m_LibAvailable
+End Function
+
+Public Function Load8bf(ByVal plgIndex As Long) As Boolean
+    
+    Const funcName As String = "Load8bf"
+    Load8bf = False
+    
+    If (plgIndex < 0) Or (plgIndex >= m_numPlugins) Then Exit Function
+    
+    Dim retPspi As PSPI_Result
+    retPspi = pspiPlugInLoad(StrPtr(m_Plugins(plgIndex).plugLocationOnDisk))
+    Load8bf = (retPspi = PSPI_OK)
+    
+    If Load8bf Then
+        m_Active8bf = plgIndex
+    Else
+        m_Active8bf = -1
+        InternalError funcName, "couldn't load plugin", retPspi
+    End If
+    
 End Function
 
 Public Sub ReleaseEngine()
@@ -243,25 +288,51 @@ Public Function Set8bfPath(ByRef dstPath As String) As Boolean
     
 End Function
 
+'Short-hand function for automatically setting the plugin image to PD's active working image.  Note that
+' the image is *shared* with the plugin, so you can't free the image without first freeing the plugin
+' without things going horribly wrong!
+Public Function SetImage_CurrentWorkingImage() As Boolean
+    
+    Const funcName As String = "SetImage_CurrentWorkingImage"
+    
+    'Failsafes
+    If (m_Active8bf < 0) Then Exit Function
+    
+    'Create a standard PD working copy of the image
+    Dim tmpSA As SafeArray2D
+    EffectPrep.PrepImageData tmpSA
+    
+    'Notify the plugin of the shared image
+    Dim retPspi As PSPI_Result
+    retPspi = pspiSetImage(PSPI_IMG_TYPE_BGRA, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, workingDIB.GetDIBPointer, workingDIB.GetDIBStride, 0, 0)
+    SetImage_CurrentWorkingImage = (retPspi = PSPI_OK)
+    If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetImage failed", retPspi
+    
+    retPspi = pspiSetImageOrientation(PSPI_IMG_ORIENTATION_INVERT)
+    SetImage_CurrentWorkingImage = SetImage_CurrentWorkingImage And (retPspi = PSPI_OK)
+    If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetImageOrientation failed", retPspi
+    
+    'TODO: set mask if selection is active
+    
+End Function
+
 'Experimental only; show a plugin's About dialog
 Public Sub ShowAboutDialog(ByVal plgIndex As Long)
     
     Const funcName As String = "ShowAboutDialog"
     
-    If (plgIndex < 0) Or (plgIndex >= m_numPlugins) Then Exit Sub
+    If Plugin_8bf.Load8bf(plgIndex) Then
+        
+        'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
+        Dim retPspi As PSPI_Result
+        retPspi = pspiPlugInAbout(FormMain.hWnd)
+        If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
+            InternalError funcName, "couldn't show About dialog", retPspi
+        End If
+        
+        'Free the plugin by loading a null-string
+        Plugin_8bf.Free8bf
     
-    'Load plugin
-    Dim retPspi As PSPI_Result
-    retPspi = pspiPlugInLoad(StrPtr(m_Plugins(plgIndex).plugLocationOnDisk))
-    If (retPspi <> PSPI_OK) Then
-        InternalError funcName, "couldn't load plugin", retPspi
-        Exit Sub
-    End If
-    
-    'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
-    retPspi = pspiPlugInAbout(FormMain.hWnd)
-    If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
-        InternalError funcName, "couldn't show About dialog", retPspi
     End If
     
     'There is no explict "unload plugin" function, alas

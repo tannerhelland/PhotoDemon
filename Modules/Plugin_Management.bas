@@ -1,13 +1,13 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
-'Core Plugin Manager
+'3rd-Party Library Manager
 'Copyright 2014-2021 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 13/February/19
-'Last update: integrate libdeflate as a permanent plugin
+'Last updated: 08/February/21
+'Last update: integrate pspiHost as a permanent plugin
 '
-'As PD grows, it's more and more difficult to supply the functionality I need through WAPI alone.
-' To that end, a number of third-party libraries are required for correct program operation.
+'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
+' A number of third-party libraries are required for correct program operation.
 '
 'To simplify the management of these libraries, I've created this "plugin manager".  Its purpose is
 ' to make third-party library deployment and maintainence easier in a "portable" application context.
