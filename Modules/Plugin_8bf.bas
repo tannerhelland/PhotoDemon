@@ -88,8 +88,8 @@ Private Declare Function pspiSetColorPickerCallBack Lib "pspiHost.dll" Alias "_p
 
 'Execute various plugin functions
 Private Declare Function pspiPlugInLoad Lib "pspiHost.dll" Alias "_pspiPlugInLoad@4" (ByVal ptrStrFilterPath As Long) As PSPI_Result
-Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerHWnd As Long) As PSPI_Result
-Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugInExecute@4" (ByVal ownerHWnd As Long) As PSPI_Result
+Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerHwnd As Long) As PSPI_Result
+Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugInExecute@4" (ByVal ownerHwnd As Long) As PSPI_Result
 
 'Prep plugin features and image access
 'Plugins support a "region of interest" in the source image
@@ -120,9 +120,6 @@ Private Declare Function pspiSetMask Lib "pspiHost.dll" Alias "_pspiSetMask@20" 
 ' it's necessary to free memory (big images)
 Private Declare Function pspiReleaseAllImages Lib "pspiHost.dll" Alias "_pspiReleaseAllImages@0" () As PSPI_Result
 
-'Path to 8bf plugins
-Private m_8bfPath As String
-
 'On a successful call to pspiPlugInEnumerate, an array will be filled with plugin names and paths.
 Private Type PD_Plugin8bf
     plugCategory As String
@@ -138,29 +135,54 @@ Private m_Plugins() As PD_Plugin8bf, m_numPlugins As Long
 ' "availability" state by setting m_LibAvailable to FALSE
 Private m_LibHandle As Long, m_LibAvailable As Boolean
 
-'Index of currently loaded plugin, if any (-1 if no plugin loaded)
-Private m_Active8bf As Long
+'Index of currently loaded plugin, if any (vbNullString if no plugin loaded)
+Private m_Active8bf As String
 
-'Returns the number of discovered 8bf plugins; 0 means no plugins found
-Public Function EnumerateAvailable8bf() As Long
+'To handle progress callbacks, we need to distinguish the first progress event (because that's when we
+' load and display a progress bar on the main screen).
+Private m_HasSeenProgressEvent As Boolean, m_LastProgressAmount As Long, m_TimeOfLastProgEvent As Currency
+
+'High-res time stamp when the first progress callback is hit
+Private m_FirstTimeStamp As Currency
+
+'Returns the number of discovered 8bf plugins; 0 means no plugins found.  Note that you can call this
+' function back-to-back with different folders, and it will just keep appending discoveries to a master list.
+' This makes it convenient to do a single list sort before calling GetEnumerateResults(), below.
+Public Function EnumerateAvailable8bf(ByVal srcPath As String) As Long
     
     Const funcName As String = "EnumerateAvailable8bf"
     
     'Failsafes
-    m_Active8bf = -1
     If (Not m_LibAvailable) Then Exit Function
-    If (LenB(m_8bfPath) = 0) Then Exit Function
+    If (LenB(srcPath) = 0) Then Exit Function
+    
+    Dim retPspi As PSPI_Result
+    
+    'Ensure path exists
+    srcPath = Files.PathAddBackslash(srcPath)
+    If Files.PathExists(srcPath, False) Then
+        retPspi = pspiSetPath(StrPtr(srcPath))
+        If (retPspi <> PSPI_OK) Then
+            InternalError funcName, "pspiSetPath error: " & srcPath, retPspi
+            Exit Function
+        End If
+    Else
+        InternalError funcName, "path doesn't exist: " & srcPath
+        Exit Function
+    End If
     
     'Prepare a default size for the enum array
     Const INIT_COLLECTION_SIZE As Long = 16
-    ReDim m_Plugins(0 To INIT_COLLECTION_SIZE - 1) As PD_Plugin8bf
-    m_numPlugins = 0
+    If (m_numPlugins = 0) Then ReDim m_Plugins(0 To INIT_COLLECTION_SIZE - 1) As PD_Plugin8bf
+    
+    'We will report the number of new plugins added in this enumeration, only
+    Dim numPluginsAtStart As Long
+    numPluginsAtStart = m_numPlugins
     
     'Call the enumerator and hope for the best
-    Dim retPspi As PSPI_Result
     retPspi = pspiPlugInEnumerate(AddressOf Enumerate8bfCallback, 1)
     If (retPspi = PSPI_OK) Then
-        EnumerateAvailable8bf = m_numPlugins
+        EnumerateAvailable8bf = m_numPlugins - numPluginsAtStart
     Else
         InternalError funcName, "pspi failed", retPspi
     End If
@@ -180,6 +202,7 @@ Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As L
     'Still here?  Attempt to retrieve source strings.
     If (m_numPlugins > UBound(m_Plugins)) Then ReDim Preserve m_Plugins(0 To m_numPlugins * 2 - 1) As PD_Plugin8bf
     With m_Plugins(m_numPlugins)
+    
         .plugCategory = Strings.StringFromCharPtr(ptrCategoryA, False)
         .plugName = Strings.StringFromCharPtr(ptrNameA, False)
         .plugEntryPoint = Strings.StringFromCharPtr(ptrEntryPointA, False)
@@ -187,19 +210,36 @@ Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As L
         
         'Prep a convenient sort key
         .plugSortKey = .plugCategory & "_" & .plugName
-        Debug.Print .plugCategory, .plugName, .plugEntryPoint, .plugLocationOnDisk
+        
+        'Curious about contents?  See 'em here:
+        'Debug.Print .plugCategory, .plugName, .plugEntryPoint, .plugLocationOnDisk
+        
     End With
     
     m_numPlugins = m_numPlugins + 1
     
 End Sub
 
-Public Function Execute8bf(ByVal ownerHWnd As Long) As Boolean
+Public Function Execute8bf(ByVal ownerHwnd As Long, ByRef pluginCanceled As Boolean, Optional ByVal catchProgress As Boolean = True) As Boolean
+    
+    Const funcName As String = "Execute8bf"
     
     Dim retPspi As PSPI_Result
-    retPspi = pspiPlugInExecute(ownerHWnd)
+    
+    'Before executing a plugin, we want to queue up a progress callback
+    If catchProgress Then
+        retPspi = pspiSetProgressCallBack(AddressOf Plugin_8bf.Progress8bfCallback)
+        If (retPspi <> PSPI_OK) Then InternalError funcName, "couldn't set progress callback", retPspi
+        m_HasSeenProgressEvent = False
+    End If
+    
+    retPspi = pspiPlugInExecute(ownerHwnd)
     Execute8bf = (retPspi = PSPI_OK)
-    If (Not Execute8bf) Then InternalError "Execute8bf", "plugin execution failed", retPspi
+    pluginCanceled = (retPspi = PSPI_ERR_FILTER_CANCELED)
+    
+    If (Not Execute8bf) And (Not pluginCanceled) Then
+        InternalError funcName, "plugin execution failed", retPspi
+    End If
     
 End Function
 
@@ -210,7 +250,7 @@ End Sub
 'This is a hacky way to "free" a loaded plugin, but it ensures that FreeLibrary gets called on the
 ' currently loaded 8bf (if any)
 Public Sub Free8bf()
-    m_Active8bf = -1
+    m_Active8bf = vbNullString
     Dim retPspi As PSPI_Result
     retPspi = pspiPlugInLoad(StrPtr(""))    'Cannot be null string, must be *empty* string!
 End Sub
@@ -218,6 +258,33 @@ End Sub
 Public Sub FreeImageResources()
     pspiReleaseAllImages
 End Sub
+
+'Return value is the number of plugins found by this enumeration instance (e.g. the set produced by the
+' last call to EnumerateAvailable8bf).  Note that all strings are appended to the existing stacks, so if
+' you already have strings in there, *those strings will not be removed*, by design.
+Public Function GetEnumerationResults(ByRef catNames As pdStringStack, ByRef plgNames As pdStringStack, ByRef plgFiles As pdStringStack) As Long
+
+    GetEnumerationResults = m_numPlugins
+    If (GetEnumerationResults > 0) Then
+        
+        If (catNames Is Nothing) Then Set catNames = New pdStringStack
+        If (plgNames Is Nothing) Then Set plgNames = New pdStringStack
+        If (plgFiles Is Nothing) Then Set plgFiles = New pdStringStack
+        
+        Dim i As Long
+        For i = 0 To m_numPlugins - 1
+            catNames.AddString m_Plugins(i).plugCategory
+            plgNames.AddString m_Plugins(i).plugName
+            plgFiles.AddString m_Plugins(i).plugLocationOnDisk
+        Next i
+        
+    End If
+
+End Function
+
+Public Function GetInitialEffectTimestamp()
+    GetInitialEffectTimestamp = m_FirstTimeStamp
+End Function
 
 Public Function GetPspiVersion() As String
     Dim ptrVersion As Long
@@ -243,25 +310,61 @@ Public Function IsPspiEnabled() As Boolean
     IsPspiEnabled = m_LibAvailable
 End Function
 
-Public Function Load8bf(ByVal plgIndex As Long) As Boolean
+Public Function Load8bf(ByRef fullPathToPlugin As String) As Boolean
     
     Const funcName As String = "Load8bf"
     Load8bf = False
     
-    If (plgIndex < 0) Or (plgIndex >= m_numPlugins) Then Exit Function
+    If (LenB(fullPathToPlugin) = 0) Then Exit Function
     
     Dim retPspi As PSPI_Result
-    retPspi = pspiPlugInLoad(StrPtr(m_Plugins(plgIndex).plugLocationOnDisk))
+    retPspi = pspiPlugInLoad(StrPtr(fullPathToPlugin))
     Load8bf = (retPspi = PSPI_OK)
     
     If Load8bf Then
-        m_Active8bf = plgIndex
+        m_Active8bf = fullPathToPlugin
     Else
-        m_Active8bf = -1
+        m_Active8bf = vbNullString
         InternalError funcName, "couldn't load plugin", retPspi
     End If
     
 End Function
+
+Public Sub Progress8bfCallback(ByVal amtDone As Long, ByVal amtTotal As Long)
+    
+    'Sometimes weird stuff can happen in callbacks, possibly a result of unstable plugin code.
+    ' We don't want VB to freak out, so if something goes wrong, just exit immediately - this
+    ' is just a progress update, and there's no harm if we exit prematurely.
+    On Error GoTo ExitCallback
+    
+    'If this is the first progress event, activate the main screen's progress bar
+    If (Not m_HasSeenProgressEvent) Then
+        ProgressBars.SetProgBarMax amtTotal
+        m_HasSeenProgressEvent = True
+        
+        Message "Applying plugin..."
+        Processor.MarkProgramBusyState True, True
+        
+        VBHacks.GetHighResTime m_FirstTimeStamp
+        
+    'If this is *not* the first progress event, throttle events as necessary to minimize delays
+    ' caused by on-screen progress rendering.
+    Else
+        If (VBHacks.GetTimerDifferenceNow(m_TimeOfLastProgEvent) < 0.1) Or (m_LastProgressAmount = amtDone) Then Exit Sub
+    End If
+    
+    'Debug.Print "progress callback", amtDone, amtTotal
+    
+    'Update progress
+    ProgressBars.SetProgBarVal amtDone
+    
+    'Note the time that this event occurred; we'll use this to throttle excessive progress requests
+    VBHacks.GetHighResTime m_TimeOfLastProgEvent
+    m_LastProgressAmount = amtDone
+    
+ExitCallback:
+    
+End Sub
 
 Public Sub ReleaseEngine()
     If (m_LibHandle <> 0) Then
@@ -270,23 +373,9 @@ Public Sub ReleaseEngine()
     End If
 End Sub
 
-Public Function Set8bfPath(ByRef dstPath As String) As Boolean
-    
-    Const funcName As String = "Set8bfPath"
-    
-    m_8bfPath = Files.PathAddBackslash(dstPath)
-    If Files.PathExists(dstPath, False) Then
-    
-        Dim retPspi As PSPI_Result
-        retPspi = pspiSetPath(StrPtr(m_8bfPath))
-        Set8bfPath = (retPspi = PSPI_OK)
-        If (Not Set8bfPath) Then InternalError funcName, "pspi error", retPspi
-        
-    Else
-        InternalError funcName, "path doesn't exist: " & dstPath
-    End If
-    
-End Function
+Public Sub ResetPluginCollection()
+    m_numPlugins = 0
+End Sub
 
 'Short-hand function for automatically setting the plugin image to PD's active working image.  Note that
 ' the image is *shared* with the plugin, so you can't free the image without first freeing the plugin
@@ -296,7 +385,7 @@ Public Function SetImage_CurrentWorkingImage() As Boolean
     Const funcName As String = "SetImage_CurrentWorkingImage"
     
     'Failsafes
-    If (m_Active8bf < 0) Then Exit Function
+    If (LenB(m_Active8bf) = 0) Then Exit Function
     
     'Create a standard PD working copy of the image
     Dim tmpSA As SafeArray2D
@@ -308,7 +397,9 @@ Public Function SetImage_CurrentWorkingImage() As Boolean
     SetImage_CurrentWorkingImage = (retPspi = PSPI_OK)
     If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetImage failed", retPspi
     
-    retPspi = pspiSetImageOrientation(PSPI_IMG_ORIENTATION_INVERT)
+    retPspi = pspiSetRoi(0, 0, workingDIB.GetDIBHeight - 1, workingDIB.GetDIBWidth - 1)
+    If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetRoifailed", retPspi
+    
     SetImage_CurrentWorkingImage = SetImage_CurrentWorkingImage And (retPspi = PSPI_OK)
     If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetImageOrientation failed", retPspi
     
@@ -317,11 +408,12 @@ Public Function SetImage_CurrentWorkingImage() As Boolean
 End Function
 
 'Experimental only; show a plugin's About dialog
-Public Sub ShowAboutDialog(ByVal plgIndex As Long)
+Public Sub ShowAboutDialog(ByRef fullPathToPlugin As String, Optional ByVal ownerHwnd As Long = 0)
     
     Const funcName As String = "ShowAboutDialog"
+    If (ownerHwnd = 0) Then ownerHwnd = FormMain.hWnd
     
-    If Plugin_8bf.Load8bf(plgIndex) Then
+    If Plugin_8bf.Load8bf(fullPathToPlugin) Then
         
         'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
         Dim retPspi As PSPI_Result
@@ -330,12 +422,37 @@ Public Sub ShowAboutDialog(ByVal plgIndex As Long)
             InternalError funcName, "couldn't show About dialog", retPspi
         End If
         
-        'Free the plugin by loading a null-string
+        'Free the plugin
         Plugin_8bf.Free8bf
     
     End If
     
-    'There is no explict "unload plugin" function, alas
+End Sub
+
+'PD-specific function to display a UI for plugin selection
+Public Sub ShowPluginDialog()
+
+    Dim tmpForm As FormEffects8bf
+    Set tmpForm = New FormEffects8bf
+    
+ShowDialogAgain:
+    ShowPDDialog vbModal, tmpForm, True
+    
+    'Regardless of what happened, free the progress bar and restore default UI behavior
+    ProgressBars.ReleaseProgressBar
+    Interface.EnableUserInput
+    FormMain.MousePointer = vbDefault
+    
+    'If the plugin was canceled, show the dialog again
+    If tmpForm.RestoreDialog() Then GoTo ShowDialogAgain
+    
+    'TEMPORARY FIX UNTIL CACHING IS IMPLEMENTED:
+    Plugin_8bf.ResetPluginCollection
+    
+    Unload tmpForm
+    Set tmpForm = Nothing
+    
+    'TODO?
     
 End Sub
 
@@ -345,6 +462,8 @@ Public Sub SortAvailable8bf()
     'Failsafe checks
     If (m_numPlugins < 2) Then Exit Sub
     
+    'Given the number of plugins a typical user has (asymptotically approaching 0 lol),
+    ' a quick insertion sort works fine.
     Dim i As Long, j As Long
     Dim tmpSort As PD_Plugin8bf, searchCont As Boolean
     i = 1
@@ -356,7 +475,6 @@ Public Sub SortAvailable8bf()
         'Because VB6 doesn't short-circuit And statements, we have to split this check into separate parts.
         searchCont = False
         If (j >= 0) Then searchCont = (Strings.StrCompSortPtr(StrPtr(m_Plugins(j).plugSortKey), StrPtr(tmpSort.plugSortKey)) > 0)
-        '(m_GradientPoints(j).PointPosition > tmpSort.PointPosition)
         
         Do While searchCont
             m_Plugins(j + 1) = m_Plugins(j)
@@ -369,11 +487,6 @@ Public Sub SortAvailable8bf()
         i = i + 1
         
     Loop
-    
-    'List the final collection
-    For i = 0 To m_numPlugins - 1
-        Debug.Print m_Plugins(i).plugCategory & " > " & m_Plugins(i).plugName
-    Next i
             
 End Sub
 

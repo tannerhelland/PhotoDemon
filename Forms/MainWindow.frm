@@ -1443,6 +1443,10 @@ Begin VB.Form FormMain
          Caption         =   "Custom filter..."
          Index           =   14
       End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Photoshop (8bf) plugins..."
+         Index           =   15
+      End
    End
    Begin VB.Menu MnuTools 
       Caption         =   "Tools"
@@ -1964,6 +1968,8 @@ Private Sub MnuEffectUpper_Click(Index As Integer)
             'Animation
         Case 14
             Menus.ProcessDefaultAction_ByName "effects_customfilter"
+        Case 15
+            Menus.ProcessDefaultAction_ByName "effects_8bf"
     End Select
 
 End Sub
@@ -2063,66 +2069,16 @@ Private Sub MnuTest_Click()
     'Use for timing results
     Dim startTime As Currency, lastTime As Currency
     VBHacks.GetHighResTime startTime
-    VBHacks.GetHighResTime lastTime
+    lastTime = startTime
     
     'Test code goes here
-    
-    'Set 8bf path
-    Dim path8bf As String
-    path8bf = UserPrefs.GetProgramPath & "no_sync\8bf\from PS5\"
-    Debug.Print Plugin_8bf.Set8bfPath(path8bf)
-    
-    'Enumerate plugins
-    Dim numPlugins As Long
-    numPlugins = Plugin_8bf.EnumerateAvailable8bf()
-    If (numPlugins > 0) Then
-    
-        'Filters found.
-        PDDebug.LogAction "Enumerate plugin time: " & VBHacks.GetTimeDiffNowAsString(lastTime)
-        VBHacks.GetHighResTime lastTime
-        
-        'Sort filters alphabetically (first by category, then by filter name)
-        Plugin_8bf.SortAvailable8bf
-        PDDebug.LogAction "Sort plugin time: " & VBHacks.GetTimeDiffNowAsString(lastTime)
-        VBHacks.GetHighResTime lastTime
-        
-        'Show a few About dialogs, for testing
-        'Plugin_8bf.ShowAboutDialog 0
-        'Plugin_8bf.ShowAboutDialog numPlugins - 1
-        
-        'If an image is open, let's attempt to run the plugin!
-        If (PDImages.GetNumOpenImages > 0) Then
-        
-            'Load a plugin
-            Plugin_8bf.Load8bf 1
-            
-            'Create a standard PD working copy of the image, then send it to the plugin
-            Plugin_8bf.SetImage_CurrentWorkingImage
-            
-            'Execute the plugin
-            Plugin_8bf.Execute8bf FormMain.hWnd
-            
-            'Free the passed image
-            Plugin_8bf.FreeImageResources
-            
-            'Unload the plugin
-            Plugin_8bf.Free8bf
-            
-            'Finalize results
-            EffectPrep.FinalizeImageData
-        
-        End If
-        
-    Else
-        PDDebug.LogAction "no filters found"
-    End If
     
     PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
     ' then uncomment these two lines:
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    'PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+    'Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage, FormMain.MainCanvas(0)
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest

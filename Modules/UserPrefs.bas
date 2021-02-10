@@ -44,20 +44,20 @@ Private m_DataPath As String
 Private m_ThemePath As String
 Private m_LanguagePath As String
 
-'/Data subfolders come next.  Note that some of these can be modified at run-time by user behavior (e.g. palettes
-' do not currently ship with a prebuilt collection, so that path changes as the user loads/saves palettes from
-' standalone palette files).
-Private m_MacroPath As String
-Private m_PreferencesPath As String
-Private m_TempPath As String
-Private m_IconPath As String
-
-Private m_ColorProfilePath As String
-Private m_UserLanguagePath As String
+'/Data subfolders come next.  Note that some of these can be modified at run-time by user behavior -
+' e.g. PhotoDemon does not currently ship with a prebuilt collection, so its palette path changes as the
+' user loads/saves palettes from standalone palette files.  Similarly, some features support additional
+' user paths - like 8bf plugins, which have a default folder in the /Data subfolder, but users can also
+' add their own paths through the 8bf dialog, and those paths are tracked and stored separate from this
+' module (which just exists to ensure a core set of default folders exist on every install).
+Private m_PreferencesPath As String, m_TempPath As String
+Private m_MacroPath As String, m_IconPath As String
+Private m_ColorProfilePath As String, m_UserLanguagePath As String
 Private m_LUTPathDefault As String, m_LUTPathUser As String
 Private m_GradientPathDefault As String, m_GradientPathUser As String
-Private m_PalettePath As String
-Private m_SelectionPath As String
+Private m_PalettePath As String, m_SelectionPath As String
+Private m_8bfPath As String
+
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
                                     ' are automatically placed here.
@@ -166,8 +166,16 @@ Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean =
     If getUserThemePathInstead Then GetThemePath = m_UserThemePath Else GetThemePath = m_ThemePath
 End Function
 
-'Get/set subfolders from the user's /Data folder.  These paths may not exist at run-time; ensure code works even if these
-' paths are not available!  Similarly, not all folders support a /Set
+'Get/set subfolders from the user's /Data folder.  These paths may not exist at run-time, so always ensure that code
+' works even if these paths are not available.
+'
+'Similarly, not all folders support a SetXYZPath partner.  This is a deliberate choice, and a detailed explanation
+' varies according to path type.  (Some paths are internal PD ones that never vary.  Other paths are fallbacks only,
+' and the user has mechanisms for adding additional or different paths through dialogs other than the Preferences one.)
+Public Function Get8bfPath() As String
+    Get8bfPath = m_8bfPath
+End Function
+
 Public Function GetDebugPath() As String
     GetDebugPath = m_DebugPath
 End Function
@@ -452,6 +460,9 @@ Public Function InitializePaths() As Boolean
     PDDebug.LogAction "PD data folder points at " & m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
+    m_8bfPath = m_DataPath & "8bfPlugins\"
+    If (Not Files.PathExists(m_8bfPath)) Then Files.PathCreate m_8bfPath
+    
     m_ColorProfilePath = m_DataPath & "ColorProfiles\"
     If (Not Files.PathExists(m_ColorProfilePath)) Then Files.PathCreate m_ColorProfilePath
     
@@ -567,6 +578,7 @@ Public Sub LoadUserSettings()
         End If
         
         'Pull all other stored paths
+        m_8bfPath = GetPref_String("Paths", "8bf", m_8bfPath)
         m_ColorProfilePath = GetPref_String("Paths", "ColorProfiles", m_ColorProfilePath)
         m_GradientPathUser = GetPref_String("Paths", "Gradients", m_GradientPathDefault)
         m_LUTPathUser = GetPref_String("Paths", "LUTs", m_LUTPathDefault)
@@ -710,6 +722,7 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
         
         .WriteTag "Paths", vbNullString, True
+            .WriteTag "8bf", m_8bfPath
             .WriteTag "Macro", m_MacroPath
             .WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
             .WriteTag "Palettes", m_DataPath & "Palettes\"
@@ -736,6 +749,7 @@ Private Sub CreateNewPreferencesFile()
             .WriteTag "ForceLz4Disable", "False"
             .WriteTag "ForceOptiPNGDisable", "False"
             .WriteTag "ForcePngQuantDisable", "False"
+            .WriteTag "ForcepspiHostDisable", "False"
             .WriteTag "ForceZstdDisable", "False"
             .WriteTag "LastPluginPreferencesPage", "0"
         .CloseTag "Plugins"
