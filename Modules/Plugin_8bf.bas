@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_8bf"
 '8bf Plugin Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 07/February/21
-'Last updated: 07/February/21
-'Last update: initial build
+'Last updated: 10/February/21
+'Last update: add better UI support (progress bar tracking) during plugin enumeration
 '
 '8bf files are 3rd-party Adobe Photoshop plugins that implement one or more "filters".  These are
 ' basically DLL files with special interfaces for communicating with a parent Photoshop instance.
@@ -145,10 +145,14 @@ Private m_HasSeenProgressEvent As Boolean, m_LastProgressAmount As Long, m_TimeO
 'High-res time stamp when the first progress callback is hit
 Private m_FirstTimeStamp As Currency
 
+'When enumerating plugins, the user can pass an (optional) progress bar.  We'll update the bar as plugins
+' are found and loaded.
+Private m_EnumProgressBar As pdProgressBar
+
 'Returns the number of discovered 8bf plugins; 0 means no plugins found.  Note that you can call this
 ' function back-to-back with different folders, and it will just keep appending discoveries to a master list.
 ' This makes it convenient to do a single list sort before calling GetEnumerateResults(), below.
-Public Function EnumerateAvailable8bf(ByVal srcPath As String) As Long
+Public Function EnumerateAvailable8bf(ByVal srcPath As String, Optional ByRef dstProgressBar As pdProgressBar = Nothing) As Long
     
     Const funcName As String = "EnumerateAvailable8bf"
     
@@ -178,6 +182,9 @@ Public Function EnumerateAvailable8bf(ByVal srcPath As String) As Long
     'We will report the number of new plugins added in this enumeration, only
     Dim numPluginsAtStart As Long
     numPluginsAtStart = m_numPlugins
+    
+    'Note the target progress bar, if any
+    Set m_EnumProgressBar = dstProgressBar
     
     'Call the enumerator and hope for the best
     retPspi = pspiPlugInEnumerate(AddressOf Enumerate8bfCallback, 1)
@@ -217,6 +224,9 @@ Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As L
     End With
     
     m_numPlugins = m_numPlugins + 1
+    
+    'Update the target progress bar (if one exists)
+    If (Not m_EnumProgressBar Is Nothing) Then m_EnumProgressBar.Value = m_numPlugins
     
 End Sub
 
