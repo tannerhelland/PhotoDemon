@@ -109,11 +109,11 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdButton cmdFolders 
          Height          =   615
          Index           =   1
-         Left            =   7920
+         Left            =   7080
          TabIndex        =   3
          Top             =   4440
-         Width           =   2175
-         _ExtentX        =   3836
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1085
          Caption         =   "add folder..."
       End
@@ -165,8 +165,8 @@ Begin VB.Form FormEffects8bf
          Left            =   0
          TabIndex        =   4
          Top             =   4440
-         Width           =   2175
-         _ExtentX        =   3836
+         Width           =   3015
+         _ExtentX        =   5318
          _ExtentY        =   1085
          Caption         =   "remove folder"
          Enabled         =   0   'False
@@ -396,9 +396,13 @@ Private Sub Form_Load()
     'Retrieve the user's default plugin folder:
     hypPlugins.Caption = UserPrefs.Get8bfPath()
     hypPlugins.AssignTooltip "click to open this folder in Windows Explorer"
-    
-    'Retrieve any other saved folders (TODO)
         
+    'Load any UI resources
+    Dim btnImgSize As Long
+    btnImgSize = Interface.FixDPI(24)
+    cmdFolders(0).AssignImage "file_close", Nothing, btnImgSize, btnImgSize
+    cmdFolders(1).AssignImage "generic_add", Nothing, btnImgSize, btnImgSize
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
