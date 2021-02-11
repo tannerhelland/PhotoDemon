@@ -1,13 +1,13 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
-'Core Plugin Manager
+'3rd-Party Library Manager
 'Copyright 2014-2021 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 13/February/19
-'Last update: integrate libdeflate as a permanent plugin
+'Last updated: 08/February/21
+'Last update: integrate pspiHost as a permanent plugin
 '
-'As PD grows, it's more and more difficult to supply the functionality I need through WAPI alone.
-' To that end, a number of third-party libraries are required for correct program operation.
+'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
+' A number of third-party libraries are required for correct program operation.
 '
 'To simplify the management of these libraries, I've created this "plugin manager".  Its purpose is
 ' to make third-party library deployment and maintainence easier in a "portable" application context.
@@ -33,12 +33,13 @@ Public Enum CORE_PLUGINS
     CCP_lz4
     CCP_OptiPNG
     CCP_PNGQuant
+    CCP_pspiHost
     CCP_zstd
 End Enum
 
 #If False Then
     Private Const CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0, CCP_LittleCMS = 0
-    Private Const CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_zstd = 0
+    Private Const CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_pspiHost = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -51,11 +52,12 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.9.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10903"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
+Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_ZSTD_VERSION As String = "10408"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 9
+Private Const CORE_PLUGIN_COUNT As Long = 10
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
@@ -193,6 +195,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "optipng.exe"
         Case CCP_PNGQuant
             GetPluginFilename = "pngquant.exe"
+        Case CCP_pspiHost
+            GetPluginFilename = "pspiHost.dll"
         Case CCP_zstd
             GetPluginFilename = "libzstd.dll"
     End Select
@@ -216,6 +220,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "OptiPNG"
         Case CCP_PNGQuant
             GetPluginName = "PNGQuant"
+        Case CCP_pspiHost
+            GetPluginName = "pspiHost"
         Case CCP_zstd
             GetPluginName = "zstd"
         Case Else
@@ -263,6 +269,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_PNGQuant
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant.GetPngQuantVersion()
         
+        'pspiHost returns a 3-char version string
+        Case CCP_pspiHost
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
+            
         'zstd provides a dedicated version-checking function
         Case CCP_zstd
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_zstd.GetZstdVersion()
@@ -313,6 +323,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_PNGQuant
             dstStringStack.AddString "pngquant-README.txt"
         
+        Case CCP_pspiHost
+            dstStringStack.AddString "pspiHost-LICENSE.txt"
+            
         Case CCP_zstd
             dstStringStack.AddString "libzstd-LICENSE.txt"
             
@@ -354,6 +367,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = m_OptiPNGEnabled
         Case CCP_PNGQuant
             IsPluginCurrentlyEnabled = ImageFormats.IsPngQuantEnabled()
+        Case CCP_pspiHost
+            IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
         Case CCP_zstd
             IsPluginCurrentlyEnabled = m_ZstdEnabled
     End Select
@@ -380,6 +395,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             m_OptiPNGEnabled = newEnabledState
         Case CCP_PNGQuant
             ImageFormats.SetPngQuantEnabled newEnabledState
+        Case CCP_pspiHost
+            Plugin_8bf.ForciblySetAvailability newEnabledState
         Case CCP_zstd
             m_ZstdEnabled = newEnabledState
     End Select
@@ -412,6 +429,8 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = False
         Case CCP_PNGQuant
             IsPluginHighPriority = False
+        Case CCP_pspiHost
+            IsPluginHighPriority = False
         Case CCP_zstd
             IsPluginHighPriority = True
     End Select
@@ -437,6 +456,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_OPTIPNG_VERSION
         Case CCP_PNGQuant
             ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
+        Case CCP_pspiHost
+            ExpectedPluginVersion = EXPECTED_PSPI_VERSION
         Case CCP_zstd
             ExpectedPluginVersion = EXPECTED_ZSTD_VERSION
     End Select
@@ -461,6 +482,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "http://optipng.sourceforge.net/"
         Case CCP_PNGQuant
             GetPluginHomepage = "https://pngquant.org"
+        Case CCP_pspiHost
+            GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
         Case CCP_zstd
             GetPluginHomepage = "https://facebook.github.io/zstd/"
     End Select
@@ -485,6 +508,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
         Case CCP_PNGQuant
             GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
+        Case CCP_pspiHost
+            GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_zstd
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
     End Select
@@ -509,6 +534,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://optipng.sourceforge.net/license.txt"
         Case CCP_PNGQuant
             GetPluginLicenseURL = "https://github.com/pornel/pngquant/blob/master/COPYRIGHT"
+        Case CCP_pspiHost
+            GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
         Case CCP_zstd
             GetPluginLicenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE"
     End Select
@@ -573,6 +600,9 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_PNGQuant
             initializationSuccessful = True
             
+        Case CCP_pspiHost
+            initializationSuccessful = Plugin_8bf.InitializeEngine(PluginManager.GetPluginPath)
+            
     End Select
 
     InitializePlugin = initializationSuccessful
@@ -608,6 +638,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_PNGQuant
             ImageFormats.SetPngQuantEnabled pluginState
+            
+        Case CCP_pspiHost
+            Plugin_8bf.ForciblySetAvailability pluginState
         
         Case CCP_zstd
             m_ZstdEnabled = pluginState
@@ -728,6 +761,9 @@ Public Sub TerminateAllPlugins()
     ' (There's not really a reason for this, except as a failsafe against asynchronous actions happening in the background.)
     Plugin_EZTwain.ReleaseEZTwain
     PDDebug.LogAction "EZTwain released"
+    
+    Plugin_8bf.ReleaseEngine
+    PDDebug.LogAction "pspiHost released"
     
     Plugin_FreeImage.ReleaseFreeImage
     ImageFormats.SetFreeImageEnabled False

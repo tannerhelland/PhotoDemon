@@ -224,7 +224,6 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "Repeat"
-         Enabled         =   0   'False
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
@@ -1444,6 +1443,10 @@ Begin VB.Form FormMain
          Caption         =   "Custom filter..."
          Index           =   14
       End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Photoshop (8bf) plugins..."
+         Index           =   15
+      End
    End
    Begin VB.Menu MnuTools 
       Caption         =   "Tools"
@@ -1963,8 +1966,10 @@ Private Sub MnuEffectUpper_Click(Index As Integer)
             '(separator)
         Case 13
             'Animation
-        Case 15
+        Case 14
             Menus.ProcessDefaultAction_ByName "effects_customfilter"
+        Case 15
+            Menus.ProcessDefaultAction_ByName "effects_8bf"
     End Select
 
 End Sub
@@ -2061,32 +2066,14 @@ Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately
     
-    Dim cLUT As pdLUT3D
-    Set cLUT = New pdLUT3D
+    'Use for timing results
+    Dim startTime As Currency, lastTime As Currency
+    VBHacks.GetHighResTime startTime
+    lastTime = startTime
     
-    Dim curTime As Currency
-    VBHacks.GetHighResTime curTime
+    'Test code goes here
     
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\_Orange and Blue 16.cube")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\KH LUT 6.cube")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\DropBlues.3DL")
-    'Debug.Print cLUT.LoadLUTFromFile("C:\Users\Tanner\Downloads\450+ Color Lookup (3D lut) Presets for Photoshop - Free Download\IWLTBAP Arapaho - LOG.3dl")
-    Debug.Print cLUT.LoadLUTFromFile("C:\PhotoDemon v4\PhotoDemon\Data\3DLuts\AVC-01-Youngbacca.cube")
-    
-    PDDebug.LogAction "LUT load: " & VBHacks.GetTimeDiffNowAsString(curTime)
-    VBHacks.GetHighResTime curTime
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA, False   'toPreview, dstPic
-    
-    cLUT.ApplyLUTToDIB workingDIB
-    
-    PDDebug.LogAction "Apply time: " & VBHacks.GetTimeDiffNowAsString(curTime)
-    
-    EffectPrep.FinalizeImageData False
-    
-    'Filters_Scientific.InternalFFTTest
+    PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,
     ' then uncomment these two lines:

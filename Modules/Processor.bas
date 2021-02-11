@@ -460,7 +460,7 @@ Public Sub InitializeProcessor()
 End Sub
 
 'Internal reporting method for Processor timer updates.  Pass the start time, and this function will automatically report elapsed time.
-Private Sub ReportProcessorTimeTaken(ByVal srcStartTime As Currency)
+Public Sub ReportProcessorTimeTaken(ByVal srcStartTime As Currency)
 
     Dim timingString As String
     timingString = g_Language.TranslateMessage("Time taken")
@@ -1907,6 +1907,13 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     'Custom filters
     ElseIf Strings.StringsEqual(processID, "Custom filter", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
+        Process_EffectsMenu = True
+        
+    '8bf filters have a weird workflow because we simply call "execute" on the plugin but then all handling
+    ' occurs inside the plugin - so things like creating Undo data before running an effect doesn't follow a normal workflow.
+    ' As such, we use a special module wrapper to handle the details for us.
+    ElseIf Strings.StringsEqual(processID, "Photoshop (8bf) filter", True) Then
+        If raiseDialog Then Plugin_8bf.ShowPluginDialog
         Process_EffectsMenu = True
         
     End If

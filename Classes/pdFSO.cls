@@ -1559,7 +1559,7 @@ End Function
 ' links to the original, unmodified classes, please read the header comments in the referenced classes.
 Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
     
-    If (Len(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
+    If (LenB(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
     
     'Vista+ users get the fancy new "browse for folder" interface
     If OS.IsVistaOrLater Then
@@ -1569,7 +1569,7 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
         
         With cBrowseNew
             .propFlags = FOS__BrowseFoldersDefaults
-            If (Len(initFolder) <> 0) Then .propStartupFolder_Set initFolder, ppType_AsString
+            If (LenB(initFolder) <> 0) Then .propStartupFolder_Set initFolder, ppType_AsString
             
             'For reasons I don't understand, a strange magic number is used to report cancellation; see the
             ' function documentation for additional details.
@@ -1588,7 +1588,7 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
         
         With cBrowse
         
-            If (Len(initFolder) <> 0) Then .InitialDirectory = initFolder
+            If (LenB(initFolder) <> 0) Then .InitialDirectory = initFolder
             .dialogTitle = dialogTitleText
             .Flags = BIF_RETURNONLYFSDIRS Or BIF_NEWDIALOGSTYLE
                 
@@ -1603,7 +1603,7 @@ Friend Function PathBrowseDialog(ByVal srcHwnd As Long, Optional ByVal initFolde
     End If
     
     'PD folder functions enforce a trailing slash, to simplify subsequent concatenations
-    If (Len(PathBrowseDialog) <> 0) Then PathBrowseDialog = Me.PathAddBackslash(PathBrowseDialog)
+    If (LenB(PathBrowseDialog) <> 0) Then PathBrowseDialog = Me.PathAddBackslash(PathBrowseDialog)
     
 End Function
 
