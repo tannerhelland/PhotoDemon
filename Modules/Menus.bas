@@ -516,7 +516,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Background...", "effects_animation_background", 6, 13, 0
         AddMenuItem "Foreground...", "effects_animation_foreground", 6, 13, 1
     AddMenuItem "Custom filter...", "effects_customfilter", 6, 14
-    AddMenuItem "Photoshop (8bf) plugins...", "effects_8bf", 6, 15
+    AddMenuItem "Photoshop (8bf) plugin...", "effects_8bf", 6, 15
     
     'Tools Menu
     AddMenuItem "Tools", "tools_top", 7
@@ -2940,7 +2940,7 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
             Process "Custom filter", True
         
         Case "effects_8bf"
-            Process "Photoshop (8bf) filter", True
+            Process "Photoshop (8bf) plugin", True
         
         Case Else
             cmdFound = False

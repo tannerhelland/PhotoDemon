@@ -1444,7 +1444,7 @@ Begin VB.Form FormMain
          Index           =   14
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Photoshop (8bf) plugins..."
+         Caption         =   "Photoshop (8bf) plugin..."
          Index           =   15
       End
    End

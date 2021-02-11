@@ -1912,7 +1912,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     '8bf filters have a weird workflow because we simply call "execute" on the plugin but then all handling
     ' occurs inside the plugin - so things like creating Undo data before running an effect doesn't follow a normal workflow.
     ' As such, we use a special module wrapper to handle the details for us.
-    ElseIf Strings.StringsEqual(processID, "Photoshop (8bf) filter", True) Then
+    ElseIf Strings.StringsEqual(processID, "Photoshop (8bf) plugin", True) Then
         If raiseDialog Then Plugin_8bf.ShowPluginDialog
         Process_EffectsMenu = True
         

@@ -3,7 +3,7 @@ Begin VB.Form FormEffects8bf
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Photoshop (8bf) plugins"
+   Caption         =   " Photoshop (8bf) plugin"
    ClientHeight    =   6915
    ClientLeft      =   45
    ClientTop       =   390
@@ -295,7 +295,7 @@ Private Sub cmdBar_OKClick()
                 EffectPrep.FinalizeImageData
                 
                 'Submit a "fake" processor operation.  This creates an Undo point, among other tasks
-                Processor.Process "Photoshop (8bf) filter", False, vbNullString, UNDO_Layer
+                Processor.Process "Photoshop (8bf) plugin", False, vbNullString, UNDO_Layer
                 
                 'The fake processor call, above, will report faulty timing reports (because it only
                 ' tracks the time of the processor function, which is just a dummy call here).
