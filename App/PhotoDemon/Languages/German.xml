@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.435</langversion>
+<langversion>9.0.450</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -34,7 +34,7 @@
 
 <phrase>
 <original>Unloading image %1 of %2</original>
-<translation>Bild %1 von %2 wird entladen</translation>
+<translation>Entladen des Bildes %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -113,17 +113,17 @@
 
 <phrase>
 <original>Cut special</original>
-<translation>Spezielles ausschneiden</translation>
+<translation>Special ausschneiden</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation>Spezielles kopieren</translation>
+<translation>Special kopieren</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation>Spezielles einfügen</translation>
+<translation>Special einfügen</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -276,17 +276,17 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Applying %1 filter</original>
-<translation>Filter %1 wird angewendet</translation>
+<translation>Anwenden des %1 Filters</translation>
 </phrase>
 
 <phrase>
 <original>Generating grids</original>
-<translation>Gitter werden generiert</translation>
+<translation>Generierung der Gitter</translation>
 </phrase>
 
 <phrase>
 <original>Applying grid blur</original>
-<translation>Gitterunschärfe wird angewendet</translation>
+<translation>Anwenden der Gitterunschärfe</translation>
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -393,7 +393,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Mehrseitiges Bild gefunden. Seite #%1 von %2 wird geladen</translation>
+<translation>Mehrseitiges Bild gefunden. Laden der Seite #%1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -886,7 +886,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Loading image</original>
-<translation>Bild wird geladen</translation>
+<translation>Laden des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -1063,7 +1063,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Loading macro data</original>
-<translation>Makrodaten werden geladen</translation>
+<translation>Laden der Makrodaten</translation>
 </phrase>
 
 <phrase>
@@ -1101,7 +1101,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Processing macro data</original>
-<translation>Makrodaten werden verarbeitet</translation>
+<translation>Verarbeitung der Makrodaten</translation>
 </phrase>
 
 <!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -2253,7 +2253,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Photoshop (8bf)-Plug-in</translation>
 </phrase>
 
 <phrase>
@@ -2482,7 +2482,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation>Tone-Mapping wird angewendet</translation>
+<translation>Anwenden des Tone-Mapping</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2612,7 +2612,7 @@ Description: %2
 <translation>PhotoDemon hat einen Fehler festgestellt. Details zu dem Problem enthalten:
 
 Fehlernummer %1
-Beschreibung: %2
+Deskription: %2
 
 %3</translation>
 </phrase>
@@ -2967,7 +2967,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Loading selection</original>
-<translation>Auswahl wird geladen</translation>
+<translation>Laden der Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -3675,12 +3675,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Removing metadata with potential privacy concerns</original>
-<translation>Metadaten mit potentiell Privatsphäre betreffend werden entfernt</translation>
+<translation>Entfernung der Metadaten mit potentiellen Bedenken hinsichtl. der Privatsphäre</translation>
 </phrase>
 
 <phrase>
 <original>Embedding metadata</original>
-<translation>Metadaten werden eingebettet</translation>
+<translation>Einbettung der Metadaten</translation>
 </phrase>
 
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
@@ -4179,7 +4179,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>erase tags that might be personal (including GPS and location)</original>
-<translation>Tags löschen, die persönlich sein könnten (einschließlich GPS und Ort)</translation>
+<translation>Tags löschen, die persönlich sein könnten (einschl. GPS und Ort)</translation>
 </phrase>
 
 <phrase>
@@ -4546,7 +4546,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Special</original>
-<translation>Speziell</translation>
+<translation>Special</translation>
 </phrase>
 
 <phrase>
@@ -5339,12 +5339,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Removing existing translation</original>
-<translation>Vorhandene Übersetzung wird entfernt</translation>
+<translation>Entfernung der vorhandenen Übersetzung</translation>
 </phrase>
 
 <phrase>
 <original>Applying new translation</original>
-<translation>Neue Übersetzung wird angewendet</translation>
+<translation>Anwenden der neuen Übersetzung</translation>
 </phrase>
 
 <phrase>
@@ -5667,7 +5667,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying color lookup</original>
-<translation>Farb-Lookup wird angewendet</translation>
+<translation>Anwenden der Farb-Lookup</translation>
 </phrase>
 
 <phrase>
@@ -5748,7 +5748,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>new temperature (K)</original>
-<translation>Neue Temperatur (Kelvin)</translation>
+<translation>Neue Temperatur (K)</translation>
 </phrase>
 
 <phrase>
@@ -5763,7 +5763,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying new temperature to image</original>
-<translation>Neue Temperatur wird auf Bild angewendet</translation>
+<translation>Anwenden der neuen Temperatur auf das Bild</translation>
 </phrase>
 
 <phrase>
@@ -5824,7 +5824,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying new curve to image</original>
-<translation>Neue Kurve wird auf Bild angewendet</translation>
+<translation>Anwenden der neuen Kurve auf das Bild</translation>
 </phrase>
 
 <phrase>
@@ -6078,7 +6078,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Generating HDR map for image</original>
-<translation>HDR-Map für Bild wird generiert</translation>
+<translation>Generierung der HDR-Map für das Bild</translation>
 </phrase>
 
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6170,7 +6170,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Applying photo filter</original>
-<translation>Fotofilter wird angewendet</translation>
+<translation>Anwenden des Fotofilters</translation>
 </phrase>
 
 <!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -7143,12 +7143,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying background</original>
-<translation>Hintergrund wird angewendet</translation>
+<translation>Anwenden des Hintergrundes</translation>
 </phrase>
 
 <phrase>
 <original>Applying foreground</original>
-<translation>Vordergrund wird angewendet</translation>
+<translation>Anwenden des Vordergrundes</translation>
 </phrase>
 
 <phrase>
@@ -7303,7 +7303,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating glass tiles</original>
-<translation>Glasziegel werden generiert</translation>
+<translation>Generierung der Glasziegel</translation>
 </phrase>
 
 <!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -7367,7 +7367,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying modern art techniques</original>
-<translation>Modern-Art-Techniken werden angewendet</translation>
+<translation>Anwenden der Modern-Art-Techniken</translation>
 </phrase>
 
 <!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -7529,7 +7529,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying box blur to image</original>
-<translation>Boxunschärfe wird auf Bild angewendet</translation>
+<translation>Anwenden der Boxunschärfe auf das Bild</translation>
 </phrase>
 
 <!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -7546,7 +7546,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying gaussian blur</original>
-<translation>Gaußscher Weichzeichner wird angewendet</translation>
+<translation>Anwenden des Gaußschen Weichzeichners</translation>
 </phrase>
 
 <phrase>
@@ -7578,7 +7578,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying Kuwahara filter</original>
-<translation>Kuwahara-Filter wiird angewendet</translation>
+<translation>Anwenden des Kuwahara-Filters</translation>
 </phrase>
 
 <!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -7595,7 +7595,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying motion blur</original>
-<translation>Bewegungsunschärfe wird angewendet</translation>
+<translation>Anwenden der Bewegungsunschärfe</translation>
 </phrase>
 
 <phrase>
@@ -7607,7 +7607,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying radial blur</original>
-<translation>Radiale Unschärfe wird angewendet</translation>
+<translation>Anwenden der radialen Unschärfe</translation>
 </phrase>
 
 <phrase>
@@ -7619,21 +7619,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
-<translation>Symmetrisches Pixelpaar wird generiert</translation>
+<translation>Generierung des symmetrischen Pixelpaares</translation>
 </phrase>
 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying surface blur</original>
-<translation>Oberflächenunschärfe wird angewendet</translation>
+<translation>Anwenden der Oberflächenunschärfe</translation>
 </phrase>
 
 <!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying zoom blur</original>
-<translation>Zoomunschärfe wird angewendet</translation>
+<translation>Anwenden der Zoomunschärfe</translation>
 </phrase>
 
 <!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -7748,7 +7748,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying %1 distortion</original>
-<translation>%1 Verzerrung wird angewendet</translation>
+<translation>Anwenden der %1 Verzerrung</translation>
 </phrase>
 
 <phrase>
@@ -7914,7 +7914,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying pass %1 of %2 for %3 filter</original>
-<translation>Durchlauf %1 von %2 für %3 Filter wird angewendet</translation>
+<translation>Anwenden des Durchlaufs %1 von %2 für %3 Filter</translation>
 </phrase>
 
 <phrase>
@@ -8091,7 +8091,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation>Cross-Screen-Filter wird angewendet</translation>
+<translation>Anwenden des Cross-Screen-Filters</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8130,7 +8130,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating light beams</original>
-<translation>Lichtstrahlen werden generiert</translation>
+<translation>Generierung der Lichtstrahlen</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8144,7 +8144,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating artificial fog</original>
-<translation>Künstlicher Nebel wird generiert</translation>
+<translation>Generierung des künstlichen Nebels</translation>
 </phrase>
 
 <!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8282,7 +8282,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating film grain texture</original>
-<translation>Filmkörnungstextur wird generiert</translation>
+<translation>Generierung der Filmkörnungstextur</translation>
 </phrase>
 
 <phrase>
@@ -8294,14 +8294,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation>Harmonischer Mittelwertfilter wird angewendet</translation>
+<translation>Anwenden des harmonischen Mittelwertfilters</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying mean shift filter</original>
-<translation>Mittelwertverschiebungsfilter wird angewendet</translation>
+<translation>Anwenden des Mittelwertverschiebungsfilters</translation>
 </phrase>
 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8313,17 +8313,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying erode (minimum rank) filter</original>
-<translation>Erodieren- (Rangordnung Minimum) Filter wird angewendet</translation>
+<translation>Anwenden des Erodieren- (Rangordnung Minimum) Filters</translation>
 </phrase>
 
 <phrase>
 <original>Applying dilate (maximum rank) filter</original>
-<translation>Erweitern- (Rangordnung Maximum) Filter wird angewendet</translation>
+<translation>Anwenden des Erweitern- (Rangordnung Maximum) Filters</translation>
 </phrase>
 
 <phrase>
 <original>Applying median filter</original>
-<translation>Medianfilter wird angewendet</translation>
+<translation>Anwenden des Medianfilters</translation>
 </phrase>
 
 <!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8438,7 +8438,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying mosaic</original>
-<translation>Moasaik wird angewendet</translation>
+<translation>Anwenden des Moasaiks</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8493,7 +8493,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying unsharp mask (step %1 of %2)</original>
-<translation>Unscharf maskieren wird angewendet (Schritt %1 von %2)</translation>
+<translation>Anwenden von Unscharf maskieren (Schritt %1 von %2)</translation>
 </phrase>
 
 <!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8539,7 +8539,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating image outline</original>
-<translation>Bild-Outline wird generiert</translation>
+<translation>Generierung der Bild-Outline</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8616,12 +8616,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation>Optimale Palette wird generiert</translation>
+<translation>Generierung der optimalen Palette</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation>Neue Palette wird auf Bild angewendet</translation>
+<translation>Anwenden der neuen Palette auf das Bild</translation>
 </phrase>
 
 <phrase>
@@ -8648,7 +8648,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying petroleum jelly to camera lens</original>
-<translation>Vaseline wird auf Kameralinse angewendet</translation>
+<translation>Anwenden der Vaseline (Petrolat) auf die Kameralinse</translation>
 </phrase>
 
 <phrase>
@@ -8677,14 +8677,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating image twin</original>
-<translation>Bildzwilling wird generiert</translation>
+<translation>Generierung des Bildzwillings</translation>
 </phrase>
 
 <!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying vignetting</original>
-<translation>Bild wird vignettiert</translation>
+<translation>Anwenden der Vignettierung</translation>
 </phrase>
 
 <phrase>
@@ -8716,7 +8716,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying pan and zoom (Ken Burns) effect</original>
-<translation>Schwenk- und Zoomeffekt (Ken Burns) werden angewendet</translation>
+<translation>Anwenden des Schwenk- und Zoomeffektes (Ken Burns)</translation>
 </phrase>
 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8728,7 +8728,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying new perspective</original>
-<translation>Neue Perspektive wird angewendet</translation>
+<translation>Anwenden der neuen Perspektive</translation>
 </phrase>
 
 <phrase>
@@ -8893,17 +8893,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>Nach einer erfolgreichen Wiederherstellung die Original- (nicht reparierte) Datei löschen</translation>
+<translation>Nach einer erfolgreichen Wiederherstellung die Original- (unreparierte) Datei löschen</translation>
 </phrase>
 
 <phrase>
 <original>generating list of files to repair</original>
-<translation>Liste der zu repariernden Dateien wird generiert</translation>
+<translation>Generierung der Liste der zu repariernden Dateien</translation>
 </phrase>
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Datei %1 von %2 wird verarbeitet (%3 Reparaturen durchgeführt)</translation>
+<translation>Verarbeitung der Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
 </phrase>
 
 <phrase>
@@ -8915,7 +8915,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien verbleiben an deren Original-Orten.</translation>
+<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Unreparierte Dateien verbleiben an deren Original-Orten.</translation>
 </phrase>
 
 <phrase>
@@ -9022,7 +9022,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>lowercase</original>
-<translation>kleinbuchstaben</translation>
+<translation>kleinschrift (a, b, c ...)</translation>
 </phrase>
 
 <phrase>
@@ -9042,12 +9042,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>Jeden Dateiname erzwingen, einschließlich Erweiterung in folgendem Fall</translation>
+<translation>Jeden Dateiname erzwingen, einschl. Extension, auf die folgenden Groß- oder Kleinbuchstaben</translation>
 </phrase>
 
 <phrase>
 <original>UPPERCASE</original>
-<translation>GROSSBUCHSTABEN</translation>
+<translation>GROSSSCHRIFT (A, B, C ...)</translation>
 </phrase>
 
 <phrase>
@@ -9057,7 +9057,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>use case-sensitive matching</original>
-<translation>Groß- und Kleinschreibung verwenden</translation>
+<translation>Beachtung von Groß- und Kleinschreibung</translation>
 </phrase>
 
 <phrase>
@@ -9401,7 +9401,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(speziell: JPEG mit 92 % Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
+<translation>(speziell JPEG bei 92 % Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
 </phrase>
 
 <phrase>
@@ -9426,7 +9426,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation>Bild # %1 von %2 wird verarbeitet</translation>
+<translation>Verarbeitung des Bildes # %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -9744,7 +9744,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschließlich Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
@@ -9813,7 +9813,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plug-in, welches auf diesem Computer nicht lokalisiert werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plug-ins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plug-in, welches auf diesem Computer nicht lokalisiert werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Wenn Sie PhotoDemon das nächste Mal laden, wird es Ihnen anbieten, dieses Plug-in für Sie herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -10142,7 +10142,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation>Dateierweiterung entsprechend dem Farbmodell ändern</translation>
+<translation>Dateiextension entsprechend dem Farbmodell ändern</translation>
 </phrase>
 
 <phrase>
@@ -10525,7 +10525,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation>Content-abhängige Größenänderung wird angewendet</translation>
+<translation>Anwenden der Content-abhängigen Größenänderung</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11035,7 +11035,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Removing transparency</original>
-<translation>Transparenz wird entfernt</translation>
+<translation>Entfernung der Transparenz</translation>
 </phrase>
 
 <!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11933,7 +11933,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>crisp</original>
-<translation>Knackig</translation>
+<translation>Gestochen scharf</translation>
 </phrase>
 
 <phrase>
@@ -12025,7 +12025,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>special</original>
-<translation>Speziell</translation>
+<translation>Special</translation>
 </phrase>
 
 <phrase>
@@ -12055,7 +12055,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Titlecase</original>
-<translation>Groß-/Kleinschreibung</translation>
+<translation>Anfangsbuchstaben groß</translation>
 </phrase>
 
 <phrase>
@@ -12217,7 +12217,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>Textpassage %1 von %2 wird verarbeitet</translation>
+<translation>Verarbeitung der Textpassage %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -12891,7 +12891,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Um transparente Pixel leichter zu identifizieren, erscheint "hinter" diesen ein spezielles Gitter.  Diese Einstellung modifiziert das Erscheinungsbild des Gitters.</translation>
+<translation>Um transparente Pixel leichter zu identifizieren, erscheint "hinter" diesen ein spezielles Gitter. Diese Einstellung modifiziert das Erscheinungsbild des Gitters.</translation>
 </phrase>
 
 <phrase>
@@ -13374,84 +13374,84 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Applying plugin</original>
-<translation></translation>
+<translation>Anwenden des Plug-ins</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>scan for new plugins</original>
-<translation></translation>
+<translation>Nach neuen Plug-ins scannen</translation>
 </phrase>
 
 <phrase>
 <original>about this plugin</original>
-<translation></translation>
+<translation>Über dieses Plug-in</translation>
 </phrase>
 
 <phrase>
 <original>available plugins</original>
-<translation></translation>
+<translation>Verfügbare Plug-ins</translation>
 </phrase>
 
 <phrase>
 <original>add folder</original>
-<translation></translation>
+<translation>Ordner hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>default plugin folder</original>
-<translation></translation>
+<translation>Default-Plug-in-Ordner</translation>
 </phrase>
 
 <phrase>
 <original>additional folders</original>
-<translation></translation>
+<translation>Additionale Ordner</translation>
 </phrase>
 
 <phrase>
 <original>remove folder</original>
-<translation></translation>
+<translation>Ordner entfernen</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for plugin</original>
-<translation></translation>
+<translation>Warten auf Plug-in</translation>
 </phrase>
 
 <phrase>
 <original>Plugin canceled.</original>
-<translation></translation>
+<translation>Plug-in abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>plugins</original>
-<translation></translation>
+<translation>Plug-ins</translation>
 </phrase>
 
 <phrase>
 <original>loading plugin collection</original>
-<translation></translation>
+<translation>Laden der Plug-in-Collection</translation>
 </phrase>
 
 <phrase>
 <original>No plugins found.</original>
-<translation></translation>
+<translation>Keine Plug-ins gefunden.</translation>
 </phrase>
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
+<translation>Photoshop (8bf)-Plug-ins sind Dateien mit einer "8bf"-Extension. Diese Plug-ins stellen neue Bildeffekte (Image Effects) bereit. Tausende von 8bf-Plug-ins sind online verfügbar.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
+<translation>PhotoDemon wird nicht mit 8bf-Plug-ins ausgeliefert, aber wenn Sie online Plug-ins finden, können Sie diese herunterladen und sie zu PhotoDemon hinzufügen. (PhotoDemon unterstützt die meisten 8bf-Plug-ins in 32-Bit. 64-Bit-Plug-ins werden nicht unterstützt.)</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
+<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekt-Collection hinzu.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->

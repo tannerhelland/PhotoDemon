@@ -234,10 +234,15 @@ Option Explicit
 
 'Number of available plugins (as returned by the 8bf plugin interface), and their categories and
 ' names (each in their own string stack).  These exist for UI purposes only.
-Private m_num8bf As Long, m_8bfCategories As pdStringStack, m_8bfNames As pdStringStack
+Private Type PD_8bf
+    plgCategory As String
+    plgCategoryIndex As Long
+    plgName As String
+    plgNameIndex As Long
+    plgPath As String
+End Type
 
-'Paths to individual 8bf files are the only things we actually need to launch plugins
-Private m_8bfPaths As pdStringStack
+Private m_numPlugins As Long, m_Plugins() As PD_8bf
 
 'If we have attempted to execute a plugin, this will be set to TRUE
 Private m_PluginLive As Boolean
@@ -270,7 +275,10 @@ Private Sub cmdBar_OKClick()
     'When OK is clicked, load the selected plugin, then attempt to execute it
     If (lstPlugins.ListIndex >= 0) Then
         
-        If Plugin_8bf.Load8bf(m_8bfPaths.GetString(lstPlugins.ListIndex)) Then
+        Dim targetPluginPath As String
+        targetPluginPath = m_Plugins(lstPlugins.ListIndex).plgPath
+        
+        If Plugin_8bf.Load8bf(targetPluginPath) Then
             
             'Attempt to queue up the current layer as the active image
             Plugin_8bf.SetImage_CurrentWorkingImage
@@ -314,7 +322,7 @@ Private Sub cmdBar_OKClick()
                 If wasPluginCanceled Then
                     'Fine
                 Else
-                    PDDebug.LogAction "WARNING: Error with 8bf plugin: " & m_8bfPaths.GetString(lstPlugins.ListIndex)
+                    PDDebug.LogAction "WARNING: Error with 8bf plugin: " & targetPluginPath
                     'Error or crash
                     
                     'Consider dialog for blacklisting plugin?
@@ -420,7 +428,9 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub hypAbout_Click()
-    If (lstPlugins.ListIndex >= 0) Then Plugin_8bf.ShowAboutDialog m_8bfPaths.GetString(lstPlugins.ListIndex)
+    Dim targetPluginPath As String
+    targetPluginPath = m_Plugins(lstPlugins.ListIndex).plgPath
+    If (lstPlugins.ListIndex >= 0) Then Plugin_8bf.ShowAboutDialog targetPluginPath
 End Sub
 
 Private Sub hypPlugins_Click()
@@ -442,9 +452,6 @@ Private Sub ScanForPlugins()
     
     'Clear all existing plugin collections
     lstPlugins.Clear
-    Set m_8bfCategories = Nothing
-    Set m_8bfNames = Nothing
-    Set m_8bfPaths = Nothing
     Plugin_8bf.ResetPluginCollection
     
     'Switch the UI to "loading" mode
@@ -510,20 +517,33 @@ Private Sub ScanForPlugins()
     End If
     
     'If any plugins exist, retrieve their categories, names, and paths now
-    numPlugins = Plugin_8bf.GetEnumerationResults(m_8bfCategories, m_8bfNames, m_8bfPaths)
+    Dim cat8bf As pdStringStack, name8bf As pdStringStack, path8bf As pdStringStack
+    m_numPlugins = Plugin_8bf.GetEnumerationResults(cat8bf, name8bf, path8bf)
+    
+    'Prep our internal plugin table to match
+    If (m_numPlugins < 0) Then m_numPlugins = 0
+    ReDim m_Plugins(0 To m_numPlugins) As PD_8bf
+    
+    If (m_numPlugins > 0) Then
+        For i = 0 To m_numPlugins - 1
+            m_Plugins(i).plgCategory = cat8bf.GetString(i)
+            m_Plugins(i).plgName = name8bf.GetString(i)
+            m_Plugins(i).plgPath = path8bf.GetString(i)
+        Next i
+    End If
     
     'Populate the list of available plugins
-    If (numPlugins > 0) Then
+    If (m_numPlugins > 0) Then
         
         Dim addSeparator As Boolean
         
         For i = 0 To numPlugins - 1
-            If (i >= numPlugins) Then
-                addSeparator = Strings.StringsNotEqual(m_8bfCategories.GetString(i), m_8bfCategories.GetString(i + 1), True)
+            If (i < numPlugins - 1) Then
+                addSeparator = Strings.StringsNotEqual(m_Plugins(i).plgCategory, m_Plugins(i + 1).plgCategory, True)
             Else
                 addSeparator = False
             End If
-            lstPlugins.AddItem m_8bfCategories.GetString(i) & " > " & Replace$(m_8bfNames.GetString(i), "&&", "&"), i, addSeparator
+            lstPlugins.AddItem m_Plugins(i).plgCategory & " > " & Replace$(m_Plugins(i).plgName, "&&", "&"), i, addSeparator
         Next i
         
     End If
@@ -531,11 +551,11 @@ Private Sub ScanForPlugins()
     'Regardless of plugin count, hide the "loading" panel and restore the deafult one
     pnlOptions(2).Visible = False
     UpdatePanelVisibility
-    lstPlugins.Visible = (numPlugins > 0)
-    lblNoPlugins.Visible = (numPlugins <= 0)
+    lstPlugins.Visible = (m_numPlugins > 0)
+    lblNoPlugins.Visible = (m_numPlugins <= 0)
     
     'If no plugins were found, hide the plugin selector and give the user info on how to proceed
-    If (numPlugins <= 0) Then
+    If (m_numPlugins <= 0) Then
     
         lstPlugins.Visible = False
         
