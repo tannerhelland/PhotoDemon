@@ -293,7 +293,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>Die Anzahl eindeutiger Farben in diesem Bild wird gezählt</translation>
+<translation>Zählen der Anzahl der eindeutigen Farben in diesem Bild</translation>
 </phrase>
 
 <phrase>
@@ -919,7 +919,7 @@ Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk e
 Please close this file in any other running programs, then try again.</original>
 <translation>Leider ist die Datei '%1' derzeit durch ein anderes Programm auf diesem PC gesperrt.
 
-Bitte schließen Sie diese Datei in irgendwelchen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
+Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2571,12 +2571,12 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Bitte machen Sie Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
 </phrase>
 
 <phrase>
 <original>Out of memory.  Function canceled.</original>
-<translation>Platz im Hauptspeicher reicht nicht aus. Funktion abgebrochen.</translation>
+<translation>Platz im Hauptspeicher reicht nicht aus (Out of Memory). Funktion abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3073,7 +3073,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <original>%1 is not a valid entry.
 Please enter a value between %2 and %3.</original>
 <translation>%1 ist kein gültiger Eintrag.
-Geben Sie bitte einen Wert zwischen %2 und %3 ein.</translation>
+Bitte geben Sie einen Wert zwischen %2 und %3 ein.</translation>
 </phrase>
 
 <phrase>
@@ -3085,7 +3085,7 @@ Geben Sie bitte einen Wert zwischen %2 und %3 ein.</translation>
 <original>%1 is not a valid entry.
 Please enter a numeric value.</original>
 <translation>%1 ist kein gültiger Eintrag.
-Geben Sie bitte einen numerischen Wert ein.</translation>
+Bitte geben Sie einen numerischen Wert ein.</translation>
 </phrase>
 
 <!-- TextSupport.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4391,7 +4391,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation>"%1" erzeugt ein Resultat außerhalb des Bereichs (%2).
+<translation>"%1" erzeugt ein Resultat außerhalb des Bereiches (%2).
 Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
@@ -6349,7 +6349,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation>Geben Sie bitte einen Namen für dieses Preset ein.</translation>
+<translation>Bitte geben Sie einen Namen für dieses Preset ein.</translation>
 </phrase>
 
 <phrase>
@@ -7689,7 +7689,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>if pixels lie outside the corrected area</original>
-<translation>Wenn Pixel außerhalb des korrigierten Bereichs liegen</translation>
+<translation>Wenn Pixel außerhalb des korrigierten Bereiches liegen</translation>
 </phrase>
 
 <phrase>
@@ -8055,7 +8055,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Searching each pixel range for edges</original>
-<translation>Durchsuchen jedes Pixelbereichs nach Kanten</translation>
+<translation>Durchsuchen jedes Pixelbereiches nach Kanten</translation>
 </phrase>
 
 <!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9022,7 +9022,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>lowercase</original>
-<translation>kleinschrift (a, b, c ...)</translation>
+<translation>kleinschrift (abc ...)</translation>
 </phrase>
 
 <phrase>
@@ -9047,7 +9047,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>UPPERCASE</original>
-<translation>GROSSSCHRIFT (A, B, C ...)</translation>
+<translation>GROSSSCHRIFT (ABC ...)</translation>
 </phrase>
 
 <phrase>
@@ -9614,7 +9614,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie irgendeine andere Bilddatei öffnen.</translation>
+<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jegliche andere Bilddatei öffnen.</translation>
 </phrase>
 
 <phrase>
@@ -9865,7 +9865,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>Legacy 15 Bit-Encoding (X1-R5-G5-B5) verwenden</translation>
+<translation>Legacy-15-Bit-Encoding (X1-R5-G5-B5) verwenden</translation>
 </phrase>
 
 <phrase>
@@ -10299,7 +10299,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl führt zu einer besseren Kompression. Verwenden Sie die automatische Einstellung, um PhotoDemon multiple Strategien testen zu lassen, und wählen Sie automatisch diejenige aus, die die beste Kompression erzeugt.</translation>
+<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl erzeugt eine bessere Kompression. Verwenden Sie die automatische Einstellung, um PhotoDemon multiple Strategien testen zu lassen, und wählen Sie automatisch diejenige aus, die die beste Kompression erzeugt.</translation>
 </phrase>
 
 <phrase>
@@ -10392,7 +10392,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Patrons</original>
-<translation>Förderer</translation>
+<translation>Patrons</translation>
 </phrase>
 
 <phrase>
@@ -10422,7 +10422,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation>(Sie können auch zu einem Förderer werden! Klicken Sie hier, um mehr zu erfahren.)</translation>
+<translation>(Auch Sie können ein Patron werden! Klicken Sie hier, um mehr zu erfahren.)</translation>
 </phrase>
 
 <!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -10692,12 +10692,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>numbers only</original>
-<translation>Nur Numbers</translation>
+<translation>Nur Zahlen</translation>
 </phrase>
 
 <phrase>
 <original>numbers >= 0</original>
-<translation>Numbers >= 0</translation>
+<translation>Zahlen >= 0</translation>
 </phrase>
 
 <phrase>
@@ -10742,7 +10742,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>%1 numbers max</original>
-<translation>%1 Numbers max.</translation>
+<translation>%1 Zahlen max.</translation>
 </phrase>
 
 <phrase>
@@ -11261,7 +11261,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Versionsnummer, wie erforderlich).</translation>
+<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Zahl, wie erforderlich).</translation>
 </phrase>
 
 <phrase>
@@ -12378,7 +12378,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.</original>
-<translation>In diesem Schritt bestimmen Sie bitte ein wenig Metadaten hinsichtlich dieser Sprache. Diese Informationen helfen PhotoDemon dabei, diese Sprachdatei zu handhaben.</translation>
+<translation>In diesem Schritt bestimmen Sie bitte ein wenig an Metadaten hinsichtlich dieser Sprache. Diese Informationen helfen PhotoDemon dabei, diese Sprachdatei zu handhaben.</translation>
 </phrase>
 
 <phrase>
@@ -12388,7 +12388,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>If multiple translators have worked on this language file, please separate their names with commas.  If this language file is based on an existing language file, please include the original author's name.</original>
-<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, tren- nen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer vorhandenen Sprachdatei basiert, beziehen Sie bitte den Name des Original-Autors mit ein.</translation>
+<translation>Wenn multiple Übersetzer an dieser Sprachdatei gearbeitet haben, trennen Sie deren Namen bitte mit Kommas. Wenn diese Sprachdatei auf einer vorhandenen Sprachdatei basiert, beziehen Sie bitte den Name des Original-Autors mit ein.</translation>
 </phrase>
 
 <phrase>

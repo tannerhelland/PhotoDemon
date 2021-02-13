@@ -505,19 +505,19 @@ Public Function GetLCMSVersion() As String
     Dim versionAsLong As Long
     versionAsLong = cmsGetEncodedCMMversion()
     
-    'Split the version by zeroes
-    Dim versionAsString() As String
-    versionAsString = Split(CStr(versionAsLong), "0", , vbBinaryCompare)
-    
-    If VBHacks.IsArrayInitialized(versionAsString) Then
-        If (UBound(versionAsString) >= 1) Then
-            GetLCMSVersion = versionAsString(0) & "." & versionAsString(1) & ".0.0"
-        Else
-            GetLCMSVersion = "0.0.0.0"
-        End If
+    'The version is encoded as a 4-digit long, so e.g. 2.12.0 is "2120".
+    ' This versioning mechanism has been valid since this 2.0 release (which was v. "2000")
+    ' so I do not worry about it changing in the future.
+    Dim versionAsString As String
+    If (versionAsLong >= 1000) Then
+        versionAsString = Left$(CStr(versionAsLong), 1) & "."
+        versionAsString = versionAsString & Mid$(CStr(versionAsLong), 2, 2) & "."
+        versionAsString = versionAsString & Right$(CStr(versionAsLong), 1) & ".0"
     Else
-        GetLCMSVersion = "0.0.0.0"
+        versionAsString = "0.0.0"
     End If
+    
+    GetLCMSVersion = versionAsString
     
 End Function
 
