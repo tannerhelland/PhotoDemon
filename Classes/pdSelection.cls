@@ -348,7 +348,7 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
             If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
         Case sp_WandSampleMerged
-            m_WandImageTimestamp = 0#
+            m_WandImageTimestamp = 0@
             If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
         Case sp_WandCompareMethod
