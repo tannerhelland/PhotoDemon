@@ -3,8 +3,8 @@ Attribute VB_Name = "Selections"
 'Selection Interface
 'Copyright 2013-2021 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 03/May/18
-'Last update: minor changes to facilitate new "lock width/height/aspect-ratio" support
+'Last updated: 15/February/21
+'Last update: large selection tool overhaul to support multi-selection behavior
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -142,7 +142,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim sFile As String
         
         Dim cdFilter As String
-        cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
+        cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (.pds)|*.pds|"
         cdFilter = cdFilter & g_Language.TranslateMessage("All files") & "|*.*"
         
         Dim cdTitle As String
@@ -207,12 +207,12 @@ Public Sub SaveSelectionToFile()
     Dim sFile As String
     
     Dim cdFilter As String
-    cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
+    cdFilter = g_Language.TranslateMessage("PhotoDemon selection") & " (.pds)|*.pds"
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
         
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, UserPrefs.GetSelectionPath, cdTitle, ".pds", GetModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
         UserPrefs.SetSelectionPath sFile
@@ -372,157 +372,164 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
     Dim i As Long
     
     'Only synchronize the text boxes if a selection is active
-    If Selections.SelectionsAllowed(False) Then
+    Dim selectionIsActive As Boolean
+    selectionIsActive = Selections.SelectionsAllowed(False)
+    
+    Dim selectionToolActive As Boolean
+    If selectionIsActive Then
+        If PDImages.IsImageActive(srcImageID) Then selectionToolActive = Tools.IsSelectionToolActive()
+    End If
+    
+    'See if a selection exists
+    If selectionIsActive And selectionToolActive Then
         
-        If PDImages.IsImageActive(srcImageID) Then
+        PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh True
+    
+        'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
+        ' To access their indicies properly, we must calculate an offset.
+        Dim subpanelOffset As Long, subpanelCtlOffset As Long
+        subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))
+        subpanelCtlOffset = subpanelOffset * 2
         
-            PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh True
+        'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
+        If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
+            
+            Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
+            
+            'Different types of selections will display size and position differently
+            Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape()
+                
+                'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
+                Case ss_Rectangle, ss_Circle
+                    
+                    Dim sizeIndex As Long
+                    sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
+                    
+                    'Coordinates are allowed to be <= 0, but size and aspect ratio are not
+                    Dim allowedMin As Long
+                    If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
+                    If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
+                    End If
+                    
+                    tmpRectF = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersLockedRect()
+                    If (sizeIndex = 0) Then
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
+                    ElseIf (sizeIndex = 1) Then
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
+                    ElseIf (sizeIndex = 2) Then
+                        
+                        'Failsafe DBZ check
+                        If (tmpRectF.Height > 0) Then
+                        
+                            Dim fracNumerator As Long, fracDenominator As Long
+                            PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
+                            
+                            'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                            If (fracDenominator = 5) Then
+                                fracNumerator = fracNumerator * 2
+                                fracDenominator = fracDenominator * 2
+                            End If
+                            
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
+                            
+                        End If
+                        
+                    End If
+                    
+                    '"Lock" button visibility is a little complicated - basically, we only want to make it visible
+                    ' for width, height, and aspect ratio options.
+                    If (sizeIndex = 0) Then
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
+                        toolpanel_Selections.lblColon(subpanelOffset).Visible = False
+                    ElseIf (sizeIndex = 1) Then
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                        toolpanel_Selections.lblColon(subpanelOffset).Visible = False
+                    Else
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                        toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                        toolpanel_Selections.lblColon(subpanelOffset).Visible = True
+                    End If
+                    
+                    'Also make sure the "lock" icon matches the current lock state
+                    If (sizeIndex = 1) Then
+                        toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
+                        toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
+                    ElseIf (sizeIndex = 2) Then
+                        toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
+                    End If
+                    
+                'Line selections display x1, y1, x2, y2
+                Case ss_Line
+                    tmpRectFRB = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersUnlockedRect()
+                    toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
+                    toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
+                    toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
+                    toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
         
-            'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
-            ' To access their indicies properly, we must calculate an offset.
-            Dim subpanelOffset As Long, subpanelCtlOffset As Long
-            subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))
-            subpanelCtlOffset = subpanelOffset * 2
+            End Select
             
-            If Tools.IsSelectionToolActive Then
-            
-                'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
-                If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
-                    
-                    Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
-                    
-                    'Different types of selections will display size and position differently
-                    Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape()
-                        
-                        'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
-                        Case ss_Rectangle, ss_Circle
-                            
-                            Dim sizeIndex As Long
-                            sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
-                            
-                            'Coordinates are allowed to be <= 0, but size and aspect ratio are not
-                            Dim allowedMin As Long
-                            If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
-                            If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
-                            End If
-                            
-                            tmpRectF = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersLockedRect()
-                            If (sizeIndex = 0) Then
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
-                            ElseIf (sizeIndex = 1) Then
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
-                            ElseIf (sizeIndex = 2) Then
-                                
-                                'Failsafe DBZ check
-                                If (tmpRectF.Height > 0) Then
-                                
-                                    Dim fracNumerator As Long, fracDenominator As Long
-                                    PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
-                                    
-                                    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-                                    If (fracDenominator = 5) Then
-                                        fracNumerator = fracNumerator * 2
-                                        fracDenominator = fracDenominator * 2
-                                    End If
-                                    
-                                    toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
-                                    toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
-                                    
-                                End If
-                                
-                            End If
-                            
-                            '"Lock" button visibility is a little complicated - basically, we only want to make it visible
-                            ' for width, height, and aspect ratio options.
-                            If (sizeIndex = 0) Then
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
-                                toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                            ElseIf (sizeIndex = 1) Then
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                                toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                            Else
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                                toolpanel_Selections.lblColon(subpanelOffset).Visible = True
-                            End If
-                            
-                            'Also make sure the "lock" icon matches the current lock state
-                            If (sizeIndex = 1) Then
-                                toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
-                                toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
-                            ElseIf (sizeIndex = 2) Then
-                                toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
-                            End If
-                            
-                        'Line selections display x1, y1, x2, y2
-                        Case ss_Line
-                            tmpRectFRB = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersUnlockedRect()
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
-                
-                    End Select
-                    
-                Else
-                
-                    For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                        If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
-                    Next i
-                    
-                End If
-                
-                'Next, sync all non-coordinate information
-                If (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Raster) And (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Wand) Then
-                    toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Area)
-                    toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
-                End If
-                
-                If toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
-                If toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
-                
-                'Finally, sync any shape-specific information
-                Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape
-                
-                    Case ss_Rectangle
-                        If (toolpanel_Selections.sltCornerRounding.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)) Then toolpanel_Selections.sltCornerRounding.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)
-                    
-                    Case ss_Circle
-                    
-                    Case ss_Line
-                        If toolpanel_Selections.sltSelectionLineWidth.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth) Then toolpanel_Selections.sltSelectionLineWidth.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth)
-                        
-                    Case ss_Lasso
-                        If toolpanel_Selections.sltSmoothStroke.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke) Then toolpanel_Selections.sltSmoothStroke.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke)
-                        
-                    Case ss_Polygon
-                        If toolpanel_Selections.sltPolygonCurvature.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature) Then toolpanel_Selections.sltPolygonCurvature.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature)
-                        
-                    Case ss_Wand
-                        If toolpanel_Selections.btsWandArea.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode) Then toolpanel_Selections.btsWandArea.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode)
-                        If toolpanel_Selections.btsWandMerge.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged) Then toolpanel_Selections.btsWandMerge.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged)
-                        If toolpanel_Selections.sltWandTolerance.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance) Then toolpanel_Selections.sltWandTolerance.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance)
-                        If toolpanel_Selections.cboWandCompare.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod) Then toolpanel_Selections.cboWandCompare.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod)
-                
-                End Select
-                
-            End If
-            
-            PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh False
+        Else
+        
+            For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+            Next i
             
         End If
+        
+        'Next, sync all non-coordinate information
+        If (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Raster) And (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Wand) Then
+            toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Area)
+            toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
+        End If
+        
+        If toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
+        If toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
+        
+        'Finally, sync any shape-specific information
+        Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape
+        
+            Case ss_Rectangle
+                If (toolpanel_Selections.sltCornerRounding.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)) Then toolpanel_Selections.sltCornerRounding.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)
             
+            Case ss_Circle
+            
+            Case ss_Line
+                If toolpanel_Selections.sltSelectionLineWidth.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth) Then toolpanel_Selections.sltSelectionLineWidth.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth)
+                
+            Case ss_Lasso
+                If toolpanel_Selections.sltSmoothStroke.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke) Then toolpanel_Selections.sltSmoothStroke.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke)
+                
+            Case ss_Polygon
+                If toolpanel_Selections.sltPolygonCurvature.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature) Then toolpanel_Selections.sltPolygonCurvature.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature)
+                
+            Case ss_Wand
+                If toolpanel_Selections.btsWandArea.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode) Then toolpanel_Selections.btsWandArea.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode)
+                If toolpanel_Selections.btsWandMerge.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged) Then toolpanel_Selections.btsWandMerge.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged)
+                If toolpanel_Selections.sltWandTolerance.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance) Then toolpanel_Selections.sltWandTolerance.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance)
+                If toolpanel_Selections.cboWandCompare.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod) Then toolpanel_Selections.cboWandCompare.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod)
+        
+        End Select
+        
+        PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh False
+    
+    'A selection is *not* active; disable various selection-related UI options
     Else
         
-        Interface.SetUIGroupState PDUI_Selections, False
+        'If a selection exists, we need to leave available menu commands like "remove selection", etc.
+        Interface.SetUIGroupState PDUI_Selections, selectionIsActive
+        
+        'Transformable settings do *not* need to be available
         Interface.SetUIGroupState PDUI_SelectionTransforms, False
         
+        'This branch is only followed if a selection is *not* active but a selection tool *is* active, in which case
+        ' we need to disable some commands on the selection toolbar.
         If Tools.IsSelectionToolActive Then
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
                 If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
@@ -540,7 +547,7 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
 End Sub
 
 'Given an (x, y) pair in IMAGE coordinate space (not screen or canvas space), return a constant if the point is a valid
-' "point of interest" to this selection.  Standard UI mouse distances are allowed (meaning zoom is factored into the
+' "point of interest" for the active selection.  Standard UI mouse distances are allowed (meaning zoom is factored into the
 ' algorithm).
 '
 'The result of this function is typically passed to something like pdSelection.SetActiveSelectionPOI(), which will cache
@@ -583,7 +590,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(g_MouseAccuracy, srcImage)
+    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(Interface.GetStandardInteractionDistance(), srcImage)
         
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
@@ -1154,14 +1161,11 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     
 End Sub
 
-'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way.
+'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way;
+' only the layer's pixel contents will be affected.
 Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)
-
     PDImages.GetActiveImage.EraseProcessedSelection targetLayerIndex
-    
-    'Redraw the active viewport
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-
 End Sub
 
 'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
@@ -1346,11 +1350,14 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
                         
 End Sub
 
-'Are selections currently allowed?  Program states like "no open images" prevent selections from ever being created, and individual
-' functions can use this function to determine it.  Passing TRUE for the transformableMatters param will add a check for an existing,
-' transformable-type selection (squares, etc) to the evaluation list.
+'Are selections currently allowed?  Program states like "no open images" prevent selections from being created,
+' and individual functions can use this function to determine that state.  Passing TRUE for the
+' "transformableMatters" param will add a check for an existing, transformable-type selection (squares, etc)
+' to the evaluation list.  (These have their own unique UI requirements.)
 Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
-
+    
+    SelectionsAllowed = False
+    
     If PDImages.IsImageActive() Then
         If PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
             If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend()) Then
@@ -1360,20 +1367,18 @@ Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Bool
                     SelectionsAllowed = True
                 End If
             Else
-                SelectionsAllowed = False
+                Debug.Print "selection refresh suspended"
             End If
-        Else
-            SelectionsAllowed = False
         End If
-    Else
-        SelectionsAllowed = False
     End If
     
 End Function
 
-'Called at program startup.  At present, all it does is cache the current user preferences for selection rendering settings;
-' this ensures the settings are up-to-date, even if the user does not activate a specific selection tool.  (Why does this matter?
-' Selections can be loaded directly from file, without ever invoking a tool.)
+'Call at program startup.
+' At present, all this function does is cache the current user preferences for selection rendering settings.
+' This ensures the settings are up-to-date, even if the user does not activate a specific selection tool.
+' (Why does this matter? Selections can be loaded directly from file, without ever invoking a tool, so we
+' need to ensure rendering settings are up-to-date when the program starts.)
 Public Sub InitializeSelectionRendering()
 
     If UserPrefs.IsReady Then
