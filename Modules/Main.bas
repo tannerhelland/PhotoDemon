@@ -623,10 +623,6 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
     
-    'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
-    ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
-    g_MouseAccuracy = Interface.FixDPIFloat(7)
-    
     'Allow main form components to load any control-specific preferences they may utilize
     FormMain.MainCanvas(0).ReadUserPreferences
     

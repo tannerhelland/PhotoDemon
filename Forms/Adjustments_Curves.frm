@@ -911,8 +911,8 @@ Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
         
     Next i
     
-    'If the closest node is more than (g_MouseAccuracy) away, return it
-    If (minDistance < g_MouseAccuracy) Then CheckClick = minIndex
+    'If the closest node is close than the standard UX interaction distance, return it
+    If (minDistance < Interface.GetStandardInteractionDistance()) Then CheckClick = minIndex
     
 End Function
 

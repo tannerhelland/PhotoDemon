@@ -152,20 +152,30 @@ Public Function GetSystemDPI() As Single
     GetSystemDPI = m_CurrentSystemDPI
 End Function
 
+'PD's canvas uses interactive elements (like clickable "nodes") in many different contexts.  To ensure uniform
+' UX behavior across tools, a standardized "close enough to interact" distance is used.  This value varies by
+' run-time display DPI.
+Public Function GetStandardInteractionDistance(Optional ByRef srcImageForCanvasData As pdImage = Nothing) As Single
+    Const INTERACTION_DISTANCE_96_PPI As Single = 7!
+    GetStandardInteractionDistance = Interface.FixDPIFloat(INTERACTION_DISTANCE_96_PPI)
+End Function
+
 'Generate a unique interface ID string that describes the current visual theme + language combination
 Public Sub GenerateInterfaceID()
+    
+    m_CurrentInterfaceID = vbNullString
+    
+    Dim i18nActive As Boolean
+    i18nActive = (Not g_Language Is Nothing)
+    If i18nActive Then i18nActive = g_Language.TranslationActive()
+    
     If (Not g_Themer Is Nothing) Then
         m_CurrentInterfaceID = g_Themer.GetCurrentThemeID
-        If (Not g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then m_CurrentInterfaceID = m_CurrentInterfaceID & "|" & CStr(g_Language.GetCurrentLanguageIndex)
-        End If
+        If i18nActive Then m_CurrentInterfaceID = m_CurrentInterfaceID & "|" & CStr(g_Language.GetCurrentLanguageIndex)
     Else
-        If (Not g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then m_CurrentInterfaceID = CStr(g_Language.GetCurrentLanguageIndex)
-        Else
-            m_CurrentInterfaceID = vbNullString
-        End If
+        If i18nActive Then m_CurrentInterfaceID = CStr(g_Language.GetCurrentLanguageIndex)
     End If
+    
 End Sub
 
 Public Function GetCurrentInterfaceID() As String

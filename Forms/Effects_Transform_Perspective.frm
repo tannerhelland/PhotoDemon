@@ -863,7 +863,7 @@ Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
     Next i
     
     'If we're close to an existing point, return the index of that point
-    If (bestDist < g_MouseAccuracy) Then CheckClick = bestIndex
+    If (bestDist < Interface.GetStandardInteractionDistance()) Then CheckClick = bestIndex
     
 End Function
 

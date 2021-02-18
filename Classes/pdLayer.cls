@@ -2169,7 +2169,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(g_MouseAccuracy, PDImages.GetActiveImage)
+    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(Interface.GetStandardInteractionDistance(), PDImages.GetActiveImage)
     
     'Find the smallest distance for this mouse position
     Dim minDistance As Double

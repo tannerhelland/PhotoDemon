@@ -71,11 +71,6 @@ Public g_Themer As pdTheme
 Public g_RecentFiles As pdRecentFiles
 Public g_RecentMacros As pdMRUManager
 
-'Mouse accuracy for collision detection with on-screen objects.  This is currently set by the
-' PDMain.ContinueLoadingProgram() function; it must be calculated at run-time to account
-' for high-DPI settings.
-Public g_MouseAccuracy As Double
-
 'If a double-click action closes a window (e.g. double-clicking a file from a common dialog), Windows incorrectly
 ' forwards the second click to the window behind the closed dialog.  To avoid this "click-through" behavior,
 ' this variable can be set to TRUE, which will prevent the underlying canvas from accepting input.  Just make sure
