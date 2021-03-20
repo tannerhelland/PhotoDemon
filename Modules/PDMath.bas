@@ -72,6 +72,16 @@ Public Function PopulateRectL(ByVal srcLeft As Long, ByVal srcTop As Long, ByVal
     PopulateRectL.Bottom = srcBottom
 End Function
 
+'Translate values on the scale [0, 1] to an arbitrary new scale.
+Public Function TranslateValue_AbsToRel(ByVal srcValue As Single, ByVal srcMax As Single) As Single
+    If (srcMax <> 0!) Then TranslateValue_AbsToRel = srcValue / srcMax Else TranslateValue_AbsToRel = 0!
+End Function
+
+'Translate values from some arbitrary scale to [0, 1].
+Public Function TranslateValue_RelToAbs(ByVal srcValue As Single, ByVal srcMax As Single) As Single
+    TranslateValue_RelToAbs = srcValue * srcMax
+End Function
+
 'Find the union rect of two floating-point rects.  (This is the smallest rect that contains both rects.)
 Public Sub UnionRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByRef srcRect2 As RectF, Optional ByVal widthAndHeightAreReallyRightAndBottom As Boolean = False)
 
