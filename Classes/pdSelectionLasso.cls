@@ -41,7 +41,6 @@ Private m_SelPropBorderWidth As Single
 'Other properties unique to this shape can be referenced here
 Private m_NumOfLassoPoints As Long, m_LassoPoints() As PointFloat
 
-
 'Each selection shape has additional properties specific to that shape.  (For example, rectangular
 ' selections have a "rounded corner radius" property unique to them.)  To improve extensibility,
 ' properties are stored in a dictionary.  All properties are relayed to the current selection shape
