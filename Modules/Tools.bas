@@ -104,7 +104,7 @@ Public Sub SetCustomToolState(ByVal newState As Long)
 End Sub
 
 Public Function IsSelectionToolActive() As Boolean
-    IsSelectionToolActive = (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_WAND)
+    IsSelectionToolActive = (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_WAND)
 End Function
 
 'When a tool is finished processing, it can call this function to release all tool tracking variables
@@ -927,8 +927,6 @@ Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
             GetNameOfTool = "Rectangle selection"
         Case SELECT_CIRC
             GetNameOfTool = "Circle selection"
-        Case SELECT_LINE
-            GetNameOfTool = "Line selection"
         Case SELECT_POLYGON
             GetNameOfTool = "Polygon selection"
         Case SELECT_LASSO

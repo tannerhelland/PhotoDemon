@@ -3248,9 +3248,6 @@ Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
         Case "tool_select_ellipse"
             toolbar_Toolbox.SelectNewTool SELECT_CIRC, True, True
         
-        Case "tool_select_line"
-            toolbar_Toolbox.SelectNewTool SELECT_LINE, True, True
-        
         Case "tool_select_polygon"
             toolbar_Toolbox.SelectNewTool SELECT_POLYGON, True, True
         

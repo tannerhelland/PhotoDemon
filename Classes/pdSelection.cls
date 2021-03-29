@@ -60,15 +60,14 @@ Public Enum PD_SelectionShape
     ss_Unknown = -1
     ss_Rectangle = 0
     ss_Circle = 1
-    ss_Line = 2
-    ss_Polygon = 3
-    ss_Lasso = 4
-    ss_Wand = 5
-    ss_Raster = 6
+    ss_Polygon = 2
+    ss_Lasso = 3
+    ss_Wand = 4
+    ss_Raster = 5
 End Enum
 
 #If False Then
-    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Line = 2, ss_Polygon = 3, ss_Lasso = 4, ss_Wand = 5, ss_Raster = 6
+    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Polygon = 2, ss_Lasso = 3, ss_Wand = 4, ss_Raster = 5
 #End If
 
 Private m_SelectionShape As PD_SelectionShape
@@ -93,17 +92,16 @@ Public Enum PD_SelectionProperty
     sp_BorderWidth = 2
     sp_FeatheringRadius = 3
     sp_RoundedCornerRadius = 4
-    sp_LineWidth = 5
-    sp_SmoothStroke = 6
-    sp_PolygonCurvature = 7
-    sp_WandTolerance = 8
-    sp_WandSearchMode = 9
-    sp_WandSampleMerged = 10
-    sp_WandCompareMethod = 11
+    sp_SmoothStroke = 5
+    sp_PolygonCurvature = 6
+    sp_WandTolerance = 7
+    sp_WandSearchMode = 8
+    sp_WandSampleMerged = 9
+    sp_WandCompareMethod = 10
 End Enum
 
 #If False Then
-    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_LineWidth = 5, sp_SmoothStroke = 6, sp_PolygonCurvature = 7, sp_WandTolerance = 8, sp_WandSearchMode = 9, sp_WandSampleMerged = 10, sp_WandCompareMethod = 11
+    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_SmoothStroke = 5, sp_PolygonCurvature = 6, sp_WandTolerance = 7, sp_WandSearchMode = 8, sp_WandSampleMerged = 9, sp_WandCompareMethod = 10
 #End If
 
 Public Enum PD_SelectionLockable
@@ -251,6 +249,7 @@ Attribute m_AntTimer.VB_VarHelpID = -1
 '
 'For now, I'm starting with lasso selections *only*.  Once I've nailed down the required interface definitions,
 ' I'll extend the new strategy to *all* selection types.
+Private m_SelectionLasso As pdSelection_Lasso
 
 'Retrieve various boundary rects.  Full descriptions of these rects are given above.
 Friend Function GetCornersUnlockedRect() As RectF_RB
@@ -339,9 +338,6 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
         Case sp_RoundedCornerRadius
             If (m_SelectionShape = ss_Rectangle) Then m_IsMaskReady = False
         
-        Case sp_LineWidth
-            If (m_SelectionShape = ss_Line) Then m_IsMaskReady = False
-        
         Case sp_SmoothStroke
             If (m_SelectionShape = ss_Lasso) Then m_IsMaskReady = False
         
@@ -390,7 +386,6 @@ Friend Sub InitFromXML(ByRef srcXML As String)
             SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
             SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
             SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
-            SetSelectionProperty sp_LineWidth, cParams.GetLong("SelectionLineWidth", 1)
             
             'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
             With m_CornersLocked
@@ -405,7 +400,7 @@ Friend Sub InitFromXML(ByRef srcXML As String)
             
                 'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
                 ' values from positions [12, 15] inclusive.
-                Case ss_Rectangle, ss_Circle, ss_Line
+                Case ss_Rectangle, ss_Circle
                 
                     With m_CornersUnlocked
                         .Left = PDMath.TranslateValue_RelToAbs(cParams.GetSingle("SelectionVectorLeft", 0!), m_parentPDImage.Width)
@@ -512,7 +507,6 @@ Friend Function GetSelectionAsXML() As String
     cParams.AddParam "SelectionFeatheringRadius", Me.GetSelectionProperty(sp_FeatheringRadius)
     cParams.AddParam "SelectionBorderWidth", Me.GetSelectionProperty(sp_BorderWidth)
     cParams.AddParam "SelectionRoundedCornerRadius", Me.GetSelectionProperty(sp_RoundedCornerRadius)
-    cParams.AddParam "SelectionLineWidth", Me.GetSelectionProperty(sp_LineWidth)
     
     With m_CornersLocked
         cParams.AddParam "SelectionLeft", PDMath.TranslateValue_AbsToRel(.Left, m_parentPDImage.Width)
@@ -525,7 +519,7 @@ Friend Function GetSelectionAsXML() As String
     Select Case m_SelectionShape
     
         'Rectangles, ellipses, and lines store corner coordinates
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             With m_CornersUnlocked
                 cParams.AddParam "SelectionVectorLeft", PDMath.TranslateValue_AbsToRel(.Left, m_parentPDImage.Width)
                 cParams.AddParam "SelectionVectorTop", PDMath.TranslateValue_AbsToRel(.Top, m_parentPDImage.Height)
@@ -694,8 +688,6 @@ Friend Function DoesShapeSupportCustomPOIs() As Boolean
         DoesShapeSupportCustomPOIs = False
     ElseIf (m_SelectionShape = ss_Circle) Then
         DoesShapeSupportCustomPOIs = False
-    ElseIf (m_SelectionShape = ss_Line) Then
-        DoesShapeSupportCustomPOIs = True
     ElseIf (m_SelectionShape = ss_Lasso) Then
         DoesShapeSupportCustomPOIs = False
     ElseIf (m_SelectionShape = ss_Polygon) Then
@@ -714,13 +706,7 @@ Friend Function GetCurrentPOIList(ByRef dstPoints() As PointFloat) As Boolean
     GetCurrentPOIList = Me.DoesShapeSupportCustomPOIs()
     
     If GetCurrentPOIList Then
-        If (m_SelectionShape = ss_Line) Then
-            ReDim dstPoints(0 To 1) As PointFloat
-            dstPoints(0).x = m_CornersUnlocked.Left
-            dstPoints(0).y = m_CornersUnlocked.Top
-            dstPoints(1).x = m_CornersUnlocked.Right
-            dstPoints(1).y = m_CornersUnlocked.Bottom
-        ElseIf (m_SelectionShape = ss_Wand) Then
+        If (m_SelectionShape = ss_Wand) Then
             ReDim dstPoints(0) As PointFloat
             dstPoints(0).x = m_CornersUnlocked.Left
             dstPoints(0).y = m_CornersUnlocked.Top
@@ -743,7 +729,7 @@ Friend Sub SetSelectionShape(ByVal selShape As PD_SelectionShape)
     'Certain types of shapes are transformable.  Mark those now.
     Select Case selShape
         
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             m_IsTransformable = True
             
         Case ss_Lasso, ss_Polygon
@@ -973,37 +959,6 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         
         End Select
         
-    'Line selections
-    ElseIf (m_SelectionShape = ss_Line) Then
-    
-        'Based on the transform mode, set the initial points accordingly
-        Select Case m_CurrentPOI
-    
-            'Case "undefined" should never occur, but if it does - treat this like a normal initial coordinate call
-            Case poi_Undefined
-                With m_CornersUnlocked
-                    .Left = x
-                    .Top = y
-                    .Right = x
-                    .Bottom = y
-                End With
-            
-            'First point is being moved
-            Case 0
-                With m_CornersUnlocked
-                    .Left = x
-                    .Top = y
-                End With
-            
-            'Second point is being moved
-            Case 1
-                With m_CornersUnlocked
-                    .Right = x
-                    .Bottom = y
-                End With
-        
-        End Select
-                
     'Polygons can be both moved and resized (by click-dragging individual points)
     ElseIf (m_SelectionShape = ss_Polygon) Then
     
@@ -1082,15 +1037,6 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
             End With
             
             'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
-            m_IsTransformable = True
-        
-        Case ss_Line
-        
-            With m_CornersUnlocked
-                .Right = x
-                .Bottom = y
-            End With
-            
             m_IsTransformable = True
         
         'Polygon selections require us to initialize a whole bunch of polygon tracking variables
@@ -1236,29 +1182,6 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 
                 'If a transform mode is active, re-mark the selection as being transformable
                 m_IsTransformable = True
-        
-            Case ss_Line
-            
-                'Based on the transform mode, set the initial points accordingly
-                Select Case m_CurrentPOI
-            
-                    'Case -1 should never occur.  (-1 represents an invalid transformation request)
-                    Case poi_Undefined
-                    
-                    'First point is being moved
-                    Case 0
-                        m_CornersUnlocked.Left = x
-                        m_CornersUnlocked.Top = y
-                        
-                    'Second point is being moved
-                    Case 1
-                        m_CornersUnlocked.Right = x
-                        m_CornersUnlocked.Bottom = y
-                        
-                End Select
-                
-                'If a transform mode is active, re-mark the selection as being transformable
-                m_IsTransformable = True
             
             'Polygon transforms consist of either moving an individual polygon point, or moving the entire polygon array
             Case ss_Polygon
@@ -1363,10 +1286,6 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     If m_IsHeightLocked Then m_CornersUnlocked.Bottom = (m_CornersLocked.Top + m_CornersLocked.Height) Else m_CornersUnlocked.Bottom = y
                 End If
                 
-            Case ss_Line
-                m_CornersUnlocked.Right = x
-                m_CornersUnlocked.Bottom = y
-                
             'Polygon selections will increment the current polygon array by one, adding the new point as the latest polygon coordinate
             Case ss_Polygon
             
@@ -1438,7 +1357,7 @@ Private Sub MakeCoordinatesSquare()
 
     Select Case m_SelectionShape
                 
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             
             With m_CornersUnlocked
                 
@@ -1507,7 +1426,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
         Select Case m_SelectionShape
         
             'Rectangles, ellipses, and lines all use the same (x1, y1) - (x2, y2) coordinate system, so finding selection bounds is easy.
-            Case ss_Rectangle, ss_Circle, ss_Line
+            Case ss_Rectangle, ss_Circle
                 
                 'Our internal outline path cache needs to be regenerated whenever we update internal coordinates
                 m_FinalOutlineIsReady = False
@@ -1615,7 +1534,7 @@ Friend Function AreAllCoordinatesInvalid() As Boolean
         'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
         ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
         ' rely on intermediate x/y coords instead of the m_Bounds.Left/m_Bounds.Top etc values.
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             
             If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
             If (m_CornersLocked.Left > m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
@@ -1654,7 +1573,7 @@ Friend Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
 
     Select Case m_SelectionShape
     
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             Debug.Print "nudgeSelection function was used on an invalid selection type - FIX THIS!"
     
         Case ss_Polygon
@@ -1851,15 +1770,6 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
                 
             End If
             
-        
-        'Lines support endpoint movement via text box
-        Case ss_Line
-            m_IsMaskReady = False
-            If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-            If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
-            If toolpanel_Selections.tudSel(subpanelCtlOffset + 2).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 2)
-            If toolpanel_Selections.tudSel(subpanelCtlOffset + 3).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 3)
-            
         'I haven't decided if other selection types will support movement via text box...
         Case Else
         
@@ -1875,14 +1785,6 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
             m_CornersUnlocked.Right = m_CornersLocked.Left + m_CornersLocked.Width
             m_CornersUnlocked.Bottom = m_CornersLocked.Top + m_CornersLocked.Height
         
-        'Adjust the x1, y1, x2, y2 values to match the retrieved text box values, but note that x2 and y2 do not correspond to
-        ' width and height on line selections; they correspond to x2/y2 coordinates.
-        Case ss_Line
-            m_CornersUnlocked.Left = m_CornersLocked.Left
-            m_CornersUnlocked.Top = m_CornersLocked.Top
-            m_CornersUnlocked.Right = m_CornersLocked.Width
-            m_CornersUnlocked.Bottom = m_CornersLocked.Height
-            
         Case Else
         
     End Select
@@ -2100,15 +2002,13 @@ Private Sub CreateSelectionMask()
             
             If (Me.GetSelectionShape = ss_Rectangle) Or (Me.GetSelectionShape = ss_Circle) Then
                 If (actualBorderSize > PDMath.Min2Float_Single(m_CornersLocked.Width + 1#, m_CornersLocked.Height + 1#)) Then actualBorderSize = PDMath.Min2Float_Single(m_CornersLocked.Width + 1#, m_CornersLocked.Height + 1#)
-            ElseIf (Me.GetSelectionShape = ss_Line) Then
-                If (actualBorderSize > Me.GetSelectionProperty_Float(sp_LineWidth)) Then actualBorderSize = Me.GetSelectionProperty_Float(sp_LineWidth)
             End If
             
         End If
         
         'Note that we technically would want to use the specified foreground opacity, but because GDI+ won't give us correct
         ' antialiasing with a fully transparent brush, we rely on an opaque brush instead.
-        If (Me.GetSelectionShape = ss_Rectangle) Or (Me.GetSelectionShape = ss_Line) Then
+        If (Me.GetSelectionShape = ss_Rectangle) Then
             Drawing2D.QuickCreateSolidPen maskPen, actualBorderSize, maskForeColor, 100#, P2_LJ_Miter, P2_LC_Flat
             maskPen.SetPenMiterLimit 10#
         Else
@@ -2172,90 +2072,6 @@ Private Sub CreateSelectionMask()
             End If
             
         
-        'Line selections
-        ' TODO: let the user specify line caps
-        Case ss_Line
-            
-            'So, line selections are a little weird.  Interior/exterior versions require a pen to draw (as a line segment
-            ' does not constitute a valid "fill" target), while bordered selections require us to manually calculate a "box"
-            ' describing the line's outline.  Because of these oddities, we handle some items here (like boundary checks)
-            ' instead of using the catch-all code at the end of this class.
-            Dim linePen As pd2DPen, lineWidth As Single
-            lineWidth = GetSelectionProperty_Long(sp_LineWidth)
-            Drawing2D.QuickCreateSolidPen linePen, lineWidth, maskForeColor, 100#, P2_LJ_Miter, P2_LC_Flat
-            
-            Dim linePath As pd2DPath
-            Set linePath = New pd2DPath
-            
-            'Interior/exterior selections are easy: just add a single line to a path object
-            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                linePath.AddLine m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom
-                PD2D.DrawPath dstSurface, linePen, linePath
-                m_Bounds = linePath.GetPathBoundariesF(linePen)
-            Else
-                    
-                'Bordered selections require a little more creativity.  We could use some GDI+ functions to calculate the border
-                ' (specifically, the GdipWidenPath call), but that call is prone to unpredictable failures, so we play it safe
-                ' and manually calculate our own outline instead.
-                
-                'First, copy the endpoints of the current line into dedicated floats
-                Dim pt1 As PointFloat, pt2 As PointFloat
-                pt1.x = m_CornersUnlocked.Left
-                pt1.y = m_CornersUnlocked.Top
-                pt2.x = m_CornersUnlocked.Right
-                pt2.y = m_CornersUnlocked.Bottom
-                
-                'Determine the angle between said points, then add PI/2 to it to get the 90-degree alternative.
-                Dim ptAngle As Double
-                ptAngle = PDMath.Atan2(pt2.y - pt1.y, pt2.x - pt1.x)
-                
-                Dim ptAngle2 As Double
-                ptAngle2 = ptAngle + PI * 0.5
-                
-                'Calculate endpoints of the box surrounding the line, when drawn with the current line thickness
-                Dim endPoints(0 To 3) As PointFloat
-                PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2, endPoints(0).x, endPoints(0).y
-                PDMath.RotatePointAroundPoint pt1.x + lineWidth * 0.5, pt1.y, pt1.x, pt1.y, ptAngle2 + PI, endPoints(1).x, endPoints(1).y
-                PDMath.RotatePointAroundPoint pt2.x + lineWidth * 0.5, pt2.y, pt2.x, pt2.y, ptAngle2, endPoints(2).x, endPoints(2).y
-                PDMath.RotatePointAroundPoint pt2.x + lineWidth * 0.5, pt2.y, pt2.x, pt2.y, ptAngle2 + PI, endPoints(3).x, endPoints(3).y
-                
-                'Next, sort the points in clockwise order.  (This lets us use the points as a path.)
-                Dim i As Long, j As Long
-                For i = 0 To 3
-                    For j = 0 To 3
-                        If (endPoints(j).x < endPoints(i).x) Then
-                            pt1 = endPoints(i)
-                            endPoints(i) = endPoints(j)
-                            endPoints(j) = pt1
-                        Else
-                            If (endPoints(j).x = endPoints(i).x) Then
-                                If (endPoints(j).y < endPoints(i).y) Then
-                                    pt1 = endPoints(i)
-                                    endPoints(i) = endPoints(j)
-                                    endPoints(j) = pt1
-                                End If
-                            End If
-                        End If
-                    Next j
-                Next i
-                
-                pt1 = endPoints(3)
-                endPoints(3) = endPoints(2)
-                endPoints(2) = pt1
-                
-                'We finally have our outline!  Add it to a path object (and make sure to close the path after).
-                linePath.AddLines 4, VarPtr(endPoints(0))
-                linePath.CloseCurrentFigure
-                
-                '*Now* we can draw this like any other bordered selection
-                maskPath.AddPath linePath
-                PD2D.DrawPath dstSurface, maskPen, linePath
-                
-                'Because it's convenient, calculate boundaries while we're here
-                m_Bounds = linePath.GetPathBoundariesF(maskPen)
-                
-            End If
-            
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
         Case ss_Polygon
             
@@ -2414,9 +2230,6 @@ Private Sub CreateSelectionMask()
                         If (m_Bounds.Width = 0#) And (m_Bounds.Height = 0#) Then m_Bounds = m_CornersLocked
                         
                     End If
-                    
-                'Line boundaries are already calculated in a previous step
-                Case ss_Line
                     
                 'Polygon boundaries are already calculated in a previous step
                 Case ss_Polygon
@@ -2591,7 +2404,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         If Me.DoesShapeSupportCustomPOIs() Then
             
             'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
-            If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
+            If (m_SelectionShape = ss_Wand) Then
                 
                 Dim poiList() As PointFloat
                 Me.GetCurrentPOIList poiList

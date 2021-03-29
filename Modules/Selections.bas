@@ -465,14 +465,6 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
                         toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
                     End If
                     
-                'Line selections display x1, y1, x2, y2
-                Case ss_Line
-                    tmpRectFRB = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersUnlockedRect()
-                    toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
-                    toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
-                    toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
-                    toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
-        
             End Select
             
         Else
@@ -500,9 +492,6 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
             
             Case ss_Circle
             
-            Case ss_Line
-                If toolpanel_Selections.sltSelectionLineWidth.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth) Then toolpanel_Selections.sltSelectionLineWidth.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth)
-                
             Case ss_Lasso
                 If toolpanel_Selections.sltSmoothStroke.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke) Then toolpanel_Selections.sltSmoothStroke.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke)
                 
@@ -703,14 +692,6 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                 End If
                 
             End If
-            
-        Case ss_Line
-    
-            'Line selections are simple - we only care if the mouse is by (x1,y1) or (x2,y2)
-            srcImage.MainSelection.GetCurrentPOIList poiListFloat
-            
-            'Used the generalized point comparison function to see if one of the points matches
-            IsCoordSelectionPOI = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
             
         Case ss_Polygon
         
@@ -1182,9 +1163,6 @@ Public Function GetSelectionShapeFromCurrentTool() As PD_SelectionShape
         Case SELECT_CIRC
             GetSelectionShapeFromCurrentTool = ss_Circle
         
-        Case SELECT_LINE
-            GetSelectionShapeFromCurrentTool = ss_Line
-            
         Case SELECT_POLYGON
             GetSelectionShapeFromCurrentTool = ss_Polygon
             
@@ -1215,9 +1193,6 @@ Public Function GetRelevantToolFromSelectShape() As PDTools
                     
                 Case ss_Circle
                     GetRelevantToolFromSelectShape = SELECT_CIRC
-                
-                Case ss_Line
-                    GetRelevantToolFromSelectShape = SELECT_LINE
                 
                 Case ss_Polygon
                     GetRelevantToolFromSelectShape = SELECT_POLYGON
@@ -1255,17 +1230,14 @@ Public Function GetSelectionSubPanelFromCurrentTool() As Long
         Case SELECT_CIRC
             GetSelectionSubPanelFromCurrentTool = 1
         
-        Case SELECT_LINE
+        Case SELECT_POLYGON
             GetSelectionSubPanelFromCurrentTool = 2
             
-        Case SELECT_POLYGON
+        Case SELECT_LASSO
             GetSelectionSubPanelFromCurrentTool = 3
             
-        Case SELECT_LASSO
-            GetSelectionSubPanelFromCurrentTool = 4
-            
         Case SELECT_WAND
-            GetSelectionSubPanelFromCurrentTool = 5
+            GetSelectionSubPanelFromCurrentTool = 4
         
         Case Else
             GetSelectionSubPanelFromCurrentTool = -1
@@ -1284,17 +1256,14 @@ Public Function GetSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage
         Case ss_Circle
             GetSelectionSubPanelFromSelectionShape = 1
         
-        Case ss_Line
+        Case ss_Polygon
             GetSelectionSubPanelFromSelectionShape = 2
             
-        Case ss_Polygon
+        Case ss_Lasso
             GetSelectionSubPanelFromSelectionShape = 3
             
-        Case ss_Lasso
-            GetSelectionSubPanelFromSelectionShape = 4
-            
         Case ss_Wand
-            GetSelectionSubPanelFromSelectionShape = 5
+            GetSelectionSubPanelFromSelectionShape = 4
         
         Case Else
             GetSelectionSubPanelFromSelectionShape = -1
@@ -1325,7 +1294,6 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
         .SetSelectionProperty sp_FeatheringRadius, toolpanel_Selections.sltSelectionFeathering.Value
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_BorderWidth, toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Value
         .SetSelectionProperty sp_RoundedCornerRadius, toolpanel_Selections.sltCornerRounding.Value
-        .SetSelectionProperty sp_LineWidth, toolpanel_Selections.sltSelectionLineWidth.Value
         If (curShape = ss_Polygon) Then .SetSelectionProperty sp_PolygonCurvature, toolpanel_Selections.sltPolygonCurvature.Value
         If (curShape = ss_Lasso) Then .SetSelectionProperty sp_SmoothStroke, toolpanel_Selections.sltSmoothStroke.Value
         If (curShape = ss_Wand) Then
@@ -1740,7 +1708,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
         'Basic selection tools
         Select Case g_CurrentTool
             
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
+            Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON
                 
                 'First, check to see if a selection is both active and transformable.
                 If PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
@@ -1819,7 +1787,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     Select Case g_CurrentTool
     
         'Most selection tools are handled identically
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
             If PDImages.GetActiveImage.IsSelectionActive Then

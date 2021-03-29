@@ -33,7 +33,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   375
       Index           =   0
       Left            =   1440
-      TabIndex        =   35
+      TabIndex        =   28
       Top             =   840
       Width           =   1125
       _ExtentX        =   1931
@@ -47,7 +47,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   375
       Index           =   1
       Left            =   1440
-      TabIndex        =   36
+      TabIndex        =   29
       Top             =   840
       Width           =   1125
       _ExtentX        =   1931
@@ -105,7 +105,7 @@ Begin VB.Form toolpanel_Selections
       Height          =   330
       Index           =   1
       Left            =   225
-      TabIndex        =   37
+      TabIndex        =   30
       Top             =   840
       Width           =   1140
       _ExtentX        =   2011
@@ -136,7 +136,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   1
          Left            =   5520
-         TabIndex        =   34
+         TabIndex        =   27
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -148,7 +148,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   0
          Left            =   2760
-         TabIndex        =   38
+         TabIndex        =   31
          Top             =   30
          Width           =   3135
          _ExtentX        =   6376
@@ -249,7 +249,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   1
          Left            =   120
-         TabIndex        =   32
+         TabIndex        =   25
          Top             =   30
          Width           =   2415
          _ExtentX        =   4260
@@ -262,7 +262,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   405
          Index           =   1
          Left            =   120
-         TabIndex        =   33
+         TabIndex        =   26
          Top             =   840
          Width           =   2550
          _ExtentX        =   4498
@@ -327,7 +327,7 @@ Begin VB.Form toolpanel_Selections
          Height          =   360
          Index           =   2
          Left            =   3960
-         TabIndex        =   31
+         TabIndex        =   24
          Top             =   855
          Width           =   375
          _ExtentX        =   661
@@ -361,132 +361,6 @@ Begin VB.Form toolpanel_Selections
          Height          =   735
          Index           =   2
          Left            =   120
-         TabIndex        =   24
-         Top             =   30
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   1296
-         Caption         =   "area"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSlider sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   2
-         Left            =   120
-         TabIndex        =   25
-         Top             =   840
-         Width           =   2550
-         _ExtentX        =   4498
-         _ExtentY        =   714
-         Min             =   1
-         Max             =   1000
-         ScaleStyle      =   2
-         Value           =   1
-         DefaultValue    =   1
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   4
-         Left            =   2820
-         TabIndex        =   26
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   5
-         Left            =   2820
-         TabIndex        =   27
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   6
-         Left            =   4380
-         TabIndex        =   28
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSpinner tudSel 
-         Height          =   345
-         Index           =   7
-         Left            =   4380
-         TabIndex        =   29
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         ShowResetButton =   0   'False
-      End
-      Begin PhotoDemon.pdSlider sltSelectionLineWidth 
-         CausesValidation=   0   'False
-         Height          =   735
-         Left            =   5880
-         TabIndex        =   30
-         Top             =   30
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   1296
-         Caption         =   "line width"
-         FontSizeCaption =   10
-         Min             =   1
-         Max             =   1000
-         ScaleStyle      =   2
-         Value           =   1
-         DefaultValue    =   1
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   5
-         Left            =   4350
-         Top             =   45
-         Width           =   1425
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "2nd point (x, y)"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   4
-         Left            =   2790
-         Top             =   45
-         Width           =   1485
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "1st point (x, y)"
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   1470
-      Index           =   3
-      Left            =   5340
-      Top             =   0
-      Width           =   9975
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboSelArea 
-         Height          =   735
-         Index           =   3
-         Left            =   120
          TabIndex        =   20
          Top             =   30
          Width           =   2415
@@ -498,7 +372,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
-         Index           =   3
+         Index           =   2
          Left            =   120
          TabIndex        =   21
          Top             =   840
@@ -528,7 +402,7 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
-      Index           =   4
+      Index           =   3
       Left            =   5340
       Top             =   0
       Width           =   9975
@@ -536,7 +410,7 @@ Begin VB.Form toolpanel_Selections
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
-         Index           =   4
+         Index           =   3
          Left            =   120
          TabIndex        =   16
          Top             =   30
@@ -549,7 +423,7 @@ Begin VB.Form toolpanel_Selections
       Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
-         Index           =   4
+         Index           =   3
          Left            =   120
          TabIndex        =   17
          Top             =   840
@@ -580,7 +454,7 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
-      Index           =   5
+      Index           =   4
       Left            =   5340
       Top             =   0
       Width           =   9975
@@ -956,13 +830,6 @@ Private Sub sltSelectionFeathering_Change()
     End If
 End Sub
 
-Private Sub sltSelectionLineWidth_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-        PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_LineWidth, sltSelectionLineWidth.Value
-        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    End If
-End Sub
-
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
 ' panel concise and clean, we move other controls up or down depending on what controls are visible.
 Public Sub UpdateSelectionPanelLayout()
@@ -1052,7 +919,6 @@ Public Sub UpdateAgainstCurrentTheme()
     
     sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
     sltCornerRounding.AssignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-    sltSelectionLineWidth.AssignTooltip "This option adjusts the width of a line selection."
     
     sltPolygonCurvature.AssignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
     sltSmoothStroke.AssignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
