@@ -1200,7 +1200,26 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                         If (trnsIndex >= 0) Then FreeImage_SetTransparentIndex fi_DIB, trnsIndex
                     Else
-                        If (frameData(i).framePalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
+                        
+                        'Note that PD prefers that the transparency index - if one exists - is always the
+                        ' *first* palette index.  This improves compatibility with old GIF decoders (some of
+                        ' which make this exact assumption).
+                        If (frameData(i).framePalette(0).Alpha = 0) Then
+                            FreeImage_SetTransparentIndex fi_DIB, 0
+                        
+                        'If PD finds transparency in a non-ideal location, it will still write it correctly,
+                        ' but you risk old GIF decoders not displaying the frames properly.
+                        Else
+                            Dim idxPal As Long
+                            For idxPal = 0 To frameData(i).palNumColors - 1
+                                If (frameData(i).framePalette(idxPal).Alpha = 0) Then
+                                    FreeImage_SetTransparentIndex fi_DIB, idxPal
+                                    PDDebug.LogAction "palette transparency in suboptimal location (" & idxPal & "); consider fixing!"
+                                    Exit For
+                                End If
+                            Next idxPal
+                        End If
+                        
                     End If
                     
                     'Set this frame to either erase to background (transparent black) or retain data

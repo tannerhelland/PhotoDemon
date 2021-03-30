@@ -3825,9 +3825,13 @@ End Function
 ' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
 ' eight most popular colors are matched to power-of-two values (e.g. the most compressible indices).
 '
+'If the prioritizeAlpha parameter is set to TRUE, the palette value with transparency = 0 will be given
+' highest precedence.  (This produces "more compatible" GIFs, since some GIF decoders expect index 0 to
+' always represent transparency, if it exists.)
+'
 'This operation is lossless for the DIB - it is treated as read-only - but the passed palette will obviously
 ' be modified by the function!
-Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal prioritizeAlpha As Boolean = True) As Boolean
     
     Dim srcPixels() As Byte, tmpSA As SafeArray1D
     
@@ -3894,12 +3898,29 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
     
     srcDIB.UnwrapArrayFromDIB srcPixels
     
+    Dim i As Long
+    
+    'If transparency needs to be prioritized, find the highest popularity value and set the transparent
+    ' index to that value.
+    If prioritizeAlpha Then
+    
+        Dim maxPopularity As Long
+        For i = 0 To UBound(srcPalette)
+            If (palPopularity(i) > maxPopularity) Then maxPopularity = palPopularity(i)
+        Next i
+        
+        For i = 0 To UBound(srcPalette)
+            If (srcPalette(i).Alpha = 0) Then palPopularity(i) = maxPopularity + 1
+        Next i
+    
+    End If
+    
     'Do a quick insertion sort.  Points are likely to be somewhat close to sorted, as the first color(s)
     ' we encounter are likely to consume most of the image, especially in e.g. a GIF.
     Dim numColors As Long
     numColors = UBound(srcPalette) + 1
     
-    Dim i As Long, j As Long
+    Dim j As Long
     Dim tmpSortQ As RGBQuad, tmpSortL As Long, searchCont As Boolean
     i = 1
     
