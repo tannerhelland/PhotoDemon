@@ -27,7 +27,8 @@ Attribute VB_Name = "Plugin_zstd"
 
 Option Explicit
 
-'These constants were originally declared in zstd.h
+'These constants were originally declared in zstd.h.  (These can also be queried at run-time, FYI,
+' but that would require declares not supplied here - see zstd.h for details.)
 Private Const ZSTD_MIN_CLEVEL As Long = 1
 Private Const ZSTD_DEFAULT_CLEVEL As Long = 3
 
@@ -56,6 +57,7 @@ Private m_CompressionContext As Long, m_DecompressionContext As Long
 'Private Declare Function ZSTD_isError Lib "libzstd" Alias "_ZSTD_isError@4" (ByVal returnCode As Long) As Long 'Tells you if a function result is an error code or a valid size return
 'Private Declare Function ZSTD_maxCLevel Lib "libzstd" Alias "_ZSTD_maxCLevel@0" () As Long  'Maximum compression level available
 'Private Declare Function ZSTD_versionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long
+'Private Declare Function ZSTD_CCtx_setParameter Lib "libzstd" Alias "_ZSTD_CCtx_setParameter@12" (ByVal dstCCtx As Long, ByVal ZSTD_cParameter As Long, ByVal newValue As Long) As Long
 
 'If you want, you can ask zstd to tell you how much size is require to decompress a given compression array.
 ' PD doesn't need this (as we track compression sizes manually), but it's here if you need it.  Note that
@@ -69,6 +71,9 @@ Private m_ZstdHandle As Long
 
 'Maximum compression level that the library currently supports.  This is cached at initialization time.
 Private m_ZstdCompressLevelMax As Long
+
+'Experimental check for multithread-capable libzstd instance (requires a custom build for PD)
+Private m_ZstdMTAvailable As Boolean
 
 'zstd has very specific compiler needs in order to produce maximum perf code, so rather than
 ' recompile myself, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
@@ -91,6 +96,7 @@ Private Enum Zstd_ProcAddress
     ZSTD_compressBound
     ZSTD_isError
     ZSTD_getErrorName
+    ZSTD_CCtx_setParameter
     [last_address]
 End Enum
 
@@ -128,6 +134,7 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(ZSTD_isError) = GetProcAddress(m_ZstdHandle, "ZSTD_isError")
         m_ProcAddresses(ZSTD_maxCLevel) = GetProcAddress(m_ZstdHandle, "ZSTD_maxCLevel")
         m_ProcAddresses(ZSTD_versionNumber) = GetProcAddress(m_ZstdHandle, "ZSTD_versionNumber")
+        m_ProcAddresses(ZSTD_CCtx_setParameter) = GetProcAddress(m_ZstdHandle, "ZSTD_CCtx_setParameter")
         
         'Initialize all module-level arrays
         ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
@@ -138,6 +145,18 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
         m_ZstdCompressLevelMax = CallCDeclW(ZSTD_maxCLevel, vbLong)
         If (m_ZstdCompressLevelMax > ZSTD_MAX_CLEVEL) Then m_ZstdCompressLevelMax = ZSTD_MAX_CLEVEL
         m_CompressionContext = CallCDeclW(ZSTD_createCCtx, vbLong)
+        
+        'I've experimented with manually patching libzstd for PD to enable multi-threaded compression,
+        ' but a lot more work is necessary throughout PD to assume asynchronous compression behavior.
+        ' For now, just do a quick check at load-time to determine if a multithread aware libzstd is even
+        ' available to this instance.
+        If (m_CompressionContext <> 0) Then
+            Dim mtCompressionAvailable As Long
+            mtCompressionAvailable = CallCDeclW(ZSTD_CCtx_setParameter, vbLong, m_CompressionContext, 400&, 1&)
+            m_ZstdMTAvailable = (CallCDeclW(ZSTD_isError, vbLong, mtCompressionAvailable) = 0)
+            If (Not m_ZstdMTAvailable) Then PDDebug.LogAction "(note: libzstd is configured for single-threaded (blocking) mode)"
+        End If
+        
         m_DecompressionContext = CallCDeclW(ZSTD_createDCtx, vbLong)
         
         PDDebug.LogAction "zstd is ready.  Max compression level supported: " & CStr(m_ZstdCompressLevelMax)
