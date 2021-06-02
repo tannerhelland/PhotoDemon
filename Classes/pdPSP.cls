@@ -209,8 +209,13 @@ Friend Function LoadPSP(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Dim keepLoading As PD_PSPResult
     keepLoading = Step1_ValidateHeader(srcFile)
     
-    'If this identifies as a PSP file, build and validate the block directory
-    If (keepLoading < psp_Failure) Then keepLoading = Step2_BuildBlockDirectory(srcFile)
+    'If this identifies as a PSP file, build and validate the block directory.
+    ' (Otherwise, exit immediately.)
+    If (keepLoading < psp_Failure) Then
+        keepLoading = Step2_BuildBlockDirectory(srcFile)
+    Else
+        LoadPSP = False
+    End If
     
     'If the block directory looks good, parse the general image header.
     If (keepLoading < psp_Failure) Then keepLoading = Step3_ReadImageAttributes(srcFile)
@@ -1352,7 +1357,7 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String) As PD_PSPResult
             If (m_ImageHeader.psph_VersionMinor <> 0) Then m_Warnings.AddString "Unexpected PSP minor version encountered: " & m_ImageHeader.psph_VersionMinor
             
         Else
-            m_Warnings.AddString "PSP header failed basic validation.  (This is not a PSP file.)"
+            If PSP_DEBUG_VERBOSE Then m_Warnings.AddString "PSP header failed basic validation.  (This is not a PSP file.)"
             okToProceed = psp_FileNotPSP
         End If
         
