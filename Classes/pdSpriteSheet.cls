@@ -306,7 +306,53 @@ Friend Function CopyCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal d
         End If
         
     End If
+    
+End Function
+
+'Retrieve dimensions of a given sprite; not usually required by the client
+Friend Function GetSpriteHeight(ByVal srcImgID As Long) As Long
+    
+    'Resolve the image number into a sprite row and column
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
         
+        'Query the parent UDT for sprite dimensions
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
+            GetSpriteHeight = m_ImageCache(targetIndex).spriteHeight
+        Else
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.GetSpriteHeight failed to query image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+        
+    End If
+    
+End Function
+
+'Return the text name of a given sprite
+Friend Function GetSpriteName(ByVal srcImgID As Long) As String
+    
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
+            GetSpriteName = m_ImageCache(targetIndex).spriteNames.GetString(targetColumn * m_MaxSpritesInColumn + targetRow)
+        Else
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.GetSpriteName failed to query image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+    End If
+    
+End Function
+
+'For detailed comments, see GetSpriteHeight() above
+Friend Function GetSpriteWidth(ByVal srcImgID As Long) As Long
+    
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
+            GetSpriteWidth = m_ImageCache(targetIndex).spriteWidth
+        Else
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.GetSpriteHeight failed to query image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+    End If
+    
 End Function
 
 'AlphaBlend equivalent
@@ -322,6 +368,7 @@ Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
                 .imgSpriteSheets(targetColumn).AlphaBlendToDCEx dstDC, dstX, dstY, .spriteWidth, .spriteHeight, 0, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, customAlpha
                 .imgSpriteSheets(targetColumn).FreeFromDC
             End With
+            PaintCachedImage = True
         Else
             PDDebug.LogAction "WARNING!  pdSpriteSheet.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
         End If
@@ -351,6 +398,25 @@ Friend Function StretchBltCachedImage(ByRef dstDIB As pdDIB, ByVal x1 As Single,
     
 End Function
 
+'After painting (or adding, if you want) a sprite to this sprite sheet object,
+' you can call this function to suspend the underlying sheet to a compressed stream
+' of bytes.  This also frees all GDI objects associated with the image.
+Friend Sub SuspendCachedImage(ByVal srcImgID As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True)
+
+    'Resolve the image number into a sprite row and column, then suspend that image
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        
+        If (m_ImageCache(targetIndex).numSheets > 0) Then
+            m_ImageCache(targetIndex).imgSpriteSheets(targetColumn).SuspendDIB cmpFormat, autoKeepIfLarge
+        Else
+            PDDebug.LogAction "WARNING!  pdSpriteSheet.SuspendCachedImage failed to suspend image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+        
+    End If
+    
+End Sub
+
 Private Function GetRowColumnPos(ByVal srcImgID As Long, ByRef dstIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long) As Boolean
     
     GetRowColumnPos = True
@@ -378,11 +444,11 @@ Private Sub GetNumRowsColumns(ByVal srcImageIndex As Long, ByRef dstRow As Long,
 End Sub
 
 'Suspend all spritesheets to compressed memory streams; they will auto-recreate as necessary
-Friend Sub MinimizeMemory(Optional ByVal autoKeepIfLarge As Boolean = True)
+Friend Sub MinimizeMemory(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True)
     Dim i As Long, j As Long
     For i = 0 To m_NumOfCacheObjects - 1
-        For j = 0 To m_ImageCache(j).numSheets - 1
-            m_ImageCache(i).imgSpriteSheets(j).SuspendDIB cf_Lz4, autoKeepIfLarge
+        For j = 0 To m_ImageCache(i).numSheets - 1
+            m_ImageCache(i).imgSpriteSheets(j).SuspendDIB cmpFormat, autoKeepIfLarge
         Next j
     Next i
 End Sub

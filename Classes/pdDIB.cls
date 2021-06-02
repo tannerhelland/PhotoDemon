@@ -1173,7 +1173,7 @@ Private Sub UnsuspendDIB()
                 ' buffer intact for small images.  These are likely to suspend/unsuspend many times
                 ' as part of UI rendering, and the cost of keeping the suspend buffer intact is less
                 ' than the cost of constant small re-allocations
-                If (m_SizeSuspended > 50000) Then Erase m_SuspensionBuffer
+                If (m_SizeSuspended > 16384) Then Erase m_SuspensionBuffer
                 
                 m_SizeSuspended = 0
                 m_SizeUnsuspended = 0
