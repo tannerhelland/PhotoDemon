@@ -288,15 +288,8 @@ Public Sub AssignImage(ByRef resName As String, Optional ByRef srcDIB As pdDIB =
         'Add this image to the central UI image cache (and if no name exists, invent a random one)
         If (LenB(resName) = 0) Then resName = OS.GetArbitraryGUID()
         m_SpriteHandles(st_Normal) = UIImages.AddImage(srcDIB, resName)
-        
-        'Unpremultiply the source image
-        Dim initAlphaState As Boolean
-        initAlphaState = srcDIB.GetAlphaPremultiplication
-        If initAlphaState Then srcDIB.SetAlphaPremultiplication False
-        
-        'A separate function will automatically generate "glowy hovered" and "grayscale disabled"
-        ' versions of the image, and add the results to the central UI image cache
-        GenerateVariantButtonImages srcDIB, resName, False
+        m_SpriteHandles(st_Hover) = UI_SPRITE_UNDEFINED
+        m_SpriteHandles(st_Disabled) = UI_SPRITE_UNDEFINED
         
     End If
     
@@ -329,15 +322,8 @@ Public Sub AssignImage_Pressed(ByRef resName As String, Optional ByRef srcDIB As
         'Add this image to the central UI image cache (and if no name exists, invent a random one)
         If (LenB(resName) = 0) Then resName = OS.GetArbitraryGUID()
         m_SpriteHandles(st_NormalPressed) = UIImages.AddImage(srcDIB, resName)
-        
-        'Unpremultiply the source image
-        Dim initAlphaState As Boolean
-        initAlphaState = srcDIB.GetAlphaPremultiplication
-        If initAlphaState Then srcDIB.SetAlphaPremultiplication False
-        
-        'A separate function will automatically generate "glowy hovered" and "grayscale disabled"
-        ' versions of the image, and add the results to the central UI image cache
-        GenerateVariantButtonImages srcDIB, resName, True
+        m_SpriteHandles(st_HoverPressed) = UI_SPRITE_UNDEFINED
+        m_SpriteHandles(st_DisabledPressed) = UI_SPRITE_UNDEFINED
         
     End If
     
@@ -348,11 +334,10 @@ End Sub
 
 'After loading the initial button DIB and creating a matching spritesheet, call this function to fill the rest of
 ' the spritesheet with the "glowy hovered" and "grayscale disabled" button image variants.
-Private Sub GenerateVariantButtonImages(ByRef srcDIB As pdDIB, ByRef origImageName As String, Optional ByVal thisIsSpecialPressedImage As Boolean = False)
+Private Sub GenerateVariantButtonImage_Hover(ByRef srcDIB As pdDIB, ByRef origImageName As String, Optional ByVal thisIsSpecialPressedImage As Boolean = False)
     
     'Start by building two lookup tables: one for the hovered image, and a second one for the disabled image
-    Dim hLookup() As Byte
-    ReDim hLookup(0 To 255) As Byte
+    Dim hLookup(0 To 255) As Byte
     
     Dim newPxColor As Long, x As Long, y As Long
     For x = 0 To 255
@@ -362,6 +347,7 @@ Private Sub GenerateVariantButtonImages(ByRef srcDIB As pdDIB, ByRef origImageNa
     Next x
     
     'We require direct access to the source image's bytes...
+    If srcDIB.GetAlphaPremultiplication Then srcDIB.SetAlphaPremultiplication False
     Dim srcPixels() As Byte, srcSA As SafeArray1D
     Dim dstPixels() As Byte, dstSA As SafeArray1D
     
@@ -406,15 +392,39 @@ Private Sub GenerateVariantButtonImages(ByRef srcDIB As pdDIB, ByRef origImageNa
         m_SpriteHandles(st_Hover) = UIImages.AddImage(tmpDIB, origImageName & "-h")
     End If
     
-    tmpDIB.ResetDIB 0
+End Sub
+
+Private Sub GenerateVariantButtonImage_Disabled(ByRef srcDIB As pdDIB, ByRef origImageName As String, Optional ByVal thisIsSpecialPressedImage As Boolean = False)
+    
+    Dim x As Long, y As Long
+    
+    'We require direct access to the source image's bytes...
+    If srcDIB.GetAlphaPremultiplication Then srcDIB.SetAlphaPremultiplication False
+    Dim srcPixels() As Byte, srcSA As SafeArray1D
+    Dim dstPixels() As Byte, dstSA As SafeArray1D
+    
+    '...and a new, temporary destination image's bytes
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0, 0
     tmpDIB.SetInitialAlphaPremultiplicationState False
+    
+    Dim initY As Long, finalY As Long
+    initY = 0
+    finalY = m_ButtonHeight - 1
+    
+    Dim initX As Long, finalX As Long
+    initX = 0
+    finalX = (m_ButtonWidth - 1) * 4
+    
+    Dim a As Long
     
     'Next, create a grayscale "disabled" version of the sprite.
     ' (For this, note that we use a theme-level disabled color.)
     Dim disabledColor As Long
     disabledColor = g_Themer.GetGenericUIColor(UI_ImageDisabled)
     
-    Dim dR As Integer, dG As Integer, dB As Integer
+    Dim dR As Byte, dG As Byte, dB As Byte
     dR = Colors.ExtractRed(disabledColor)
     dG = Colors.ExtractGreen(disabledColor)
     dB = Colors.ExtractBlue(disabledColor)
@@ -656,6 +666,10 @@ Private Sub UserControl_Initialize()
     
     'Initialize the sprite handle collection
     ReDim m_SpriteHandles(0 To 5) As Long
+    Dim i As Long
+    For i = 0 To 5
+        m_SpriteHandles(i) = UI_SPRITE_UNDEFINED
+    Next i
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -788,26 +802,69 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
         'Paint the image, if any
         If (m_ButtonWidth <> 0) Then
             
+            Dim targetSpriteHandle As Long, tmpDIB As pdDIB, tmpDIBName As String
+            targetSpriteHandle = -1
+            
             If Me.Enabled Then
                 If (Me.Value And m_ButtonImagesPressed) Then
                     If useHoverImage Then
-                        UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_HoverPressed)
+                        targetSpriteHandle = m_SpriteHandles(st_HoverPressed)
                     Else
-                        UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_NormalPressed)
+                        targetSpriteHandle = m_SpriteHandles(st_NormalPressed)
                     End If
                 Else
                     If useHoverImage Then
-                        UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_Hover)
+                        targetSpriteHandle = m_SpriteHandles(st_Hover)
                     Else
-                        UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_Normal)
+                        targetSpriteHandle = m_SpriteHandles(st_Normal)
                     End If
                 End If
             Else
                 If (Me.Value And m_ButtonImagesPressed) Then
-                    UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_DisabledPressed)
+                    targetSpriteHandle = m_SpriteHandles(st_DisabledPressed)
                 Else
-                    UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, m_SpriteHandles(st_Disabled)
+                    targetSpriteHandle = m_SpriteHandles(st_Disabled)
                 End If
+            End If
+            
+            'If the requested sprite doesn't exist, this may be the first time we've attempted
+            ' to paint it (e.g. a "disabled" or "hovered" copy of the original DIB may be needed).
+            ' Such images are created on-the-fly, so check for such a state, then create the
+            ' necessary DIB if needed.
+            If (targetSpriteHandle < 0) Then
+                
+                If Me.Enabled Then
+                    If (Me.Value And m_ButtonImagesPressed) Then
+                        If useHoverImage Then
+                            Set tmpDIB = UIImages.GetCopyOfSprite(m_SpriteHandles(st_NormalPressed), tmpDIBName)
+                            If (Not tmpDIB Is Nothing) Then GenerateVariantButtonImage_Hover tmpDIB, tmpDIBName, True
+                            targetSpriteHandle = m_SpriteHandles(st_HoverPressed)
+                        End If
+                    Else
+                        If useHoverImage Then
+                            Set tmpDIB = UIImages.GetCopyOfSprite(m_SpriteHandles(st_Normal), tmpDIBName)
+                            If (Not tmpDIB Is Nothing) Then GenerateVariantButtonImage_Hover tmpDIB, tmpDIBName, False
+                            targetSpriteHandle = m_SpriteHandles(st_Hover)
+                        End If
+                    End If
+                Else
+                    If (Me.Value And m_ButtonImagesPressed) Then
+                        Set tmpDIB = UIImages.GetCopyOfSprite(m_SpriteHandles(st_NormalPressed), tmpDIBName)
+                        If (Not tmpDIB Is Nothing) Then GenerateVariantButtonImage_Disabled tmpDIB, tmpDIBName, True
+                        targetSpriteHandle = m_SpriteHandles(st_DisabledPressed)
+                    Else
+                        Set tmpDIB = UIImages.GetCopyOfSprite(m_SpriteHandles(st_Normal), tmpDIBName)
+                        If (Not tmpDIB Is Nothing) Then GenerateVariantButtonImage_Disabled tmpDIB, tmpDIBName, False
+                        targetSpriteHandle = m_SpriteHandles(st_Disabled)
+                    End If
+                End If
+            
+            End If
+            
+            'We have now performed an exhaustive search for this button's image.  Paint it if found.
+            If (targetSpriteHandle >= 0) Then
+                UIImages.PaintCachedImage bufferDC, btImageCoords.x, btImageCoords.y, targetSpriteHandle
+                UIImages.SuspendSprite targetSpriteHandle
             End If
             
         End If
