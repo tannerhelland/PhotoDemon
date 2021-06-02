@@ -667,6 +667,9 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Final interface sync"
     Interface.SyncInterfaceToCurrentImage
     
+    'Minimize UI memory usage
+    UIImages.MinimizeCacheMemory
+    
     'If we made it all the way here, startup can be considered successful!
     m_ProgramStartupSuccessful = True
     

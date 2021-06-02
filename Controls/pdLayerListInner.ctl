@@ -1021,7 +1021,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
                         PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, m_ThumbHeight
-                        m_LayerThumbnails(i).spriteIDStr = Str$(layerID)
+                        m_LayerThumbnails(i).spriteIDStr = Trim$(Str$(layerID))
                         m_LayerThumbnails(i).spriteIDInt = m_ThumbCollection.AddImage(tmpDIB, m_LayerThumbnails(i).spriteIDStr)
                         layerUpdateSuccessful = True
                         Exit For

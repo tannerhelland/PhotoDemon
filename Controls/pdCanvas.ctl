@@ -2633,7 +2633,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         
         'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
         Dim centerButtonIconSize As Long
-        centerButtonIconSize = Interface.FixDPI(14)
+        centerButtonIconSize = Interface.FixDPI(15)
         cmdCenter.AssignImage "zoom_center", , centerButtonIconSize, centerButtonIconSize
         cmdCenter.AssignTooltip "Center the image inside the viewport"
         cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
