@@ -89,19 +89,22 @@ End Enum
 Public Enum PD_SelectionProperty
     sp_Area = 0
     sp_Smoothing = 1
-    sp_BorderWidth = 2
+    sp_Combine = 2
     sp_FeatheringRadius = 3
-    sp_RoundedCornerRadius = 4
-    sp_SmoothStroke = 5
+    sp_BorderWidth = 4
+    sp_RoundedCornerRadius = 5
     sp_PolygonCurvature = 6
     sp_WandTolerance = 7
     sp_WandSearchMode = 8
     sp_WandSampleMerged = 9
     sp_WandCompareMethod = 10
+    sp_SmoothStroke = 11        'Currently unused; intended as a future lasso selection feature
 End Enum
 
 #If False Then
-    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_SmoothStroke = 5, sp_PolygonCurvature = 6, sp_WandTolerance = 7, sp_WandSearchMode = 8, sp_WandSampleMerged = 9, sp_WandCompareMethod = 10
+    Private Const sp_Area = 0, sp_Smoothing = 1, sp_Combine = 2, sp_FeatheringRadius = 3, sp_BorderWidth = 4
+    Private Const sp_RoundedCornerRadius = 5, sp_PolygonCurvature = 6, sp_WandTolerance = 7, sp_WandSearchMode = 8
+    Private Const sp_WandSampleMerged = 9, sp_WandCompareMethod = 10, sp_SmoothStroke = 11
 #End If
 
 Public Enum PD_SelectionLockable
@@ -243,14 +246,6 @@ Private m_PropertyDict As pdDictionary
 Private WithEvents m_AntTimer As pdTimer
 Attribute m_AntTimer.VB_VarHelpID = -1
 
-'New project: I'm going to attempt to migrate selection behavior to individual classes.  This is a prerequisite
-' for supporting multiple selections at once, since we need a way to manage multiple selections simultaneously.
-' (This could also greatly simplify and streamline future selection enhancements.)
-'
-'For now, I'm starting with lasso selections *only*.  Once I've nailed down the required interface definitions,
-' I'll extend the new strategy to *all* selection types.
-Private m_SelectionLasso As pdSelection_Lasso
-
 'Retrieve various boundary rects.  Full descriptions of these rects are given above.
 Friend Function GetCornersUnlockedRect() As RectF_RB
     GetCornersUnlockedRect = m_CornersUnlocked
@@ -319,8 +314,8 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
     
     m_PropertyDict.AddEntry propertyName, propertyValue
     
-    'Some property changes require us to redraw the selection mask.  To maximize property change performance, we only refresh
-    ' the mask if absolutely necessary.
+    'Some property changes require us to redraw the selection mask.  To maximize property change performance,
+    ' we only refresh the mask if absolutely necessary.
     Select Case propertyName
     
         Case sp_Area
@@ -382,6 +377,7 @@ Friend Sub InitFromXML(ByRef srcXML As String)
             'All selections share a core set of universal properties
             SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
             SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
+            SetSelectionProperty sp_Combine, cParams.GetLong("select-combine", pdsm_Replace, True)
             SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", es_None)
             SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
             SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
