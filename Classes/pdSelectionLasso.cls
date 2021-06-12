@@ -39,7 +39,7 @@ Private m_SelPropFeatherRadius As Single
 Private m_SelPropBorderWidth As Single
 
 'Other properties unique to this shape can be referenced here
-Private m_NumOfLassoPoints As Long, m_LassoPoints() As PointFloat
+Private m_NumLassoPoints As Long, m_LassoPoints() As PointFloat
 
 'Each selection shape has additional properties specific to that shape.  (For example, rectangular
 ' selections have a "rounded corner radius" property unique to them.)  To improve extensibility,
@@ -101,15 +101,15 @@ Public Function InitializeFromXML(ByRef srcXML As String, ByVal parentImageWidth
     ' potential issues, especially on sharp corners.
     'SetSelectionProperty sp_SmoothStroke, cParams.GetDouble("SelectionSmoothStroke", 0#)
     
-    m_NumOfLassoPoints = cParams.GetLong("SelectionNumOfPoints", 0)
-    If (m_NumOfLassoPoints > 0) Then
+    m_NumLassoPoints = cParams.GetLong("SelectionNumOfPoints", 0)
+    If (m_NumLassoPoints > 0) Then
     
-        ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As PointFloat
+        ReDim m_LassoPoints(0 To m_NumLassoPoints - 1) As PointFloat
         
         'Retrieve all remaining lasso points
-        If (m_NumOfLassoPoints > 0) Then
+        If (m_NumLassoPoints > 0) Then
             Dim i As Long
-            For i = 0 To m_NumOfLassoPoints - 1
+            For i = 0 To m_NumLassoPoints - 1
                 With m_LassoPoints(i)
                     .x = PDMath.TranslateValue_RelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0#), parentImageWidth)
                     .y = PDMath.TranslateValue_RelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0#), parentImageHeight)
@@ -134,3 +134,39 @@ End Function
 Private Sub Class_Initialize()
     Set m_PropertyDict = New pdDictionary
 End Sub
+
+'New plan: let's just start migrating over lasso-specific settings via
+' wrapper functions.  This provides a "free" way to start the migration
+' without the current clusterfuck of trying to migrate the ENTIRE selection
+' engine along with it.
+Friend Function GetNumLassoPoints() As Long
+    GetNumLassoPoints = m_NumLassoPoints
+End Function
+
+Friend Sub SetNumLassoPoints(ByVal newNumPoints As Long)
+    m_NumLassoPoints = newNumPoints
+End Sub
+
+'Returns the number of points, and dimensions (and fills) dstLassoPoints accordingly.
+' If return value is 0, dstLassoPoints() is *NOT* guaranteed to be initialized.
+Friend Function GetLassoPoints(ByRef dstLassoPoints() As PointFloat) As Long
+
+    GetLassoPoints = m_NumLassoPoints
+    
+    'Only copy points if they are guaranteed to exist
+    If (GetLassoPoints > 0) Then
+        
+        'Fast array initialize
+        If (Not VBHacks.IsArrayInitialized(dstLassoPoints)) Then
+            ReDim dstLassoPoints(0 To m_NumLassoPoints - 1) As PointFloat
+        Else
+            If (UBound(dstLassoPoints) < m_NumLassoPoints - 1) Then ReDim dstLassoPoints(0 To m_NumLassoPoints - 1) As PointFloat
+        End If
+        
+        'Fast copy of point list (guaranteed initialized by this point);
+        ' sizeof(PointFloat) = 8
+        CopyMemoryStrict VarPtr(dstLassoPoints(0)), VarPtr(m_LassoPoints(0)), 8 * m_NumLassoPoints
+    
+    End If
+    
+End Function

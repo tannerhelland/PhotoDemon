@@ -18,6 +18,17 @@ Attribute VB_Name = "Selections"
 
 Option Explicit
 
+Public Enum PD_SelectionCombine
+    pdsm_Replace = 0
+    pdsm_Add = 1
+    pdsm_Subtract = 2
+    pdsm_Intersect = 3
+End Enum
+
+#If False Then
+    Private Const pdsm_Replace = 0, pdsm_Add = 1, pdsm_Subtract = 2, pdsm_Intersect = 3
+#End If
+
 Public Enum PD_SelectionDialog
     pdsd_Grow = 0
     pdsd_Shrink = 1
