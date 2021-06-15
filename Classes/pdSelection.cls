@@ -235,7 +235,7 @@ Private m_ViewportEdges As pdEdgeDetector
 ' any changes to the actual underlying selection object.
 Private m_LastOverlayCache As String
 
-'Some selection use a timestamp to improve UI behavior
+'Some selections use a timestamp to improve UI behavior
 Private m_LastTime As Currency
 
 'Each different selection shape has a number of properties specific to that shape.  Instead of storing these in open variables,
@@ -324,6 +324,10 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
         Case sp_Smoothing
             If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
         
+        'Combine mode changes always require a recalculation of the mask
+        Case sp_Combine
+            m_IsMaskReady = False
+        
         Case sp_BorderWidth
             If (m_SelectionShape <> ss_Raster) And (m_SelectionShape <> ss_Wand) Then m_IsMaskReady = False
         
@@ -377,8 +381,8 @@ Friend Sub InitFromXML(ByRef srcXML As String)
             'All selections share a core set of universal properties
             SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
             SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
-            SetSelectionProperty sp_Combine, cParams.GetLong("select-combine", pdsm_Replace, True)
             SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", es_None)
+            SetSelectionProperty sp_Combine, cParams.GetLong("SelectionCombine", pdsm_Replace, True)
             SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
             SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
             SetSelectionProperty sp_RoundedCornerRadius, cParams.GetDouble("SelectionRoundedCornerRadius", 0#)
@@ -499,6 +503,7 @@ Friend Function GetSelectionAsXML() As String
     
     cParams.AddParam "SelectionShape", Me.GetSelectionShape
     cParams.AddParam "SelectionArea", Me.GetSelectionProperty(sp_Area)
+    cParams.AddParam "SelectionCombine", Me.GetSelectionProperty(sp_Combine)
     cParams.AddParam "SelectionSmoothing", Me.GetSelectionProperty(sp_Smoothing)
     cParams.AddParam "SelectionFeatheringRadius", Me.GetSelectionProperty(sp_FeatheringRadius)
     cParams.AddParam "SelectionBorderWidth", Me.GetSelectionProperty(sp_BorderWidth)
@@ -583,6 +588,7 @@ Friend Sub SelectAll()
     'Set basic information about this selection
     SetSelectionShape ss_Rectangle
     SetSelectionProperty sp_Area, sa_Interior
+    SetSelectionProperty sp_Combine, pdsm_Replace
     SetSelectionProperty sp_FeatheringRadius, 0
     SetSelectionProperty sp_Smoothing, es_Antialiased
     SetSelectionProperty sp_RoundedCornerRadius, 0#
