@@ -303,6 +303,7 @@ Private Sub Form_Load()
     End If
     
     GeneratePatron "James Proctor"
+    GeneratePatron "Jim Schmidt"
     GeneratePatron vbNullString
     
     'Thank you text

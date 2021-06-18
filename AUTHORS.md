@@ -13,6 +13,11 @@ Super Patrons:
 * Jessica H
 * Johannes Nendel
 
+Patrons:
+
+* James Proctor
+* Jim Schmidt
+
 ### 3rd-party libraries
 
 The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these developers for freely sharing their work.  
