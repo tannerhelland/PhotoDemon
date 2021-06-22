@@ -1722,7 +1722,7 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
     'Now we can actually composite the results
     For curFrame = 0 To Me.NumAnimationFrames - 1
         
-        Message "Multipage image found.  Loading page #%1 of %2...", CStr(curFrame + 1), Me.NumAnimationFrames, "DONOTLOG"
+        Message "Loading page %1 of %2...", CStr(curFrame + 1), Me.NumAnimationFrames, "DONOTLOG"
         
         'Frame 0 is a special case.  In most animated PNGs, it will also be the first frame - but this is
         ' *not* guaranteed.  Note that this has already been handled in a previous step, by pointing the
