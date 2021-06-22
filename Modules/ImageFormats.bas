@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 05/February/21
-'Last update: wrap up support for PSP (Paintshop Pro) export
+'Last updated: 18/June/21
+'Last update: wrap up support for CBZ (comic book archive) import
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -208,8 +208,10 @@ Public Sub GenerateInputFormats()
     'Set the location tracker to "0".  Beyond this point, it will be automatically updated.
     m_curFormatIndex = 0
     
-    'Bitmap files require no plugins; they are always supported.
+    'Next, add individual formats.  Some formats are condidtional on third-party libraries;
+    ' others use internal or system-provided encoders that will always be available.
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
+    AddInputFormat "CBZ - Comic Book Archive", "*.cbz", PDIF_CBZ
     
     If m_FreeImageEnabled Then
         AddInputFormat "DDS - DirectDraw Surface", "*.dds", PDIF_DDS
@@ -449,6 +451,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
     
         Case PDIF_BMP
             GetExtensionFromPDIF = "bmp"
+        Case PDIF_CBZ
+            GetExtensionFromPDIF = "cbz"
         Case PDIF_CUT
             GetExtensionFromPDIF = "cut"
         Case PDIF_DDS
@@ -564,6 +568,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
     
         Case "bmp"
             GetPDIFFromExtension = PDIF_BMP
+        Case "cbz"
+            GetPDIFFromExtension = PDIF_CBZ
         Case "cut"
             GetPDIFFromExtension = PDIF_CUT
         Case "dds"
@@ -755,6 +761,9 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
     
         Case PDIF_BMP
             IsExportDialogSupported = True
+            
+        Case PDIF_CBZ
+            IsExportDialogSupported = False
         
         Case PDIF_GIF
             IsExportDialogSupported = True
@@ -811,7 +820,10 @@ End Function
 Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolean
 
     Select Case srcFormat
-    
+        
+        Case PDIF_CBZ
+            IsExifToolRelevant = False
+        
         Case PDIF_ICO
             IsExifToolRelevant = False
             
