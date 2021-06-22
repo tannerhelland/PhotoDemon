@@ -3,9 +3,8 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/September/17
-'Last update: fix a potential activation issue when a paint tool is selected, and a new image is loaded, and we
-'             need to enforce that a scratch layer exists in case the user immediately operates on the image.
+'Last updated: 18/June/21
+'Last update: expand the internal QuickLoadToDIB function to cover all the esoteric formats PD now supports via internal decoders
 '
 'This module provides high-level "load" functionality for getting image files into PD.  There are a number of different ways to do this;
 ' for example, loading a user-facing image file is a horrifically complex affair, with lots of messy work involved in metadata parsing,
@@ -238,6 +237,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'If the source file was already designed as a multi-layer format (e.g. OpenRaster, PSD), this step is unnecessary.
             Dim layersAlreadyLoaded As Boolean: layersAlreadyLoaded = False
+            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_CBZ)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
@@ -277,9 +277,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "FreeImage plugin"
             Case id_GDIPlus
                 decoderName = "GDI+"
+            Case id_CBZParser
+                decoderName = "Internal CBZ parser"
             Case id_ICOParser
                 decoderName = "Internal ICO parser"
-            Case id_Internal
+            Case id_PDIParser
                 decoderName = "Internal PDI parser"
             Case id_MBMParser
                 decoderName = "Internal MBM parser"
@@ -424,7 +426,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
-        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (decoderUsed <> id_Internal) Then
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (decoderUsed <> id_PDIParser) Then
             
             'Some tools may have already stopped to load metadata
             If (Not targetImage.ImgMetadata.HasMetadata) Then
@@ -546,11 +548,15 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
 End Function
 
-'Quick and dirty function for loading an image file to a containing DIB.  This function provides none of the extra scans or features
-' that the more advanced LoadFileAsNewImage does; instead, it is assumed that the calling function will handle any extra work.
+'Quick and dirty function for loading an image file to a pdDIB object (*NOT* a pdImage object).
+'
+'This function provides none of the extra scans or features that the more advanced LoadFileAsNewImage() does;
+' instead, it assumes that the calling function will handle any extra work.
 ' (Note that things like metadata will not be processed *at all* for the image file.)
 '
-'That said, FreeImage/GDI+ are still used intelligently, so this function should reflect PD's full capacity for image format support.
+'That said, internal decoders and FreeImage/GDI+ are still used intelligently, so this function should reflect
+' PD's full capacity for image format support.  Importantly, however, multi-page files will be squashed into
+' single-frame composite forms, by design.
 '
 'The function will return TRUE if successful; detailed load information is not available past that.
 Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal suppressDebugData As Boolean = False) As Boolean
@@ -564,6 +570,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     
     'Before attempting to load an image, make sure it exists
     If (Not Files.FileExists(imagePath)) Then
+        PDDebug.LogAction "QuickLoadImageToDIB error - file not found:" & imagePath
         If displayMessagesToUser Then PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbExclamation Or vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
@@ -573,11 +580,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     'Prepare a dummy pdImage object, which some external functions may require
     Dim tmpPDImage As pdImage
     Set tmpPDImage = New pdImage
-    
-    'Determine the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture).  Note that FreeImage does not
-    ' return a generic pass/fail value.
-    Dim freeImageReturn As PD_OPERATION_OUTCOME
-    freeImageReturn = PD_FAILURE_GENERIC
     
     'Start by stripping the extension from the file path
     Dim fileExtension As String
@@ -614,37 +616,80 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case "PDTMP"
             loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
         
-        Case "PSD", "PSB"
-            Dim cPSD As pdPSD
-            Set cPSD = New pdPSD
-            If cPSD.IsFilePSD(imagePath) Then loadSuccessful = (cPSD.LoadPSD(imagePath, tmpPDImage, targetDIB) < psd_Failure)
+        'Internal decoders follow
+        Case "CBZ"
+            Dim cCBZ As pdCBZ
+            Set cCBZ = New pdCBZ
+            If cCBZ.IsFileCBZ(imagePath) Then loadSuccessful = cCBZ.LoadCBZ(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
+        Case "MBM", "MBW", "MCL", "AIF", "ABW", "ACL"
+            Dim cMBM As pdMBM
+            Set cMBM = New pdMBM
+            If cMBM.IsFileMBM(imagePath) Then loadSuccessful = cMBM.LoadMBM_FromFile(imagePath, tmpPDImage, targetDIB)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
         Case "ORA"
             Dim cORA As pdOpenRaster
             Set cORA = New pdOpenRaster
             If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
-        
+            
         Case "PNG"
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
             loadSuccessful = (cPNG.LoadPNG_Simple(imagePath, tmpPDImage, targetDIB) < png_Failure)
             If (Not targetDIB.GetAlphaPremultiplication) Then targetDIB.SetAlphaPremultiplication True
+            
+        Case "PSD", "PSB"
+            Dim cPSD As pdPSD
+            Set cPSD = New pdPSD
+            If cPSD.IsFilePSD(imagePath) Then loadSuccessful = (cPSD.LoadPSD(imagePath, tmpPDImage, targetDIB) < psd_Failure)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
+        Case "PSP", "PSPIMAGE", "TUB", "PSPTUBE", "PFR", "PSPFRAME", "MSK", "PSPMASK", "PSPBRUSH"
+            Dim cPSP As pdPSP
+            Set cPSP = New pdPSP
+            If cPSP.IsFilePSP(imagePath) Then loadSuccessful = (cPSP.LoadPSP(imagePath, tmpPDImage, targetDIB) < psp_Failure)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
         ' VB's internal LoadPicture function.
         Case Else
             
-            'If FreeImage is available, use it to try and load the image.
-            If ImageFormats.IsFreeImageEnabled() Then
+            'FreeImage's TIFF support (via libTIFF?) is wonky.  It's prone to bad crashes and inexplicable
+            ' memory issues (including allocation failures on normal-sized images), so for TIFFs we want to
+            ' try GDI+ before trying FreeImage.  (PD's GDI+ image loader was heavily restructured in v8.0 to
+            ' support things like multi-page import, so this strategy wasn't viable until then.)
+            Dim tryGDIPlusFirst As Boolean
+            tryGDIPlusFirst = (fileExtension = "TIF") Or (fileExtension = "TIFF")
+            
+            'On modern Windows builds (8+) FreeImage is markedly slower than GDI+ at loading JPEG images,
+            ' so let's also default to GDI+ for JPEGs.
+            tryGDIPlusFirst = tryGDIPlusFirst Or (fileExtension = "JPG") Or (fileExtension = "JPEG") Or (fileExtension = "JPE")
+            
+            'Animated GIFs are supported by both engines, but GDI+ is faster
+            tryGDIPlusFirst = tryGDIPlusFirst Or (fileExtension = "GIF")
+            
+            'If GDI+ is preferable, attempt it now
+            If tryGDIPlusFirst Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+            
+            'If GDI+ failed, proceed with FreeImage
+            If (Not loadSuccessful) And ImageFormats.IsFreeImageEnabled() Then
+                
+                Dim freeImageReturn As PD_OPERATION_OUTCOME
+                freeImageReturn = PD_FAILURE_GENERIC
                 freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, , suppressDebugData)
                 loadSuccessful = (freeImageReturn = PD_SUCCESS)
-            End If
                 
-            'If FreeImage fails for some reason, offload the image to GDI+
-            If (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
-                    
+                'If FreeImage failed and we haven't tried GDI+ yet, try it now
+                If (Not loadSuccessful) And (Not tryGDIPlusFirst) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+                
+            End If
+            
+            'As a final resort, attempt WIC.  (Win 10+ may provide HEIF codecs or other user-installed ones.)
+            If (Not loadSuccessful) And WIC.IsWICAvailable() Then loadSuccessful = LoadHEIF(imagePath, tmpPDImage, targetDIB)
+            
     End Select
     
     'Sometimes, our image load functions will think the image loaded correctly, but they will return a blank image.  Check for
