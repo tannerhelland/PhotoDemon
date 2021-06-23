@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.492</langversion>
+<langversion>6.6.493</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -390,8 +390,8 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- Filters_Transform.bas contains 29 phrases. 16 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
-<original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Gambar multipage ditemukan. Memuat halaman # %1 dari %2</translation>
+<original>Loading page %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13458,12 +13458,14 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
+<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2547</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5203 phrases. -->
-<!-- 2656 are duplicates, so only 2547 unique phrases have been written to file. -->
-<!-- These 2547 phrases contain approximately 11730 total words. -->
+<!-- As of this build, PhotoDemon contains 5204 phrases. -->
+<!-- 2657 are duplicates, so only 2547 unique phrases have been written to file. -->
+<!-- These 2547 phrases contain approximately 11726 total words. -->
 
 </pdData>

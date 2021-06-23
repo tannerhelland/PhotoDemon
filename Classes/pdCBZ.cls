@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Comic Book Archive (CBZ) Container and Parser
 'Copyright 2021-2021 by Tanner Helland
 'Created: 18/June/21
-'Last updated: 18/June/21
-'Last update: initial build
+'Last updated: 23/June/21
+'Last update: wrap up initial build
 '
 'Comic book archives are simple .zip files containing a set of comic book pages in ascending order.
 ' (Note that non-zip variants also exist, like .CBR which use "RAR" format - PhotoDemon only supports
@@ -40,9 +40,9 @@ Option Explicit
 
 'Some of our own internal parsers can perform perf timings;
 ' enable this value to send format-specific timing reports to PDDebug.
-Private Const GENERATE_PERF_REPORTS As Boolean = True
+Private Const GENERATE_PERF_REPORTS As Boolean = False
 
-'cZipArchive handles all zip extraction duties
+'cZipArchive handles all zip interaction duties
 Private WithEvents m_ZipArchive As cZipArchive
 Attribute m_ZipArchive.VB_VarHelpID = -1
 
@@ -141,20 +141,22 @@ Friend Function LoadCBZ(ByRef srcFilename As String, ByRef dstImage As pdImage) 
         pageData = m_ZipArchive.FileInfo(cbPage)
         
         'Some CBZ writers place all pages in a parent folder; ignore this if it exists.
-        ' (Note also that the weird Int cast and vbDirectory comparison is necessary to work around a weird
-        '  VB6 quirk with bitwise operations and variants; an explicit cast ensures correct behavior.)
+        ' (Note also that the weird Int cast and vbDirectory comparison is necessary to work around VB6
+        '  quirks with bitwise operations and variants; an explicit cast ensures correct behavior.)
         Const idxAttributes As Long = 1
         If ((Int(pageData(idxAttributes)) And vbDirectory) <> vbDirectory) Then
         
             'This is not a folder.  It's most likely an image (page), but note that some users may
-            ' acquire CBZ files from questionable sites.  Such archives may contain warez-style NFO files
-            ' or other junk entries.  While I could check file extensions here, I'd rather err on the
-            ' side of compatibility and simply extract the target file to a standalone temp file,
-            ' then attempt to load it via PD's built-in (extremely extensive) file format coverage.
+            ' acquire CBZ files from questionable sites.  Such archives may contain warez-style
+            ' NFO files or other junk entries.  While I could check file extensions here,
+            ' I'd rather err on the side of compatibility and simply extract the target file to a
+            ' standalone temp file, *then* attempt to load it via PD's (extensive) standard
+            ' file format coverage.
             
-            'Start by generating a temp filename with the same extension as the target file.  (Note that
-            ' zip "filenames" can have illegal characters in filenames and other potential nonsense, so it's
-            ' safer - and easier - to simply use a temp filename that we know is safe.)
+            'Start by generating a temp filename with the same extension as the target file.
+            ' (Note that zip "filenames" can have illegal characters in filenames and other
+            ' potential nonsense, so it's safer - and easier - to simply use a temp filename
+            ' that we know is safe.)
             Dim tmpFilename As String
             tmpFilename = OS.UniqueTempFilename()
             
@@ -166,9 +168,9 @@ Friend Function LoadCBZ(ByRef srcFilename As String, ByRef dstImage As pdImage) 
             If (LenB(Files.FileGetExtension(zipFilename)) <> 0) Then tmpFilename = tmpFilename & "." & Files.FileGetExtension(zipFilename)
             If GENERATE_PERF_REPORTS Then VBHacks.GetHighResTime startTime
             
+            'Extract the target file.  (See the m_ZipArchive_BeforeExtract() event for the reason
+            ' this m_OverrideFilename value exists.)
             m_OverrideFilename = tmpFilename
-            
-            'Extract the target file
             If m_ZipArchive.Extract(tmpFilename, cbPage) Then
                 
                 If GENERATE_PERF_REPORTS Then
@@ -186,11 +188,12 @@ Friend Function LoadCBZ(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                 End If
                 
                 'If the image is not in a format PD recognizes, that's fine - it's probably metadata
-                ' or text info, which we can safely ignore.  We'll just silently ignore any files
-                ' that don't contain image data.
+                ' or text info, which we can safely ignore.  (This function is currently set to
+                ' *silently* ignore incompatible files, i.e. files that don't contain image data.)
                 If imgOK Then
                 
-                    'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
+                    'Because color-management has already been handled (if applicable),
+                    ' this is a great time to premultiply alpha.
                     If (Not tmpDIB.GetAlphaPremultiplication) Then tmpDIB.SetAlphaPremultiplication True
                     
                     'Prep a new layer object and initialize it with the image bits we've retrieved
@@ -209,7 +212,8 @@ Friend Function LoadCBZ(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                     tmpLayer.SetLayerVisibility (numPagesAdded = 0)
                     numPagesAdded = numPagesAdded + 1
                     
-                    'Notify the layer and image of new changes, so it knows to regenerate internal caches on next access
+                    'Notify the layer and image of new changes, so it knows to regenerate internal caches
+                    ' on next access
                     tmpLayer.NotifyOfDestructiveChanges
                     dstImage.NotifyImageChanged UNDO_Image
                     
@@ -227,7 +231,7 @@ Friend Function LoadCBZ(ByRef srcFilename As String, ByRef dstImage As pdImage) 
             
         '/end Not isDirectory
         Else
-            'If you want directory information, you could use it here:
+            'If you want directory information, you could retrieve it here:
             'PDDebug.LogAction "folder: " & pageData(idxFilename)
         End If
         
@@ -318,4 +322,3 @@ End Sub
 Private Sub m_ZipArchive_BeforeExtract(ByVal FileIdx As Long, File As Variant, SkipFile As Boolean, Cancel As Boolean)
     File = m_OverrideFilename
 End Sub
-

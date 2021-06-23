@@ -373,6 +373,7 @@ Private Sub Form_Load()
     GenerateContributor "Lemuel Cushing", "https://github.com/LemuelCushing"
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"
+    GenerateContributor "Mariozo"
     GenerateContributor "Ming", "http://ufoym.com/"
     GenerateContributor "Mohammad Reza Karimi"
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"
