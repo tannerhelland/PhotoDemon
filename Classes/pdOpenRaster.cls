@@ -40,9 +40,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Some of our own internal parsers can perform perf timings; enable this value to send format-specific timing reports
-' to PDDebug.
-Private Const GENERATE_PERF_REPORTS As Boolean = True
+'Some of our own internal parsers can perform perf timings;
+' enable this value to send format-specific timing reports to PDDebug.
+Private Const GENERATE_PERF_REPORTS As Boolean = False
 
 'cZipArchive handles all zip extraction duties
 Private m_ZipArchive As cZipArchive

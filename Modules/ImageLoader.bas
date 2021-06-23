@@ -22,6 +22,7 @@ Option Explicit
 ' formats for testing purposes, but note that fallback methods like FreeImage and GDI+
 ' *CANNOT* read most of these formats.  If you encounter problems with a specific image format,
 ' PLEASE FILE AN ISSUE ON GITHUB.
+Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
@@ -994,12 +995,21 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'A custom MBM parser was provisionally added in v9.0
+    'A custom MBM parser was added in v9.0
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_MBM Then
         CascadeLoadGenericImage = LoadMBM(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
             decoderUsed = id_MBMParser
             dstImage.SetOriginalFileFormat PDIF_MBM
+        End If
+    End If
+    
+    'A custom CBZ parser was added in v9.0
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_CBZ Then
+        CascadeLoadGenericImage = LoadCBZ(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_CBZParser
+            dstImage.SetOriginalFileFormat PDIF_CBZ
         End If
     End If
     
@@ -1091,7 +1101,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_PDI
             dstImage.SetOriginalColorDepth 32
             dstImage.NotifyImageChanged UNDO_Everything
-            decoderUsed = id_Internal
+            decoderUsed = id_PDIParser
             
         'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and easier for PD than wrapping
         ' the pdDIB object inside a pdPackage layer (e.g. during clipboard interactions, since we start with a raw pdDIB object
@@ -1106,7 +1116,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             dstImage.SetOriginalColorDepth 32
             dstImage.NotifyImageChanged UNDO_Everything
-            decoderUsed = id_Internal
+            decoderUsed = id_PDIParser
             
         'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.
         ' As ridiculous as it sounds, we must default to the generic load engine list,
@@ -1120,6 +1130,42 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             
     End Select
+    
+End Function
+
+Private Function LoadCBZ(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadCBZ = False
+    
+    'pdCBZhandles all the dirty work for us
+    Dim cCBZ As pdCBZ
+    Set cCBZ = New pdCBZ
+    
+    'Validate the potential comic book archive
+    LoadCBZ = cCBZ.IsFileCBZ(srcFile, True)
+    
+    'If validation passes, attempt a full load
+    If LoadCBZ Then
+        PDDebug.LogAction "CBZ format found; loading pages..."
+        LoadCBZ = cCBZ.LoadCBZ(srcFile, dstImage)
+    End If
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadCBZ Then
+        
+        dstImage.SetOriginalFileFormat PDIF_CBZ
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
     
 End Function
 
