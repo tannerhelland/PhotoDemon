@@ -460,7 +460,7 @@ Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         
         'Create the window!
         If PDMain.IsProgramRunning() Then
-            m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
+            m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, StrPtr("EDIT"), 0&, flagsWinStyle Or flagsEditControl, _
                 x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
             If (m_EditBoxHwnd <> 0) Then UserControls.NotifyAPIWindowCreated
         End If
