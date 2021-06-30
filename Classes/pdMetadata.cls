@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright 2013-2021 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 09/June/16
-'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature
+'Last updated: 29/June/21
+'Last update: improve handling of multiline tags written by Photoshop
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See https://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -1009,13 +1009,13 @@ End Function
 
 Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePointer As Long) As Boolean
     
-    If linePointer < UBound(xmlLines) Then
+    If (linePointer < UBound(xmlLines)) Then
         
         'Make sure this line looks like a valid tag definition
         If PARSE_IsLinePotentialTag(xmlLines(linePointer)) Then
         
             'Make sure we have room in our metadata collection for the new tag
-            If m_NumOfTags > UBound(m_Tags) Then ReDim Preserve m_Tags(0 To m_NumOfTags * 2 - 1) As PDMetadataItem
+            If (m_NumOfTags > UBound(m_Tags)) Then ReDim Preserve m_Tags(0 To m_NumOfTags * 2 - 1) As PDMetadataItem
             
             '...while sLine and eLine are the line indices where this tag starts and ends
             Dim sLine As Long, eLine As Long
@@ -1050,7 +1050,7 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                 endTagName = "</" & curTagName & ">"
                 Do While (InStr(1, xmlLines(linePointer), endTagName, vbBinaryCompare) = 0)
                     linePointer = linePointer + 1
-                    If linePointer > UBound(xmlLines) Then
+                    If (linePointer > UBound(xmlLines)) Then
                         PARSE_LikelyTagLine = False
                         Exit Function
                     End If
@@ -1060,7 +1060,7 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                 
                 'Make sure the tag comprises at least *6* lines (inclusive).  This is the amount assumed by our parser, and a
                 ' deviation indicates an unexpected change in ExifTool's output formatting.
-                If (eLine - sLine) >= 5 Then
+                If ((eLine - sLine) >= 5) Then
                 
                     'With the tag's start and end line locations now known, we can commence with parsing all the lines in-between.
                     
@@ -1337,13 +1337,17 @@ Private Function PARSE_RDFBagCheck(ByRef xmlLines() As String, ByRef tagStartLin
     
 End Function
 
+'Some writers (*cough* Photoshop *cough*) will embed multiline tags in places where they shouldn't belong.
+' Note that - for simplicity's sake - this function may also handle esoteric multiline tags that *are*
+' allowed to use linebreaks.  I don't maintain a comprehensive list of which tags in which formats allow
+' linebreaks, so instead I leave it up to ExifTool to sort this out for me.
 Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
     
     PARSE_InvalidMultilineTag = False
     dstMetadata.IsTagBinary = False
     dstMetadata.IsTagList = False
     
-    'Here is the layout of an invalid, multiline XMP tag (this is taken from an actual, real-world image):
+    'Here is the layout of a multiline XMP tag (this is taken from an actual, real-world image):
     ' <XMP-dc:Description>
     '  <rdf:Description et:id='description' et:table='XMP::dc'>
     '   <et:desc>Description</et:desc>
@@ -1359,12 +1363,13 @@ Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tag
     '  </rdf:Description>
     ' </XMP-dc:Description>
     
-    'Unlike other non-standard metadata checks, there is no easy way to check for tags like this, so they simply get a "failsafe"
-    ' check after checks for all valid types have failed.
+    'Unlike other non-standard metadata checks, there is no easy way to check for tags like this,
+    ' so they simply get a "failsafe" check after checks for all valid types have failed.
     If (InStr(1, xmlLines(tagStartLine + 3), "<et:prt>", vbBinaryCompare) <> 0) And (InStr(1, xmlLines(tagStartLine + 3), "</et:prt>", vbBinaryCompare) = 0) Then
         
-        'This appears to be an invalid multiline tag.  Search subsequent lines for the trailing </et:prt> tag, and note that valid
-        ' tag content may appear on the same line where the closing tag is found.  (This is different from other multiline types.)
+        'This appears to be a multiline tag.  Search subsequent lines for the trailing </et:prt> tag,
+        ' and note that tag content may appear on the same line where the closing tag is found.
+        ' (This is different from tags that are explicitly marked as multiline-capable.)
         
         'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
         Dim i As Long
@@ -1374,21 +1379,31 @@ Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tag
         
         If (i > tagStartLine) Then
             
-            'Assemble the full string into one contiguous length
+            'Assemble the full string into one contiguous string
             Dim finalValueLine As Long:  finalValueLine = i
-            Dim fullTagValue As String
+            Dim tagBuilder As pdString
+            Set tagBuilder = New pdString
             
             For i = (tagStartLine + 3) To finalValueLine
-                fullTagValue = fullTagValue & xmlLines(i)
+                
+                'The first line may have unwanted whitespace due to XML formatting.  Trim it manually,
+                ' while also removing the opening tag.
+                If (i = tagStartLine + 3) Then
+                    tagBuilder.AppendLine LTrim$(Replace$(xmlLines(i), "<et:prt>", vbNullString, , , vbBinaryCompare))
+                
+                'Same idea for the final line
+                ElseIf (i = finalValueLine) Then
+                    tagBuilder.AppendLine RTrim$(Replace$(xmlLines(i), "</et:prt>", vbNullString, , , vbBinaryCompare))
+                
+                'Append normal lines as-is
+                Else
+                    tagBuilder.AppendLine xmlLines(i)
+                End If
+                
             Next i
             
-            'Strip any vbCrLfs in the data, then remove the opening/closing tags
-            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, vbNullString, , , vbBinaryCompare)
-            fullTagValue = Replace$(fullTagValue, "<et:prt>", vbNullString, , , vbBinaryCompare)
-            fullTagValue = Replace$(fullTagValue, "</et:prt>", vbNullString, , , vbBinaryCompare)
-            
             'Store the result as a normal tag.
-            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)
+            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(tagBuilder.ToString())
             dstMetadata.TagValue = dstMetadata.TagValueFriendly
             PARSE_InvalidMultilineTag = True
             
