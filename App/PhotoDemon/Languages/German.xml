@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.451</langversion>
+<langversion>9.0.505</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -393,7 +393,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>Laden der Seite %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -5677,7 +5677,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>Ihre LUT-Collection wird gespeichert in dem Ordner "%1"</translation>
+<translation>Ihre LUT-Kollektion wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
@@ -6497,7 +6497,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>save to gradient collection</original>
-<translation>In Gradienten-Collection speichern</translation>
+<translation>In Gradientenkollektion speichern</translation>
 </phrase>
 
 <phrase>
@@ -6547,12 +6547,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>sort collection by</original>
-<translation>Collection sortieren nach</translation>
+<translation>Kollektion sortieren nach</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation>Ihre Collection</translation>
+<translation>Ihre Kollektion</translation>
 </phrase>
 
 <phrase>
@@ -6577,7 +6577,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Ein Gradient mit dem Namen "%1" ist bereits in Ihrer Collection vorhanden. Möchten Sie diesen überschreiben?</translation>
+<translation>Ein Gradient mit dem Namen "%1" ist bereits in Ihrer Kollektion vorhanden. Möchten Sie diesen überschreiben?</translation>
 </phrase>
 
 <phrase>
@@ -6587,7 +6587,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation>Dieser Gradient hat keinen Namen. Bitte geben Sie ihm einen Namen, bevor dieser zu Ihrer Collection hinzugefügt wird.</translation>
+<translation>Dieser Gradient hat keinen Namen. Bitte geben Sie ihm einen Namen, bevor dieser zu Ihrer Kollektion hinzugefügt wird.</translation>
 </phrase>
 
 <phrase>
@@ -6642,7 +6642,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>gradient collection</original>
-<translation>Gradienten-Collection</translation>
+<translation>Gradientenkollektion</translation>
 </phrase>
 
 <phrase>
@@ -6667,7 +6667,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Ihre Gradienten-Collection wird gespeichert in dem Ordner "%1"</translation>
+<translation>Ihre Gradientenkollektion wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
@@ -13431,7 +13431,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>loading plugin collection</original>
-<translation>Laden der Plug-in-Collection</translation>
+<translation>Laden der Plug-in-Kollektion</translation>
 </phrase>
 
 <phrase>
@@ -13451,7 +13451,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekt-Collection hinzu.</translation>
+<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effektkollektion hinzu.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
