@@ -210,6 +210,12 @@ Public Sub GenerateInputFormats()
     
     'Next, add individual formats.  Some formats are condidtional on third-party libraries;
     ' others use internal or system-provided encoders that will always be available.
+    
+    'AV1-based codecs require an external plugin
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport) Then
+        AddInputFormat "AVIF - AV1 Image File", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.avif;*.avifs", PDIF_AVIF
+    End If
+    
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
     AddInputFormat "CBZ - Comic Book Archive", "*.cbz", PDIF_CBZ
     

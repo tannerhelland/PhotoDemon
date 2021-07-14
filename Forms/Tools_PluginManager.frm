@@ -404,7 +404,7 @@ Private Sub Form_Load()
         If lblInterfaceTitle(i).GetWidth > maxWidth Then maxWidth = lblInterfaceTitle(i).GetWidth
         
         'Align the top position of each status label with its matching title label
-        If (i > 0) Then lblInterfaceTitle(i).SetTop lblInterfaceTitle(i - 1).GetTop + lblInterfaceTitle(i - 1).GetHeight + FixDPI(12)
+        If (i > 0) Then lblInterfaceTitle(i).SetTop lblInterfaceTitle(i - 1).GetTop + lblInterfaceTitle(i - 1).GetHeight + FixDPI(8)
         lblStatus(i).SetTop lblInterfaceTitle(i).GetTop
         
     Next i
@@ -517,7 +517,7 @@ Private Sub CollectAllVersionNumbers()
     'Remove trailing build numbers from certain version strings.
     Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) Then
+        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_AvifExport) And (i <> CCP_AvifImport) Then
             If (LenB(m_LibraryVersion(i)) <> 0) Then
                 dotPos = InStrRev(m_LibraryVersion(i), ".", -1, vbBinaryCompare)
                 If (dotPos <> 0) Then m_LibraryVersion(i) = Left$(m_LibraryVersion(i), dotPos - 1)

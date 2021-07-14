@@ -976,6 +976,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
+    ' copying of the official libavif exe binaries (for example,
+    ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
+    '...into the /App/PhotoDemon/Plugins subfolder.
+    If Plugin_AVIF.IsAVIFImportAvailable() Then
+        
+        Dim potentialAVIF As Boolean
+        potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+        If potentialAVIF Then
+        
+            'cascadeloadgenericimage = 'TODO
+        
+        End If
+        
+    End If
+    
     'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
     ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
     If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then
