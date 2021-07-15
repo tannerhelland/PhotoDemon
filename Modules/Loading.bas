@@ -281,6 +281,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "Internal CBZ parser"
             Case id_ICOParser
                 decoderName = "Internal ICO parser"
+            Case id_libAVIF
+                decoderName = "libavif plugin"
             Case id_PDIParser
                 decoderName = "Internal PDI parser"
             Case id_MBMParser
@@ -354,7 +356,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: some multipage formats (like PSD, ORA, ICO, etc) load all pages/frames in the initial
         ' load function.  This "separate multipage loader function" approach primarily exists for
         ' legacy functions where a 3rd-party library is responsible for parsing the extra pages.
-        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG)) Then
+        
+        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF)) Then
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
@@ -392,7 +395,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'Internal multipage loader; this is used for animated PNG files
             Else
-                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
+                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
             End If
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or PNG.

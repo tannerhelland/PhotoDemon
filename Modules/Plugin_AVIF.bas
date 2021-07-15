@@ -32,6 +32,108 @@ Attribute VB_Name = "Plugin_AVIF"
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).
 Private m_avifImportAvailable As Boolean, m_avifExportAvailable As Boolean
 
+'Using PNG or JPEG as an intermediary format is a tough call.  PNG is lossless, which should make
+' it the obvious preference... but damn, PNG encoding is slow.  (I've been spoiled by PD's internal
+' encoder lol.)  JPEG as an intermediary format can be 10-30x faster on large images, so I'm inclined
+' to use it at present.  You can toggle this constant at compile-time to require PNG only.
+Private Const REQUIRE_LOSSLESS_INTERMEDIARY As Boolean = False
+
+Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef outputPDIF As PD_IMAGE_FORMAT = PDIF_PNG) As Boolean
+    
+    Const funcName As String = "ConvertAVIFtoStandardImage"
+    
+    'Safety checks on plugin
+    If (Not m_avifImportAvailable) Then
+        InternalError funcName, "libavif broken or missing"
+        Exit Function
+    End If
+    
+    Dim pluginPath As String
+    pluginPath = PluginManager.GetPluginPath & "avifdec.exe"
+    If (Not Files.FileExists(pluginPath)) Then
+        InternalError funcName, "libavif missing"
+        Exit Function
+    End If
+    
+    'Safety checks on source file
+    If (Not Files.FileExists(srcFile)) Then
+        InternalError funcName, "source file doesn't exist"
+        Exit Function
+    End If
+    
+    'If the destination file isn't specified, generate a random temp file name
+    If (Not Files.FileExists(dstFile)) Then dstFile = OS.UniqueTempFilename()
+    
+    'Ensure destination file has an appropriate extension (this is how the decoder
+    ' figures out which format to use)
+    Dim reqExtension As String
+    If REQUIRE_LOSSLESS_INTERMEDIARY Then
+        reqExtension = "png"
+        outputPDIF = PDIF_PNG
+    Else
+        reqExtension = "jpg"
+        outputPDIF = PDIF_JPEG
+    End If
+    If Strings.StringsNotEqual(Files.FileGetExtension(dstFile), reqExtension, True) Then dstFile = dstFile & "." & reqExtension
+    
+    'Shell plugin and wait for return
+    Dim shellCmd As pdString
+    Set shellCmd = New pdString
+    shellCmd.Append "avifdec.exe "
+    
+    'Use all available cores for decoding
+    shellCmd.Append "-j "
+    shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
+    
+    'If using a lossy intermediary (jpeg), attempt to maximize quality
+    If (Not REQUIRE_LOSSLESS_INTERMEDIARY) Then shellCmd.Append "-q 100 "
+    
+    'Append space-safe source image
+    shellCmd.Append """"
+    shellCmd.Append srcFile
+    shellCmd.Append """ "
+    
+    'Append space-safe destination image
+    shellCmd.Append """"
+    shellCmd.Append dstFile
+    shellCmd.Append """"
+    
+    'Shell plugin and capture output for analysis
+    Dim outputString As String
+    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    
+        'Shell appears successful.  The output string will have two easy-to-check flags if
+        ' the conversion was successful.  Don't return success unless we find both.
+        Dim targetStringSrc As String, targetStringDst As String
+        targetStringSrc = "Image decoded: " & srcFile
+        
+        If REQUIRE_LOSSLESS_INTERMEDIARY Then
+            targetStringDst = "Wrote PNG: "
+        Else
+            targetStringDst = "Wrote JPEG: "
+        End If
+        targetStringDst = targetStringDst & dstFile
+        
+        ConvertAVIFtoStandardImage = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
+        ConvertAVIFtoStandardImage = ConvertAVIFtoStandardImage And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
+        
+        'Want to review the output string manually?  Print it here:
+        'PDDebug.LogAction outputString
+        
+        'Record full details of failures
+        If ConvertAVIFtoStandardImage Then
+            PDDebug.LogAction "libavif reports success; transferring image to internal parser..."
+        Else
+            InternalError funcName, "load failed; output follows:"
+            PDDebug.LogAction outputString
+        End If
+        
+    Else
+        InternalError funcName, "shell failed"
+    End If
+    
+End Function
+
 Public Function GetVersion(ByVal testExportLibrary As Boolean) As String
     
     GetVersion = vbNullString
@@ -135,3 +237,7 @@ End Function
 Public Function IsAVIFImportAvailable() As Boolean
     IsAVIFImportAvailable = m_avifImportAvailable
 End Function
+
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
+    PDDebug.LogAction "WARNING! libavif error reported in " & funcName & "(): " & errDescription
+End Sub

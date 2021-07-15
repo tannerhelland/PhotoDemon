@@ -980,14 +980,38 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     ' copying of the official libavif exe binaries (for example,
     ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
     '...into the /App/PhotoDemon/Plugins subfolder.
-    If Plugin_AVIF.IsAVIFImportAvailable() Then
+    Dim potentialAVIF As Boolean
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+    If potentialAVIF Then
+    
+        If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+            'Offer to auto-download in the future...?  idk
+        End If
         
-        Dim potentialAVIF As Boolean
-        potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
-        If potentialAVIF Then
+        If Plugin_AVIF.IsAVIFImportAvailable() Then
         
-            'cascadeloadgenericimage = 'TODO
-        
+            'It's an ugly workaround, but necessary; convert the AVIF into a (lossless) PNG file
+            Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
+            CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, intermediaryPDIF)
+            
+            'If that worked, load the intermediary image using the relevant decoder
+            If CascadeLoadGenericImage Then
+                If (intermediaryPDIF = PDIF_PNG) Then
+                    CascadeLoadGenericImage = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
+                Else
+                    CascadeLoadGenericImage = AttemptGDIPlusLoad(tmpFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+                End If
+            End If
+            
+            'Regardless of outcome, kill the temp file
+            Files.FileDeleteIfExists tmpFile
+            
+            'If succcessful, flag the image format and return
+            If CascadeLoadGenericImage Then
+                decoderUsed = id_libAVIF
+                dstImage.SetOriginalFileFormat PDIF_AVIF
+            End If
+            
         End If
         
     End If
