@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2021 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 23/October/20
-'Last update: add new function to blank a string in the array; this is useful for freeing memory while
-'             traversing a large collection in-order
+'Last updated: 20/July/21
+'Last update: add a fast "RemoveString" function; this isn't actually needed in PD, but in the separate
+'             update-file-generator (which needs to manually flag some files as unnecessary)
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -621,6 +621,46 @@ Friend Sub CreateFromMultilineString(ByRef srcString As String, Optional ByVal l
     tmpArray = Split(srcString, lineDelimiter, , vbBinaryCompare)
     Me.CreateFromStringArray tmpArray
 End Sub
+
+'Remove a string from the current stack.
+' IMPORTANT NOTE: use this function sparingly, because even though it's optimized using
+' "pointer magic" (or the closest thing to it VB has) to migrate strings in the stack
+' into position over the removed one, it still has to iterate all strings past the target one
+Friend Sub RemoveStringByIndex(ByVal stringIndex As Long)
+    
+    If (stringIndex >= 0) And (stringIndex < m_NumOfStrings) Then
+    
+        'Free the target string
+        m_Strings(stringIndex) = vbNullString
+        
+        'Use pointer tricks to shift all neighboring strings "down" in the stack
+        Dim idxCurString As Long
+        idxCurString = stringIndex + 1
+        
+        Do While (idxCurString < m_NumOfStrings)
+            GetMem4_Ptr VarPtr(m_Strings(idxCurString)), VarPtr(m_Strings(idxCurString - 1))
+            idxCurString = idxCurString + 1
+        Loop
+        
+        'Nullify the final string pointer in the table to prevent a leak (or double-free)
+        If (stringIndex < m_NumOfStrings - 1) Then PutMem4 VarPtr(m_Strings(m_NumOfStrings - 1)), 0&
+        
+        'Decrement string counter
+        m_NumOfStrings = m_NumOfStrings - 1
+        
+    End If
+    
+End Sub
+
+'Convenience wrapper to RemoveStringByIndex(), above.
+' Returns TRUE if string is found and removed successfully; FALSE means the
+' string doesn't exist in the current stack.
+Friend Function RemoveStringByText(ByRef srcString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
+    Dim idxTarget As Long
+    idxTarget = Me.ContainsString(srcString, ignoreCase)
+    RemoveStringByText = (idxTarget >= 0)
+    If RemoveStringByText Then Me.RemoveStringByIndex idxTarget
+End Function
 
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
 Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)

@@ -2073,6 +2073,7 @@ Private Sub MnuTest_Click()
     
     'Test code goes here
     
+    'Report timing results:
     PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Want to display the test results?  Copy the processed image into PDImages.GetActiveImage.GetActiveLayer.layerDIB,

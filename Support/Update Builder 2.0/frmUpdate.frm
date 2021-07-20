@@ -190,6 +190,10 @@ Private Sub AssembleNightlyBuild()
     ' or other unwanted entries.
     m_File.RetrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\App\", nightlyList, True, False, "exe|txt|TXT|dll|xml|pdrc"
     
+    'Manually remove any files we don't want to include in nightly downloads
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifdec.exe", True
+    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifenc.exe", True
+    
     'Make a copy of the current file list for post-compression verification
     Dim verifyFiles As pdStringStack
     Set verifyFiles = New pdStringStack

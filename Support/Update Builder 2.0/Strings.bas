@@ -92,6 +92,7 @@ Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal dstCodePage A
 
 Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As Long, ByVal strLength As Long) As String
 
+Private Declare Function StrCmpLogicalW Lib "shlwapi" (ByVal ptrString1 As Long, ByVal ptrString2 As Long) As Long
 'While shlwapi provides StrStr and StrStrI functions, they are dog-slow - so avoid them as much as possible!
 Private Declare Function StrStrIW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
 Private Declare Function StrStrW Lib "shlwapi" (ByVal ptrHaystack As Long, ByVal ptrNeedle As Long) As Long
@@ -562,6 +563,13 @@ Public Function StrCompSortPtr(ByVal firstStringPtr As Long, ByVal secondStringP
     ' As such, we ignore the NORM_LINGUISTIC_CASING rule for now.
     StrCompSortPtr = CompareStringW(pdli_UserDefault, SORT_STRINGSORT Or NORM_IGNORECASE, firstStringPtr, -1, secondStringPtr, -1) - 2
     
+End Function
+
+'Wrapper to StrCmpLogicalW, which Windows Explorer uses for filename sort order.
+' Important caveat, per MSDN: "Behavior of this function, and therefore the results it returns,
+' can change from release to release. It should not be used for canonical sorting applications."
+Public Function StrCompSortPtr_Filenames(ByVal firstStringPtr As Long, ByVal secondStringPtr As Long) As Long
+    StrCompSortPtr_Filenames = StrCmpLogicalW(firstStringPtr, secondStringPtr)
 End Function
 
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
