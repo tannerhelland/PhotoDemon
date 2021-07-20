@@ -56,72 +56,79 @@ Begin VB.Form FormPluginManager
       Caption         =   "Reset all library options"
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
+      Height          =   6135
       Index           =   0
       Left            =   3000
       Top             =   240
       Width           =   7695
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   13573
+      _ExtentY        =   10821
+      Begin PhotoDemon.pdListBoxOD lstOverview 
+         Height          =   5175
+         Left            =   105
+         TabIndex        =   4
+         Top             =   840
+         Width           =   7455
+         _ExtentX        =   13150
+         _ExtentY        =   9128
+         Caption         =   "library details:"
+      End
+      Begin PhotoDemon.pdHyperlink hypPluginFolder 
+         Height          =   300
+         Left            =   1800
+         Top             =   0
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   529
+         FontSize        =   12
+         RaiseClickEvent =   -1  'True
+      End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   300
          Index           =   0
          Left            =   120
-         Top             =   15
-         Width           =   2715
-         _ExtentX        =   4789
+         Top             =   420
+         Width           =   1515
+         _ExtentX        =   2672
          _ExtentY        =   529
-         Caption         =   "third-party library status:"
+         Caption         =   "library status:"
          FontSize        =   12
          ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblPluginStatus 
          Height          =   300
-         Left            =   2880
-         Top             =   15
-         Width           =   4770
-         _ExtentX        =   8414
+         Index           =   0
+         Left            =   1800
+         Top             =   420
+         Width           =   5850
+         _ExtentX        =   10319
          _ExtentY        =   529
          Caption         =   "GOOD"
          FontSize        =   12
          ForeColor       =   47369
          UseCustomForeColor=   -1  'True
       End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   240
-         Top             =   720
-         Width           =   705
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "status:"
-         FontSize        =   11
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   300
+         Index           =   1
+         Left            =   120
+         Top             =   0
+         Width           =   1515
+         _ExtentX        =   2672
+         _ExtentY        =   529
+         Caption         =   "library folder:"
+         FontSize        =   12
          ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblStatus 
-         Height          =   285
-         Index           =   0
-         Left            =   1080
-         Top             =   720
-         Width           =   3540
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "installed, enabled, and up to date"
-         FontSize        =   11
-         ForeColor       =   49152
-         UseCustomForeColor=   -1  'True
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
+      Height          =   6135
       Index           =   1
       Left            =   3000
       Top             =   240
       Width           =   7695
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   13573
+      _ExtentY        =   10821
       Begin PhotoDemon.pdButtonStrip btsDisablePlugin 
          Height          =   1095
          Left            =   360
@@ -254,10 +261,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 17/July/20
-'Last update: rename various UI elements on this page with "third-party libraries"
-'             instead of "plugins".  "Plugins" may mean something entirely different
-'             in future builds.
+'Last updated: 19/July/21
+'Last update: revamp UI to allow for more 3rd-party libraries in the future
 '
 'I've considered merging this form with the main Tools > Options dialog, but that dialog
 ' is already cluttered, and I really prefer that users don't mess around with 3rd-party libraries.
@@ -283,6 +288,13 @@ Private m_LibraryEnabled() As Boolean
 'We need to distinguish between the user clicking on the "disable plugin" button strip, and programmatically
 ' changing the button strip to reflect the current setting.
 Private m_IgnoreButtonStripEvents As Boolean
+
+'Height of each library overview block on the front-page list
+Private Const OVERVIEW_ITEM_HEIGHT As Long = 26
+
+'Font object for owner-drawn listbox rendering, plus a few related UI measurements (cached at load time)
+Private m_ListBoxFont As pdFont
+Private m_ListBoxMaxWidth As Long
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -378,42 +390,45 @@ Private Sub Form_Load()
     m_Colors.InitializeColorList "PDPluginManager", colorCount
     UpdateColorList
     
+    'Prepare a custom font object for the owner-drawn overview listbox
+    Set m_ListBoxFont = New pdFont
+    m_ListBoxFont.SetFontBold False
+    m_ListBoxFont.SetFontSize 10
+    m_ListBoxFont.CreateFontObject
+    m_ListBoxFont.SetTextAlignment vbLeftJustify
+    
     'Populate the left-hand list box with all relevant plugins
+    lstOverview.ListItemHeight = OVERVIEW_ITEM_HEIGHT
+    lstOverview.SetAutomaticRedraws False
+    
     lstPlugins.Clear
     lstPlugins.AddItem "Overview", 0, True
     
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         lstPlugins.AddItem PluginManager.GetPluginName(i), i + 1
+        lstOverview.AddItem PluginManager.GetPluginName(i), i + 1
     Next i
     
+    lstOverview.SetAutomaticRedraws True, True
     lstPlugins.ListIndex = 0
+    
+    'Provide a convenient link to the library folder
+    Dim shortPathToLibs As String
+    shortPathToLibs = PluginManager.GetPluginPath()
+    If (InStr(1, shortPathToLibs, UserPrefs.GetProgramPath(), vbTextCompare) = 1) Then
+        shortPathToLibs = "[PhotoDemon folder]\" & Right$(shortPathToLibs, Len(shortPathToLibs) - Len(UserPrefs.GetProgramPath()))
+    End If
+    
+    hypPluginFolder.Caption = shortPathToLibs
     
     'Dynamically generate all text on the overview page
     Dim maxWidth As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         
-        'Load two new label instances
-        If (i > 0) Then
-            Load lblInterfaceTitle(i): lblInterfaceTitle(i).Visible = True
-            Load lblStatus(i): lblStatus(i).Visible = True
-        End If
+        'Find the longest plugin name
+        If (m_ListBoxFont.GetWidthOfString(PluginManager.GetPluginName(i)) > m_ListBoxMaxWidth) Then m_ListBoxMaxWidth = m_ListBoxFont.GetWidthOfString(PluginManager.GetPluginName(i))
         
-        'Assign title captions and position accordingly
-        lblInterfaceTitle(i).Caption = PluginManager.GetPluginName(i) & ":"
-        If lblInterfaceTitle(i).GetWidth > maxWidth Then maxWidth = lblInterfaceTitle(i).GetWidth
-        
-        'Align the top position of each status label with its matching title label
-        If (i > 0) Then lblInterfaceTitle(i).SetTop lblInterfaceTitle(i - 1).GetTop + lblInterfaceTitle(i - 1).GetHeight + FixDPI(12)
-        lblStatus(i).SetTop lblInterfaceTitle(i).GetTop
-        
-    Next i
-    
-    'Left-align all status labels to the same position
-    maxWidth = maxWidth + lblInterfaceTitle(0).GetLeft + FixDPI(8)
-    For i = 0 To PluginManager.GetNumOfPlugins - 1
-        lblStatus(i).SetLeft maxWidth
-        lblStatus(i).SetWidth picContainer(0).GetWidth - lblStatus(i).GetLeft
     Next i
     
     m_IgnoreButtonStripEvents = True
@@ -485,15 +500,15 @@ Private Sub UpdateLibraryLabels()
     
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        pluginStatus = pluginStatus And PopLibraryLabel(i)
+        pluginStatus = pluginStatus And CheckLibraryStateUI(i)
     Next i
     
     If pluginStatus Then
-        lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
-        lblPluginStatus.Caption = UCase$(g_Language.TranslateMessage("GOOD"))
+        lblPluginStatus(0).ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
+        lblPluginStatus(0).Caption = LCase$(g_Language.TranslateMessage("GOOD"))
     Else
-        lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-        lblPluginStatus.Caption = g_Language.TranslateMessage("problems detected")
+        lblPluginStatus(0).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
+        lblPluginStatus(0).Caption = g_Language.TranslateMessage("problems detected")
     End If
         
 End Sub
@@ -517,7 +532,7 @@ Private Sub CollectAllVersionNumbers()
     'Remove trailing build numbers from certain version strings.
     Dim dotPos As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) Then
+        If (i <> CCP_ExifTool) And (i <> CCP_libdeflate) And (i <> CCP_AvifExport) And (i <> CCP_AvifImport) Then
             If (LenB(m_LibraryVersion(i)) <> 0) Then
                 dotPos = InStrRev(m_LibraryVersion(i), ".", -1, vbBinaryCompare)
                 If (dotPos <> 0) Then m_LibraryVersion(i) = Left$(m_LibraryVersion(i), dotPos - 1)
@@ -531,40 +546,44 @@ End Sub
 
 'Given a plugin's availability, expected version, and index on this form, populate the relevant labels associated with it.
 ' This function will return TRUE if the plugin is in good status, FALSE if it isn't (for any reason)
-Private Function PopLibraryLabel(ByVal pluginID As CORE_PLUGINS) As Boolean
+Private Function CheckLibraryStateUI(ByVal pluginID As CORE_PLUGINS, Optional ByRef dstStateString As String = vbNullString, Optional ByRef dstStateUIColor As Long = vbBlack) As Boolean
     
     'Is this plugin present on the machine?
     If PluginManager.IsPluginCurrentlyInstalled(pluginID) Then
-    
+        
+        'Failsafe check for premature accesses during loading
+        If Not VBHacks.IsArrayInitialized(m_LibraryEnabled) Then Exit Function
+        If (pluginID > UBound(m_LibraryEnabled)) Then Exit Function
+        
         'If present, has it been forcibly disabled?  (Note that we use our internal enablement tracker for this,
         ' to reflect any changes the user has just made.)
         If m_LibraryEnabled(pluginID) Then
             
             'If this plugin is present and enabled, does its version match what we expect?
             If Strings.StringsEqual(m_LibraryVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), False) Then
-                lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed and up to date")
-                lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
-                PopLibraryLabel = True
+                dstStateString = g_Language.TranslateMessage("installed and up to date")
+                dstStateUIColor = m_Colors.RetrieveColor(PDPM_GoodText)
+                CheckLibraryStateUI = True
                 
             'Version mismatch
             Else
-                lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but version is unexpected")
-                lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-                PopLibraryLabel = False
+                dstStateString = g_Language.TranslateMessage("installed, but version is unexpected")
+                dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
+                CheckLibraryStateUI = False
             End If
             
         'Plugin is disabled
         Else
-            lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but disabled by user")
-            lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-            PopLibraryLabel = False
+            dstStateString = g_Language.TranslateMessage("installed, but disabled by user")
+            dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
+            CheckLibraryStateUI = False
         End If
         
     'Plugin is not present on the machine
     Else
-        lblStatus(pluginID).Caption = g_Language.TranslateMessage("not installed")
-        lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
-        PopLibraryLabel = False
+        dstStateString = g_Language.TranslateMessage("not installed")
+        dstStateUIColor = m_Colors.RetrieveColor(PDPM_BadText)
+        CheckLibraryStateUI = False
     End If
     
 End Function
@@ -574,6 +593,42 @@ End Function
 Private Sub UpdateColorList()
     m_Colors.LoadThemeColor PDPM_GoodText, "PluginOK", RGB(0, 255, 0)
     m_Colors.LoadThemeColor PDPM_BadText, "PluginError", RGB(255, 0, 0)
+End Sub
+
+Private Sub hypPluginFolder_Click()
+    Dim filePath As String, shellCommand As String
+    filePath = PluginManager.GetPluginPath()
+    shellCommand = "explorer.exe """ & filePath & """"
+    Shell shellCommand, vbNormalFocus
+End Sub
+
+Private Sub lstOverview_Click()
+    If (lstOverview.ListIndex >= 0) Then lstPlugins.ListIndex = lstOverview.ListIndex + 1
+End Sub
+
+Private Sub lstOverview_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+    
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim itemRect As RectF
+    CopyMemoryStrict VarPtr(itemRect), ptrToRectF, 16
+    
+    Dim xPadding As Long, yPadding As Long
+    xPadding = itemRect.Left + Interface.FixDPI(8)
+    yPadding = itemRect.Top + Interface.FixDPI(4)
+    
+    'Always paint the plugin name in standard colors
+    m_ListBoxFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextReadOnly)
+    m_ListBoxFont.AttachToDC bufferDC
+    m_ListBoxFont.FastRenderText xPadding, yPadding, PluginManager.GetPluginName(itemIndex)
+    
+    'Next, retrieve plugin status (and an associated color)
+    Dim stateString As String, stateColor As Long
+    CheckLibraryStateUI itemIndex, stateString, stateColor
+    m_ListBoxFont.SetFontColor stateColor
+    m_ListBoxFont.FastRenderText xPadding + m_ListBoxMaxWidth + xPadding, yPadding, stateString
+    m_ListBoxFont.ReleaseFromDC
+    
 End Sub
 
 'When a new plugin is selected, display only the relevant plugin panel

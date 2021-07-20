@@ -31,8 +31,6 @@ Option Explicit
 ' the current version (and compile date) over stdout.
 Public Function GetOptiPNGVersion() As String
     
-    GetOptiPNGVersion = vbNullString
-    
     If PluginManager.IsPluginCurrentlyInstalled(CCP_OptiPNG) Then
         
         Dim pluginPath As String

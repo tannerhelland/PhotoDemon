@@ -976,6 +976,50 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
+    ' copying of the official libavif exe binaries (for example,
+    ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
+    '...into the /App/PhotoDemon/Plugins subfolder.
+    Dim potentialAVIF As Boolean
+    potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
+    If potentialAVIF Then
+        
+        'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
+        If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+            If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo LibAVIFDidntWork
+        End If
+        
+        If Plugin_AVIF.IsAVIFImportAvailable() Then
+        
+            'It's an ugly workaround, but necessary; convert the AVIF into a temporary image file
+            ' in a supported format.
+            Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
+            CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, intermediaryPDIF)
+            
+            'If that worked, load the intermediary image using the relevant decoder
+            If CascadeLoadGenericImage Then
+                If (intermediaryPDIF = PDIF_PNG) Then
+                    CascadeLoadGenericImage = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
+                Else
+                    CascadeLoadGenericImage = AttemptGDIPlusLoad(tmpFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+                End If
+            End If
+            
+            'Regardless of outcome, kill the temp file
+            Files.FileDeleteIfExists tmpFile
+            
+            'If succcessful, flag the image format and return
+            If CascadeLoadGenericImage Then
+                decoderUsed = id_libAVIF
+                dstImage.SetOriginalFileFormat PDIF_AVIF
+            End If
+            
+        End If
+        
+    End If
+    
+LibAVIFDidntWork:
+    
     'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
     ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
     If (Not CascadeLoadGenericImage) And WIC.IsWICAvailable() Then

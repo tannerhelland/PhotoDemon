@@ -527,6 +527,12 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     PluginManager.LoadPluginGroup False
     PluginManager.ReportPluginLoadSuccess
     
+    'Some plugin instances may require us to rebuild internal databases.
+    ' (Specifically as of 9.0, the optional AVIF encoder/decoder pair requires us to
+    ' add AV1-based codecs to the supported import/export list.)
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifExport) Then ImageFormats.GenerateOutputFormats
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport) Then ImageFormats.GenerateInputFormats
+    
     
     '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
