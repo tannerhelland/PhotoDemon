@@ -951,13 +951,13 @@ End Function
 
 'Helper function that SHOULD NOT BE CALLED DIRECTLY.  Only other ClipboardPaste_* variants are able to safely use this function.
 ' Returns: TRUE if an image was successfully downloaded and loaded to the pdImages collection.  FALSE if failure occurred.
-Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
+Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'This function assumes the source URL is both absolute and well-formed
     Message "Image URL found.  Attempting to download..."
                     
     Dim tmpDownloadFile As String
-    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcUrl, suppressErrorMsgs)
+    tmpDownloadFile = Web.DownloadURLToTempFile(srcURL, suppressErrorMsgs)
     
     'If the download was successful, we can now use the standard image load routine to import the temporary file
     If (Files.FileLenW(tmpDownloadFile) <> 0) Then

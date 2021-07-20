@@ -211,8 +211,9 @@ Public Sub GenerateInputFormats()
     'Next, add individual formats.  Some formats are condidtional on third-party libraries;
     ' others use internal or system-provided encoders that will always be available.
     
-    'AV1-based codecs require an external plugin
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport) Then
+    'AV1-based codecs require an external plugin, but PD can download it for you if your system is
+    ' compatible (even if the plugin isn't currently installed).
+    If OS.OSSupports64bitExe() Then
         AddInputFormat "AVIF - AV1 Image File", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.avif;*.avifs", PDIF_AVIF
     End If
     
@@ -245,9 +246,12 @@ Public Sub GenerateInputFormats()
     ' case I'm not inclined to cover.  (I know MS discourages activating feature availability
     ' by OS version, but I don't currently know any better way to determine WIC support for
     ' HEVC containers (short of test-loading a file), so this poor-man's scheme will have to do.)
-    
+    '
     'Note that the arbitrary 17123 build no. comes from this MS article:
     ' https://blogs.windows.com/windowsexperience/2018/03/16/announcing-windows-10-insider-preview-build-17123-for-fast/#UpPIwc3yVgJHc5Q8.97
+    '
+    'Note also that libavif can load *some* but not *all* HEIF files (which are similar-but-not-
+    ' -identical to AVIF files) which is why PD lists HEIC/F as a separate entry in this list.
     If (OS.IsWin10OrLater() And (OS.GetWin10Build >= 17123)) Or (Not OS.IsProgramCompiled) Then
         AddInputFormat "HEIC/HEIF - High Efficiency Image File Format", "*.heic;*.heif", PDIF_HEIF
     End If

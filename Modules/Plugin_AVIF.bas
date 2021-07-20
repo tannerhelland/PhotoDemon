@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 13/July/21
-'Last update: initial build
+'Last updated: 20/July/21
+'Last update: new code for prompting and potentially downloading AVIF support libraries for the user
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.
@@ -17,7 +17,7 @@ Attribute VB_Name = "Plugin_AVIF"
 'PhotoDemon has been designed against v0.9.0 (22 Feb '21).  It may not work with other versions.
 ' Additional documentation regarding the use of libavif is available as part of the official library,
 ' downloadable from https://github.com/AOMediaCodec/libavif.  You can also run the exe files manually
-' with the -h extension for more details on how they work.
+' with the -h extension for details on how they work.
 '
 'libavif is available under a BSD license.  Please see the App/PhotoDemon/Plugins/avif-LICENSE.txt file
 ' for questions regarding copyright or licensing.
@@ -236,6 +236,105 @@ End Function
 
 Public Function IsAVIFImportAvailable() As Boolean
     IsAVIFImportAvailable = m_avifImportAvailable
+End Function
+
+'Notify the user that PD can automatically download and configure AVIF support for them.
+'
+'Returns TRUE if PD successfully downloaded (and initialized) all required plugins
+Public Function PromptForLibraryDownload(Optional ByVal targetIsImportLib As Boolean = True) As Boolean
+    
+    On Error GoTo BadDownload
+    
+    'Only attempt download if the current Windows install is 64-bit
+    If OS.OSSupports64bitExe() Then
+    
+        'Ask the user for permission
+        Dim uiMsg As pdString
+        Set uiMsg = New pdString
+        uiMsg.AppendLine g_Language.TranslateMessage("AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.")
+        uiMsg.AppendLineBreak
+        uiMsg.AppendLine g_Language.TranslateMessage("The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.")
+        uiMsg.AppendLineBreak
+        uiMsg.Append g_Language.TranslateMessage("Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?")
+        
+        Dim msgReturn As VbMsgBoxResult
+        msgReturn = PDMsgBox(uiMsg.ToString, vbInformation Or vbYesNoCancel, "Download required")
+        If (msgReturn <> vbYes) Then
+            
+            'On a NO response, provide additional feedback.
+            If (msgReturn = vbNo) Then
+                uiMsg.Reset
+                uiMsg.AppendLine g_Language.TranslateMessage("PhotoDemon will not download the AVIF libraries at this time.")
+                uiMsg.AppendLineBreak
+                uiMsg.AppendLine g_Language.TranslateMessage("To manually enable AVIF support, you can download the latest copies of the free ""%1"" and ""%2"" programs and place them into your PhotoDemon plugin folder:", "avifdec.exe", "avifenc.exe")
+                uiMsg.AppendLine PluginManager.GetPluginPath()
+                uiMsg.AppendLineBreak
+                uiMsg.AppendLine g_Language.TranslateMessage("These free libraries are always available at the Alliance for Open Media libavif release page:")
+                uiMsg.Append "https://github.com/AOMediaCodec/libavif/releases"
+                PDMsgBox uiMsg.ToString, vbInformation Or vbOKOnly, "Download canceled"
+            End If
+            
+            PromptForLibraryDownload = False
+            Exit Function
+            
+        End If
+        
+        'The user said YES!  Attempt to download the latest libavif release now.
+        Dim srcURL As String, dstFileDecoder As String
+        
+        'Before downloading anything, ensure we have write access on the plugin folder.
+        dstFileDecoder = PluginManager.GetPluginPath()
+        If Not Files.PathExists(dstFileDecoder, True) Then
+            PDMsgBox g_Language.TranslateMessage("You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again."), vbOKOnly Or vbApplicationModal Or vbCritical, g_Language.TranslateMessage("Error")
+            PromptForLibraryDownload = False
+            Exit Function
+        End If
+        
+        'We need to download both the import and export library.  Steps are the same for both.
+        
+        'Start with import.
+        srcURL = "https://github.com/AOMediaCodec/libavif/releases/download/v0.9.0/avifdec.exe"
+        dstFileDecoder = PluginManager.GetPluginPath() & "avifdec.exe"
+        
+        'If the destination file does exist, kill it (maybe it's broken or bad)
+        Files.FileDeleteIfExists dstFileDecoder
+        
+        'Download
+        Dim tmpFile As String
+        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
+        
+        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileDecoder
+        Files.FileDeleteIfExists tmpFile
+        
+        'Repeat for the encoder
+        Dim dstFileEncoder As String
+        srcURL = "https://github.com/AOMediaCodec/libavif/releases/download/v0.9.0/avifenc.exe"
+        dstFileEncoder = PluginManager.GetPluginPath() & "avifenc.exe"
+        Files.FileDeleteIfExists dstFileEncoder
+        
+        tmpFile = vbNullString
+        tmpFile = Web.DownloadURLToTempFile(srcURL, False)
+        
+        If Files.FileExists(tmpFile) Then Files.FileCopyW tmpFile, dstFileEncoder
+        Files.FileDeleteIfExists tmpFile
+        
+        'Attempt to initialize both plugins
+        PluginManager.LoadPluginGroup False
+        
+        If targetIsImportLib Then
+            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifImport)
+        Else
+            PromptForLibraryDownload = PluginManager.IsPluginCurrentlyEnabled(CCP_AvifExport)
+        End If
+        
+    End If
+    
+    Exit Function
+    
+BadDownload:
+    PromptForLibraryDownload = False
+    Exit Function
+
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)

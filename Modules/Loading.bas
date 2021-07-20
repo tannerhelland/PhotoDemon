@@ -656,6 +656,32 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cPSP.IsFilePSP(imagePath) Then loadSuccessful = (cPSP.LoadPSP(imagePath, tmpPDImage, targetDIB) < psp_Failure)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
+        'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
+        ' copying of the official libavif exe binaries (for example,
+        ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
+        '...into the /App/PhotoDemon/Plugins subfolder.
+        Case "HEIF", "HEIFS", "HEIC", "HEICS", "AVCI", "AVCS", "AVIF", "AVIFS"
+            If Plugin_AVIF.IsAVIFImportAvailable() Then
+            
+                Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
+                loadSuccessful = Plugin_AVIF.ConvertAVIFtoStandardImage(imagePath, tmpFile, intermediaryPDIF)
+                
+                If loadSuccessful Then
+                    If (intermediaryPDIF = PDIF_PNG) Then
+                        'Dim cPNG As pdPNG
+                        Set cPNG = New pdPNG
+                        loadSuccessful = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, targetDIB) < png_Failure)
+                    Else
+                        loadSuccessful = LoadGDIPlusImage(tmpFile, targetDIB, tmpPDImage)
+                    End If
+                End If
+                
+                Files.FileDeleteIfExists tmpFile
+                If (Not targetDIB.GetAlphaPremultiplication) Then targetDIB.SetAlphaPremultiplication True
+                If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+                
+            End If
+        
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
         ' VB's internal LoadPicture function.
         Case Else

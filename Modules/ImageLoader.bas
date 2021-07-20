@@ -983,14 +983,16 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     Dim potentialAVIF As Boolean
     potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "heif", "heifs", "heic", "heics", "avci", "avcs", "avif", "avifs")
     If potentialAVIF Then
-    
-        If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
-            'Offer to auto-download in the future...?  idk
+        
+        'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
+        If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+            If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo LibAVIFDidntWork
         End If
         
         If Plugin_AVIF.IsAVIFImportAvailable() Then
         
-            'It's an ugly workaround, but necessary; convert the AVIF into a (lossless) PNG file
+            'It's an ugly workaround, but necessary; convert the AVIF into a temporary image file
+            ' in a supported format.
             Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
             CascadeLoadGenericImage = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, intermediaryPDIF)
             
@@ -1015,6 +1017,8 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
         
     End If
+    
+LibAVIFDidntWork:
     
     'HEIF/HEIC support (import only) was added in v8.0.  Loading requires Win 10 and possible
     ' extra downloads from the MS Store.  We attempt to use WIC to load such files.
