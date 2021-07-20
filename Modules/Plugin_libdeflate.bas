@@ -314,9 +314,9 @@ Public Function IsCompressorReady() As Boolean
     IsCompressorReady = (m_libDeflateHandle <> 0)
 End Function
 
-'libdeflate doesn't export a version function, but this class was designed against the v1.2 release.
+'libdeflate doesn't export a version function, but this class was designed against the v1.8 release.
 Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.7"
+    GetCompressorVersion = "1.8"
 End Function
 
 'Private methods follow
