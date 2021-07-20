@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>8.9.505</langversion>
+		<langversion>8.9.524</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -2369,6 +2369,60 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 		<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 		<phrase>
+			<original>Applying plugin</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+		<phrase>
+			<original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Download required</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>PhotoDemon will not download the AVIF libraries at this time.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Download canceled</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+		<phrase>
 			<original>Scanner successfully enabled</original>
 			<translation></translation>
 		</phrase>
@@ -2486,6 +2540,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 		<phrase>
+			<original>BSD license</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>artistic license</original>
 			<translation></translation>
 		</phrase>
@@ -2506,16 +2565,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 		</phrase>
 
 		<phrase>
-			<original>BSD license</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>zLib license</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- Plugin_Management.bas contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 		<phrase>
 			<original>Preparing image for printing</original>
@@ -3235,7 +3289,59 @@ Please enter a numeric value.</original>
 			<translation></translation>
 		</phrase>
 
-		<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+		<phrase>
+			<original>Attempting to connect to the Internet</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Verifying URL (this may take a moment)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Downloading</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>PhotoDemon lost Internet access. Please double-check your connection.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Downloading (%1 of %2 bytes)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Download complete. Verifying file integrity</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Download canceled.  (Remote server denied access.)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
+
+You will need to manually download this file using your Internet browser.</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 		<phrase>
 			<original>Fit width</original>
@@ -3260,6 +3366,8 @@ Please enter a numeric value.</original>
 		</phrase>
 
 		<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+		<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 		<phrase>
 			<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
@@ -7075,6 +7183,88 @@ If you want to save it with a different file name, please select 'Cancel', then 
 		<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 		<phrase>
+			<original>scan for new plugins</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>about this plugin</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>available plugins</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>add folder</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>default plugin folder</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>additional folders</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>remove folder</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Waiting for plugin</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Plugin canceled.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>plugins</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>settings</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>loading plugin collection</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>No plugins found.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
+			<translation></translation>
+		</phrase>
+
+		<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
+		<phrase>
 			<original>after processing, delete this layer</original>
 			<translation></translation>
 		</phrase>
@@ -9549,70 +9739,6 @@ Would you like to save your batch list before exiting?</original>
 		</phrase>
 
 		<phrase>
-			<original>Attempting to connect to the Internet</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Verifying image URL (this may take a moment)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Online File Not Found</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Image URL verified.  Downloading image</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Downloading file (%1 of %2 bytes received)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Download complete. Verifying file integrity</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Download canceled.  (Remote server denied access.)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
-
-You will need to download this file using your Internet browser, then manually load it into %2.
-
-I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Download Unsuccessful</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 			<translation></translation>
 		</phrase>
@@ -9623,7 +9749,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 		</phrase>
 
 		<phrase>
-			<original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
+			<original>Please be respectful of copyrights when downloading images.  Thanks!</original>
 			<translation></translation>
 		</phrase>
 
@@ -9632,7 +9758,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 			<translation></translation>
 		</phrase>
 
-		<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+		<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 		<phrase>
 			<original>currently available programs (listed by window title)</original>
@@ -11859,11 +11985,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 		</phrase>
 
 		<phrase>
-			<original>settings</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
 			<original>normal</original>
 			<translation></translation>
 		</phrase>
@@ -11888,7 +12009,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 			<translation></translation>
 		</phrase>
 
-		<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 		<phrase>
 			<original>remap</original>
@@ -13118,7 +13239,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 		</phrase>
 
 		<phrase>
-			<original>third-party library status</original>
+			<original>library details</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>library status</original>
 			<translation></translation>
 		</phrase>
 
@@ -13128,12 +13254,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 		</phrase>
 
 		<phrase>
-			<original>status</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>installed, enabled, and up to date</original>
+			<original>library folder</original>
 			<translation></translation>
 		</phrase>
 
@@ -13295,98 +13416,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-		<phrase>
-			<original>Applying plugin</original>
-			<translation></translation>
-		</phrase>
-
-		<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-		<phrase>
-			<original>scan for new plugins</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>about this plugin</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>available plugins</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>add folder</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>default plugin folder</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>additional folders</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>remove folder</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Waiting for plugin</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Plugin canceled.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>plugins</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>loading plugin collection</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>No plugins found.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-			<translation></translation>
-		</phrase>
-
-		<!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
-
-		<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2547</phrasecount>
+		<phrasecount>2554</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5204 phrases. -->
-	<!-- 2657 are duplicates, so only 2547 unique phrases have been written to file. -->
-	<!-- These 2547 phrases contain approximately 11726 total words. -->
+	<!-- As of this build, PhotoDemon contains 5224 phrases. -->
+	<!-- 2670 are duplicates, so only 2554 unique phrases have been written to file. -->
+	<!-- These 2554 phrases contain approximately 11789 total words. -->
 
 	</pdData>
