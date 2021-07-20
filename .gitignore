@@ -90,3 +90,5 @@ PhotoDemon.exe
 /Resources/Assets/*.xml
 /Resources/Assets/GoRC.exe
 /Resources/Assets/PD_Icons.RES
+App/PhotoDemon/Plugins/avifdec.exe
+App/PhotoDemon/Plugins/avifenc.exe
