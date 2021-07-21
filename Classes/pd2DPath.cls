@@ -70,21 +70,21 @@ Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, B
 Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As GP_Result
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal allowableError As Single) As GP_Result
 
-'Path iterators
-Private Declare Function GdipCreatePathIter Lib "gdiplus" (ByRef hIterator As Long, ByVal hPath As Long) As GP_Result
-Private Declare Function GdipDeletePathIter Lib "gdiplus" (ByVal hIterator As Long) As GP_Result
-Private Declare Function GdipPathIterNextSubpath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long, ByRef isClosedBool As Long) As GP_Result
-Private Declare Function GdipPathIterNextSubpathPath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstHPath As Long, ByRef isClosedBool As Long) As GP_Result
-Private Declare Function GdipPathIterNextPathType Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstPathType As Byte, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long) As GP_Result
-Private Declare Function GdipPathIterNextMarker Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long) As GP_Result
-Private Declare Function GdipPathIterNextMarkerPath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstHPath As Long) As GP_Result
-Private Declare Function GdipPathIterGetCount Lib "gdiplus" (ByVal hIterator As Long, ByRef dstCount As Long) As GP_Result
-Private Declare Function GdipPathIterGetSubpathCount Lib "gdiplus" (ByVal hIterator As Long, ByRef dstCount As Long) As GP_Result
-Private Declare Function GdipPathIterIsValid Lib "gdiplus" (ByVal hIterator As Long, ByRef dstIsValidBool As Long) As GP_Result
-Private Declare Function GdipPathIterHasCurve Lib "gdiplus" (ByVal hIterator As Long, ByRef dstHasCurveBool As Long) As GP_Result
-Private Declare Function GdipPathIterRewind Lib "gdiplus" (ByVal hIterator As Long) As GP_Result
-Private Declare Function GdipPathIterEnumerate Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByVal ptrToDstPointFs As Long, ByVal ptrToDstTypeBytes As Long, ByVal numDstPointCount As Long) As GP_Result
-Private Declare Function GdipPathIterCopyData Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByVal ptrToDstPointFs As Long, ByVal ptrToDstTypeBytes As Long, ByVal startIndex As Long, ByVal endIndex As Long) As GP_Result
+'Path iterators (not currently used)
+'Private Declare Function GdipCreatePathIter Lib "gdiplus" (ByRef hIterator As Long, ByVal hPath As Long) As GP_Result
+'Private Declare Function GdipDeletePathIter Lib "gdiplus" (ByVal hIterator As Long) As GP_Result
+'Private Declare Function GdipPathIterNextSubpath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long, ByRef isClosedBool As Long) As GP_Result
+'Private Declare Function GdipPathIterNextSubpathPath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstHPath As Long, ByRef isClosedBool As Long) As GP_Result
+'Private Declare Function GdipPathIterNextPathType Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstPathType As Byte, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long) As GP_Result
+'Private Declare Function GdipPathIterNextMarker Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstStartIndex As Long, ByRef dstEndIndex As Long) As GP_Result
+'Private Declare Function GdipPathIterNextMarkerPath Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByRef dstHPath As Long) As GP_Result
+'Private Declare Function GdipPathIterGetCount Lib "gdiplus" (ByVal hIterator As Long, ByRef dstCount As Long) As GP_Result
+'Private Declare Function GdipPathIterGetSubpathCount Lib "gdiplus" (ByVal hIterator As Long, ByRef dstCount As Long) As GP_Result
+'Private Declare Function GdipPathIterIsValid Lib "gdiplus" (ByVal hIterator As Long, ByRef dstIsValidBool As Long) As GP_Result
+'Private Declare Function GdipPathIterHasCurve Lib "gdiplus" (ByVal hIterator As Long, ByRef dstHasCurveBool As Long) As GP_Result
+'Private Declare Function GdipPathIterRewind Lib "gdiplus" (ByVal hIterator As Long) As GP_Result
+'Private Declare Function GdipPathIterEnumerate Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByVal ptrToDstPointFs As Long, ByVal ptrToDstTypeBytes As Long, ByVal numDstPointCount As Long) As GP_Result
+'Private Declare Function GdipPathIterCopyData Lib "gdiplus" (ByVal hIterator As Long, ByRef dstResultCount As Long, ByVal ptrToDstPointFs As Long, ByVal ptrToDstTypeBytes As Long, ByVal startIndex As Long, ByVal endIndex As Long) As GP_Result
 
 'Unlike GDI+ and DirectX, pd2DPath follows the Cairo convention and defaults to winding mode.
 ' You can see a visualization of what this means at this MSDN page:

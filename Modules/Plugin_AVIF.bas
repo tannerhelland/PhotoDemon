@@ -27,6 +27,8 @@ Attribute VB_Name = "Plugin_AVIF"
 '
 '***************************************************************************
 
+Option Explicit
+
 'Because libavif only targets x64 targets, we interface with its .exe builds.  This means that
 ' decoding and encoding support exist separately (i.e. just because the import library exists
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).

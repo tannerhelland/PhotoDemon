@@ -422,13 +422,10 @@ Private Sub Form_Load()
     
     hypPluginFolder.Caption = shortPathToLibs
     
-    'Dynamically generate all text on the overview page
-    Dim maxWidth As Long
+    'Find the longest plugin name; we need this to know how to layout text in the
+    ' Overview panel
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        
-        'Find the longest plugin name
         If (m_ListBoxFont.GetWidthOfString(PluginManager.GetPluginName(i)) > m_ListBoxMaxWidth) Then m_ListBoxMaxWidth = m_ListBoxFont.GetWidthOfString(PluginManager.GetPluginName(i))
-        
     Next i
     
     m_IgnoreButtonStripEvents = True
