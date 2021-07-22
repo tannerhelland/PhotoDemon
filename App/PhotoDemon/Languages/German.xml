@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.506</langversion>
+<langversion>9.0.527</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -20,7 +20,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Autosave konnte nicht vollständig rekonstruiert werden. Teilweise Rekonstruktion stattdessen versucht.</translation>
+<translation>Autosave konnte nicht vollständig rekonstruiert werden. Stattdessen teilweise Rekonstruktion versucht.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -441,7 +441,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
 <translation>Das FreeImage Interface-Plug-in (FreeImage.dll) wurde bei der Programminitialisierung als fehlend markiert oder deaktiviert.
 
-Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (Download unter http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
+Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (herunterladbar von http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -947,7 +947,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
  %1
 
-Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern. Dankeschön!</translation>
+Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -973,7 +973,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Leider konnte PhotoDemon folgende(s) Bild(er) nicht laden:
 
 %1
-Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Dankeschön!</translation>
+Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Danke!</translation>
 </phrase>
 
 <phrase>
@@ -2404,47 +2404,47 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation></translation>
+<translation>AVIF ist ein modernes Bildformat, das von der Alliance for Open Media entwickelt wurde. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das die AVIF-Unterstützung permanent aktiviert.</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation></translation>
+<translation>Die Alliance for Open Media stellt kostenlose, quelloffene 64-Bit-AVIF-Encoder- und Decoder-Bibliotheken zur Verfügung. Diese Bibliotheken sind jeweils ungefähr 10 MB groß (ca. 20 MB total). Einmal heruntergeladen, werden diese PhotoDemon erlauben, AVIF-Dateien auf jedem 64-Bit-System zu importieren und exportieren.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Möchten Sie, dass PhotoDemon diese Bibliotheken in Ihren PhotoDemon-Plug-in-Ordner herunterlädt?</translation>
 </phrase>
 
 <phrase>
 <original>Download required</original>
-<translation></translation>
+<translation>Download erforderlich</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation></translation>
+<translation>PhotoDemon wird die AVIF-Bibliotheken zum jetzigen Zeitpunkt nicht herunterladen.</translation>
 </phrase>
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation></translation>
+<translation>Um die AVIF-Unterstützung manuell zu aktivieren, können Sie die neuesten Kopien der kostenlosen Programme "%1" und "%2" herunterladen und diese in Ihrem PhotoDemon-Plug-in-Ordner platzieren</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation></translation>
+<translation>Diese freien Bibliotheken sind immer verfügbar auf der libavif-Release-Seite der Alliance for Open Media</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled</original>
-<translation></translation>
+<translation>Download abgebrochen</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Da PhotoDemon keinen Administratorzugriff hat, kann es keine Dateien für Sie herunterladen. Bitte verschieben Sie PhotoDemon in einen uneingeschränkten Ordner und versuchen es erneut.</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -2474,7 +2474,7 @@ Bitte stellen Sie sicher, dass das Gerät eingeschaltet und bereit für die Nutz
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde bei der Programminitialisierung als fehlend markiert.
 
-Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
+Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -2509,7 +2509,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte Administratorrechte aktivieren und erneut versuchen.</translation>
+<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte aktivieren Sie Admin-Rechte und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2565,7 +2565,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant konnte Datei nicht schreiben. Default-32bpp-Bild wurde stattdessen gespeichert.</translation>
+<translation>PNGQuant konnte Datei nicht schreiben. Stattdessen wurde Default-32bpp-Bild gespeichert.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -3016,7 +3016,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
-<translation>Beim Versuch %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
+<translation>Beim Versuch, %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
 </phrase>
 
 <phrase>
@@ -3341,37 +3341,37 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Attempting to connect to the Internet</original>
-<translation>Verbinden mit dem Internet wird versucht</translation>
+<translation>Versuch, Verbindung mit dem Internet herzustellen</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation></translation>
+<translation>PhotoDemon kann das Internet nicht erreichen. Bitte prüfen Sie Ihre Verbindung gegen und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
 <original>Verifying URL (this may take a moment)</original>
-<translation></translation>
+<translation>URL wird verifiziert (dies kann einen Moment dauern)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation></translation>
+<translation>PhotoDemon konnte die Ziel-URL (%1) nicht erreichen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei manuell unter Verwendung Ihres Internet-Browsers herunterzuladen.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading</original>
-<translation></translation>
+<translation>Wird heruntergeladen</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation></translation>
+<translation>PhotoDemon hat den Internetzugriff verloren. Bitte prüfen Sie Ihre Verbindung gegen.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation></translation>
+<translation>Wird heruntergeladen (%1 von %2 Bytes)</translation>
 </phrase>
 
 <phrase>
@@ -3388,7 +3388,9 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation></translation>
+<translation>Leider hat %1 verhindert, dass PhotoDemon diese Datei direkt herunterladen kann. (Direkte Downloads werden manchmal von falsch konfigurierten Servern als Hotlinking missverstanden.)
+
+Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunterladen müssen.</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3436,7 +3438,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation>Bild-URL gefunden. Download wird versucht</translation>
+<translation>Bild-URL gefunden. Versuch herunterzuladen</translation>
 </phrase>
 
 <phrase>
@@ -6346,7 +6348,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Attempt to recover</original>
-<translation>Wiederherstellen versuchen</translation>
+<translation>Versuch wiederherzustellen</translation>
 </phrase>
 
 <phrase>
@@ -9212,7 +9214,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>lowercase</original>
-<translation>kleinschrift (abc ...)</translation>
+<translation>kleinschrift (abc...)</translation>
 </phrase>
 
 <phrase>
@@ -9237,7 +9239,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>UPPERCASE</original>
-<translation>GROSSSCHRIFT (ABC ...)</translation>
+<translation>GROSSSCHRIFT (ABC...)</translation>
 </phrase>
 
 <phrase>
@@ -9411,7 +9413,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen uneingeschränkten Ordner (keinen Systemordner!) für den Batch-Prozess.</translation>
+<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen systemfremden (Nicht-System), uneingeschränkten Ordner für den Batch-Prozess.</translation>
 </phrase>
 
 <phrase>
@@ -9591,7 +9593,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(speziell JPEG bei 92 % Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
+<translation>(speziell JPEG bei 92 % Qualität für Fotografien und verlustfreies PNG für Nicht-Fotografien)</translation>
 </phrase>
 
 <phrase>
@@ -9809,7 +9811,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Thanks!</original>
-<translation></translation>
+<translation>Bitte seien Sie respektvoll gegenüber Urheberrechten (Copyrights), wenn Sie Bilder herunterladen. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -10744,7 +10746,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation>Metadaten-Support wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
+<translation>Metadaten-Unterstützung wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
 </phrase>
 
 <phrase>
@@ -11378,7 +11380,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Sie haben den "sicheren" Speicher-Modus spezifiziert, was bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateiname erstellen wird.</translation>
+<translation>Sie haben den Speicher-Modus "Sicher" spezifiziert, was bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateiname erstellen wird.</translation>
 </phrase>
 
 <phrase>
@@ -13243,14 +13245,14 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht.  Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht. Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Sie haben PhotoDemon in einem eingeschränkten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner (wie Desktop, Documents oder Downloads) verschieben.
+<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner, wie Desktop, Documents oder Downloads, verschieben.
 
 (Wenn Sie PhotoDemon dort lassen, wo es ist, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
 </phrase>
@@ -13313,12 +13315,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>library details</original>
-<translation></translation>
+<translation>Bibliotheksdetails</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation></translation>
+<translation>Bibliotheksstatus</translation>
 </phrase>
 
 <phrase>
@@ -13328,7 +13330,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>library folder</original>
-<translation></translation>
+<translation>Bibliotheksordner</translation>
 </phrase>
 
 <phrase>
