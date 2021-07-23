@@ -36,9 +36,14 @@ Private m_avifImportAvailable As Boolean, m_avifExportAvailable As Boolean
 
 'Using PNG or JPEG as an intermediary format is a tough call.  PNG is lossless, which should make
 ' it the obvious preference... but damn, PNG encoding is slow.  (I've been spoiled by PD's internal
-' encoder lol.)  JPEG as an intermediary format can be 10-30x faster on large images, so I'm inclined
-' to use it at present.  You can toggle this constant at compile-time to require PNG only.
-Private Const REQUIRE_LOSSLESS_INTERMEDIARY As Boolean = False
+' encoder lol.)  JPEG as an intermediary format can be 10-30x faster on large images, but it
+' obviously doesn't support alpha channels so it's problematic as a drop-in "fix".  I've filed this
+' as a bug at the libavif repository and a pull request is pending, so I will be able to fix it...
+'...eventually.
+'
+'In the meantime, you can toggle this constant at compile-time to turn off PNG support and get
+' much faster AVIF loading.
+Private Const REQUIRE_LOSSLESS_INTERMEDIARY As Boolean = True
 
 Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef outputPDIF As PD_IMAGE_FORMAT = PDIF_PNG) As Boolean
     
@@ -127,6 +132,94 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
             PDDebug.LogAction "libavif reports success; transferring image to internal parser..."
         Else
             InternalError funcName, "load failed; output follows:"
+            PDDebug.LogAction outputString
+        End If
+        
+    Else
+        InternalError funcName, "shell failed"
+    End If
+    
+End Function
+
+Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFile As String, ByRef saveParams As String) As Boolean
+    
+    Const funcName As String = "ConvertStandardImageToAVIF"
+    
+    'Safety checks on plugin
+    If (Not m_avifExportAvailable) Then
+        InternalError funcName, "libavif broken or missing"
+        Exit Function
+    End If
+    
+    Dim pluginPath As String
+    pluginPath = PluginManager.GetPluginPath & "avifenc.exe"
+    If (Not Files.FileExists(pluginPath)) Then
+        InternalError funcName, "libavif missing"
+        Exit Function
+    End If
+    
+    'Safety checks on source and destination files
+    If (Not Files.FileExists(srcFile)) Then
+        InternalError funcName, "source file doesn't exist"
+        Exit Function
+    End If
+    
+    'Start constructing the full shell string
+    Dim shellCmd As pdString
+    Set shellCmd = New pdString
+    shellCmd.Append "avifenc.exe "
+    
+    'Assign encoding thread count (one per core seems reasonable for initial testing)
+    shellCmd.Append "-j "
+    shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
+    
+    'Lossless encoding is its own parameter, and note that it supercedes a bunch of other parameters
+    ' (because lossless encoding has unique constraints)
+    Dim useLossless As Boolean
+    useLossless = False
+    If useLossless Then
+        shellCmd.Append "-l "
+    
+    'Lossless encoding provides much more granular control over a billion different settings
+    Else
+    
+    End If
+    
+    'Append properly delimited source image
+    shellCmd.Append """"
+    shellCmd.Append srcFile
+    shellCmd.Append """ "
+    
+    'Append properly delimited destination image
+    shellCmd.Append """"
+    shellCmd.Append dstFile
+    shellCmd.Append """"
+    
+    'Final step - if destination file exists, kill it.
+    ' (TODO: convert to safe save approach)
+    Files.FileDeleteIfExists dstFile
+    
+    'Shell plugin and capture output for analysis
+    Dim outputString As String
+    If ShellExecuteCapture(pluginPath, shellCmd.ToString(), outputString) Then
+    
+        'Shell appears successful.  The output string will have two easy-to-check flags if
+        ' the conversion was successful.  Don't return success unless we find both.
+        Dim targetStringSrc As String, targetStringDst As String
+        targetStringSrc = "Successfully loaded: " & srcFile
+        targetStringDst = "Wrote AVIF: " & dstFile
+        
+        ConvertStandardImageToAVIF = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
+        ConvertStandardImageToAVIF = ConvertStandardImageToAVIF And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
+        
+        'Want to review the output string manually?  Print it here:
+        PDDebug.LogAction outputString
+        
+        'Record full details of failures
+        If ConvertStandardImageToAVIF Then
+            PDDebug.LogAction "libavif reports success!"
+        Else
+            InternalError funcName, "save failed; output follows:"
             PDDebug.LogAction outputString
         End If
         

@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2021 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 18/June/21
-'Last update: wrap up support for CBZ (comic book archive) import
+'Last updated: 21/July/21
+'Last update: ongoing work on AVIF import/export support
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -19,7 +19,9 @@ Attribute VB_Name = "ImageFormats"
 ' relevant debug log after loading an image file.
 '
 'Note also that as of 2021, many formats use native PhotoDemon-specific encoder/decoder classes.
-' These formats are *always* available regardless of 3rd-party library status.
+' These formats are *always* available regardless of 3rd-party library status (but some formats
+' may still require third-party libraries, e.g. PNG files use internal PD parsers, but still need
+' an external library for DEFLATE compression).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -38,16 +40,13 @@ Private m_pngQuantEnabled As Boolean
 Private numOfInputFormats As Long, numOfOutputFormats As Long
 
 'Array of available input, output extensions.
-Private inputExtensions() As String
-Private outputExtensions() As String
+Private inputExtensions() As String, outputExtensions() As String
 
 'Array of "friendly" descriptions for input, output formats
-Private inputDescriptions() As String
-Private outputDescriptions() As String
+Private inputDescriptions() As String, outputDescriptions() As String
 
 'Array of corresponding image format constants
-Private inputPDIFs() As PD_IMAGE_FORMAT
-Private outputPDIFs() As PD_IMAGE_FORMAT
+Private inputPDIFs() As PD_IMAGE_FORMAT, outputPDIFs() As PD_IMAGE_FORMAT
 
 'Array of common-dialog-formatted input/output filetypes.  (Common dialogs require different pipe-based formatting
 ' than normal lists, as you must add human-readable text descriptions to the list.)
@@ -211,8 +210,8 @@ Public Sub GenerateInputFormats()
     'Next, add individual formats.  Some formats are condidtional on third-party libraries;
     ' others use internal or system-provided encoders that will always be available.
     
-    'AV1-based codecs require an external plugin, but PD can download it for you if your system is
-    ' compatible (even if the plugin isn't currently installed).
+    'AV1-based codecs require an external plugin, but PD can download it automatically (with permission)
+    ' if the current system is compatible, even if the plugin isn't installed at startup.
     If OS.OSSupports64bitExe() Then
         AddInputFormat "AVIF - AV1 Image File", "*.heif;*.heifs;*.heic;*.heics;*.avci;*.avcs;*.avif;*.avifs", PDIF_AVIF
     End If
@@ -392,7 +391,13 @@ Public Sub GenerateOutputFormats()
     'Start by effectively setting the location tracker to "0".
     ' (Beyond this point, it will be automatically updated.)
     m_curFormatIndex = -1
-
+    
+    'AV1-based codecs require an external plugin, but PD can download it automatically (with permission)
+    ' if the current system is compatible, even if the plugin isn't installed at startup.
+    If OS.OSSupports64bitExe() Then
+        AddOutputFormat "AVIF - AV1 Image File", "avif", PDIF_AVIF
+    End If
+    
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
     If m_FreeImageEnabled Then AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
@@ -458,7 +463,9 @@ End Sub
 Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
     Select Case srcPDIF
-    
+        
+        Case PDIF_AVIF
+            GetExtensionFromPDIF = "avif"
         Case PDIF_BMP
             GetExtensionFromPDIF = "bmp"
         Case PDIF_CBZ
@@ -477,6 +484,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "gif"
         Case PDIF_HDR
             GetExtensionFromPDIF = "hdr"
+        Case PDIF_HEIF
+            GetExtensionFromPDIF = "heif"
         Case PDIF_ICO
             GetExtensionFromPDIF = "ico"
         Case PDIF_IFF
@@ -575,7 +584,9 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
     'Note that not all extensions are covered, by design.  Only ones used internally by PD
     ' are checked and returned.
     Select Case srcExtension
-    
+        
+        Case "avif"
+            GetPDIFFromExtension = PDIF_AVIF
         Case "bmp"
             GetPDIFFromExtension = PDIF_BMP
         Case "cbz"
@@ -594,6 +605,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String) As PD_IMAGE_F
             GetPDIFFromExtension = PDIF_GIF
         Case "hdr"
             GetPDIFFromExtension = PDIF_HDR
+        Case "heif"
+            GetPDIFFromExtension = PDIF_AVIF
         Case "ico"
             GetPDIFFromExtension = PDIF_ICO
         Case "iff"
@@ -664,7 +677,10 @@ End Function
 Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
 
     Select Case outputPDIF
-    
+        
+        Case PDIF_HEIF
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        
         Case PDIF_BMP
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         
@@ -674,6 +690,9 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_HDR
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         
+        Case PDIF_HEIF
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+            
         Case PDIF_ICO
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         
@@ -768,7 +787,10 @@ End Function
 Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
-    
+        
+        Case PDIF_AVIF
+            IsExportDialogSupported = False
+        
         Case PDIF_BMP
             IsExportDialogSupported = True
             

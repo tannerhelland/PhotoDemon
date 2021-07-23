@@ -5672,10 +5672,10 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef tmpChunk 
     If (cmpLevel < 0) Then
         cmpLevel = Compression.GetDefaultCompressionLevel(cf_Zlib)
     
-    'libdeflate does not support "none" compression; you must specify at least a value of 1.
-    ' (I have updated the wrapper to note this, but we also perform a failsafe check here.)
-    ElseIf (cmpLevel = 0) Then
-        cmpLevel = 1
+    'Note that old versions of libdeflate did not support "none" compression, so we needed to manually
+    ' specify a minimum level of 1.  This was changed in late 2020; see https://github.com/ebiggers/libdeflate/issues/86
+    'ElseIf (cmpLevel = 0) Then
+    '    cmpLevel = 1
     ElseIf (cmpLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then
         cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     End If

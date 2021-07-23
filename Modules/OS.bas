@@ -746,6 +746,7 @@ Public Function LogicalCoreCount() As Long
     Dim tmpSysInfo As OS_SystemInfo
     GetNativeSystemInfo tmpSysInfo
     LogicalCoreCount = tmpSysInfo.dwNumberOfProcessors
+    If (LogicalCoreCount < 1) Then LogicalCoreCount = 1
 End Function
 
 'PD may call into some 64-bit exes; it's nice to know in advance if this will/should work

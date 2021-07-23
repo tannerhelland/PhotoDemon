@@ -411,6 +411,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     
     Select Case outputPDIF
         
+        Case PDIF_AVIF
+            ExportToSpecificFormat = ImageExporter.ExportAVIF(srcImage, dstPath, saveParameters, metadataParameters)
+        
         Case PDIF_BMP
             ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
         
