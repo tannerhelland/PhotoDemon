@@ -789,7 +789,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
     Select Case outputPDIF
         
         Case PDIF_AVIF
-            IsExportDialogSupported = False
+            IsExportDialogSupported = True
         
         Case PDIF_BMP
             IsExportDialogSupported = True

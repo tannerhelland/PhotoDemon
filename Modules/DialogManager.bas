@@ -42,6 +42,25 @@ Public Function ConfirmClose(ByVal srcImageID As Long, ByVal numOfUnsavedImages 
     Set dialog_UnsavedChanges = Nothing
 End Function
 
+Public Function PromptAVIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportAVIF
+    dialog_ExportAVIF.ShowDialog srcImage
+    
+    PromptAVIFSettings = dialog_ExportAVIF.GetDialogResult
+    dstFormatParams = dialog_ExportAVIF.GetFormatParams
+    
+    'AVIF metadata isn't currently supported (via ExifTool; we could probably handle it manually by
+    ' writing a separate XMP file and embedding it via avifenc, but I haven't explored this thoroughly).
+    ' If this changes, the following line can be changed to match any new metadata features
+    'dstMetadataParams = dialog_ExportAVIF.GetMetadataParams
+    dstMetadataParams = vbNullString
+    
+    Unload dialog_ExportAVIF
+    Set dialog_ExportAVIF = Nothing
+    
+End Function
+
 Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportBMP
@@ -212,7 +231,6 @@ Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
 End Function
 
-'Present a dialog box to ask the user for various WebP export settings
 Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportWebP

@@ -3,11 +3,12 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2021 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 20/July/21
-'Last update: new code for prompting and potentially downloading AVIF support libraries for the user
+'Last updated: 03/August/21
+'Last update: wrap up work on AVIF export
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
-' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.
+' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
+' download these for you if you attempt to interact with AVIF files.)
 '
 'libavif is a free, open-source portable-C implementation of the AV1 AVIF still image extension.
 ' You can learn more about it here:
@@ -33,17 +34,6 @@ Option Explicit
 ' decoding and encoding support exist separately (i.e. just because the import library exists
 ' at run-time, doesn't mean the export library also exists; users may only install one or none).
 Private m_avifImportAvailable As Boolean, m_avifExportAvailable As Boolean
-
-'Using PNG or JPEG as an intermediary format is a tough call.  PNG is lossless, which should make
-' it the obvious preference... but damn, PNG encoding is slow.  (I've been spoiled by PD's internal
-' encoder lol.)  JPEG as an intermediary format can be 10-30x faster on large images, but it
-' obviously doesn't support alpha channels so it's problematic as a drop-in "fix".  I've filed this
-' as a bug at the libavif repository and a pull request is pending, so I will be able to fix it...
-'...eventually.
-'
-'In the meantime, you can toggle this constant at compile-time to turn off PNG support and get
-' much faster AVIF loading.
-Private Const REQUIRE_LOSSLESS_INTERMEDIARY As Boolean = True
 
 Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef outputPDIF As PD_IMAGE_FORMAT = PDIF_PNG) As Boolean
     
@@ -74,13 +64,8 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     'Ensure destination file has an appropriate extension (this is how the decoder
     ' figures out which format to use)
     Dim reqExtension As String
-    If REQUIRE_LOSSLESS_INTERMEDIARY Then
-        reqExtension = "png"
-        outputPDIF = PDIF_PNG
-    Else
-        reqExtension = "jpg"
-        outputPDIF = PDIF_JPEG
-    End If
+    reqExtension = "png"
+    outputPDIF = PDIF_PNG
     If Strings.StringsNotEqual(Files.FileGetExtension(dstFile), reqExtension, True) Then dstFile = dstFile & "." & reqExtension
     
     'Shell plugin and wait for return
@@ -92,8 +77,9 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append "-j "
     shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
     
-    'If using a lossy intermediary (jpeg), attempt to maximize quality
-    If (Not REQUIRE_LOSSLESS_INTERMEDIARY) Then shellCmd.Append "-q 100 "
+    'TODO: when a new version of libavif drops, we can request uncompressed PNGs here
+    ' (see https://github.com/AOMediaCodec/libavif/issues/706)
+    'shellCmd.Append "--png-compress 0 "
     
     'Append space-safe source image
     shellCmd.Append """"
@@ -114,7 +100,7 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         Dim targetStringSrc As String, targetStringDst As String
         targetStringSrc = "Image decoded: " & srcFile
         
-        If REQUIRE_LOSSLESS_INTERMEDIARY Then
+        If (outputPDIF = PDIF_PNG) Then
             targetStringDst = "Wrote PNG: "
         Else
             targetStringDst = "Wrote JPEG: "
@@ -141,7 +127,7 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     
 End Function
 
-Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFile As String, ByRef saveParams As String) As Boolean
+Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFile As String, Optional ByVal encoderQuality As Long = -1, Optional ByVal encoderSpeed As Long = -1) As Boolean
     
     Const funcName As String = "ConvertStandardImageToAVIF"
     
@@ -176,14 +162,44 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
     'Lossless encoding is its own parameter, and note that it supercedes a bunch of other parameters
     ' (because lossless encoding has unique constraints)
     Dim useLossless As Boolean
-    useLossless = False
+    useLossless = (encoderQuality = 0)
+    
     If useLossless Then
         shellCmd.Append "-l "
     
     'Lossless encoding provides much more granular control over a billion different settings
     Else
-    
+        
+        'Encoder speed can now be specified; default is 6 (per ./avifenc.exe -h).  Lower = slower.
+        ' Negative values indicate "use the current avifenc default".
+        If (encoderSpeed >= 0) Then
+            If (encoderSpeed > 10) Then encoderSpeed = 10
+            shellCmd.Append "--speed " & CStr(encoderSpeed) & " "
+        End If
+            
+        'To simplify the UI, we don't expose min/max quality values (which are used by the encoder
+        ' as part of a variable bit-rate approach to encoding).  Instead, we automatically generate
+        ' a maximum quality value based on the user-supplied value (which is treated as a minimum
+        ' target, where libavif quality=0=lossless ).  This makes the quality process somewhat more
+        ' analogous to how otherformats (e.g. JPEG) do it.
+        If (encoderQuality >= 0) Then
+            If (encoderQuality > 63) Then encoderQuality = 63
+            
+            shellCmd.Append "--min " & CStr(encoderQuality) & " "
+            
+            'Treat 0 as lossless; anything else as variable quality
+            Dim maxQuality As Long
+            maxQuality = encoderQuality
+            If (encoderQuality > 0) Then maxQuality = maxQuality + 10
+            If (maxQuality > 63) Then maxQuality = 63
+            shellCmd.Append "--max " & CStr(maxQuality) & " "
+            
+        End If
+        
     End If
+    
+    'PD uses premultiplied alpha internally, so signal that to the encoder as well
+    'shellCmd.Append "--premultiply "
     
     'Append properly delimited source image
     shellCmd.Append """"
@@ -198,6 +214,8 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
     'Final step - if destination file exists, kill it.
     ' (TODO: convert to safe save approach)
     Files.FileDeleteIfExists dstFile
+    
+    Debug.Print shellCmd.ToString()
     
     'Shell plugin and capture output for analysis
     Dim outputString As String
