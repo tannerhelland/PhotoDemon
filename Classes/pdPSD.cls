@@ -223,6 +223,15 @@ Private m_numOfLayers As Long
 'Embedded ICC profiles are read and used by PD.  (These can be found in the "image resource" segment.)
 Private m_Profile As pdICCProfile
 
+'During loading, we mark the offset to the composite image data.  PD doesn't always need this data,
+' but if layer data is "unsalvageable" (e.g. layers are vector or fill layers that PD doesn't understand),
+' we can use the composite image to at least give the user *something*.
+Private m_CompositeImageOffset As Long
+
+'High bit-depth images store data in a totally different way that requires us to jump around the source file.
+' We flag this state so that we can reset the underlying stream pointer accordingly.
+Private m_HighBitDepthToggle As Boolean
+
 'Byte-by-byte access is provided, as always, by a pdStream instance
 Private m_Stream As pdStream
 
@@ -304,19 +313,17 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         
         'If we made it this far successfully, we have enough data to construct a pdImage object!
         If (keepLoading < psd_Failure) Then
-            
-            'Because the stream object may have pre-cached the PSD file (useful for perf improvements when the source
-            ' data is small), let's free it to free up as much memory as possible before we attempt to assemble the
-            ' final image.
-            Set m_Stream = Nothing
-            
             keepLoading = Step5_AssemblePDImage(srcFile, dstImage)
             If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 5 successful." Else PDDebug.LogAction "PSD parsing step 5 unsuccessful."
-            
         End If
         
         LoadPSD = keepLoading
         
+    End If
+    
+    'Regardless of success/failure, ensure the underlying stream gets closed
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
     
     'Even if the PSD loaded, one (or more) surprises may have affected our ability to render everything correctly.
@@ -1093,17 +1100,22 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
             If (curGroupDepth > 0) Then
                 If (Not curGroupVisibility) Then tmpLayer.SetLayerVisibility False
             End If
-            
-        'If this layer doesn't contain pixel data, it may be a group marker.  Set group
-        ' flags accordingly.
+        
+        'If this layer doesn't contain pixel data (e.g. Not m_Layers(i).DoesLayerHaveUsableData()),
+        ' it may be a group marker.  Set group flags accordingly.
         Else
+            
+            'If pixel data is unusable AND this is not a group marker, add a debug warning
+            Dim layerDataRelevant As Boolean
             
             'Layer groups may require a dummy DIB as their backing surface (a blank 1x1 transparent DIB)
             Dim dummyDIB As pdDIB
             
             'When a new layer group, increment our group depth counter
             If m_Layers(i).IsLayerGroupStart() Then
-            
+                
+                layerDataRelevant = True
+                
                 'Add this group's visibility and name to our running collection.  (We track this info
                 ' so we can properly handle complex nested group arrangements.)
                 If (curGroupDepth > UBound(groupVisibility)) Then
@@ -1150,6 +1162,8 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
             
             'Look for the end of the current layer group (if any)
             If m_Layers(i).IsLayerGroupEnd() Then
+                
+                layerDataRelevant = True
                 
                 'Decrement depth counter, with a failsafe check for malformed PSDs
                 curGroupDepth = curGroupDepth - 1
@@ -1201,18 +1215,75 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
                 
             End If
             
+            If (Not layerDataRelevant) Then
+                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Skipping layer " & i & ": layer data unusable"
+            End If
+            
         End If
         
     Next i
     
-    'Because layers were loaded in top-down order, we now need to *reverse* the layer stack
-    dstImage.ReverseLayerOrder
+    'We now need to perform one last failsafe check to ensure that at least *one* valid layer exists.
+    If (numUsableLayers <= 0) Then
     
-    'Make sure we were able to generate at least one usable layer.
-    If (numUsableLayers <= 0) Or (dstImage.GetNumOfLayers <= 0) Then
-        m_Warnings.AddString "unable to create any usable layers.  Abandoning load."
-        Step5_AssemblePDImage = psd_Failure
-        Exit Function
+        'No useable layers exist.  This typically means the image is comprised of nothing but
+        ' vector layers (or effect/fill layers), which PD can't interpret.
+        
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "No usable layers found; using composite image instead..."
+        
+        'Instead of just bombing out, we're going to try and retrieve the composite image.
+        If (m_CompositeImageOffset > 0) Then
+            
+            'High bit-depth images move the underlying stream object around in unpredictable ways.
+            ' Reset the entire stream accordingly.
+            If m_HighBitDepthToggle Then
+                Set m_Stream = New pdStream
+                If Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
+                    m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
+                    Step5_AssemblePDImage = psd_Failure
+                    Exit Function
+                End If
+            End If
+            
+            'Move the stream pointer into position, then attempt to load the composite image
+            m_Stream.SetPosition m_CompositeImageOffset, FILE_BEGIN
+            Step5_AssemblePDImage = Step4B_SingleLayerImage()
+            
+            'If the composite image loaded successfully, initialize it as the only layer in the target image
+            If (Step5_AssemblePDImage < psd_Failure) Then
+            
+                'Prep a new layer object and initialize it with the image bits we've retrieved
+                newLayerID = dstImage.CreateBlankLayer()
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                tmpLayer.InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Background"), m_Layers(0).GetLayerDIB()
+                
+                'Fill in any remaining layer properties
+                With tmpLayer
+                    .SetLayerBlendMode BM_Normal
+                    .SetLayerOpacity 100!
+                    .SetLayerOffsetX 0
+                    .SetLayerOffsetY 0
+                    .SetLayerVisibility True
+                End With
+            
+            End If
+            
+        End If
+    
+    'At least one valid layer exists, so finalize the image, then exit.
+    Else
+        
+        'Because layers were loaded in top-down order, we now need to *reverse* the layer stack
+        dstImage.ReverseLayerOrder
+        
+        'Make sure we were able to generate at least one usable layer.
+        If (numUsableLayers <= 0) Or (dstImage.GetNumOfLayers <= 0) Then
+            m_Warnings.AddString "unable to create any usable layers.  Abandoning load."
+            Set m_Stream = Nothing
+            Step5_AssemblePDImage = psd_Failure
+            Exit Function
+        End If
+        
     End If
     
     'Look for the "clipping" flag on any loaded layers.  If it is set, we can mimic the clipping results by
@@ -1221,6 +1292,11 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     ' have enough images available to test it well.)
     
     ' TODO!
+    
+    'Finally, free the underlying stream
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen() Then m_Stream.StopStream True
+    End If
     
     Exit Function
 
@@ -1282,9 +1358,12 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     ' (While we handle both cases, note that PD is unlikely to work with PSBs on account of being 32-bit.)
     Dim lenOfSection As Long, finalPointerPosition As Long
     lenOfSection = m_Stream.ReadLong_BE()
-    If m_PSDisPSB Then lenOfSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
+    If m_PSDisPSB Then lenOfSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach?
     finalPointerPosition = m_Stream.GetPosition() + lenOfSection
     
+    'Note that the end of this segment is the Image Data section, which stores a copy of the merged image
+    ' (if one exists).  Flag that position so we can use it to salvage the image if things go horribly awry.
+    m_CompositeImageOffset = finalPointerPosition
     If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Length of layer and mask section (offset " & CStr(m_Stream.GetPosition - 4) & "): " & lenOfSection
     
     'If a PSD only contains one layer, it can be written at the end of the file (in the
@@ -1293,6 +1372,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     ' obnoxious ways).
     If (lenOfSection <= 0) Then
         If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Retrieving layer data from image segment instead..."
+        m_CompositeImageOffset = 0
         Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
         Exit Function
     End If
@@ -1358,7 +1438,8 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 
                 hpdChunkFound = True
                 
-                'Close our original stream; it no longer serves any purpose
+                'Reset our original stream; we will instead parse ensuing layer data from the
+                ' target block.
                 Set m_Stream = New pdStream
                 
                 'Instead, wrap the m_Stream object around the high bit-depth block
@@ -1372,6 +1453,8 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 lenOfLayerInfoSection = m_Stream.GetStreamSize()
                 
             End If
+            
+            m_HighBitDepthToggle = hpdChunkFound
             
         End If
     
@@ -1485,8 +1568,10 @@ skipLayer:
     'Layer info section is null-length; layer data has already been located using an alternate strategy
     End If
     
-    'At the end of this step, we are finished with the source stream object.  Free it to conserve resources.
-    m_Stream.StopStream True
+    'At the end of this step, we are probably finished with the source stream object.  However, we may need to
+    ' access it if PD is unable to recover any layers from the layer data segment (if for example the image
+    ' is comprised solely of vector or fill layers that PD can't parse).  As such, leave the base stream open
+    ' "just in case"; we'll free it in a later step.
     
     Exit Function
 
@@ -2024,6 +2109,7 @@ End Function
 Friend Sub Reset()
     Set m_Profile = Nothing
     Set m_Warnings = New pdStringStack
+    m_CompositeImageOffset = 0
 End Sub
 
 Private Sub Class_Initialize()
