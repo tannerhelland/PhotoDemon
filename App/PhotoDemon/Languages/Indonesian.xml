@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.494</langversion>
+<langversion>6.6.495</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -414,6 +414,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Saving %1 file</original>
+<translation>Menyimpan Berkas %1</translation>
+</phrase>
+
+<phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation> %1 Menyimpan gagal (FreeImage_SaveEx senyap gagal). Tolong laporkan Kesalahan Ini menggunakan Bantuan -> Kirim Laporan Bug.</translation>
 </phrase>
@@ -447,7 +452,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Menyimpan Tidak Dapat Di Selesaikan Tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2939,11 +2944,6 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Menyimpan Berkas %1</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2981,7 +2981,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation></translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3830,7 +3830,12 @@ You will need to manually download this file using your Internet browser.</origi
 <translation></translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5123,11 +5128,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation></translation>
 </phrase>
@@ -5460,7 +5460,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 374 phrases. 194 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9958,6 +9958,38 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>preview quality changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>berkualiti rendah, fail kecil</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>berkualiti tinggi, fail besar</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>restrict palette size</original>
 <translation>membatasi ukuran palet</translation>
 </phrase>
@@ -10032,12 +10064,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>1-bpp</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10119,16 +10146,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>berkualiti tinggi, fail besar</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>berkualiti rendah, fail kecil</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Lossless (1: 1)</translation>
 </phrase>
@@ -10158,7 +10175,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Nisbah Custom (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10449,6 +10466,13 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -13484,19 +13508,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2557</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5224 phrases. -->
-<!-- 2670 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11789 total words. -->
+<!-- As of this build, PhotoDemon contains 5235 phrases. -->
+<!-- 2678 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11813 total words. -->
 
 </pdData>

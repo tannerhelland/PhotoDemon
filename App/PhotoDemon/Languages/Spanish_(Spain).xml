@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.53</langversion>
+<langversion>8.0.54</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -416,6 +416,11 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Saving %1 file</original>
+<translation>Guardando archivo %1</translation>
+</phrase>
+
+<phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Guardar %1 ha fallado (fallo silencioso de FreeImage_SaveEx). Por favor, informe de este error utilizando "Ayuda", "Enviar informe de errores".</translation>
 </phrase>
@@ -449,7 +454,7 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 <translation>La operación de guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2938,11 +2943,6 @@ Cuando hayas terminado, haz clic en el botón "Enviar nuevo número".  Gracias.<
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Guardando archivo %1</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2980,7 +2980,7 @@ Mientras tanto, intente guardar la imagen en un formato alternativo. También pu
 <translation>Exportar animación</translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3829,7 +3829,12 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>%1 (Canal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5123,11 +5128,6 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation></translation>
 </phrase>
@@ -5460,7 +5460,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 374 phrases. 194 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9958,6 +9958,38 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>preview quality changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>Baja calidad, archivo pequeño</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>Alta calidad, archivo de gran tamaño</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1 opciones</translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>restrict palette size</original>
 <translation>Restringir el tamaño de la paleta</translation>
 </phrase>
@@ -10032,12 +10064,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>1-bpp</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1 opciones</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10119,16 +10146,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>Alta calidad, archivo de gran tamaño</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>Baja calidad, archivo pequeño</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Sin pérdida (01:01)</translation>
 </phrase>
@@ -10158,7 +10175,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Relación personalizada (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10449,6 +10466,13 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -13484,19 +13508,12 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2557</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5224 phrases. -->
-<!-- 2670 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11789 total words. -->
+<!-- As of this build, PhotoDemon contains 5235 phrases. -->
+<!-- 2678 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11813 total words. -->
 
 </pdData>
