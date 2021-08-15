@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Render"
 'Render Filter Collection
 'Copyright 2017-2021 by Tanner Helland
 'Created: 14/October/17
-'Last updated: 14/October/17
-'Last update: start migrating render-specific functions here
+'Last updated: 06/August/21
+'Last update: add Truchet tile rendering
 '
 'Container module for PD's render filter collection.
 '
@@ -14,6 +14,35 @@ Attribute VB_Name = "Filters_Render"
 '***************************************************************************
 
 Option Explicit
+
+'Truchet tiles support various shapes
+Public Enum PD_TruchetShape
+    ts_Arc = 0
+    ts_Line = 1
+    ts_Maze = 2
+    ts_Triangle = 3
+    ts_Circle = 4
+    ts_Star = 5
+    ts_Max = 6
+End Enum
+
+#If False Then
+    Private Const ts_Arc = 0, ts_Line = 1, ts_Maze = 2, ts_Triangle = 3, ts_Circle = 4, ts_Star = 5, ts_Max = 6
+#End If
+
+'You can also generate tiles in various patterns.  These bare some similarity to tiles in PD's Voronoi tool,
+' primarily so that we can share localization text between the two.
+Public Enum PD_TruchetPattern
+    tp_Random = 0
+    tp_BaseImage = 1
+    tp_Repeat = 2
+    tp_Wave = 3
+    tp_Max = 4
+End Enum
+
+#If False Then
+    Private Const tp_Random = 0, tp_BaseImage = 1, tp_Repeat = 2, tp_Wave = 3, tp_Max = 4
+#End If
 
 'Render a "cloud" effect to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
 ' the caller requires.
@@ -146,6 +175,36 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVa
     
     GetCloudDIB = True
         
+End Function
+
+Public Function GetUINameOfTruchetShape(ByVal truchetID As PD_TruchetShape) As String
+    Select Case truchetID
+        Case ts_Arc
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("arc")
+        Case ts_Line
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("line")
+        Case ts_Maze
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("maze")
+        Case ts_Triangle
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("triangle")
+        Case ts_Circle
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("circle")
+        Case ts_Star
+            GetUINameOfTruchetShape = g_Language.TranslateMessage("star")
+    End Select
+End Function
+
+Public Function GetUINameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern) As String
+    Select Case truchetID
+        Case tp_Random
+            GetUINameOfTruchetPattern = g_Language.TranslateMessage("random")
+        Case tp_BaseImage
+            GetUINameOfTruchetPattern = g_Language.TranslateMessage("image")
+        Case tp_Repeat
+            GetUINameOfTruchetPattern = g_Language.TranslateMessage("repeat")
+        Case tp_Wave
+            GetUINameOfTruchetPattern = g_Language.TranslateMessage("wave")
+    End Select
 End Function
 
 'Render a "fiber" effect to an arbitrary DIB.  A two-color system (a la Photoshop) is used.
@@ -286,3 +345,260 @@ Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLUT() As Long, By
         
 End Function
 
+'Render "Truchet tiles" to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
+' the caller requires.
+Public Function GetTruchetDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Long, ByVal fxLineWidthRatio As Single, ByVal fxForegroundColor As Long, ByVal fxForegroundOpacity As Single, ByVal fxBackgroundColor As Long, ByVal fxBackgroundOpacity As Single, Optional ByVal fxShape As PD_TruchetShape = ts_Triangle, Optional ByVal fxPattern As PD_TruchetPattern = tp_Random, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Basic validation of input params
+    If (fxScale > dstDIB.GetDIBWidth) Then fxScale = dstDIB.GetDIBWidth
+    If (fxScale > dstDIB.GetDIBHeight) Then fxScale = dstDIB.GetDIBHeight
+    If (fxScale < 3) Then fxScale = 3
+    
+    'Create an array of source images.  (The count varies by shape.)
+    ' Some images may be generated using an array of floating-point coordinates.  Initialize that count
+    ' here as well, as needed.
+    Dim srcImages() As pdDIB, numImages As Long
+    Dim fxPoints() As PointFloat, numPoints As Long
+    
+    Select Case fxShape
+        Case ts_Arc
+            numImages = 2
+        Case ts_Line
+            numImages = 2
+        Case ts_Maze
+            numImages = 2
+            numPoints = 2
+        Case ts_Triangle
+            numImages = 4
+            numPoints = 3
+        Case ts_Circle
+            numImages = 4
+            numPoints = 1
+        Case ts_Star
+            numImages = 4
+            numPoints = 4
+    End Select
+    
+    ReDim srcImages(0 To numImages - 1) As pdDIB
+    If (numPoints > 0) Then ReDim fxPoints(0 To numPoints - 1) As PointFloat
+    
+    'Initialize the initial image collection to the specified background color and opacity
+    Dim x As Long, y As Long
+    For x = 0 To numImages - 1
+        Set srcImages(x) = New pdDIB
+        srcImages(x).CreateBlank fxScale, fxScale, 32, fxBackgroundColor, Int(fxBackgroundOpacity * 2.55 + 0.5)
+        If (Not srcImages(x).GetAlphaPremultiplication) Then srcImages(x).SetAlphaPremultiplication True
+    Next x
+    
+    'Create a brush and/or pen for the foreground color
+    Dim foreBrush As pd2DBrush, forePen As pd2DPen
+    Set foreBrush = New pd2DBrush
+    foreBrush.SetBrushMode P2_BM_Solid
+    
+    Set forePen = New pd2DPen
+    forePen.SetPenStyle P2_DS_Solid
+    
+    Select Case fxShape
+        Case ts_Arc
+            forePen.SetPenColor fxForegroundColor
+            forePen.SetPenOpacity fxForegroundOpacity
+            forePen.SetPenLineCap P2_LC_Round
+            
+        Case ts_Line, ts_Maze
+            forePen.SetPenColor fxForegroundColor
+            forePen.SetPenOpacity fxForegroundOpacity
+            forePen.SetPenLineCap P2_LC_Square
+            
+        Case Else
+            foreBrush.SetBrushColor fxForegroundColor
+            foreBrush.SetBrushOpacity fxForegroundOpacity
+        
+    End Select
+    
+    'Pen-based shapes also need to specify line width.  This is passed as a ratio on the scale [0, 100] and we
+    ' transform it as a ratio of the current tile size.
+    Dim penWidth As Single
+    
+    If (fxLineWidthRatio > 100!) Then fxLineWidthRatio = 100!
+    If (fxLineWidthRatio < 1!) Then fxLineWidthRatio = 1!
+    fxLineWidthRatio = fxLineWidthRatio / 100!
+    penWidth = fxLineWidthRatio * (fxScale / 3!)
+    
+    'Failsafe check on pen width
+    If (penWidth < 1!) Then penWidth = 1!
+    forePen.SetPenWidth penWidth
+    
+    'More complex shapes may use a path object for rendering
+    Dim tmpPath As pd2DPath
+            
+    'Generate all tile images (approach varies by shape)
+    Dim dstSurface As pd2DSurface
+    Set dstSurface = New pd2DSurface
+    
+    For x = 0 To numImages - 1
+        
+        'Start by wrapping a pd2D surface around the target tile image
+        dstSurface.WrapSurfaceAroundPDDIB srcImages(x)
+        dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        dstSurface.SetSurfacePixelOffset P2_PO_Half
+        
+        Select Case fxShape
+            
+            Case ts_Arc
+                If (x = 0) Then
+                    PD2D.DrawArcF dstSurface, forePen, 0!, 0!, fxScale / 2!, 0!, 91!
+                    PD2D.DrawArcF dstSurface, forePen, fxScale, fxScale, fxScale / 2!, 180!, 91!
+                Else
+                    PD2D.DrawArcF dstSurface, forePen, fxScale, 0!, fxScale / 2!, 90!, 91!
+                    PD2D.DrawArcF dstSurface, forePen, 0!, fxScale, fxScale / 2!, 270!, 91!
+                End If
+            
+            Case ts_Line
+                If (x = 0) Then
+                    PD2D.DrawLineF dstSurface, forePen, 0!, fxScale / 2!, fxScale / 2!, 0!
+                    PD2D.DrawLineF dstSurface, forePen, fxScale / 2!, fxScale, fxScale, fxScale / 2!
+                Else
+                    PD2D.DrawLineF dstSurface, forePen, fxScale / 2!, 0!, fxScale, fxScale / 2!
+                    PD2D.DrawLineF dstSurface, forePen, 0!, fxScale / 2!, fxScale / 2!, fxScale
+                End If
+            
+            Case ts_Maze
+                If (x = 0) Then
+                    PD2D.DrawLineF dstSurface, forePen, 0!, 0!, fxScale, fxScale
+                Else
+                    PD2D.DrawLineF dstSurface, forePen, 0!, fxScale, fxScale, 0!
+                End If
+                
+            Case ts_Triangle
+                
+                fxPoints(0).x = 0!: fxPoints(0).y = 0!
+                fxPoints(1).x = fxScale: fxPoints(1).y = 0!
+                fxPoints(2).x = 0!: fxPoints(2).y = fxScale
+                    
+                Set tmpPath = New pd2DPath
+                tmpPath.AddLines 3, VarPtr(fxPoints(0))
+                tmpPath.CloseCurrentFigure
+                
+                'Rotate by [90 * n] degrees
+                If (x > 0) Then tmpPath.RotatePathAroundItsCenter 90! * x
+                
+                PD2D.FillPath dstSurface, foreBrush, tmpPath
+                
+            Case ts_Circle
+                If (x = 0) Then
+                    fxPoints(0).x = 0!: fxPoints(0).y = 0!
+                ElseIf (x = 1) Then
+                    fxPoints(0).x = fxScale: fxPoints(0).y = 0!
+                ElseIf (x = 2) Then
+                    fxPoints(0).x = fxScale: fxPoints(0).y = fxScale
+                Else
+                    fxPoints(0).x = 0!: fxPoints(0).y = fxScale
+                End If
+                
+                PD2D.FillCircleI dstSurface, foreBrush, fxPoints(0).x, fxPoints(0).y, fxScale
+                
+            Case ts_Star
+                
+                Set tmpPath = New pd2DPath
+                tmpPath.AddLine 0!, 0!, fxScale, 0!
+                tmpPath.AddArcCircular fxScale, fxScale, fxScale, 270!, -90!
+                tmpPath.CloseCurrentFigure
+                
+                'Rotate by [90 * n] degrees
+                If (x > 0) Then tmpPath.RotatePathAroundItsCenter 90! * x
+                
+                PD2D.FillPath dstSurface, foreBrush, tmpPath
+                
+        End Select
+            
+    Next x
+    
+    Set dstSurface = Nothing
+    
+    'Source tile images are now ready!
+    
+    'Figure out how many tiles we'll need to paint in each direction
+    Dim numTilesX As Long, numTilesY As Long
+    numTilesX = Int(dstDIB.GetDIBWidth / fxScale + 0.5)
+    numTilesY = Int(dstDIB.GetDIBHeight / fxScale + 0.5)
+    
+    'If random number mode is in use, initialize the random number generator
+    Dim cRandom As pdRandomize, cLUT() As Byte, tmpDIB As pdDIB
+    If (fxPattern = tp_Random) Then
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_Float fxRndSeed
+        cRandom.SetRndIntegerBounds 0, numImages - 1
+    
+    'If the pattern should instead be based on the base image, generate a mini version of the
+    ' image and produce corresponding lookup tables.
+    ElseIf (fxPattern = tp_BaseImage) Then
+    
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromExistingDIB dstDIB, numTilesX + 1, numTilesY + 1, GP_IM_HighQualityBilinear
+        
+        'Convert the mini reference image to grayscale
+        DIBs.GetDIBGrayscaleMap tmpDIB, cLUT, True
+        Set tmpDIB = Nothing
+        
+        'Reduce the map to [numImages] discrete values
+        Dim scaleFactor As Double
+        scaleFactor = (255# / (numImages - 1))
+        
+        For y = 0 To numTilesY
+        For x = 0 To numTilesX
+            cLUT(x, y) = Int(cLUT(x, y) / scaleFactor + 0.5)
+        Next x
+        Next y
+        
+    End If
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax numTilesY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    Dim idxSrcImage As Long
+    
+    'Iterate through each destination tile, painting a matching source tile based on the random number generator
+    For y = 0 To numTilesY
+    For x = 0 To numTilesX
+        
+        'Painting is the same regardless of shape, but the system we use for generating the initial lookup table
+        ' varies by pattern type.
+        Select Case fxPattern
+            Case tp_Random
+                idxSrcImage = cRandom.GetRandomInt_WH()
+            Case tp_BaseImage
+                idxSrcImage = cLUT(x, y)
+            Case tp_Repeat
+                idxSrcImage = x And 1
+                If (numImages > 2) Then
+                    If (y And 1) Then idxSrcImage = Abs(idxSrcImage - 3)
+                End If
+            Case tp_Wave
+                idxSrcImage = x And 1
+                If (numImages > 2) Then
+                    If (y And 1) Then idxSrcImage = idxSrcImage + 2
+                End If
+        End Select
+        
+        'As a failsafe, mask against the number of images to ensure no overflow
+        idxSrcImage = idxSrcImage And (numImages - 1)
+        
+        GDI.BitBltWrapper dstDIB.GetDIBDC, x * fxScale, y * fxScale, fxScale, fxScale, srcImages(idxSrcImage).GetDIBDC, 0, 0, vbSrcCopy
+          
+    Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal modifyProgBarOffset + y
+            End If
+        End If
+    Next y
+    
+    GetTruchetDIB = True
+        
+End Function

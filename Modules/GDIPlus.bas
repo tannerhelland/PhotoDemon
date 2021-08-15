@@ -1142,15 +1142,15 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         End If
         
         'Release our image attributes object
-        GdipDisposeImageAttributes imgAttributesHandle
+        If (imgAttributesHandle <> 0) Then GdipDisposeImageAttributes imgAttributesHandle
         
     Else
         GDIPlusResizeDIB = False
     End If
     
     'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics hGdipGraphics
-    GdipDisposeImage hGdipBitmap
+    If (hGdipGraphics <> 0) Then GdipDeleteGraphics hGdipGraphics
+    If (hGdipBitmap <> 0) Then GdipDisposeImage hGdipBitmap
     
     'GDI+ draw functions always result in a premultiplied image
     dstDIB.SetInitialAlphaPremultiplicationState True
