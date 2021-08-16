@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.548</langversion>
+<langversion>9.0.558</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -334,7 +334,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>waves</original>
-<translation></translation>
+<translation>Wellen</translation>
 </phrase>
 
 <phrase>
@@ -354,7 +354,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>arc</original>
-<translation></translation>
+<translation>Arkus</translation>
 </phrase>
 
 <phrase>
@@ -364,7 +364,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>maze</original>
-<translation></translation>
+<translation>Labyrinth</translation>
 </phrase>
 
 <phrase>
@@ -374,7 +374,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>octagon</original>
-<translation></translation>
+<translation>Oktagon</translation>
 </phrase>
 
 <phrase>
@@ -2220,7 +2220,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Truchet</translation>
 </phrase>
 
 <phrase>
@@ -8715,12 +8715,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Truchet tiles</original>
-<translation></translation>
+<translation>Truchet-Kacheln</translation>
 </phrase>
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation></translation>
+<translation>Rendering der Truchet-Kacheln</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9991,19 +9991,19 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>portrait</original>
-<translation>Porträt</translation>
+<translation>Porträt (Hochformat)</translation>
 </phrase>
 
 <phrase>
 <original>landscape</original>
-<translation>Landscape</translation>
+<translation>Landscape (Querformat)</translation>
 </phrase>
 
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
-<translation></translation>
+<translation>Qualitätsänderungen vorab anschauen</translation>
 </phrase>
 
 <phrase>
