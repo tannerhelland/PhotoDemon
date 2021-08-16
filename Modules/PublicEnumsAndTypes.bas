@@ -683,10 +683,12 @@ Public Enum PD_ResampleCurrent
     pdrc_Mitchell = 6
     pdrc_CatmullRom = 7
     pdrc_Sinc = 8
+    pdrc_Experimental = 9
 End Enum
 
 #If False Then
     Private Const pdrc_Automatic = 0, pdrc_NearestNeighbor = 1, pdrc_BilinearNormal = 2, pdrc_BilinearShrink = 3, pdrc_BicubicNormal = 4, pdrc_BicubicShrink = 5, pdrc_Mitchell = 6, pdrc_CatmullRom = 7, pdrc_Sinc = 8
+    Private Const pdrc_Experimental = 9
 #End If
 
 Public Enum PD_ResizeFit
@@ -773,7 +775,7 @@ End Enum
 Public Type PD_PNGHeader
     Width As Long
     Height As Long
-    ColorType As PD_PNGColorType
+    colorType As PD_PNGColorType
     Interlaced As Boolean
     BitDepth As Byte
     BitsPerPixel As Byte

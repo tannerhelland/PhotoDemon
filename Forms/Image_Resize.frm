@@ -106,9 +106,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright 2001-2021 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 10/July/18
-'Last update: expose dedicated options for pre-filtered bilinear and bicubic resampling
-'             (which provide improved results when down-sizing an image)
+'Last updated: 16/August/21
+'Last update: attempt a new custom-built resize engine, specific to PhotoDemon
 '
 'Standard image resize dialog.  A number of resample algorithms are provided, with some being provided
 ' by the 3rd-party FreeImage library.  PD also supports three different modes of "fitting" the resized
@@ -221,6 +220,11 @@ Private Sub Form_Load()
         cboResample.AddItem "Catmull-Rom"
         cboResample.AddItem "Sinc (Lanczos)"
     End If
+    
+    'New experimental option!
+    cboResample.AddItem "Experimental"
+    
+    'Resume original code...
     cboResample.ListIndex = 0
     cboResample.SetAutomaticRedraws True, True
     
@@ -309,6 +313,31 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     End If
     
 End Sub
+
+'Resize an image using our own internal algorithms.  Slower, but better quality.
+Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResampleCurrent) As Boolean
+    
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
+    'Unpremultiply alpha prior to resampling
+    If srcDIB.GetAlphaPremultiplication() Then srcDIB.SetAlphaPremultiplication False
+    
+    'Resize the destination DIB in preparation for the resize
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    If (dstDIB.GetDIBWidth <> dstWidth) Or (dstDIB.GetDIBHeight <> dstHeight) Then
+        dstDIB.CreateBlank dstWidth, dstHeight, srcDIB.GetDIBColorDepth
+    Else
+        dstDIB.ResetDIB 0
+    End If
+    
+    'Hand off the image to PD's internal resampler
+    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, rf_Box)
+    
+    'Premultiply the resulting image
+    dstDIB.SetAlphaPremultiplication True, True
+    
+End Function
+
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeImage(ByVal resizeParams As String)
@@ -507,8 +536,9 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             'If ImageFormats.IsFreeImageEnabled Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
             
         'All subsequent methods require (and assume presence of) the FreeImage plugin
-        ElseIf ImageFormats.IsFreeImageEnabled Then
-                
+        'TODO: maybe they won't forever!
+        ElseIf (ImageFormats.IsFreeImageEnabled And (resampleMethod < pdrc_Experimental)) Then
+                    
             If (resampleMethod = pdrc_Mitchell) Then
                 FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
             ElseIf (resampleMethod = pdrc_CatmullRom) Then
@@ -522,10 +552,20 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
             End If
             
+        'Experimental internal methods!
+        ElseIf (resampleMethod = pdrc_Experimental) Then
+            
+            Debug.Print "Attempting internal resize..."
+            
+            'Attempt new experimental methods here
+            InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, pdrc_Automatic
+        
         'This fallback should never actually be triggered; it is provided as an emergency "just in case" failsafe
         Else
+        
             If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
             GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
+        
         End If
         
         'tmpDIB now holds a copy of the resized image.

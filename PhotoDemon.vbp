@@ -462,6 +462,7 @@ Form=Forms\Tools_ScreenVideo.frm
 Form=Forms\Tools_ScreenVideoPrefs.frm
 Form=Forms\Tools_ThemeEditor.frm
 ResFile32="Resources\PD_icons.RES"
+Module=Resampling; Modules\Resampling.bas
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
