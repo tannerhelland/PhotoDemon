@@ -28,7 +28,7 @@ Begin VB.Form FormFxTruchet
       Height          =   735
       Left            =   9000
       TabIndex        =   10
-      Top             =   3120
+      Top             =   2760
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
@@ -43,7 +43,7 @@ Begin VB.Form FormFxTruchet
       Height          =   495
       Left            =   9000
       TabIndex        =   8
-      Top             =   1455
+      Top             =   1575
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -57,11 +57,11 @@ Begin VB.Form FormFxTruchet
       Height          =   375
       Index           =   0
       Left            =   6000
-      Top             =   960
+      Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   661
-      Caption         =   "foreground color and opacity"
+      Caption         =   "color and opacity"
       FontSize        =   12
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -78,8 +78,8 @@ Begin VB.Form FormFxTruchet
       Left            =   6000
       TabIndex        =   2
       Top             =   120
-      Width           =   2895
-      _ExtentX        =   5106
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   1244
       Caption         =   "scale"
       Min             =   3
@@ -101,29 +101,30 @@ Begin VB.Form FormFxTruchet
    End
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   735
-      Left            =   9000
+      Left            =   6000
       TabIndex        =   3
-      Top             =   120
-      Width           =   2895
-      _ExtentX        =   5106
+      Top             =   4680
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   1296
       Caption         =   "blend mode"
    End
    Begin PhotoDemon.pdRandomizeUI rndSeed 
       Height          =   735
-      Left            =   6000
+      Left            =   9000
       TabIndex        =   4
-      Top             =   4800
-      Width           =   5895
-      _ExtentX        =   10398
+      Top             =   3720
+      Width           =   2895
+      _ExtentX        =   5106
       _ExtentY        =   1296
       Caption         =   "random seed:"
+      MaxLength       =   15
    End
    Begin PhotoDemon.pdColorSelector cpForeground 
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   1440
+      Top             =   1560
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -133,7 +134,7 @@ Begin VB.Form FormFxTruchet
       Height          =   735
       Left            =   6000
       TabIndex        =   6
-      Top             =   3120
+      Top             =   2760
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
@@ -143,27 +144,16 @@ Begin VB.Form FormFxTruchet
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   2520
+      Top             =   2160
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   1
-      Left            =   6000
-      Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   661
-      Caption         =   "background color and opacity"
-      FontSize        =   12
    End
    Begin PhotoDemon.pdSlider sldBackground 
       Height          =   495
       Left            =   9000
       TabIndex        =   9
-      Top             =   2535
+      Top             =   2175
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -177,8 +167,8 @@ Begin VB.Form FormFxTruchet
       Height          =   735
       Left            =   6000
       TabIndex        =   11
-      Top             =   3960
-      Width           =   5895
+      Top             =   3720
+      Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
       Caption         =   "tile pattern"
@@ -237,8 +227,8 @@ Public Sub FxRenderTruchet(ByVal effectParams As String, Optional ByVal toPrevie
         
         fxBlendMode = .GetLong("blendmode", cboBlendMode.ListIndex)
         fxSeed = .GetString("seed")
-        fxShape = .GetLong("shape", ts_Triangle)
-        fxPattern = .GetLong("pattern", tp_Random)
+        fxShape = Filters_Render.GetTruchetShapeFromName(.GetString("shape", vbNullString, True))
+        fxPattern = Filters_Render.GetTruchetPatternFromName(.GetString("pattern", vbNullString, True))
         fxLineWidth = .GetSingle("line-width", 1!)
         
     End With
@@ -320,7 +310,7 @@ Private Sub Form_Load()
     cboGenerator.SetAutomaticRedraws False
     Dim i As PD_TruchetShape
     For i = 0 To ts_Max - 1
-        cboGenerator.AddItem Filters_Render.GetUINameOfTruchetShape(i)
+        cboGenerator.AddItem Filters_Render.GetNameOfTruchetShape(i)
     Next i
     cboGenerator.ListIndex = ts_Arc
     cboGenerator.SetAutomaticRedraws True, True
@@ -328,7 +318,7 @@ Private Sub Form_Load()
     cboPattern.SetAutomaticRedraws False
     Dim j As PD_TruchetPattern
     For j = 0 To tp_Max - 1
-        cboPattern.AddItem Filters_Render.GetUINameOfTruchetPattern(j)
+        cboPattern.AddItem Filters_Render.GetNameOfTruchetPattern(j)
     Next j
     cboPattern.ListIndex = tp_Random
     cboPattern.SetAutomaticRedraws True, True
@@ -387,8 +377,8 @@ Private Function GetLocalParamString() As String
         .AddParam "foreground-opacity", sldForeground.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
         .AddParam "seed", rndSeed.Value
-        .AddParam "shape", cboGenerator.ListIndex
-        .AddParam "pattern", cboPattern.ListIndex
+        .AddParam "shape", Filters_Render.GetNameOfTruchetShape(cboGenerator.ListIndex)
+        .AddParam "pattern", Filters_Render.GetNameOfTruchetPattern(cboPattern.ListIndex)
         .AddParam "line-width", sldLineWidth.Value
     End With
     

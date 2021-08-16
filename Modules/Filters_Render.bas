@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Render"
 'Render Filter Collection
 'Copyright 2017-2021 by Tanner Helland
 'Created: 14/October/17
-'Last updated: 06/August/21
-'Last update: add Truchet tile rendering
+'Last updated: 15/August/21
+'Last update: wrap up work on Truchet tile rendering
 '
 'Container module for PD's render filter collection.
 '
@@ -21,13 +21,13 @@ Public Enum PD_TruchetShape
     ts_Line = 1
     ts_Maze = 2
     ts_Triangle = 3
-    ts_Circle = 4
-    ts_Star = 5
+    ts_Octagon = 4
+    ts_Circle = 5
     ts_Max = 6
 End Enum
 
 #If False Then
-    Private Const ts_Arc = 0, ts_Line = 1, ts_Maze = 2, ts_Triangle = 3, ts_Circle = 4, ts_Star = 5, ts_Max = 6
+    Private Const ts_Arc = 0, ts_Line = 1, ts_Maze = 2, ts_Triangle = 3, ts_Octagon = 4, ts_Circle = 5, ts_Max = 6
 #End If
 
 'You can also generate tiles in various patterns.  These bare some similarity to tiles in PD's Voronoi tool,
@@ -37,11 +37,15 @@ Public Enum PD_TruchetPattern
     tp_BaseImage = 1
     tp_Repeat = 2
     tp_Wave = 3
-    tp_Max = 4
+    tp_Quilt = 4
+    tp_Chain = 5
+    tp_Weave = 6
+    tp_Max = 7
 End Enum
 
 #If False Then
-    Private Const tp_Random = 0, tp_BaseImage = 1, tp_Repeat = 2, tp_Wave = 3, tp_Max = 4
+    Private Const tp_Random = 0, tp_BaseImage = 1, tp_Repeat = 2, tp_Wave = 3, tp_Quilt = 4, tp_Chain = 5, tp_Weave = 6
+    Private Const tp_Max = 7
 #End If
 
 'Render a "cloud" effect to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
@@ -177,33 +181,75 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVa
         
 End Function
 
-Public Function GetUINameOfTruchetShape(ByVal truchetID As PD_TruchetShape) As String
+Public Function GetNameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern) As String
     Select Case truchetID
-        Case ts_Arc
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("arc")
-        Case ts_Line
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("line")
-        Case ts_Maze
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("maze")
-        Case ts_Triangle
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("triangle")
-        Case ts_Circle
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("circle")
-        Case ts_Star
-            GetUINameOfTruchetShape = g_Language.TranslateMessage("star")
+        Case tp_Random
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("random")
+        Case tp_BaseImage
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("image")
+        Case tp_Repeat
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("repeat")
+        Case tp_Wave
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("wave")
+        Case tp_Quilt
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("quilt")
+        Case tp_Chain
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("chain")
+        Case tp_Weave
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("weave")
     End Select
 End Function
 
-Public Function GetUINameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern) As String
+Public Function GetNameOfTruchetShape(ByVal truchetID As PD_TruchetShape) As String
     Select Case truchetID
-        Case tp_Random
-            GetUINameOfTruchetPattern = g_Language.TranslateMessage("random")
-        Case tp_BaseImage
-            GetUINameOfTruchetPattern = g_Language.TranslateMessage("image")
-        Case tp_Repeat
-            GetUINameOfTruchetPattern = g_Language.TranslateMessage("repeat")
-        Case tp_Wave
-            GetUINameOfTruchetPattern = g_Language.TranslateMessage("wave")
+        Case ts_Arc
+            GetNameOfTruchetShape = g_Language.TranslateMessage("arc")
+        Case ts_Line
+            GetNameOfTruchetShape = g_Language.TranslateMessage("line")
+        Case ts_Maze
+            GetNameOfTruchetShape = g_Language.TranslateMessage("maze")
+        Case ts_Triangle
+            GetNameOfTruchetShape = g_Language.TranslateMessage("triangle")
+        Case ts_Octagon
+            GetNameOfTruchetShape = g_Language.TranslateMessage("octagon")
+        Case ts_Circle
+            GetNameOfTruchetShape = g_Language.TranslateMessage("circle")
+    End Select
+End Function
+
+Public Function GetTruchetPatternFromName(ByRef truchetName As String) As PD_TruchetPattern
+    Select Case LCase$(truchetName)
+        Case "random"
+            GetTruchetPatternFromName = tp_Random
+        Case "image"
+            GetTruchetPatternFromName = tp_BaseImage
+        Case "repeat"
+            GetTruchetPatternFromName = tp_Repeat
+        Case "wave"
+            GetTruchetPatternFromName = tp_Wave
+        Case "quilt"
+            GetTruchetPatternFromName = tp_Quilt
+        Case "chain"
+            GetTruchetPatternFromName = tp_Chain
+        Case "weave"
+            GetTruchetPatternFromName = tp_Weave
+    End Select
+End Function
+
+Public Function GetTruchetShapeFromName(ByRef truchetName As String) As PD_TruchetShape
+    Select Case LCase$(truchetName)
+        Case "arc"
+            GetTruchetShapeFromName = ts_Arc
+        Case "line"
+            GetTruchetShapeFromName = ts_Line
+        Case "maze"
+            GetTruchetShapeFromName = ts_Maze
+        Case "triangle"
+            GetTruchetShapeFromName = ts_Triangle
+        Case "octagon"
+            GetTruchetShapeFromName = ts_Octagon
+        Case "circle"
+            GetTruchetShapeFromName = ts_Circle
     End Select
 End Function
 
@@ -371,12 +417,12 @@ Public Function GetTruchetDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Long, ByVa
         Case ts_Triangle
             numImages = 4
             numPoints = 3
+        Case ts_Octagon
+            numImages = 4
+            numPoints = 4
         Case ts_Circle
             numImages = 4
             numPoints = 1
-        Case ts_Star
-            numImages = 4
-            numPoints = 4
     End Select
     
     ReDim srcImages(0 To numImages - 1) As pdDIB
@@ -470,13 +516,27 @@ Public Function GetTruchetDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Long, ByVa
                 End If
                 
             Case ts_Triangle
-                
                 fxPoints(0).x = 0!: fxPoints(0).y = 0!
                 fxPoints(1).x = fxScale: fxPoints(1).y = 0!
                 fxPoints(2).x = 0!: fxPoints(2).y = fxScale
                     
                 Set tmpPath = New pd2DPath
                 tmpPath.AddLines 3, VarPtr(fxPoints(0))
+                tmpPath.CloseCurrentFigure
+                
+                'Rotate by [90 * n] degrees
+                If (x > 0) Then tmpPath.RotatePathAroundItsCenter 90! * x
+                
+                PD2D.FillPath dstSurface, foreBrush, tmpPath
+                
+            Case ts_Octagon
+                fxPoints(0).x = 0!: fxPoints(0).y = 0!
+                fxPoints(1).x = fxScale: fxPoints(1).y = 0!
+                PDMath.RotatePointAroundPoint fxScale, 0!, 0!, 0!, PDMath.DegreesToRadians(45#), fxPoints(2).x, fxPoints(2).y
+                fxPoints(3).x = 0!: fxPoints(3).y = fxScale
+                    
+                Set tmpPath = New pd2DPath
+                tmpPath.AddLines 4, VarPtr(fxPoints(0))
                 tmpPath.CloseCurrentFigure
                 
                 'Rotate by [90 * n] degrees
@@ -497,17 +557,6 @@ Public Function GetTruchetDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Long, ByVa
                 
                 PD2D.FillCircleI dstSurface, foreBrush, fxPoints(0).x, fxPoints(0).y, fxScale
                 
-            Case ts_Star
-                
-                Set tmpPath = New pd2DPath
-                tmpPath.AddLine 0!, 0!, fxScale, 0!
-                tmpPath.AddArcCircular fxScale, fxScale, fxScale, 270!, -90!
-                tmpPath.CloseCurrentFigure
-                
-                'Rotate by [90 * n] degrees
-                If (x > 0) Then tmpPath.RotatePathAroundItsCenter 90! * x
-                
-                PD2D.FillPath dstSurface, foreBrush, tmpPath
                 
         End Select
             
@@ -582,6 +631,25 @@ Public Function GetTruchetDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Long, ByVa
                 idxSrcImage = x And 1
                 If (numImages > 2) Then
                     If (y And 1) Then idxSrcImage = idxSrcImage + 2
+                End If
+            Case tp_Quilt
+                If (y And 1) Then
+                    idxSrcImage = x And 3
+                Else
+                    idxSrcImage = (x + 2) And 3
+                End If
+                If (idxSrcImage > 1) Then idxSrcImage = Abs(idxSrcImage - 5)
+            Case tp_Chain
+                idxSrcImage = x And 1
+                If (numImages > 2) Then
+                    If (y And 1) Then idxSrcImage = idxSrcImage + 2
+                End If
+                If (x And 2) Then idxSrcImage = 3 - idxSrcImage
+            Case tp_Weave
+                If (y And 1) Then
+                    idxSrcImage = x And 3
+                Else
+                    idxSrcImage = (x + 2) And 3
                 End If
         End Select
         
