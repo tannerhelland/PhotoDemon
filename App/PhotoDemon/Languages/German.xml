@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.528</langversion>
+<langversion>9.0.545</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -767,7 +767,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>preview not available</original>
-<translation>Vorschau nicht verfügbar</translation>
+<translation>Preview nicht verfügbar</translation>
 </phrase>
 
 <!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
@@ -4316,7 +4316,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>Umschalten zwischen 1x und wiederholenden Vorschauen</translation>
+<translation>Umschalten zwischen 1x und wiederholenden Previews</translation>
 </phrase>
 
 <phrase>
@@ -5809,7 +5809,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -6100,12 +6100,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -6486,7 +6486,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>preview</original>
-<translation>Vorschau</translation>
+<translation>Preview</translation>
 </phrase>
 
 <phrase>
@@ -7527,7 +7527,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -7886,7 +7886,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster</translation>
+<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster</translation>
 </phrase>
 
 <phrase>
@@ -9174,7 +9174,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>show image previews</original>
-<translation>Bildvorschauen zeigen</translation>
+<translation>Bild-Previews zeigen</translation>
 </phrase>
 
 <phrase>
@@ -9319,7 +9319,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>previews disabled</original>
-<translation>Vorschauen deaktiviert</translation>
+<translation>Previews deaktiviert</translation>
 </phrase>
 
 <phrase>
@@ -9695,7 +9695,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Dieser Button wirkt sich nur auf die Vorschau oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
+<translation>Dieser Button wirkt sich nur auf die Preview oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -9868,7 +9868,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Applikations-Preview als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
@@ -9964,7 +9964,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>image quality</original>
-<translation></translation>
+<translation>Bildqualität</translation>
 </phrase>
 
 <phrase>
@@ -9979,7 +9979,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation></translation>
+<translation>Die AVIF-Kompression ist sehr rechenintensiv. Auf älteren oder langsameren PCs sollten Sie vielleicht Live-Previews deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -10350,7 +10350,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation>Klick, um ein neues Vorschaubild zu generieren</translation>
+<translation>Klick, um ein neues Preview-Bild zu generieren</translation>
 </phrase>
 
 <phrase>
@@ -10445,7 +10445,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation>Bitte warten Sie, während ein neues Vorschaubild erstellt wird</translation>
+<translation>Bitte warten Sie, während ein neues Preview-Bild erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -11149,7 +11149,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -12915,7 +12915,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>application settings folder</original>
-<translation>Ordner für Anwendungseinstellungen</translation>
+<translation>Ordner für Applikationseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -13244,7 +13244,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
+<translation>PhotoDemon ist eine portable Applikation, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
 </phrase>
 
 <phrase>
