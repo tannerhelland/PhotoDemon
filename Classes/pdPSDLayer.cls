@@ -266,10 +266,12 @@ End Function
 '(Also note: if the DecodeChannels step fails for a given channel, don't waste time calling this step; it won't
 ' work if the underlying channel data hasn't been decoded properly!)
 Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
-
-    ConstructImage = psd_Success
     
     On Error GoTo InternalVBError
+    
+    ConstructImage = psd_Success
+    
+    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "attempting to construct layer: " & Me.GetLayerName()
     
     m_ColorMode = imgColorMode
     
@@ -1733,6 +1735,8 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
     
     On Error GoTo InternalVBError
     
+    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "attempting to decode channels for layer: " & Me.GetLayerName()
+    
     'Decoded data size is contingent on the layer's rectangle
     Dim origLayerWidth As Long, origLayerHeight As Long
     Dim layerWidth As Long, layerHeight As Long
@@ -2223,7 +2227,7 @@ End Function
 'After *all* layer headers have been successfully parsed, the next chunk of the PSD contains image channel data.
 ' Pass the same source stream to this function to load all channel data for this layer.
 Friend Function LoadChannels(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode) As PD_PSDResult
-
+    
     On Error GoTo InternalVBError
     
     LoadChannels = psd_Success
@@ -2241,6 +2245,9 @@ Friend Function LoadChannels(ByRef srcStream As pdStream, ByRef warningStack As 
             ' latter value always being two bytes (an unsigned int).  To avoid confusion, we
             ' pre-calculate the raw "size of pixel data" by subtracting two from the net chunk size.
             .ciDataLength = .ciSizeL - 2
+            
+            'Want to see basic channel data (helpful for debugging)?
+            'Debug.Print "data length: ", .ciDataLength, .ciID
             
             'It *is* possible to have zero-length layer data (for example, layer groups and
             ' adjustment/effect layers can do this).  As such, it's critical to check channel size

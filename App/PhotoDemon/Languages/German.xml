@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.527</langversion>
+<langversion>9.0.545</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -416,6 +416,11 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Saving %1 file</original>
+<translation>Datei %1 wird gespeichert</translation>
+</phrase>
+
+<phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler mittels "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
@@ -449,7 +454,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Speichern kann nicht ohne FreeImage-Library abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -762,7 +767,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>preview not available</original>
-<translation>Vorschau nicht verfügbar</translation>
+<translation>Preview nicht verfügbar</translation>
 </phrase>
 
 <!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
@@ -2938,11 +2943,6 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Datei %1 wird gespeichert</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2980,7 +2980,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Animation exportieren</translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3831,7 +3831,12 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <translation>%1 (Kanal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation>Hintergrund</translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -4311,7 +4316,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>Umschalten zwischen 1x und wiederholenden Vorschauen</translation>
+<translation>Umschalten zwischen 1x und wiederholenden Previews</translation>
 </phrase>
 
 <phrase>
@@ -5125,11 +5130,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation>Hintergrund</translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation>Vordergrund</translation>
 </phrase>
@@ -5462,7 +5462,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 374 phrases. 194 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5809,7 +5809,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -6100,12 +6100,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -6486,7 +6486,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>preview</original>
-<translation>Vorschau</translation>
+<translation>Preview</translation>
 </phrase>
 
 <phrase>
@@ -7527,7 +7527,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -7886,7 +7886,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster</translation>
+<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster</translation>
 </phrase>
 
 <phrase>
@@ -9174,7 +9174,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>show image previews</original>
-<translation>Bildvorschauen zeigen</translation>
+<translation>Bild-Previews zeigen</translation>
 </phrase>
 
 <phrase>
@@ -9319,7 +9319,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>previews disabled</original>
-<translation>Vorschauen deaktiviert</translation>
+<translation>Previews deaktiviert</translation>
 </phrase>
 
 <phrase>
@@ -9695,7 +9695,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Dieser Button wirkt sich nur auf die Vorschau oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
+<translation>Dieser Button wirkt sich nur auf die Preview oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -9868,7 +9868,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Applikations-Preview als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
@@ -9958,6 +9958,38 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>preview quality changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation>Bildqualität</translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>Niedrige Qualität, kleine Datei</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>Hohe Qualität, große Datei</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation>Die AVIF-Kompression ist sehr rechenintensiv. Auf älteren oder langsameren PCs sollten Sie vielleicht Live-Previews deaktivieren.</translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1-Optionen</translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>restrict palette size</original>
 <translation>Palettengröße beschränken</translation>
 </phrase>
@@ -10032,12 +10064,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>1-bpp</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1-Optionen</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10119,16 +10146,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>Hohe Qualität, große Datei</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>Niedrige Qualität, kleine Datei</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Verlustfrei (1:1)</translation>
 </phrase>
@@ -10158,7 +10175,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Benutzerdefiniertes Verhältnis (X:1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10333,7 +10350,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation>Klick, um ein neues Vorschaubild zu generieren</translation>
+<translation>Klick, um ein neues Preview-Bild zu generieren</translation>
 </phrase>
 
 <phrase>
@@ -10428,7 +10445,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation>Bitte warten Sie, während ein neues Vorschaubild erstellt wird</translation>
+<translation>Bitte warten Sie, während ein neues Preview-Bild erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -10449,6 +10466,13 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation>Zielversion</translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -11125,7 +11149,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -12891,7 +12915,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>application settings folder</original>
-<translation>Ordner für Anwendungseinstellungen</translation>
+<translation>Ordner für Applikationseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -13220,7 +13244,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
+<translation>PhotoDemon ist eine portable Applikation, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
 </phrase>
 
 <phrase>
@@ -13484,19 +13508,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation>Zielversion</translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2554</phrasecount>
+<phrasecount>2557</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5224 phrases. -->
-<!-- 2670 are duplicates, so only 2554 unique phrases have been written to file. -->
-<!-- These 2554 phrases contain approximately 11789 total words. -->
+<!-- As of this build, PhotoDemon contains 5235 phrases. -->
+<!-- 2678 are duplicates, so only 2557 unique phrases have been written to file. -->
+<!-- These 2557 phrases contain approximately 11813 total words. -->
 
 </pdData>
