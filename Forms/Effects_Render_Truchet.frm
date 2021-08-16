@@ -32,7 +32,7 @@ Begin VB.Form FormFxTruchet
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
-      Caption         =   "outline width"
+      Caption         =   "width"
       Min             =   1
       Max             =   100
       Value           =   20
@@ -138,7 +138,7 @@ Begin VB.Form FormFxTruchet
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
-      Caption         =   "tile shape"
+      Caption         =   "shape"
    End
    Begin PhotoDemon.pdColorSelector cpBackground 
       Height          =   495
@@ -171,7 +171,7 @@ Begin VB.Form FormFxTruchet
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
-      Caption         =   "tile pattern"
+      Caption         =   "pattern"
    End
 End
 Attribute VB_Name = "FormFxTruchet"

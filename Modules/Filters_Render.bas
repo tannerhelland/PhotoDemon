@@ -190,7 +190,7 @@ Public Function GetNameOfTruchetPattern(ByVal truchetID As PD_TruchetPattern) As
         Case tp_Repeat
             GetNameOfTruchetPattern = g_Language.TranslateMessage("repeat")
         Case tp_Wave
-            GetNameOfTruchetPattern = g_Language.TranslateMessage("wave")
+            GetNameOfTruchetPattern = g_Language.TranslateMessage("waves")
         Case tp_Quilt
             GetNameOfTruchetPattern = g_Language.TranslateMessage("quilt")
         Case tp_Chain
@@ -225,7 +225,7 @@ Public Function GetTruchetPatternFromName(ByRef truchetName As String) As PD_Tru
             GetTruchetPatternFromName = tp_BaseImage
         Case "repeat"
             GetTruchetPatternFromName = tp_Repeat
-        Case "wave"
+        Case "waves"
             GetTruchetPatternFromName = tp_Wave
         Case "quilt"
             GetTruchetPatternFromName = tp_Quilt

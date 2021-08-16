@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.47</langversion>
+<langversion>8.0.50</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -318,6 +318,73 @@ Questa immagine contiene %2 valori unici di colore + opacità (RGBA).</translati
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>immagine</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>ripetere</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>linea</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>triangolo</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>cerchio</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
 <original>Time taken</original>
 <translation>Tempo trascorso</translation>
 </phrase>
@@ -551,11 +618,6 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 </phrase>
 
 <phrase>
-<original>circle</original>
-<translation>cerchio</translation>
-</phrase>
-
-<phrase>
 <original>diamond</original>
 <translation>diamante</translation>
 </phrase>
@@ -770,7 +832,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>anteprima non disponibile</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2157,6 +2219,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Truchet</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Affila</translation>
 </phrase>
@@ -2301,7 +2368,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Cancella l'elenco delle macro recenti</translation>
 </phrase>
 
-<!-- Menus.bas contains 270 phrases. 32 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
+<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3867,11 +3934,6 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>cross</original>
 <translation></translation>
 </phrase>
@@ -3882,21 +3944,11 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>ragged</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -5458,7 +5510,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 194 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6521,11 +6573,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation>linea</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>riflessione</translation>
 </phrase>
@@ -6535,7 +6582,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>rettangolo</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6878,11 +6925,6 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 </phrase>
 
 <phrase>
-<original>triangle</original>
-<translation>triangolo</translation>
-</phrase>
-
-<phrase>
 <original>miter</original>
 <translation>mitra</translation>
 </phrase>
@@ -6892,7 +6934,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>angolo</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7679,11 +7721,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Cartesian (traditional)</original>
 <translation>Cartesiano (tradizionale)</translation>
 </phrase>
@@ -7698,7 +7735,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Chebyshev (scacchiera)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8671,6 +8708,18 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -9661,11 +9710,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>repeat</original>
-<translation>ripetere</translation>
-</phrase>
-
-<phrase>
 <original>repeat count</original>
 <translation>ripetizione del conteggio</translation>
 </phrase>
@@ -9710,7 +9754,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>tempo limite per livelli non definiti (in ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -11689,16 +11733,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>immagine</translation>
-</phrase>
-
-<phrase>
 <original>n/a</original>
 <translation>N/A</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -13517,10 +13556,10 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2557</phrasecount>
+<phrasecount>2564</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5235 phrases. -->
-<!-- 2678 are duplicates, so only 2557 unique phrases have been written to file. -->
-<!-- These 2557 phrases contain approximately 11813 total words. -->
+<!-- As of this build, PhotoDemon contains 5273 phrases. -->
+<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
+<!-- These 2564 phrases contain approximately 11823 total words. -->
 
 </pdData>
