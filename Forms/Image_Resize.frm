@@ -315,7 +315,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using our own internal algorithms.  Slower, but better quality.
-Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResampleCurrent) As Boolean
+Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter) As Boolean
     
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
@@ -331,13 +331,12 @@ Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDI
     End If
     
     'Hand off the image to PD's internal resampler
-    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, rf_Box)
+    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod)
     
     'Premultiply the resulting image
     dstDIB.SetAlphaPremultiplication True, True
     
 End Function
-
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeImage(ByVal resizeParams As String)
@@ -556,9 +555,10 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         ElseIf (resampleMethod = pdrc_Experimental) Then
             
             Debug.Print "Attempting internal resize..."
+            PDDebug.LogAction "INTERNAL RESIZE ACTIVE WAAAAHHHHOOOOOOOOOO"
             
             'Attempt new experimental methods here
-            InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, pdrc_Automatic
+            InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos8
         
         'This fallback should never actually be triggered; it is provided as an emergency "just in case" failsafe
         Else

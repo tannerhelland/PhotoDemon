@@ -4,7 +4,7 @@ Attribute VB_Name = "Resampling"
 'Copyright 2021-2021 by Tanner Helland
 'Created: 16/August/21
 'Last updated: 16/August/21
-'Last update: instead of relying on 3rd-party code for resampling, let's write our own!
+'Last update: instead of relying on a 3rd-party library for resampling, let's write a native VB6 implementation!
 '
 'This module is currently a WIP.
 '
@@ -59,7 +59,7 @@ End Type
 ' memory consumption).  This intermediate array will be reused on subsequent calls, and can also be manually
 ' freed when bulk resizing completes.
 Private m_tmpPixels() As Byte
-Private m_tmpPixelWidth As Long, m_tmpPixelHeight As Long
+Private m_tmpPixelSize As Long
 
 'Resample an image using the supplied algorith.  A few notes...
 ' 1) Resampling requires an intermediary image copy to store a copy of resampled data.  This allows you to resize in
@@ -89,10 +89,11 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     Dim totalSize As Long: totalSize = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
     
     'Allocate the intermediary "working" copy of the image width dimensions [dstWidth, srcHeight]
-    If (dstWidth > m_tmpPixelWidth) Or (srcHeight > m_tmpPixelHeight) Then
-        ReDim m_tmpPixels(0 To (dstWidth * 4) - 1, 0 To srcHeight - 1)
+    If (dstWidth * srcHeight * 4 > m_tmpPixelSize) Then
+        m_tmpPixelSize = dstWidth * srcHeight * 4
+        ReDim m_tmpPixels(0 To m_tmpPixelSize - 1) As Byte
     Else
-        VBHacks.ZeroMemory VarPtr(m_tmpPixels(0, 0)), m_tmpPixelWidth * m_tmpPixelHeight * 4
+        VBHacks.ZeroMemory VarPtr(m_tmpPixels(0)), m_tmpPixelSize
     End If
     
     'Calculate x/y scales; this provides a simple mechanism for checking up- vs downsampling
@@ -108,7 +109,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     Dim wdth As Double, center As Double, weight As Double
     Dim intensityR As Double, intensityG As Double, intensityB As Double, intensityA As Double
-    Dim left As Long, right As Long, i As Long, j As Long, k As Long
+    Dim Left As Long, Right As Long, i As Long, j As Long, k As Long
     Dim r As Long, g As Long, b As Long, a As Long
     
     'Now, calculate all input weights
@@ -128,10 +129,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
-            left = Fix(center - wdth)
-            right = Fix(center + wdth)
+            Left = Fix(center - wdth)
+            Right = Fix(center + wdth)
             
-            For j = left To right
+            For j = Left To Right
                 
                 'Ignore OOB pixels; they will not contribute to weighting
                 If (j < 0) Then GoTo NextJXlt1
@@ -165,10 +166,10 @@ NextJXlt1:
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
-            left = Fix(center - GetDefaultRadius(rsFilter))
-            right = Fix(center + GetDefaultRadius(rsFilter) + 0.99999999999)
+            Left = Fix(center - GetDefaultRadius(rsFilter))
+            Right = Fix(center + GetDefaultRadius(rsFilter) + 0.99999999999)
 
-            For j = left To right
+            For j = Left To Right
                 
                 'Ignore OOB pixels; they will not contribute to weighting
                 If (j < 0) Then GoTo NextJXgt1
@@ -240,7 +241,7 @@ NextJXgt1:
             If (a < 0) Then a = 0
             
             'Assign new RGBA values to the working data array
-            idxPixel = i * 4
+            idxPixel = k * dstWidth * 4 + i * 4
             m_tmpPixels(idxPixel) = b
             m_tmpPixels(idxPixel + 1) = g
             m_tmpPixels(idxPixel + 2) = r
@@ -278,12 +279,12 @@ NextJXgt1:
             contrib(i).wsum = 0#
           
             center = (i + 0.5) / yScale
-            left = Fix(center - wdth)
-            right = Fix(center + wdth)
+            Left = Fix(center - wdth)
+            Right = Fix(center + wdth)
             
             'Precalculate all weights for this column (technically these are not left/right values
             ' but up/down ones, remember)
-            For j = left To right
+            For j = Left To Right
 
                 'Skip OOB pixels
                 If (j < 0) Then GoTo NextJYlt1
@@ -314,10 +315,10 @@ NextJYlt1:
             contrib(i).wsum = 0#
             
             center = ((i + 0.5) / yScale)
-            left = Fix(center - GetDefaultRadius(rsFilter))
-            right = Fix(center + GetDefaultRadius(rsFilter) + 0.9999999999)
+            Left = Fix(center - GetDefaultRadius(rsFilter))
+            Right = Fix(center + GetDefaultRadius(rsFilter) + 0.9999999999)
 
-            For j = left To right
+            For j = Left To Right
                 
                 If (j < 0) Then GoTo NextJYgt1
                 If (j >= srcHeight) Then GoTo NextJYgt1
