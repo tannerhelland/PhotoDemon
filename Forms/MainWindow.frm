@@ -2757,7 +2757,13 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
             
             'If this action is associated with a menu, make sure that corresponding menu is enabled
             If (.HasMenu(acceleratorIndex)) Then
-                If (Not Menus.IsMenuEnabled(.GetMenuName(acceleratorIndex))) Then Exit Sub
+                If (Not Menus.IsMenuEnabled(.GetMenuName(acceleratorIndex))) Then
+                    
+                    'A rare exception to "allow hotkey even when menu is disabled" is the PASTE shortcut.
+                    ' We instead silently reroute Ctrl+V to "Paste as New Image" if no images are currently active.
+                    If (LCase$(.HotKeyName(acceleratorIndex)) <> "paste") Then Exit Sub
+                    
+                End If
             End If
             
             Processor.Process .HotKeyName(acceleratorIndex), .IsDialogDisplayed(acceleratorIndex), cParams.GetParamString(), .ProcUndoValue(acceleratorIndex)
