@@ -1775,14 +1775,17 @@ Private Sub PrepareForBatchConversion()
                     'If the user has requested an image resize, apply it now
                     If chkActions(1).Value Then
                         
+                        'Generate a compatible list of options for PD's resampling engine
                         Dim resizeParams As pdSerialize
                         Set resizeParams = New pdSerialize
                         With resizeParams
+                            .SetParamVersion 3#
                             .AddParam "width", ucResize.ResizeWidth
                             .AddParam "height", ucResize.ResizeHeight
                             .AddParam "unit", ucResize.UnitOfMeasurement
                             .AddParam "ppi", ucResize.ResizeDPIAsPPI
-                            .AddParam "algorithm", ResizeSincLanczos
+                            .AddParam "resample", Resampling.GetResamplerName(rf_Automatic)
+                            .AddParam "approximations-ok", True
                             .AddParam "fit", cmbResizeFit.ListIndex
                             .AddParam "fillcolor", vbWhite
                             .AddParam "target", pdat_Image

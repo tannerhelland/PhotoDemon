@@ -4,7 +4,7 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize image"
-   ClientHeight    =   7140
+   ClientHeight    =   7425
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   9630
@@ -22,15 +22,25 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   476
+   ScaleHeight     =   495
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkEstimate 
+      Height          =   375
+      Left            =   825
+      TabIndex        =   5
+      Top             =   4440
+      Width           =   7935
+      _ExtentX        =   13996
+      _ExtentY        =   661
+      Caption         =   "use approximations to improve performance"
+   End
    Begin PhotoDemon.pdDropDown cmbFit 
       Height          =   375
       Left            =   840
       TabIndex        =   2
-      Top             =   5160
+      Top             =   5520
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   635
@@ -40,7 +50,7 @@ Begin VB.Form FormResize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6390
+      Top             =   6675
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
@@ -59,7 +69,7 @@ Begin VB.Form FormResize
       Left            =   840
       TabIndex        =   4
       ToolTipText     =   "Click to change the color used for empty borders"
-      Top             =   5640
+      Top             =   6000
       Visible         =   0   'False
       Width           =   7935
       _ExtentX        =   13996
@@ -77,7 +87,7 @@ Begin VB.Form FormResize
    Begin PhotoDemon.pdLabel lblFit 
       Height          =   315
       Left            =   480
-      Top             =   4680
+      Top             =   5040
       Width           =   8685
       _ExtentX        =   0
       _ExtentY        =   0
@@ -123,14 +133,49 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Internal flag to use/not use GDI+ resize functions.  GDI+ is much faster than our internal PD resampler.
-' This should always be TRUE in production code.
-Private Const USE_GDIPLUS_RESIZE As Boolean = False
+'Internal flag to use/not use GDI+ resize functions.  GDI+ is much faster than our internal PD resampler,
+' but it's algorithms are nonstandard and have some weird quirks vs theoretically "perfect" implementations
+' (see https://photosauce.net/blog/post/image-scaling-with-gdi-part-4-examining-the-interpolationmode-values).
+' This value should be TRUE in production code.
+Private Const USE_GDIPLUS_RESIZE As Boolean = True
 
 'Internal flag to use/not use the 3rd-party FreeImage library's resize functions (if available).
-' FreeImage's functions are faster but lower-quality than our internal PD resampler.
-' If FreeImage is *not* available, this value is ignored.
+' FreeImage's functions are faster than our internal PD resampler, but they require a lot of extra memory due
+' to FreeImage needing its own container for pixel data.  (If FreeImage is *not* available, this value is ignored.)
+' This value should be TRUE in production code.
 Private Const USE_FREEIMAGE_RESIZE As Boolean = False
+
+'PhotoDemon's resampling options have expanded over the years.  Unfortunately, old versions of the app
+' stored resampling settings using 0-based integers.  I have since switched to a version-agnostic string system,
+' but these old enums are kept around so PD can map old macros to modern resampling constants.
+Private Enum PD_ResampleOld_V1
+    ResizeNormal = 0
+    ResizeBilinear = 1
+    ResizeBspline = 2
+    ResizeBicubicMitchell = 3
+    ResizeBicubicCatmull = 4
+    ResizeSincLanczos = 5
+End Enum
+
+#If False Then
+    Private Const ResizeNormal = 0, ResizeBilinear = 1, ResizeBspline = 2, ResizeBicubicMitchell = 3, ResizeBicubicCatmull = 4, ResizeSincLanczos = 5
+#End If
+
+Private Enum PD_ResampleOld_V2
+    pdrc_Automatic = 0
+    pdrc_NearestNeighbor = 1
+    pdrc_BilinearNormal = 2
+    pdrc_BilinearShrink = 3
+    pdrc_BicubicNormal = 4
+    pdrc_BicubicShrink = 5
+    pdrc_Mitchell = 6
+    pdrc_CatmullRom = 7
+    pdrc_Sinc = 8
+End Enum
+
+#If False Then
+    Private Const pdrc_Automatic = 0, pdrc_NearestNeighbor = 1, pdrc_BilinearNormal = 2, pdrc_BilinearShrink = 3, pdrc_BicubicNormal = 4, pdrc_BicubicShrink = 5, pdrc_Mitchell = 6, pdrc_CatmullRom = 7, pdrc_Sinc = 8
+#End If
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
@@ -216,20 +261,12 @@ Private Sub Form_Load()
     'Populate the dropdowns with all available resampling algorithms.
     cboResample.SetAutomaticRedraws False
     cboResample.Clear
-    cboResample.AddItem "automatic"
-    cboResample.AddItem "nearest-neighbor"
-    cboResample.AddItem "bilinear"
-    cboResample.AddItem "bilinear (optimized for downsizing)"
-    cboResample.AddItem "bicubic"
-    cboResample.AddItem "bicubic (optimized for downsizing)"
-    cboResample.AddItem "Mitchell-Netravali"
-    cboResample.AddItem "Catmull-Rom"
-    cboResample.AddItem "Sinc (Lanczos)"
     
-    'New experimental option!
-    'cboResample.AddItem "Experimental"
+    Dim i As PD_ResamplingFilter
+    For i = 0 To rf_Max - 1
+        cboResample.AddItem Resampling.GetResamplerNameUI(i)
+    Next i
     
-    'Resume original code...
     cboResample.ListIndex = 0
     cboResample.SetAutomaticRedraws True, True
     
@@ -257,6 +294,7 @@ Private Sub Form_Load()
     End Select
     
     'Add some tooltips
+    chkEstimate.AssignTooltip "Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality."
     cboResample.AssignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
     cmbFit.AssignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
@@ -350,7 +388,8 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         
     'Parse incoming parameters into type-appropriate vars
     Dim imgWidth As Double, imgHeight As Double, imgDPI As Double
-    Dim resampleMethod As PD_ResampleCurrent, fitMethod As PD_ResizeFit, newBackColor As Long
+    Dim resampleMethod As PD_ResamplingFilter, allowApproximation As Boolean
+    Dim fitMethod As PD_ResizeFit, newBackColor As Long
     Dim imgResizeUnit As PD_MeasurementUnit
     Dim thingToResize As PD_ActionTarget
     
@@ -366,50 +405,23 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         fitMethod = .GetLong("fit", ResizeFitStretch)
         newBackColor = .GetLong("fillcolor", vbWhite)
         thingToResize = .GetLong("target", pdat_Image)
-        
-        'In July 2018, the resample options for this tool were updated.  As such, we must manually map
-        ' old enums to new ones, as necessary.
-        If (.GetParamVersion() = 2#) Then
-            resampleMethod = .GetLong("algorithm", pdrc_Automatic)
-        
-        'Retrieve the legacy parameter, and auto-map it to the corresponding new one.
-        Else
-            Dim resampleMethodOld As PD_ResampleOld
-            resampleMethodOld = .GetLong("algorithm", ResizeNormal)
-            If (resampleMethodOld = ResizeNormal) Then
-                resampleMethod = pdrc_NearestNeighbor
-            ElseIf (resampleMethodOld = ResizeBilinear) Then
-                resampleMethod = pdrc_BilinearNormal
-            ElseIf (resampleMethodOld = ResizeBspline) Then
-                resampleMethod = pdrc_BicubicNormal
-            ElseIf (resampleMethodOld = ResizeBicubicMitchell) Then
-                resampleMethod = pdrc_Mitchell
-            ElseIf (resampleMethodOld = ResizeBicubicCatmull) Then
-                resampleMethod = pdrc_CatmullRom
-            ElseIf (resampleMethodOld = ResizeSincLanczos) Then
-                resampleMethod = pdrc_Sinc
-            Else
-                resampleMethod = pdrc_Automatic
-            End If
-        End If
-        
     End With
+    
+    'Use a separate function to retrieve resampling method and approximation permission
+    ' (legacy items may need to be dealt with)
+    resampleMethod = GetResampleMethod(cParams, allowApproximation)
     
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
-    Dim fitWidth As Long, fitHeight As Long
-    
     Dim srcWidth As Long, srcHeight As Long
-    Select Case thingToResize
     
+    Select Case thingToResize
         Case pdat_Image
             srcWidth = PDImages.GetActiveImage.Width
             srcHeight = PDImages.GetActiveImage.Height
-        
         Case pdat_SingleLayer
             srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
             srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
-        
     End Select
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
@@ -418,6 +430,9 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, srcWidth)
     imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, srcHeight)
     
+    'Finally, use the above values to determine a "fit" width/height (necessary if stretch-to-fit
+    ' is *not* enabled).
+    Dim fitWidth As Long, fitHeight As Long
     Select Case fitMethod
     
         'Stretch-to-fit.  Default behavior, and no size changes are required.
@@ -435,7 +450,8 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         
     End Select
     
-    'If the image contains an active selection, automatically deactivate it
+    'If the image contains an active selection, automatically deactivate it.
+    ' (In the future, perhaps we could resize it, depending on the selection type.)
     If PDImages.GetActiveImage.IsSelectionActive And (thingToResize = pdat_Image) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
@@ -449,26 +465,26 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     ' (In the future, it would be nice to develop a smarter heuristic for this step - but for now,
     '  use bicubic resampling, and auto-select the shrink-optimized variant based on the
     '  dimensions used for the resize.)
-    If (resampleMethod = pdrc_Automatic) Then
+    If (resampleMethod = rf_Automatic) Then
         If (fitWidth < srcWidth) Or (fitHeight < srcHeight) Then
-            resampleMethod = pdrc_BicubicShrink
-        Else
-            If ImageFormats.IsFreeImageEnabled() Then
-                resampleMethod = pdrc_Sinc
+            If allowApproximation Then
+                resampleMethod = rf_CubicBSpline
             Else
-                resampleMethod = pdrc_BicubicNormal
+                resampleMethod = rf_Mitchell
             End If
+        Else
+            resampleMethod = rf_Lanczos3
         End If
     End If
     
-    'Because we will likely use outside libraries for the resize (FreeImage, GDI+), we won't be able to track
-    ' detailed progress of the actions.  Instead, let the user know when a layer has been resized by using
-    ' the number of layers as our progress guide.
+    'If we use an outside library for the resize (e.g. FreeImage, GDI+), we won't receive progress reports
+    ' during the resize.  For full-image resizing this may not be a problem (as we can use layer count as
+    ' a surrogate), but for a single-layer resize, we don't have a good fallback.
     If (thingToResize = pdat_Image) Then
-        SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
+        ProgressBars.SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Message "Resizing image..."
     Else
-        SetProgBarMax 1
+        ProgressBars.SetProgBarMax 1
         Message "Resizing layer..."
     End If
         
@@ -481,25 +497,23 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Dim tmpLayerRef As pdLayer
     
     'If we are resizing the entire image, we must handle all layers in turn.  Otherwise, we can handle just
-    ' the active layer.
+    ' the active layer.  Set loop boundaries accordingly.
     Dim firstLayerIndex As Long, lastLayerIndex As Long
     
     Select Case thingToResize
-    
         Case pdat_Image
             firstLayerIndex = 0
             lastLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
-        
         Case pdat_SingleLayer
             firstLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
             lastLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
-    
     End Select
     
     Dim i As Long
     For i = firstLayerIndex To lastLayerIndex
-    
-        If (thingToResize = pdat_Image) Then SetProgBarVal i
+        
+        'When resizing the full image, report progress on a layer-by-layer basis
+        If (thingToResize = pdat_Image) Then ProgressBars.SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
@@ -513,11 +527,11 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         Select Case resampleMethod
             
             'For nearest-neighbor scaling, GDI can be used for great performance
-            Case pdrc_NearestNeighbor
+            Case rf_Box
             
                 'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
                 ' for a fast resize.)
-                If USE_GDIPLUS_RESIZE Then
+                If USE_GDIPLUS_RESIZE And allowApproximation Then
                     tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
                 
                 'For a slower, but more mathematically accurate approach, you could also use our internal scaler
@@ -526,60 +540,65 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 End If
                 
             'Bilinear resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
-            Case pdrc_BilinearNormal
-                If USE_GDIPLUS_RESIZE Then
+            Case rf_BilinearTriangle
+                If USE_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bilinear
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Triangle
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle
                 End If
+            
+            Case rf_Hermite
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite
+            
+            Case rf_Bell
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite
                 
-            Case pdrc_BilinearShrink
-                If USE_GDIPLUS_RESIZE Then
+            'Bicubic sampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library (currently disabled)
+            Case rf_CubicBSpline
+                If USE_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
-                Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Triangle
-                End If
-            
-            'Bicubic sampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
-            Case pdrc_BicubicNormal
-                If USE_GDIPLUS_RESIZE Then
-                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline
                 End If
             
-            Case pdrc_BicubicShrink
-                If USE_GDIPLUS_RESIZE Then
-                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+            Case rf_Lanczos3
+                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos3
                 End If
             
             'All subsequent methods use either our internal resampler, or the FreeImage library (when applicable)
-            Case pdrc_Mitchell
+            Case rf_Mitchell
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell
                 End If
             
-            Case pdrc_CatmullRom
+            Case rf_Cosine
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine
+            
+            Case rf_CatmullRom
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom
                 End If
             
-            Case pdrc_Sinc
-                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
-                Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos3
-                End If
+            Case rf_Quadratic
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic
+            
+            Case rf_QuadraticBSpline
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline
+                
+            Case rf_CubicConvolution
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution
+                
+            Case rf_Lanczos8
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos8
             
             'This failsafe should never be triggered
             Case Else
@@ -656,8 +675,9 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     'Move on to the next layer
     Next i
     
-    'We are finished with the temporary DIB, so release it
+    'We are finished with the temporary DIB, so release it, along with any other temporary buffers we allocated
     Set tmpDIB = Nothing
+    Resampling.FreeBuffers
     
     'Update the main image's size and DPI values
     If (thingToResize = pdat_Image) Then
@@ -670,7 +690,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Release the progress bar
-    SetProgBarVal 0
+    ProgressBars.SetProgBarVal 0
     ReleaseProgressBar
     
     Message "Finished."
@@ -683,18 +703,110 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdSerialize
     With cParams
     
-        'In July 2018, the parameters for this tool were modified
-        .SetParamVersion 2#
+        'In July 2021, the parameters for this tool were modified.  String values are now used
+        ' to define resampling algorithms, which should successfully future-proof this tool
+        ' (finally lol)
+        .SetParamVersion 3#
         .AddParam "width", ucResize.ResizeWidth
         .AddParam "height", ucResize.ResizeHeight
         .AddParam "unit", ucResize.UnitOfMeasurement
         .AddParam "ppi", ucResize.ResizeDPIAsPPI
-        .AddParam "algorithm", cboResample.ListIndex
+        .AddParam "resample", Resampling.GetResamplerName(cboResample.ListIndex)
+        .AddParam "approximations-ok", chkEstimate.Value
         .AddParam "fit", cmbFit.ListIndex
         .AddParam "fillcolor", csBackground.Color
         .AddParam "target", m_ResizeTarget
+        
     End With
     
     GetLocalParamString = cParams.GetParamString()
     
+End Function
+
+'This separate function is necessary for retrieving the preferred resampling method from
+' PD's XML-based serializer (which stores macro commands, among other details).  Old versions
+' of the serializer used 0-based integers to define resampling methods; we now use string IDs
+' as they're much easier to make backward- and forward-compatible against new features.
+Private Function GetResampleMethod(ByRef cParams As pdSerialize, ByRef allowApproximation As Boolean) As PD_ResamplingFilter
+
+    'Current parameter strings (v3) use string IDs
+    If (cParams.GetParamVersion() >= 3#) Then
+        GetResampleMethod = Resampling.GetResamplerID(cParams.GetString("resample", "auto", True))
+        allowApproximation = cParams.GetBool("approximations-ok", True, True)
+        
+    'Legacy implementations follow
+    Else
+    
+        'In July 2018, the resample options for this tool were updated to allow for downsample-optimized
+        ' filters (provided by GDI+).
+        If (cParams.GetParamVersion() = 2#) Then
+        
+            Dim rsMethodV2 As PD_ResampleOld_V2
+            rsMethodV2 = cParams.GetLong("algorithm", pdrc_Automatic)
+            
+            'Translate the old enum into a modern one
+            Select Case rsMethodV2
+                Case pdrc_Automatic
+                    GetResampleMethod = rf_Automatic
+                    allowApproximation = True
+                Case pdrc_NearestNeighbor
+                    GetResampleMethod = rf_Box
+                    allowApproximation = True
+                Case pdrc_BilinearNormal
+                    GetResampleMethod = rf_BilinearTriangle
+                    allowApproximation = False
+                Case pdrc_BilinearShrink
+                    GetResampleMethod = rf_BilinearTriangle
+                    allowApproximation = True
+                Case pdrc_BicubicNormal
+                    GetResampleMethod = rf_CubicBSpline
+                    allowApproximation = False
+                Case pdrc_BicubicShrink
+                    GetResampleMethod = rf_CubicBSpline
+                    allowApproximation = True
+                Case pdrc_Mitchell
+                    GetResampleMethod = rf_Mitchell
+                    allowApproximation = True
+                Case pdrc_CatmullRom
+                    GetResampleMethod = rf_CatmullRom
+                    allowApproximation = True
+                Case pdrc_Sinc
+                    GetResampleMethod = rf_Lanczos3
+                    allowApproximation = True
+            End Select
+            
+        'v1 parameters use a different enum
+        Else
+            
+            Dim rsMethodV1 As PD_ResampleOld_V1
+            rsMethodV1 = cParams.GetLong("algorithm", ResizeNormal)
+            
+            Select Case rsMethodV1
+                Case ResizeNormal
+                    GetResampleMethod = rf_Box
+                    allowApproximation = True
+                Case ResizeBilinear
+                    GetResampleMethod = rf_BilinearTriangle
+                    allowApproximation = False
+                Case ResizeBspline
+                    GetResampleMethod = rf_CubicBSpline
+                    allowApproximation = False
+                Case ResizeBicubicMitchell
+                    GetResampleMethod = rf_Mitchell
+                    allowApproximation = True
+                Case ResizeBicubicCatmull
+                    GetResampleMethod = rf_CatmullRom
+                    allowApproximation = True
+                Case ResizeSincLanczos
+                    GetResampleMethod = rf_Lanczos3
+                    allowApproximation = True
+                Case Else
+                    GetResampleMethod = rf_Automatic
+                    allowApproximation = True
+            End Select
+            
+        End If
+    
+    End If
+
 End Function
