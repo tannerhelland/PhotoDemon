@@ -52,9 +52,9 @@ Private Type Contributor
 End Type
     
 Private Type ContributorEntry
-    n As Long
+    nCount As Long
     p() As Contributor
-    wsum As Double
+    weightSum As Double
 End Type
 
 'Our current resampling approach uses an intermediate copy of the image; this allows us to handle x and y
@@ -226,7 +226,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     Dim wdth As Double, center As Double, weight As Double
     Dim intensityR As Double, intensityG As Double, intensityB As Double, intensityA As Double
-    Dim Left As Long, Right As Long, i As Long, j As Long, k As Long
+    Dim pxLeft As Long, pxRight As Long, i As Long, j As Long, k As Long
     Dim r As Long, g As Long, b As Long, a As Long
     
     'Now, calculate all input weights
@@ -240,16 +240,16 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         For i = 0 To dstWidth - 1
             
             'Initialize contributor weight table
-            contrib(i).n = 0
+            contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Int(2 * wdth + 1)) As Contributor
-            contrib(i).wsum = 0#
+            contrib(i).weightSum = 0#
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
-            Left = Fix(center - wdth)
-            Right = Fix(center + wdth)
+            pxLeft = Fix(center - wdth)
+            pxRight = Fix(center + wdth)
             
-            For j = Left To Right
+            For j = pxLeft To pxRight
                 
                 'Ignore OOB pixels; they will not contribute to weighting
                 If (j < 0) Then GoTo NextJXlt1
@@ -257,15 +257,16 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 weight = GetValue(rsFilter, (center - j - 0.5) * xScale)
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).n).pixel = j
-                    contrib(i).p(contrib(i).n).weight = weight
-                    contrib(i).wsum = contrib(i).wsum + weight
-                    contrib(i).n = contrib(i).n + 1
+                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).weight = weight
+                    contrib(i).weightSum = contrib(i).weightSum + weight
+                    contrib(i).nCount = contrib(i).nCount + 1
                 End If
 NextJXlt1:
             Next j
             
-            'Could exit here if user requests cancellation
+            'Normalize the weight sum before exiting
+            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
             
         Next i
     
@@ -276,16 +277,16 @@ NextJXlt1:
         For i = 0 To dstWidth - 1
             
             'Initialize contributor weight table
-            contrib(i).n = 0
+            contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Int(2 * GetDefaultRadius(rsFilter) + 1)) As Contributor
-            contrib(i).wsum = 0#
+            contrib(i).weightSum = 0#
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
-            Left = Fix(center - GetDefaultRadius(rsFilter))
-            Right = Fix(center + GetDefaultRadius(rsFilter) + 0.99999999999)
+            pxLeft = Fix(center - GetDefaultRadius(rsFilter))
+            pxRight = Int(center + GetDefaultRadius(rsFilter) + 0.99999999999)
 
-            For j = Left To Right
+            For j = pxLeft To pxRight
                 
                 'Ignore OOB pixels; they will not contribute to weighting
                 If (j < 0) Then GoTo NextJXgt1
@@ -293,15 +294,16 @@ NextJXlt1:
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).n).pixel = j
-                    contrib(i).p(contrib(i).n).weight = weight
-                    contrib(i).wsum = contrib(i).wsum + weight
-                    contrib(i).n = contrib(i).n + 1
+                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).weight = weight
+                    contrib(i).weightSum = contrib(i).weightSum + weight
+                    contrib(i).nCount = contrib(i).nCount + 1
                 End If
 NextJXgt1:
             Next j
             
-            'Could exit here if user requests cancellation
+            'Normalize the weight sum before exiting
+            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
             
         Next i
     
@@ -332,32 +334,30 @@ NextJXgt1:
                 intensityA = 0#
                 
                 'Generate weighted result for each color component
-                For j = 0 To contrib(i).n - 1
+                For j = 0 To contrib(i).nCount - 1
                     weight = contrib(i).p(j).weight
-                    If (weight <> 0#) Then
-                        idxPixel = contrib(i).p(j).pixel * 4
-                        intensityB = intensityB + (srcImageData(idxPixel) * weight)
-                        intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
-                        intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
-                        intensityA = intensityA + (srcImageData(idxPixel + 3) * weight)
-                    End If
+                    idxPixel = contrib(i).p(j).pixel * 4
+                    intensityB = intensityB + (srcImageData(idxPixel) * weight)
+                    intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
+                    intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
+                    intensityA = intensityA + (srcImageData(idxPixel + 3) * weight)
                 Next j
                 
-                'Weight and clamp final RGBA values
-                b = Int(intensityB / contrib(i).wsum + 0.5)
+                'Weight and clamp final RGBA values.  (Note that normally you'd *divide* by the
+                ' weighted sum here, but we already normalized that value in a previous step.)
+                b = Int(intensityB * contrib(i).weightSum + 0.5)
+                g = Int(intensityG * contrib(i).weightSum + 0.5)
+                r = Int(intensityR * contrib(i).weightSum + 0.5)
+                a = Int(intensityA * contrib(i).weightSum + 0.5)
+                
                 If (b > 255) Then b = 255
-                If (b < 0) Then b = 0
-                
-                g = Int(intensityG / contrib(i).wsum + 0.5)
                 If (g > 255) Then g = 255
-                If (g < 0) Then g = 0
-                
-                r = Int(intensityR / contrib(i).wsum + 0.5)
                 If (r > 255) Then r = 255
-                If (r < 0) Then r = 0
-                
-                a = Int(intensityA / contrib(i).wsum + 0.5)
                 If (a > 255) Then a = 255
+                
+                If (b < 0) Then b = 0
+                If (g < 0) Then g = 0
+                If (r < 0) Then r = 0
                 If (a < 0) Then a = 0
                 
                 'Assign new RGBA values to the working data array
@@ -403,17 +403,17 @@ NextJXgt1:
         'Iterate through each row in the image
         For i = 0 To dstHeight - 1
           
-            contrib(i).n = 0
+            contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Fix(2 * wdth + 1)) As Contributor
-            contrib(i).wsum = 0#
+            contrib(i).weightSum = 0#
           
             center = (i + 0.5) / yScale
-            Left = Fix(center - wdth)
-            Right = Fix(center + wdth)
+            pxLeft = Fix(center - wdth)
+            pxRight = Fix(center + wdth)
             
             'Precalculate all weights for this column (technically these are not left/right values
             ' but up/down ones, remember)
-            For j = Left To Right
+            For j = pxLeft To pxRight
 
                 'Skip OOB pixels
                 If (j < 0) Then GoTo NextJYlt1
@@ -421,14 +421,17 @@ NextJXgt1:
                 
                 weight = GetValue(rsFilter, (center - j - 0.5) * yScale)
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).n).pixel = j
-                    contrib(i).p(contrib(i).n).weight = weight
-                    contrib(i).wsum = contrib(i).wsum + weight
-                    contrib(i).n = contrib(i).n + 1
+                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).weight = weight
+                    contrib(i).weightSum = contrib(i).weightSum + weight
+                    contrib(i).nCount = contrib(i).nCount + 1
                 End If
 NextJYlt1:
             Next j
-        
+            
+            'Normalize the weight sum before exiting
+            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
+            
         'Next row...
         Next i
     
@@ -438,31 +441,32 @@ NextJYlt1:
         'The source height is smaller than the destination height
         For i = 0 To dstHeight - 1
             
-            contrib(i).n = 0
+            contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Int(2 * GetDefaultRadius(rsFilter) + 1)) As Contributor
-            contrib(i).wsum = 0#
+            contrib(i).weightSum = 0#
             
             center = ((i + 0.5) / yScale)
-            Left = Fix(center - GetDefaultRadius(rsFilter))
-            Right = Fix(center + GetDefaultRadius(rsFilter) + 0.9999999999)
+            pxLeft = Fix(center - GetDefaultRadius(rsFilter))
+            pxRight = Int(center + GetDefaultRadius(rsFilter) + 0.9999999999)
 
-            For j = Left To Right
+            For j = pxLeft To pxRight
                 
                 If (j < 0) Then GoTo NextJYgt1
                 If (j >= srcHeight) Then GoTo NextJYgt1
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).n).pixel = j
-                    contrib(i).p(contrib(i).n).weight = weight
-                    contrib(i).wsum = contrib(i).wsum + weight
-                    contrib(i).n = contrib(i).n + 1
+                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).weight = weight
+                    contrib(i).weightSum = contrib(i).weightSum + weight
+                    contrib(i).nCount = contrib(i).nCount + 1
                 End If
 NextJYgt1:
             Next j
             
-            'Could check abort status here...
-        
+            'Normalize the weight sum before exiting
+            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
+            
         'Next row...
         Next i
     
@@ -490,33 +494,30 @@ NextJYgt1:
                 intensityA = 0#
                 
                 'Generate weighted result for each color component
-                For j = 0 To contrib(i).n - 1
+                For j = 0 To contrib(i).nCount - 1
                     weight = contrib(i).p(j).weight
-                    If (weight <> 0#) Then
-                        idxPixel = (contrib(i).p(j).pixel * dstWidth * 4) + (k * 4)
-                        intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
-                        intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
-                        intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
-                        intensityA = intensityA + (m_tmpPixels(idxPixel + 3) * weight)
-                    End If
+                    idxPixel = (contrib(i).p(j).pixel * dstWidth * 4) + (k * 4)
+                    intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
+                    intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
+                    intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
+                    intensityA = intensityA + (m_tmpPixels(idxPixel + 3) * weight)
                 Next j
                 
                 'Weight and clamp final RGBA values
-                b = Int(intensityB / contrib(i).wsum + 0.5)
-                If (b > 255) Then b = 255
+                b = Int(intensityB * contrib(i).weightSum + 0.5)
+                g = Int(intensityG * contrib(i).weightSum + 0.5)
+                r = Int(intensityR * contrib(i).weightSum + 0.5)
+                a = Int(intensityA * contrib(i).weightSum + 0.5)
+                
                 If (b < 0) Then b = 0
-                
-                g = Int(intensityG / contrib(i).wsum + 0.5)
-                If (g > 255) Then g = 255
                 If (g < 0) Then g = 0
-                
-                r = Int(intensityR / contrib(i).wsum + 0.5)
-                If (r > 255) Then r = 255
                 If (r < 0) Then r = 0
-                
-                a = Int(intensityA / contrib(i).wsum + 0.5)
-                If (a > 255) Then a = 255
                 If (a < 0) Then a = 0
+                
+                If (b > 255) Then b = 255
+                If (g > 255) Then g = 255
+                If (r > 255) Then r = 255
+                If (a > 255) Then a = 255
                 
                 'Assign new RGBA values to the working data array
                 idxPixel = (k * 4) + (i * dstWidth * 4)
@@ -631,7 +632,7 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
                 GetValue = (0.5 * temp * x - temp + 0.666666666666667)
             ElseIf (x < 2#) Then
                 x = 2# - x
-                GetValue = (x * x * x) / 6#
+                GetValue = x * x * x * 0.166666666666667
             Else
                 GetValue = 0#
             End If
@@ -655,7 +656,7 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
                 GetValue = (x / 6)
             ElseIf (x < 2#) Then
                 x = (((-MC - 6 * MC) * (x * temp)) + ((6 * MC + 30 * MC) * temp) + ((-12 * MC - 48 * MC) * x) + (8 * MC + 24 * MC))
-                GetValue = (x / 6)
+                GetValue = x * 0.166666666666667
             Else
                 GetValue = 0#
             End If
@@ -671,9 +672,9 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
             If (x < 0#) Then x = -x
             temp = x * x
             If (x <= 1#) Then
-                GetValue = (1.5 * temp * x - 2.5 * temp + 1)
+                GetValue = (1.5 * temp * x - 2.5 * temp + 1#)
             ElseIf (x <= 2#) Then
-                GetValue = (-0.5 * temp * x + 2.5 * temp - 4 * x + 2)
+                GetValue = (-0.5 * temp * x + 2.5 * temp - 4 * x + 2#)
             Else
                 GetValue = 0#
             End If
@@ -681,7 +682,7 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
         Case rf_Quadratic
             If (x < 0#) Then x = -x
             If (x <= 0.5) Then
-                GetValue = (-2 * x * x + 1)
+                GetValue = (-2# * x * x + 1#)
             ElseIf (x <= 1.5) Then
                 GetValue = (x * x - 2.5 * x + 1.5)
             Else
