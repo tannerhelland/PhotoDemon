@@ -123,6 +123,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Internal flag to use/not use GDI+ resize functions.  GDI+ is much faster than our internal PD resampler.
+' This should always be TRUE in production code.
+Private Const USE_GDIPLUS_RESIZE As Boolean = False
+
+'Internal flag to use/not use the 3rd-party FreeImage library's resize functions (if available).
+' FreeImage's functions are faster but lower-quality than our internal PD resampler.
+' If FreeImage is *not* available, this value is ignored.
+Private Const USE_FREEIMAGE_RESIZE As Boolean = False
+
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
 Private m_ResizeTarget As PD_ActionTarget
@@ -213,16 +222,12 @@ Private Sub Form_Load()
     cboResample.AddItem "bilinear (optimized for downsizing)"
     cboResample.AddItem "bicubic"
     cboResample.AddItem "bicubic (optimized for downsizing)"
-    
-    'Some resample algorithms currently lean on the FreeImage library
-    If ImageFormats.IsFreeImageEnabled() Then
-        cboResample.AddItem "Mitchell-Netravali"
-        cboResample.AddItem "Catmull-Rom"
-        cboResample.AddItem "Sinc (Lanczos)"
-    End If
+    cboResample.AddItem "Mitchell-Netravali"
+    cboResample.AddItem "Catmull-Rom"
+    cboResample.AddItem "Sinc (Lanczos)"
     
     'New experimental option!
-    cboResample.AddItem "Experimental"
+    'cboResample.AddItem "Experimental"
     
     'Resume original code...
     cboResample.ListIndex = 0
@@ -317,6 +322,8 @@ End Sub
 'Resize an image using our own internal algorithms.  Slower, but better quality.
 Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter) As Boolean
     
+    PDDebug.LogAction "Using internal resampler for this operation."
+    
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Unpremultiply alpha prior to resampling
@@ -325,7 +332,7 @@ Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDI
     'Resize the destination DIB in preparation for the resize
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     If (dstDIB.GetDIBWidth <> dstWidth) Or (dstDIB.GetDIBHeight <> dstHeight) Then
-        dstDIB.CreateBlank dstWidth, dstHeight, srcDIB.GetDIBColorDepth
+        dstDIB.CreateBlank dstWidth, dstHeight, 32, 0, 0
     Else
         dstDIB.ResetDIB 0
     End If
@@ -443,7 +450,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     '  use bicubic resampling, and auto-select the shrink-optimized variant based on the
     '  dimensions used for the resize.)
     If (resampleMethod = pdrc_Automatic) Then
-        If (fitWidth < srcWidth) Then
+        If (fitWidth < srcWidth) Or (fitHeight < srcHeight) Then
             resampleMethod = pdrc_BicubicShrink
         Else
             If ImageFormats.IsFreeImageEnabled() Then
@@ -503,70 +510,84 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
         
-        'Nearest neighbor...
-        If (resampleMethod = pdrc_NearestNeighbor) Then
+        Select Case resampleMethod
             
-            'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
-            ' for a fast resize.)
-            tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
+            'For nearest-neighbor scaling, GDI can be used for great performance
+            Case pdrc_NearestNeighbor
             
-        'Bilinear sampling
-        ElseIf (resampleMethod = pdrc_BilinearNormal) Then
-            If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bilinear
+                'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
+                ' for a fast resize.)
+                If USE_GDIPLUS_RESIZE Then
+                    tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
+                
+                'For a slower, but more mathematically accurate approach, you could also use our internal scaler
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box
+                End If
+                
+            'Bilinear resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
+            Case pdrc_BilinearNormal
+                If USE_GDIPLUS_RESIZE Then
+                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bilinear
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Triangle
+                End If
+                
+            Case pdrc_BilinearShrink
+                If USE_GDIPLUS_RESIZE Then
+                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Triangle
+                End If
             
-        ElseIf (resampleMethod = pdrc_BilinearShrink) Then
-            If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
+            'Bicubic sampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
+            Case pdrc_BicubicNormal
+                If USE_GDIPLUS_RESIZE Then
+                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline
+                End If
             
-            'Note that FreeImage provides a bilinear filter, which we do not use at present:
-            'If ImageFormats.IsFreeImageEnabled() Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BILINEAR
+            Case pdrc_BicubicShrink
+                If USE_GDIPLUS_RESIZE Then
+                    If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline
+                End If
             
-        'Bicubic sampling
-        ElseIf (resampleMethod = pdrc_BicubicNormal) Then
-            If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
+            'All subsequent methods use either our internal resampler, or the FreeImage library (when applicable)
+            Case pdrc_Mitchell
+                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell
+                End If
             
-        ElseIf (resampleMethod = pdrc_BicubicShrink) Then
-            If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+            Case pdrc_CatmullRom
+                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom
+                End If
             
-            'Note that FreeImage provides a bspline bicubic filter, which we do not use at present:
-            'If ImageFormats.IsFreeImageEnabled Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
-            
-        'All subsequent methods require (and assume presence of) the FreeImage plugin
-        'TODO: maybe they won't forever!
-        ElseIf (ImageFormats.IsFreeImageEnabled And (resampleMethod < pdrc_Experimental)) Then
-                    
-            If (resampleMethod = pdrc_Mitchell) Then
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
-            ElseIf (resampleMethod = pdrc_CatmullRom) Then
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
-            ElseIf (resampleMethod = pdrc_Sinc) Then
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
+            Case pdrc_Sinc
+                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
+                Else
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos3
+                End If
             
             'This failsafe should never be triggered
-            Else
+            Case Else
+                PDDebug.LogAction "WARNING: FormResize.ResizeImage encountered an unknown resize filter: " & resampleMethod
                 If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                 GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
-            End If
             
-        'Experimental internal methods!
-        ElseIf (resampleMethod = pdrc_Experimental) Then
-            
-            Debug.Print "Attempting internal resize..."
-            PDDebug.LogAction "INTERNAL RESIZE ACTIVE WAAAAHHHHOOOOOOOOOO"
-            
-            'Attempt new experimental methods here
-            InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos8
-        
-        'This fallback should never actually be triggered; it is provided as an emergency "just in case" failsafe
-        Else
-        
-            If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_Bicubic
-        
-        End If
+        End Select
         
         'tmpDIB now holds a copy of the resized image.
         

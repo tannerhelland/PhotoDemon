@@ -61,6 +61,10 @@ End Type
 Private m_tmpPixels() As Byte
 Private m_tmpPixelSize As Long
 
+Public Function GetNameOfResampler(ByVal rsID As PD_ResamplingFilter) As String
+
+End Function
+
 'Resample an image using the supplied algorith.  A few notes...
 ' 1) Resampling requires an intermediary image copy to store a copy of resampled data.  This allows you to resize in
 '    two dimensions simultaneously (actually this will take two passes, but that's invisible to the caller).
