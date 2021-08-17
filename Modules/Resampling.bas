@@ -114,13 +114,13 @@ Public Function GetResamplerNameUI(ByVal rsID As PD_ResamplingFilter) As String
         Case rf_BilinearTriangle
             GetResamplerNameUI = g_Language.TranslateMessage("bilinear")
         Case rf_Hermite
-            GetResamplerNameUI = "hermite"
+            GetResamplerNameUI = "Hermite"
         Case rf_Bell
             GetResamplerNameUI = g_Language.TranslateMessage("bell")
         Case rf_CubicBSpline
             GetResamplerNameUI = g_Language.TranslateMessage("bicubic")
         Case rf_Lanczos3
-            GetResamplerNameUI = "lanczos3"
+            GetResamplerNameUI = "Lanczos-3"
         Case rf_Mitchell
             GetResamplerNameUI = "Mitchell-Netravali"
         Case rf_Cosine
@@ -134,7 +134,7 @@ Public Function GetResamplerNameUI(ByVal rsID As PD_ResamplingFilter) As String
         Case rf_CubicConvolution
             GetResamplerNameUI = g_Language.TranslateMessage("cubic convolution")
         Case rf_Lanczos8
-            GetResamplerNameUI = "lanczos8"
+            GetResamplerNameUI = "Lanczos-8"
     End Select
 
 End Function
@@ -201,9 +201,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     'Inputs look good.  Prepare intermediary data structs.  Custom types are used to improve memory locality.
     Dim srcWidth As Long: srcWidth = srcDIB.GetDIBWidth
     Dim srcHeight As Long: srcHeight = srcDIB.GetDIBHeight
-    Dim totalSize As Long: totalSize = srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
     
-    'Allocate the intermediary "working" copy of the image width dimensions [dstWidth, srcHeight]
+    'Allocate the intermediary "working" copy of the image width dimensions [dstWidth, srcHeight].
+    ' Note that a 32-bpp BGRA structure is *always* assumed.  (It would be trivial to extend this to
+    ' floating-point or higher bit-depths, but at present, 32-bpp works well!)
     If (dstWidth * srcHeight * 4 > m_tmpPixelSize) Then
         m_tmpPixelSize = dstWidth * srcHeight * 4
         ReDim m_tmpPixels(0 To m_tmpPixelSize - 1) As Byte
@@ -212,6 +213,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     End If
     
     'Calculate x/y scales; this provides a simple mechanism for checking up- vs downsampling
+    ' in either direction.
     Dim xScale As Double, yScale As Double
     xScale = dstWidth / srcWidth
     yScale = dstHeight / srcHeight
@@ -268,8 +270,7 @@ NextJXlt1:
         Next i
     
     'Horizontal upsampling
-    'TODO: special case for unchanged width?
-    Else
+    ElseIf (xScale > 1#) Then
         
         'The source width is smaller than the destination width
         For i = 0 To dstWidth - 1
@@ -304,7 +305,8 @@ NextJXgt1:
             
         Next i
     
-    '/End up- vs downsampling
+    '/End up- vs downsampling.  Note that the special case of xScale = 1.0 (e.g. horizontal width
+    ' isn't changing) is not handled here; we'll handle it momentarily as a special case.
     End If
     
     'With weights successfully calculated, we can now filter horizontally from the input image
@@ -312,70 +314,82 @@ NextJXgt1:
     Dim srcImageData() As Byte, srcSA As SafeArray1D
     Dim idxPixel As Long
     
-    'Each row (source image height)...
-    For k = 0 To srcHeight - 1
+    'If the image is changing size, perform resampling now
+    If (xScale <> 1#) Then
         
-        'Wrap a VB array around the image at this line
-        srcDIB.WrapArrayAroundScanline srcImageData, srcSA, k
-        
-        'Each column (destination image width)...
-        For i = 0 To dstWidth - 1
-
-            intensityB = 0#
-            intensityG = 0#
-            intensityR = 0#
-            intensityA = 0#
+        'Each row (source image height)...
+        For k = 0 To srcHeight - 1
             
-            'Generate weighted result for each color component
-            For j = 0 To contrib(i).n - 1
-                weight = contrib(i).p(j).weight
-                If (weight <> 0#) Then
-                    idxPixel = contrib(i).p(j).pixel * 4
-                    intensityB = intensityB + (srcImageData(idxPixel) * weight)
-                    intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
-                    intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
-                    intensityA = intensityA + (srcImageData(idxPixel + 3) * weight)
-                End If
-            Next j
+            'Wrap a VB array around the image at this line
+            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, k
             
-            'Weight and clamp final RGBA values
-            b = Int(intensityB / contrib(i).wsum + 0.5)
-            If (b > 255) Then b = 255
-            If (b < 0) Then b = 0
-            
-            g = Int(intensityG / contrib(i).wsum + 0.5)
-            If (g > 255) Then g = 255
-            If (g < 0) Then g = 0
-            
-            r = Int(intensityR / contrib(i).wsum + 0.5)
-            If (r > 255) Then r = 255
-            If (r < 0) Then r = 0
-            
-            a = Int(intensityA / contrib(i).wsum + 0.5)
-            If (a > 255) Then a = 255
-            If (a < 0) Then a = 0
-            
-            'Assign new RGBA values to the working data array
-            idxPixel = k * dstWidth * 4 + i * 4
-            m_tmpPixels(idxPixel) = b
-            m_tmpPixels(idxPixel + 1) = g
-            m_tmpPixels(idxPixel + 2) = r
-            m_tmpPixels(idxPixel + 3) = a
-            
-        'Next pixel in row...
-        Next i
-        
-        'Could check abort status here?
-        
-    'Next row in image...
-    Next k
+            'Each column (destination image width)...
+            For i = 0 To dstWidth - 1
     
-    'Free any unsafe references
-    srcDIB.UnwrapArrayFromDIB srcImageData
+                intensityB = 0#
+                intensityG = 0#
+                intensityR = 0#
+                intensityA = 0#
+                
+                'Generate weighted result for each color component
+                For j = 0 To contrib(i).n - 1
+                    weight = contrib(i).p(j).weight
+                    If (weight <> 0#) Then
+                        idxPixel = contrib(i).p(j).pixel * 4
+                        intensityB = intensityB + (srcImageData(idxPixel) * weight)
+                        intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
+                        intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
+                        intensityA = intensityA + (srcImageData(idxPixel + 3) * weight)
+                    End If
+                Next j
+                
+                'Weight and clamp final RGBA values
+                b = Int(intensityB / contrib(i).wsum + 0.5)
+                If (b > 255) Then b = 255
+                If (b < 0) Then b = 0
+                
+                g = Int(intensityG / contrib(i).wsum + 0.5)
+                If (g > 255) Then g = 255
+                If (g < 0) Then g = 0
+                
+                r = Int(intensityR / contrib(i).wsum + 0.5)
+                If (r > 255) Then r = 255
+                If (r < 0) Then r = 0
+                
+                a = Int(intensityA / contrib(i).wsum + 0.5)
+                If (a > 255) Then a = 255
+                If (a < 0) Then a = 0
+                
+                'Assign new RGBA values to the working data array
+                idxPixel = k * dstWidth * 4 + i * 4
+                m_tmpPixels(idxPixel) = b
+                m_tmpPixels(idxPixel + 1) = g
+                m_tmpPixels(idxPixel + 2) = r
+                m_tmpPixels(idxPixel + 3) = a
+                
+            'Next pixel in row...
+            Next i
+            
+            'Could check abort status here?
+            
+        'Next row in image...
+        Next k
     
+        'Free any unsafe references
+        srcDIB.UnwrapArrayFromDIB srcImageData
+    
+    'If the image's horizontal size *isn't* changing, just mirror the data into the temporary array.
+    ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
+    '  destination in the next step - but VB makes this harder than it needs to be so I haven't attempted
+    '  it yet...)
+    Else
+        CopyMemoryStrict VarPtr(m_tmpPixels(0)), srcDIB.GetDIBPointer, srcHeight * dstWidth * 4
+    End If
+        
     'Horizontal sampling is now complete.
     
-    'Next, we need to perform nearly identical sampling from the "working" copy to the destination image
+    'Next, we need to perform nearly identical sampling from the "working" copy to the destination image,
+    ' while resampling in the y-direction.
     
     'Reset contributor weight table (one entry per row for vertical resampling)
     ReDim contrib(0 To dstHeight - 1) As ContributorEntry
@@ -419,8 +433,7 @@ NextJYlt1:
         Next i
     
     'Vertical upsampling
-    'TODO: special case for unchanged height?
-    Else
+    ElseIf (yScale > 1#) Then
         
         'The source height is smaller than the destination height
         For i = 0 To dstHeight - 1
@@ -452,75 +465,85 @@ NextJYgt1:
         
         'Next row...
         Next i
-        
-    '/End up- vs downsampling
+    
+    '/End up- vs downsampling.  Note that the special case of yScale = 1.0 (e.g. vertical height
+    ' isn't changing) is not handled here; we'll handle it momentarily as a special case.
     End If
     
     'With weights successfully calculated, we can now filter vertically from the "working copy"
     ' to the destination image.
-    
-    'Because we need to access pixels across rows, it's easiest to just wrap a single array around
-    'the entire image.
-    dstDIB.WrapArrayAroundDIB_1D srcImageData, srcSA
-    
-    'Each column (new image width)...
-    For k = 0 To dstWidth - 1
-
-        'Each row (destination image height)...
-        For i = 0 To dstHeight - 1
-            
-            intensityB = 0#
-            intensityG = 0#
-            intensityR = 0#
-            intensityA = 0#
-            
-            'Generate weighted result for each color component
-            For j = 0 To contrib(i).n - 1
-                weight = contrib(i).p(j).weight
-                If (weight <> 0#) Then
-                    idxPixel = (contrib(i).p(j).pixel * dstWidth * 4) + (k * 4)
-                    intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
-                    intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
-                    intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
-                    intensityA = intensityA + (m_tmpPixels(idxPixel + 3) * weight)
-                End If
-            Next j
-            
-            'Weight and clamp final RGBA values
-            b = Int(intensityB / contrib(i).wsum + 0.5)
-            If (b > 255) Then b = 255
-            If (b < 0) Then b = 0
-            
-            g = Int(intensityG / contrib(i).wsum + 0.5)
-            If (g > 255) Then g = 255
-            If (g < 0) Then g = 0
-            
-            r = Int(intensityR / contrib(i).wsum + 0.5)
-            If (r > 255) Then r = 255
-            If (r < 0) Then r = 0
-            
-            a = Int(intensityA / contrib(i).wsum + 0.5)
-            If (a > 255) Then a = 255
-            If (a < 0) Then a = 0
-            
-            'Assign new RGBA values to the working data array
-            idxPixel = (k * 4) + (i * dstWidth * 4)
-            srcImageData(idxPixel) = b
-            srcImageData(idxPixel + 1) = g
-            srcImageData(idxPixel + 2) = r
-            srcImageData(idxPixel + 3) = a
-            
-        'Next row...
-        Next i
+    If (yScale <> 1#) Then
         
-        'Could check abort status here?
+        'Because we need to access pixels across rows, it's easiest to just wrap a single array around
+        'the entire image.
+        dstDIB.WrapArrayAroundDIB_1D srcImageData, srcSA
         
-    'Next column...
-    Next k
+        'Each column (new image width)...
+        For k = 0 To dstWidth - 1
     
-    'Release all unsafe references
-    dstDIB.UnwrapArrayFromDIB srcImageData
-    
+            'Each row (destination image height)...
+            For i = 0 To dstHeight - 1
+                
+                intensityB = 0#
+                intensityG = 0#
+                intensityR = 0#
+                intensityA = 0#
+                
+                'Generate weighted result for each color component
+                For j = 0 To contrib(i).n - 1
+                    weight = contrib(i).p(j).weight
+                    If (weight <> 0#) Then
+                        idxPixel = (contrib(i).p(j).pixel * dstWidth * 4) + (k * 4)
+                        intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
+                        intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
+                        intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
+                        intensityA = intensityA + (m_tmpPixels(idxPixel + 3) * weight)
+                    End If
+                Next j
+                
+                'Weight and clamp final RGBA values
+                b = Int(intensityB / contrib(i).wsum + 0.5)
+                If (b > 255) Then b = 255
+                If (b < 0) Then b = 0
+                
+                g = Int(intensityG / contrib(i).wsum + 0.5)
+                If (g > 255) Then g = 255
+                If (g < 0) Then g = 0
+                
+                r = Int(intensityR / contrib(i).wsum + 0.5)
+                If (r > 255) Then r = 255
+                If (r < 0) Then r = 0
+                
+                a = Int(intensityA / contrib(i).wsum + 0.5)
+                If (a > 255) Then a = 255
+                If (a < 0) Then a = 0
+                
+                'Assign new RGBA values to the working data array
+                idxPixel = (k * 4) + (i * dstWidth * 4)
+                srcImageData(idxPixel) = b
+                srcImageData(idxPixel + 1) = g
+                srcImageData(idxPixel + 2) = r
+                srcImageData(idxPixel + 3) = a
+                
+            'Next row...
+            Next i
+            
+            'Could check abort status here?
+            
+        'Next column...
+        Next k
+        
+        'Release all unsafe references
+        dstDIB.UnwrapArrayFromDIB srcImageData
+        
+    'If the image's vertical size *isn't* changing, just mirror the intermediate data into dstImage.
+    ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
+    '  destination earlier - but VB makes this harder than it needs to be so I haven't attempted
+    '  it yet...)
+    Else
+        CopyMemoryStrict dstDIB.GetDIBPointer, VarPtr(m_tmpPixels(0)), dstHeight * dstWidth * 4
+    End If
+        
     'Resampling complete!
     ResampleImage = True
     

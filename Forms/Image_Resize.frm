@@ -115,7 +115,7 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
 'Copyright 2001-2021 by Tanner Helland
-'Created: 6/12/01
+'Created: 12/December/01
 'Last updated: 16/August/21
 'Last update: attempt a new custom-built resize engine, specific to PhotoDemon
 '
@@ -134,15 +134,15 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Internal flag to use/not use GDI+ resize functions.  GDI+ is much faster than our internal PD resampler,
-' but it's algorithms are nonstandard and have some weird quirks vs theoretically "perfect" implementations
+' but its algorithms are nonstandard and have some weird quirks vs theoretically "perfect" implementations
 ' (see https://photosauce.net/blog/post/image-scaling-with-gdi-part-4-examining-the-interpolationmode-values).
-' This value should be TRUE in production code.
+' This value should be set to TRUE in production code.
 Private Const USE_GDIPLUS_RESIZE As Boolean = True
 
 'Internal flag to use/not use the 3rd-party FreeImage library's resize functions (if available).
 ' FreeImage's functions are faster than our internal PD resampler, but they require a lot of extra memory due
 ' to FreeImage needing its own container for pixel data.  (If FreeImage is *not* available, this value is ignored.)
-' This value should be TRUE in production code.
+' This value should be set to TRUE in production code.
 Private Const USE_FREEIMAGE_RESIZE As Boolean = False
 
 'PhotoDemon's resampling options have expanded over the years.  Unfortunately, old versions of the app
