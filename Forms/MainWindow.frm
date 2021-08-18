@@ -2078,6 +2078,7 @@ Private Sub MnuTest_Click()
     lastTime = startTime
     
     'Test code goes here
+    If (PDImages.GetNumOpenImages > 0) Then ExifTool.ShowMetadataDialog PDImages.GetActiveImage()
     
     'Report timing results:
     PDDebug.LogAction "Test function time: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -3734,7 +3735,18 @@ End Sub
 
 'All metadata sub-menu options are handled here
 Private Sub MnuMetadata_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuMetadata(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "image_editmetadata"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "image_removemetadata"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "image_countcolors"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "image_maplocation"
+    End Select
 End Sub
 
 Private Sub MnuMonochrome_Click(Index As Integer)

@@ -421,6 +421,7 @@ Form=Forms\Image_CanvasSize.frm
 Form=Forms\Image_Compare.frm
 Form=Forms\Image_ContentAwareResize.frm
 Form=Forms\Image_Metadata.frm
+Form=Forms\Image_MetadataBasic.frm
 Form=Forms\Image_Resize.frm
 Form=Forms\Image_Rotate.frm
 Form=Forms\Image_Straighten.frm

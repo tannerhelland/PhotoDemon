@@ -2180,7 +2180,8 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Edit metadata", True) Then
         
         'Note that there is no "Else" block here; the "Else" block does nothing but notify the processor to create an Undo entry
-        If raiseDialog Then ExifTool.ShowMetadataDialog PDImages.GetActiveImage()
+        'If raiseDialog Then ExifTool.ShowMetadataDialog PDImages.GetActiveImage()
+        If raiseDialog Then ShowPDDialog vbModal, FormMetadataBasic
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Remove all metadata", True) Then
