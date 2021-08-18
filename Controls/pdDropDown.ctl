@@ -637,14 +637,17 @@ Private Sub RaiseListBox()
     End If
     
     'Convert the preceding and trailing list item counts into pixel measurements, and add them to our target rect.
-    Dim sizeChange As Single, i As Long
+    Dim sizeChange As Single, i As Long, separatorsUsed As Boolean
     If (amtPreceding > 0) Then
         sizeChange = amtPreceding * listSupport.DefaultItemHeight
         
         'If separators are active, add any separator sizes to our total
         If listSupport.GetInternalSizeMode = PDLH_Separators Then
             For i = (Me.ListIndex - amtPreceding) To (Me.ListIndex - 1)
-                If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
+                If listSupport.DoesItemHaveSeparator(i) Then
+                    sizeChange = sizeChange + listSupport.GetSeparatorHeight
+                    separatorsUsed = True
+                End If
             Next i
         End If
         
@@ -657,12 +660,18 @@ Private Sub RaiseListBox()
         
         If listSupport.GetInternalSizeMode = PDLH_Separators Then
             For i = Me.ListIndex To (Me.ListIndex + amtTrailing)
-                If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
+                If listSupport.DoesItemHaveSeparator(i) Then
+                    sizeChange = sizeChange + listSupport.GetSeparatorHeight
+                    separatorsUsed = True
+                End If
             Next i
         End If
         
         popupRect.Height = popupRect.Height + sizeChange
     End If
+    
+    'If separators are used, bump up the display size by 1 to ensure the popup is large enough to avoid scrolling
+    If separatorsUsed Then popupRect.Height = popupRect.Height + 1
     
     'We now want to make sure the popup box doesn't lie off-screen.  Check each dimension in turn, and note that changing
     ' the vertical position of the listbox also changes the pixel-based position of the active .ListIndex within the box.
