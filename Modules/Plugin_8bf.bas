@@ -292,7 +292,7 @@ Public Function GetEnumerationResults(ByRef catNames As pdStringStack, ByRef plg
 
 End Function
 
-Public Function GetInitialEffectTimestamp()
+Public Function GetInitialEffectTimestamp() As Currency
     GetInitialEffectTimestamp = m_FirstTimeStamp
 End Function
 

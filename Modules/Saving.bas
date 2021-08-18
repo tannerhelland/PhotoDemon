@@ -258,7 +258,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) And (Not (saveFormat = PDIF_PDI)) Then
+        If (PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) And (saveFormat <> PDIF_PDI)) Then
             
             'Sometimes, PD may process images faster than ExifTool can parse the source file's metadata.
             ' Check for this, and pause until metadata processing catches up.
@@ -330,6 +330,9 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
     If ImageFormats.IsExportDialogSupported(outputPDIF) Then
         
         Select Case outputPDIF
+            
+            Case PDIF_AVIF
+                GetExportParamsFromDialog = (Dialogs.PromptAVIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_BMP
                 GetExportParamsFromDialog = (Dialogs.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
@@ -410,6 +413,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     cParams.SetParamString saveParameters
     
     Select Case outputPDIF
+        
+        Case PDIF_AVIF
+            ExportToSpecificFormat = ImageExporter.ExportAVIF(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_BMP
             ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
@@ -770,7 +776,7 @@ End Function
 'Quickly save a DIB to file in PNG format.  At present, this is only used when forwarding image data
 ' to the Windows Photo Printer object.  (All internal quick-saves use PD-specific formats, which are
 ' much faster to read/write.)
-Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As pdDIB, Optional ByVal forceTo24bppRGB As Boolean = False) As Boolean
+Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As pdDIB, Optional ByVal forceTo24bppRGB As Boolean = False, Optional ByVal dontCompress As Boolean = False) As Boolean
 
     'Perform a few failsafe checks
     If (srcDIB Is Nothing) Then
@@ -794,13 +800,16 @@ Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As p
         alphaWasChanged = True
     End If
     
+    'Sometimes compression isn't necessary, which makes this step extremely fast
+    Dim compressLevel As Long
+    If dontCompress Then compressLevel = 0 Else compressLevel = 3
+    
+    Dim colorType As PD_PNGColorType
+    If forceTo24bppRGB Then colorType = png_Truecolor Else colorType = png_TruecolorAlpha
+    
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
-    If forceTo24bppRGB Then
-        QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, png_Truecolor, 8, 3) < png_Failure)
-    Else
-        QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, png_TruecolorAlpha, 8, 3) < png_Failure)
-    End If
+    QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, colorType, 8, compressLevel) < png_Failure)
     
     If (Not QuickSaveDIBAsPNG) Then PDDebug.LogAction "Saving.QuickSaveDIBAsPNG failed (pdPNG couldn't write the file?)."
     

@@ -1095,10 +1095,7 @@ Private Function ExportStep4b_WriteChannel(ByRef cStream As pdStream, ByRef srcD
     'Next is the compressed and uncompressed size of this channel.  We need to produce an uncompressed
     ' planar stream first (PD always uses interleaved RGBA data internally), then compress it (obviously)
     ' to obtain these values.
-    If (Not VBHacks.IsArrayInitialized(srcChannelBytes)) Then
-        ReDim srcChannelBytes(0) As Byte
-        ReDim dstChannelBytes(0) As Byte
-    End If
+    If (Not VBHacks.IsArrayInitialized(srcChannelBytes)) Then ReDim srcChannelBytes(0) As Byte
     
     'Only 32-bpp RGBA data is handled at present
     Dim uncompressedSize As Long

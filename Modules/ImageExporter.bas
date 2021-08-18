@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2021 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 25/January/21
-'Last update: add support for PSP (Paintshop Pro) export
+'Last updated: 03/August/21
+'Last update: finalize support for AVIF export
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.  You will not generally
 ' want to interface with this module directly; instead, rely on the high-level functions in the "Saving" module.
@@ -83,6 +83,16 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
         ' for this image format.
         Select Case dstFormat
             
+            'To be completely honest, I'm not sure what export depths should be used with our current strategy of
+            ' PD > PNG > AVIF.  I currently limit output to 24- or 32-bit, but this likely needs to be revisited
+            ' pending testing.
+            Case PDIF_AVIF
+                If (currentAlphaStatus = PDAS_NoAlpha) Then
+                    AutoDetectOutputColorDepth = 24
+                Else
+                    AutoDetectOutputColorDepth = 32
+                End If
+            
             'BMP files support output depths of 1, 4, 8, 24, and 32.  (16 is also supported, but it will never be auto-recommended.)
             ' Any alpha whatsoever results in a recommendation for 32-bpp, since paletted BMP files are unreliable with alpha data.
             Case PDIF_BMP
@@ -95,7 +105,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                         If isMonochrome Then
                             AutoDetectOutputColorDepth = 1
                         Else
-                            If uniqueColorCount <= 16 Then
+                            If (uniqueColorCount <= 16) Then
                                 AutoDetectOutputColorDepth = 4
                             Else
                                 AutoDetectOutputColorDepth = 8
@@ -533,6 +543,84 @@ End Sub
 ' 5) Because these export functions interface with multiple parts of the program (including the batch processor), it is
 '     very important that they maintain identical function signatures.  Any format-specific functionality needs to be
 '     handled via the aforementioned XML parameter strings, and not via extra params.
+
+Public Function ExportAVIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportAVIFError
+    
+    ExportAVIF = False
+    Dim sFileType As String: sFileType = "AVIF"
+    
+    'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy
+    If OS.OSSupports64bitExe And (Not Plugin_AVIF.IsAVIFImportAvailable()) Then
+        
+        If (Not Plugin_AVIF.PromptForLibraryDownload()) Then GoTo ExportAVIFError
+        
+        'Downloading the AVIF plugins will raise new messages in the status bar; restore the original
+        ' "saving %1 image" text
+        Message "Saving %1 file...", sFileType
+        
+    End If
+    
+    'Failsafe check before proceeding
+    If (Not Plugin_AVIF.IsAVIFImportAvailable()) Then GoTo ExportAVIFError
+    
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+    'Parse all relevant AVIF parameters.  (See the AVIF export dialog for details on how these are generated.)
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
+    
+    'Retrieve target AVIF quality
+    Dim avifQuality As Long
+    avifQuality = cParams.GetLong("avif-quality", 0)    '0=lossless
+    
+    'PD's AVIF interface requires us to first save a PNG file; the external AVIF engine
+    ' will then convert this to an AVIF file.
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    
+    'For performance reasons, write an uncompressed PNG
+    Const PNG_COMPRESS As Long = 0
+    
+    Dim imgSavedOK As Boolean
+    imgSavedOK = False
+    
+    'Generate a temporary filename for the intermediary PNG file.
+    Dim tmpFilename As String
+    tmpFilename = OS.UniqueTempFilename()
+    
+    'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
+    ' and format coverage than either FreeImage or GDI+.  Use it to dump a lossless copy of the current image
+    ' to file.
+    If (Not imgSavedOK) Then
+        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+        imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, PNG_COMPRESS, vbNullString, True) < png_Failure)
+    End If
+    
+    'If other mechanisms failed, attempt a failsafe export using GDI+.  (This should never trigger, but is
+    ' a holdover from when PD's PNG encoder was in its infancy and reliability was not yet real-world-confirmed.)
+    If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
+    
+    'We now have a temporary PNG file saved.  Shell avifenc with the proper parameters to generate a
+    ' valid AVIF (at the requested filename).
+    ExportAVIF = Plugin_AVIF.ConvertStandardImageToAVIF(tmpFilename, dstFile, avifQuality)
+    
+    'With the AVIF generated, we can now erase our temporary PNG file
+    Files.FileDeleteIfExists tmpFilename
+    
+    Exit Function
+    
+ExportAVIFError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportAVIF = False
+    
+End Function
+
 Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportBMPError

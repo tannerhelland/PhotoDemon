@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.451</langversion>
+<langversion>9.0.558</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -20,7 +20,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Autosave konnte nicht vollständig rekonstruiert werden. Teilweise Rekonstruktion stattdessen versucht.</translation>
+<translation>Autosave konnte nicht vollständig rekonstruiert werden. Stattdessen teilweise Rekonstruktion versucht.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -318,6 +318,73 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
+<original>random</original>
+<translation>Zufällig</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>Bild</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>Wiederholung</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation>Wellen</translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation>Steppen</translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation>Kette</translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation>Gewebe</translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation>Arkus</translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>Linie</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation>Labyrinth</translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>Dreieck</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation>Oktagon</translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>Kreis</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
 <original>Time taken</original>
 <translation>Benötigte Zeit</translation>
 </phrase>
@@ -393,7 +460,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>Laden der Seite %1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -414,6 +481,11 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 </phrase>
 
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<phrase>
+<original>Saving %1 file</original>
+<translation>Datei %1 wird gespeichert</translation>
+</phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
@@ -441,7 +513,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
 <translation>Das FreeImage Interface-Plug-in (FreeImage.dll) wurde bei der Programminitialisierung als fehlend markiert oder deaktiviert.
 
-Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (Download unter http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
+Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (herunterladbar von http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -449,7 +521,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Speichern kann nicht ohne FreeImage-Library abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -543,11 +615,6 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <phrase>
 <original>square</original>
 <translation>Quadrat</translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>Kreis</translation>
 </phrase>
 
 <phrase>
@@ -762,10 +829,10 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>preview not available</original>
-<translation>Vorschau nicht verfügbar</translation>
+<translation>Preview nicht verfügbar</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -947,7 +1014,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
  %1
 
-Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern. Dankeschön!</translation>
+Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -973,7 +1040,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Leider konnte PhotoDemon folgende(s) Bild(er) nicht laden:
 
 %1
-Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Dankeschön!</translation>
+Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Danke!</translation>
 </phrase>
 
 <phrase>
@@ -2152,6 +2219,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Truchet</original>
+<translation>Truchet</translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Schärfen</translation>
 </phrase>
@@ -2296,7 +2368,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 270 phrases. 32 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
+<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2396,6 +2468,60 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
+<original>Applying plugin</original>
+<translation>Anwenden des Plug-ins</translation>
+</phrase>
+
+<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
+<original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
+<translation>AVIF ist ein modernes Bildformat, das von der Alliance for Open Media entwickelt wurde. PhotoDemon unterstützt AVIF-Bilder nicht nativ, aber es kann ein kostenloses, quelloffenes Plug-in heruntergeladen werden, das die AVIF-Unterstützung permanent aktiviert.</translation>
+</phrase>
+
+<phrase>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<translation>Die Alliance for Open Media stellt kostenlose, quelloffene 64-Bit-AVIF-Encoder- und Decoder-Bibliotheken zur Verfügung. Diese Bibliotheken sind jeweils ungefähr 10 MB groß (ca. 20 MB total). Einmal heruntergeladen, werden diese PhotoDemon erlauben, AVIF-Dateien auf jedem 64-Bit-System zu importieren und exportieren.</translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
+<translation>Möchten Sie, dass PhotoDemon diese Bibliotheken in Ihren PhotoDemon-Plug-in-Ordner herunterlädt?</translation>
+</phrase>
+
+<phrase>
+<original>Download required</original>
+<translation>Download erforderlich</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download the AVIF libraries at this time.</original>
+<translation>PhotoDemon wird die AVIF-Bibliotheken zum jetzigen Zeitpunkt nicht herunterladen.</translation>
+</phrase>
+
+<phrase>
+<original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
+<translation>Um die AVIF-Unterstützung manuell zu aktivieren, können Sie die neuesten Kopien der kostenlosen Programme "%1" und "%2" herunterladen und diese in Ihrem PhotoDemon-Plug-in-Ordner platzieren</translation>
+</phrase>
+
+<phrase>
+<original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
+<translation>Diese freien Bibliotheken sind immer verfügbar auf der libavif-Release-Seite der Alliance for Open Media</translation>
+</phrase>
+
+<phrase>
+<original>Download canceled</original>
+<translation>Download abgebrochen</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Da PhotoDemon keinen Administratorzugriff hat, kann es keine Dateien für Sie herunterladen. Bitte verschieben Sie PhotoDemon in einen uneingeschränkten Ordner und versuchen es erneut.</translation>
+</phrase>
+
+<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>Scanner successfully enabled</original>
 <translation>Scanner erfolgreich aktiviert</translation>
 </phrase>
@@ -2420,7 +2546,7 @@ Bitte stellen Sie sicher, dass das Gerät eingeschaltet und bereit für die Nutz
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde bei der Programminitialisierung als fehlend markiert.
 
-Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
+Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -2455,7 +2581,7 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte Administratorrechte aktivieren und erneut versuchen.</translation>
+<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte aktivieren Sie Admin-Rechte und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2511,10 +2637,15 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant konnte Datei nicht schreiben. Default-32bpp-Bild wurde stattdessen gespeichert.</translation>
+<translation>PNGQuant konnte Datei nicht schreiben. Stattdessen wurde Default-32bpp-Bild gespeichert.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>BSD license</original>
+<translation>BSD-License</translation>
+</phrase>
 
 <phrase>
 <original>artistic license</original>
@@ -2537,16 +2668,11 @@ Um den Scanner-Support zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (v
 </phrase>
 
 <phrase>
-<original>BSD license</original>
-<translation>BSD-License</translation>
-</phrase>
-
-<phrase>
 <original>zLib license</original>
 <translation>zLib-License</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2884,11 +3010,6 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Datei %1 wird gespeichert</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2926,7 +3047,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Animation exportieren</translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -2962,7 +3083,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
-<translation>Beim Versuch %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
+<translation>Beim Versuch, %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
 </phrase>
 
 <phrase>
@@ -3285,7 +3406,61 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <translation>Keine GPS-Daten gefunden</translation>
 </phrase>
 
-<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<phrase>
+<original>Attempting to connect to the Internet</original>
+<translation>Versuch, Verbindung mit dem Internet herzustellen</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
+<translation>PhotoDemon kann das Internet nicht erreichen. Bitte prüfen Sie Ihre Verbindung gegen und versuchen es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Verifying URL (this may take a moment)</original>
+<translation>URL wird verifiziert (dies kann einen Moment dauern)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<translation>PhotoDemon konnte die Ziel-URL (%1) nicht erreichen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei manuell unter Verwendung Ihres Internet-Browsers herunterzuladen.</translation>
+</phrase>
+
+<phrase>
+<original>Downloading</original>
+<translation>Wird heruntergeladen</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon lost Internet access. Please double-check your connection.</original>
+<translation>PhotoDemon hat den Internetzugriff verloren. Bitte prüfen Sie Ihre Verbindung gegen.</translation>
+</phrase>
+
+<phrase>
+<original>Downloading (%1 of %2 bytes)</original>
+<translation>Wird heruntergeladen (%1 von %2 Bytes)</translation>
+</phrase>
+
+<phrase>
+<original>Download complete. Verifying file integrity</original>
+<translation>Download abgeschlossen. Dateiintegrität wird verifiziert</translation>
+</phrase>
+
+<phrase>
+<original>Download canceled.  (Remote server denied access.)</original>
+<translation>Download abgebrochen. (Remote-Server verweigert Zugriff.)</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
+
+You will need to manually download this file using your Internet browser.</original>
+<translation>Leider hat %1 verhindert, dass PhotoDemon diese Datei direkt herunterladen kann. (Direkte Downloads werden manchmal von falsch konfigurierten Servern als Hotlinking missverstanden.)
+
+Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunterladen müssen.</translation>
+</phrase>
+
+<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3311,6 +3486,8 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
+<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
 <translation>Die Zwischenablage ist leer oder enthält kein gültiges Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen es erneut.</translation>
@@ -3328,7 +3505,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation>Bild-URL gefunden. Download wird versucht</translation>
+<translation>Bild-URL gefunden. Versuch herunterzuladen</translation>
 </phrase>
 
 <phrase>
@@ -3721,7 +3898,12 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <translation>%1 (Kanal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation>Hintergrund</translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3755,11 +3937,6 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
-<original>chain</original>
-<translation>Kette</translation>
-</phrase>
-
-<phrase>
 <original>cross</original>
 <translation>Kreuz</translation>
 </phrase>
@@ -3770,21 +3947,11 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
-<original>quilt</original>
-<translation>Steppen</translation>
-</phrase>
-
-<phrase>
 <original>ragged</original>
 <translation>Gezackt</translation>
 </phrase>
 
-<phrase>
-<original>weave</original>
-<translation>Gewebe</translation>
-</phrase>
-
-<!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -4201,7 +4368,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>Umschalten zwischen 1x und wiederholenden Vorschauen</translation>
+<translation>Umschalten zwischen 1x und wiederholenden Previews</translation>
 </phrase>
 
 <phrase>
@@ -5015,11 +5182,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation>Hintergrund</translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation>Vordergrund</translation>
 </phrase>
@@ -5352,7 +5514,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5677,7 +5839,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>Ihre LUT-Collection wird gespeichert in dem Ordner "%1"</translation>
+<translation>Ihre LUT-Kollektion wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
@@ -5699,7 +5861,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -5990,12 +6152,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Schatten-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Farbe der Glanzlicht-Tonwertspreizung festlegen, durch Rechtsklick auf eine Farbe im Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -6238,7 +6400,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Attempt to recover</original>
-<translation>Wiederherstellen versuchen</translation>
+<translation>Versuch wiederherzustellen</translation>
 </phrase>
 
 <phrase>
@@ -6376,7 +6538,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>preview</original>
-<translation>Vorschau</translation>
+<translation>Preview</translation>
 </phrase>
 
 <phrase>
@@ -6415,11 +6577,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation>Linie</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>Reflexion</translation>
 </phrase>
@@ -6429,7 +6586,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Rechteck</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6497,7 +6654,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>save to gradient collection</original>
-<translation>In Gradienten-Collection speichern</translation>
+<translation>In Gradientenkollektion speichern</translation>
 </phrase>
 
 <phrase>
@@ -6547,12 +6704,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>sort collection by</original>
-<translation>Collection sortieren nach</translation>
+<translation>Kollektion sortieren nach</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation>Ihre Collection</translation>
+<translation>Ihre Kollektion</translation>
 </phrase>
 
 <phrase>
@@ -6577,7 +6734,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Ein Gradient mit dem Namen "%1" ist bereits in Ihrer Collection vorhanden. Möchten Sie diesen überschreiben?</translation>
+<translation>Ein Gradient mit dem Namen "%1" ist bereits in Ihrer Kollektion vorhanden. Möchten Sie diesen überschreiben?</translation>
 </phrase>
 
 <phrase>
@@ -6587,7 +6744,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation>Dieser Gradient hat keinen Namen. Bitte geben Sie ihm einen Namen, bevor dieser zu Ihrer Collection hinzugefügt wird.</translation>
+<translation>Dieser Gradient hat keinen Namen. Bitte geben Sie ihm einen Namen, bevor dieser zu Ihrer Kollektion hinzugefügt wird.</translation>
 </phrase>
 
 <phrase>
@@ -6642,7 +6799,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>gradient collection</original>
-<translation>Gradienten-Collection</translation>
+<translation>Gradientenkollektion</translation>
 </phrase>
 
 <phrase>
@@ -6667,7 +6824,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Ihre Gradienten-Collection wird gespeichert in dem Ordner "%1"</translation>
+<translation>Ihre Gradientenkollektion wird gespeichert in dem Ordner "%1"</translation>
 </phrase>
 
 <phrase>
@@ -6772,11 +6929,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>triangle</original>
-<translation>Dreieck</translation>
-</phrase>
-
-<phrase>
 <original>miter</original>
 <translation>Gehrung</translation>
 </phrase>
@@ -6786,7 +6938,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Bevel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7132,6 +7284,88 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>scan for new plugins</original>
+<translation>Nach neuen Plug-ins scannen</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>Über dieses Plug-in</translation>
+</phrase>
+
+<phrase>
+<original>available plugins</original>
+<translation>Verfügbare Plug-ins</translation>
+</phrase>
+
+<phrase>
+<original>add folder</original>
+<translation>Ordner hinzufügen</translation>
+</phrase>
+
+<phrase>
+<original>default plugin folder</original>
+<translation>Default-Plug-in-Ordner</translation>
+</phrase>
+
+<phrase>
+<original>additional folders</original>
+<translation>Additionale Ordner</translation>
+</phrase>
+
+<phrase>
+<original>remove folder</original>
+<translation>Ordner entfernen</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for plugin</original>
+<translation>Warten auf Plug-in</translation>
+</phrase>
+
+<phrase>
+<original>Plugin canceled.</original>
+<translation>Plug-in abgebrochen.</translation>
+</phrase>
+
+<phrase>
+<original>plugins</original>
+<translation>Plug-ins</translation>
+</phrase>
+
+<phrase>
+<original>settings</original>
+<translation>Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>loading plugin collection</original>
+<translation>Laden der Plug-in-Kollektion</translation>
+</phrase>
+
+<phrase>
+<original>No plugins found.</original>
+<translation>Keine Plug-ins gefunden.</translation>
+</phrase>
+
+<phrase>
+<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
+<translation>Photoshop (8bf)-Plug-ins sind Dateien mit einer "8bf"-Extension. Diese Plug-ins stellen neue Bildeffekte (Image Effects) bereit. Tausende von 8bf-Plug-ins sind online verfügbar.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
+<translation>PhotoDemon wird nicht mit 8bf-Plug-ins ausgeliefert, aber wenn Sie online Plug-ins finden, können Sie diese herunterladen und sie zu PhotoDemon hinzufügen. (PhotoDemon unterstützt die meisten 8bf-Plug-ins in 32-Bit. 64-Bit-Plug-ins werden nicht unterstützt.)</translation>
+</phrase>
+
+<phrase>
+<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
+<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effektkollektion hinzu.</translation>
+</phrase>
+
+<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
+<phrase>
 <original>after processing, delete this layer</original>
 <translation>Nach Verarbeitung diesen Layer löschen</translation>
 </phrase>
@@ -7335,7 +7569,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster.</translation>
 </phrase>
 
 <phrase>
@@ -7491,11 +7725,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>random</original>
-<translation>Zufällig</translation>
-</phrase>
-
-<phrase>
 <original>Cartesian (traditional)</original>
 <translation>Kartesisch (traditionell)</translation>
 </phrase>
@@ -7510,7 +7739,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Tschebyscheff (Schachbrett)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -7694,7 +7923,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Vorschaufenster</translation>
+<translation>Sie können auch eine Mittelposition festlegen, durch Klick auf das Preview-Fenster</translation>
 </phrase>
 
 <phrase>
@@ -8484,6 +8713,18 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
+<phrase>
+<original>Truchet tiles</original>
+<translation>Truchet-Kacheln</translation>
+</phrase>
+
+<phrase>
+<original>Rendering Truchet tiles</original>
+<translation>Rendering der Truchet-Kacheln</translation>
+</phrase>
+
+<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
 <!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
@@ -8982,7 +9223,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>show image previews</original>
-<translation>Bildvorschauen zeigen</translation>
+<translation>Bild-Previews zeigen</translation>
 </phrase>
 
 <phrase>
@@ -9022,7 +9263,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>lowercase</original>
-<translation>kleinschrift (abc ...)</translation>
+<translation>kleinschrift (abc...)</translation>
 </phrase>
 
 <phrase>
@@ -9047,7 +9288,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>UPPERCASE</original>
-<translation>GROSSSCHRIFT (ABC ...)</translation>
+<translation>GROSSSCHRIFT (ABC...)</translation>
 </phrase>
 
 <phrase>
@@ -9127,7 +9368,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>previews disabled</original>
-<translation>Vorschauen deaktiviert</translation>
+<translation>Previews deaktiviert</translation>
 </phrase>
 
 <phrase>
@@ -9221,7 +9462,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen uneingeschränkten Ordner (keinen Systemordner!) für den Batch-Prozess.</translation>
+<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte selektieren Sie einen systemfremden (Nicht-System), uneingeschränkten Ordner für den Batch-Prozess.</translation>
 </phrase>
 
 <phrase>
@@ -9401,7 +9642,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(speziell JPEG bei 92 % Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
+<translation>(speziell JPEG bei 92 % Qualität für Fotografien und verlustfreies PNG für Nicht-Fotografien)</translation>
 </phrase>
 
 <phrase>
@@ -9467,11 +9708,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>repeat</original>
-<translation>Wiederholung</translation>
-</phrase>
-
-<phrase>
 <original>repeat count</original>
 <translation>Wiederholungsanzahl</translation>
 </phrase>
@@ -9503,7 +9739,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Dieser Button wirkt sich nur auf die Vorschau oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
+<translation>Dieser Button wirkt sich nur auf die Preview oberhalb aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -9516,7 +9752,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Frame-Zeit für undefinierte Layer (in ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -9608,74 +9844,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>Attempting to connect to the Internet</original>
-<translation>Verbinden mit dem Internet wird versucht</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jegliche andere Bilddatei öffnen.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying image URL (this may take a moment)</original>
-<translation>Bild-URL wird verifiziert (dies kann einen Moment dauern)</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 konnte keine gültige Datei unter dieser URL lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
-</phrase>
-
-<phrase>
-<original>Online File Not Found</original>
-<translation>Online-Datei nicht gefunden</translation>
-</phrase>
-
-<phrase>
-<original>Image URL verified.  Downloading image</original>
-<translation>Bild-URL verifiziert. Bild wird heruntergeladen</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 hat Zugriff auf das Internet verloren. Bitte prüfen Sie Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file (%1 of %2 bytes received)</original>
-<translation>Datei wird heruntergeladen (%1 von %2 Bytes empfangen)</translation>
-</phrase>
-
-<phrase>
-<original>Download complete. Verifying file integrity</original>
-<translation>Download abgeschlossen. Dateiintegrität wird verifiziert</translation>
-</phrase>
-
-<phrase>
-<original>Download canceled.  (Remote server denied access.)</original>
-<translation>Download abgebrochen. (Remote-Server verweigert Zugriff.)</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
-
-You will need to download this file using your Internet browser, then manually load it into %2.
-
-I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-<translation>Leider verhindert %1, dass %2 dieses Bild direkt herunterlädt. (Direkte Downloads werden mitunter durch falsch konfigurierte Server irrtümlich als 'Hotlinking' interpretiert.)
-
-Sie werden diese Datei unter Verwendung Ihres Internet-Browsers herunterladen müssen, dann laden Sie es manuell in %2.
-
-Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglücklicherweise gibt es nichts, was %2 gegen unzulängliche Serverkonfigurationen tun kann. :(</translation>
-</phrase>
-
-<phrase>
-<original>Download Unsuccessful</original>
-<translation>Download nicht erfolgreich</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Diese URL ist nicht gültig. Bitte stellen Sie sicher, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
 </phrase>
@@ -9686,8 +9854,8 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Bitte beachten und respektieren Sie die Copyrights, wenn Sie Bilder herunterladen. Selbst wenn ein Bild online verfügbar ist, kann es möglicherweise für die Nutzung außerhalb einer spezifischen Website nicht lizenziert sein. Dankeschön!</translation>
+<original>Please be respectful of copyrights when downloading images.  Thanks!</original>
+<translation>Bitte seien Sie respektvoll gegenüber Urheberrechten (Copyrights), wenn Sie Bilder herunterladen. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -9695,7 +9863,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Warten auf Benutzereingabe</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9744,7 +9912,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschl. Apps aus dem Windows-Store) erlauben keine direkten Screen-Captures. Wenn eine Applikations-Preview als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
@@ -9823,15 +9991,47 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>portrait</original>
-<translation>Porträt</translation>
+<translation>Porträt (Hochformat)</translation>
 </phrase>
 
 <phrase>
 <original>landscape</original>
-<translation>Landscape</translation>
+<translation>Landscape (Querformat)</translation>
 </phrase>
 
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+
+<phrase>
+<original>preview quality changes</original>
+<translation>Qualitätsänderungen vorab anschauen</translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation>Bildqualität</translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>Niedrige Qualität, kleine Datei</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>Hohe Qualität, große Datei</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation>Die AVIF-Kompression ist sehr rechenintensiv. Auf älteren oder langsameren PCs sollten Sie vielleicht Live-Previews deaktivieren.</translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1-Optionen</translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -9908,12 +10108,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>1-bpp</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1-Optionen</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -9995,16 +10190,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>Hohe Qualität, große Datei</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>Niedrige Qualität, kleine Datei</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Verlustfrei (1:1)</translation>
 </phrase>
@@ -10034,7 +10219,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Benutzerdefiniertes Verhältnis (X:1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10209,7 +10394,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation>Klick, um ein neues Vorschaubild zu generieren</translation>
+<translation>Klick, um ein neues Preview-Bild zu generieren</translation>
 </phrase>
 
 <phrase>
@@ -10304,7 +10489,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation>Bitte warten Sie, während ein neues Vorschaubild erstellt wird</translation>
+<translation>Bitte warten Sie, während ein neues Preview-Bild erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -10325,6 +10510,13 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation>Zielversion</translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -10622,7 +10814,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation>Metadaten-Support wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
+<translation>Metadaten-Unterstützung wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
 </phrase>
 
 <phrase>
@@ -11001,7 +11193,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
+<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Preview)</translation>
 </phrase>
 
 <phrase>
@@ -11256,7 +11448,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Sie haben den "sicheren" Speicher-Modus spezifiziert, was bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateiname erstellen wird.</translation>
+<translation>Sie haben den Speicher-Modus "Sicher" spezifiziert, was bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateiname erstellen wird.</translation>
 </phrase>
 
 <phrase>
@@ -11534,16 +11726,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>Bild</translation>
-</phrase>
-
-<phrase>
 <original>n/a</original>
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -11922,11 +12109,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>settings</original>
-<translation>Einstellungen</translation>
-</phrase>
-
-<phrase>
 <original>normal</original>
 <translation>Normal</translation>
 </phrase>
@@ -11951,7 +12133,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Klicken Sie hier, um diesen Layer in grundlegenden Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -12772,7 +12954,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>application settings folder</original>
-<translation>Ordner für Anwendungseinstellungen</translation>
+<translation>Ordner für Applikationseinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -13101,7 +13283,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Anwendung, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
+<translation>PhotoDemon ist eine portable Applikation, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
 </phrase>
 
 <phrase>
@@ -13126,14 +13308,14 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht.  Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn ein Update zum Anwenden bereit steht. Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Sie haben PhotoDemon in einem eingeschränkten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner (wie Desktop, Documents oder Downloads) verschieben.
+<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner, wie Desktop, Documents oder Downloads, verschieben.
 
 (Wenn Sie PhotoDemon dort lassen, wo es ist, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
 </phrase>
@@ -13195,8 +13377,13 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 </phrase>
 
 <phrase>
-<original>third-party library status</original>
-<translation>Drittanbieter-Bibliotheksstatus</translation>
+<original>library details</original>
+<translation>Bibliotheksdetails</translation>
+</phrase>
+
+<phrase>
+<original>library status</original>
+<translation>Bibliotheksstatus</translation>
 </phrase>
 
 <phrase>
@@ -13205,13 +13392,8 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 </phrase>
 
 <phrase>
-<original>status</original>
-<translation>Status</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>Installiert, aktiviert, und auf dem neuesten Stand</translation>
+<original>library folder</original>
+<translation>Bibliotheksordner</translation>
 </phrase>
 
 <phrase>
@@ -13365,105 +13547,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation>Zielversion</translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<phrase>
-<original>Applying plugin</original>
-<translation>Anwenden des Plug-ins</translation>
-</phrase>
-
-<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>scan for new plugins</original>
-<translation>Nach neuen Plug-ins scannen</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>Über dieses Plug-in</translation>
-</phrase>
-
-<phrase>
-<original>available plugins</original>
-<translation>Verfügbare Plug-ins</translation>
-</phrase>
-
-<phrase>
-<original>add folder</original>
-<translation>Ordner hinzufügen</translation>
-</phrase>
-
-<phrase>
-<original>default plugin folder</original>
-<translation>Default-Plug-in-Ordner</translation>
-</phrase>
-
-<phrase>
-<original>additional folders</original>
-<translation>Additionale Ordner</translation>
-</phrase>
-
-<phrase>
-<original>remove folder</original>
-<translation>Ordner entfernen</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for plugin</original>
-<translation>Warten auf Plug-in</translation>
-</phrase>
-
-<phrase>
-<original>Plugin canceled.</original>
-<translation>Plug-in abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>plugins</original>
-<translation>Plug-ins</translation>
-</phrase>
-
-<phrase>
-<original>loading plugin collection</original>
-<translation>Laden der Plug-in-Collection</translation>
-</phrase>
-
-<phrase>
-<original>No plugins found.</original>
-<translation>Keine Plug-ins gefunden.</translation>
-</phrase>
-
-<phrase>
-<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation>Photoshop (8bf)-Plug-ins sind Dateien mit einer "8bf"-Extension. Diese Plug-ins stellen neue Bildeffekte (Image Effects) bereit. Tausende von 8bf-Plug-ins sind online verfügbar.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation>PhotoDemon wird nicht mit 8bf-Plug-ins ausgeliefert, aber wenn Sie online Plug-ins finden, können Sie diese herunterladen und sie zu PhotoDemon hinzufügen. (PhotoDemon unterstützt die meisten 8bf-Plug-ins in 32-Bit. 64-Bit-Plug-ins werden nicht unterstützt.)</translation>
-</phrase>
-
-<phrase>
-<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oben), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekt-Collection hinzu.</translation>
-</phrase>
-
-<!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
-
-<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2547</phrasecount>
+<phrasecount>2564</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5204 phrases. -->
-<!-- 2657 are duplicates, so only 2547 unique phrases have been written to file. -->
-<!-- These 2547 phrases contain approximately 11726 total words. -->
+<!-- As of this build, PhotoDemon contains 5273 phrases. -->
+<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
+<!-- These 2564 phrases contain approximately 11823 total words. -->
 
 </pdData>

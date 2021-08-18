@@ -33,10 +33,6 @@ Option Explicit
 ' initializing sprite sheet values, to determine if a given sprite has been loaded yet.)
 Public Const UI_SPRITE_UNDEFINED As Long = &HFFFFFFFF
 
-'Number of images allowed on a single sheet column.  Once the number of images on a sheet exceeds this,
-' a new column will be created.  (The number of allowed columns is currently unbounded.)
-Private Const MAX_SPRITES_IN_COLUMN As Long = 16
-
 'This module no longer uses a custom spritesheet implementation; instead, it wraps pdSpriteSheet
 ' (which was heavily optimized as part of work on animated image support).
 ' Note that one great side-effect of this is that this module now supports images of varying sizes.
@@ -66,11 +62,6 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     AddImage = m_Sprites.AddImage(srcDIB, uniqueImageName)
     
 End Function
-
-Public Sub FreeSharedCompressBuffer()
-    Erase m_TempCompressBuffer
-    m_CompressBufferSize = 0
-End Sub
 
 'Return a standalone DIB of a given sprite.  Do *not* use this more than absolutely necessary,
 ' as it is expensive to initialize sprites (and it sort of defeats the purpose of using a

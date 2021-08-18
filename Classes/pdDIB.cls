@@ -526,42 +526,31 @@ Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
     If (srcDIB.GetDIBDC <> 0) Then
         
         'Prepare new width and height values as requested by the user
-        If (newWidth = -1) Then newWidth = srcDIB.GetDIBWidth
-        If (newHeight = -1) Then newHeight = srcDIB.GetDIBHeight
+        If (newWidth < 0) Then newWidth = srcDIB.GetDIBWidth
+        If (newHeight < 0) Then newHeight = srcDIB.GetDIBHeight
         
         'If the width and height values are not being changed, the transfer is simple
         If (newWidth = srcDIB.GetDIBWidth) And (newHeight = srcDIB.GetDIBHeight) Then
             
             'If we are already at the same size and bit-depth as the source image, we can use our existing DIB and DC as-is.
             If (newWidth = m_dibWidth) And (newHeight = m_dibHeight) And (srcDIB.GetDIBColorDepth = m_dibColorDepth) Then
-            
-                'Copy the image data without modification
-                BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
                 
-                'Copy the source DIB's header as well.  (Note that this only copies a BITMAPINFOHEADER,
-                ' meaning descriptive info only - not things like the DIB bits pointer.)
+                'Copy the source DIB's header to ensure full parity.  (Note that this only copies a BITMAPINFOHEADER,
+                ' meaning descriptive info only - not things like the actual DIB bits pointer.)
                 srcDIB.CopyDIBHeader m_dibHeader
-                
-                'Reset our alpha premultiplication flag to match
-                m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
-                
                 CreateFromExistingDIB = True
-                
-            Else
             
-                'Create a new, blank DIB the same size as the source DIB
-                If Me.CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth, 0, 0) Then
-                    
-                    'Copy the image data without modification
-                    BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
-                    
-                    'Reset our alpha premultiplication flag to match
-                    m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
-                    
-                    CreateFromExistingDIB = True
-                    
-                End If
-                
+            'If our current DIB is a different size and/or bit-depth than the source image,
+            ' create a new, blank DIB the same size as the source DIB
+            Else
+                CreateFromExistingDIB = Me.CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth, 0, 0)
+            End If
+            
+            'If creation and/or header-copy were successful, copy all image bits (BitBlt works for <=32-bpp data),
+            ' then mirror current alpha premultiplication status.
+            If CreateFromExistingDIB Then
+                BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
             End If
         
         'If new width and height values are being specified, the transfer is a bit more complex
@@ -574,14 +563,11 @@ Friend Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 Me.ResetDIB 0
             End If
             
-            GDI_Plus.GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeModeIfNecessary
+            CreateFromExistingDIB = GDI_Plus.GDIPlusResizeDIB(Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeModeIfNecessary)
                 
-            'Note that GDI+ *always* paints images with pre-multiplied alpha.  If our source image did *not* have premultiplied alpha,
-            ' this will result in a mismatch.  (TODO: make a firm decision on whether we handle that here, or if performance
-            ' demands dictate that we leave the image premultiplied, and let the caller sort things out.)
-            'If m_IsAlphaPremultiplied Then...
-            
-            CreateFromExistingDIB = True
+            'Note that GDI+ *always* paints images with pre-multiplied alpha.  If our source image did *not*
+            ' have premultiplied alpha, this will result in a mismatch; it's expected that the caller handles
+            ' this case manually, because PD is currently designed to always assume premultiplication internally.
             
         End If
         

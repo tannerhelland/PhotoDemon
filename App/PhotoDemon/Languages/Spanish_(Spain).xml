@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.52</langversion>
+<langversion>8.0.57</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -318,6 +318,73 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>Imagen</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>repita</translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>Línea</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>Triángulo</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>Círculo</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
 <original>Time taken</original>
 <translation>Tiempo transcurrido</translation>
 </phrase>
@@ -416,6 +483,11 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Saving %1 file</original>
+<translation>Guardando archivo %1</translation>
+</phrase>
+
+<phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Guardar %1 ha fallado (fallo silencioso de FreeImage_SaveEx). Por favor, informe de este error utilizando "Ayuda", "Enviar informe de errores".</translation>
 </phrase>
@@ -449,7 +521,7 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 <translation>La operación de guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -543,11 +615,6 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 <phrase>
 <original>square</original>
 <translation>Cuadrado</translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>Círculo</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +832,7 @@ A fin de habilitar el soporte para este formato de imagen, por favor, copie el a
 <translation>Vista previa no disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2152,6 +2219,11 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <phrase>
+<original>Truchet</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Enfocar</translation>
 </phrase>
@@ -2296,7 +2368,7 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 <translation>Borrar lista de macros recientes</translation>
 </phrase>
 
-<!-- Menus.bas contains 270 phrases. 32 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
+<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2394,6 +2466,60 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>Applying plugin</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
+<original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download required</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download the AVIF libraries at this time.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download canceled</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2517,6 +2643,11 @@ Para habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (di
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>BSD license</original>
+<translation>Licencia BSD</translation>
+</phrase>
+
+<phrase>
 <original>artistic license</original>
 <translation>Licencia artística</translation>
 </phrase>
@@ -2537,16 +2668,11 @@ Para habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (di
 </phrase>
 
 <phrase>
-<original>BSD license</original>
-<translation>Licencia BSD</translation>
-</phrase>
-
-<phrase>
 <original>zLib license</original>
 <translation>Licencia zLib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2884,11 +3010,6 @@ Cuando hayas terminado, haz clic en el botón "Enviar nuevo número".  Gracias.<
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Guardando archivo %1</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2926,7 +3047,7 @@ Mientras tanto, intente guardar la imagen en un formato alternativo. También pu
 <translation>Exportar animación</translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3285,7 +3406,59 @@ Por favor, introduzca un valor numérico válido.</translation>
 <translation>No se han encontrado datos GPS</translation>
 </phrase>
 
-<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<phrase>
+<original>Attempting to connect to the Internet</original>
+<translation>Intentando conexión a internet</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Verifying URL (this may take a moment)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Downloading</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon lost Internet access. Please double-check your connection.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Downloading (%1 of %2 bytes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download complete. Verifying file integrity</original>
+<translation>Descarga completa. Comprobando la integridad del archivo.</translation>
+</phrase>
+
+<phrase>
+<original>Download canceled.  (Remote server denied access.)</original>
+<translation>Descarga cancelada (el servidor remoto denegó el acceso).</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
+
+You will need to manually download this file using your Internet browser.</original>
+<translation></translation>
+</phrase>
+
+<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3310,6 +3483,8 @@ Por favor, introduzca un valor numérico válido.</translation>
 </phrase>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
@@ -3721,7 +3896,12 @@ Por favor, introduzca un valor numérico válido.</translation>
 <translation>%1 (Canal %2)</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3755,11 +3935,6 @@ Por favor, introduzca un valor numérico válido.</translation>
 </phrase>
 
 <phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>cross</original>
 <translation></translation>
 </phrase>
@@ -3770,21 +3945,11 @@ Por favor, introduzca un valor numérico válido.</translation>
 </phrase>
 
 <phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>ragged</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -5015,11 +5180,6 @@ El valor final debe estar entre %3 y %4.</translation>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation></translation>
 </phrase>
@@ -5352,7 +5512,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6415,11 +6575,6 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation>Línea</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>Reflexión</translation>
 </phrase>
@@ -6429,7 +6584,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Rectángulo</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6772,11 +6927,6 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
-<original>triangle</original>
-<translation>Triángulo</translation>
-</phrase>
-
-<phrase>
 <original>miter</original>
 <translation>Inglete</translation>
 </phrase>
@@ -6786,7 +6936,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Bisel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7130,6 +7280,88 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 </phrase>
 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>scan for new plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default plugin folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>additional folders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for plugin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Plugin canceled.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>settings</original>
+<translation>Ajustes</translation>
+</phrase>
+
+<phrase>
+<original>loading plugin collection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No plugins found.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -7491,11 +7723,6 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 </phrase>
 
 <phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Cartesian (traditional)</original>
 <translation>Cartesiano tradicional</translation>
 </phrase>
@@ -7510,7 +7737,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <translation>Chebyshev (ajedrezado)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8483,6 +8710,18 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -9469,11 +9708,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>repeat</original>
-<translation>repita</translation>
-</phrase>
-
-<phrase>
 <original>repeat count</original>
 <translation>repita el recuento</translation>
 </phrase>
@@ -9518,7 +9752,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>tiempo de marco para capas no definidas (en ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -9610,74 +9844,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Attempting to connect to the Internet</original>
-<translation>Intentando conexión a internet</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation> %1 no pudo establecer una conexión a Internet. Por favor, vuelva a comprobar si está en línea. En caso de que el problema persista, intente descargar la imagen a mano utilizando el navegador de internet de su elección. Una vez descargada, puede abrir el archivo en %1 de la misma forma que cualquier otro archivo de imagen.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying image URL (this may take a moment)</original>
-<translation>Verificando URL de la imagen (puede tardar un momento)</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 no pudo localizar un archivo válido en esa URL. Por favor, compruebe de nuevo la ruta. Si el problema persiste, intente descargar el archivo de forma manual utilizando su navegador de internet.</translation>
-</phrase>
-
-<phrase>
-<original>Online File Not Found</original>
-<translation>Archivo en línea no encontrado</translation>
-</phrase>
-
-<phrase>
-<original>Image URL verified.  Downloading image</original>
-<translation>URL de imagen verificada. Descargando imagen.</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 perdió la conexión con internet. Por favor, compruebe que está en línea. Si el problema persiste, intente descargar el archivo de forma manual utilizando su navegador de internet.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file (%1 of %2 bytes received)</original>
-<translation>Descargando archivo (%1 de %2 bytes recibidos)</translation>
-</phrase>
-
-<phrase>
-<original>Download complete. Verifying file integrity</original>
-<translation>Descarga completa. Comprobando la integridad del archivo.</translation>
-</phrase>
-
-<phrase>
-<original>Download canceled.  (Remote server denied access.)</original>
-<translation>Descarga cancelada (el servidor remoto denegó el acceso).</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
-
-You will need to download this file using your Internet browser, then manually load it into %2.
-
-I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-<translation>Por desgracia, %1 está impidiendo a %2 la descarga directa de esta imagen (las descargas directas son a veces confundidas con robo de ancho de banda por servidores mal configurados).
-
-Tendrá que descargar este archivo usando un navegador de internet y, luego, cargarlo en %2 de forma manual.
-
-Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que %2 pueda hacer para sortear configuraciones de servidor cicateras. :(</translation>
-</phrase>
-
-<phrase>
-<original>Download Unsuccessful</original>
-<translation>Descarga fallida</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Esta URL no es válida. Por favor, asegúrese de que la URL empieza con "http://" o "ftp://".</translation>
 </phrase>
@@ -9688,8 +9854,8 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Por favor, sea respetuoso con los derechos de autor al descargar imágenes. Incluso cuando una imagen está disponible en línea, puede que carezca de licencia para su uso fuera de un sitio web específico. ¡Gracias!</translation>
+<original>Please be respectful of copyrights when downloading images.  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9697,7 +9863,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>Esperando la interacción del usuario</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9836,6 +10002,38 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>preview quality changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>Baja calidad, archivo pequeño</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>Alta calidad, archivo de gran tamaño</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation>%1 opciones</translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>restrict palette size</original>
 <translation>Restringir el tamaño de la paleta</translation>
 </phrase>
@@ -9910,12 +10108,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>1-bpp</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation>%1 opciones</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -9997,16 +10190,6 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>Alta calidad, archivo de gran tamaño</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>Baja calidad, archivo pequeño</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Sin pérdida (01:01)</translation>
 </phrase>
@@ -10036,7 +10219,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>Relación personalizada (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10327,6 +10510,13 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -11536,16 +11726,11 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>Imagen</translation>
-</phrase>
-
-<phrase>
 <original>n/a</original>
 <translation>No aplicable</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -11924,11 +12109,6 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 </phrase>
 
 <phrase>
-<original>settings</original>
-<translation>Ajustes</translation>
-</phrase>
-
-<phrase>
 <original>normal</original>
 <translation>Normal</translation>
 </phrase>
@@ -11953,7 +12133,7 @@ Le pedimos disculpas por este contratiempo, pero lamentablemente no hay nada que
 <translation>Haga clic aquí para convertir esta capa en texto básico.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13197,8 +13377,13 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 </phrase>
 
 <phrase>
-<original>third-party library status</original>
-<translation>estado de la biblioteca de terceros</translation>
+<original>library details</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>library status</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13207,13 +13392,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 </phrase>
 
 <phrase>
-<original>status</original>
-<translation>Estado</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>Instalado, habilitado y puesto al día</translation>
+<original>library folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13367,105 +13547,12 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<phrase>
-<original>Applying plugin</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>scan for new plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>available plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>add folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>default plugin folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>additional folders</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>remove folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Waiting for plugin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Plugin canceled.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>loading plugin collection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No plugins found.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
-
-<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2547</phrasecount>
+<phrasecount>2564</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5204 phrases. -->
-<!-- 2657 are duplicates, so only 2547 unique phrases have been written to file. -->
-<!-- These 2547 phrases contain approximately 11726 total words. -->
+<!-- As of this build, PhotoDemon contains 5273 phrases. -->
+<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
+<!-- These 2564 phrases contain approximately 11823 total words. -->
 
 </pdData>

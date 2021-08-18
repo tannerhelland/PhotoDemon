@@ -36,7 +36,7 @@ End Enum
 
 'LibDeflate is zlib-compatible, but it exposes even higher compression levels (12 vs zlib's 9) for
 ' better-but-slower compression.  The default value remains 6; these are all declared in libdeflate.h
-Private Const LIBDEFLATE_MIN_CLEVEL As Long = 1
+Private Const LIBDEFLATE_MIN_CLEVEL As Long = 0
 Private Const LIBDEFLATE_MAX_CLEVEL As Long = 12
 Private Const LIBDEFLATE_DEFAULT_CLEVEL As Long = 6
 
@@ -314,9 +314,9 @@ Public Function IsCompressorReady() As Boolean
     IsCompressorReady = (m_libDeflateHandle <> 0)
 End Function
 
-'libdeflate doesn't export a version function, but this class was designed against the v1.2 release.
+'libdeflate doesn't export a version function, but this class was designed against the v1.8 release.
 Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.7"
+    GetCompressorVersion = "1.8"
 End Function
 
 'Private methods follow

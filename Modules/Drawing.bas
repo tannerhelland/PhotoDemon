@@ -148,6 +148,7 @@ Public Sub GetArbitraryCheckerboardDIB(ByRef srcDIB As pdDIB, ByVal chkColorOne 
     b2 = Colors.ExtractBlue(chkColorTwo)
     
     'Resize the source DIB to fit a 2x2 block pattern of the requested checkerboard pattern
+    If (srcDIB Is Nothing) Then Set srcDIB = New pdDIB
     srcDIB.CreateBlank chkSize * 2, chkSize * 2, 32, initialAlpha:=255
     
     Dim chkLookup() As Byte

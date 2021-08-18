@@ -549,6 +549,7 @@ Friend Function CreateBrush() As Boolean
                 If (tmpReturn <> GP_OK) Then InternalError "CreateBrush", "GDI+ failure", tmpReturn
                 tmpReturn = GdipDisposeImage(srcBitmap)
                 If (tmpReturn <> GP_OK) Then InternalError "CreateBrush", "GDI+ failure", tmpReturn
+                CreateBrush = (m_BrushHandle <> 0)
             Else
                 InternalError "CreateBrush", "GDI+ failure", tmpReturn
             End If

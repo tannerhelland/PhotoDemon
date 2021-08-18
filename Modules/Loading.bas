@@ -241,7 +241,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ICO)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
-            layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSD)
+            layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
             
             If (Not layersAlreadyLoaded) Then
@@ -281,6 +281,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 decoderName = "Internal CBZ parser"
             Case id_ICOParser
                 decoderName = "Internal ICO parser"
+            Case id_libAVIF
+                decoderName = "libavif plugin"
             Case id_PDIParser
                 decoderName = "Internal PDI parser"
             Case id_MBMParser
@@ -354,7 +356,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: some multipage formats (like PSD, ORA, ICO, etc) load all pages/frames in the initial
         ' load function.  This "separate multipage loader function" approach primarily exists for
         ' legacy functions where a 3rd-party library is responsible for parsing the extra pages.
-        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG)) Then
+        
+        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF)) Then
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
@@ -392,7 +395,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'Internal multipage loader; this is used for animated PNG files
             Else
-                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
+                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
             End If
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or PNG.
@@ -652,6 +655,32 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             Set cPSP = New pdPSP
             If cPSP.IsFilePSP(imagePath) Then loadSuccessful = (cPSP.LoadPSP(imagePath, tmpPDImage, targetDIB) < psp_Failure)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
+        'AVIF support was provisionally added in v9.0.  Loading requires 64-bit Windows and manual
+        ' copying of the official libavif exe binaries (for example,
+        ' https://github.com/AOMediaCodec/libavif/releases/tag/v0.9.0)
+        '...into the /App/PhotoDemon/Plugins subfolder.
+        Case "HEIF", "HEIFS", "HEIC", "HEICS", "AVCI", "AVCS", "AVIF", "AVIFS"
+            If Plugin_AVIF.IsAVIFImportAvailable() Then
+            
+                Dim tmpFile As String, intermediaryPDIF As PD_IMAGE_FORMAT
+                loadSuccessful = Plugin_AVIF.ConvertAVIFtoStandardImage(imagePath, tmpFile, intermediaryPDIF)
+                
+                If loadSuccessful Then
+                    If (intermediaryPDIF = PDIF_PNG) Then
+                        'Dim cPNG As pdPNG
+                        Set cPNG = New pdPNG
+                        loadSuccessful = (cPNG.LoadPNG_Simple(tmpFile, tmpPDImage, targetDIB) < png_Failure)
+                    Else
+                        loadSuccessful = LoadGDIPlusImage(tmpFile, targetDIB, tmpPDImage)
+                    End If
+                End If
+                
+                Files.FileDeleteIfExists tmpFile
+                If (Not targetDIB.GetAlphaPremultiplication) Then targetDIB.SetAlphaPremultiplication True
+                If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+                
+            End If
         
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
         ' VB's internal LoadPicture function.

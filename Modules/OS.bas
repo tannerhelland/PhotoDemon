@@ -746,6 +746,18 @@ Public Function LogicalCoreCount() As Long
     Dim tmpSysInfo As OS_SystemInfo
     GetNativeSystemInfo tmpSysInfo
     LogicalCoreCount = tmpSysInfo.dwNumberOfProcessors
+    If (LogicalCoreCount < 1) Then LogicalCoreCount = 1
+End Function
+
+'PD may call into some 64-bit exes; it's nice to know in advance if this will/should work
+Public Function OSSupports64bitExe() As Boolean
+
+    Dim tSYSINFO As OS_SystemInfo
+    GetNativeSystemInfo tSYSINFO
+    
+    OSSupports64bitExe = (tSYSINFO.wProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64)
+    OSSupports64bitExe = OSSupports64bitExe Or (tSYSINFO.wProcessorArchitecture = PROCESSOR_ARCHITECTURE_IA64)
+    
 End Function
 
 'Return the current OS version as a string.  (This is basically a helper function for PD's debug logger.)

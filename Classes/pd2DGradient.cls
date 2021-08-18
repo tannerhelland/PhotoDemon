@@ -110,11 +110,11 @@ Friend Function SetCenterOffset(ByRef newCenterX As Single, ByVal newCenterY As 
 End Function
 
 'By default, radial gradients will always be centered over the centroid of the filled shape.
-Friend Function SetCenterOffset_Default()
+Friend Sub SetCenterOffset_Default()
     m_UseCustomCenterPoint = False
     m_GradientCenterPoint.x = 0.5!
     m_GradientCenterPoint.y = 0.5!
-End Function
+End Sub
 
 Friend Function GetGradientGammaMode() As Boolean
     GetGradientGammaMode = m_GradientGammaMode

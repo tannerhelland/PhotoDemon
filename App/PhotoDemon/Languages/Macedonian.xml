@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.347</langversion>
+<langversion>1.0.352</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -315,6 +315,73 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- Filters_Misc.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
+<original>random</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>слика</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>waves</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quilt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>chain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>weave</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>arc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line</original>
+<translation>линија</translation>
+</phrase>
+
+<phrase>
+<original>maze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation>тријаголник</translation>
+</phrase>
+
+<phrase>
+<original>octagon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>круг</translation>
+</phrase>
+
+<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<phrase>
 <original>Time taken</original>
 <translation>потребно подолго време</translation>
 </phrase>
@@ -413,6 +480,11 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
+<original>Saving %1 file</original>
+<translation>Заштеда на %1 датотека</translation>
+</phrase>
+
+<phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation> %1 Зачувувањето не успеа (FreeImage_Save молчи не). Ве молам пријавете грешка користење Помош -> достават грешка извештај.</translation>
 </phrase>
@@ -446,7 +518,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Зачувај не може да се заврши без FreeImage библиотека.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 21 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -540,11 +612,6 @@ To овозможи поддршка за овој формат на слика,
 <phrase>
 <original>square</original>
 <translation>плоштад</translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>круг</translation>
 </phrase>
 
 <phrase>
@@ -762,7 +829,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>преглед не се достапни</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 24 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+<!-- Interface.bas contains 83 phrases. 25 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2149,6 +2216,11 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Truchet</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Подигнување</translation>
 </phrase>
@@ -2293,7 +2365,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 270 phrases. 32 were duplicates of existing phrases, so only 238 new phrases were written to file. -->
+<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2391,6 +2463,60 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>Applying plugin</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<phrase>
+<original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download required</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon will not download the AVIF libraries at this time.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download canceled</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2514,6 +2640,11 @@ To овозможи поддршка скенер, молам копирајте
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>BSD license</original>
+<translation>BSD лиценца</translation>
+</phrase>
+
+<phrase>
 <original>artistic license</original>
 <translation>уметнички лиценца</translation>
 </phrase>
@@ -2534,16 +2665,11 @@ To овозможи поддршка скенер, молам копирајте
 </phrase>
 
 <phrase>
-<original>BSD license</original>
-<translation>BSD лиценца</translation>
-</phrase>
-
-<phrase>
 <original>zLib license</original>
 <translation>лиценца zlib</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2879,11 +3005,6 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Заштеда на %1 датотека</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2921,7 +3042,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation></translation>
 </phrase>
 
-<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 39 phrases. 33 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3280,7 +3401,59 @@ Please enter a numeric value.</original>
 <translation>пронајдени GPS податоци</translation>
 </phrase>
 
-<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<phrase>
+<original>Attempting to connect to the Internet</original>
+<translation>Обидувајќи се да се поврзете на интернет</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Verifying URL (this may take a moment)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Downloading</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon lost Internet access. Please double-check your connection.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Downloading (%1 of %2 bytes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Download complete. Verifying file integrity</original>
+<translation>Превземи заврши. Проверка на исправноста на датотеката</translation>
+</phrase>
+
+<phrase>
+<original>Download canceled.  (Remote server denied access.)</original>
+<translation>Превземи откажани. (Далечински сервер забранет пристапот.)</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
+
+You will need to manually download this file using your Internet browser.</original>
+<translation></translation>
+</phrase>
+
+<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3305,6 +3478,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
@@ -3716,7 +3891,12 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPSD.cls contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Background</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -3750,11 +3930,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>chain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>cross</original>
 <translation></translation>
 </phrase>
@@ -3765,21 +3940,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>quilt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>ragged</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>weave</original>
-<translation></translation>
-</phrase>
-
-<!-- pdVoronoi.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -5009,11 +5174,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Foreground</original>
 <translation></translation>
 </phrase>
@@ -5346,7 +5506,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 374 phrases. 193 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6409,11 +6569,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation>линија</translation>
-</phrase>
-
-<phrase>
 <original>reflection</original>
 <translation>рефлексија</translation>
 </phrase>
@@ -6423,7 +6578,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>правоаголник</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6766,11 +6921,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>triangle</original>
-<translation>тријаголник</translation>
-</phrase>
-
-<phrase>
 <original>miter</original>
 <translation>митра</translation>
 </phrase>
@@ -6780,7 +6930,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>откос</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7124,6 +7274,88 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>scan for new plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default plugin folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>additional folders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for plugin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Plugin canceled.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>settings</original>
+<translation>поставувања</translation>
+</phrase>
+
+<phrase>
+<original>loading plugin collection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No plugins found.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -7485,11 +7717,6 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>random</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Cartesian (traditional)</original>
 <translation>Картезијанската (традиција)</translation>
 </phrase>
@@ -7504,7 +7731,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Chebyshev (шаховска табла)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8477,6 +8704,18 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering Truchet tiles</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -9463,11 +9702,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>repeat</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>repeat count</original>
 <translation></translation>
 </phrase>
@@ -9512,7 +9746,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 12 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -9604,74 +9838,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>Attempting to connect to the Internet</original>
-<translation>Обидувајќи се да се поврзете на интернет</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation> %1 не може да се воспостави врска со интернет. Ве молиме проверете ја вашата врска. Ако проблемот продолжи, се обиде да ја преземете сликата рачно со помош на вашиот интернет пребарувач на избор. Еднаш симнат, може да ја отворам датотеката %1 како и секоја друга датотека со слика.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying image URL (this may take a moment)</original>
-<translation>Потврдување на URL-то на сликата (ова може да потрае еден момент)</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation> %1 не може да се лоцираат валидна датотека на оваа адреса. Ве молиме проверете ја патеката. Ако проблемот продолжи, се обиде да ја преземете датотеката рачно со помош на вашиот интернет пребарувач.</translation>
-</phrase>
-
-<phrase>
-<original>Online File Not Found</original>
-<translation>Онлајн датотеката не е пронајдена</translation>
-</phrase>
-
-<phrase>
-<original>Image URL verified.  Downloading image</original>
-<translation>URL-то на сликата потврдена. презема слика</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation> %1 изгубиле пристап до интернет. Ве молиме проверете ја вашата интернет конекција. Ако проблемот продолжи, се обиде да ја преземете датотеката рачно со помош на вашиот интернет пребарувач.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file (%1 of %2 bytes received)</original>
-<translation>Превземање фајлови ( %1 од %доби 2 бајти)</translation>
-</phrase>
-
-<phrase>
-<original>Download complete. Verifying file integrity</original>
-<translation>Превземи заврши. Проверка на исправноста на датотеката</translation>
-</phrase>
-
-<phrase>
-<original>Download canceled.  (Remote server denied access.)</original>
-<translation>Превземи откажани. (Далечински сервер забранет пристапот.)</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
-
-You will need to download this file using your Internet browser, then manually load it into %2.
-
-I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-<translation>За жал, %1 %2 спречување од директно преземање на оваа слика. (Директен преземања се понекогаш е погрешно како hotlinking од лошо конфигуриран сервери.) 
-
-You ќе треба да ја преземете оваа датотека на вашиот интернет пребарувач, а потоа рачно да го вчита во %2.
-
-I Искрено се извинуваме за оваа ситуација, но за жал не постои ништо %2 може да се направи во врска со скржавиот серверски конфигурации.:(</translation>
-</phrase>
-
-<phrase>
-<original>Download Unsuccessful</original>
-<translation>преземете Неуспешни</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Овој URL не е валиден. Ве молиме бидете сигурни дека ја URL адресата започнува со "http: //" или "ftp: //".</translation>
 </phrase>
@@ -9682,8 +9848,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Ве молиме да се почитуваат авторските права при преземање на слики. Дури и ако сликата е достапна на интернет, тоа не може да биде лиценциран за употреба надвор од одредена веб-страница. Ви благодариме!</translation>
+<original>Please be respectful of copyrights when downloading images.  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9691,7 +9857,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Чека за корисникот влез</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 24 phrases. 4 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -9830,6 +9996,38 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- File_PrintXP.frm contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>preview quality changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>image quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>низок квалитет, мал фајл</translation>
+</phrase>
+
+<phrase>
+<original>high quality, large file</original>
+<translation>висок квалитет, голема датотека</translation>
+</phrase>
+
+<phrase>
+<original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 options</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_AVIF.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
 <original>restrict palette size</original>
 <translation>ограничи големината палета</translation>
 </phrase>
@@ -9904,12 +10102,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>1-м</translation>
 </phrase>
 
-<phrase>
-<original>%1 options</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 24 phrases. 8 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -9991,16 +10184,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>high quality, large file</original>
-<translation>висок квалитет, голема датотека</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>низок квалитет, мал фајл</translation>
-</phrase>
-
-<phrase>
 <original>Lossless (1:1)</original>
 <translation>Lossless (1: 1)</translation>
 </phrase>
@@ -10030,7 +10213,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>сооднос обичај (X: 1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -10321,6 +10504,13 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>target version</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -11530,16 +11720,11 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>image</original>
-<translation>слика</translation>
-</phrase>
-
-<phrase>
 <original>n/a</original>
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 44 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 50 phrases. 45 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>spacing</original>
@@ -11918,11 +12103,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>settings</original>
-<translation>поставувања</translation>
-</phrase>
-
-<phrase>
 <original>normal</original>
 <translation>нормално</translation>
 </phrase>
@@ -11947,7 +12127,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 13 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13191,7 +13371,12 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
-<original>third-party library status</original>
+<original>library details</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>library status</original>
 <translation></translation>
 </phrase>
 
@@ -13201,13 +13386,8 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
-<original>status</original>
-<translation>статус</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>инсталирани, е овозможено, и до денес</translation>
+<original>library folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13361,105 +13541,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>target version</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<phrase>
-<original>Applying plugin</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<phrase>
-<original>scan for new plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>available plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>add folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>default plugin folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>additional folders</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>remove folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Waiting for plugin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Plugin canceled.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>loading plugin collection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No plugins found.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_8bf.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
-
-<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2547</phrasecount>
+<phrasecount>2564</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5204 phrases. -->
-<!-- 2657 are duplicates, so only 2547 unique phrases have been written to file. -->
-<!-- These 2547 phrases contain approximately 11726 total words. -->
+<!-- As of this build, PhotoDemon contains 5273 phrases. -->
+<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
+<!-- These 2564 phrases contain approximately 11823 total words. -->
 
 </pdData>
