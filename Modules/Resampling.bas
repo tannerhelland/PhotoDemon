@@ -24,26 +24,42 @@ Attribute VB_Name = "Resampling"
 
 'Currently available resamplers
 Public Enum PD_ResamplingFilter
+    
+    'Dummy entry that auto-maps to other filters depending on resize dimensions
     rf_Automatic = 0
+    
+    'r = 0.5
     rf_Box
+    
+    'r = 1.0
     rf_BilinearTriangle
-    rf_Hermite
-    rf_Bell
-    rf_CubicBSpline
-    rf_Lanczos3
-    rf_Mitchell
     rf_Cosine
-    rf_CatmullRom
+    rf_Hermite
+    
+    'r = 1.5
+    rf_Bell
     rf_Quadratic
     rf_QuadraticBSpline
+    
+    'r = 2
+    rf_CubicBSpline
+    rf_CatmullRom
+    rf_Mitchell
+    
+    'r = 3
     rf_CubicConvolution
-    rf_Lanczos8
+    
+    'r is variable [2, 8], default 3
+    rf_Lanczos
+    
+    'Dummy entry to help with iteration
     rf_Max
+    
 End Enum
 
 #If False Then
-    Private Const rf_Automatic = 0, rf_Box = 0, rf_BilinearTriangle = 0, rf_Hermite = 0, rf_Bell = 0, rf_CubicBSpline = 0, rf_Lanczos3 = 0, rf_Mitchell = 0
-    Private Const rf_Cosine = 0, rf_CatmullRom = 0, rf_Quadratic = 0, rf_QuadraticBSpline = 0, rf_CubicConvolution = 0, rf_Lanczos8 = 0
+    Private Const rf_Automatic = 0, rf_Box = 0, rf_BilinearTriangle = 0, rf_Hermite = 0, rf_Bell = 0, rf_CubicBSpline = 0, rf_Lanczos = 0, rf_Mitchell = 0
+    Private Const rf_Cosine = 0, rf_CatmullRom = 0, rf_Quadratic = 0, rf_QuadraticBSpline = 0, rf_CubicConvolution = 0
     Private Const rf_Max = 0
 #End If
 
@@ -59,6 +75,11 @@ Private Type ContributorEntry
     weightSum As Double
 End Type
 
+'Lanczos supports variable lobes currently locked on the range 1-10; note that performance scales O(2n) against
+' this value (it's separable), so larger radii require longer processing times.
+Private Const LANCZOS_DEFAULT = 3, LANCZOS_MIN = 2, LANCZOS_MAX = 10
+Private m_LanczosRadius As Long
+
 'Our current resampling approach uses an intermediate copy of the image; this allows us to handle x and y
 ' resampling independently (which improves performance and greatly simplifies the code, at some trade-off to
 ' memory consumption).  This intermediate array will be reused on subsequent calls, and can also be manually
@@ -71,6 +92,18 @@ Public Sub FreeBuffers()
     Erase m_tmpPixels
 End Sub
 
+Public Function GetLanczosRadius() As Long
+    GetLanczosRadius = m_LanczosRadius
+End Function
+
+Public Sub SetLanczosRadius(ByVal newRadius As Long)
+    If (newRadius < LANCZOS_MIN) Or (newRadius > LANCZOS_MAX) Then
+        m_LanczosRadius = LANCZOS_DEFAULT
+    Else
+        m_LanczosRadius = newRadius
+    End If
+End Sub
+
 Public Function GetResamplerName(ByVal rsID As PD_ResamplingFilter) As String
 
     Select Case rsID
@@ -80,28 +113,26 @@ Public Function GetResamplerName(ByVal rsID As PD_ResamplingFilter) As String
             GetResamplerName = "nearest"
         Case rf_BilinearTriangle
             GetResamplerName = "bilinear"
+        Case rf_Cosine
+            GetResamplerName = "cosine"
         Case rf_Hermite
             GetResamplerName = "hermite"
         Case rf_Bell
             GetResamplerName = "bell"
-        Case rf_CubicBSpline
-            GetResamplerName = "bicubic"
-        Case rf_Lanczos3
-            GetResamplerName = "lanczos3"
-        Case rf_Mitchell
-            GetResamplerName = "mitchell"
-        Case rf_Cosine
-            GetResamplerName = "cosine"
-        Case rf_CatmullRom
-            GetResamplerName = "catmull"
         Case rf_Quadratic
             GetResamplerName = "quadratic"
         Case rf_QuadraticBSpline
             GetResamplerName = "quadratic-spline"
+        Case rf_CubicBSpline
+            GetResamplerName = "bicubic"
+        Case rf_CatmullRom
+            GetResamplerName = "catmull"
+        Case rf_Mitchell
+            GetResamplerName = "mitchell"
         Case rf_CubicConvolution
             GetResamplerName = "cubic-convolve"
-        Case rf_Lanczos8
-            GetResamplerName = "lanczos8"
+        Case rf_Lanczos
+            GetResamplerName = "lanczos"
     End Select
 
 End Function
@@ -115,28 +146,26 @@ Public Function GetResamplerNameUI(ByVal rsID As PD_ResamplingFilter) As String
             GetResamplerNameUI = g_Language.TranslateMessage("nearest-neighbor")
         Case rf_BilinearTriangle
             GetResamplerNameUI = g_Language.TranslateMessage("bilinear")
+        Case rf_Cosine
+            GetResamplerNameUI = g_Language.TranslateMessage("cosine")
         Case rf_Hermite
             GetResamplerNameUI = "Hermite"
         Case rf_Bell
             GetResamplerNameUI = g_Language.TranslateMessage("bell")
-        Case rf_CubicBSpline
-            GetResamplerNameUI = g_Language.TranslateMessage("bicubic")
-        Case rf_Lanczos3
-            GetResamplerNameUI = "Lanczos-3"
-        Case rf_Mitchell
-            GetResamplerNameUI = "Mitchell-Netravali"
-        Case rf_Cosine
-            GetResamplerNameUI = g_Language.TranslateMessage("cosine")
-        Case rf_CatmullRom
-            GetResamplerNameUI = "Catmull-Rom"
         Case rf_Quadratic
             GetResamplerNameUI = g_Language.TranslateMessage("quadratic")
         Case rf_QuadraticBSpline
             GetResamplerNameUI = g_Language.TranslateMessage("quadratic b-spline")
+        Case rf_CubicBSpline
+            GetResamplerNameUI = g_Language.TranslateMessage("bicubic")
+        Case rf_CatmullRom
+            GetResamplerNameUI = "Catmull-Rom"
+        Case rf_Mitchell
+            GetResamplerNameUI = "Mitchell-Netravali"
         Case rf_CubicConvolution
             GetResamplerNameUI = g_Language.TranslateMessage("cubic convolution")
-        Case rf_Lanczos8
-            GetResamplerNameUI = "Lanczos-8"
+        Case rf_Lanczos
+            GetResamplerNameUI = "Lanczos"
     End Select
 
 End Function
@@ -150,28 +179,26 @@ Public Function GetResamplerID(ByRef rsName As String) As PD_ResamplingFilter
             GetResamplerID = rf_Box
         Case "bilinear"
             GetResamplerID = rf_BilinearTriangle
+        Case "cosine"
+            GetResamplerID = rf_Cosine
         Case "hermite"
             GetResamplerID = rf_Hermite
         Case "bell"
             GetResamplerID = rf_Bell
-        Case "bicubic"
-            GetResamplerID = rf_CubicBSpline
-        Case "lanczos3"
-            GetResamplerID = rf_Lanczos3
-        Case "mitchell"
-            GetResamplerID = rf_Mitchell
-        Case "cosine"
-            GetResamplerID = rf_Cosine
-        Case "catmull"
-            GetResamplerID = rf_CatmullRom
         Case "quadratic"
             GetResamplerID = rf_Quadratic
         Case "quadratic-spline"
             GetResamplerID = rf_QuadraticBSpline
+        Case "bicubic"
+            GetResamplerID = rf_CubicBSpline
+        Case "catmull"
+            GetResamplerID = rf_CatmullRom
+        Case "mitchell"
+            GetResamplerID = rf_Mitchell
         Case "cubic-convolve"
             GetResamplerID = rf_CubicConvolution
-        Case "lanczos8"
-            GetResamplerID = rf_Lanczos8
+        Case "lanczos"
+            GetResamplerID = rf_Lanczos
         Case Else
             GetResamplerID = rf_Automatic
     End Select
@@ -199,6 +226,9 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         InternalError FUNC_NAME, "bad width/height: " & dstWidth & ", " & dstHeight
         Exit Function
     End If
+    
+    'Validate all internal values as well
+    If (m_LanczosRadius < LANCZOS_MIN) Or (m_LanczosRadius > LANCZOS_MAX) Then m_LanczosRadius = LANCZOS_DEFAULT
     
     'Inputs look good.  Prepare intermediary data structs.  Custom types are used to improve memory locality.
     Dim srcWidth As Long: srcWidth = srcDIB.GetDIBWidth
@@ -570,34 +600,45 @@ End Function
 Private Function GetDefaultRadius(ByVal rsType As PD_ResamplingFilter) As Double
 
     Select Case rsType
+        
         Case rf_Automatic
             'dummy entry
+            
         Case rf_Box
             GetDefaultRadius = 0.5
+        
         Case rf_BilinearTriangle
+            GetDefaultRadius = 1#
+        Case rf_Cosine
             GetDefaultRadius = 1#
         Case rf_Hermite
             GetDefaultRadius = 1#
+        
         Case rf_Bell
             GetDefaultRadius = 1.5
-        Case rf_CubicBSpline
-            GetDefaultRadius = 2#
-        Case rf_Lanczos3
-            GetDefaultRadius = 3#
-        Case rf_Mitchell
-            GetDefaultRadius = 2#
-        Case rf_Cosine
-            GetDefaultRadius = 1#
-        Case rf_CatmullRom
-            GetDefaultRadius = 2#
         Case rf_Quadratic
             GetDefaultRadius = 1.5
         Case rf_QuadraticBSpline
             GetDefaultRadius = 1.5
+        
+        Case rf_CubicBSpline
+            GetDefaultRadius = 2#
+        Case rf_CatmullRom
+            GetDefaultRadius = 2#
+        Case rf_Mitchell
+            GetDefaultRadius = 2#
+        
         Case rf_CubicConvolution
             GetDefaultRadius = 3#
-        Case rf_Lanczos8
-            GetDefaultRadius = 8#
+        
+        'Lanczos now supports variable radii
+        Case rf_Lanczos
+            If (m_LanczosRadius < LANCZOS_MIN) Or (m_LanczosRadius > LANCZOS_MAX) Then
+                GetDefaultRadius = LANCZOS_DEFAULT
+            Else
+                GetDefaultRadius = m_LanczosRadius
+            End If
+
     End Select
 
 End Function
@@ -622,6 +663,13 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
             Else
                 GetValue = 0#
             End If
+        
+        Case rf_Cosine
+            If ((x >= -1) And (x <= 1)) Then
+                GetValue = (Cos(x * PI) + 1#) * 0.5
+            Else
+                GetValue = 0#
+            End If
             
         Case rf_Hermite
             If (x < 0#) Then x = -x
@@ -642,60 +690,6 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
                 GetValue = 0#
             End If
       
-        Case rf_CubicBSpline
-            If (x < 0#) Then x = -x
-            If (x < 1#) Then
-                temp = x * x
-                GetValue = (0.5 * temp * x - temp + 0.666666666666667)
-            ElseIf (x < 2#) Then
-                x = 2# - x
-                GetValue = x * x * x * 0.166666666666667
-            Else
-                GetValue = 0#
-            End If
-            
-        Case rf_Lanczos3
-            If (x < 0#) Then x = -x
-            If (x < 3#) Then
-                GetValue = (SinC(x) * SinC(x * 0.333333333333333))
-            Else
-                GetValue = 0#
-            End If
-      
-        Case rf_Mitchell
-            Const MC As Double = 0.333333333333333
-            
-            If (x < 0#) Then x = -x
-            temp = x * x
-            
-            If (x < 1#) Then
-                x = (((12 - 9 * MC - 6 * MC) * (x * temp)) + ((-18 + 12 * MC + 6 * MC) * temp) + (6 - 2 * MC))
-                GetValue = (x / 6)
-            ElseIf (x < 2#) Then
-                x = (((-MC - 6 * MC) * (x * temp)) + ((6 * MC + 30 * MC) * temp) + ((-12 * MC - 48 * MC) * x) + (8 * MC + 24 * MC))
-                GetValue = x * 0.166666666666667
-            Else
-                GetValue = 0#
-            End If
-            
-        Case rf_Cosine
-            If ((x >= -1) And (x <= 1)) Then
-                GetValue = (Cos(x * PI) + 1#) * 0.5
-            Else
-                GetValue = 0#
-            End If
-            
-        Case rf_CatmullRom
-            If (x < 0#) Then x = -x
-            temp = x * x
-            If (x <= 1#) Then
-                GetValue = (1.5 * temp * x - 2.5 * temp + 1#)
-            ElseIf (x <= 2#) Then
-                GetValue = (-0.5 * temp * x + 2.5 * temp - 4 * x + 2#)
-            Else
-                GetValue = 0#
-            End If
-            
         Case rf_Quadratic
             If (x < 0#) Then x = -x
             If (x <= 0.5) Then
@@ -716,6 +710,45 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
                 GetValue = 0#
             End If
             
+        Case rf_CubicBSpline
+            If (x < 0#) Then x = -x
+            If (x < 1#) Then
+                temp = x * x
+                GetValue = (0.5 * temp * x - temp + 0.666666666666667)
+            ElseIf (x < 2#) Then
+                x = 2# - x
+                GetValue = x * x * x * 0.166666666666667
+            Else
+                GetValue = 0#
+            End If
+            
+        Case rf_CatmullRom
+            If (x < 0#) Then x = -x
+            temp = x * x
+            If (x <= 1#) Then
+                GetValue = (1.5 * temp * x - 2.5 * temp + 1#)
+            ElseIf (x <= 2#) Then
+                GetValue = (-0.5 * temp * x + 2.5 * temp - 4 * x + 2#)
+            Else
+                GetValue = 0#
+            End If
+            
+        Case rf_Mitchell
+            Const MC As Double = 0.333333333333333
+            
+            If (x < 0#) Then x = -x
+            temp = x * x
+            
+            If (x < 1#) Then
+                x = (((12 - 9 * MC - 6 * MC) * (x * temp)) + ((-18 + 12 * MC + 6 * MC) * temp) + (6 - 2 * MC))
+                GetValue = (x / 6)
+            ElseIf (x < 2#) Then
+                x = (((-MC - 6 * MC) * (x * temp)) + ((6 * MC + 30 * MC) * temp) + ((-12 * MC - 48 * MC) * x) + (8 * MC + 24 * MC))
+                GetValue = x * 0.166666666666667
+            Else
+                GetValue = 0#
+            End If
+            
         Case rf_CubicConvolution
             If (x < 0#) Then x = -x
             temp = x * x
@@ -729,10 +762,10 @@ Private Function GetValue(ByVal rsType As PD_ResamplingFilter, ByVal x As Double
                 GetValue = 0#
             End If
             
-        Case rf_Lanczos8
+        Case rf_Lanczos
             If (x < 0#) Then x = -x
-            If (x < 8#) Then
-                GetValue = (SinC(x) * SinC(x * 0.25))
+            If (x < m_LanczosRadius) Then
+                GetValue = (SinC(x) * SinC(x / m_LanczosRadius))
             Else
                 GetValue = 0#
             End If
