@@ -3,17 +3,19 @@ Attribute VB_Name = "Resampling"
 'Image Resampling engine
 'Copyright 2021-2021 by Tanner Helland
 'Created: 16/August/21
-'Last updated: 16/August/21
-'Last update: instead of relying on a 3rd-party library for resampling, let's write a native VB6 implementation!
+'Last updated: 17/August/21
+'Last update: myriad optimizations
 '
-'This module is currently a WIP.
+'For many years, PhotoDemon relied on external libraries (GDI+, FreeImage) for its resampling algorithms.
+' In modern versions, however, we now have our own homebrew resampler that provides excellent quality and
+' many more available filters.
 '
-'Resampling algorithms in this article include heavily modified versions of code originally written by Libor Tinka.
-' Libor shared his original C# implementation under a Code Project Open License (CPOL):
-'  https://www.codeproject.com/info/cpol10.aspx
+'Most filters in this module are heavily modified versions of resamplers originally written by Libor Tinka.
+' Libor shared his original C# resampling code under a Code Project Open License (CPOL):
+'  - https://www.codeproject.com/info/cpol10.aspx
 ' His original, unmodified source code is available here (link good as of Aug 2021):
-'  https://www.codeproject.com/Articles/11143/Image-Resizing-outperform-GDI
-' Many thanks to Libor for his original example of universal image resampling in C#.
+'  - https://www.codeproject.com/Articles/11143/Image-Resizing-outperform-GDI
+' Thank you to Libor for sharing his excellent C# image resampling project.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -181,7 +183,7 @@ End Function
 '    two dimensions simultaneously (actually this will take two passes, but that's invisible to the caller).
 ' 2) When two-dimensional resampling is required, the x-dimension will be resampled first.
 ' 3) 32-bpp inputs are required.  All channels will be resampled using identical code and weights.
-Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal rsFilter As PD_ResamplingFilter) As Boolean
+Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal rsFilter As PD_ResamplingFilter, Optional ByVal displayProgress As Boolean = False) As Boolean
     
     ResampleImage = False
     
@@ -218,10 +220,17 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     xScale = dstWidth / srcWidth
     yScale = dstHeight / srcHeight
     
+    'If progress bar reports are wanted, calculate max values now
+    Dim progX As Long, progY As Long, progBarCheck As Long
+    If displayProgress Then
+        If (xScale <> 1#) Then progX = srcHeight
+        If (yScale <> 1#) Then progY = dstWidth
+        ProgressBars.SetProgBarMax progX + progY
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
     'Prep array of contributors (which contain per-pixel weights)
     Dim contrib() As ContributorEntry
-    
-    'Reset contributor table (one entry per column for horizontal resampling)
     ReDim contrib(0 To dstWidth - 1) As ContributorEntry
     
     Dim wdth As Double, center As Double, weight As Double
@@ -370,7 +379,11 @@ NextJXgt1:
             'Next pixel in row...
             Next i
             
-            'Could check abort status here?
+            'Report progress
+            If displayProgress And ((k And progBarCheck) = 0) Then
+                If Interface.UserPressedESC() Then Exit For
+                ProgressBars.SetProgBarVal k
+            End If
             
         'Next row in image...
         Next k
@@ -529,7 +542,11 @@ NextJYgt1:
             'Next row...
             Next i
             
-            'Could check abort status here?
+            'Report progress
+            If (displayProgress And (((k + progX) And progBarCheck) = 0)) Then
+                If Interface.UserPressedESC() Then Exit For
+                ProgressBars.SetProgBarVal k + progX
+            End If
             
         'Next column...
         Next k

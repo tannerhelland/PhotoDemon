@@ -143,7 +143,7 @@ Private Const USE_GDIPLUS_RESIZE As Boolean = True
 ' FreeImage's functions are faster than our internal PD resampler, but they require a lot of extra memory due
 ' to FreeImage needing its own container for pixel data.  (If FreeImage is *not* available, this value is ignored.)
 ' This value should be set to TRUE in production code.
-Private Const USE_FREEIMAGE_RESIZE As Boolean = False
+Private Const USE_FREEIMAGE_RESIZE As Boolean = True
 
 'PhotoDemon's resampling options have expanded over the years.  Unfortunately, old versions of the app
 ' stored resampling settings using 0-based integers.  I have since switched to a version-agnostic string system,
@@ -358,7 +358,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using our own internal algorithms.  Slower, but better quality.
-Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter) As Boolean
+Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter, ByVal displayProgress As Boolean) As Boolean
     
     PDDebug.LogAction "Using internal resampler for this operation."
     
@@ -376,7 +376,7 @@ Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDI
     End If
     
     'Hand off the image to PD's internal resampler
-    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod)
+    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod, displayProgress)
     
     'Premultiply the resulting image
     dstDIB.SetAlphaPremultiplication True, True
@@ -536,7 +536,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 
                 'For a slower, but more mathematically accurate approach, you could also use our internal scaler
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box, (firstLayerIndex = lastLayerIndex)
                 End If
                 
             'Bilinear resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
@@ -545,14 +545,14 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_Hermite
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite, (firstLayerIndex = lastLayerIndex)
             
             Case rf_Bell
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Bell, (firstLayerIndex = lastLayerIndex)
                 
             'Bicubic sampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library (currently disabled)
             Case rf_CubicBSpline
@@ -560,14 +560,14 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_Lanczos3
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos3
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos3, (firstLayerIndex = lastLayerIndex)
                 End If
             
             'All subsequent methods use either our internal resampler, or the FreeImage library (when applicable)
@@ -575,30 +575,30 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_Cosine
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine, (firstLayerIndex = lastLayerIndex)
             
             Case rf_CatmullRom
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_Quadratic
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic, (firstLayerIndex = lastLayerIndex)
             
             Case rf_QuadraticBSpline
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_CubicConvolution
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_Lanczos8
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos8
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos8, (firstLayerIndex = lastLayerIndex)
             
             'This failsafe should never be triggered
             Case Else
