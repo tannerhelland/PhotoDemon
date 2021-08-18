@@ -106,6 +106,16 @@ Public Function GetFormattedFileSize(ByVal srcSize As Long) As String
     End If
 End Function
 
+'Given a file size (64-bit), return a properly-formatted string representation.  Uses shlwapi.
+Public Function GetFormattedFileSizeL(ByVal srcSize As Currency) As String
+    GetFormattedFileSizeL = String$(64, 0)
+    If (StrFormatByteSizeW(srcSize, StrPtr(GetFormattedFileSizeL), Len(GetFormattedFileSizeL)) <> 0) Then
+        GetFormattedFileSizeL = Strings.TrimNull(GetFormattedFileSizeL)
+    Else
+        GetFormattedFileSizeL = CStr(srcSize * 10000) & " bytes"
+    End If
+End Function
+
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the auto-incremented filename WITHOUT an extension and WITHOUT a prepended folder,
 ' by design, so that the result can be passed to a common dialog without further parsing.
