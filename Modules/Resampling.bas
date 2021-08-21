@@ -22,6 +22,9 @@ Attribute VB_Name = "Resampling"
 '
 '***************************************************************************
 
+'Timing reports are helpful during debugging.  Do not enable in production.
+Private Const REPORT_RESAMPLE_PERF As Boolean = True
+
 'Currently available resamplers
 Public Enum PD_ResamplingFilter
     
@@ -227,6 +230,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         Exit Function
     End If
     
+    'Performance reporting (via debug logs) is controlled by a constant at the top of this class
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'Validate all internal values as well
     If (m_LanczosRadius < LANCZOS_MIN) Or (m_LanczosRadius > LANCZOS_MAX) Then m_LanczosRadius = LANCZOS_DEFAULT
     
@@ -263,10 +270,16 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     Dim contrib() As ContributorEntry
     ReDim contrib(0 To dstWidth - 1) As ContributorEntry
     
-    Dim wdth As Double, center As Double, weight As Double
+    Dim radius As Double, center As Double, weight As Double
     Dim intensityR As Double, intensityG As Double, intensityB As Double, intensityA As Double
     Dim pxLeft As Long, pxRight As Long, i As Long, j As Long, k As Long
     Dim r As Long, g As Long, b As Long, a As Long
+    Dim xOffset As Long
+    
+    If REPORT_RESAMPLE_PERF Then
+        'PDDebug.LogAction "Resampling.ResampleImage prep time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'Now, calculate all input weights
     
@@ -274,35 +287,43 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     If (xScale < 1#) Then
         
         'The source width is larger than the destination width
-        wdth = (GetDefaultRadius(rsFilter) / xScale)
-
+        radius = (GetDefaultRadius(rsFilter) / xScale)
+        
         For i = 0 To dstWidth - 1
             
             'Initialize contributor weight table
             contrib(i).nCount = 0
-            ReDim contrib(i).p(0 To Int(2 * wdth + 1)) As Contributor
+            ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
             
-            'Calculate center/left/right for this column
+            'Calculate center/left/right for this column (and ensure valid boundaries)
             center = ((i + 0.5) / xScale)
-            pxLeft = Fix(center - wdth)
-            pxRight = Fix(center + wdth)
+            pxLeft = Int(center - radius)
+            If (pxLeft < 0) Then pxLeft = 0
+            pxRight = Int(center + radius + 0.99999999999)
+            If (pxRight >= srcWidth) Then pxRight = srcWidth - 1
             
             For j = pxLeft To pxRight
                 
-                'Ignore OOB pixels; they will not contribute to weighting
-                If (j < 0) Then GoTo NextJXlt1
-                If (j >= srcWidth) Then GoTo NextJXlt1
-                
+                'Calculate weight for this pixel, according to the current filter
                 weight = GetValue(rsFilter, (center - j - 0.5) * xScale)
-                If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).nCount).pixel = j
+                
+                'For a "perfect" implementation, you would want to include the weight of all contributing
+                ' pixels, regardless of how minute they are.  Because we're working with 32-bpp data, however,
+                ' and clamping between the horizontal and vertical passes, there is no compelling reason to
+                ' include values that contribute less than 1 integer value of a pixel's potential color (1/255)
+                ' to the final result.  Ignoring extreme tails of the distribution provides a nice performance
+                ' improvement with no meaningful change to the final result (across all resampling algorithms).
+                If (Abs(weight) > 0.003921568627451) Then
+                    contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                 End If
-NextJXlt1:
+            
             Next j
+            
+            Debug.Print contrib(i).nCount, contrib(i).weightSum
             
             'Normalize the weight sum before exiting
             If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
@@ -312,33 +333,34 @@ NextJXlt1:
     'Horizontal upsampling
     ElseIf (xScale > 1#) Then
         
+        radius = GetDefaultRadius(rsFilter)
+        
         'The source width is smaller than the destination width
         For i = 0 To dstWidth - 1
             
             'Initialize contributor weight table
             contrib(i).nCount = 0
-            ReDim contrib(i).p(0 To Int(2 * GetDefaultRadius(rsFilter) + 1)) As Contributor
+            ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
-            pxLeft = Fix(center - GetDefaultRadius(rsFilter))
-            pxRight = Int(center + GetDefaultRadius(rsFilter) + 0.99999999999)
-
+            pxLeft = Int(center - radius)
+            If (pxLeft < 0) Then pxLeft = 0
+            pxRight = Int(center + radius + 0.99999999999)
+            If (pxRight >= srcWidth) Then pxRight = srcWidth - 1
+            
             For j = pxLeft To pxRight
                 
-                'Ignore OOB pixels; they will not contribute to weighting
-                If (j < 0) Then GoTo NextJXgt1
-                If (j >= srcWidth) Then GoTo NextJXgt1
-                
                 weight = GetValue(rsFilter, center - j - 0.5)
+                
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                 End If
-NextJXgt1:
+            
             Next j
             
             'Normalize the weight sum before exiting
@@ -348,6 +370,11 @@ NextJXgt1:
     
     '/End up- vs downsampling.  Note that the special case of xScale = 1.0 (e.g. horizontal width
     ' isn't changing) is not handled here; we'll handle it momentarily as a special case.
+    End If
+    
+    If REPORT_RESAMPLE_PERF Then
+        'PDDebug.LogAction "Resampling.ResampleImage horizontal 1 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
     End If
     
     'With weights successfully calculated, we can now filter horizontally from the input image
@@ -375,7 +402,7 @@ NextJXgt1:
                 'Generate weighted result for each color component
                 For j = 0 To contrib(i).nCount - 1
                     weight = contrib(i).p(j).weight
-                    idxPixel = contrib(i).p(j).pixel * 4
+                    idxPixel = contrib(i).p(j).pixel
                     intensityB = intensityB + (srcImageData(idxPixel) * weight)
                     intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
                     intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
@@ -428,8 +455,12 @@ NextJXgt1:
     Else
         CopyMemoryStrict VarPtr(m_tmpPixels(0)), srcDIB.GetDIBPointer, srcHeight * dstWidth * 4
     End If
-        
+    
     'Horizontal sampling is now complete.
+    If REPORT_RESAMPLE_PERF Then
+        PDDebug.LogAction "Resampling.ResampleImage horizontal 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'Next, we need to perform nearly identical sampling from the "working" copy to the destination image,
     ' while resampling in the y-direction.
@@ -437,39 +468,43 @@ NextJXgt1:
     'Reset contributor weight table (one entry per row for vertical resampling)
     ReDim contrib(0 To dstHeight - 1) As ContributorEntry
     
+    If REPORT_RESAMPLE_PERF Then
+        'PDDebug.LogAction "Resampling.ResampleImage vertical prep time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
     'Vertical downsampling
     If (yScale < 1#) Then
         
         'The source height is larger than the destination height
-        wdth = GetDefaultRadius(rsFilter) / yScale
+        radius = GetDefaultRadius(rsFilter) / yScale
         
         'Iterate through each row in the image
         For i = 0 To dstHeight - 1
           
             contrib(i).nCount = 0
-            ReDim contrib(i).p(0 To Fix(2 * wdth + 1)) As Contributor
+            ReDim contrib(i).p(0 To Fix(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
           
             center = (i + 0.5) / yScale
-            pxLeft = Fix(center - wdth)
-            pxRight = Fix(center + wdth)
+            pxLeft = Int(center - radius)
+            If (pxLeft < 0) Then pxLeft = 0
+            pxRight = Int(center + radius + 0.999999999)
+            If (pxRight >= srcHeight) Then pxRight = srcHeight - 1
             
             'Precalculate all weights for this column (technically these are not left/right values
             ' but up/down ones, remember)
             For j = pxLeft To pxRight
-
-                'Skip OOB pixels
-                If (j < 0) Then GoTo NextJYlt1
-                If (j >= srcHeight) Then GoTo NextJYlt1
                 
                 weight = GetValue(rsFilter, (center - j - 0.5) * yScale)
-                If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).nCount).pixel = j
+                
+                If (Abs(weight) > 0.003921568627451) Then
+                    contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                 End If
-NextJYlt1:
+            
             Next j
             
             'Normalize the weight sum before exiting
@@ -481,30 +516,32 @@ NextJYlt1:
     'Vertical upsampling
     ElseIf (yScale > 1#) Then
         
+        radius = GetDefaultRadius(rsFilter)
+        
         'The source height is smaller than the destination height
         For i = 0 To dstHeight - 1
             
             contrib(i).nCount = 0
-            ReDim contrib(i).p(0 To Int(2 * GetDefaultRadius(rsFilter) + 1)) As Contributor
+            ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
             
             center = ((i + 0.5) / yScale)
-            pxLeft = Fix(center - GetDefaultRadius(rsFilter))
-            pxRight = Int(center + GetDefaultRadius(rsFilter) + 0.9999999999)
-
+            pxLeft = Int(center - radius)
+            If (pxLeft < 0) Then pxLeft = 0
+            pxRight = Int(center + radius + 0.9999999999)
+            If (pxRight >= srcHeight) Then pxRight = srcHeight - 1
+            
             For j = pxLeft To pxRight
                 
-                If (j < 0) Then GoTo NextJYgt1
-                If (j >= srcHeight) Then GoTo NextJYgt1
-                
                 weight = GetValue(rsFilter, center - j - 0.5)
+                
                 If (weight <> 0#) Then
-                    contrib(i).p(contrib(i).nCount).pixel = j
+                    contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                 End If
-NextJYgt1:
+            
             Next j
             
             'Normalize the weight sum before exiting
@@ -517,6 +554,11 @@ NextJYgt1:
     ' isn't changing) is not handled here; we'll handle it momentarily as a special case.
     End If
     
+    If REPORT_RESAMPLE_PERF Then
+        'PDDebug.LogAction "Resampling.ResampleImage vertical 1 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
     'With weights successfully calculated, we can now filter vertically from the "working copy"
     ' to the destination image.
     If (yScale <> 1#) Then
@@ -527,7 +569,10 @@ NextJYgt1:
         
         'Each column (new image width)...
         For k = 0 To dstWidth - 1
-    
+            
+            'Pre-calculate a fixed x-offset for this column
+            xOffset = k * 4
+            
             'Each row (destination image height)...
             For i = 0 To dstHeight - 1
                 
@@ -539,7 +584,7 @@ NextJYgt1:
                 'Generate weighted result for each color component
                 For j = 0 To contrib(i).nCount - 1
                     weight = contrib(i).p(j).weight
-                    idxPixel = (contrib(i).p(j).pixel * dstWidth * 4) + (k * 4)
+                    idxPixel = contrib(i).p(j).pixel + xOffset
                     intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
                     intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
                     intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
@@ -591,7 +636,12 @@ NextJYgt1:
     Else
         CopyMemoryStrict dstDIB.GetDIBPointer, VarPtr(m_tmpPixels(0)), dstHeight * dstWidth * 4
     End If
-        
+    
+    If REPORT_RESAMPLE_PERF Then
+        PDDebug.LogAction "Resampling.ResampleImage vertical 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
     'Resampling complete!
     ResampleImage = True
     
