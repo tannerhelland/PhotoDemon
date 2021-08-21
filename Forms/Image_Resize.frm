@@ -4,10 +4,10 @@ Begin VB.Form FormResize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize image"
-   ClientHeight    =   6705
+   ClientHeight    =   6480
    ClientLeft      =   45
    ClientTop       =   390
-   ClientWidth     =   9630
+   ClientWidth     =   14430
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,14 +22,33 @@ Begin VB.Form FormResize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   447
+   ScaleHeight     =   432
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   642
+   ScaleWidth      =   962
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkPreview 
+      Height          =   375
+      Left            =   120
+      TabIndex        =   6
+      Top             =   150
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   661
+      Caption         =   "preview changes"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdPictureBoxInteractive picPreview 
+      Height          =   4935
+      Left            =   120
+      Top             =   600
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   8705
+   End
    Begin PhotoDemon.pdLabel lblLanczos 
       Height          =   375
-      Left            =   4440
-      Top             =   4305
+      Left            =   10200
+      Top             =   4185
       Visible         =   0   'False
       Width           =   1095
       _ExtentX        =   1931
@@ -39,12 +58,12 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.pdSlider sldLanczos 
       Height          =   375
-      Left            =   5640
+      Left            =   11400
       TabIndex        =   5
-      Top             =   4245
+      Top             =   4125
       Visible         =   0   'False
-      Width           =   3735
-      _ExtentX        =   6588
+      Width           =   2655
+      _ExtentX        =   4683
       _ExtentY        =   661
       Min             =   2
       Value           =   3
@@ -53,9 +72,9 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.pdCheckBox chkEstimate 
       Height          =   375
-      Left            =   600
+      Left            =   6360
       TabIndex        =   4
-      Top             =   4290
+      Top             =   4170
       Width           =   3735
       _ExtentX        =   6588
       _ExtentY        =   661
@@ -63,11 +82,11 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.pdDropDown cmbFit 
       Height          =   855
-      Left            =   480
+      Left            =   6360
       TabIndex        =   2
-      Top             =   4860
-      Width           =   8775
-      _ExtentX        =   15478
+      Top             =   4740
+      Width           =   7695
+      _ExtentX        =   13573
       _ExtentY        =   1508
       Caption         =   "when changing aspect ratio, fit image to new size by"
    End
@@ -76,27 +95,27 @@ Begin VB.Form FormResize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5955
-      Width           =   9630
-      _ExtentX        =   16986
+      Top             =   5730
+      Width           =   14430
+      _ExtentX        =   25453
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
-      Left            =   480
+      Left            =   5760
       TabIndex        =   1
-      Top             =   360
-      Width           =   8775
-      _ExtentX        =   15478
+      Top             =   240
+      Width           =   8415
+      _ExtentX        =   14843
       _ExtentY        =   5027
    End
    Begin PhotoDemon.pdDropDown cboResample 
       Height          =   735
-      Left            =   480
+      Left            =   6360
       TabIndex        =   3
-      Top             =   3360
-      Width           =   8895
-      _ExtentX        =   15690
+      Top             =   3240
+      Width           =   7695
+      _ExtentX        =   13573
       _ExtentY        =   1296
       Caption         =   "resampling"
    End
@@ -139,6 +158,9 @@ Private Const USE_GDIPLUS_RESIZE As Boolean = True
 ' This value should be set to TRUE in production code.
 Private Const USE_FREEIMAGE_RESIZE As Boolean = True
 
+'Internal flag to report performance.  Very helpful while debugging; not helpful in production.
+Private Const REPORT_PREVIEW_PERF As Boolean = False
+
 'PhotoDemon's resampling options have expanded over the years.  Unfortunately, old versions of the app
 ' stored resampling settings using 0-based integers.  I have since switched to a version-agnostic string system,
 ' but these old enums are kept around so PD can map old macros to modern resampling constants.
@@ -175,13 +197,64 @@ End Enum
 ' and can be externally accessed by the ResizeTarget property.
 Private m_ResizeTarget As PD_ActionTarget
 
+'This dialog now supports live previews, which means we need a track a bunch of preview-related settings.
+
+'Original, untouched source DIB (full image or layer, depending on dialog mode)
+Private m_SrcComposite As pdDIB
+
+'Cropped region of the source image pertaining to the current resize area.  May be larger or smaller
+' than the preview DIB, depending on resize settings (e.g. up- or downsampling).
+Private m_PreviewSrc As pdDIB
+
+'Current preview, resized to the same size as the interactive preview box on the left and containing
+' a preview of what a region of the resized image will look like.
+Private m_PreviewDst As pdDIB
+
+'Current x/y offset - IN SOURCE IMAGE/LAYER COORDINATES - of the preview box
+Private m_PreviewSrcX As Long, m_PreviewSrcY As Long
+
+'Current source width/height of the image/layer (depends on m_ResizeTarget, above)
+Private m_SrcImageWidth As Long, m_SrcImageHeight As Long
+
+'Source and destination rectangle of the current preview, in their respective coordinate spaces.
+Private m_DstRectF As RectF, m_SrcRectF As RectF
+
+'Mouse is in the preview area
+Private m_MouseInPreview As Boolean
+
+'Forcibly suspend previews until the dialog is ready
+Private m_PreviewsAllowed As Boolean
+
 Public Property Let ResizeTarget(newTarget As PD_ActionTarget)
     m_ResizeTarget = newTarget
+    If (m_ResizeTarget = pdat_Image) Then
+        m_SrcImageWidth = PDImages.GetActiveImage.Width
+        m_SrcImageHeight = PDImages.GetActiveImage.Height
+        PDImages.GetActiveImage.GetCompositedImage m_SrcComposite, True
+    Else
+        m_SrcImageWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+        m_SrcImageHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
+        If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True) Then
+            PDImages.GetActiveImage.GetActiveLayer.GetAffineTransformedDIB m_SrcComposite, 0, 0
+        Else
+            Set m_SrcComposite = New pdDIB
+            m_SrcComposite.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.layerDIB
+        End If
+    End If
 End Property
 
 Private Sub cboResample_Click()
     sldLanczos.Visible = (cboResample.ListIndex = rf_Lanczos)
     lblLanczos.Visible = (cboResample.ListIndex = rf_Lanczos)
+    UpdatePreview
+End Sub
+
+Private Sub chkEstimate_Click()
+    UpdatePreview
+End Sub
+
+Private Sub cmbFit_Click()
+    UpdatePreview   'Is this necessary?
 End Sub
 
 'OK button
@@ -248,7 +321,10 @@ Private Sub Form_Activate()
     End If
     
     ucResize.AspectRatioLock = True
-
+    
+    m_PreviewsAllowed = True
+    UpdatePreview True
+    
 End Sub
 
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
@@ -459,17 +535,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     ' (In the future, it would be nice to develop a smarter heuristic for this step - but for now,
     '  use bicubic resampling, and auto-select the shrink-optimized variant based on the
     '  dimensions used for the resize.)
-    If (resampleMethod = rf_Automatic) Then
-        If (fitWidth < srcWidth) Or (fitHeight < srcHeight) Then
-            If allowApproximation Then
-                resampleMethod = rf_CubicBSpline
-            Else
-                resampleMethod = rf_Lanczos
-            End If
-        Else
-            resampleMethod = rf_Mitchell
-        End If
-    End If
+    If (resampleMethod = rf_Automatic) Then resampleMethod = ConvertAutoResample(srcWidth, srcHeight, fitWidth, fitHeight, allowApproximation)
     
     'If we use an outside library for the resize (e.g. FreeImage, GDI+), we won't receive progress reports
     ' during the resize.  For full-image resizing this may not be a problem (as we can use layer count as
@@ -807,3 +873,236 @@ Private Function GetResampleMethod(ByRef cParams As pdSerialize, ByRef allowAppr
     End If
 
 End Function
+
+'Rendering the preview box is easy - just paint the current preview cache to the target DC!
+Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
+    
+    'The user can disable live previews.  This is helpful on older/performance-constrained PCs.
+    If chkPreview.Value And (Not m_PreviewDst Is Nothing) Then
+    
+        'Start by painting a checkerboard background on the destination
+        Dim xOffset As Long, yOffset As Long
+        xOffset = (picPreview.Width - m_PreviewDst.GetDIBWidth) \ 2
+        yOffset = (picPreview.Height - m_PreviewDst.GetDIBHeight) \ 2
+        GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, xOffset, yOffset, m_PreviewDst.GetDIBWidth, m_PreviewDst.GetDIBHeight, g_CheckerboardPattern, targetDC, True, True
+        
+        'Then paint the preview atop it
+        m_PreviewDst.AlphaBlendToDC targetDC, dstX:=xOffset, dstY:=yOffset
+        
+    End If
+    
+    'Always finish by drawing a border around the control
+    Dim borderColor As Long
+    If m_MouseInPreview And chkPreview.Value Then
+        borderColor = g_Themer.GetGenericUIColor(UI_Accent, True, False, True)
+    Else
+        borderColor = g_Themer.GetGenericUIColor(UI_GrayDefault)
+    End If
+    
+    Dim cSurface As pd2DSurface
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundDC targetDC
+    cSurface.SetSurfaceAntialiasing P2_AA_None
+    
+    Dim cPen As pd2DPen
+    Set cPen = New pd2DPen
+    cPen.SetPenWidth 1!
+    cPen.SetPenColor borderColor
+    cPen.SetPenLineJoin P2_LJ_Miter
+    
+    PD2D.DrawRectangleI cSurface, cPen, 0, 0, picPreview.GetWidth - 1, picPreview.GetHeight - 1
+    
+    Set cSurface = Nothing: Set cPen = Nothing
+End Sub
+
+Private Sub picPreview_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInPreview = True
+    picPreview.RequestRedraw True
+End Sub
+
+Private Sub picPreview_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInPreview = False
+    picPreview.RequestRedraw True
+End Sub
+
+Private Sub sldLanczos_Change()
+    UpdatePreview
+End Sub
+
+Private Sub ucResize_Change(ByVal newWidthPixels As Double, ByVal newHeightPixels As Double)
+    UpdatePreview
+End Sub
+
+'If the user has requested "automatic" resample mode, convert that to an actual resample mode.
+' (In the future, it would be nice to develop a smarter heuristic for this step - but for now,
+'  use standard resampling rules from Photoshop.)
+Private Function ConvertAutoResample(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal allowApproximation As Boolean) As PD_ResamplingFilter
+
+    If (dstWidth < srcWidth) Or (dstHeight < srcHeight) Then
+        If allowApproximation Then
+            ConvertAutoResample = rf_CubicBSpline
+        Else
+            ConvertAutoResample = rf_Lanczos
+        End If
+    Else
+        ConvertAutoResample = rf_Mitchell
+    End If
+    
+End Function
+
+Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
+    
+    'Failsafe checks
+    If (m_SrcComposite Is Nothing) Then Exit Sub
+    If ((Not cmdBar.PreviewsAllowed) Or (Not m_PreviewsAllowed)) And (Not forcePreviewNow) Then Exit Sub
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+        
+    'The user can disable live previews.  This is helpful on older PCs.
+    If chkPreview.Value Then
+        
+        'Cache the current source and destination rectangles.
+        ' (If they haven't changed since the last preview, we don't need to regenerate them.)
+        Dim lastSrcRectF As RectF
+        lastSrcRectF = m_SrcRectF
+        
+        'Next, we need to calculate the rectangle in the source image we need to "snip" out a preview source.
+        
+        'Calculate the the source image's width/height.  If the source image is small (or the destination image
+        ' is small due to current resizing), we'll need to position the preview image accordingly.
+        Dim srcWidth As Long, srcHeight As Long
+        srcWidth = m_SrcComposite.GetDIBWidth
+        srcHeight = m_SrcComposite.GetDIBHeight
+        
+        'Next, figure out an x/y scale of the current image vs the resized coordinates
+        Dim xScale As Double, yScale As Double
+        xScale = ucResize.ResizeWidthInPixels / srcWidth
+        yScale = ucResize.ResizeHeightInPixels / srcHeight
+        
+        'Working backward from the destination image (whose size is fixed, since it's tied to the preview box),
+        ' calculate a corresponding rectangle in the source image that matches the current scale factor.
+        
+        'Start by filling the destination rect with dummy values
+        With m_DstRectF
+            .Left = 0
+            .Top = 0
+            .Width = picPreview.GetWidth
+            .Height = picPreview.GetHeight
+        End With
+        
+        'Now, work backward - using the current scale factor - to find a corresponding region in the source image.
+        With m_SrcRectF
+            .Left = m_PreviewSrcX
+            .Top = m_PreviewSrcY
+            .Width = m_DstRectF.Width / xScale
+            .Height = m_DstRectF.Height / yScale
+        End With
+        
+        'We now have a corresponding source rectangle.  We now need to modify the source rectangle to account
+        ' for things like "larger than the source image" and other boundary conditions.
+        With m_SrcRectF
+            
+            'Check OOB on right edge
+            If ((.Left + .Width) > srcWidth) Then
+                
+                'The current rectangle lies outside the image.  Attempt to bring it in-bounds by
+                ' moving the rectangle left.
+                .Left = .Left - ((.Left + .Width) - srcWidth)
+                
+                'If moving the rectangle left pushes it out of bounds, we have no choice but to shrink the
+                ' width entirely, to the smallest functional width we can afford.
+                If (.Left < 0) Then
+                    .Left = 0
+                    .Width = srcWidth
+                End If
+                
+            End If
+            
+            'Repeat the above steps for the bottom boundary
+            If ((.Top + .Height) > srcHeight) Then
+                
+                'The current rectangle lies outside the image.  Attempt to bring it in-bounds by
+                ' moving the rectangle up.
+                .Top = .Top - ((.Top + .Height) - srcHeight)
+                
+                'If moving the rectangle up pushes it out of bounds, we have no choice but to shrink the
+                ' height entirely, to the smallest functional height we can afford.
+                If (.Top < 0) Then
+                    .Top = 0
+                    .Height = srcHeight
+                End If
+                
+            End If
+            
+        End With
+        
+        'Left and top boundaries for the source rectangle are now properly cropped, as are width/height.
+        ' This means we have the source rectangle we want to use.
+        
+        'We now need to reverse-calculate a corresponding destination width/height for this rectangle.
+        With m_DstRectF
+            .Width = m_SrcRectF.Width * xScale
+            .Height = m_SrcRectF.Height * yScale
+            
+            'Left and Top will need to be dealt with in the future; for now, zero them for testing
+            .Left = 0
+            .Top = 0
+            
+        End With
+        
+        'Crop out the source region into a standalone DIB
+        ' TODO: new resize function that allows you to set source and destination rects?
+        If (m_PreviewSrc Is Nothing) Then Set m_PreviewSrc = New pdDIB
+        If (Not PDMath.AreRectFsEqual(lastSrcRectF, m_SrcRectF)) Then
+            m_PreviewSrc.CreateBlank m_SrcRectF.Width, m_SrcRectF.Height, 32, 0, 0
+            GDI.BitBltWrapper m_PreviewSrc.GetDIBDC, 0, 0, m_SrcRectF.Width, m_SrcRectF.Height, m_SrcComposite.GetDIBDC, m_SrcRectF.Left, m_SrcRectF.Top, vbSrcCopy
+        End If
+        
+        'Failsafe check during initialization
+        If (m_PreviewSrc.GetDIBWidth = 0) Or (m_PreviewSrc.GetDIBDC = 0) Then
+            Debug.Print "not refreshing preview because source image is null!"
+            Exit Sub
+        End If
+        
+        If REPORT_PREVIEW_PERF Then PDDebug.LogAction "Prep: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+        
+        'Create the destination DIB at the required size
+        If (m_PreviewDst Is Nothing) Then Set m_PreviewDst = New pdDIB
+        m_PreviewDst.CreateBlank m_DstRectF.Width, m_DstRectF.Height, 32, 0, 0
+        
+        If REPORT_PREVIEW_PERF Then PDDebug.LogAction "Dest: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+        
+        'If the x/y scales are 1.0, it means the image is not being resized.  Simply copy it as-is into place.
+        If (xScale = 1#) And (yScale = 1#) Then
+            GDI.BitBltWrapper m_PreviewDst.GetDIBDC, 0, 0, m_DstRectF.Width, m_DstRectF.Height, m_PreviewSrc.GetDIBDC, 0, 0, vbSrcCopy
+            m_PreviewDst.SetInitialAlphaPremultiplicationState True
+            
+        'Ifi the x/y scales are *not* 1.0, it means the image is being resized.  We need to generate a preview.
+        Else
+            
+            'Determine which resampling strategy to preview
+            Dim resampleMethod As PD_ResamplingFilter
+            resampleMethod = cboResample.ListIndex
+            If (resampleMethod = rf_Automatic) Then resampleMethod = ConvertAutoResample(m_SrcRectF.Width, m_SrcRectF.Height, m_DstRectF.Width, m_DstRectF.Height, chkEstimate.Value)
+            
+            'Perform the resize (different methods TODO)
+            Resampling.SetLanczosRadius sldLanczos.Value
+            Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+            
+            'Ensure correct premultiplication
+            m_PreviewDst.SetAlphaPremultiplication True
+            
+        End If
+        
+    '/end "show previews" checkbox
+    End If
+    
+    'Request a redraw
+    picPreview.RequestRedraw forcePreviewNow
+        
+    If REPORT_PREVIEW_PERF Then PDDebug.LogAction "Final: " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
+End Sub
