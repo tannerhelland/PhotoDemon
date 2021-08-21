@@ -224,7 +224,7 @@ Option Explicit
 
 'This object provides a single raised event:
 ' - Change (which triggers when a size value is updated)
-Public Event Change(newWidthPixels As Double, newHeightPixels As Double, ByVal curWidthText As String, ByVal curHeightText As String)
+Public Event Change(ByVal newWidthPixels As Double, ByVal newHeightPixels As Double)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -260,6 +260,9 @@ Private m_UnknownSizeMode As Boolean
 
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
+
+'To minimize the frequency of raised _Change events, we only raise events if something has actually changed.
+Private m_LastImgWidthPixels As Long, m_LastImgHeightPixels As Long
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -905,7 +908,12 @@ Private Sub SyncDimensions(ByVal useWidthAsSource As Boolean)
     imgWidthPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
     imgHeightPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
     
-    RaiseEvent Change(imgWidthPixels, imgHeightPixels, tudWidth, tudHeight)
+    'Minimize events by auto-detecting when values haven't changed
+    If (imgWidthPixels <> m_LastImgWidthPixels) Or (imgHeightPixels <> m_LastImgHeightPixels) Then
+        m_LastImgWidthPixels = imgWidthPixels
+        m_LastImgHeightPixels = imgHeightPixels
+        RaiseEvent Change(imgWidthPixels, imgHeightPixels)
+    End If
 
 End Sub
 
