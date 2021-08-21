@@ -1057,6 +1057,7 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
         If (Not PDMath.AreRectFsEqual(lastSrcRectF, m_SrcRectF)) Then
             m_PreviewSrc.CreateBlank m_SrcRectF.Width, m_SrcRectF.Height, 32, 0, 0
             GDI.BitBltWrapper m_PreviewSrc.GetDIBDC, 0, 0, m_SrcRectF.Width, m_SrcRectF.Height, m_SrcComposite.GetDIBDC, m_SrcRectF.Left, m_SrcRectF.Top, vbSrcCopy
+            m_PreviewSrc.SetInitialAlphaPremultiplicationState True
         End If
         
         'Failsafe check during initialization
@@ -1092,7 +1093,12 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
             Resampling.SetLanczosRadius sldLanczos.Value
             Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
             
-            'Ensure correct premultiplication
+            'Ensure correct premultiplication by un-premultiplying, then re-premultiplying alpha.
+            ' (This is necessary because some operators with sharpening tendencies - like Lanczos -
+            ' will weight color values from transparent pixels as part of the algorithm, so we want
+            ' to resample in the premultiplied color space to minimize absorption of color from
+            ' transparent regions.)
+            m_PreviewDst.SetAlphaPremultiplication False, True
             m_PreviewDst.SetAlphaPremultiplication True
             
         End If
