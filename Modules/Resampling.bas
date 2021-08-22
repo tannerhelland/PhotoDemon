@@ -24,6 +24,7 @@ Attribute VB_Name = "Resampling"
 
 'Timing reports are helpful during debugging.  Do not enable in production.
 Private Const REPORT_RESAMPLE_PERF As Boolean = True
+Private m_NetTime As Double, m_Iterations As Long
 
 'Currently available resamplers
 Public Enum PD_ResamplingFilter
@@ -74,13 +75,13 @@ End Type
     
 Private Type ContributorEntry
     nCount As Long
-    weightSum As Double
+    weightSum As Single
     p() As Contributor
 End Type
 
 'Lanczos supports variable lobes currently locked on the range 1-10; note that performance scales O(2n) against
 ' this value (it's separable), so larger radii require longer processing times.
-Private Const LANCZOS_DEFAULT = 3, LANCZOS_MIN = 2, LANCZOS_MAX = 10
+Private Const LANCZOS_DEFAULT As Long = 3, LANCZOS_MIN As Long = 2, LANCZOS_MAX As Long = 10
 Private m_LanczosRadius As Long
 
 'Our current resampling approach uses an intermediate copy of the image; this allows us to handle x and y
@@ -230,8 +231,9 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     End If
     
     'Performance reporting (via debug logs) is controlled by a constant at the top of this class
-    Dim startTime As Currency
+    Dim startTime As Currency, firstTime As Currency
     VBHacks.GetHighResTime startTime
+    firstTime = startTime
     
     'Validate all internal values as well
     If (m_LanczosRadius < LANCZOS_MIN) Or (m_LanczosRadius > LANCZOS_MAX) Then m_LanczosRadius = LANCZOS_DEFAULT
@@ -459,7 +461,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     'Horizontal sampling is now complete.
     If REPORT_RESAMPLE_PERF Then
-        PDDebug.LogAction "Resampling.ResampleImage horizontal 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        'PDDebug.LogAction "Resampling.ResampleImage horizontal 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     End If
     
@@ -641,8 +643,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     End If
     
     If REPORT_RESAMPLE_PERF Then
-        PDDebug.LogAction "Resampling.ResampleImage vertical 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
-        VBHacks.GetHighResTime startTime
+        'PDDebug.LogAction "Resampling.ResampleImage vertical 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        m_NetTime = m_NetTime + VBHacks.GetTimerDifferenceNow(firstTime)
+        m_Iterations = m_Iterations + 1
+        PDDebug.LogAction "Average resampling time for this session: " & VBHacks.GetTotalTimeAsString((m_NetTime / m_Iterations) * 1000)
     End If
     
     'Resampling complete!
