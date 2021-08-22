@@ -69,13 +69,13 @@ End Enum
 'Weight calculation
 Private Type Contributor
     pixel As Long
-    weight As Double
+    weight As Single    'Because this is declared as an array (see below), single provides a perf advantage over double
 End Type
     
 Private Type ContributorEntry
     nCount As Long
-    p() As Contributor
     weightSum As Double
+    p() As Contributor
 End Type
 
 'Lanczos supports variable lobes currently locked on the range 1-10; note that performance scales O(2n) against
@@ -87,8 +87,7 @@ Private m_LanczosRadius As Long
 ' resampling independently (which improves performance and greatly simplifies the code, at some trade-off to
 ' memory consumption).  This intermediate array will be reused on subsequent calls, and can also be manually
 ' freed when bulk resizing completes.
-Private m_tmpPixels() As Byte
-Private m_tmpPixelSize As Long
+Private m_tmpPixels() As Byte, m_tmpPixelSize As Long
 
 Public Sub FreeBuffers()
     m_tmpPixelSize = 0
@@ -380,7 +379,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     'With weights successfully calculated, we can now filter horizontally from the input image
     ' to the temporary "working" copy.
     Dim srcImageData() As Byte, srcSA As SafeArray1D
-    Dim idxPixel As Long
+    Dim idxPixel As Long, wSum As Double
     
     'If the image is changing size, perform resampling now
     If (xScale <> 1#) Then
@@ -393,7 +392,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
             
             'Each column (destination image width)...
             For i = 0 To dstWidth - 1
-    
+                
                 intensityB = 0#
                 intensityG = 0#
                 intensityR = 0#
@@ -411,10 +410,12 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 'Weight and clamp final RGBA values.  (Note that normally you'd *divide* by the
                 ' weighted sum here, but we already normalized that value in a previous step.)
-                b = Int(intensityB * contrib(i).weightSum + 0.5)
-                g = Int(intensityG * contrib(i).weightSum + 0.5)
-                r = Int(intensityR * contrib(i).weightSum + 0.5)
-                a = Int(intensityA * contrib(i).weightSum + 0.5)
+                wSum = contrib(i).weightSum
+                
+                b = Int(intensityB * wSum + 0.5)
+                g = Int(intensityG * wSum + 0.5)
+                r = Int(intensityR * wSum + 0.5)
+                a = Int(intensityA * wSum + 0.5)
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
@@ -483,7 +484,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         For i = 0 To dstHeight - 1
           
             contrib(i).nCount = 0
-            ReDim contrib(i).p(0 To Fix(2 * radius + 1)) As Contributor
+            ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
           
             center = (i + 0.5) / yScale
@@ -592,20 +593,22 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 Next j
                 
                 'Weight and clamp final RGBA values
-                b = Int(intensityB * contrib(i).weightSum + 0.5)
-                g = Int(intensityG * contrib(i).weightSum + 0.5)
-                r = Int(intensityR * contrib(i).weightSum + 0.5)
-                a = Int(intensityA * contrib(i).weightSum + 0.5)
+                wSum = contrib(i).weightSum
                 
-                If (b < 0) Then b = 0
-                If (g < 0) Then g = 0
-                If (r < 0) Then r = 0
-                If (a < 0) Then a = 0
+                b = Int(intensityB * wSum + 0.5)
+                g = Int(intensityG * wSum + 0.5)
+                r = Int(intensityR * wSum + 0.5)
+                a = Int(intensityA * wSum + 0.5)
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
                 If (r > 255) Then r = 255
                 If (a > 255) Then a = 255
+                
+                If (b < 0) Then b = 0
+                If (g < 0) Then g = 0
+                If (r < 0) Then r = 0
+                If (a < 0) Then a = 0
                 
                 'Assign new RGBA values to the working data array
                 idxPixel = (k * 4) + (i * dstWidth * 4)
