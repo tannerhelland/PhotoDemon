@@ -1091,7 +1091,7 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
             
             'Perform the resize (different methods TODO)
             Resampling.SetLanczosRadius sldLanczos.Value
-            Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
             
             'Ensure correct premultiplication by un-premultiplying, then re-premultiplying alpha.
             ' (This is necessary because some operators with sharpening tendencies - like Lanczos -
