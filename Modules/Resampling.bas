@@ -24,7 +24,7 @@ Attribute VB_Name = "Resampling"
 '***************************************************************************
 
 'Timing reports are helpful during debugging.  Do not enable in production.
-Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = True
+Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = False
 Private m_NetTime As Double, m_Iterations As Long
 
 'Currently available resamplers
@@ -735,7 +735,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     ReDim contrib(0 To dstWidth - 1) As ContributorEntry
     ReDim contribI(0 To dstWidth - 1) As ContributorEntryI
     
-    Dim radius As Double, center As Double, weight As Double
+    Dim radius As Double, center As Double, weight As Double, weightI As Long
     Dim intensityR As Double, intensityG As Double, intensityB As Double, intensityA As Double
     Dim iR As Long, iG As Long, iB As Long, iA As Long
     Dim pxLeft As Long, pxRight As Long, i As Long, j As Long, k As Long
@@ -863,7 +863,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     'With weights successfully calculated, we can now filter horizontally from the input image
     ' to the temporary "working" copy.
     Dim srcImageData() As Byte, srcSA As SafeArray1D
-    Dim idxPixel As Long, wSum As Double
+    Dim idxPixel As Long, wSum As Double, wSumI As Long
     
     'If the image is changing size, perform resampling now
     If (xScale <> 1#) Then
@@ -884,22 +884,22 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 
                 'Generate weighted result for each color component
                 For j = 0 To contribI(i).nCount - 1
-                    weight = contribI(i).p(j).weight
+                    weightI = contribI(i).p(j).weight
                     idxPixel = contribI(i).p(j).pixel
-                    iB = iB + (srcImageData(idxPixel) * weight)
-                    iG = iG + (srcImageData(idxPixel + 1) * weight)
-                    iR = iR + (srcImageData(idxPixel + 2) * weight)
-                    iA = iA + (srcImageData(idxPixel + 3) * weight)
+                    iB = iB + (srcImageData(idxPixel) * weightI)
+                    iG = iG + (srcImageData(idxPixel + 1) * weightI)
+                    iR = iR + (srcImageData(idxPixel + 2) * weightI)
+                    iA = iA + (srcImageData(idxPixel + 3) * weightI)
                 Next j
                 
                 'Weight and clamp final RGBA values.  (Note that normally you'd *divide* by the
                 ' weighted sum here, but we already normalized that value in a previous step.)
-                wSum = contrib(i).weightSum
+                wSumI = contribI(i).weightSum
                 
-                b = iB * wSum
-                g = iG * wSum
-                r = iR * wSum
-                a = iA * wSum
+                b = iB \ wSumI
+                g = iG \ wSumI
+                r = iR \ wSumI
+                a = iA \ wSumI
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
