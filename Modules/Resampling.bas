@@ -3,17 +3,19 @@ Attribute VB_Name = "Resampling"
 'Image Resampling engine
 'Copyright 2021-2021 by Tanner Helland
 'Created: 16/August/21
-'Last updated: 22/August/21
-'Last update: myriad optimizations
+'Last updated: 23/August/21
+'Last update: new integer-based resampler (ResampleImageI), which provides a great performance boost over the
+'             floating-point version with minimal impact to quality (results are 99.9% similar per PSNR).
 '
 'For many years, PhotoDemon relied on external libraries (GDI+, FreeImage) for its resampling algorithms.
-' As of 9.0, however, PD has its own homebrew resampler that provides excellent quality and many more
-' resampling filters.
+' As of v9.0, however, PD now ships with two native resampling engines (one floating-point-based, one integer-based).
+' These native resampling engines support many more resampling filters, and their quality is excellent while
+' maintaining impressive performance (especially for VB6!).
 '
-'The general design of PD's resampling engine is adopted from a resampling project originally written by
-' Libor Tinka. Libor shared his original C# resampling code under a Code Project Open License (CPOL):
+'The general design of PD's floating-point resampling engine is adopted from a resampling project originally
+' written by Libor Tinka. Libor shared his original C# resampling code under a Code Project Open License (CPOL):
 '  - https://www.codeproject.com/info/cpol10.aspx
-' His original, unmodified source code is available here (link good as of Aug 2021):
+' His original, unmodified resampling source code is available here (link good as of Aug 2021):
 '  - https://www.codeproject.com/Articles/11143/Image-Resizing-outperform-GDI
 ' Thank you to Libor for sharing his informative C# image resampling project.  (Note that a number of
 ' critical bug-fixes are addressed in PD's version of the code; details are in the comments.)
@@ -23,9 +25,13 @@ Attribute VB_Name = "Resampling"
 '
 '***************************************************************************
 
+Option Explicit
+
 'Timing reports are helpful during debugging.  Do not enable in production.
 Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = False
-Private m_NetTime As Double, m_Iterations As Long
+
+'Float- and integer-based methods are tracked separately
+Private m_NetTimeF As Double, m_IterationsF As Long, m_NetTimeI As Double, m_IterationsI As Long
 
 'Currently available resamplers
 Public Enum PD_ResamplingFilter
@@ -103,11 +109,20 @@ Private m_LanczosRadius As Long
 ' freed when bulk resizing completes.
 Private m_tmpPixels() As Byte, m_tmpPixelSize As Long
 
+'Freeing the temporary resize buffers also resets perf trackers
 Public Sub FreeBuffers()
     m_tmpPixelSize = 0
     Erase m_tmpPixels
+    m_NetTimeF = 0#
+    m_NetTimeI = 0#
+    m_IterationsF = 0
+    m_IterationsI = 0
 End Sub
 
+'The radius of most resample filters is fixed.  Lanczos is an exception since it's a windowed approximation of a "perfect"
+' Sinc function (and technically this changes the lobe count, not the radius FYI).  Larger radius doesn't necessarily
+' correlate with "better visual results"; it's more about theoretical accuracy which may or may not translate to
+' something a human prefers - so don't crank this value up unnecessarily.
 Public Function GetLanczosRadius() As Long
     GetLanczosRadius = m_LanczosRadius
 End Function
@@ -222,20 +237,22 @@ Public Function GetResamplerID(ByRef rsName As String) As PD_ResamplingFilter
 End Function
 
 'Resample an image using a variety of resampling filters.  A few notes...
-' 1) This implementation uses separable resampling, which means resampling occurs in two passes (one in each direction.)
+' 1) This implementation uses separable resampling, which means resampling occurs in two passes (one in each direction).
 '     This provides performance O(2n) vs O(n^2).
 ' 2) Resampling requires an intermediary copy to store a copy of the data resampled by the first pass.  The code
-'     attempts to reuse the same buffer between calls; to free this shared buffer, call FreeBuffers().
-'    two dimensions simultaneously (actually this will take two passes, but that's invisible to the caller).
-' 3) When two-dimensional resampling is required, the x-dimension will be resampled first.
-' 4) 32-bpp inputs are required.  All channels are resampled using identical code and weights.
+'     attempts to reuse the same buffer between calls; to free this shared buffer, call FreeBuffers().  The size of
+'     this buffer is (newWidth x oldHeight x numOfChannels).
+' 3) When two-dimensional resampling is required, the x-dimension will be resampled first.  This is by design as
+'     VB array allocation favors locality in the x-direction, so it's generally faster to do the largest computational
+'     pass in the X-direction.
+' 4) 32-bpp 4-channel inputs are required.  All channels are resampled using identical code and weights.
 ' 5) Resampling should always be applied in the premultiplied alpha space.  Without this, you risk bleeding
-'     color values from transparent pixels into neighboring regions.
+'     color values from transparent pixels into neighboring regions.  (PD handles this internally.)
 Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal rsFilter As PD_ResamplingFilter, Optional ByVal displayProgress As Boolean = False) As Boolean
     
     ResampleImage = False
-    
     Const FUNC_NAME As String = "ResampleImage"
+    If (Not REPORT_RESAMPLE_PERF) Then PDDebug.LogAction "Float resampler started."
     
     'Validate all inputs
     If (srcDIB Is Nothing) Then
@@ -301,6 +318,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     End If
     
     'Now, calculate all input weights
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'Horizontal downsampling
     If (xScale < 1#) Then
@@ -333,7 +351,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 ' include values that contribute less than 1 integer value of a pixel's potential color (1/255)
                 ' to the final result.  Ignoring extreme tails of the distribution provides a nice performance
                 ' improvement with no meaningful change to the final result (across all resampling algorithms).
-                If (Abs(weight) > 0.003921568627451) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
@@ -341,8 +359,6 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 End If
             
             Next j
-            
-            Debug.Print contrib(i).nCount, contrib(i).weightSum
             
             'Normalize the weight sum before exiting
             If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
@@ -373,7 +389,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 
-                If (weight <> 0#) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
@@ -398,7 +414,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     'With weights successfully calculated, we can now filter horizontally from the input image
     ' to the temporary "working" copy.
-    Dim srcImageData() As Byte, srcSA As SafeArray1D
+    Dim imgPixels() As Byte, srcSA As SafeArray1D
     Dim idxPixel As Long, wSum As Double
     
     'If the image is changing size, perform resampling now
@@ -408,7 +424,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         For k = 0 To srcHeight - 1
             
             'Wrap a VB array around the image at this line
-            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, k
+            srcDIB.WrapArrayAroundScanline imgPixels, srcSA, k
             
             'Each column (destination image width)...
             For i = 0 To dstWidth - 1
@@ -422,10 +438,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 For j = 0 To contrib(i).nCount - 1
                     weight = contrib(i).p(j).weight
                     idxPixel = contrib(i).p(j).pixel
-                    intensityB = intensityB + (srcImageData(idxPixel) * weight)
-                    intensityG = intensityG + (srcImageData(idxPixel + 1) * weight)
-                    intensityR = intensityR + (srcImageData(idxPixel + 2) * weight)
-                    intensityA = intensityA + (srcImageData(idxPixel + 3) * weight)
+                    intensityB = intensityB + (imgPixels(idxPixel) * weight)
+                    intensityG = intensityG + (imgPixels(idxPixel + 1) * weight)
+                    intensityR = intensityR + (imgPixels(idxPixel + 2) * weight)
+                    intensityA = intensityA + (imgPixels(idxPixel + 3) * weight)
                 Next j
                 
                 'Weight and clamp final RGBA values.  (Note that normally you'd *divide* by the
@@ -467,7 +483,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         Next k
     
         'Free any unsafe references
-        srcDIB.UnwrapArrayFromDIB srcImageData
+        srcDIB.UnwrapArrayFromDIB imgPixels
     
     'If the image's horizontal size *isn't* changing, just mirror the data into the temporary array.
     ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
@@ -519,7 +535,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 weight = GetValue(rsFilter, (center - j - 0.5) * yScale)
                 
-                If (Abs(weight) > 0.003921568627451) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
@@ -556,7 +572,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 
-                If (weight <> 0#) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
                     contrib(i).weightSum = contrib(i).weightSum + weight
@@ -586,7 +602,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         
         'Because we need to access pixels across rows, it's easiest to just wrap a single array around
         'the entire image.
-        dstDIB.WrapArrayAroundDIB_1D srcImageData, srcSA
+        dstDIB.WrapArrayAroundDIB_1D imgPixels, srcSA
         
         'Each column (new image width)...
         For k = 0 To dstWidth - 1
@@ -632,10 +648,10 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
                 
                 'Assign new RGBA values to the working data array
                 idxPixel = (k * 4) + (i * dstWidth * 4)
-                srcImageData(idxPixel) = b
-                srcImageData(idxPixel + 1) = g
-                srcImageData(idxPixel + 2) = r
-                srcImageData(idxPixel + 3) = a
+                imgPixels(idxPixel) = b
+                imgPixels(idxPixel + 1) = g
+                imgPixels(idxPixel + 2) = r
+                imgPixels(idxPixel + 3) = a
                 
             'Next row...
             Next i
@@ -650,7 +666,7 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
         Next k
         
         'Release all unsafe references
-        dstDIB.UnwrapArrayFromDIB srcImageData
+        dstDIB.UnwrapArrayFromDIB imgPixels
         
     'If the image's vertical size *isn't* changing, just mirror the intermediate data into dstImage.
     ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
@@ -662,9 +678,9 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
     If REPORT_RESAMPLE_PERF Then
         If REPORT_DETAILED_PERF Then PDDebug.LogAction "Resampling.ResampleImage vertical 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
-        m_NetTime = m_NetTime + VBHacks.GetTimerDifferenceNow(firstTime)
-        m_Iterations = m_Iterations + 1
-        PDDebug.LogAction "Average resampling time for this session: " & VBHacks.GetTotalTimeAsString((m_NetTime / m_Iterations) * 1000)
+        m_NetTimeF = m_NetTimeF + VBHacks.GetTimerDifferenceNow(firstTime)
+        m_IterationsF = m_IterationsF + 1
+        PDDebug.LogAction "Average resampling time for this session (F): " & VBHacks.GetTotalTimeAsString((m_NetTimeF / m_IterationsF) * 1000)
     End If
     
     'Resampling complete!
@@ -672,15 +688,17 @@ Public Function ResampleImage(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVa
     
 End Function
 
-'Resample an image using integer-based transforms.  This function is faster than the "pure"
-' floating-point version, above, but at a slight hit to quality.  Whether or not the differences
-' are noticeable is up to you; PSNR suggests that they are not meaningful, however.
-' (Note that all the same caveats apply as the original function regarding data inputs.)
+'Resample an image using integer-based transforms.  This function has 2x or better performance than the "pure"
+' floating-point version, above, but at a slight hit to quality.  Whether or not the differences are noticeable
+' is ultimately up to the viewer, but PSNR suggests the differences are not meaningful (99.8-99.9% similarity to
+' the floating-point version).
+'
+'Finally, note that all the same caveats as the original function apply, especially regarding input/output formats.
 Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal rsFilter As PD_ResamplingFilter, Optional ByVal displayProgress As Boolean = False) As Boolean
     
     ResampleImageI = False
-    
     Const FUNC_NAME As String = "ResampleImageI"
+    If (Not REPORT_RESAMPLE_PERF) Then PDDebug.LogAction "Integer resampler started."
     
     'Validate all inputs
     If (srcDIB Is Nothing) Then
@@ -747,7 +765,9 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
         VBHacks.GetHighResTime startTime
     End If
     
-    'Now, calculate all input weights
+    'Now, calculate all input weights.  (Unique to this integer version is that we need to track the
+    ' maximum weight value in the table; we'll use this to normalize all weights against LONG_MAX.)
+    Const ONE_DIV_255 As Double = 1# / 255#
     
     'Horizontal downsampling
     If (xScale < 1#) Then
@@ -761,6 +781,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
+            weightMax = 0#
             
             'Calculate center/left/right for this column (and ensure valid boundaries)
             center = ((i + 0.5) / xScale)
@@ -768,7 +789,6 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             If (pxLeft < 0) Then pxLeft = 0
             pxRight = Int(center + radius + 0.99999999999)
             If (pxRight >= srcWidth) Then pxRight = srcWidth - 1
-            weightMax = 0#
             
             For j = pxLeft To pxRight
                 
@@ -781,10 +801,9 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 ' include values that contribute less than 1 integer value of a pixel's potential color (1/255)
                 ' to the final result.  Ignoring extreme tails of the distribution provides a nice performance
                 ' improvement with no meaningful change to the final result (across all resampling algorithms).
-                If (Abs(weight) > 0.003921568627451) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
-                    contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                     If (weight > weightMax) Then weightMax = weight
                 End If
@@ -793,8 +812,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             
             'Now that we know the maximum weight of the filter, we can determine an integer scale-factor
             ' that guarantees overflow safety for this table while maximizing integer estimation "accuracy".
-            intFactor = LONG_MAX \ Int(weightMax * contrib(i).nCount * 255 + 0.5)
-            Debug.Print intFactor
+            intFactor = LONG_MAX \ Int(weightMax * contrib(i).nCount * 256 + 0.999999999999999)
             
             'Rebuild the weight table using the newly determined integer factor.
             ReDim contribI(i).p(0 To contrib(i).nCount - 1) As ContributorI
@@ -806,8 +824,24 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
             Next j
             
-            'Normalize the weight sum before exiting?
-            If (contribI(i).weightSum <> 0) Then contrib(i).weightSum = 1# / CDbl(contribI(i).weightSum)
+'            'There is one last trick we could do, but because VB6 doesn't support bit-shift operations, I've
+'            ' commented it out (but I may rewrite this in C someday and I don't want to forget that this works!)
+'            ' Let's round our total weight (which we need to divide each color component by) down to the nearest
+'            ' power-of-two, which lets us use bit-shifting instead of integer division.  (The PowerOfTwo function
+'            ' in PD returns the nearest power-of-two *ABOVE* the current number, but we want the lower number -
+'            ' so shift down accordingly).
+'            Dim oldSum As Long
+'            oldSum = contribI(i).weightSum
+'            contribI(i).weightSum = PDMath.NearestPowerOfTwo(oldSum) \ 2
+'
+'            'Because changing the weighted sum has also changed the scale of the entire calculation, we need
+'            ' to do one last pass through the data to reassign it to this new numerical range.
+'            intFactor = Int(CDbl(intFactor) * (CDbl(contribI(i).weightSum) / CDbl(oldSum)))
+'            For j = 0 To contribI(i).nCount - 1
+'                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+'                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+'                'contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
+'            Next j
             
         Next i
     
@@ -823,6 +857,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             contrib(i).nCount = 0
             ReDim contrib(i).p(0 To Int(2 * radius + 1)) As Contributor
             contrib(i).weightSum = 0#
+            weightMax = 0#
             
             'Calculate center/left/right for this column
             center = ((i + 0.5) / xScale)
@@ -830,30 +865,40 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             If (pxLeft < 0) Then pxLeft = 0
             pxRight = Int(center + radius + 0.99999999999)
             If (pxRight >= srcWidth) Then pxRight = srcWidth - 1
-            weightMax = 0#
             
             For j = pxLeft To pxRight
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 
-                If (weight <> 0#) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * 4   'Offset by 32-bits-per-pixel in advance
                     contrib(i).p(contrib(i).nCount).weight = weight
-                    contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                     If (weight > weightMax) Then weightMax = weight
                 End If
             
             Next j
             
-            'Normalize the weight sum before exiting
-            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
+            'Scale against LONG_MAX and rebuild as an integer weight table.
+            intFactor = LONG_MAX \ Int(weightMax * contrib(i).nCount * 256 + 0.999999999999999)
+            
+            ReDim contribI(i).p(0 To contrib(i).nCount - 1) As ContributorI
+            contribI(i).nCount = contrib(i).nCount
+            
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+                contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
+            Next j
             
         Next i
     
     '/End up- vs downsampling.  Note that the special case of xScale = 1.0 (e.g. horizontal width
     ' isn't changing) is not handled here; we'll handle it momentarily as a special case.
     End If
+    
+    'Note that we no longer need the floating-point weight table, but we're going to leave it
+    ' allocated because we need to construct a similar table for the vertical resize, below.
     
     If REPORT_DETAILED_PERF Then
         PDDebug.LogAction "Resampling.ResampleImage horizontal 1 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -862,8 +907,8 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     
     'With weights successfully calculated, we can now filter horizontally from the input image
     ' to the temporary "working" copy.
-    Dim srcImageData() As Byte, srcSA As SafeArray1D
-    Dim idxPixel As Long, wSum As Double, wSumI As Long
+    Dim imgPixels() As Byte, srcSA As SafeArray1D
+    Dim idxPixel As Long, wSumI As Long
     
     'If the image is changing size, perform resampling now
     If (xScale <> 1#) Then
@@ -872,7 +917,8 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
         For k = 0 To srcHeight - 1
             
             'Wrap a VB array around the image at this line
-            srcDIB.WrapArrayAroundScanline srcImageData, srcSA, k
+            srcDIB.WrapArrayAroundScanline imgPixels, srcSA, k
+            xOffset = k * dstWidth * 4
             
             'Each column (destination image width)...
             For i = 0 To dstWidth - 1
@@ -886,16 +932,15 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 For j = 0 To contribI(i).nCount - 1
                     weightI = contribI(i).p(j).weight
                     idxPixel = contribI(i).p(j).pixel
-                    iB = iB + (srcImageData(idxPixel) * weightI)
-                    iG = iG + (srcImageData(idxPixel + 1) * weightI)
-                    iR = iR + (srcImageData(idxPixel + 2) * weightI)
-                    iA = iA + (srcImageData(idxPixel + 3) * weightI)
+                    iB = iB + weightI * imgPixels(idxPixel)
+                    iG = iG + weightI * imgPixels(idxPixel + 1)
+                    iR = iR + weightI * imgPixels(idxPixel + 2)
+                    iA = iA + weightI * imgPixels(idxPixel + 3)
                 Next j
                 
-                'Weight and clamp final RGBA values.  (Note that normally you'd *divide* by the
-                ' weighted sum here, but we already normalized that value in a previous step.)
+                'Weight and clamp final RGBA values.  (Note that the integer divide could be replaced
+                ' by a much-faster bit-shift in other languages; see comments above for details.)
                 wSumI = contribI(i).weightSum
-                
                 b = iB \ wSumI
                 g = iG \ wSumI
                 r = iR \ wSumI
@@ -912,7 +957,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 If (a < 0) Then a = 0
                 
                 'Assign new RGBA values to the working data array
-                idxPixel = k * dstWidth * 4 + i * 4
+                idxPixel = xOffset + i * 4
                 m_tmpPixels(idxPixel) = b
                 m_tmpPixels(idxPixel + 1) = g
                 m_tmpPixels(idxPixel + 2) = r
@@ -931,7 +976,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
         Next k
     
         'Free any unsafe references
-        srcDIB.UnwrapArrayFromDIB srcImageData
+        srcDIB.UnwrapArrayFromDIB imgPixels
     
     'If the image's horizontal size *isn't* changing, just mirror the data into the temporary array.
     ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
@@ -952,6 +997,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     
     'Reset contributor weight table (one entry per row for vertical resampling)
     ReDim contrib(0 To dstHeight - 1) As ContributorEntry
+    ReDim contribI(0 To dstHeight - 1) As ContributorEntryI
     
     If REPORT_DETAILED_PERF Then
         PDDebug.LogAction "Resampling.ResampleImage vertical prep time: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -984,18 +1030,26 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 
                 weight = GetValue(rsFilter, (center - j - 0.5) * yScale)
                 
-                If (Abs(weight) > 0.003921568627451) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
-                    contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                     If (weight > weightMax) Then weightMax = weight
                 End If
             
             Next j
             
-            'Normalize the weight sum before exiting
-            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
+            'Scale against LONG_MAX and rebuild as an integer weight table.
+            intFactor = LONG_MAX \ Int(weightMax * contrib(i).nCount * 256 + 0.999999999999999)
+            
+            ReDim contribI(i).p(0 To contrib(i).nCount - 1) As ContributorI
+            contribI(i).nCount = contrib(i).nCount
+            
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+                contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
+            Next j
             
         'Next row...
         Next i
@@ -1023,18 +1077,26 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 
                 weight = GetValue(rsFilter, center - j - 0.5)
                 
-                If (weight <> 0#) Then
+                If (Abs(weight) > ONE_DIV_255) Then
                     contrib(i).p(contrib(i).nCount).pixel = j * dstWidth * 4    'Precalculate a row offset
                     contrib(i).p(contrib(i).nCount).weight = weight
-                    contrib(i).weightSum = contrib(i).weightSum + weight
                     contrib(i).nCount = contrib(i).nCount + 1
                     If (weight > weightMax) Then weightMax = weight
                 End If
             
             Next j
             
-            'Normalize the weight sum before exiting
-            If (contrib(i).weightSum <> 0#) Then contrib(i).weightSum = 1# / contrib(i).weightSum
+            'Scale against LONG_MAX and rebuild as an integer weight table.
+            intFactor = LONG_MAX \ Int(weightMax * contrib(i).nCount * 256 + 0.999999999999999)
+            
+            ReDim contribI(i).p(0 To contrib(i).nCount - 1) As ContributorI
+            contribI(i).nCount = contrib(i).nCount
+            
+            For j = 0 To contribI(i).nCount - 1
+                contribI(i).p(j).pixel = contrib(i).p(j).pixel
+                contribI(i).p(j).weight = Int(contrib(i).p(j).weight * intFactor)
+                contribI(i).weightSum = contribI(i).weightSum + contribI(i).p(j).weight
+            Next j
             
         'Next row...
         Next i
@@ -1048,13 +1110,16 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
         VBHacks.GetHighResTime startTime
     End If
     
+    'Floating-point weight table is no longer required
+    Erase contrib
+    
     'With weights successfully calculated, we can now filter vertically from the "working copy"
     ' to the destination image.
     If (yScale <> 1#) Then
         
         'Because we need to access pixels across rows, it's easiest to just wrap a single array around
         'the entire image.
-        dstDIB.WrapArrayAroundDIB_1D srcImageData, srcSA
+        dstDIB.WrapArrayAroundDIB_1D imgPixels, srcSA
         
         'Each column (new image width)...
         For k = 0 To dstWidth - 1
@@ -1065,28 +1130,28 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
             'Each row (destination image height)...
             For i = 0 To dstHeight - 1
                 
-                intensityB = 0#
-                intensityG = 0#
-                intensityR = 0#
-                intensityA = 0#
+                iB = 0
+                iG = 0
+                iR = 0
+                iA = 0
                 
                 'Generate weighted result for each color component
-                For j = 0 To contrib(i).nCount - 1
-                    weight = contrib(i).p(j).weight
-                    idxPixel = contrib(i).p(j).pixel + xOffset
-                    intensityB = intensityB + (m_tmpPixels(idxPixel) * weight)
-                    intensityG = intensityG + (m_tmpPixels(idxPixel + 1) * weight)
-                    intensityR = intensityR + (m_tmpPixels(idxPixel + 2) * weight)
-                    intensityA = intensityA + (m_tmpPixels(idxPixel + 3) * weight)
+                For j = 0 To contribI(i).nCount - 1
+                    weightI = contribI(i).p(j).weight
+                    idxPixel = contribI(i).p(j).pixel + xOffset
+                    iB = iB + weightI * m_tmpPixels(idxPixel)
+                    iG = iG + weightI * m_tmpPixels(idxPixel + 1)
+                    iR = iR + weightI * m_tmpPixels(idxPixel + 2)
+                    iA = iA + weightI * m_tmpPixels(idxPixel + 3)
                 Next j
                 
-                'Weight and clamp final RGBA values
-                wSum = contrib(i).weightSum
-                
-                b = Int(intensityB * wSum + 0.5)
-                g = Int(intensityG * wSum + 0.5)
-                r = Int(intensityR * wSum + 0.5)
-                a = Int(intensityA * wSum + 0.5)
+                'Weight and clamp final RGBA values.  (Note that the integer divide could be replaced
+                ' by a much-faster bit-shift in other languages; see comments above for details.)
+                wSumI = contribI(i).weightSum
+                b = iB \ wSumI
+                g = iG \ wSumI
+                r = iR \ wSumI
+                a = iA \ wSumI
                 
                 If (b > 255) Then b = 255
                 If (g > 255) Then g = 255
@@ -1100,10 +1165,10 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
                 
                 'Assign new RGBA values to the working data array
                 idxPixel = (k * 4) + (i * dstWidth * 4)
-                srcImageData(idxPixel) = b
-                srcImageData(idxPixel + 1) = g
-                srcImageData(idxPixel + 2) = r
-                srcImageData(idxPixel + 3) = a
+                imgPixels(idxPixel) = b
+                imgPixels(idxPixel + 1) = g
+                imgPixels(idxPixel + 2) = r
+                imgPixels(idxPixel + 3) = a
                 
             'Next row...
             Next i
@@ -1118,7 +1183,7 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
         Next k
         
         'Release all unsafe references
-        dstDIB.UnwrapArrayFromDIB srcImageData
+        dstDIB.UnwrapArrayFromDIB imgPixels
         
     'If the image's vertical size *isn't* changing, just mirror the intermediate data into dstImage.
     ' (NOTE: with some trickery, we could also skip this step entirely and simply copy data from source to
@@ -1130,9 +1195,9 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     
     If REPORT_RESAMPLE_PERF Then
         If REPORT_DETAILED_PERF Then PDDebug.LogAction "Resampling.ResampleImage vertical 2 time: " & VBHacks.GetTimeDiffNowAsString(startTime)
-        m_NetTime = m_NetTime + VBHacks.GetTimerDifferenceNow(firstTime)
-        m_Iterations = m_Iterations + 1
-        PDDebug.LogAction "Average resampling time for this session: " & VBHacks.GetTotalTimeAsString((m_NetTime / m_Iterations) * 1000)
+        m_NetTimeI = m_NetTimeI + VBHacks.GetTimerDifferenceNow(firstTime)
+        m_IterationsI = m_IterationsI + 1
+        PDDebug.LogAction "Average resampling time for this session (I): " & VBHacks.GetTotalTimeAsString((m_NetTimeI / m_IterationsI) * 1000)
     End If
     
     'Resampling complete!

@@ -303,6 +303,9 @@ Private Sub cmdBar_ResetClick()
     'Stretch to new aspect ratio by default
     cmbFit.ListIndex = 0
     
+    'It's possible that none of the above changes trigger a preview redraw, so request a manual one "just in case"
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -430,7 +433,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using our own internal algorithms.  Slower, but better quality.
-Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter, ByVal displayProgress As Boolean) As Boolean
+Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal interpolationMethod As PD_ResamplingFilter, ByVal allowApproximation As Boolean, ByVal displayProgress As Boolean) As Boolean
     
     PDDebug.LogAction "Using internal resampler for this operation."
     
@@ -447,8 +450,13 @@ Private Function InternalImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDI
         dstDIB.ResetDIB 0
     End If
     
-    'Hand off the image to PD's internal resampler
-    InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod, displayProgress)
+    'Hand off the image to PD's internal resampler, and if approximation is allowed, use the integer-based transform
+    ' for a nice performance boost.
+    If allowApproximation Then
+        InternalImageResize = Resampling.ResampleImageI(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod, displayProgress)
+    Else
+        InternalImageResize = Resampling.ResampleImage(dstDIB, srcDIB, dstWidth, dstHeight, interpolationMethod, displayProgress)
+    End If
     
     'Premultiply the resulting image
     dstDIB.SetAlphaPremultiplication True, True
@@ -596,7 +604,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 
                 'For a slower, but more mathematically accurate approach, you could also use our internal scaler
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Box, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
                 
             'Bilinear and bicubic resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
@@ -605,7 +613,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_BilinearTriangle, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_CubicBSpline
@@ -613,7 +621,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             'Some sampling methods can use our internal methods *or* FreeImage's equivalents (with minor differences)
@@ -621,14 +629,14 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_CatmullRom
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             'Lanczos is a weird outlier because at r=3 we can use FreeImage, but for other radii we must
@@ -637,27 +645,27 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation And (Resampling.GetLanczosRadius() = 3)) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
                 Else
-                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, (firstLayerIndex = lastLayerIndex)
+                    InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
                 
             'All remaining methods rely on our own internal resampling engine
             Case rf_Cosine
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Cosine, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_Hermite
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Hermite, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_Bell
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Bell, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Bell, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_Quadratic
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Quadratic, allowApproximation, (firstLayerIndex = lastLayerIndex)
             
             Case rf_QuadraticBSpline
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_QuadraticBSpline, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             Case rf_CubicConvolution
-                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution, (firstLayerIndex = lastLayerIndex)
+                InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CubicConvolution, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 
             'This failsafe should never be triggered
             Case Else
