@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.50</langversion>
+<langversion>8.0.51</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -4478,7 +4478,12 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>l'esatta dimensione varierà tramite l'immagine</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 36 phrases. 23 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<phrase>
+<original>%1, was %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
@@ -10952,8 +10957,13 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
-<original>Click to change the color used for empty borders</original>
-<translation>Fai clic per modificare il colore utilizzato per i bordi vuoti</translation>
+<original>preview changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimize for speed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10962,28 +10972,8 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>il vicino più vicino</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>bilineare</translation>
-</phrase>
-
-<phrase>
-<original>bilinear (optimized for downsizing)</original>
-<translation>bilineare (ottimizzato per il downsizing)</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>bicubico</translation>
-</phrase>
-
-<phrase>
-<original>bicubic (optimized for downsizing)</original>
-<translation>bicubic (ottimizzato per il downsizing)</translation>
+<original>resampling</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10999,6 +10989,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
 <translation>adatamento esclusivo, e ritaglio se necessario</translation>
+</phrase>
+
+<phrase>
+<original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11021,7 +11016,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Ridimensionamento del livello</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11044,6 +11039,21 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>nearest-neighbor</original>
+<translation>il vicino più vicino</translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation>bilineare</translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation>bicubico</translation>
+</phrase>
+
+<phrase>
 <original>fill with color</original>
 <translation>riempire di colore</translation>
 </phrase>
@@ -11058,7 +11068,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Ruota il livello</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -13554,12 +13564,39 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>cosine</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bell</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic b-spline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic convolution</original>
+<translation></translation>
+</phrase>
+
+<!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2564</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5273 phrases. -->
-<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
-<!-- These 2564 phrases contain approximately 11823 total words. -->
+<!-- As of this build, PhotoDemon contains 5290 phrases. -->
+<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 11837 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.97</langversion>
+<langversion>8.2.98</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4471,7 +4471,12 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>精确大小会因图像而异</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 36 phrases. 23 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<phrase>
+<original>%1, was %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
@@ -10937,8 +10942,13 @@ Would you like to save your batch list before exiting?</original>
 <!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
-<original>Click to change the color used for empty borders</original>
-<translation>单击更改用于空边框的颜色</translation>
+<original>preview changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimize for speed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10947,28 +10957,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>近邻取样</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>双线性</translation>
-</phrase>
-
-<phrase>
-<original>bilinear (optimized for downsizing)</original>
-<translation>双线性（针对缩小尺寸进行了优化）</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>双三次插值</translation>
-</phrase>
-
-<phrase>
-<original>bicubic (optimized for downsizing)</original>
-<translation>双立方体（针对缩小尺寸进行了优化）</translation>
+<original>resampling</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10984,6 +10974,11 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
 <translation>完全拟合，根据需要裁剪</translation>
+</phrase>
+
+<phrase>
+<original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11006,7 +11001,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>调整层大小</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11029,6 +11024,21 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>nearest-neighbor</original>
+<translation>近邻取样</translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation>双线性</translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation>双三次插值</translation>
+</phrase>
+
+<phrase>
 <original>fill with color</original>
 <translation>填充颜色</translation>
 </phrase>
@@ -11043,7 +11053,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>旋转层</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -13535,12 +13545,39 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>cosine</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bell</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic b-spline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic convolution</original>
+<translation></translation>
+</phrase>
+
+<!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2564</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5273 phrases. -->
-<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
-<!-- These 2564 phrases contain approximately 11823 total words. -->
+<!-- As of this build, PhotoDemon contains 5290 phrases. -->
+<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 11837 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.540</langversion>
+<langversion>6.7.541</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -4479,7 +4479,12 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>la taille exacte varie selon l'image</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 36 phrases. 23 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<phrase>
+<original>%1, was %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
@@ -10945,8 +10950,13 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
-<original>Click to change the color used for empty borders</original>
-<translation>Cliquez pour changer la couleur utilisée pour les bords vides</translation>
+<original>preview changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimize for speed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10955,28 +10965,8 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>voisin le plus proche</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>bilinéaire</translation>
-</phrase>
-
-<phrase>
-<original>bilinear (optimized for downsizing)</original>
-<translation>bilineaire (optimisé pour réduire)</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>bicubique</translation>
-</phrase>
-
-<phrase>
-<original>bicubic (optimized for downsizing)</original>
-<translation>bicubique (optimisé pour réduire)</translation>
+<original>resampling</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10992,6 +10982,11 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
 <translation>montage exclusif, et recadrage si nécessaire</translation>
+</phrase>
+
+<phrase>
+<original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11014,7 +11009,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>Redimensionnement du calque</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 24 phrases. 10 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11037,6 +11032,21 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 </phrase>
 
 <phrase>
+<original>nearest-neighbor</original>
+<translation>voisin le plus proche</translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation>bilinéaire</translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation>bicubique</translation>
+</phrase>
+
+<phrase>
 <original>fill with color</original>
 <translation>remplir de couleur</translation>
 </phrase>
@@ -11051,7 +11061,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>Rotation du calque</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -13562,12 +13572,39 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>cosine</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bell</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic b-spline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic convolution</original>
+<translation></translation>
+</phrase>
+
+<!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2564</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5273 phrases. -->
-<!-- 2709 are duplicates, so only 2564 unique phrases have been written to file. -->
-<!-- These 2564 phrases contain approximately 11823 total words. -->
+<!-- As of this build, PhotoDemon contains 5290 phrases. -->
+<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 11837 total words. -->
 
 </pdData>

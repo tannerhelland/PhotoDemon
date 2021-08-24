@@ -201,9 +201,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
 'Copyright 2001-2021 by Tanner Helland
-'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
-'Last updated: 03/May/18
-'Last update: add esoteric unit support (mm, pt, pc)
+'Created: 12/June/01
+'Last updated: 18/August/21
+'Last update: display in-memory size of the image as dimensions are changed (vs orig. size, when appropriate)
 '
 'Many tools in PD relate to resizing: image size, canvas size, (soon) layer size, content-aware rescaling,
 ' perhaps a more advanced autocrop tool, plus dedicated resize options in the batch converter...
@@ -224,7 +224,7 @@ Option Explicit
 
 'This object provides a single raised event:
 ' - Change (which triggers when a size value is updated)
-Public Event Change(newWidthPixels As Double, newHeightPixels As Double, ByVal curWidthText As String, ByVal curHeightText As String)
+Public Event Change(ByVal newWidthPixels As Double, ByVal newHeightPixels As Double)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -260,6 +260,9 @@ Private m_UnknownSizeMode As Boolean
 
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
+
+'To minimize the frequency of raised _Change events, we only raise events if something has actually changed.
+Private m_LastImgWidthPixels As Long, m_LastImgHeightPixels As Long
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -905,7 +908,12 @@ Private Sub SyncDimensions(ByVal useWidthAsSource As Boolean)
     imgWidthPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
     imgHeightPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
     
-    RaiseEvent Change(imgWidthPixels, imgHeightPixels, tudWidth, tudHeight)
+    'Minimize events by auto-detecting when values haven't changed
+    If (imgWidthPixels <> m_LastImgWidthPixels) Or (imgHeightPixels <> m_LastImgHeightPixels) Then
+        m_LastImgWidthPixels = imgWidthPixels
+        m_LastImgHeightPixels = imgHeightPixels
+        RaiseEvent Change(imgWidthPixels, imgHeightPixels)
+    End If
 
 End Sub
 
@@ -943,8 +951,27 @@ Private Sub UpdateAspectRatio()
                 lblAspectRatio(1).Caption = " " & numerator & ":" & denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "#0.00#") & ")"
             End If
             
-            'While we're here, also update the dimensions caption
-            lblDimensions(1).Caption = " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
+            'While we're here, also update the dimensions caption.  Note that currency is used to cover the
+            ' (rare) case of an overflow from resizing an image to larger than 2GB.
+            Dim dmString As pdString
+            Set dmString = New pdString
+            
+            'Append size, in pixels
+            dmString.Append " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
+            dmString.Append "   ("
+            
+            'Calculate current and proposed sizes.  (If they match, we won't display both values - only the
+            ' current one.)
+            Dim curSize As Currency, newSize As Currency
+            curSize = (CCur(m_initWidth) * CCur(m_initHeight) * 4@) / 10000@
+            newSize = (CCur(imgWidthPixels) * CCur(imgHeightPixels) * 4@) / 10000@
+            If (curSize = 0) Or (newSize = 0) Or (curSize = newSize) Then
+                dmString.Append CStr(Files.GetFormattedFileSizeL(newSize))
+            Else
+                dmString.Append g_Language.TranslateMessage("%1, was %2", Files.GetFormattedFileSizeL(newSize), Files.GetFormattedFileSizeL(curSize))
+            End If
+            dmString.Append ")"
+            lblDimensions(1).Caption = dmString.ToString()
             
         End If
     

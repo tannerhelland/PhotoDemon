@@ -658,37 +658,8 @@ End Enum
     Private Const poi_Undefined = -1, poi_Interior = -2, poi_CornerNW = -3, poi_CornerNE = -4, poi_CornerSE = -5, poi_CornerSW = -6, poi_EdgeN = -7, poi_EdgeE = -8, poi_EdgeS = -9, poi_EdgeW = -10
 #End If
 
-'Constants used for library-agnostic image resizing.  (At present, options 3, 4, 5 require the FreeImage library;
-' if FreeImage is missing, Bspline will automatically target GDI+'s bicubic resampling.)
-Public Enum PD_ResampleOld
-    ResizeNormal = 0
-    ResizeBilinear = 1
-    ResizeBspline = 2
-    ResizeBicubicMitchell = 3
-    ResizeBicubicCatmull = 4
-    ResizeSincLanczos = 5
-End Enum
-
-#If False Then
-    Private Const ResizeNormal = 0, ResizeBilinear = 1, ResizeBspline = 2, ResizeBicubicMitchell = 3, ResizeBicubicCatmull = 4, ResizeSincLanczos = 5
-#End If
-
-Public Enum PD_ResampleCurrent
-    pdrc_Automatic = 0
-    pdrc_NearestNeighbor = 1
-    pdrc_BilinearNormal = 2
-    pdrc_BilinearShrink = 3
-    pdrc_BicubicNormal = 4
-    pdrc_BicubicShrink = 5
-    pdrc_Mitchell = 6
-    pdrc_CatmullRom = 7
-    pdrc_Sinc = 8
-End Enum
-
-#If False Then
-    Private Const pdrc_Automatic = 0, pdrc_NearestNeighbor = 1, pdrc_BilinearNormal = 2, pdrc_BilinearShrink = 3, pdrc_BicubicNormal = 4, pdrc_BicubicShrink = 5, pdrc_Mitchell = 6, pdrc_CatmullRom = 7, pdrc_Sinc = 8
-#End If
-
+'When resizing images, PD offers several "fit" strategies.  These allow you to resize an image into a container
+' with a different aspect ratio without distorting the image (if desired).
 Public Enum PD_ResizeFit
     ResizeFitStretch = 0
     ResizeFitInclusive = 1
@@ -773,7 +744,7 @@ End Enum
 Public Type PD_PNGHeader
     Width As Long
     Height As Long
-    ColorType As PD_PNGColorType
+    colorType As PD_PNGColorType
     Interlaced As Boolean
     BitDepth As Byte
     BitsPerPixel As Byte
