@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.541</langversion>
+<langversion>6.7.542</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -319,17 +319,17 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>random</original>
-<translation>aléatoire</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>image</original>
-<translation>image</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>repeat</original>
-<translation>répétitions</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -339,17 +339,17 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>quilt</original>
-<translation>courtepointe</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation>chaine</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation>entrelacé</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -359,7 +359,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>line</original>
-<translation>linéaire</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -369,7 +369,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>triangle</original>
-<translation>triangle</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -379,7 +379,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>circle</original>
-<translation>circulaire</translation>
+<translation></translation>
 </phrase>
 
 <!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -460,7 +460,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation></translation>
+<translation>Chargement de la page %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -2221,7 +2221,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Truchet</translation>
 </phrase>
 
 <phrase>
@@ -2326,7 +2326,7 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Plugin Photoshop (8bf) </translation>
 </phrase>
 
 <phrase>
@@ -2470,54 +2470,54 @@ Dans la version 6.0, les fichiers de macros PhotoDemon ont été refondus pour s
 
 <phrase>
 <original>Applying plugin</original>
-<translation></translation>
+<translation>Application du plugin</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation></translation>
+<translation>AVIF est un format d'image moderne  développé par l'Alliance for Open Media.  PhotoDemon ne supporte pas nativement les images au format AVIF, mais il peut télécharger un plugin open source qui activera de façon permanente le support du format AVIF.</translation>
 </phrase>
 
 <phrase>
 <original>The Alliance for Open Media provides free, open-source 64-bit AVIF encoder and decoder libraries.  These libraries are roughly ~10 mb each (~20 mb total).  Once downloaded, they will allow PhotoDemon to import and export AVIF files on any 64-bit system.</original>
-<translation></translation>
+<translation>L'alliance for Open Media fournit des bibliothèques d'encodage et de décodage AVIF 64 bits gratuites et à code source ouvert.  Ces bibliothèques font environ 10 Mo chacune (20 Mo au total).  Une fois téléchargées, elles permettront à PhotoDemon d'importer et d'exporter des fichiers AVIF sur tout système 64 bits.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Souhaitez-Vous que PhotoDemon télécharge ces bibliothèques dans votre dossier de plugins PhotoDemon ?</translation>
 </phrase>
 
 <phrase>
 <original>Download required</original>
-<translation></translation>
+<translation>Téléchargement nécessaire</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation></translation>
+<translation>PhotoDemon ne téléchargera pas les bibliothèques AVIF pour le moment.</translation>
 </phrase>
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation></translation>
+<translation>Pour activer manuellement la prise en charge d'AVIF, vous pouvez télécharger les copies les plus récentes des programmes gratuits "%1" et "%2" et les placer dans le dossier plugin de PhotoDemon.</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation></translation>
+<translation>Ces bibliothèques gratuites sont toujours disponibles sur la page de publication libavif de l'Alliance for Open Media.</translation>
 </phrase>
 
 <phrase>
 <original>Download canceled</original>
-<translation></translation>
+<translation>Téléchargement annulé</translation>
 </phrase>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>Vous avez placé PhotoDemon dans un dossier système dont les droits sont limités.  PhotoDemon ne disposant pas d'un accès administrateur, ne peut donc pas télécharger de fichiers pour vous.  Veuillez déplacer PhotoDemon dans un dossier sans droits limités et réessayez.</translation>
 </phrase>
 
 <!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -2645,7 +2645,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>BSD license</original>
-<translation>Licence BSD</translation>
+<translation>licence BSD</translation>
 </phrase>
 
 <phrase>
@@ -2665,12 +2665,12 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>MIT license</original>
-<translation>Licence MIT</translation>
+<translation>licence MIT</translation>
 </phrase>
 
 <phrase>
 <original>zLib license</original>
-<translation>License zLib</translation>
+<translation>license zLib</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3413,37 +3413,37 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation></translation>
+<translation>Photodemon ne peut pas se connecter a Internet.  Veuillez verifier votre connexion et essayez à nouveau</translation>
 </phrase>
 
 <phrase>
 <original>Verifying URL (this may take a moment)</original>
-<translation></translation>
+<translation>Vérification de l'URL de l'image (cela peut prendre un certain temps)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation></translation>
+<translation>Photodemon n'a pas pu trouver l'URL cible (%1).  Si le problème persiste, tentez de télécharger le fichier manuellement en utilisant votre navigateur</translation>
 </phrase>
 
 <phrase>
 <original>Downloading</original>
-<translation></translation>
+<translation>Téléchargement</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation></translation>
+<translation>PhotoDemon a perdu l'accès à Internet. Veuillez revérifier votre connexion.</translation>
 </phrase>
 
 <phrase>
 <original>Downloading (%1 of %2 bytes)</original>
-<translation></translation>
+<translation>Téléchargement (%1 de %2 bytes)</translation>
 </phrase>
 
 <phrase>
 <original>Download complete. Verifying file integrity</original>
-<translation>Téléchargement terminé. Vérification de l'intégrité des fichiers</translation>
+<translation>Téléchargement terminé. Vérification de l'intégrité du fichier</translation>
 </phrase>
 
 <phrase>
@@ -3455,7 +3455,7 @@ Veuillez entrer une valeur numérique.</translation>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation></translation>
+<translation>Malheureusement, %1 empêche Photodemon de télécharger ce fichier directement. (Les téléchargements directs sont parfois confondus comme étant des liens redirigés par les serveurs mal configurés.)</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3907,7 +3907,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Composite image</original>
-<translation></translation>
+<translation>Image composite</translation>
 </phrase>
 
 <!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4481,7 +4481,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>%1, was %2</original>
-<translation></translation>
+<translation>%1, était %2</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -7288,52 +7288,52 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scan for new plugins</original>
-<translation></translation>
+<translation>recherche de nouveaux plugins</translation>
 </phrase>
 
 <phrase>
 <original>about this plugin</original>
-<translation></translation>
+<translation>à propos de ce plugin</translation>
 </phrase>
 
 <phrase>
 <original>available plugins</original>
-<translation></translation>
+<translation>plugins disponibles</translation>
 </phrase>
 
 <phrase>
 <original>add folder</original>
-<translation></translation>
+<translation>ajouter un dossier</translation>
 </phrase>
 
 <phrase>
 <original>default plugin folder</original>
-<translation></translation>
+<translation>dossier des plugins par défaut</translation>
 </phrase>
 
 <phrase>
 <original>additional folders</original>
-<translation></translation>
+<translation>dossiers supplémentaires</translation>
 </phrase>
 
 <phrase>
 <original>remove folder</original>
-<translation></translation>
+<translation>supprimer le dossier</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for plugin</original>
-<translation></translation>
+<translation>En attente du plugin</translation>
 </phrase>
 
 <phrase>
 <original>Plugin canceled.</original>
-<translation></translation>
+<translation>Plugin annulé.</translation>
 </phrase>
 
 <phrase>
 <original>plugins</original>
-<translation></translation>
+<translation>plugins</translation>
 </phrase>
 
 <phrase>
@@ -7343,27 +7343,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>loading plugin collection</original>
-<translation></translation>
+<translation>chargement de la collection de plugins</translation>
 </phrase>
 
 <phrase>
 <original>No plugins found.</original>
-<translation></translation>
+<translation>Aucun plugin trouvé.</translation>
 </phrase>
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
+<translation>Les plugins Photoshop (8bf) sont des fichiers avec une extension "8bf".  Ces plugins fournissent de nouveaux effets d'image.  Des milliers de plugins 8bf sont disponibles en ligne.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
+<translation>PhotoDemon n'est pas livré avec des plugins 8bf, mais si vous trouvez des plugins en ligne, vous pouvez les télécharger et les ajouter à PhotoDemon.  (PhotoDemon prend en charge la plupart des plugins 8bf 32 bits.  Les plugins 64 bits ne sont pas pris en charge).</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation></translation>
+<translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver.  PhotoDemon les ajoutera alors à votre collection d'Effets.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -8718,12 +8718,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Truchet tiles</original>
-<translation></translation>
+<translation>Tuiles Truchet</translation>
 </phrase>
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation></translation>
+<translation>Rendu des tuiles Truchet</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9860,7 +9860,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Thanks!</original>
-<translation></translation>
+<translation>Veuillez respecter les droits d'auteur lorsque vous téléchargez des images.  Merci !</translation>
 </phrase>
 
 <phrase>
@@ -10008,12 +10008,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>preview quality changes</original>
-<translation></translation>
+<translation>aperçu des modifications de la qualité</translation>
 </phrase>
 
 <phrase>
 <original>image quality</original>
-<translation></translation>
+<translation>qualité de l'image</translation>
 </phrase>
 
 <phrase>
@@ -10028,7 +10028,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>AVIF compression is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation></translation>
+<translation>La compression AVIF est très gourmande en ressources de calcul.  Sur les PC plus anciens ou plus lents, vous pouvez désactiver les aperçus en direct.</translation>
 </phrase>
 
 <phrase>
@@ -10518,7 +10518,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>target version</original>
-<translation></translation>
+<translation>version cible</translation>
 </phrase>
 
 <!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10951,12 +10951,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>preview changes</original>
-<translation></translation>
+<translation>aperçu des changements</translation>
 </phrase>
 
 <phrase>
 <original>optimize for speed</original>
-<translation></translation>
+<translation>optimiser pour la vitesse</translation>
 </phrase>
 
 <phrase>
@@ -10966,7 +10966,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>resampling</original>
-<translation></translation>
+<translation>rééchantillonnage</translation>
 </phrase>
 
 <phrase>
@@ -10986,7 +10986,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation></translation>
+<translation>Certains filtres de rééchantillonnage d'images prennent en charge les calculs aléatoires.  Ils améliorent les performances, mais avec une légère perte de qualité.</translation>
 </phrase>
 
 <phrase>
@@ -13403,12 +13403,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>library details</original>
-<translation></translation>
+<translation>détails de la bibliothèque</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation></translation>
+<translation>statut de la bibliothèque</translation>
 </phrase>
 
 <phrase>
@@ -13418,7 +13418,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>library folder</original>
-<translation></translation>
+<translation>dossier de la bibliothèque</translation>
 </phrase>
 
 <phrase>
@@ -13574,27 +13574,27 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>cosine</original>
-<translation></translation>
+<translation>cosinuïdal</translation>
 </phrase>
 
 <phrase>
 <original>bell</original>
-<translation></translation>
+<translation>cloche</translation>
 </phrase>
 
 <phrase>
 <original>quadratic</original>
-<translation></translation>
+<translation>quadragulaire</translation>
 </phrase>
 
 <phrase>
 <original>quadratic b-spline</original>
-<translation></translation>
+<translation>b-spline quadrangulaire</translation>
 </phrase>
 
 <phrase>
 <original>cubic convolution</original>
-<translation></translation>
+<translation>convolution cubique</translation>
 </phrase>
 
 <!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
