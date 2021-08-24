@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form FormResize 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize image"
    ClientHeight    =   6480
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   14430
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -20,30 +19,26 @@ Begin VB.Form FormResize
    EndProperty
    HasDC           =   0   'False
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   432
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   962
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkPreview 
       Height          =   375
       Left            =   120
       TabIndex        =   6
-      Top             =   150
+      Top             =   5280
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   661
       Caption         =   "preview changes"
-      FontSize        =   12
    End
    Begin PhotoDemon.pdPictureBoxInteractive picPreview 
-      Height          =   4935
+      Height          =   4920
       Left            =   120
-      Top             =   600
-      Width           =   5415
-      _ExtentX        =   9551
-      _ExtentY        =   8705
+      Top             =   240
+      Width           =   5400
+      _ExtentX        =   9525
+      _ExtentY        =   8678
    End
    Begin PhotoDemon.pdLabel lblLanczos 
       Height          =   375
@@ -72,11 +67,11 @@ Begin VB.Form FormResize
    End
    Begin PhotoDemon.pdCheckBox chkEstimate 
       Height          =   375
-      Left            =   6360
+      Left            =   6495
       TabIndex        =   4
       Top             =   4170
-      Width           =   3735
-      _ExtentX        =   6588
+      Width           =   3675
+      _ExtentX        =   6482
       _ExtentY        =   661
       Caption         =   "optimize for speed"
    End
@@ -84,7 +79,7 @@ Begin VB.Form FormResize
       Height          =   855
       Left            =   6360
       TabIndex        =   2
-      Top             =   4740
+      Top             =   4710
       Width           =   7695
       _ExtentX        =   13573
       _ExtentY        =   1508
@@ -129,8 +124,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright 2001-2021 by Tanner Helland
 'Created: 12/December/01
-'Last updated: 18/August/21
-'Last update: continue reworking UI in light of our new custom-built resampling engine, specific to PhotoDemon
+'Last updated: 23/August/21
+'Last update: finalize work on live previews of current resize options
 '
 'Standard image resize dialog.  A number of resample algorithms are provided, with some being provided
 ' by the 3rd-party FreeImage library.  PD also supports three different modes of "fitting" the resized
@@ -146,17 +141,22 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Internal flag to use/not use GDI+ resize functions.  GDI+ is much faster than our internal PD resampler,
-' but its algorithms are nonstandard and have some weird quirks vs theoretically "perfect" implementations
+'Internal flag to use/not use GDI+ resize functions.  GDI+ is significantly faster than our internal PD resampler,
+' but its algorithms are nonstandard and have some weird quirks vs theoretically "correct" implementations
 ' (see https://photosauce.net/blog/post/image-scaling-with-gdi-part-4-examining-the-interpolationmode-values).
-' This value should be set to TRUE in production code.
-Private Const USE_GDIPLUS_RESIZE As Boolean = True
+' My current feeling is that the performance vs quality trade-offs are worth it, and the GDI+ resamplers should
+' be available to users (for the three resampling modes where they apply, and only if fast "approximation" mode
+' is enabled).  Thus I prefer this constant set to TRUE in production code.
+Private Const ALLOW_GDIPLUS_RESIZE As Boolean = True
 
 'Internal flag to use/not use the 3rd-party FreeImage library's resize functions (if available).
-' FreeImage's functions are faster than our internal PD resampler, but they require a lot of extra memory due
-' to FreeImage needing its own container for pixel data.  (If FreeImage is *not* available, this value is ignored.)
-' This value should be set to TRUE in production code.
-Private Const USE_FREEIMAGE_RESIZE As Boolean = True
+' FreeImage's functions are marginally faster than our internal PD resampler (and I mean *barely* marginal,
+' especially when comparing against PD's integer-based engine) but the biggest disadvantage is that they
+' require extra memory due to FreeImage needing its own container for pixel data (e.g. we can't just wrap
+' FreeImage around our own containers - FreeImage needs to make a local duplicate, which we then copy).
+' Because of these limitations, my personal preference is that FreeImage's resize engine should be ignored
+' in production code - so for now, set this to FALSE.
+Private Const ALLOW_FREEIMAGE_RESIZE As Boolean = False
 
 'Internal flag to report performance.  Very helpful while debugging; not helpful in production.
 Private Const REPORT_PREVIEW_PERF As Boolean = False
@@ -210,8 +210,11 @@ Private m_PreviewSrc As pdDIB
 ' a preview of what a region of the resized image will look like.
 Private m_PreviewDst As pdDIB
 
-'Current x/y offset - IN SOURCE IMAGE/LAYER COORDINATES - of the preview box
+'Current x/y offset - IN SOURCE IMAGE/LAYER COORDINATES - of the preview box.  (Also, values necessary
+' for tracking state changes to those values during mouse-drag.)
 Private m_PreviewSrcX As Long, m_PreviewSrcY As Long
+Private m_OrigPreviewSrcX As Long, m_OrigPreviewSrcY As Long
+Private m_OrigMouseDownX As Long, m_OrigMouseDownY As Long
 
 'Current source width/height of the image/layer (depends on m_ResizeTarget, above)
 Private m_SrcImageWidth As Long, m_SrcImageHeight As Long
@@ -251,6 +254,10 @@ End Sub
 
 Private Sub chkEstimate_Click()
     UpdatePreview
+End Sub
+
+Private Sub chkPreview_Click()
+    UpdatePreview True
 End Sub
 
 Private Sub cmbFit_Click()
@@ -304,7 +311,7 @@ Private Sub cmdBar_ResetClick()
     cmbFit.ListIndex = 0
     
     'It's possible that none of the above changes trigger a preview redraw, so request a manual one "just in case"
-    UpdatePreview
+    UpdatePreview True
     
 End Sub
 
@@ -374,7 +381,7 @@ Private Sub Form_Load()
     cmbFit.AssignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
     
 End Sub
 
@@ -599,7 +606,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             
                 'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
                 ' for a fast resize.)
-                If USE_GDIPLUS_RESIZE And allowApproximation Then
+                If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
                     tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, GP_IM_NearestNeighbor
                 
                 'For a slower, but more mathematically accurate approach, you could also use our internal scaler
@@ -609,7 +616,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 
             'Bilinear and bicubic resampling can use GDI+ (preferentially), our internal resampler, or the FreeImage library
             Case rf_BilinearTriangle
-                If USE_GDIPLUS_RESIZE And allowApproximation Then
+                If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear, P2_PO_Half
                 Else
@@ -617,7 +624,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
                 End If
             
             Case rf_CubicBSpline
-                If USE_GDIPLUS_RESIZE And allowApproximation Then
+                If ALLOW_GDIPLUS_RESIZE And allowApproximation Then
                     If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic, P2_PO_Half
                 Else
@@ -626,14 +633,14 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             
             'Some sampling methods can use our internal methods *or* FreeImage's equivalents (with minor differences)
             Case rf_Mitchell
-                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
+                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Mitchell, allowApproximation, (firstLayerIndex = lastLayerIndex)
                 End If
             
             Case rf_CatmullRom
-                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
+                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_CatmullRom, allowApproximation, (firstLayerIndex = lastLayerIndex)
@@ -642,7 +649,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             'Lanczos is a weird outlier because at r=3 we can use FreeImage, but for other radii we must
             ' implement it ourselves.
             Case rf_Lanczos
-                If (USE_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation And (Resampling.GetLanczosRadius() = 3)) Then
+                If (ALLOW_FREEIMAGE_RESIZE And ImageFormats.IsFreeImageEnabled And allowApproximation And (Resampling.GetLanczosRadius() = 3)) Then
                     FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
                 Else
                     InternalImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, rf_Lanczos, allowApproximation, (firstLayerIndex = lastLayerIndex)
@@ -886,12 +893,12 @@ End Function
 Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     
     'The user can disable live previews.  This is helpful on older/performance-constrained PCs.
-    If chkPreview.Value And (Not m_PreviewDst Is Nothing) Then
+    If (Not m_PreviewDst Is Nothing) Then
     
         'Start by painting a checkerboard background on the destination
         Dim xOffset As Long, yOffset As Long
-        xOffset = (picPreview.Width - m_PreviewDst.GetDIBWidth) \ 2
-        yOffset = (picPreview.Height - m_PreviewDst.GetDIBHeight) \ 2
+        xOffset = (picPreview.GetWidth - m_PreviewDst.GetDIBWidth) \ 2
+        yOffset = (picPreview.GetHeight - m_PreviewDst.GetDIBHeight) \ 2
         GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, xOffset, yOffset, m_PreviewDst.GetDIBWidth, m_PreviewDst.GetDIBHeight, g_CheckerboardPattern, targetDC, True, True
         
         'Then paint the preview atop it
@@ -923,14 +930,57 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
     Set cSurface = Nothing: Set cPen = Nothing
 End Sub
 
+Private Sub picPreview_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    If (Button And pdLeftButton) Then
+        m_OrigPreviewSrcX = m_PreviewSrcX
+        m_OrigPreviewSrcY = m_PreviewSrcY
+        m_OrigMouseDownX = x
+        m_OrigMouseDownY = y
+    End If
+End Sub
+
 Private Sub picPreview_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInPreview = True
+    picPreview.RequestCursor IDC_HAND
     picPreview.RequestRedraw True
 End Sub
 
 Private Sub picPreview_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInPreview = False
     picPreview.RequestRedraw True
+End Sub
+
+Private Sub picPreview_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    If (Button And pdLeftButton) Then
+        
+        Dim xScale As Double, yScale As Double
+        If (m_SrcImageWidth > 0#) Then
+            xScale = m_SrcImageWidth / ucResize.ResizeWidthInPixels
+        Else
+            xScale = 1#
+        End If
+        If (m_SrcImageHeight > 0#) Then
+            yScale = m_SrcImageHeight / ucResize.ResizeHeightInPixels
+        Else
+            yScale = 1#
+        End If
+        
+        m_PreviewSrcX = m_OrigPreviewSrcX - (x - m_OrigMouseDownX) * xScale
+        m_PreviewSrcY = m_OrigPreviewSrcY - (y - m_OrigMouseDownY) * yScale
+        
+        'Fix boundary conditions
+        If (m_PreviewSrcX < 0) Then m_PreviewSrcX = 0
+        If (m_PreviewSrcY < 0) Then m_PreviewSrcY = 0
+        If (m_PreviewSrcX + (picPreview.GetWidth * xScale) > m_SrcImageWidth) Then m_PreviewSrcX = m_SrcImageWidth - (picPreview.GetWidth * xScale)
+        If (m_PreviewSrcY + (picPreview.GetHeight * yScale) > m_SrcImageHeight) Then m_PreviewSrcY = m_SrcImageHeight - (picPreview.GetHeight * yScale)
+        
+        UpdatePreview True
+        
+    End If
+End Sub
+
+Private Sub picPreview_WindowResizeDetected()
+    UpdatePreview
 End Sub
 
 Private Sub sldLanczos_Change()
@@ -988,6 +1038,9 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
         xScale = ucResize.ResizeWidthInPixels / srcWidth
         yScale = ucResize.ResizeHeightInPixels / srcHeight
         
+        'Failsafe check
+        If (xScale <= 0#) Or (yScale <= 0#) Then Exit Sub
+        
         'Working backward from the destination image (whose size is fixed, since it's tied to the preview box),
         ' calculate a corresponding rectangle in the source image that matches the current scale factor.
         
@@ -1016,15 +1069,16 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
                 
                 'The current rectangle lies outside the image.  Attempt to bring it in-bounds by
                 ' moving the rectangle left.
-                .Left = .Left - ((.Left + .Width) - srcWidth)
+                .Left = srcWidth - .Width
                 
-                'If moving the rectangle left pushes it out of bounds, we have no choice but to shrink the
-                ' width entirely, to the smallest functional width we can afford.
-                If (.Left < 0) Then
-                    .Left = 0
-                    .Width = srcWidth
-                End If
-                
+            End If
+            
+            'If moving the rectangle left pushes it out of bounds, we have no choice but to shrink the
+            ' width entirely, to the smallest functional width we can afford.
+            If (.Left < 0) Then
+                .Left = 0
+                .Width = srcWidth
+                m_PreviewSrcX = 0
             End If
             
             'Repeat the above steps for the bottom boundary
@@ -1032,15 +1086,16 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
                 
                 'The current rectangle lies outside the image.  Attempt to bring it in-bounds by
                 ' moving the rectangle up.
-                .Top = .Top - ((.Top + .Height) - srcHeight)
+                .Top = srcHeight - .Height
                 
-                'If moving the rectangle up pushes it out of bounds, we have no choice but to shrink the
-                ' height entirely, to the smallest functional height we can afford.
-                If (.Top < 0) Then
-                    .Top = 0
-                    .Height = srcHeight
-                End If
-                
+            End If
+            
+            'If moving the rectangle up pushes it out of bounds, we have no choice but to shrink the
+            ' height entirely, to the smallest functional height we can afford.
+            If (.Top < 0) Then
+                .Top = 0
+                .Height = srcHeight
+                m_PreviewSrcY = 0
             End If
             
         End With
@@ -1060,7 +1115,6 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
         End With
         
         'Crop out the source region into a standalone DIB
-        ' TODO: new resize function that allows you to set source and destination rects?
         If (m_PreviewSrc Is Nothing) Then Set m_PreviewSrc = New pdDIB
         If (Not PDMath.AreRectFsEqual(lastSrcRectF, m_SrcRectF)) Then
             m_PreviewSrc.CreateBlank m_SrcRectF.Width, m_SrcRectF.Height, 32, 0, 0
@@ -1069,10 +1123,7 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
         End If
         
         'Failsafe check during initialization
-        If (m_PreviewSrc.GetDIBWidth = 0) Or (m_PreviewSrc.GetDIBDC = 0) Then
-            Debug.Print "not refreshing preview because source image is null!"
-            Exit Sub
-        End If
+        If (m_PreviewSrc.GetDIBWidth = 0) Or (m_PreviewSrc.GetDIBDC = 0) Then Exit Sub
         
         If REPORT_PREVIEW_PERF Then PDDebug.LogAction "Prep: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
@@ -1097,9 +1148,69 @@ Private Sub UpdatePreview(Optional ByVal forcePreviewNow As Boolean = False)
             resampleMethod = cboResample.ListIndex
             If (resampleMethod = rf_Automatic) Then resampleMethod = ConvertAutoResample(m_SrcRectF.Width, m_SrcRectF.Height, m_DstRectF.Width, m_DstRectF.Height, chkEstimate.Value)
             
-            'Perform the resize (different methods TODO)
+            Dim allowApproximation As Boolean
+            allowApproximation = chkEstimate.Value
+            
+            'Perform the resize.  Note that - as best we can - we try to mimic different resize algorithms
+            ' as they'll appear in the "official" resize, but some engines - like FreeImage are ignored in
+            ' favor of our internal functions during a preview.
             Resampling.SetLanczosRadius sldLanczos.Value
-            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+            
+            Select Case resampleMethod
+                Case rf_Box
+                    If allowApproximation Then
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            m_PreviewDst.CreateFromExistingDIB m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, GP_IM_NearestNeighbor
+                        Else
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    Else
+                        'If GDI+ is active, it will handle "fast" mode.  For "pure" mode, let's use our
+                        ' faster-but-just-about-identical integer mode if we're competing with GDI+.
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        Else
+                            Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    End If
+                Case rf_BilinearTriangle
+                    If allowApproximation Then
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            GDI_Plus.GDIPlusResizeDIB m_PreviewDst, 0, 0, m_DstRectF.Width, m_DstRectF.Height, m_PreviewSrc, 0, 0, m_SrcRectF.Width, m_SrcRectF.Height, GP_IM_HighQualityBilinear, P2_PO_Half
+                        Else
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    Else
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        Else
+                            Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    End If
+                Case rf_CubicBSpline
+                    If allowApproximation Then
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            GDI_Plus.GDIPlusResizeDIB m_PreviewDst, 0, 0, m_DstRectF.Width, m_DstRectF.Height, m_PreviewSrc, 0, 0, m_SrcRectF.Width, m_SrcRectF.Height, GP_IM_HighQualityBicubic, P2_PO_Half
+                        Else
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    Else
+                        If ALLOW_GDIPLUS_RESIZE Then
+                            Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        Else
+                            Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                        End If
+                    End If
+                
+                'Anything else uses our internal resampler for preview
+                Case Else
+                    If allowApproximation Then
+                        Resampling.ResampleImageI m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                    Else
+                        Resampling.ResampleImage m_PreviewDst, m_PreviewSrc, m_DstRectF.Width, m_DstRectF.Height, resampleMethod, False
+                    End If
+                
+            End Select
             
             'Ensure correct premultiplication by un-premultiplying, then re-premultiplying alpha.
             ' (This is necessary because some operators with sharpening tendencies - like Lanczos -

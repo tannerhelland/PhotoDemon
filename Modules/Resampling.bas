@@ -28,7 +28,7 @@ Attribute VB_Name = "Resampling"
 Option Explicit
 
 'Timing reports are helpful during debugging.  Do not enable in production.
-Private Const REPORT_RESAMPLE_PERF As Boolean = True, REPORT_DETAILED_PERF As Boolean = False
+Private Const REPORT_RESAMPLE_PERF As Boolean = False, REPORT_DETAILED_PERF As Boolean = False
 
 'Float- and integer-based methods are tracked separately
 Private m_NetTimeF As Double, m_IterationsF As Long, m_NetTimeI As Double, m_IterationsI As Long
@@ -754,7 +754,6 @@ Public Function ResampleImageI(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByV
     ReDim contribI(0 To dstWidth - 1) As ContributorEntryI
     
     Dim radius As Double, center As Double, weight As Double, weightI As Long
-    Dim intensityR As Double, intensityG As Double, intensityB As Double, intensityA As Double
     Dim iR As Long, iG As Long, iB As Long, iA As Long
     Dim pxLeft As Long, pxRight As Long, i As Long, j As Long, k As Long
     Dim r As Long, g As Long, b As Long, a As Long

@@ -136,6 +136,10 @@ Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestNewSize newWidth, newHeight, True
 End Sub
 
+Public Sub RequestCursor(ByVal newCursor As SystemCursorConstant)
+    ucSupport.RequestCursor newCursor
+End Sub
+
 Public Sub RequestRedraw(Optional ByVal paintImmediately As Boolean = False)
     RedrawBackBuffer paintImmediately
 End Sub
