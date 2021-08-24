@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.353</langversion>
+<langversion>1.0.354</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -862,8 +862,18 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
+<original>Replace layer from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Нов слој од датотека</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -946,7 +956,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Страница %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -1468,6 +1478,16 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <phrase>
 <original>Delete hidden layers</original>
 <translation>Избриши ги скриените слоеви</translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2365,7 +2385,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
+<!-- Menus.bas contains 274 phrases. 33 were duplicates of existing phrases, so only 241 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4844,6 +4864,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merge up</original>
 <translation>соедините и до</translation>
 </phrase>
@@ -5511,7 +5536,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 379 phrases. 198 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13580,10 +13605,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5290 phrases. -->
-<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5301 phrases. -->
+<!-- 2725 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 11854 total words. -->
 
 </pdData>

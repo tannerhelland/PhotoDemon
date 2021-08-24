@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.558</langversion>
+<langversion>9.0.647</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -865,8 +865,18 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 </phrase>
 
 <phrase>
+<original>Replace layer from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Neuer Layer aus Datei</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -949,7 +959,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Seite %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -1471,6 +1481,16 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <phrase>
 <original>Delete hidden layers</original>
 <translation>Ausgeblendete Layer löschen</translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2368,7 +2388,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
+<!-- Menus.bas contains 274 phrases. 33 were duplicates of existing phrases, so only 241 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4483,7 +4503,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>%1, was %2</original>
-<translation></translation>
+<translation>%1, war %2</translation>
 </phrase>
 
 <!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4849,6 +4869,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>Hidden layers</original>
 <translation>Ausgeblendete Layer</translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5519,7 +5544,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 379 phrases. 198 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10394,7 +10419,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>lossy optimization is provided by pngquant</original>
-<translation>Verlustbehaftete Optimierung wird bereitgestellt von pngquant</translation>
+<translation>Verlustbehaftete Optimierung (Lossy Optimization) wird bereitgestellt von pngquant</translation>
 </phrase>
 
 <phrase>
@@ -10434,7 +10459,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
-<translation>Verlustfreie Optimierung wird bereitgestellt von OptiPNG</translation>
+<translation>Verlustfreie Optimierung (Lossless Optimization) wird bereitgestellt von OptiPNG</translation>
 </phrase>
 
 <phrase>
@@ -10819,7 +10844,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation>Metadaten-Unterstützung wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
+<translation>Metadaten-Unterstützung (Metadata Support) wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
 </phrase>
 
 <phrase>
@@ -10951,12 +10976,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>preview changes</original>
-<translation></translation>
+<translation>Änderungen vorab anschauen</translation>
 </phrase>
 
 <phrase>
 <original>optimize for speed</original>
-<translation></translation>
+<translation>Für Geschwindigkeit optimieren</translation>
 </phrase>
 
 <phrase>
@@ -10966,7 +10991,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>resampling</original>
-<translation></translation>
+<translation>Resampling</translation>
 </phrase>
 
 <phrase>
@@ -10986,7 +11011,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation></translation>
+<translation>Einige Bild- (Image-) Resampling-Filter unterstützen approximative Berechnungen. Diese verbessern die Performance bei einer geringfügigen Verminderung der Qualität.</translation>
 </phrase>
 
 <phrase>
@@ -13559,37 +13584,37 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>cosine</original>
-<translation></translation>
+<translation>Kosinus</translation>
 </phrase>
 
 <phrase>
 <original>bell</original>
-<translation></translation>
+<translation>Glocke</translation>
 </phrase>
 
 <phrase>
 <original>quadratic</original>
-<translation></translation>
+<translation>Quadratisch</translation>
 </phrase>
 
 <phrase>
 <original>quadratic b-spline</original>
-<translation></translation>
+<translation>Quadratischer B-Spline</translation>
 </phrase>
 
 <phrase>
 <original>cubic convolution</original>
-<translation></translation>
+<translation>Kubische Faltung</translation>
 </phrase>
 
 <!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5290 phrases. -->
-<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5301 phrases. -->
+<!-- 2725 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 11854 total words. -->
 
 </pdData>
