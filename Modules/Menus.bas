@@ -269,68 +269,72 @@ Public Sub InitializeMenus()
     AddMenuItem "Delete", "layer_delete", 3, 1
         AddMenuItem "Current layer", "layer_deletecurrent", 3, 1, 0, "generic_trash"
         AddMenuItem "Hidden layers", "layer_deletehidden", 3, 1, 1, "generic_invisible"
-    AddMenuItem "-", "-", 3, 2
-    AddMenuItem "Merge up", "layer_mergeup", 3, 3, , "layer_mergeup"
-    AddMenuItem "Merge down", "layer_mergedown", 3, 4, , "layer_mergedown"
-    AddMenuItem "Order", "layer_order", 3, 5
-        AddMenuItem "Go to top layer", "layer_gotop", 3, 5, 0
-        AddMenuItem "Go to layer above", "layer_goup", 3, 5, 1
-        AddMenuItem "Go to layer below", "layer_godown", 3, 5, 2
-        AddMenuItem "Go to bottom layer", "layer_gobottom", 3, 5, 3
-        AddMenuItem "-", "-", 3, 5, 4
-        AddMenuItem "Move layer to top", "layer_movetop", 3, 5, 5
-        AddMenuItem "Move layer up", "layer_moveup", 3, 5, 6, "layer_up"
-        AddMenuItem "Move layer down", "layer_movedown", 3, 5, 7, "layer_down"
-        AddMenuItem "Move layer to bottom", "layer_movebottom", 3, 5, 8
-        AddMenuItem "-", "-", 3, 5, 9
-        AddMenuItem "Reverse", "layer_reverse", 3, 5, 10
-    AddMenuItem "Visibility", "layer_visibility", 3, 6
-        AddMenuItem "Show this layer", "layer_show", 3, 6, 0
-        AddMenuItem "-", "-", 3, 6, 1
-        AddMenuItem "Show only this layer", "layer_showonly", 3, 6, 2
-        AddMenuItem "Hide only this layer", "layer_hideonly", 3, 6, 3
+    AddMenuItem "Replace", "layer_replace", 3, 2
+        AddMenuItem "From clipboard", "layer_replacefromclipboard", 3, 2, 0, "edit_paste"
+        AddMenuItem "From file...", "layer_replacefromfile", 3, 2, 1, "file_open"
+        AddMenuItem "From visible layers", "layer_replacefromvisiblelayers", 3, 2, 2
+    AddMenuItem "-", "-", 3, 3
+    AddMenuItem "Merge up", "layer_mergeup", 3, 4, , "layer_mergeup"
+    AddMenuItem "Merge down", "layer_mergedown", 3, 5, , "layer_mergedown"
+    AddMenuItem "Order", "layer_order", 3, 6
+        AddMenuItem "Go to top layer", "layer_gotop", 3, 6, 0
+        AddMenuItem "Go to layer above", "layer_goup", 3, 6, 1
+        AddMenuItem "Go to layer below", "layer_godown", 3, 6, 2
+        AddMenuItem "Go to bottom layer", "layer_gobottom", 3, 6, 3
         AddMenuItem "-", "-", 3, 6, 4
-        AddMenuItem "Show all layers", "layer_showall", 3, 6, 5
-        AddMenuItem "Hide all layers", "layer_hideall", 3, 6, 6
-    AddMenuItem "-", "-", 3, 7
-    AddMenuItem "Crop", "layer_crop", 3, 8
-        AddMenuItem "Crop to selection", "layer_cropselection", 3, 8, 0, "image_crop"
-        AddMenuItem "-", "-", 3, 8, 1
-        AddMenuItem "Fit to canvas", "layer_pad", 3, 8, 2
-        AddMenuItem "Trim empty borders", "layer_trim", 3, 8, 3
-    AddMenuItem "Orientation", "layer_orientation", 3, 9
-        AddMenuItem "Straighten...", "layer_straighten", 3, 9, 0
+        AddMenuItem "Move layer to top", "layer_movetop", 3, 6, 5
+        AddMenuItem "Move layer up", "layer_moveup", 3, 6, 6, "layer_up"
+        AddMenuItem "Move layer down", "layer_movedown", 3, 6, 7, "layer_down"
+        AddMenuItem "Move layer to bottom", "layer_movebottom", 3, 6, 8
+        AddMenuItem "-", "-", 3, 6, 9
+        AddMenuItem "Reverse", "layer_reverse", 3, 6, 10
+    AddMenuItem "Visibility", "layer_visibility", 3, 7
+        AddMenuItem "Show this layer", "layer_show", 3, 7, 0
+        AddMenuItem "-", "-", 3, 7, 1
+        AddMenuItem "Show only this layer", "layer_showonly", 3, 7, 2
+        AddMenuItem "Hide only this layer", "layer_hideonly", 3, 7, 3
+        AddMenuItem "-", "-", 3, 7, 4
+        AddMenuItem "Show all layers", "layer_showall", 3, 7, 5
+        AddMenuItem "Hide all layers", "layer_hideall", 3, 7, 6
+    AddMenuItem "-", "-", 3, 8
+    AddMenuItem "Crop", "layer_crop", 3, 9
+        AddMenuItem "Crop to selection", "layer_cropselection", 3, 9, 0, "image_crop"
         AddMenuItem "-", "-", 3, 9, 1
-        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 9, 2, "generic_rotateright"
-        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 9, 3, "generic_rotateleft"
-        AddMenuItem "Rotate 180", "layer_rotate180", 3, 9, 4
-        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 9, 5
-        AddMenuItem "-", "-", 3, 9, 6
-        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 9, 7, "image_fliphorizontal"
-        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 9, 8, "image_flipvertical"
-    AddMenuItem "Size", "layer_resize", 3, 10
-        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 10, 0, "generic_reset"
+        AddMenuItem "Fit to canvas", "layer_pad", 3, 9, 2
+        AddMenuItem "Trim empty borders", "layer_trim", 3, 9, 3
+    AddMenuItem "Orientation", "layer_orientation", 3, 10
+        AddMenuItem "Straighten...", "layer_straighten", 3, 10, 0
         AddMenuItem "-", "-", 3, 10, 1
-        AddMenuItem "Resize...", "layer_resize", 3, 10, 2, "image_resize"
-        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 10, 3
-        AddMenuItem "-", "-", 3, 10, 4
-        AddMenuItem "Fit to image", "layer_fittoimage", 3, 10, 5
-    AddMenuItem "-", "-", 3, 11
-    AddMenuItem "Transparency", "layer_transparency", 3, 12
-        AddMenuItem "From color (chroma key)...", "layer_colortoalpha", 3, 12, 0
-        AddMenuItem "From luminance...", "layer_luminancetoalpha", 3, 12, 1
-        AddMenuItem "-", "-", 3, 12, 2
-        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 12, 3, "generic_trash"
-        AddMenuItem "Threshold...", "layer_thresholdalpha", 3, 12, 4
-    AddMenuItem "-", "-", 3, 13
-    AddMenuItem "Rasterize", "layer_rasterize", 3, 14
-        AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 14, 0
-        AddMenuItem "All layers", "layer_rasterizeall", 3, 14, 1
-    AddMenuItem "Split", "layer_split", 3, 15
-        AddMenuItem "Current layer into standalone image", "layer_splitlayertoimage", 3, 15, 0
-        AddMenuItem "All layers into standalone images", "layer_splitalllayerstoimages", 3, 15, 1
-        AddMenuItem "-", "-", 3, 15, 2
-        AddMenuItem "Other open images into this image (as layers)...", "layer_splitimagestolayers", 3, 15, 3
+        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 10, 2, "generic_rotateright"
+        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 10, 3, "generic_rotateleft"
+        AddMenuItem "Rotate 180", "layer_rotate180", 3, 10, 4
+        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 10, 5
+        AddMenuItem "-", "-", 3, 10, 6
+        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 10, 7, "image_fliphorizontal"
+        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 10, 8, "image_flipvertical"
+    AddMenuItem "Size", "layer_resize", 3, 11
+        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 11, 0, "generic_reset"
+        AddMenuItem "-", "-", 3, 11, 1
+        AddMenuItem "Resize...", "layer_resize", 3, 11, 2, "image_resize"
+        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 11, 3
+        AddMenuItem "-", "-", 3, 11, 4
+        AddMenuItem "Fit to image", "layer_fittoimage", 3, 11, 5
+    AddMenuItem "-", "-", 3, 12
+    AddMenuItem "Transparency", "layer_transparency", 3, 13
+        AddMenuItem "From color (chroma key)...", "layer_colortoalpha", 3, 13, 0
+        AddMenuItem "From luminance...", "layer_luminancetoalpha", 3, 13, 1
+        AddMenuItem "-", "-", 3, 13, 2
+        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 13, 3, "generic_trash"
+        AddMenuItem "Threshold...", "layer_thresholdalpha", 3, 13, 4
+    AddMenuItem "-", "-", 3, 14
+    AddMenuItem "Rasterize", "layer_rasterize", 3, 15
+        AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 15, 0
+        AddMenuItem "All layers", "layer_rasterizeall", 3, 15, 1
+    AddMenuItem "Split", "layer_split", 3, 16
+        AddMenuItem "Current layer into standalone image", "layer_splitlayertoimage", 3, 16, 0
+        AddMenuItem "All layers into standalone images", "layer_splitalllayerstoimages", 3, 16, 1
+        AddMenuItem "-", "-", 3, 16, 2
+        AddMenuItem "Other open images into this image (as layers)...", "layer_splitimagestolayers", 3, 16, 3
     
     'Select Menu
     AddMenuItem "Select", "select_top", 4
@@ -2334,6 +2338,16 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 
             Case "layer_deletehidden"
                 Process "Delete hidden layers", False, , UNDO_Image_VectorSafe
+        
+        Case "layer_replace"
+            Case "layer_replacefromclipboard"
+                Process "Replace layer from clipboard", False, createUndo:=UNDO_Layer
+                
+            Case "layer_replacefromfile"
+                Process "Replace layer from file", True
+                
+            Case "layer_replacefromvisiblelayers"
+                Process "Replace layer from visible layers", False, createUndo:=UNDO_Layer
                 
         Case "layer_mergeup"
             Process "Merge layer up", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image

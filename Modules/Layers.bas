@@ -302,28 +302,46 @@ Public Function AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_La
 End Function
 
 'Create a new layer from the current composite image, and place it at the top of the layer stack.
-' RETURNS: layer ID (*not* index!) of the newly created layer.  PD doesn't always make use of this value,
+' (If the replaceActiveLayerInstead parameter is TRUE, the contents of the active layer will be replaced
+' instead - this is the difference between the `Layer > Add from visible layers` and `Layer > Replace
+' from visible layers` commands.)
+'RETURNS: layer ID (*not* index!) of the newly created layer.  PD doesn't always make use of this value,
 ' but it's there if you need it.
-Public Function AddLayerFromVisibleLayers() As Long
-
-    'Figure out where the top of the layer stack sits
-    Dim topLayerIndex As Long
-    topLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+Public Function AddLayerFromVisibleLayers(Optional replaceActiveLayerInstead As Boolean = False) As Long
     
-    'Ask the parent pdImage to create a new layer object at the top of its stack
-    Dim newLayerID As Long
-    newLayerID = PDImages.GetActiveImage.CreateBlankLayer(topLayerIndex)
+    Dim targetLayerID As Long, tmpDIB As pdDIB
     
     'Retrieve a composite of the current image
-    Dim tmpDIB As pdDIB
     PDImages.GetActiveImage.GetCompositedImage tmpDIB, True
-    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Visible"), tmpDIB
+        
+    'This function can either 1) create a new layer, or 2) replace an existing layer.
+    ' (Replacing is much simpler, since we can use most of the existing layer as-is - only the pixel surface
+    ' needs to be modified.)
+    If replaceActiveLayerInstead Then
     
-    'Make the blank layer the new active layer
-    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
+        'Updating the layer is as simple as replacing its existing surface reference with tmpDIB.
+        ' (Just make sure not to mess with or forcibly free tmpDIB after this point!)
+        Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+        
+    Else
     
-    'Notify the parent of the change
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+        'Figure out where the top of the layer stack sits
+        Dim topLayerIndex As Long
+        topLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+        
+        'Ask the parent pdImage to create a new layer object at the top of its stack,
+        ' then initialize that layer using the composite image we retrieved earlier.
+        targetLayerID = PDImages.GetActiveImage.CreateBlankLayer(topLayerIndex)
+        PDImages.GetActiveImage.GetLayerByID(targetLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Visible"), tmpDIB
+        
+        'Make the blank layer the new active layer
+        PDImages.GetActiveImage.SetActiveLayerByID targetLayerID
+    
+        'Notify the parent of the change
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+    
+    End If
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
@@ -334,7 +352,7 @@ Public Function AddLayerFromVisibleLayers() As Long
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
     
-    AddLayerFromVisibleLayers = newLayerID
+    AddLayerFromVisibleLayers = targetLayerID
     
 End Function
 
@@ -349,7 +367,7 @@ Public Sub AddLayerViaCut()
 End Sub
 
 'Load an image file, and add it to the current image as a new layer
-Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX)
+Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = vbNullString, Optional ByVal customLayerName As String = vbNullString, Optional ByVal createUndo As Boolean = False, Optional ByVal refreshUI As Boolean = True, Optional ByVal xOffset As Long = LONG_MAX, Optional ByVal yOffset As Long = LONG_MAX, Optional ByVal replaceActiveLayerInstead As Boolean = False)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -360,7 +378,11 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         'Retrieve a filepath
         Dim imgFilePath As String
         If FileMenu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd) Then
-            Process "New layer from file", False, imgFilePath, UNDO_Image_VectorSafe
+            If replaceActiveLayerInstead Then
+                Process "Replace layer from file", False, imgFilePath, UNDO_Layer
+            Else
+                Process "New layer from file", False, imgFilePath, UNDO_Image_VectorSafe
+            End If
         End If
     
     'If showDialog is FALSE, the user has already selected a file, and we just need to load it
@@ -377,94 +399,129 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             ' 32-bpp mode)
             If (tmpDIB.GetDIBColorDepth <> 32) Then tmpDIB.ConvertTo32bpp
             
-            'Ask the current image to prepare a blank layer for us
-            Dim newLayerID As Long
-            newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+            'We now have two pathways (because this function can create a new layer from file, or simply update
+            ' an existing layer's contents with an image file's contents)
             
-            'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
-            If (LenB(customLayerName) = 0) Then
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
+            'If we are just replacing the current layer, this step is easier
+            If replaceActiveLayerInstead Then
+                
+                'Easy-peasy - just replace the current layer's contents with the contents from the newly loaded file
+                Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+                
+            'If we are creating a new layer from scratch, the process is a bit more complicated.
             Else
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB
+                
+                'Ask the current image to prepare a blank layer for us
+                Dim newLayerID As Long
+                newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+                
+                'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
+                If (LenB(customLayerName) = 0) Then
+                    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
+                Else
+                    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB
+                End If
+                
+                'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
+                ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
+                ' (Note that the caller can override this by supplying their own coordinates; if they do this,
+                ' we'll still validate the requested position to ensure it fits nicely in the current viewport.)
+                
+                'Start by retrieving the current top-left position of the canvas, in *image* coordinates
+                Dim newX As Double, newY As Double, safeX As Double, safeY As Double
+                If (Not PDImages.GetActiveImage Is Nothing) Then
+                    Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
+                    safeX = newX
+                    safeY = newY
+                Else
+                    newX = 0
+                    newY = 0
+                End If
+                
+                'If the caller passed in their own x and/or y value, validate each value before replacing
+                ' our auto-calculated position
+                If (xOffset <> LONG_MAX) Then
+                    
+                    newX = xOffset
+                    
+                    'Make sure the newly placed layer doesn't lie off-canvas.  (This is a risk with drag+drop,
+                    ' as the use may drop the layer into blank areas around the image.)
+                    If (newX > PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth) Then newX = PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth
+                    If (newX < 0) Then newX = 0
+                    
+                    'Finally, if our calculated position lies to the left of the current viewport,
+                    ' reposition it accordingly.  (This provides the most intuitive behavior, IMO, as it
+                    ' guarantees the newly created layer will *always* be visible within the current
+                    ' viewport, regardless of where the caller attempted to position it.)
+                    If (newX < safeX) Then newX = safeX
+                    
+                End If
+                
+                'Repeat all the above steps for y
+                If (yOffset <> LONG_MAX) Then
+                    newY = yOffset
+                    If (newY > PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight) Then newY = PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight
+                    If (newY < 0) Then newY = 0
+                    If (newY < safeY) Then newY = safeY
+                End If
+                
+                'Assign the new coordinates to our layer!
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
+                
+                'Notify the parent image that the entire image now needs to be recomposited
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+                
             End If
             
-            'With the layer successfully created, we now want to position it on-screen.  Rather than dump the layer
-            ' at (0, 0), let's be polite and place it at the top-left corner of the current viewport.
-            ' (Note that the caller can override this by supplying their own coordinates; if they do this,
-            ' we'll still validate the requested position to ensure it fits nicely in the current viewport.)
+            'IMPORTANT NOTE: tmpDIB has now been assigned as the backing surface for the new/updated layer.
+            ' Do *not* modify it further (or worse, release it) in this function, because you will be modifying
+            ' the actual layer contents instead of just a temporary surface.
             
-            'Start by retrieving the current top-left position of the canvas, in *image* coordinates
-            Dim newX As Double, newY As Double, safeX As Double, safeY As Double
-            If (Not PDImages.GetActiveImage Is Nothing) Then
-                Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage, 0#, 0#, newX, newY, True
-                safeX = newX
-                safeY = newY
-            Else
-                newX = 0
-                newY = 0
-            End If
-            
-            'If the caller passed in their own x and/or y value, validate each value before replacing
-            ' our auto-calculated position
-            If (xOffset <> LONG_MAX) Then
-                
-                newX = xOffset
-                
-                'Make sure the newly placed layer doesn't lie off-canvas.  (This is a risk with drag+drop,
-                ' as the use may drop the layer into blank areas around the image.)
-                If (newX > PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth) Then newX = PDImages.GetActiveImage.Width - tmpDIB.GetDIBWidth
-                If (newX < 0) Then newX = 0
-                
-                'Finally, if our calculated position lies to the left of the current viewport,
-                ' reposition it accordingly.  (This provides the most intuitive behavior, IMO, as it
-                ' guarantees the newly created layer will *always* be visible within the current
-                ' viewport, regardless of where the caller attempted to position it.)
-                If (newX < safeX) Then newX = safeX
-                
-            End If
-            
-            'Repeat all the above steps for y
-            If (yOffset <> LONG_MAX) Then
-                newY = yOffset
-                If (newY > PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight) Then newY = PDImages.GetActiveImage.Height - tmpDIB.GetDIBHeight
-                If (newY < 0) Then newY = 0
-                If (newY < safeY) Then newY = safeY
-            End If
-            
-            'Assign the new coordinates to our layer!
-            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX newX
-            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY newY
-            
-            'Notify the parent image that the entire image now needs to be recomposited
-            PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-            
-            'If the caller wants us to manually create an Undo point (as required when pasting, for example), do so now
+            'If the caller wants us to manually create an Undo point, do so now.
+            ' (In PD, this is only required when adding images via Drag/Drop, which require a custom pathway.
+            ' Anything initiated by menus, hotkeys, or other "normal" interactions will generate Undo data
+            ' automatically via PD's central processor.)
             If createUndo Then
                 
                 Dim tmpProcCall As PD_ProcessCall
                 With tmpProcCall
-                    .pcID = g_Language.TranslateMessage("New layer from file")
                     .pcParameters = vbNullString
                     .pcRaiseDialog = False
                     .pcRecorded = True
-                    .pcUndoType = UNDO_Image_VectorSafe
+                    
+                    'Remaining parameters depend on new layer vs replacing existing.  (Note that the replace
+                    ' pathway is not actually used at present; drag+dropped layers are always added "as new".)
+                    If replaceActiveLayerInstead Then
+                        .pcID = g_Language.TranslateMessage("Replace layer from file")
+                        .pcUndoType = UNDO_Layer
+                    Else
+                        .pcID = g_Language.TranslateMessage("New layer from file")
+                        .pcUndoType = UNDO_Image_VectorSafe
+                    End If
+                    
                 End With
                 
-                PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, newLayerID
+                If replaceActiveLayerInstead Then
+                    PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, PDImages.GetActiveImage.GetActiveLayerID
+                Else
+                    PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, newLayerID
+                End If
                 
             End If
             
+            'If requested, synchronize the interface to the new image
             If refreshUI Then
-                
-                'Render the new image to screen
                 Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-                
-                'Synchronize the interface to the new image
                 SyncInterfaceToCurrentImage
-                
             End If
             
-            Message "New layer added successfully."
+            If replaceActiveLayerInstead Then
+                Message "Layer updated successfully."
+            Else
+                Message "New layer added successfully."
+            End If
         
         Else
             PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
@@ -1440,6 +1497,33 @@ Public Sub MergeVisibleLayers()
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
+
+Public Function ReplaceLayerWithClipboard() As Boolean
+        
+    'See if there's anything useable on the clipboard
+    Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
+    ReplaceLayerWithClipboard = g_Clipboard.ClipboardPaste(True, tmpDIB)
+    
+    If ReplaceLayerWithClipboard And (Not tmpDIB Is Nothing) Then
+    
+        'The paste operation succeeded.  Overwrite the active layer's contents with whatever we retrieved
+        ' from the clipboard, and notify the parent image of the change.
+        Set PDImages.GetActiveImage.GetActiveLayer.layerDIB = tmpDIB
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.NotifyLayerChange PDImages.GetActiveImage.GetActiveLayerID
+        
+        'Render the new image to screen (not technically necessary, but doesn't hurt)
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        
+        'Synchronize the interface to the new image
+        Interface.SyncInterfaceToCurrentImage
+        
+    '/if the clipboard doesn't contain useable data, do nothing
+    End If
+    
+End Function
 
 'If a layer has been transformed using the on-canvas tools, this will reset it to its default size.
 Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)

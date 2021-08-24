@@ -411,7 +411,7 @@ End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
-Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing, Optional ByRef fullParamString As String)
+Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing, Optional ByRef fullParamString As String = vbNullString) As Boolean
     
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
@@ -431,19 +431,19 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
         
         'If PD was used to Cut or Copy something onto the clipboard, our own private format(s) will be listed first.
         If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) And PD_CB_ALLOW_INTERNAL_FORMAT_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
         If m_Clipboard.DoesClipboardHaveFormatName("PNG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_PNG_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("PNG", srcIsMeantAsLayer, "png")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("PNG", srcIsMeantAsLayer, "png", pasteToThisDIBInstead)
         End If
         
         'If we couldn't find PNG data (or something went horribly wrong during that step), look for an HTML fragment next.
         ' Images copied from web browsers typically create an HTML fragment, which should have a direct link to the copied image.
         '  Downloading the image manually lets us maintain things like ICC profiles and the image's original filename.
         If m_Clipboard.DoesClipboardHaveHTML() And (Not pasteWasSuccessful) And PD_CB_ALLOW_ONLINE_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_HTML(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_HTML(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'JPEGs are another possibility.  We prefer them less than PNG or direct download (because there's no guarantee that the
@@ -451,38 +451,38 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
         ' color profiles, so test for JPEG next.  (Also, note that certain versions of Microsoft Office use "JFIF" as the identifier,
         ' for reasons known only to them...)
         If m_Clipboard.DoesClipboardHaveFormatName("JPEG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPEG", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPEG", srcIsMeantAsLayer, "jpg", pasteToThisDIBInstead)
         End If
         
         If m_Clipboard.DoesClipboardHaveFormatName("JPG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPG", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPG", srcIsMeantAsLayer, "jpg", pasteToThisDIBInstead)
         End If
         
         If m_Clipboard.DoesClipboardHaveFormatName("JFIF") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JFIF", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JFIF", srcIsMeantAsLayer, "jpg", pasteToThisDIBInstead)
         End If
         
         'Next, see if the clipboard contains a generic file list.  If it does, try to load each file in turn.
         If m_Clipboard.DoesClipboardHaveFiles() And (Not pasteWasSuccessful) And PD_CB_ALLOW_FILE_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_ListOfFiles(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_ListOfFiles(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'Next, look for plaintext.  This could be a URL, or maybe a text representation of a filepath.
         ' (Also, note that we only have to search for one text format, because the OS auto-converts between text formats for free.)
         If m_Clipboard.DoesClipboardHaveText() And (Not pasteWasSuccessful) And PD_CB_ALLOW_GENERIC_TEXT_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_TextSource(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_TextSource(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'Next, use any DIBs or bitmaps.  Once again, the OS auto-converts between bitmap and DIB formats, and if it all possible,
         ' we prefer DIBv5 as it actually supports alpha data.
         If m_Clipboard.DoesClipboardHaveBitmapImage() And (Not pasteWasSuccessful) And PD_CB_ALLOW_BMP_DIB_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_BitmapImage(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_BitmapImage(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'As a last resort, try to grab metafiles.  These are not ideal as some software (*cough* OFFICE *cough*) generates
         ' pretty terrible metafiles, but it's better than nothing.
         If m_Clipboard.DoesClipboardHaveMetafile() And (Not pasteWasSuccessful) And PD_CB_ALLOW_METAFILE_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_Metafile(srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_Metafile(srcIsMeantAsLayer, pasteToThisDIBInstead)
         End If
         
         'Regardless of success or failure, make sure to close the clipboard now that we're done with it.
@@ -494,7 +494,9 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
     Else
         PDDebug.LogAction "WARNING!  Couldn't open the clipboard; is it possible another program has locked it?"
     End If
-        
+    
+    ClipboardPaste = pasteWasSuccessful
+    
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
     ' new layer has been pasted.
     If pasteWasSuccessful Then
@@ -575,7 +577,7 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pas
         PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation Or vbOKOnly, "Error"
     End If
     
-End Sub
+End Function
 
 'If the clipboard contains internal PD-format data (most commonly a bare DIB), you can call this function to initiate a "paste" command
 ' using the internal data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
@@ -1634,7 +1636,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             If (LenB(targetFile) <> 0) Then
             
                 If PDImages.IsImageActive() And loadAsLayers Then
-                    Layers.LoadImageAsNewLayer False, targetFile, , True, , srcX, srcY
+                    Layers.LoadImageAsNewLayer False, targetFile, vbNullString, True, True, srcX, srcY
                 Else
                     LoadFileAsNewImage targetFile
                 End If
