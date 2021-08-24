@@ -319,67 +319,67 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>random</original>
-<translation></translation>
+<translation>aléatoire</translation>
 </phrase>
 
 <phrase>
 <original>image</original>
-<translation></translation>
+<translation>image</translation>
 </phrase>
 
 <phrase>
 <original>repeat</original>
-<translation></translation>
+<translation>répétitions</translation>
 </phrase>
 
 <phrase>
 <original>waves</original>
-<translation></translation>
+<translation>vagues</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation></translation>
+<translation>courtepointe</translation>
 </phrase>
 
 <phrase>
 <original>chain</original>
-<translation></translation>
+<translation>chaine</translation>
 </phrase>
 
 <phrase>
 <original>weave</original>
-<translation></translation>
+<translation>entrelacé</translation>
 </phrase>
 
 <phrase>
 <original>arc</original>
-<translation></translation>
+<translation>arc</translation>
 </phrase>
 
 <phrase>
 <original>line</original>
-<translation></translation>
+<translation>linéaire</translation>
 </phrase>
 
 <phrase>
 <original>maze</original>
-<translation></translation>
+<translation>labyrinthe</translation>
 </phrase>
 
 <phrase>
 <original>triangle</original>
-<translation></translation>
+<translation>triangle</translation>
 </phrase>
 
 <phrase>
 <original>octagon</original>
-<translation></translation>
+<translation>octogone</translation>
 </phrase>
 
 <phrase>
 <original>circle</original>
-<translation></translation>
+<translation>circulaire</translation>
 </phrase>
 
 <!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
