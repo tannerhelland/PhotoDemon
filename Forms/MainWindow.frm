@@ -482,20 +482,36 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "-"
+         Caption         =   "Replace"
          Index           =   2
+         Begin VB.Menu MnuLayerReplace 
+            Caption         =   "From clipboard"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerReplace 
+            Caption         =   "From file..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerReplace 
+            Caption         =   "From visible layers"
+            Index           =   2
+         End
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge up"
+         Caption         =   "-"
          Index           =   3
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge down"
+         Caption         =   "Merge up"
          Index           =   4
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Order"
+         Caption         =   "Merge down"
          Index           =   5
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Order"
+         Index           =   6
          Begin VB.Menu MnuLayerOrder 
             Caption         =   "Go to top layer"
             Index           =   0
@@ -543,7 +559,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Visibility"
-         Index           =   6
+         Index           =   7
          Begin VB.Menu MnuLayerVisibility 
             Caption         =   "Show this layer"
             Checked         =   -1  'True
@@ -576,11 +592,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   7
+         Index           =   8
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Crop"
-         Index           =   8
+         Index           =   9
          Begin VB.Menu MnuLayerCrop 
             Caption         =   "Crop to selection"
             Index           =   0
@@ -600,7 +616,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Orientation"
-         Index           =   9
+         Index           =   10
          Begin VB.Menu MnuLayerOrientation 
             Caption         =   "Straighten..."
             Index           =   0
@@ -640,7 +656,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Size"
-         Index           =   10
+         Index           =   11
          Begin VB.Menu MnuLayerSize 
             Caption         =   "Reset to actual size"
             Index           =   0
@@ -668,11 +684,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   11
+         Index           =   12
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Transparency"
-         Index           =   12
+         Index           =   13
          Begin VB.Menu MnuLayerTransparency 
             Caption         =   "From color (chroma key)..."
             Index           =   0
@@ -696,11 +712,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   13
+         Index           =   14
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Rasterize"
-         Index           =   14
+         Index           =   15
          Begin VB.Menu MnuLayerRasterize 
             Caption         =   "Current layer"
             Index           =   0
@@ -712,7 +728,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Split"
-         Index           =   15
+         Index           =   16
          Begin VB.Menu MnuLayerSplit 
             Caption         =   "Current layer into standalone image"
             Index           =   0
@@ -2012,6 +2028,17 @@ Private Sub MnuLayerCrop_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuLayerReplace_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_replacefromclipboard"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "layer_replacefromfile"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "layer_replacefromvisiblelayers"
+    End Select
+End Sub
+
 Private Sub MnuLayerSplit_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -2915,7 +2942,7 @@ Private Sub Form_Load()
     On Error GoTo FormMainLoadError
     
     '*************************************************************************************************************************************
-    ' Start by rerouting control to "LoadTheProgram", which initializes all key PD systems
+    ' Start by rerouting control to "ContinueLoadingProgram", which initializes all key PD systems
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function

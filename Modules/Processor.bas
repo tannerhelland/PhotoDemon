@@ -326,6 +326,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'End of special processID checks
     End If
     
+    'Relay any Undo/Redo changes to our processor tracker
+    If processFound And (thisProcData.pcUndoType <> createUndo) Then thisProcData.pcUndoType = createUndo
+    
     'If the user wants us to time this action, display the results now.  (Note that we only do this for actions that change the image
     ' in some way, as determined by whether meaningful Undo/Redo data is created.)
     If g_DisplayTimingReports And (createUndo <> UNDO_Nothing) Then ReportProcessorTimeTaken m_ProcessingTime
@@ -1402,7 +1405,7 @@ End Function
 'Helper wrapper for EDIT MENU operations.  (Note that edit menu actions are generally not recorded as part of macros.)
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_EditMenu(ByRef processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_EditMenu(ByRef processID As String, Optional ByVal raiseDialog As Boolean = False, Optional ByRef processParameters As String = vbNullString, Optional ByRef createUndo As PD_UndoType = UNDO_Nothing, Optional ByRef relevantTool As Long = -1, Optional ByRef recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
     ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
@@ -1469,7 +1472,9 @@ Private Function Process_EditMenu(ByRef processID As String, Optional raiseDialo
     ' parameters to the function; those parameters contain cursor x/y position, if any - and if
     ' the paste function receives them, it will perform a "paste to cursor" op instead.)
     ElseIf Strings.StringsEqual(processID, "Paste", True) Then
-        g_Clipboard.ClipboardPaste PDImages.IsImageActive()
+        Dim pasteResult As Boolean
+        pasteResult = g_Clipboard.ClipboardPaste(PDImages.IsImageActive())
+        If (PDImages.IsImageActive And (Not pasteResult)) Then createUndo = UNDO_Nothing
         Process_EditMenu = True
     
     '"Paste to cursor" is identical to "paste", except we ensure process parameters get passed
@@ -2214,7 +2219,7 @@ End Function
 'Helper wrapper for LAYER MENU operations.
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_LayerMenu(ByVal processID As String, Optional ByVal raiseDialog As Boolean = False, Optional ByRef processParameters As String = vbNullString, Optional ByRef createUndo As PD_UndoType = UNDO_Nothing, Optional ByVal relevantTool As Long = -1, Optional ByRef recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
     'A number of layer functions pass the relevant layer index in the parameter string (as future-proofing against selecting
     ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
@@ -2286,7 +2291,20 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Delete hidden layers", True) Then
         Layers.DeleteHiddenLayers
         Process_LayerMenu = True
-        
+    
+    'Replace layer contents with something new
+    ElseIf Strings.StringsEqual(processID, "Replace layer from clipboard", True) Then
+        If (Not Layers.ReplaceLayerWithClipboard) Then createUndo = UNDO_Nothing
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Replace layer from file", True) Then
+        Layers.LoadImageAsNewLayer raiseDialog, processParameters, replaceActiveLayerInstead:=True
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Replace layer from visible layers", True) Then
+        Layers.AddLayerFromVisibleLayers True
+        Process_LayerMenu = True
+    
     'Merge a layer up or down
     ElseIf Strings.StringsEqual(processID, "Merge layer down", True) Then
         Layers.MergeLayerAdjacent cParams.GetLong("layerindex"), True

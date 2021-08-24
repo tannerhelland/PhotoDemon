@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>8.2.98</langversion>
+<langversion>8.2.99</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -863,8 +863,18 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
+<original>Replace layer from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>从文件新建图层</translation>
+</phrase>
+
+<phrase>
+<original>Layer updated successfully.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -947,7 +957,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>%1 页</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 56 phrases. 31 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -1464,6 +1474,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Delete hidden layers</original>
 <translation>删除隐藏层</translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace layer from visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2361,7 +2381,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 271 phrases. 32 were duplicates of existing phrases, so only 239 new phrases were written to file. -->
+<!-- Menus.bas contains 274 phrases. 33 were duplicates of existing phrases, so only 241 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -4842,6 +4862,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Replace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merge up</original>
 <translation>合并</translation>
 </phrase>
@@ -5508,7 +5533,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 375 phrases. 195 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- MainWindow.frm contains 379 phrases. 198 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13574,10 +13599,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5290 phrases. -->
-<!-- 2719 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 11837 total words. -->
+<!-- As of this build, PhotoDemon contains 5301 phrases. -->
+<!-- 2725 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 11854 total words. -->
 
 </pdData>
