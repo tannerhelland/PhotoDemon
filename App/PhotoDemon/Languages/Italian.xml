@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.0.52</langversion>
+<langversion>8.0.53</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (8.0 updates by DeepL.com)</author>
@@ -2024,6 +2024,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Droste</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply lens distortion</original>
 <translation>Applica la distorsione lenticolare</translation>
 </phrase>
@@ -2388,7 +2393,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Cancella l'elenco delle macro recenti</translation>
 </phrase>
 
-<!-- Menus.bas contains 274 phrases. 33 were duplicates of existing phrases, so only 241 new phrases were written to file. -->
+<!-- Menus.bas contains 275 phrases. 33 were duplicates of existing phrases, so only 242 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3027,6 +3032,53 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 </phrase>
 
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+
+<phrase>
+<original>automatic</original>
+<translation>automatico</translation>
+</phrase>
+
+<phrase>
+<original>nearest-neighbor</original>
+<translation>il vicino più vicino</translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation>bilineare</translation>
+</phrase>
+
+<phrase>
+<original>cosine</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bell</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quadratic b-spline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation>bicubico</translation>
+</phrase>
+
+<phrase>
+<original>cubic convolution</original>
+<translation></translation>
+</phrase>
+
+<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
@@ -5540,7 +5592,7 @@ Tl'aggiornamento viene elaborato automaticamente in background.  Riceverai una n
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 379 phrases. 198 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 380 phrases. 199 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7990,6 +8042,28 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>swap order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inner radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outer radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Summoning M. C. Escher</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Miscellaneous distorts</original>
@@ -10475,11 +10549,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>automatic</original>
-<translation>automatico</translation>
-</phrase>
-
-<phrase>
 <original>optimize: fast filters</original>
 <translation>ottimizzare: filtri veloci</translation>
 </phrase>
@@ -10529,7 +10598,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Queste impostazioni di ottimizzazione delle perdite hanno ridotto la dimensione del file di %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 48 phrases. 19 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -11064,21 +11133,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>il vicino più vicino</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>bilineare</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>bicubico</translation>
-</phrase>
-
-<phrase>
 <original>fill with color</original>
 <translation>riempire di colore</translation>
 </phrase>
@@ -11093,7 +11147,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Ruota il livello</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -13589,39 +13643,12 @@ Se si sceglie ancora di disabilitare gli aggiornamenti, non dimenticate di visit
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>cosine</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>bell</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>quadratic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>quadratic b-spline</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cubic convolution</original>
-<translation></translation>
-</phrase>
-
-<!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2581</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5301 phrases. -->
-<!-- 2725 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 11854 total words. -->
+<!-- As of this build, PhotoDemon contains 5314 phrases. -->
+<!-- 2733 are duplicates, so only 2581 unique phrases have been written to file. -->
+<!-- These 2581 phrases contain approximately 11865 total words. -->
 
 </pdData>

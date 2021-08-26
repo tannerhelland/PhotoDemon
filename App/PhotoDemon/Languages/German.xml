@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.649</langversion>
+<langversion>9.0.650</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2024,6 +2024,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Droste</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Apply lens distortion</original>
 <translation>Linsenverzeichnung anwenden</translation>
 </phrase>
@@ -2388,7 +2393,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 274 phrases. 33 were duplicates of existing phrases, so only 241 new phrases were written to file. -->
+<!-- Menus.bas contains 275 phrases. 33 were duplicates of existing phrases, so only 242 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -3028,6 +3033,53 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 </phrase>
 
 <!-- Processor.bas contains 125 phrases. 66 were duplicates of existing phrases, so only 59 new phrases were written to file. -->
+
+<phrase>
+<original>automatic</original>
+<translation>Automatisch</translation>
+</phrase>
+
+<phrase>
+<original>nearest-neighbor</original>
+<translation>Nearest-Neighbor</translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation>Bilinear</translation>
+</phrase>
+
+<phrase>
+<original>cosine</original>
+<translation>Kosinus</translation>
+</phrase>
+
+<phrase>
+<original>bell</original>
+<translation>Glocke</translation>
+</phrase>
+
+<phrase>
+<original>quadratic</original>
+<translation>Quadratisch</translation>
+</phrase>
+
+<phrase>
+<original>quadratic b-spline</original>
+<translation>Quadratischer B-Spline</translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation>Bikubisch</translation>
+</phrase>
+
+<phrase>
+<original>cubic convolution</original>
+<translation>Kubische Faltung</translation>
+</phrase>
+
+<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
@@ -5544,7 +5596,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 379 phrases. 198 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 380 phrases. 199 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -7994,6 +8046,28 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>swap order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inner radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outer radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Summoning M. C. Escher</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Miscellaneous distorts</original>
@@ -10473,11 +10547,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>automatic</original>
-<translation>Automatisch</translation>
-</phrase>
-
-<phrase>
 <original>optimize: fast filters</original>
 <translation>Optimieren: Schnelle Filter</translation>
 </phrase>
@@ -10527,7 +10596,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße um %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 48 phrases. 19 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 48 phrases. 20 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -11057,21 +11126,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>nearest-neighbor</original>
-<translation>Nearest-Neighbor</translation>
-</phrase>
-
-<phrase>
-<original>bilinear</original>
-<translation>Bilinear</translation>
-</phrase>
-
-<phrase>
-<original>bicubic</original>
-<translation>Bikubisch</translation>
-</phrase>
-
-<phrase>
 <original>fill with color</original>
 <translation>Mit Farbe füllen</translation>
 </phrase>
@@ -11086,7 +11140,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Layer drehen</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -13582,39 +13636,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<phrase>
-<original>cosine</original>
-<translation>Kosinus</translation>
-</phrase>
-
-<phrase>
-<original>bell</original>
-<translation>Glocke</translation>
-</phrase>
-
-<phrase>
-<original>quadratic</original>
-<translation>Quadratisch</translation>
-</phrase>
-
-<phrase>
-<original>quadratic b-spline</original>
-<translation>Quadratischer B-Spline</translation>
-</phrase>
-
-<phrase>
-<original>cubic convolution</original>
-<translation>Kubische Faltung</translation>
-</phrase>
-
-<!-- Resampling.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2581</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5301 phrases. -->
-<!-- 2725 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 11854 total words. -->
+<!-- As of this build, PhotoDemon contains 5314 phrases. -->
+<!-- 2733 are duplicates, so only 2581 unique phrases have been written to file. -->
+<!-- These 2581 phrases contain approximately 11865 total words. -->
 
 </pdData>
