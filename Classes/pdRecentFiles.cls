@@ -229,9 +229,9 @@ Friend Sub UpdateUI_NonEmptyList()
         End If
         
         'Ensure the special menus at the bottom of the Recent Files list are available
-        FormMain.MnuRecentSepBar1.Visible = True
-        FormMain.MnuLoadAllMRU.Visible = True
-        FormMain.MnuClearMRU.Visible = True
+        For i = 0 To FormMain.MnuRecentFiles.Count - 1
+            FormMain.MnuRecentFiles(i).Visible = True
+        Next i
         
         'Update any relevant thumbnail icons.  (TODO: ensure this isn't being called from multiple places.)
         IconsAndCursors.ResetMenuIcons
@@ -255,9 +255,10 @@ Friend Sub UpdateUI_EmptyList()
         End If
         
         FormMain.MnuRecDocs(0).Enabled = False
-        FormMain.MnuRecentSepBar1.Visible = False
-        FormMain.MnuClearMRU.Visible = False
-        FormMain.MnuLoadAllMRU.Visible = False
+        
+        For i = 0 To FormMain.MnuRecentFiles.Count - 1
+            FormMain.MnuRecentFiles(i).Visible = False
+        Next i
         
         'All icons in this menu need to be manually reset after the list is cleared; the ResetMenuIcons function
         ' will also call the Menus.UpdateSpecialMenu_RecentFiles() function to set all captions properly.

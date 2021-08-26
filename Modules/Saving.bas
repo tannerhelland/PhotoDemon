@@ -196,6 +196,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             g_RecentFiles.AddFileToList dstPath, srcImage
             Interface.SyncInterfaceToCurrentImage
             Interface.NotifyImageChanged PDImages.GetActiveImageID()
+            Menus.UpdateSpecialMenu_WindowsOpen
         End If
         
         'At this point, it's safe to re-enable the main form and restore the default cursor

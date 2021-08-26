@@ -535,7 +535,10 @@ Private Sub SetUIMode_NoImages()
     'With all menus reset to their default values, we can now redraw all associated menu icons.
     ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
     IconsAndCursors.ResetMenuIcons
-        
+    
+    'Ensure the Windows menu does not list any open images.
+    Menus.UpdateSpecialMenu_WindowsOpen
+    
     'If no images are currently open, but images were previously opened during this session, release any memory associated
     ' with those images.  This helps minimize PD's memory usage at idle.
     If (PDImages.GetNumSessionImages >= 1) Then PDImages.ReleaseAllPDImageResources
@@ -2033,6 +2036,9 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     
     'A newly activated image requires a whole swath of UI changes.  Ask SyncInterfaceToCurrentImage to handle this for us.
     Interface.SyncInterfaceToCurrentImage
+    
+    'Ensure the list of open windows (on the main form > Window menu) is up-to-date
+    Menus.UpdateSpecialMenu_WindowsOpen
     
 End Sub
 

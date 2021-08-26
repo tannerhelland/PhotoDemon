@@ -19,7 +19,6 @@ Attribute VB_Name = "Menus"
 '
 '***************************************************************************
 
-
 Option Explicit
 
 Private Type PD_MenuEntry
@@ -922,6 +921,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     ' (e.g. the "Languages" menu), while others must be handled here.
     Menus.UpdateSpecialMenu_RecentFiles
     Menus.UpdateSpecialMenu_RecentMacros
+    Menus.UpdateSpecialMenu_WindowsOpen
     
     If redrawMenuBar Then DrawMenuBar FormMain.hWnd
     
@@ -3319,15 +3319,129 @@ Public Sub UpdateSpecialMenu_Language(ByVal numOfLanguages As Long, ByRef availa
     
 End Sub
 
+'The main form's Window menu displays a list of open images.  This list must be updated whenever...
+' 1) An image is loaded
+' 2) An image is unloaded
+' 3) A different image is "activated" (e.g. selected for editing)
+' 4) The current image is saved to a different filename
+Public Sub UpdateSpecialMenu_WindowsOpen()
+    
+    Dim i As Long
+    
+    'Quick branch for "no open images" state (it's much easier to handle)
+    If (PDImages.GetNumOpenImages > 0) Then
+        
+        'Images are potentially stored non-sequentially.  Retrieve a list of active image IDs from the
+        ' central image manager.
+        Dim listOfOpenImages As pdStack
+        PDImages.GetListOfActiveImageIDs listOfOpenImages
+        
+        'Ensure the correct number of menus are available.  (This may involve freeing existing menus
+        ' when an image is closed, or adding new menus when an image is opened.)
+        
+        'This limit is effectively arbitrary, but useability of this menu is kind of pointless
+        ' past a certain point.  (Windows may have its own menu count limit as well, idk; I deliberately
+        ' prefer to stay well beneath that amount.)
+        Const MAX_NUM_MENU_ENTRIES As Long = 64
+        
+        Dim numImagesAllowed As Long
+        numImagesAllowed = PDMath.Min2Int(MAX_NUM_MENU_ENTRIES, listOfOpenImages.GetNumOfInts)
+        
+        If (FormMain.MnuWindowOpen.Count > numImagesAllowed) Then
+            For i = FormMain.MnuWindowOpen.Count - 1 To numImagesAllowed - 1 Step -1
+                If (i <> 0) Then Unload FormMain.MnuWindowOpen(i)
+            Next i
+        End If
+        
+        Dim curMenuCount As Long
+        curMenuCount = FormMain.MnuWindowOpen.Count
+        If (curMenuCount < numImagesAllowed) Then
+            For i = curMenuCount To numImagesAllowed - 1
+                Load FormMain.MnuWindowOpen(i)
+            Next i
+        End If
+        
+        'The correct number of menu entries are now available.
+        
+        'To ensure offsets retrieved from API menu calls are valid, we need to ensure the separator bar
+        ' above the open window section is visible *before* interacting with items beneath it.
+        ' (FYI: individual menus start at index 10 (9 is the separator bar above the first open image entry))
+        Const MENU_OFFSET As Long = 10
+        FormMain.MnuWindow(MENU_OFFSET - 1).Visible = True
+        
+        'We now need to set all menu captions to match the filename of each open image.  (As part of setting
+        ' the correct names, we'll also set visible/enabled/checked state.)
+        
+        'Menu bar itself
+        Dim hMenu As Long
+        hMenu = GetMenu(FormMain.hWnd)
+        
+        'Window menu
+        hMenu = GetSubMenu(hMenu, 9&)
+        
+        'Prepare a MenuItemInfo struct
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STRING
+        
+        'Note that we have to use WAPI to do this, because filenames may have Unicode chars.
+        For i = 0 To numImagesAllowed - 1
+            
+            'Use VB to set the rest of the parameters; this will also trigger a DrawMenuBar call
+            With FormMain.MnuWindowOpen(i)
+                .Visible = True
+                .Enabled = True
+                .Checked = (listOfOpenImages.GetInt(i) = PDImages.GetActiveImageID)
+            End With
+            
+            'Retrieve the caption (which should be the location on-disk, unless the image hasn't been saved
+            ' in which case the loader will have assigned the image a "suggested" filename)
+            Dim tmpCaption As String
+            If PDImages.GetImageByID(listOfOpenImages.GetInt(i)).ImgStorage.DoesKeyExist("CurrentLocationOnDisk") Then
+                tmpCaption = Files.FileGetName(PDImages.GetImageByID(listOfOpenImages.GetInt(i)).ImgStorage.GetEntry_String("CurrentLocationOnDisk"), False)
+            End If
+            
+            If (LenB(tmpCaption) = 0) Then
+                tmpCaption = Files.FileGetName(PDImages.GetImageByID(listOfOpenImages.GetInt(i)).ImgStorage.GetEntry_String("OriginalFileName"), False)
+            End If
+            
+            
+            Debug.Print "caption?", tmpCaption, hMenu, MENU_OFFSET + i
+            'Assign the caption via WAPI to preserve Unicode chars
+            tmpMii.dwTypeData = StrPtr(tmpCaption)
+            Debug.Print SetMenuItemInfoW(hMenu, MENU_OFFSET + i, 1&, tmpMii), "SetMenuItemInfoW"
+            Debug.Print Err.LastDllError
+            
+        Next i
+        
+        'Use the API to trigger a state change for any new captions
+        DrawMenuBar FormMain.hWnd
+        
+    'No open images.  Unload all menu items and hide the separator bar at the top of this section.
+    Else
+    
+        If (FormMain.MnuWindowOpen.Count > 1) Then
+            For i = 1 To FormMain.MnuWindowOpen.Count - 1
+                Unload FormMain.MnuWindowOpen(i)
+            Next i
+        End If
+        
+        'Hide the final instance and the separator bar above it
+        FormMain.MnuWindow(9).Visible = False
+        FormMain.MnuWindowOpen(0).Visible = False
+    
+    End If
+    
+End Sub
+
+'Whenever the "File > Open Recent" menu is modified, we need to modify our internal list of recent file items.
+' (We manually track this menu so we can handle translations correctly for the items at the bottom of the menu,
+' e.g. "Load all" and "Clear list", as well as menu captions for recent files with Unicode filenames.)
 Public Sub UpdateSpecialMenu_RecentFiles()
 
-    'Whenever the "File > Open Recent" menu is modified, we need to modify our internal list of recent file items.
-    ' (We manually track this menu so we can handle translations correctly for the items at the bottom of the menu,
-    ' e.g. "Load all" and "Clear list".)
-    
     'Start by retrieving a handle to the menu in question
     If (Not g_RecentFiles Is Nothing) Then
-    
+        
         Dim hMenu As Long
         hMenu = GetMenu(FormMain.hWnd)
         hMenu = GetSubMenu(hMenu, 0&)

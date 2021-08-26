@@ -65,14 +65,17 @@ Begin VB.Form FormMain
             Enabled         =   0   'False
             Index           =   0
          End
-         Begin VB.Menu MnuRecentSepBar1 
+         Begin VB.Menu MnuRecentFiles 
             Caption         =   "-"
+            Index           =   0
          End
-         Begin VB.Menu MnuLoadAllMRU 
+         Begin VB.Menu MnuRecentFiles 
             Caption         =   "Open all recent images"
+            Index           =   1
          End
-         Begin VB.Menu MnuClearMRU 
+         Begin VB.Menu MnuRecentFiles 
             Caption         =   "Clear recent image list"
+            Index           =   2
          End
       End
       Begin VB.Menu MnuFile 
@@ -1762,6 +1765,17 @@ Begin VB.Form FormMain
          Caption         =   "Previous image"
          Index           =   8
       End
+      Begin VB.Menu MnuWindow 
+         Caption         =   "-"
+         Index           =   9
+         Visible         =   0   'False
+      End
+      Begin VB.Menu MnuWindowOpen 
+         Caption         =   "empty"
+         Enabled         =   0   'False
+         Index           =   0
+         Visible         =   0   'False
+      End
    End
    Begin VB.Menu MnuHelpTop 
       Caption         =   "Help"
@@ -2086,6 +2100,33 @@ Private Sub MnuMacroCreate_Click(Index As Integer)
         Case 3
             Menus.ProcessDefaultAction_ByName "tools_stopmacro"
     End Select
+End Sub
+
+Private Sub MnuRecentFiles_Click(Index As Integer)
+    
+    Select Case Index
+        
+        Case 0
+            'separator
+        
+        'Load all MRU files
+        Case 1
+            Dim listOfFiles As pdStringStack
+            Set listOfFiles = New pdStringStack
+            
+            Dim i As Long
+            For i = 0 To g_RecentFiles.GetNumOfItems() - 1
+                listOfFiles.AddString g_RecentFiles.GetFullPath(i)
+            Next i
+            
+            Loading.LoadMultipleImageFiles listOfFiles, True
+        
+        'Clear MRU
+        Case 2
+            g_RecentFiles.ClearList
+            
+    End Select
+    
 End Sub
 
 Private Sub MnuRender_Click(Index As Integer)
@@ -2724,6 +2765,18 @@ Private Sub MnuView_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuWindowOpen_Click(Index As Integer)
+
+    'Open the current document corresponding to the index in the menu
+    Dim listOfOpenImages As pdStack
+    PDImages.GetListOfActiveImageIDs listOfOpenImages
+    
+    If (Index < listOfOpenImages.GetNumOfInts) Then
+        If PDImages.IsImageActive(listOfOpenImages.GetInt(Index)) Then CanvasManager.ActivatePDImage listOfOpenImages.GetInt(Index), "window menu"
+    End If
+
+End Sub
+
 Private Sub MnuWindowToolbox_Click(Index As Integer)
     
     'Because this is a checkbox-based menu, we handle its commands specially
@@ -3355,10 +3408,6 @@ Private Sub MnuBlur_Click(Index As Integer)
     End Select
 End Sub
 
-Private Sub MnuClearMRU_Click()
-    g_RecentFiles.ClearList
-End Sub
-
 'All Color sub-menu entries are handled here.
 Private Sub MnuColor_Click(Index As Integer)
     Select Case Index
@@ -3721,21 +3770,6 @@ Private Sub MnuLighting_Click(Index As Integer)
         Case 6
             Menus.ProcessDefaultAction_ByName "adj_sandh"
     End Select
-End Sub
-
-'Load all images in the current "Recent Files" menu
-Private Sub MnuLoadAllMRU_Click()
-    
-    Dim listOfFiles As pdStringStack
-    Set listOfFiles = New pdStringStack
-    
-    Dim i As Long
-    For i = 0 To g_RecentFiles.GetNumOfItems() - 1
-        listOfFiles.AddString g_RecentFiles.GetFullPath(i)
-    Next i
-    
-    Loading.LoadMultipleImageFiles listOfFiles, True
-    
 End Sub
 
 'All metadata sub-menu options are handled here
