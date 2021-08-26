@@ -1394,6 +1394,9 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
             captionBase = g_Language.TranslateMessage("[untitled image]")
         End If
         
+        'Check image state.  If the image is unsaved, prepend an asterisk.
+        If (Not srcImage.GetSaveState(pdSE_AnySave)) Then captionBase = "* " & captionBase
+        
     'If no image exists, return an empty caption; this is handled later in the function
     Else
     

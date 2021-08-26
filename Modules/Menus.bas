@@ -3363,11 +3363,9 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             'Finally, manually place the captions for all recent file filenames, while handling the special
             ' case of an empty list.
             If listIsEmpty Then
-                
                 tmpString = g_Language.TranslateMessage("empty")
                 tmpMii.dwTypeData = StrPtr(tmpString)
                 SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
-                
             Else
                 
                 'If actual MRU paths exist, note that we apply them *without* translations, obviously.
