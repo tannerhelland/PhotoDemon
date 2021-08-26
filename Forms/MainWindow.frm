@@ -1151,40 +1151,44 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Lens..."
+            Caption         =   "Droste..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Lens..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Poke..."
+            Caption         =   "Pinch and whirl..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Ripple..."
+            Caption         =   "Poke..."
             Index           =   6
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Squish..."
+            Caption         =   "Ripple..."
             Index           =   7
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Swirl..."
+            Caption         =   "Squish..."
             Index           =   8
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   9
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "-"
+            Caption         =   "Waves..."
             Index           =   10
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Miscellaneous..."
+            Caption         =   "-"
             Index           =   11
+         End
+         Begin VB.Menu MnuDistortEffects 
+            Caption         =   "Miscellaneous..."
+            Index           =   12
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3404,22 +3408,24 @@ Private Sub MnuDistortEffects_Click(Index As Integer)
         Case 2
             Menus.ProcessDefaultAction_ByName "effects_donut"
         Case 3
-            Menus.ProcessDefaultAction_ByName "effects_lens"
+            Menus.ProcessDefaultAction_ByName "effects_droste"
         Case 4
-            Menus.ProcessDefaultAction_ByName "effects_pinchandwhirl"
+            Menus.ProcessDefaultAction_ByName "effects_lens"
         Case 5
-            Menus.ProcessDefaultAction_ByName "effects_poke"
+            Menus.ProcessDefaultAction_ByName "effects_pinchandwhirl"
         Case 6
-            Menus.ProcessDefaultAction_ByName "effects_ripple"
+            Menus.ProcessDefaultAction_ByName "effects_poke"
         Case 7
-            Menus.ProcessDefaultAction_ByName "effects_squish"
+            Menus.ProcessDefaultAction_ByName "effects_ripple"
         Case 8
-            Menus.ProcessDefaultAction_ByName "effects_swirl"
+            Menus.ProcessDefaultAction_ByName "effects_squish"
         Case 9
-            Menus.ProcessDefaultAction_ByName "effects_waves"
+            Menus.ProcessDefaultAction_ByName "effects_swirl"
         Case 10
-            'separator
+            Menus.ProcessDefaultAction_ByName "effects_waves"
         Case 11
+            'separator
+        Case 12
             Menus.ProcessDefaultAction_ByName "effects_miscdistort"
     End Select
 End Sub

@@ -1649,6 +1649,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
     ElseIf Strings.StringsEqual(processID, "Donut", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormDonut Else FormDonut.ApplyDonutDistortion processParameters
         Process_EffectsMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Droste", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormDroste Else FormDroste.FxDroste processParameters
+        Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Miscellaneous distort", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormMiscDistorts Else FormMiscDistorts.ApplyMiscDistort processParameters

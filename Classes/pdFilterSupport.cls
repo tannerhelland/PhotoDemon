@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright 2013-2021 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 20/February/20
-'Last update: massive performance improvements via new wrapper functions; myriad bug-fixes for weird
-'             edge-cases on various edge-handling strategies. See GitHub for details:
-'             https://github.com/tannerhelland/PhotoDemon/commit/35c583a111bc21ceffc768cb3194fcf814702ecd
+'Last updated: 25/August/21
+'Last update: tweak non-interpolated output by half-pixel offset to ensure alignment with interpolated results
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -101,11 +99,31 @@ Friend Function GetColorsFromSource(ByVal srcX As Double, ByVal srcY As Double, 
             
         'Clamp to the nearest integer coordinate value
         Else
-            GetColorsFromSource = m_Pixels(Int(srcX), Int(srcY))
+            GetColorsFromSource = m_Pixels(Int(srcX + 0.5), Int(srcY + 0.5))
         End If
         
     End If
 
+End Function
+
+'This function is a fast variant of the standard GetColorsFromSource() function, with this IMPORTANT CAVEAT:
+' it does *NOT* support edge-handling.  If the source pixel lies off-image, this function will return a
+' transparent pixel.  This is helpful for e.g. the Droste effect, which needs to iterate several times before
+' caring about edge-handling, so on the early iterations, we can skip edge-handling entirely for a nice perf boost.
+Friend Function GetColorsFromSource_FastErase(ByVal srcX As Double, ByVal srcY As Double) As RGBQuad
+    If (srcX >= 0#) Then
+        If (srcX <= m_FinalX) Then
+            If (srcY >= 0#) Then
+                If (srcY <= m_FinalY) Then
+                    If m_Interpolate Then
+                        GetColorsFromSource_FastErase = BilinearInterpolate(srcX, srcY)
+                    Else
+                        GetColorsFromSource_FastErase = m_Pixels(Int(srcX + 0.5), Int(srcY + 0.5))
+                    End If
+                End If
+            End If
+        End If
+    End If
 End Function
 
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster

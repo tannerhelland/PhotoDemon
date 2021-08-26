@@ -443,15 +443,16 @@ Public Sub InitializeMenus()
         AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 6, 2, 0
         AddMenuItem "-", "-", 6, 2, 1
         AddMenuItem "Donut...", "effects_donut", 6, 2, 2
-        AddMenuItem "Lens...", "effects_lens", 6, 2, 3
-        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 6, 2, 4
-        AddMenuItem "Poke...", "effects_poke", 6, 2, 5
-        AddMenuItem "Ripple...", "effects_ripple", 6, 2, 6
-        AddMenuItem "Squish...", "effects_squish", 6, 2, 7
-        AddMenuItem "Swirl...", "effects_swirl", 6, 2, 8
-        AddMenuItem "Waves...", "effects_waves", 6, 2, 9
-        AddMenuItem "-", "-", 6, 2, 10
-        AddMenuItem "Miscellaneous...", "effects_miscdistort", 6, 2, 11
+        AddMenuItem "Droste...", "effects_droste", 6, 2, 3
+        AddMenuItem "Lens...", "effects_lens", 6, 2, 4
+        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 6, 2, 5
+        AddMenuItem "Poke...", "effects_poke", 6, 2, 6
+        AddMenuItem "Ripple...", "effects_ripple", 6, 2, 7
+        AddMenuItem "Squish...", "effects_squish", 6, 2, 8
+        AddMenuItem "Swirl...", "effects_swirl", 6, 2, 9
+        AddMenuItem "Waves...", "effects_waves", 6, 2, 10
+        AddMenuItem "-", "-", 6, 2, 11
+        AddMenuItem "Miscellaneous...", "effects_miscdistort", 6, 2, 12
     AddMenuItem "Edge", "effects_edges", 6, 3
         AddMenuItem "Emboss...", "effects_emboss", 6, 3, 0
         AddMenuItem "Enhance edges...", "effects_enhanceedges", 6, 3, 1
@@ -2750,6 +2751,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_donut"
                 Process "Donut", True
+            
+            Case "effects_droste"
+                Process "Droste", True
                 
             Case "effects_lens"
                 Process "Apply lens distortion", True
