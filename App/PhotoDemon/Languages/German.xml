@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.647</langversion>
+<langversion>9.0.649</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -408,7 +408,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Cropping image</original>
-<translation>Bild wird zugeschnitten</translation>
+<translation>Cropping des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -866,7 +866,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Layer aus Datei ersetzen</translation>
 </phrase>
 
 <phrase>
@@ -876,7 +876,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation></translation>
+<translation>Layer erfolgreich aktualisiert.</translation>
 </phrase>
 
 <phrase>
@@ -1350,7 +1350,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Resize image</original>
-<translation>Bild in der Größe ändern</translation>
+<translation>Bild in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -1485,12 +1485,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Layer aus Zwischenablage ersetzen</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Layer aus sichtbaren Layern ersetzen</translation>
 </phrase>
 
 <phrase>
@@ -1630,7 +1630,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Resize layer</original>
-<translation>Layer in der Größe ändern</translation>
+<translation>Layer in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -2825,7 +2825,7 @@ Deskription: %2
 
 <phrase>
 <original>resize quality</original>
-<translation>Qualität der Größenänderung</translation>
+<translation>Qualität in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -3198,7 +3198,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Resize selection</original>
-<translation>Auswahl in der Größe ändern</translation>
+<translation>Auswahl in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -3233,7 +3233,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Resize layer (on-canvas)</original>
-<translation>Layer in der Größe ändern (auf Leinwand)</translation>
+<translation>Layer in der Größe anpassen (auf Leinwand)</translation>
 </phrase>
 
 <phrase>
@@ -4463,7 +4463,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Seitenverhältnis beibehalten (mitunter Einschränkungsproportionen genannt). Verwenden Sie diese Option, um ein Bild in der Größe zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
+<translation>Seitenverhältnis beibehalten (mitunter Einschränkungsproportionen genannt). Verwenden Sie diese Option, um ein Bild in der Größe anzupassen, während die Breite und Höhe in Sync gehalten werden.</translation>
 </phrase>
 
 <phrase>
@@ -4473,7 +4473,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Die Maßeinheit ändern, die verwendet wird, um das Bild in der Größe zu ändern.</translation>
+<translation>Die Maßeinheit ändern, die verwendet wird, um das Bild in der Größe anzupassen.</translation>
 </phrase>
 
 <phrase>
@@ -4873,7 +4873,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Replace</original>
-<translation></translation>
+<translation>Ersetzen</translation>
 </phrase>
 
 <phrase>
@@ -9373,7 +9373,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize image by</original>
-<translation>Bild in der Größe ändern nach</translation>
+<translation>Bild in der Größe anpassen nach</translation>
 </phrase>
 
 <phrase>
@@ -9388,7 +9388,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize images</original>
-<translation>Bilder in der Größe ändern</translation>
+<translation>Bilder in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -9647,12 +9647,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fit inclusively</original>
-<translation>Inklusive anpassen</translation>
+<translation>Einschließlich anpassen</translation>
 </phrase>
 
 <phrase>
 <original>fit exclusively</original>
-<translation>Exklusiv anpassen</translation>
+<translation>Ausschließlich anpassen</translation>
 </phrase>
 
 <phrase>
@@ -10665,7 +10665,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>resize images as necessary</original>
-<translation>Bilder in der Größe ändern wie erforderlich</translation>
+<translation>Nach Bedarf Bilder in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -10737,7 +10737,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>Hinweis: Diese Operation wird das Bild auf den Hintergrund-Layer reduzieren, bevor es in der Größe geändert wird.</translation>
+<translation>Hinweis: Diese Operation wird das Bild vor seiner Größenanpassung auf den Hintergrund-Layer reduzieren.</translation>
 </phrase>
 
 <phrase>
@@ -11001,12 +11001,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>Anpassung inklusive, mit transparenten Rahmungen wie erforderlich</translation>
+<translation>Einschließlich Anpassung, nach Bedarf mit transparenten Rahmungen</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>Anpassung exklusiv, und Zuschneidung wie erforderlich</translation>
+<translation>Ausschließlich Anpassung, und Cropping nach Bedarf</translation>
 </phrase>
 
 <phrase>
@@ -11021,17 +11021,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Zuschneidung verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Cropping verwendet werden.</translation>
 </phrase>
 
 <phrase>
 <original>Resizing image</original>
-<translation>Bild wird in der Größe geändert</translation>
+<translation>Größenanpassung des Bildes</translation>
 </phrase>
 
 <phrase>
 <original>Resizing layer</original>
-<translation>Layer wird in der Größe geändert</translation>
+<translation>Größenanpassung des Layers</translation>
 </phrase>
 
 <!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11186,7 +11186,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>resize to fit imported layers</original>
-<translation>Größenänderung auf importierte Layer anpassen</translation>
+<translation>Größenänderung, um importierte Layer anzupassen</translation>
 </phrase>
 
 <phrase>
@@ -11518,7 +11518,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>Bild-Layer verschieben und in der Größe ändern</translation>
+<translation>Bild-Layer verschieben und in der Größe anpassen</translation>
 </phrase>
 
 <phrase>
@@ -13359,7 +13359,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neuesten Versionsnummern von Software, Plug-ins und Sprachen. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>

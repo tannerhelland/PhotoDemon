@@ -3,8 +3,8 @@ Attribute VB_Name = "NavKey"
 'Navigation Key Handler (including automated tab order handling)
 'Copyright 2017-2021 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 22/August/17
-'Last update: continuing work on initial build
+'Last updated: 25/August/21
+'Last update: fix potential crash when unloading Options dialog
 '
 'In a project as complex as PD, tab order is difficult to keep straight.  VB orders controls in the order
 ' they're added, and there's no easy way to modify this short of manually setting TabOrder across all forms.
@@ -41,22 +41,52 @@ Private m_NumOfForms As Long, m_LastForm As Long
 ' performance because we don't have to look-up the form in our table for subsequent calls.)
 Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
 
-    'At present, PD guarantees that forms will not be double-loaded - e.g. only one instance is allowed at a time.
-    ' As such, we don't have to search our table for existing entries.
+    'At present, PD guarantees that *most* forms will not be double-loaded - e.g. only one instance
+    ' is allowed for effect and adjustment dialogs.
+    '
+    'One weird exception to this rule is the main form, who may be re-themed more than once if the
+    ' user does something like change the active language at run-time (which requires a re-theme
+    ' because UI layout may change dramatically).  Its child forms may be re-themed as part of the
+    ' process (e.g. toolbars).
+    '
+    'As such, we do need to perform a failsafe check for the specified form in our table, even though
+    ' 99.9% of the time such a check is unnecessary.
     If (Not parentForm Is Nothing) Then
         
-        'Make sure we have room for this form
+        'Make sure we have room for this form (expanding the collection is harmless, even if we
+        ' find a match for this form in the collection)
         If (m_NumOfForms = 0) Then
             ReDim m_Forms(0 To INIT_NUM_OF_FORMS - 1) As pdObjectList
         Else
             If (m_NumOfForms > UBound(m_Forms)) Then ReDim Preserve m_Forms(0 To m_NumOfForms * 2 - 1) As pdObjectList
         End If
         
-        Set m_Forms(m_NumOfForms) = New pdObjectList
-        m_Forms(m_NumOfForms).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
+        'Perform a quick failsafe check for the current form existing in the collection.
+        Dim targetIndex As Long
         
-        m_LastForm = m_NumOfForms
-        m_NumOfForms = m_NumOfForms + 1
+        If (m_NumOfForms <> 0) Then
+            
+            Dim checkIndex As Long
+            
+            Dim i As Long
+            For i = 0 To m_NumOfForms - 1
+                If (Not m_Forms(i) Is Nothing) Then
+                    If (m_Forms(i).GetParentHWnd = parentForm.hWnd) Then
+                        targetIndex = i
+                        Exit For
+                    End If
+                End If
+            Next i
+            
+        Else
+            targetIndex = m_NumOfForms
+        End If
+        
+        Set m_Forms(targetIndex) = New pdObjectList
+        m_Forms(targetIndex).SetParentHWnd parentForm.hWnd, handleAutoResize, hWndCustomAnchor
+        
+        m_LastForm = targetIndex
+        If (targetIndex = m_NumOfForms) Then m_NumOfForms = m_NumOfForms + 1
         
     End If
 
@@ -92,6 +122,7 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
             For i = indexOfForm To m_NumOfForms - 1
                 Set m_Forms(i) = m_Forms(i + 1)
             Next i
+            Set m_Forms(m_NumOfForms) = Nothing
         End If
         
     End If
@@ -109,22 +140,27 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
     'The caller specified a parent window handle.  Find a matching object before continuing.
     Else
         
-        If (m_NumOfForms > 0) Then
-        
-            If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
-                m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
-            Else
+        'Failsafe checks follow
+        If (m_NumOfForms > 0) And (m_LastForm < UBound(m_Forms)) Then
+            If (Not m_Forms(m_LastForm) Is Nothing) Then
+                
+                If (m_Forms(m_LastForm).GetParentHWnd = hostFormhWnd) Then
+                    m_Forms(m_LastForm).NotifyChildControl childObject, canReceiveFocus
+                Else
+                
+                    Dim i As Long
+                    For i = 0 To m_NumOfForms - 1
+                        If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
+                            m_Forms(i).NotifyChildControl childObject, canReceiveFocus
+                            Exit For
+                        End If
+                    Next i
+                
+                End If
             
-                Dim i As Long
-                For i = 0 To m_NumOfForms - 1
-                    If (m_Forms(i).GetParentHWnd = hostFormhWnd) Then
-                        m_Forms(i).NotifyChildControl childObject, canReceiveFocus
-                        Exit For
-                    End If
-                Next i
-            
+            '/failsafe check for m_Forms(m_LastForm) Is Nothing
             End If
-            
+        '/failsafe check for form index exists in form array
         End If
     
     End If
