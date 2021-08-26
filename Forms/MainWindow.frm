@@ -871,35 +871,35 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Channels"
          Index           =   12
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Channel mixer..."
             Index           =   0
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Rechannel..."
             Index           =   1
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "-"
             Index           =   2
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Maximum channel"
             Index           =   3
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Minimum channel"
             Index           =   4
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "-"
             Index           =   5
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Shift left"
             Index           =   6
          End
-         Begin VB.Menu MnuColorComponents 
+         Begin VB.Menu MnuChannels 
             Caption         =   "Shift right"
             Index           =   7
          End
@@ -1106,31 +1106,31 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Blur"
          Index           =   1
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Box blur..."
             Index           =   0
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Gaussian blur..."
             Index           =   1
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Surface blur..."
             Index           =   2
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "-"
             Index           =   3
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Motion blur..."
             Index           =   4
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Radial blur..."
             Index           =   5
          End
-         Begin VB.Menu MnuBlurFilter 
+         Begin VB.Menu MnuBlur 
             Caption         =   "Zoom blur..."
             Index           =   6
          End
@@ -1138,55 +1138,55 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
          Index           =   2
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Correct existing distortion..."
             Index           =   0
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "-"
             Index           =   1
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Donut..."
             Index           =   2
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Droste..."
             Index           =   3
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Lens..."
             Index           =   4
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Pinch and whirl..."
             Index           =   5
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Poke..."
             Index           =   6
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Ripple..."
             Index           =   7
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Squish..."
             Index           =   8
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Swirl..."
             Index           =   9
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Waves..."
             Index           =   10
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "-"
             Index           =   11
          End
-         Begin VB.Menu MnuDistortEffects 
+         Begin VB.Menu MnuDistort 
             Caption         =   "Miscellaneous..."
             Index           =   12
          End
@@ -3336,7 +3336,7 @@ Private Sub MnuArtistic_Click(Index As Integer)
 End Sub
 
 'All blur filters are handled here
-Private Sub MnuBlurFilter_Click(Index As Integer)
+Private Sub MnuBlur_Click(Index As Integer)
     Select Case Index
         Case 0
             Menus.ProcessDefaultAction_ByName "effects_boxblur"
@@ -3395,13 +3395,30 @@ Private Sub MnuColor_Click(Index As Integer)
     End Select
 End Sub
 
-'All entries in the Color -> Components sub-menu are handled here
-Private Sub MnuColorComponents_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuColorComponents(Index).Caption
+'All entries in the Color -> Channels sub-menu are handled here
+Private Sub MnuChannels_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_channelmixer"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_rechannel"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "adj_maxchannel"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "adj_minchannel"
+        Case 5
+            'separator
+        Case 6
+            Menus.ProcessDefaultAction_ByName "adj_shiftchannelsleft"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "adj_shiftchannelsright"
+    End Select
 End Sub
 
 'All distortion filters happen here
-Private Sub MnuDistortEffects_Click(Index As Integer)
+Private Sub MnuDistort_Click(Index As Integer)
     Select Case Index
         Case 0
             Menus.ProcessDefaultAction_ByName "effects_fixlensdistort"
@@ -3450,154 +3467,96 @@ Private Sub MnuEdge_Click(Index As Integer)
 End Sub
 
 Private Sub MnuEdit_Click(Index As Integer)
-    
     Select Case Index
-    
         Case 0
             Menus.ProcessDefaultAction_ByName "edit_undo"
-        
         Case 1
             Menus.ProcessDefaultAction_ByName "edit_redo"
-        
         Case 2
             Menus.ProcessDefaultAction_ByName "edit_history"
-        
         Case 3
             'separator
-        
         Case 4
             Menus.ProcessDefaultAction_ByName "edit_repeat"
-        
         Case 5
             Menus.ProcessDefaultAction_ByName "edit_fade"
-        
         Case 6
             'separator
-        
         Case 7
             Menus.ProcessDefaultAction_ByName "edit_cutlayer"
-        
         Case 8
             Menus.ProcessDefaultAction_ByName "edit_cutmerged"
-            
         Case 9
             Menus.ProcessDefaultAction_ByName "edit_copylayer"
-            
         Case 10
             Menus.ProcessDefaultAction_ByName "edit_copymerged"
-            
         Case 11
             Menus.ProcessDefaultAction_ByName "edit_pasteaslayer"
-        
         Case 12
             Menus.ProcessDefaultAction_ByName "edit_pastetocursor"
-        
         Case 13
             Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
-            
         Case 14
             'Top-level "cut/copy/paste special"
-            
         Case 15
             'separator
-            
         Case 16
             Menus.ProcessDefaultAction_ByName "edit_emptyclipboard"
-    
     End Select
-    
 End Sub
 
 Private Sub MnuEditSpecial_Click(Index As Integer)
-
     Select Case Index
-    
         Case 0
             Menus.ProcessDefaultAction_ByName "edit_specialcut"
-        
         Case 1
             Menus.ProcessDefaultAction_ByName "edit_specialcopy"
-        
         Case 2
             'Menus.ProcessDefaultAction_ByName "edit_specialpaste"
-    
     End Select
-
 End Sub
 
 Private Sub MnuFile_Click(Index As Integer)
-    
     Select Case Index
-    
-        'New
         Case 0
             Menus.ProcessDefaultAction_ByName "file_new"
-        
-        'Open
         Case 1
             Menus.ProcessDefaultAction_ByName "file_open"
-        
-        '<Open Recent top-level>
         Case 2
-        
-        '<Import top-level>
+            '<Open Recent top-level>
         Case 3
-        
-        '<separator>
+            '<Import top-level>
         Case 4
-        
-        'Close
+            '<separator>
         Case 5
             Menus.ProcessDefaultAction_ByName "file_close"
-        
-        'Close all
         Case 6
             Menus.ProcessDefaultAction_ByName "file_closeall"
-            
-        '<separator>
         Case 7
-        
-        'Save
+            '<separator>
         Case 8
             Menus.ProcessDefaultAction_ByName "file_save"
-            
-        'Save copy (lossless)
         Case 9
             Menus.ProcessDefaultAction_ByName "file_savecopy"
-            
-        'Save as
         Case 10
             Menus.ProcessDefaultAction_ByName "file_saveas"
-        
-        'Revert
         Case 11
             Menus.ProcessDefaultAction_ByName "file_revert"
-        
-        'Export
         Case 12
-        
-        '<separator>
+            'Export top-level
         Case 13
-        
-        'Batch top-level menu
+            '<separator>
         Case 14
-        
-        '<separator>
+            'Batch top-level
         Case 15
-        
-        'Print
+            '<separator>
         Case 16
             Menus.ProcessDefaultAction_ByName "file_print"
-            
-        '<separator>
         Case 17
-        
-        'Exit
+            '<separator>
         Case 18
             Menus.ProcessDefaultAction_ByName "file_quit"
-    
     End Select
-    
 End Sub
 
 Private Sub MnuFileExport_Click(Index As Integer)
@@ -3652,15 +3611,21 @@ Private Sub MnuHelp_Click(Index As Integer)
 End Sub
 
 Private Sub MnuHistogram_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuHistogram(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_histogramdisplay"
+        Case 1
+            'separator
+        Case 2
+            Menus.ProcessDefaultAction_ByName "adj_histogramequalize"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "adj_histogramstretch"
+    End Select
 End Sub
 
 'All top-level Image menu actions are handled here
 Private Sub MnuImage_Click(Index As Integer)
 
-    'Normally we can auto-generate commands from menu names, but the Image menu shares some menu
-    ' commands with the Layer menu (e.g. "Resize", "Crop to Selection"), so we manually request
-    ' actions for most items in this menu.
     Select Case Index
         Case 0
             Menus.ProcessDefaultAction_ByName "image_duplicate"
@@ -3775,19 +3740,58 @@ End Sub
 
 'All metadata sub-menu options are handled here
 Private Sub MnuMetadata_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuMetadata(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "image_editmetadata"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "image_removemetadata"
+        Case 2
+            'separator
+        Case 3
+            Menus.ProcessDefaultAction_ByName "image_countcolors"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "image_maplocation"
+    End Select
+    
 End Sub
 
 Private Sub MnuMonochrome_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuMonochrome(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_colortomonochrome"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_monochrometogray"
+    End Select
 End Sub
 
 Private Sub MnuNatureFilter_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuNatureFilter(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_atmosphere"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_fog"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_ignite"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_lava"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_metal"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_snow"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "effects_underwater"
+    End Select
 End Sub
 
 Private Sub MnuInvert_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuInvert(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_invertcmyk"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_inverthue"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "adj_invertrgb"
+    End Select
 End Sub
 
 'All noise filters are handled here
@@ -3821,36 +3825,20 @@ End Sub
 
 'All rotation actions are initiated here
 Private Sub MnuRotate_Click(Index As Integer)
-
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the Layer > Orientation menu; as such, we must explicitly request actions.
     Select Case Index
-    
-        'Straighten
         Case 0
             Menus.ProcessDefaultAction_ByName "image_straighten"
-            
-        '<separator>
         Case 1
-        
-        'Rotate 90
+            '<separator>
         Case 2
             Menus.ProcessDefaultAction_ByName "image_rotate90"
-            
-        'Rotate 270
         Case 3
             Menus.ProcessDefaultAction_ByName "image_rotate270"
-            
-        'Rotate 180
         Case 4
             Menus.ProcessDefaultAction_ByName "image_rotate180"
-            
-        'Rotate arbitrary
         Case 5
             Menus.ProcessDefaultAction_ByName "image_rotatearbitrary"
-            
     End Select
-            
 End Sub
 
 'All select menu items are handled here
@@ -3865,26 +3853,36 @@ End Sub
 
 'All sharpen filters are handled here
 Private Sub MnuSharpen_Click(Index As Integer)
-    
-    'Because the top-level Sharpen menu shares a name with an item in the child Sharpen menu,
-    ' we manually request actions (instead of relying on caption-matching).
     Select Case Index
-            
-        'Sharpen
         Case 0
             Menus.ProcessDefaultAction_ByName "effects_sharpen"
-        
-        'Unsharp mask
         Case 1
             Menus.ProcessDefaultAction_ByName "effects_unsharp"
-            
     End Select
-
 End Sub
 
 'These menu items correspond to specific zoom values
 Private Sub MnuSpecificZoom_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuSpecificZoom(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "zoom_16_1"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "zoom_8_1"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "zoom_4_1"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "zoom_2_1"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "zoom_actual"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "zoom_1_2"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "zoom_1_4"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "zoom_1_8"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "zoom_1_16"
+    End Select
 End Sub
 
 'All stylize filters are handled here
@@ -3961,7 +3959,26 @@ End Sub
 
 'All "Window" menu items are handled here
 Private Sub MnuWindow_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuWindow(Index).Caption
+    Select Case Index
+        Case 0
+            'Toolbox top-level
+        Case 1
+            Menus.ProcessDefaultAction_ByName "window_tooloptions"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "window_layers"
+        Case 3
+            'Tab-strip top level
+        Case 4
+            'separator
+        Case 5
+            Menus.ProcessDefaultAction_ByName "window_resetsettings"
+        Case 6
+            'separator
+        Case 7
+            Menus.ProcessDefaultAction_ByName "window_next"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "window_previous"
+    End Select
 End Sub
 
 'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable
