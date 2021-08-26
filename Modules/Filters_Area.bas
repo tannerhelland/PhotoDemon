@@ -43,11 +43,6 @@ Private Type DericheCoeffs
     dc_max_iter As Long
 End Type
 
-Private Type ComplexNumber
-    dc_real As Double
-    dc_imag As Double
-End Type
-
 'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
 ' Note that as of July '17, ApplyConvolutionFilter uses an XML param string for supplying convolution details.
 ' The relevant ParamString entries are as follows:
@@ -1282,54 +1277,54 @@ Private Sub Gaussian_DerichePreComp(ByRef c As DericheCoeffs, ByVal sigma As Dou
     'Deriche's optimized filter parameters
     Dim cxAlpha() As ComplexNumber
     ReDim cxAlpha(0 To DERICHE_MAX_K - DERICHE_MIN_K, 0 To 3) As ComplexNumber
-    cxAlpha(0, 0).dc_real = 0.48145
-    cxAlpha(0, 0).dc_imag = 0.971
-    cxAlpha(0, 1).dc_real = 0.48145
-    cxAlpha(0, 1).dc_imag = -0.971
-    cxAlpha(1, 0).dc_real = -0.44645
-    cxAlpha(1, 0).dc_imag = 0.5105
-    cxAlpha(1, 1).dc_real = -0.44645
-    cxAlpha(1, 1).dc_imag = -0.5105
-    cxAlpha(1, 2).dc_real = 1.898
-    cxAlpha(1, 2).dc_imag = 0#
-    cxAlpha(2, 0).dc_real = 0.84
-    cxAlpha(2, 0).dc_imag = 1.8675
-    cxAlpha(2, 1).dc_real = 0.84
-    cxAlpha(2, 1).dc_imag = -1.8675
-    cxAlpha(2, 2).dc_real = -0.34015
-    cxAlpha(2, 2).dc_imag = -0.1299
-    cxAlpha(2, 3).dc_real = -0.34015
-    cxAlpha(2, 3).dc_imag = 0.1299
+    cxAlpha(0, 0).c_real = 0.48145
+    cxAlpha(0, 0).c_imag = 0.971
+    cxAlpha(0, 1).c_real = 0.48145
+    cxAlpha(0, 1).c_imag = -0.971
+    cxAlpha(1, 0).c_real = -0.44645
+    cxAlpha(1, 0).c_imag = 0.5105
+    cxAlpha(1, 1).c_real = -0.44645
+    cxAlpha(1, 1).c_imag = -0.5105
+    cxAlpha(1, 2).c_real = 1.898
+    cxAlpha(1, 2).c_imag = 0#
+    cxAlpha(2, 0).c_real = 0.84
+    cxAlpha(2, 0).c_imag = 1.8675
+    cxAlpha(2, 1).c_real = 0.84
+    cxAlpha(2, 1).c_imag = -1.8675
+    cxAlpha(2, 2).c_real = -0.34015
+    cxAlpha(2, 2).c_imag = -0.1299
+    cxAlpha(2, 3).c_real = -0.34015
+    cxAlpha(2, 3).c_imag = 0.1299
     
     Dim cxLambda() As ComplexNumber
     ReDim cxLambda(0 To DERICHE_MAX_K - DERICHE_MIN_K, 0 To 3) As ComplexNumber
-    cxLambda(0, 0).dc_real = 1.26
-    cxLambda(0, 0).dc_imag = 0.8448
-    cxLambda(0, 1).dc_real = 1.26
-    cxLambda(0, 1).dc_imag = -0.8448
-    cxLambda(1, 0).dc_real = 1.512
-    cxLambda(1, 0).dc_imag = 1.475
-    cxLambda(1, 1).dc_real = 1.512
-    cxLambda(1, 1).dc_imag = -1.475
-    cxLambda(1, 2).dc_real = 1.556
-    cxLambda(1, 2).dc_imag = 0#
-    cxLambda(2, 0).dc_real = 1.783
-    cxLambda(2, 0).dc_imag = 0.6318
-    cxLambda(2, 1).dc_real = 1.783
-    cxLambda(2, 1).dc_imag = -0.6318
-    cxLambda(2, 2).dc_real = 1.723
-    cxLambda(2, 2).dc_imag = 1.997
-    cxLambda(2, 3).dc_real = 1.723
-    cxLambda(2, 3).dc_imag = -1.997
+    cxLambda(0, 0).c_real = 1.26
+    cxLambda(0, 0).c_imag = 0.8448
+    cxLambda(0, 1).c_real = 1.26
+    cxLambda(0, 1).c_imag = -0.8448
+    cxLambda(1, 0).c_real = 1.512
+    cxLambda(1, 0).c_imag = 1.475
+    cxLambda(1, 1).c_real = 1.512
+    cxLambda(1, 1).c_imag = -1.475
+    cxLambda(1, 2).c_real = 1.556
+    cxLambda(1, 2).c_imag = 0#
+    cxLambda(2, 0).c_real = 1.783
+    cxLambda(2, 0).c_imag = 0.6318
+    cxLambda(2, 1).c_real = 1.783
+    cxLambda(2, 1).c_imag = -0.6318
+    cxLambda(2, 2).c_real = 1.723
+    cxLambda(2, 2).c_imag = 1.997
+    cxLambda(2, 3).c_real = 1.723
+    cxLambda(2, 3).c_imag = -1.997
     
     Dim cxBeta() As ComplexNumber
     ReDim cxBeta(0 To DERICHE_MAX_K - 1) As ComplexNumber
     
     Dim sk As Long, temp As Double
     For sk = 0 To k - 1
-        temp = Exp(-cxLambda(k - DERICHE_MIN_K, sk).dc_real / sigma)
-        cxBeta(sk) = make_complex(-temp * Cos(cxLambda(k - DERICHE_MIN_K, sk).dc_imag / sigma), _
-                     temp * Sin(cxLambda(k - DERICHE_MIN_K, sk).dc_imag / sigma))
+        temp = Exp(-cxLambda(k - DERICHE_MIN_K, sk).c_real / sigma)
+        cxBeta(sk) = ComplexNumbers.make_complex(-temp * Cos(cxLambda(k - DERICHE_MIN_K, sk).c_imag / sigma), _
+                     temp * Sin(cxLambda(k - DERICHE_MIN_K, sk).c_imag / sigma))
     Next sk
     
     'Compute the causal filter coefficients
@@ -1408,33 +1403,33 @@ Private Sub Gaussian_MakeDericheAB(ByRef result_b() As Double, ByRef result_a() 
     
     'Initialize b/a = alpha[0] / (1 + beta[0] z^-1)
     b(0) = cx_alpha(idx_cx_alpha, 0)
-    a(0) = make_complex(1#, 0#)
+    a(0) = ComplexNumbers.make_complex(1#, 0#)
     a(1) = cx_beta(0)
     
     For sk = 1 To k - 1
         
         'Add kth term, b/a += alpha[k] / (1 + beta[k] z^-1)
-        b(sk) = c_mul(cx_beta(sk), b(sk - 1))
+        b(sk) = ComplexNumbers.c_mul(cx_beta(sk), b(sk - 1))
         
         For j = sk - 1 To 1 Step -1
-            b(j) = c_add(b(j), c_mul(cx_beta(sk), b(j - 1)))
+            b(j) = ComplexNumbers.c_add(b(j), ComplexNumbers.c_mul(cx_beta(sk), b(j - 1)))
         Next j
         
         For j = 0 To sk
-            b(j) = c_add(b(j), c_mul(cx_alpha(idx_cx_alpha, sk), a(j)))
+            b(j) = ComplexNumbers.c_add(b(j), ComplexNumbers.c_mul(cx_alpha(idx_cx_alpha, sk), a(j)))
         Next j
         
-        a(sk + 1) = c_mul(cx_beta(sk), a(sk))
+        a(sk + 1) = ComplexNumbers.c_mul(cx_beta(sk), a(sk))
         
         For j = sk To 1 Step -1
-            a(j) = c_add(a(j), c_mul(cx_beta(sk), a(j - 1)))
+            a(j) = ComplexNumbers.c_add(a(j), ComplexNumbers.c_mul(cx_beta(sk), a(j - 1)))
         Next j
         
     Next sk
     
     For sk = 0 To k - 1
-        result_b(sk) = b(sk).dc_real / denom
-        result_a(sk + 1) = a(sk + 1).dc_real
+        result_b(sk) = b(sk).c_real / denom
+        result_a(sk + 1) = a(sk + 1).c_real
     Next sk
     
 End Sub
@@ -1532,176 +1527,3 @@ Private Sub Deriche_InitRecursFilter(ByRef dest() As Double, ByRef src() As Sing
     Next sn
     
 End Sub
-
-'A bunch of complex number arithmetic functions follow.  These are necessary for implementing
-' Deriche's method; not all methods are currently used, but they may be in the future for other
-' recursive IIR methods.
-'
-'These VB6 implementations are adapted from original C implementations by Pascal Getreuer in
-' "A Survey of Gaussian Convolution Algorithms", http://www.ipol.im/pub/art/2013/87/
-'
-' - Original C versions copyright (c) 2012-2013, Pascal Getreuer <getreuer@cmla.ens-cachan.fr>
-' - Used here under their original BSD license <http://www.opensource.org/licenses/bsd-license.html>
-' - Translated into VB6 by Tanner Helland in 2019
-Private Function make_complex(ByVal a As Double, ByVal b As Double) As ComplexNumber
-    make_complex.dc_real = a
-    make_complex.dc_imag = b
-End Function
-
-'Complex conjugate
-Private Function c_conj(ByRef z As ComplexNumber) As ComplexNumber
-    c_conj.dc_real = z.dc_real
-    c_conj.dc_imag = -z.dc_imag
-End Function
-
-'Complex addition
-Private Function c_add(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
-    c_add.dc_real = w.dc_real + z.dc_real
-    c_add.dc_imag = w.dc_imag + z.dc_imag
-End Function
-
-'Complex negation
-Private Function c_neg(ByRef z As ComplexNumber) As ComplexNumber
-    c_neg.dc_real = -z.dc_real
-    c_neg.dc_imag = -z.dc_imag
-End Function
-
-'Complex subtraction
-Private Function c_sub(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
-    c_sub.dc_real = w.dc_real - z.dc_real
-    c_sub.dc_imag = w.dc_imag - z.dc_imag
-End Function
-
-'Complex multiplication
-Private Function c_mul(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
-    c_mul.dc_real = w.dc_real * z.dc_real - w.dc_imag * z.dc_imag
-    c_mul.dc_imag = w.dc_real * z.dc_imag + w.dc_imag * z.dc_real
-End Function
-
-'Complex multiplicative inverse 1/z
-Private Function c_inv(ByRef z As ComplexNumber) As ComplexNumber
-
-    'There are two mathematically-equivalent formulas for the inverse. For accuracy,
-    ' choose the formula with the smaller value of |ratio|.
-    Dim ratio As Double, denom As Double
-    If (Abs(z.dc_real) >= Abs(z.dc_imag)) Then
-        ratio = z.dc_imag / z.dc_real
-        denom = z.dc_real + z.dc_imag * ratio
-        c_inv.dc_real = 1# / denom
-        c_inv.dc_imag = -ratio / denom
-    Else
-        ratio = z.dc_real / z.dc_imag
-        denom = z.dc_real * ratio + z.dc_imag
-        c_inv.dc_real = ratio / denom
-        c_inv.dc_imag = -1# / denom
-    End If
-    
-End Function
-
-'Complex division w/z
-Private Function c_div(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
-
-    'For accuracy, choose the formula with the smaller value of |ratio|.
-    Dim ratio As Double, denom As Double
-    If (Abs(z.dc_real) >= Abs(z.dc_imag)) Then
-        ratio = z.dc_imag / z.dc_real
-        denom = z.dc_real + z.dc_imag * ratio
-        c_div.dc_real = (w.dc_real + w.dc_imag * ratio) / denom
-        c_div.dc_imag = (w.dc_imag - w.dc_real * ratio) / denom
-    Else
-        ratio = z.dc_real / z.dc_imag
-        denom = z.dc_real * ratio + z.dc_imag
-        c_div.dc_real = (w.dc_real * ratio + w.dc_imag) / denom
-        c_div.dc_imag = (w.dc_imag * ratio - w.dc_real) / denom
-    End If
-    
-End Function
-
-'Complex magnitude
-Private Function c_mag(ByRef z As ComplexNumber) As Double
-    
-    Dim tmpz As ComplexNumber
-    tmpz = z
-    tmpz.dc_real = Abs(z.dc_real)
-    tmpz.dc_imag = Abs(z.dc_imag)
-    
-    'For accuracy, choose the formula with the smaller value of |ratio|.
-    Dim ratio As Double
-    If (tmpz.dc_real >= tmpz.dc_imag) Then
-        ratio = tmpz.dc_imag / tmpz.dc_real
-        c_mag = tmpz.dc_real * Sqr(1# + ratio * ratio)
-    Else
-        ratio = tmpz.dc_real / tmpz.dc_imag
-        c_mag = tmpz.dc_imag * Sqr(1# + ratio * ratio)
-    End If
-    
-End Function
-
-'Complex argument (angle) in [-pi,+pi]
-Private Function c_arg(ByRef z As ComplexNumber) As Double
-    c_arg = PDMath.Atan2(z.dc_imag, z.dc_real)
-End Function
-
-'Complex power w^z
-Private Function c_pow(ByRef w As ComplexNumber, ByRef z As ComplexNumber) As ComplexNumber
-    
-    Dim mag_w As Double
-    mag_w = c_mag(w)
-    
-    Dim arg_w As Double
-    arg_w = c_arg(w)
-    
-    Dim mag As Double
-    mag = (mag_w ^ z.dc_real) * Exp(-z.dc_imag * arg_w)
-    
-    Dim arg As Double
-    arg = z.dc_real * arg_w + z.dc_imag * Log(mag_w)
-    
-    c_pow.dc_real = mag * Cos(arg)
-    c_pow.dc_imag = mag * Sin(arg)
-    
-End Function
-
-'Complex power w^x with real exponent
-Private Function c_real_pow(ByRef w As ComplexNumber, ByVal x As Double) As ComplexNumber
-    
-    Dim mag As Double
-    mag = c_mag(w) ^ x
-    
-    Dim arg As Double
-    arg = c_arg(w) * x
-    
-    c_real_pow.dc_real = mag * Cos(arg)
-    c_real_pow.dc_imag = mag * Sin(arg)
-    
-End Function
-
-'Complex square root (principal branch)
-Private Function c_sqrt(ByRef z As ComplexNumber) As ComplexNumber
-    
-    Dim r As Double
-    r = c_mag(z)
-    
-    c_sqrt.dc_real = Sqr((r + z.dc_real) / 2#)
-    c_sqrt.dc_imag = Sqr((r - z.dc_real) / 2#)
-    
-    If (z.dc_imag < 0#) Then c_sqrt.dc_imag = -c_sqrt.dc_imag
-    
-End Function
-
-'Complex exponential
-Private Function c_exp(ByRef z As ComplexNumber) As ComplexNumber
-    
-    Dim r As Double
-    r = Exp(z.dc_real)
-    
-    c_exp.dc_real = r * Cos(z.dc_imag)
-    c_exp.dc_imag = r * Sin(z.dc_imag)
-    
-End Function
-
-'Complex logarithm (principal branch)
-Private Function c_log(ByRef z As ComplexNumber) As ComplexNumber
-    c_log.dc_real = Log(c_mag(z))
-    c_log.dc_imag = c_arg(z)
-End Function
