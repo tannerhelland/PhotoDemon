@@ -2469,30 +2469,32 @@ Private Sub MnuLayer_Click(Index As Integer)
         Case 1
             'Delete submenu
         Case 2
-            '(separator)
+            'Replace submenu
         Case 3
-            Menus.ProcessDefaultAction_ByName "layer_mergeup"
+            '(separator)
         Case 4
-            Menus.ProcessDefaultAction_ByName "layer_mergedown"
+            Menus.ProcessDefaultAction_ByName "layer_mergeup"
         Case 5
-            'Order submenu
+            Menus.ProcessDefaultAction_ByName "layer_mergedown"
         Case 6
-            'Visibility submenu
+            'Order submenu
         Case 7
-            '(separator)
+            'Visibility submenu
         Case 8
-            'Crop submenu
+            '(separator)
         Case 9
-            'Orientation submenu
+            'Crop submenu
         Case 10
-            'Size submenu
+            'Orientation submenu
         Case 11
-            '(separator)
+            'Size submenu
         Case 12
-            'Transparency submenu
-        Case 13
             '(separator)
+        Case 13
+            'Transparency submenu
         Case 14
+            '(separator)
+        Case 15
             'Rasterize submenu
     End Select
 End Sub
