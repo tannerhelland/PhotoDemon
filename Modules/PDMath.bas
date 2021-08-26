@@ -471,48 +471,6 @@ Public Function Log10(ByVal srcValue As Double) As Double
     Log10 = Log(srcValue) * INV_LOG_OF_10
 End Function
 
-'/* natural log on [0x1.f7a5ecp-127, 0x1.fffffep127]. Maximum relative error 9.4529e-5 */
-Public Function LogFast(ByVal a As Single) As Double
-
-    Dim m As Single, r As Single, s As Single, t As Single, i As Single, f As Single
-    Dim e As Long, e2 As Long
-    
-    'e = (__float_as_int (a) - 0x3f2aaaab) & 0xff800000;
-    GetMem4 VarPtr(a), e2
-    e = (e2 - &H3F2AAAAB) And &HFF800000
-    
-    PutMem4 VarPtr(m), e2 - e
-    'm = __int_as_float (__float_as_int (a) - e);
-    
-    'i = (float)e * 1.19209290e-7f; // 0x1.0p-23
-    i = e * 0.00000011920929
-    
-    '/* m in [2/3, 4/3] */
-    'f = m - 1.0f;
-    f = m - 1!
-    
-    's = f * f;
-    s = f * f
-    
-    '/* Compute log1p(f) for f in [-1/3, 1/3] */
-    'r = fmaf (0.230836749f, f, -0.279208571f); // 0x1.d8c0f0p-3, -0x1.1de8dap-2
-    r = 0.230836749 * f - 0.279208571
-    
-    't = fmaf (0.331826031f, f, -0.498910338f); // 0x1.53ca34p-2, -0x1.fee25ap-2
-    t = 0.331826031 * f - 0.498910338
-    
-    'r = fmaf (r, s, t);
-    r = r * s + t
-    
-    'r = fmaf (r, s, f);
-    r = r * s + f
-    
-    'r = fmaf (i, 0.693147182f, r); // 0x1.62e430p-1 // log(2)
-    'return r;
-    LogFast = i * 0.693147182 + r
-    
-End Function
-
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
 Public Function LoWord(ByRef dw As Long) As Integer
    If (dw And &H8000&) Then

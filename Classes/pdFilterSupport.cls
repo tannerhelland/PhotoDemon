@@ -95,7 +95,7 @@ Friend Function GetColorsFromSource(ByVal srcX As Double, ByVal srcY As Double, 
         
         'Interpolate a new pixel value
         If m_Interpolate Then
-            GetColorsFromSource = BilinearInterpolateI(srcX, srcY)
+            GetColorsFromSource = BilinearInterpolate(srcX, srcY)
             
         'Clamp to the nearest integer coordinate value
         Else
@@ -116,7 +116,7 @@ Friend Function GetColorsFromSource_FastErase(ByVal srcX As Double, ByVal srcY A
             If (srcY >= 0#) Then
                 If (srcY <= m_FinalY) Then
                     If m_Interpolate Then
-                        GetColorsFromSource_FastErase = BilinearInterpolateI(srcX, srcY)
+                        GetColorsFromSource_FastErase = BilinearInterpolate(srcX, srcY)
                     Else
                         GetColorsFromSource_FastErase = m_Pixels(Int(srcX + 0.5), Int(srcY + 0.5))
                     End If
@@ -302,89 +302,5 @@ ShortCircuit:
     topRow = topRight.Alpha * xBlend + topLeft.Alpha * xBlendInv
     bottomRow = bottomRight.Alpha * xBlend + bottomLeft.Alpha * xBlendInv
     BilinearInterpolate.Alpha = bottomRow * yBlend + topRow * yBlendInv
-    
-End Function
-
-'Integer-only version of the above interpolation.  Profiling this solution remains TODO.
-Private Function BilinearInterpolateI(ByVal x1 As Double, ByVal y1 As Double) As RGBQuad
-    
-    'We first need to retrieve the four surrounding pixel values
-    Dim topLeft As RGBQuad, topRight As RGBQuad, bottomLeft As RGBQuad, bottomRight As RGBQuad
-    
-    'Pixel coordinates are always guaranteed in-bounds on the left/top boundary
-    Dim intLeft As Long, intTop As Long
-    intLeft = Int(x1)
-    intTop = Int(y1)
-    topLeft = m_Pixels(intLeft, intTop)
-    
-    'The other three pixels can potentially lie out-of-bounds, so we need to bounds-check 'em
-    Dim fixX As Double, fixY As Double
-    
-    'Pixels at the far edges of the image require special treatment during interpolation
-    ' (treatment that varies depending on the current edge-handling model).
-    
-    'Top-right next
-    If (x1 < m_FinalX) Then
-    
-        topRight = m_Pixels(intLeft + 1, intTop)
-        
-        'We know the x-coord is in-bounds; perform a quick check on y to see if we can short-circuit
-        ' the rest of the function.  (If x is in-bounds, the odds of y also being in-bounds is very high.)
-        If (y1 < m_FinalY) Then
-            intTop = intTop + 1
-            bottomLeft = m_Pixels(intLeft, intTop)
-            bottomRight = m_Pixels(intLeft + 1, intTop)
-            GoTo ShortCircuit
-        End If
-        
-    Else
-        fixX = x1 + 1#
-        fixY = y1
-        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(topRight), 0& Else topRight = m_Pixels(Int(fixX), Int(fixY))
-    End If
-    
-    'Bottom-left
-    If (y1 < m_FinalY) Then
-        bottomLeft = m_Pixels(intLeft, intTop + 1)
-    Else
-        fixX = x1
-        fixY = y1 + 1#
-        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(bottomLeft), 0& Else bottomLeft = m_Pixels(Int(fixX), Int(fixY))
-    End If
-    
-    If (x1 < m_FinalX) And (y1 < m_FinalY) Then
-        bottomRight = m_Pixels(intLeft + 1, intTop + 1)
-    Else
-        fixX = x1 + 1#
-        fixY = y1 + 1#
-        If FixDistortEdges(fixX, fixY) Then PutMem4 VarPtr(bottomRight), 0& Else bottomRight = m_Pixels(Int(fixX), Int(fixY))
-    End If
-    
-ShortCircuit:
-    
-    'Calculate blend ratios using integer math (for a nice perf boost)
-    Dim yBlend As Long, xBlend As Long, xBlendInv As Long, yBlendInv As Long
-    yBlend = Int((y1 - Int(y1)) * 256)
-    yBlendInv = 256 - yBlend
-    xBlend = Int((x1 - Int(x1)) * 256)
-    xBlendInv = 256 - xBlend
-    
-    'Blend in the x-direction, then y-direction, for each color component
-    Dim topRow As Long, bottomRow As Long
-    topRow = topRight.Blue * xBlend + topLeft.Blue * xBlendInv + 128
-    bottomRow = bottomRight.Blue * xBlend + bottomLeft.Blue * xBlendInv + 128
-    BilinearInterpolateI.Blue = (bottomRow * yBlend + topRow * yBlendInv) \ 65536
-    
-    topRow = topRight.Green * xBlend + topLeft.Green * xBlendInv + 128
-    bottomRow = bottomRight.Green * xBlend + bottomLeft.Green * xBlendInv + 128
-    BilinearInterpolateI.Green = (bottomRow * yBlend + topRow * yBlendInv) \ 65536
-    
-    topRow = topRight.Red * xBlend + topLeft.Red * xBlendInv + 128
-    bottomRow = bottomRight.Red * xBlend + bottomLeft.Red * xBlendInv + 128
-    BilinearInterpolateI.Red = (bottomRow * yBlend + topRow * yBlendInv) \ 65536
-    
-    topRow = topRight.Alpha * xBlend + topLeft.Alpha * xBlendInv + 128
-    bottomRow = bottomRight.Alpha * xBlend + bottomLeft.Alpha * xBlendInv + 128
-    BilinearInterpolateI.Alpha = (bottomRow * yBlend + topRow * yBlendInv) \ 65536
     
 End Function
