@@ -385,7 +385,7 @@ End Enum
     Private Const PD_SUCCESS = -1, PD_FAILURE_GENERIC = 0, PD_FAILURE_USER_CANCELED = 1
 #End If
 
-'As of version 6.6, PD's update abilities became a lot better.
+'How frequently to check for new versions of the app
 Public Enum PD_UPDATE_FREQUENCY
     PDUF_EACH_SESSION = 0
     PDUF_WEEKLY = 1
@@ -397,6 +397,7 @@ End Enum
     Private Const PDUF_EACH_SESSION = 0, PDUF_WEEKLY = 1, PDUF_MONTHLY = 2, PDUF_NEVER = 3
 #End If
 
+'...and what kind of updates we are allowed to download automatically
 Public Enum PD_UpdateTrack
     [ut_None] = -1
     ut_Stable = 0
@@ -408,9 +409,10 @@ End Enum
     Private Const ut_None = -1, ut_Stable = 0, ut_Beta = 1, ut_Developer = 2
 #End If
 
-'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.  Callers need to
-' identify compositor requests with one of these IDs, which tells the compositor which cache to preferentially use.
-' Correct LOD tags greatly improve performance, particularly on the primary canvas.
+'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.
+' Callers need to identify compositor requests with one of these IDs, which tells the compositor which
+' cache to preferentially use.  Correct LOD tags greatly improve performance, particularly on the
+' primary canvas.
 Public Enum PD_CompositorLOD
     CLC_Generic = 0
     CLC_Viewport = 1
@@ -425,10 +427,11 @@ End Enum
 
 Public Const NUM_OF_LOD_CACHES As Long = 5
 
-'PD's gotten much better about abstracting and encapsulating clipboard-specific functionality.  Unfortunately, some formats
-' (most notably CF_BITMAP) require special heuristics from PD's image load function, because the alpha data CF_BITMAP
-' provides is unlikely to be valid, but we can't know for sure without examining it.  As such, some clipboard-specific data
-' can be retrieved via this struct.
+'PD's gotten much better about abstracting and encapsulating clipboard-specific functionality.
+' Unfortunately, some formats (most notably CF_BITMAP) require special heuristics from PD's
+' image load function, because the alpha data CF_BITMAP provides is unlikely to be valid, but we
+' can't know for sure without examining it.  As such, some clipboard-specific data can be
+' retrieved via this struct.
 Public Type PD_Clipboard_Info
     pdci_CurrentFormat As PredefinedClipboardFormatConstants
     pdci_OriginalFormat As PredefinedClipboardFormatConstants

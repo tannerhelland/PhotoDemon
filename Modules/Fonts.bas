@@ -4,18 +4,18 @@ Attribute VB_Name = "Fonts"
 'Copyright 2013-2021 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 26/April/15
-'Last update: start splitting relevant bits from pdFont into this separate manager module.  pdFont still exists for
-'              GDI font rendering purposes.
+'Last update: start splitting relevant bits from pdFont into this separate manager module.
+'              pdFont still exists for GDI font rendering purposes.
 '
-'For many years, PhotoDemon has used the pdFont class for GDI text rendering.  Unfortunately, that class was designed before I
-' knew much about GDI font management, and it has some sketchy design considerations that make it a poor fit for PD's text tool.
+'For many years, PhotoDemon has used the pdFont class for GDI text rendering.  Unfortunately, that class
+' was designed before I knew much about GDI font management, and it has some sketchy design considerations
+' that make it a poor fit for PD's text tool.
 '
-'As part of a broader overhaul to PD's text management, this new Fonts module has been created.  Its job is to manage a
-' font cache for this system, which individual font classes can then query for things like font existence, style, and more.
+'As part of a broader overhaul to PD's text management, this new Fonts module has been created.  Its job
+' is to manage a font cache for this system, which individual font classes can then query for things like
+' font existence, style, and more.
 '
 'Obviously, this class relies heavily on WAPI.  Functions are documented to the best of my knowledge and ability.
-'
-'Dependencies: font section of PD's Public_Enums_And_Types module
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -185,8 +185,6 @@ Public Type OUTLINETEXTMETRIC
     otmpStyleName As Long
     otmpFullName As Long
 End Type
-
-'NOTE: several crucial types for this class are listed in the Public_Enums_And_Types module.
 
 Private Declare Function EnumFontFamiliesEx Lib "gdi32" Alias "EnumFontFamiliesExW" (ByVal hDC As Long, ByRef lpLogFontW As LOGFONTW, ByVal lpEnumFontFamExProc As Long, ByRef lParam As Any, ByVal dwFlags As Long) As Long
 

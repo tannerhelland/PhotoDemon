@@ -16,7 +16,8 @@ Attribute VB_Name = "Drawing"
 
 Option Explicit
 
-'The following Enum and two API declarations are used to draw the system information icon
+'The following Enum defines standard message box information icons, but note that PD does *not* use
+' the system versions.  (Instead, to support run-time theming we paint our own copies.)
 Public Enum SystemIconConstants
     IDI_HAND = 32513
     IDI_QUESTION = 32514

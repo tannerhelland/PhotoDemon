@@ -63,10 +63,7 @@ Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As
         
         'Perform a quick failsafe check for the current form existing in the collection.
         Dim targetIndex As Long
-        
         If (m_NumOfForms <> 0) Then
-            
-            Dim checkIndex As Long
             
             Dim i As Long
             For i = 0 To m_NumOfForms - 1

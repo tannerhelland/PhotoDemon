@@ -332,9 +332,6 @@ Public Sub FxDroste(ByVal effectParams As String, Optional ByVal toPreview As Bo
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
     
-    'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
-    Dim srcX As Double, srcY As Double
-    
     'Max radius is calculated as the distance from the center of the image to a corner
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
@@ -607,10 +604,6 @@ Private Sub sldRadiusInner_Change()
 End Sub
 
 Private Sub sldRadiusOuter_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sldSpeed_Change()
     UpdatePreview
 End Sub
 
