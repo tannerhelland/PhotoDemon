@@ -3405,12 +3405,9 @@ Public Sub UpdateSpecialMenu_WindowsOpen()
                 tmpCaption = Files.FileGetName(PDImages.GetImageByID(listOfOpenImages.GetInt(i)).ImgStorage.GetEntry_String("OriginalFileName"), False)
             End If
             
-            
-            Debug.Print "caption?", tmpCaption, hMenu, MENU_OFFSET + i
             'Assign the caption via WAPI to preserve Unicode chars
             tmpMii.dwTypeData = StrPtr(tmpCaption)
-            Debug.Print SetMenuItemInfoW(hMenu, MENU_OFFSET + i, 1&, tmpMii), "SetMenuItemInfoW"
-            Debug.Print Err.LastDllError
+            SetMenuItemInfoW hMenu, MENU_OFFSET + i, 1&, tmpMii
             
         Next i
         
