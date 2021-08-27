@@ -404,11 +404,11 @@ Private Function c_loghypotf(ByRef z As ComplexNumberF) As Single
         If (z.c_imag = 0!) Then
             c_loghypotf = 0!
         Else
-            c_loghypotf = Math.Log(z.c_imag)
+            c_loghypotf = Math.Log(Abs(z.c_imag))
         End If
     Else
         If (z.c_imag = 0!) Then
-            c_loghypotf = Math.Log(z.c_real)
+            c_loghypotf = Math.Log(Abs(z.c_real))
         Else
             'Accurate enough and much faster
             If (Math.Abs(z.c_real) < 3000!) And (Math.Abs(z.c_imag) < 3000!) Then
@@ -420,4 +420,3 @@ Private Function c_loghypotf(ByRef z As ComplexNumberF) As Single
     End If
     
 End Function
-
