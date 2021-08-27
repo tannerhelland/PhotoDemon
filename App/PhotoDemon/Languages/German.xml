@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.650</langversion>
+<langversion>9.0.682</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -423,17 +423,17 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Flipping image</original>
-<translation>Bild wird gekippt</translation>
+<translation>Kippen des Bildes</translation>
 </phrase>
 
 <phrase>
 <original>Mirroring image</original>
-<translation>Bild wird gespiegelt</translation>
+<translation>Spiegelung des Bildes</translation>
 </phrase>
 
 <phrase>
 <original>Rotating image</original>
-<translation>Bild wird gedreht</translation>
+<translation>Drehen des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -1715,7 +1715,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Border selection</original>
-<translation>Rahmenauswahl</translation>
+<translation>Rahmungsauswahl</translation>
 </phrase>
 
 <phrase>
@@ -2025,7 +2025,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Droste</translation>
 </phrase>
 
 <phrase>
@@ -3225,12 +3225,12 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>Auswahl wird verkleinert</translation>
+<translation>Verkleinerung der Auswahl</translation>
 </phrase>
 
 <phrase>
 <original>Finding selection border</original>
-<translation>Auswahlrahmen wird gesucht</translation>
+<translation>Feststellung des Auswahlrahmens</translation>
 </phrase>
 
 <phrase>
@@ -3240,7 +3240,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
-<translation>Die Maustaste loslassen, um die Lasso-Auswahl abzuschließen</translation>
+<translation>Loslassen der Maustaste, um die Lasso-Auswahl abzuschließen</translation>
 </phrase>
 
 <phrase>
@@ -3553,7 +3553,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unnamed gradient</original>
-<translation>Ubenannter Gradient</translation>
+<translation>Unbenannter Gradient</translation>
 </phrase>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8042,29 +8042,29 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Deep-frying image</original>
-<translation>Bild tief-ausbackend</translation>
+<translation>Tief-ausbackendes Bild</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
-<translation></translation>
+<translation>Reihenfolge tauschen</translation>
 </phrase>
 
 <phrase>
 <original>inner radius</original>
-<translation></translation>
+<translation>Innerer Radius</translation>
 </phrase>
 
 <phrase>
 <original>outer radius</original>
-<translation></translation>
+<translation>Äußerer Radius</translation>
 </phrase>
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation></translation>
+<translation>Summoning (Kanalisierung des Geistes von) M. C. Escher</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11112,7 +11112,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Rotating layer</original>
-<translation>Layer wird gedreht</translation>
+<translation>Drehen des Layers</translation>
 </phrase>
 
 <phrase>
@@ -12087,12 +12087,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>interior</original>
-<translation>Innen</translation>
+<translation>Innenbereich</translation>
 </phrase>
 
 <phrase>
 <original>exterior</original>
-<translation>Außen</translation>
+<translation>Außenbereich</translation>
 </phrase>
 
 <phrase>
