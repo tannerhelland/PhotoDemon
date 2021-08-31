@@ -1207,6 +1207,8 @@ End Sub
 ' to strict formatting rules.
 Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
     
+    On Error GoTo ReturnNullString
+    
     Dim formatString As String
     If (m_SigDigits = 0) Then
         formatString = "#0"
@@ -1215,7 +1217,8 @@ Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
     End If
     
     GetFormattedStringValue = Format$(srcValue, formatString)
-        
+ReturnNullString:
+
     'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
     If (Not Me.Enabled) Then GetFormattedStringValue = vbNullString
 

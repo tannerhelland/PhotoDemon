@@ -1015,6 +1015,46 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
     
 End Function
 
+'This function will return a single channel from a 32bpp image.  An input byte array is required; it will be initialized
+' to the size of the image and filled with a copy of the image's values in the specified channel.  ChannelOffset must
+' be a value between 0 and 3 (obviously); the function will crash otherwise.
+'
+'Note that - by design - the DIB is not actually modified by this function.
+Public Function RetrieveSingleChannel(ByRef srcDIB As pdDIB, ByRef dstChannelTable() As Byte, ByVal channelOffset As Long) As Boolean
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long
+            
+            Dim finalX As Long, finalY As Long
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            ReDim dstChannelTable(0 To finalX, 0 To finalY) As Byte
+            
+            Dim iData() As Byte, tmpSA As SafeArray2D
+            srcDIB.WrapArrayAroundDIB iData, tmpSA
+                
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+            For x = 0 To finalX
+                dstChannelTable(x, y) = iData(x * 4 + channelOffset, y)
+            Next x
+            Next y
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            srcDIB.UnwrapArrayFromDIB iData
+            
+            RetrieveSingleChannel = True
+            
+        End If
+    End If
+    
+End Function
+
 'This function will return the alpha channel of a 32bpp image.  An input byte array is required; it will be initialized
 ' to the size of the image and filled with a copy of the image's alpha values.  Optionally, you can pass a pointer to a
 ' RectF struct that defines the target region; if non-null, only that region will be stored - IMPORTANTLY, if you use this

@@ -145,6 +145,9 @@ Private m_HasSeenProgressEvent As Boolean, m_LastProgressAmount As Long, m_TimeO
 'High-res time stamp when the first progress callback is hit
 Private m_FirstTimeStamp As Currency
 
+'Selection mask contents, if any
+Private m_MaskCopy() As Byte
+
 'When enumerating plugins, the user can pass an (optional) progress bar.  We'll update the bar as plugins
 ' are found and loaded.
 Private m_EnumProgressBar As pdProgressBar
@@ -266,7 +269,9 @@ Public Sub Free8bf()
 End Sub
 
 Public Sub FreeImageResources()
-    pspiReleaseAllImages
+    pspiSetMask 0, 0, 0, 0, 0   'See documentation; null parameters frees mask pointers and associated resources
+    Erase m_MaskCopy
+    pspiReleaseAllImages        'pspi will auto-free upon close, but PD also needs to free unsafe pointers to temporary structs
 End Sub
 
 'Return value is the number of plugins found by this enumeration instance (e.g. the set produced by the
@@ -390,7 +395,7 @@ End Sub
 'Short-hand function for automatically setting the plugin image to PD's active working image.  Note that
 ' the image is *shared* with the plugin, so you can't free the image without first freeing the plugin
 ' without things going horribly wrong!
-Public Function SetImage_CurrentWorkingImage() As Boolean
+Public Function SetImage_CurrentWorkingImage(Optional ByVal pspiMaskOK As Boolean = False) As Boolean
     
     Const funcName As String = "SetImage_CurrentWorkingImage"
     
@@ -399,7 +404,7 @@ Public Function SetImage_CurrentWorkingImage() As Boolean
     
     'Create a standard PD working copy of the image
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA, ignoreSelection:=pspiMaskOK
     
     'Notify the plugin of the shared image
     Dim retPspi As PSPI_Result
@@ -415,6 +420,34 @@ Public Function SetImage_CurrentWorkingImage() As Boolean
     
     'TODO: set mask if selection is active
     
+End Function
+
+'Short-hand function for automatically setting the plugin mask to PD's active selection.  Note that
+' the mask is *shared* with the plugin (but we actually host it), so we must not free our mask copy
+' until the appropriate plugin shutdown functions are called.
+Public Function SetMask_CurrentSelectionMask() As Boolean
+    
+    Const funcName As String = "SetMask_CurrentSelectionMask"
+    
+    'Make sure we're being called correctly
+    If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+    
+        'Retrieve a copy of the mask
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = PDImages.GetActiveImage.MainSelection.GetMaskDIB()
+        
+        'Retrieve just the alpha channel
+        DIBs.RetrieveSingleChannel tmpDIB, m_MaskCopy, 0
+        
+        'Notify pspi
+        Dim retPspi As PSPI_Result
+        retPspi = pspiSetMask(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, VarPtr(m_MaskCopy(0, 0)), tmpDIB.GetDIBWidth, 1)
+        SetMask_CurrentSelectionMask = (retPspi = PSPI_OK)
+        If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetMask failed", retPspi
+        
+    '/no mask; do nothing
+    End If
+
 End Function
 
 'Experimental only; show a plugin's About dialog
@@ -461,8 +494,6 @@ ShowDialogAgain:
     
     Unload tmpForm
     Set tmpForm = Nothing
-    
-    'TODO?
     
 End Sub
 

@@ -280,8 +280,22 @@ Private Sub cmdBar_OKClick()
         
         If Plugin_8bf.Load8bf(targetPluginPath) Then
             
+            'If a selection is active, retrieve a copy (in 8-bit format) and cache it locally,
+            ' then notify pspi of the mask's presence
+            Dim pspiMaskOK As Boolean
+            If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+                
+                'DISCLAIMER: pspi allows you to pass a selection mask copy on to the target image.
+                ' In my experience, however, this doesn't work great.  Many plugins don't support
+                ' selection data and there's no way to know this in advance.  As such, I'm inclined
+                ' to use our own internal selection masking engine for now, as it provides much more
+                ' predictable results.
+                'pspiMaskOK = Plugin_8bf.SetMask_CurrentSelectionMask
+                
+            End If
+            
             'Attempt to queue up the current layer as the active image
-            Plugin_8bf.SetImage_CurrentWorkingImage
+            Plugin_8bf.SetImage_CurrentWorkingImage pspiMaskOK
             
             'Note that we're attempting to go live
             m_PluginLive = True
@@ -296,11 +310,8 @@ Private Sub cmdBar_OKClick()
             
                 'Plugin ended successfully.
                 
-                'Free the plugin as it's no longer needed
-                Plugin_8bf.Free8bf
-                
                 'Finalize the plugin results (e.g. commit the finished effect to the target layer/image)
-                EffectPrep.FinalizeImageData
+                EffectPrep.FinalizeImageData ignoreSelection:=pspiMaskOK
                 
                 'Submit a "fake" processor operation.  This creates an Undo point, among other tasks
                 Processor.Process "Photoshop (8bf) plugin", False, vbNullString, UNDO_Layer
@@ -330,6 +341,10 @@ Private Sub cmdBar_OKClick()
                 End If
                 
             End If
+            
+            'Free any remaining image and/or plugin resources
+            Plugin_8bf.FreeImageResources   'Pointers to our images and/or internal 8bf image structs
+            Plugin_8bf.Free8bf              'Plugin itself
             
         Else
             'Warn the user?

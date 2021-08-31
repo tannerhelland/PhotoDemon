@@ -269,16 +269,20 @@ End Sub
 ' to process, which in turn allows the tool dialog to render much faster.  (Importantly, for this to work, a valid
 ' pdFxPreview reference must be passed to the function.)
 '
-'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is
-' the current DIB's width, but some routines run vertically and the progress bar maximum will need to be changed
+'The calling routine can optionally specify a different maximum progress bar value.  By default, this is
+' the current DIB's width, but some routines run vertically and the progress bar maximum needs to be changed
 ' to match.
-Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
+'
+'The optional "ignoreSelection" parameter should always be set to FALSE in internal PD code.  The parameter exists
+' for external Photoshop plugins (8bf) which may handle selection masking themselves.  When used, PD will not
+' attempt to blend selection results itself and will instead rely on the given 8bf's native selection handling.
+Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False, Optional ByVal ignoreSelection As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     g_cancelCurrentAction = False
     
     Dim selToolActive As Boolean
-    selToolActive = PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn
+    selToolActive = PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
     
     'When selections are active, we may need to process pixels outside the active layer's boundaries.
     ' This requires special handling to render a correct image; basically, we must null-pad the current layer's
@@ -538,8 +542,10 @@ End Sub
 '
 'Note that unlike PrepImageData, this function has to do a lot of extra processing when selections are active.
 ' The selection mask must be scanned for each pixel, and the results blended with the original image as appropriate.
-' (This is the price we pay for full selection feathering support!)
-Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
+' (This is the price we pay for full selection feathering support!)  This step can be forcibly bypassed by setting
+' the optional ignoreSelection parameter to TRUE, but this should never be used for internal PD tools.  (The setting
+' exists only for Photoshop-style 8bf plugins, which are allowed to use their own selection blending logic.)
+Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False, Optional ByVal ignoreSelection As Boolean = False)
     
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
@@ -551,7 +557,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     Dim selToolActive As Boolean
-    selToolActive = (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn)
+    selToolActive = (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn) And (Not ignoreSelection)
     
     If selToolActive Then
         
@@ -718,7 +724,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     If (Not isPreview) Then
         
         'If a selection is active, copy the processed area into its proper place.
-        If (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
+        If selToolActive Then
             
             'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
             ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
@@ -764,7 +770,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     Else
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
-        If (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
+        If selToolActive Then
             
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
                 workingDIBBackup.SetAlphaPremultiplication True
