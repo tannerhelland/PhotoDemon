@@ -1345,8 +1345,6 @@ Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Bool
                 Else
                     SelectionsAllowed = True
                 End If
-            Else
-                Debug.Print "selection refresh suspended"
             End If
         End If
     End If

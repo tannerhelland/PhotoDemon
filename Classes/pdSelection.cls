@@ -18,30 +18,32 @@ Attribute VB_Exposed = False
 'Last updated: 03/May/18
 'Last update: add support for locking width, height, aspect-ratio
 '
-'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
-' currently implemented, with magic wand set to be tackled in the coming weeks.
+'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
+' currently implemented.  A selection brush is on my TODO list, pending the addition of selection unions.
 '
-'All selections are treated as a subset of pixels within a bounding rectangle.  Each selection will calculate this bounding
-' rectangle differently; simple shapes like rectangles and ellipses can calculate it using their x1, y1, x2, y2 coordinates,
-' while more complex shapes (lasso, polygon) must search their point collection and manually construct a bounding rect that
-' way.  Certain modifiable parameters - e.g. feathering, possibly border width - may also affect the bounding rect calculation.
+'All selections are treated as a subset of pixels within a bounding rectangle.  Each selection calculates this
+' bounding rectangle differently; simple shapes like rectangles and ellipses can calculate it using their (x1, y1)
+' and (x2, y2) coordinates, while more complex shapes (lasso, polygon, wand) may need to search their point collection
+' and manually construct a bounding rect.  Certain modifiable parameters - like feathering, or PD's built-in support
+' for exterior- and border-type selections - can also affect the bounding rect.  I mention this because the bounding
+' rect *must* be accurate or a lot of things will break - so consider it carefully.
 '
-'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate collections;
-' these vary from simple coordinate pairs, as with rectangle selections, to large variable-size arrays, as with a lasso
-' selection.  From these, a uniform set of boundaries are calculated and stored inside the m_CornersLocked RectF; these define
-' the boundaries of the raw geometric shape constructed by the selection.  These boundary values are primarily used internally,
-' or to show the user the size of their created shape (rectangle and elliptical selections allow the user to modify these values
-' via text box), but generally they should not be used externally.
+'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate
+' collections; these vary from simple coordinate pairs (rectangle, ellipse), to large variable-size arrays (lasso),
+' to something approximating raw raster data (wand).  From these point collections, a uniform set of boundaries are
+' calculated and stored inside the m_CornersLocked RectF; these define the boundaries of the entire selection.
+' These boundary values are primarily used internally, or to show the user the size of their created shape
+' (rectangle and elliptical selections allow the user to modify these via text box, for example).
 '
-'At selection mask creation time, a final bounding rect (used by variables m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, and m_Bounds.Height)
-' is created, factoring in any extra settings like feathering, border considerations, etc.  These bounding values are the
-' ones that external functions should use, because they enclose the full image area affected by the selection.  In some rare
-' cases, e.g. raster selections, these boundary coordinates may actually be calculated by a manual scan of the selection mask.
+'At selection mask creation time, a final bounding rect (m_Bounds) is calculated.  These bounding values are the ones
+' that external functions must reference, because they enclose the full image area affected by the selection.  PD
+' currently guarantees that this boundary rect is accurate against all supported selection types and settings.
 '
-'Note also that this class is treated as a subset of pdImage(). Right now each image object only contains one selection,
-' but there's no reason it couldn't store multiples in the future. (Some software allows for selection blending modes, e.g.
-' you can draw one selection, then draw another and the two will be merged into one - multiple selections are required
-' for that.)
+'Note also that this class is treated as a subset of pdImage().  This is important because each open image supports
+' its own active selection, and switching between images also switches between their selections.
+'
+'As of 2021 I am actively working on support for multiple selections, which will finally allow things like
+' selection unions and intersections.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -117,7 +119,9 @@ End Enum
     Private Const pdsl_Width = 0, pdsl_Height = 1, pdsl_AspectRatio = 2
 #End If
 
-'The coordinates of the current selection (if rectangular)
+'The boundary coordinates of the current selection (if rectangular or elliptical).  This structure is also used
+' when click-dragging to transform the current preview.  It is not externally useful or accessible; only this class
+' needs to access it.
 Private m_CornersUnlocked As RectF_RB
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
@@ -164,12 +168,36 @@ Private m_MaskHasBeenCreated As Boolean
 ' to recreate a mask from existing vector data.
 Private m_IsMaskReady As Boolean
 
+'If the user is merging multiple selections together, we need to track both the current selection (i.e. the one the user
+' is interacting with, stored in m_SelMask) AND the old selection (e.g. whatever selection(s) they made before).  By storing
+' both masks, the user is able to edit their current mask without ruining the old one.  Anyway, those old selection(s) are
+' stored here.  (Note that when the user finalizes the current selection, the contents of this DIB are retained - because
+' the user can switch away to a different tool, then return to edit the selection, and we still want it to be editable).
+Private m_OldMask As pdDIB
+
+'If both the old mask AND the current mask are in use, we must generate a 3rd selection DIB: the composite of both masks
+' (using the current selection merge strategy). Technically speaking you could generate this on-the-fly from the other
+' two masks, but there are significant performance concerns with doing this.  So we just cache the selection after
+' computing it.  For things like processing a fill or paint operation against the image, *this* is the mask you must use.
+Private m_CompositeMask As pdDIB
+
+'Modify basic "marching ants" outline properties.  Note that these have performance considerations, so changes need to be
+' intensively profiled to ensure they don't ruin the end-user experience.  (Note that things like animation frametime are
+' controlled by user settings in the Tools > Options menu.)
+Private Const ANT_DASH_SIZE As Single = 4!
+Private Const ANT_DASH_SPEED_SLOW As Long = 200     'Frame time for marching ants animation, in ms; 200 = 5 fps (which is plenty)
+Private Const ANT_DASH_SPEED_NORMAL As Long = 67    '15 fps (which is plenty)
+Private Const ANT_DASH_SPEED_FAST As Long = 33      '30 fps (which is overkill)
+Private m_AntDashes() As Single, m_AntDashOffset As Single
+
 'When in outline or marching ant rendering mode, the current on-screen outline (e.g. the selection outline *already transformed*
 ' to viewport coordinates) is cached to improve performance.  Similarly, certain outline rendering properties are also cached.
-Private m_FinalOutline As pd2DPath, m_FinalOutlineIsReady As Boolean
-Private Const ANT_DASH_SIZE As Single = 4#
-Private Const ANT_DASH_SPEED As Long = 280
-Private m_AntDashes() As Single, m_AntDashOffset As Single
+Private m_CurrentOutline As pd2DPath, m_CurrentOutlineIsReady As Boolean
+
+'Note that we need to make copies of all the above selection UI rendering objects for both the old mask, and the composite mask.
+' (They have to be rendered too!)
+
+'TODO: figure out how many (and which) objects need to be cached for each mask version.
 
 'External forces may need to suspend animations for various reasons (e.g. a separate dialog is being raised).
 ' This value will be set to TRUE if animations are currently allowed; FALSE otherwise.  Note that this value is
@@ -226,8 +254,7 @@ Private m_ViewportOverlay As pdDIB, m_OverlayIsReady As Boolean
 ' also guarantees empty boundary pixels, and it must be regenerated whenever the reference DIB, above, changes.
 '
 '(Note that we also store the dimensions of this array, and its (x, y) offset relative to the underlying image.)
-Private m_ViewportByteCopy() As Byte
-Private m_ViewportByteCopyRect As RectL_WH
+Private m_ViewportByteCopy() As Byte, m_ViewportByteCopyRect As RectL_WH
 Private m_ViewportEdges As pdEdgeDetector
 
 'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
@@ -247,10 +274,6 @@ Private WithEvents m_AntTimer As pdTimer
 Attribute m_AntTimer.VB_VarHelpID = -1
 
 'Retrieve various boundary rects.  Full descriptions of these rects are given above.
-Friend Function GetCornersUnlockedRect() As RectF_RB
-    GetCornersUnlockedRect = m_CornersUnlocked
-End Function
-
 Friend Function GetCornersLockedRect() As RectF
     GetCornersLockedRect = m_CornersLocked
 End Function
@@ -259,16 +282,25 @@ Friend Function GetBoundaryRect() As RectF
     GetBoundaryRect = m_Bounds
 End Function
 
+'GetMaskDC() is used by functions like Tools_Fill.CommitFillResults() (which applies floodfill paint to the
+' selected region).  Typically it is used as part of fast selection mask copies, e.g with BitBlt to crop out
+' a portion of the mask image for fast masking against an underlying DIB.  The Preview engine also calls this
+' function, so it is very perf-sensitive.  This function must *always* use the composite mask (if one exists).
 Friend Function GetMaskDC() As Long
     If (Not m_IsMaskReady) Then CreateSelectionMask
     If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
 End Function
 
+'Give an outside function direct access to the mask DIB.  This is used for operations like "Crop to Selection"
+' or "Copy to Clipboard".  This function must *always* use the composite mask (if one exists).
 Friend Function GetMaskDIB() As pdDIB
     If (Not m_IsMaskReady) Then CreateSelectionMask
     Set GetMaskDIB = m_SelMask
 End Function
 
+'The viewport-only copy of the selection mask is exclusively used by PD's paint tools.  They need a fast,
+' viewport-specific copy of masked pixels that gets masked against the viewport-specific brush preview.
+' This function must *always* use the composite mask (if one exists).
 Friend Function GetMaskDIB_ViewportCopy() As pdDIB
     If (Not m_IsMaskReady) Then CreateSelectionMask
     Set GetMaskDIB_ViewportCopy = m_ViewportReference
@@ -1431,7 +1463,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
             Case ss_Rectangle, ss_Circle
                 
                 'Our internal outline path cache needs to be regenerated whenever we update internal coordinates
-                m_FinalOutlineIsReady = False
+                m_CurrentOutlineIsReady = False
                 
                 With m_CornersUnlocked
                     
@@ -1457,7 +1489,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
             Case ss_Polygon
             
                 'Our internal outline path cache needs to be regenerated whenever we update internal coordinates
-                m_FinalOutlineIsReady = False
+                m_CurrentOutlineIsReady = False
                 
                 m_CornersLocked.Left = LONG_MAX
                 m_CornersLocked.Top = LONG_MAX
@@ -1484,7 +1516,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
             Case ss_Lasso
             
                 'Our internal outline path cache needs to be regenerated whenever we update internal coordinates
-                m_FinalOutlineIsReady = False
+                m_CurrentOutlineIsReady = False
                 
                 m_CornersLocked.Left = LONG_MAX
                 m_CornersLocked.Top = LONG_MAX
@@ -1511,7 +1543,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 If Me.IsLockedIn Then
                     m_ViewportRefReady = False
                     m_OverlayIsReady = False
-                    m_FinalOutlineIsReady = False
+                    m_CurrentOutlineIsReady = False
                     Me.FindNewBoundsManually True
                 End If
                 
@@ -1635,9 +1667,9 @@ Friend Sub RemoveLastPolygonPoint()
         m_ViewportRefReady = False
         m_OverlayIsReady = False
         m_LastOverlayCache = vbNullString
-        m_FinalOutlineIsReady = False
+        m_CurrentOutlineIsReady = False
         m_IsMaskReady = False
-        If (m_NumOfPolygonPoints < 2) Then Set m_FinalOutline = Nothing
+        If (m_NumOfPolygonPoints < 2) Then Set m_CurrentOutline = Nothing
     End If
 End Sub
 
@@ -1672,9 +1704,9 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     m_NumOfLassoPoints = newLassoIndex + 1
     If (m_NumOfLassoPoints < 1) Then m_NumOfLassoPoints = 1
     m_ViewportRefReady = False
-    m_FinalOutlineIsReady = False
+    m_CurrentOutlineIsReady = False
     m_IsMaskReady = False
-    If (m_NumOfLassoPoints < 2) Then Set m_FinalOutline = Nothing
+    If (m_NumOfLassoPoints < 2) Then Set m_CurrentOutline = Nothing
     
     'Return the new cursor coordinates at this position, then exit
     newCursorX_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).x
@@ -1839,8 +1871,8 @@ Friend Sub EraseCustomTrackers()
     m_PolygonClosed = False
     m_LassoClosed = False
     
-    m_FinalOutlineIsReady = False
-    Set m_FinalOutline = Nothing
+    m_CurrentOutlineIsReady = False
+    Set m_CurrentOutline = Nothing
     
     m_OverlayIsReady = False
     m_LastOverlayCache = vbNullString
@@ -1880,7 +1912,7 @@ Private Sub CreateSelectionMask()
     
     'Whenever a new mask is created, any viewport-specific overlays and outlines must be re-created to match
     m_ViewportRefReady = False
-    m_FinalOutlineIsReady = False
+    m_CurrentOutlineIsReady = False
     m_OverlayIsReady = False
     
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
@@ -2937,11 +2969,11 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Let's begin with task (1): figuring out if our existing outline path is both:
     ' 1) available, and...
     ' 2) up-to-date.
-    If (Not m_FinalOutlineIsReady) Or (m_FinalOutline Is Nothing) Or overlayWasRegenerated Then
+    If (Not m_CurrentOutlineIsReady) Or (m_CurrentOutline Is Nothing) Or overlayWasRegenerated Then
         
         'Debug.Print "rebuilding selection outline path (" & Timer & ")"
         
-        If (m_FinalOutline Is Nothing) Then Set m_FinalOutline = New pd2DPath Else m_FinalOutline.ResetPath
+        If (m_CurrentOutline Is Nothing) Then Set m_CurrentOutline = New pd2DPath Else m_CurrentOutline.ResetPath
         
         'PD supports two different paths for populating an "outline path":
         ' 1) 99% of the time, we want to perform a manual outline scan of the selection mask
@@ -2991,18 +3023,18 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     
                     'Add the converted shape to the path object
                     If (m_SelectionShape = ss_Polygon) Then
-                        m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
+                        m_CurrentOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
                     Else
-                        m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
+                        m_CurrentOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
                     End If
                     
                     'Translate the final path into its correct on-screen position, while also accounting for the 1px border we
                     ' manually add to the transparent "overlay" DIB (which gives us room for outlines that extend "outside"
                     ' the first row and column of pixels in the image).
-                    m_FinalOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
+                    m_CurrentOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
                     
                 Else
-                    Set m_FinalOutline = Nothing
+                    Set m_CurrentOutline = Nothing
                 End If
                 
             End If
@@ -3084,18 +3116,18 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
             'Find the edges of the temporary byte-map we've just generated
             If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
-            m_ViewportEdges.FindAllEdges m_FinalOutline, m_ViewportByteCopy, 1, 1, m_ViewportByteCopyRect.Width - 1, m_ViewportByteCopyRect.Height - 1, loopStartX - 1, loopStartY - 1
+            m_ViewportEdges.FindAllEdges m_CurrentOutline, m_ViewportByteCopy, 1, 1, m_ViewportByteCopyRect.Width - 1, m_ViewportByteCopyRect.Height - 1, loopStartX - 1, loopStartY - 1
             
         End If
         
         'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
         ' viewport position/zoom) changes.
-        m_FinalOutlineIsReady = True
+        m_CurrentOutlineIsReady = True
         
     End If
         
     'We are now ready to render the actual outline onto the overlay DIB.
-    If (Not m_FinalOutline Is Nothing) Then
+    If (Not m_CurrentOutline Is Nothing) Then
     
         'Start by making sure our cached overlay dimensions are correct.  We need the overlay DIB to be at least 1-px larger
         ' in each dimension than the temporary viewport DIB generated by our parent function; this allows us to paint our
@@ -3126,8 +3158,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If (renderType = PDSR_Outline) Then
             
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
-            PD2D.DrawPath cSurface, cPenUIBase, m_FinalOutline
-            PD2D.DrawPath cSurface, cPenUITop, m_FinalOutline
+            PD2D.DrawPath cSurface, cPenUIBase, m_CurrentOutline
+            PD2D.DrawPath cSurface, cPenUITop, m_CurrentOutline
         
         'Render the outline using an animated "marching ants" approach
         Else
@@ -3145,12 +3177,18 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
             cDottedPen.SetPenDashOffset m_AntDashOffset
             
-            PD2D.DrawPath cSurface, cBlackPen, m_FinalOutline
-            PD2D.DrawPath cSurface, cDottedPen, m_FinalOutline
+            PD2D.DrawPath cSurface, cBlackPen, m_CurrentOutline
+            PD2D.DrawPath cSurface, cDottedPen, m_CurrentOutline
                         
             'If marching ants are being used, make sure our timer is enabled now
             If (Not m_AntTimer.IsActive) Then
-                m_AntTimer.Interval = ANT_DASH_SPEED
+                If (g_InterfacePerformance = PD_PERF_FASTEST) Then
+                    m_AntTimer.Interval = ANT_DASH_SPEED_FAST
+                ElseIf (g_InterfacePerformance = PD_PERF_BESTQUALITY) Then
+                    m_AntTimer.Interval = ANT_DASH_SPEED_SLOW
+                Else
+                    m_AntTimer.Interval = ANT_DASH_SPEED_NORMAL
+                End If
                 m_AntTimer.StartTimer
             End If
         
@@ -3333,8 +3371,9 @@ Friend Function ReadSelectionFromFile_New(ByRef srcFilename As String, Optional 
             
         Loop
         
-        'Polygon selections loaded from file are assumed to be closed
+        'Polygon and lasso selections loaded from file are assumed to be closed
         m_PolygonClosed = True
+        m_LassoClosed = True
         
         'If this selection was locked in at the time of its save, lock this selection in as well
         If (Not ignoreLockStatus) Then
@@ -3777,7 +3816,7 @@ End Function
 ' because external functions can "hook" into the raster and modify it at will.  If a function does this, it needs to notify us,
 ' so we can generate a new viewport-specific overlay matching the updated raster data.
 Friend Sub NotifyRasterDataChanged()
-    m_FinalOutlineIsReady = False
+    m_CurrentOutlineIsReady = False
     m_OverlayIsReady = False
     m_ViewportRefReady = False
 End Sub
@@ -3818,6 +3857,7 @@ Private Sub Class_Initialize()
     'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
     
+    'Generate custom dash sizes for the "marching ants" outline
     ReDim m_AntDashes(0 To 1) As Single
     m_AntDashes(0) = ANT_DASH_SIZE
     m_AntDashes(1) = ANT_DASH_SIZE
@@ -3844,8 +3884,8 @@ Private Sub m_AntTimer_Timer()
     If m_AnimationsAllowed Then
         
         'Advance the current offset
-        m_AntDashOffset = m_AntDashOffset + 1#
-        If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0#
+        m_AntDashOffset = m_AntDashOffset + 1!
+        If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0!
         
         'Perform a failsafe check to see if we're even needed
         Dim okayToRender As Boolean
