@@ -549,7 +549,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandSearchMode, buttonIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -559,7 +559,7 @@ End Sub
 Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandSampleMerged, buttonIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -571,7 +571,7 @@ Private Sub cboSelArea_Click(Index As Integer)
     sltSelectionBorder(Index).Visible = (cboSelArea(Index).ListIndex = sa_Border)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Area, cboSelArea(Index).ListIndex
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -582,7 +582,7 @@ End Sub
 Private Sub cboSelCombine_Click()
 
     'If a selection is already active, we may need to calculate a new combined area
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_Combine, cboSelCombine.ListIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -600,7 +600,7 @@ Private Sub cboSelRender_Click()
     spnOpacity(1).Visible = (cboSelRender.ListIndex = PDSR_Lightbox)
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
+    SelectionUI.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
@@ -621,7 +621,7 @@ Private Sub cboSelSmoothing_Click()
 End Sub
 
 Private Sub cboSize_Click(Index As Integer)
-    Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+    SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 End Sub
 
 Private Sub cboWandCompare_Click()
@@ -630,7 +630,7 @@ Private Sub cboWandCompare_Click()
     If (cboWandCompare.ListIndex > 1) Then sltWandTolerance.SigDigits = 0 Else sltWandTolerance.SigDigits = 1
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandCompareMethod, cboWandCompare.ListIndex
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -641,7 +641,7 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'Ignore lock actions unless a selection is active, *and* the current selection tool matches the currently
     ' active selection.
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         
         Dim lockedValue As Variant
         
@@ -692,9 +692,9 @@ End Sub
 Private Sub csSelection_ColorChanged(Index As Integer)
     
     If (Index = 0) Then
-        Selections.NotifySelectionRenderChange pdsr_HighlightColor, csSelection(Index).Color
+        SelectionUI.NotifySelectionRenderChange pdsr_HighlightColor, csSelection(Index).Color
     ElseIf (Index = 1) Then
-        Selections.NotifySelectionRenderChange pdsr_LightboxColor, csSelection(Index).Color
+        SelectionUI.NotifySelectionRenderChange pdsr_LightboxColor, csSelection(Index).Color
     End If
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -794,7 +794,7 @@ Private Sub Form_Load()
     
     'If a selection is already active, synchronize all UI elements to match
     If suspendActive Then
-        If PDImages.GetActiveImage.IsSelectionActive Then Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+        If PDImages.GetActiveImage.IsSelectionActive Then SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     End If
     
     Viewport.EnableRendering
@@ -824,31 +824,31 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     
     'Pull certain universal selection settings from PD's main preferences file
     If UserPrefs.IsReady Then
-        cboSelRender.ListIndex = Selections.GetSelectionRenderMode()
-        csSelection(0).Color = Selections.GetSelectionColor_Highlight()
-        spnOpacity(0).Value = Selections.GetSelectionOpacity_Highlight()
-        csSelection(1).Color = Selections.GetSelectionColor_Lightbox()
-        spnOpacity(1).Value = Selections.GetSelectionOpacity_Lightbox()
+        cboSelRender.ListIndex = SelectionUI.GetSelectionRenderMode()
+        csSelection(0).Color = SelectionUI.GetSelectionColor_Highlight()
+        spnOpacity(0).Value = SelectionUI.GetSelectionOpacity_Highlight()
+        csSelection(1).Color = SelectionUI.GetSelectionColor_Lightbox()
+        spnOpacity(1).Value = SelectionUI.GetSelectionOpacity_Lightbox()
     End If
     
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
-    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_PolygonCurvature, sltPolygonCurvature.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change(Index As Integer)
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -869,21 +869,21 @@ Public Sub UpdateSelectionPanelLayout()
     sltSelectionFeathering.Visible = (cboSelSmoothing.ListIndex = es_FullyFeathered)
     
     'Display the border slider as necessary
-    If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then
-        sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
+    If (SelectionUI.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (SelectionUI.GetSelectionSubPanelFromCurrentTool > 0) Then
+        sltSelectionBorder(SelectionUI.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(SelectionUI.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
     End If
     
 End Sub
 
 Private Sub sltSmoothStroke_Change()
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_SmoothStroke, sltSmoothStroke.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
-    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
         PDImages.GetActiveImage.MainSelection.SetSelectionProperty sp_WandTolerance, sltWandTolerance.Value
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
@@ -892,9 +892,9 @@ End Sub
 Private Sub spnOpacity_Change(Index As Integer)
 
     If (Index = 0) Then
-        Selections.NotifySelectionRenderChange pdsr_HighlightOpacity, spnOpacity(Index).Value
+        SelectionUI.NotifySelectionRenderChange pdsr_HighlightOpacity, spnOpacity(Index).Value
     ElseIf (Index = 1) Then
-        Selections.NotifySelectionRenderChange pdsr_LightboxOpacity, spnOpacity(Index).Value
+        SelectionUI.NotifySelectionRenderChange pdsr_LightboxOpacity, spnOpacity(Index).Value
     End If
     
     If SelectionsAllowed(False) Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
@@ -910,7 +910,7 @@ End Sub
 ' matches the current selection tool.
 Private Sub UpdateSelectionsValuesViaText(ByVal Index As Integer)
     If SelectionsAllowed(True) Then
-        If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+        If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
             PDImages.GetActiveImage.MainSelection.UpdateViaTextBox Index
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If

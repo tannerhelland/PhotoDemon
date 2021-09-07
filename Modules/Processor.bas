@@ -2583,27 +2583,27 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         
     'Modify the existing selection in some way
     ElseIf Strings.StringsEqual(processID, "Invert selection", True) Then
-        Selections.InvertCurrentSelection
+        SelectionFilters.InvertCurrentSelection
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Grow selection", True) Then
-        If raiseDialog Then Selections.GrowCurrentSelection True Else Selections.GrowCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.GrowCurrentSelection True Else SelectionFilters.GrowCurrentSelection False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Shrink selection", True) Then
-        If raiseDialog Then Selections.ShrinkCurrentSelection True Else Selections.ShrinkCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.ShrinkCurrentSelection True Else SelectionFilters.ShrinkCurrentSelection False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Feather selection", True) Then
-        If raiseDialog Then Selections.FeatherCurrentSelection True Else Selections.FeatherCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.FeatherCurrentSelection True Else SelectionFilters.FeatherCurrentSelection False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Sharpen selection", True) Then
-        If raiseDialog Then Selections.SharpenCurrentSelection True Else Selections.SharpenCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.SharpenCurrentSelection True Else SelectionFilters.SharpenCurrentSelection False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Border selection", True) Then
-        If raiseDialog Then Selections.BorderCurrentSelection True Else Selections.BorderCurrentSelection False, cParams.GetDouble("filtervalue")
+        If raiseDialog Then SelectionFilters.BorderCurrentSelection True Else SelectionFilters.BorderCurrentSelection False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
     
     'Erase selected area (from layer)
@@ -2613,21 +2613,21 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
     
     'Load/save selection from/to file
     ElseIf Strings.StringsEqual(processID, "Load selection", True) Then
-        If raiseDialog Then Selections.LoadSelectionFromFile True Else Selections.LoadSelectionFromFile False, processParameters
+        If raiseDialog Then SelectionFiles.LoadSelectionFromFile True Else SelectionFiles.LoadSelectionFromFile False, processParameters
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Save selection", True) Then
-        Selections.SaveSelectionToFile
+        SelectionFiles.SaveSelectionToFile
         Process_SelectMenu = True
         
     'Export selected area as image (defaults to PNG, but user can select the actual format)
     ElseIf Strings.StringsEqual(processID, "Export selected area as image", True) Then
-        Selections.ExportSelectedAreaAsImage
+        SelectionFiles.ExportSelectedAreaAsImage
         Process_SelectMenu = True
     
     'Export selection mask as image (defaults to PNG, but user can select the actual format)
     ElseIf Strings.StringsEqual(processID, "Export selection mask as image", True) Then
-        Selections.ExportSelectionMaskAsImage
+        SelectionFiles.ExportSelectionMaskAsImage
         Process_SelectMenu = True
     
     ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved

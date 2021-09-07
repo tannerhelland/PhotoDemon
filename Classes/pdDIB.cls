@@ -966,7 +966,7 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
         GDI.FreeMemoryDC m_dibDC
         m_dibDC = 0
     End If
-        
+    
     'Reset all associated DIB section variables
     m_dibHandleOriginal = 0
     m_dibHandle = 0
@@ -983,7 +983,7 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     m_SizeSuspended = 0
     m_SizeUnsuspended = 0
     Erase m_SuspensionBuffer
-    m_IsSuspended = 0
+    m_IsSuspended = False
     
     'Finally, release the memory-mapped file backing the DIB, if one exists
     If (Not m_FileMM Is Nothing) Then m_FileMM.CloseFile
