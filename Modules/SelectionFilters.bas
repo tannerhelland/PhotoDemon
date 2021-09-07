@@ -83,18 +83,29 @@ Public Sub InvertCurrentSelection()
     ' being non-transformable)
     PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Raster
     PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
-    PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
     
+    'Apply any final UI changes
     SetProgBarVal 0
     ReleaseProgressBar
     Message "Selection inversion complete."
-    
-    'Lock in this selection
-    PDImages.GetActiveImage.MainSelection.LockIn
-    PDImages.GetActiveImage.SetSelectionActive True
         
-    'Draw the new selection to the screen
-    Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    'Note that if no selections are found, we want to basically perform a "select none" operation.
+    ' (This can occur if the user performs a Select > All followed by Select > Invert.)
+    If PDImages.GetActiveImage.MainSelection.FindNewBoundsManually() Then
+    
+        'At least one valid selection pixel still exists.  Activate it as the "new" selection.
+        
+        'Lock in this selection
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
+            
+        'Draw the new selection to the screen
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'No selection pixels exist.  Unload any active selection data.
+    Else
+        Selections.RemoveCurrentSelection
+    End If
 
 End Sub
 
