@@ -836,6 +836,12 @@ Private Function HandleMouseDown(ByVal uiMsg As Long, ByVal wParam As Long, ByVa
     'Increment the capture counter
     m_CaptureCounter = m_CaptureCounter + 1
     
+    'If a tooltip window is active on the target window, kill the tooltip immediately *without a timeout animation*;
+    ' this ensures that subsequent mouse events (like _MouseUp) get sent to the correct window.  (Prior to adding
+    ' this check, it was possible for the tooltip window to "eat" subsequent mouse actions by accident, because
+    ' Windows does weird things with mouse messages over windows that are actively animating to a new state.)
+    If UserControls.IsTooltipActive(m_hWnd) Then UserControls.HideUCTooltip True, False
+    
     'If we have not captured the mouse, capture it now
     If ((m_CaptureCounter >= 1) And (Not m_DoNotCaptureOnButtonPress) And (Not m_MouseHasBeenCaptured)) Then
         SetCapture m_hWnd

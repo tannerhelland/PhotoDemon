@@ -1178,7 +1178,8 @@ Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
     
     If m_TTActive And (m_TTHwnd <> 0) Then
         
-        'Hide (but do not unload!) the tooltip window.  The commented out code is for a non-animated approach.
+        'Hide (but do not unload!) the tooltip window.  Animations can be suspended if there are interaction concerns
+        ' (typically if the mouse is over the tooltip window area).
         If useAnimation Then
             AnimateWindow m_TTHwnd, 150&, AW_HIDE Or AW_BLEND
         Else
