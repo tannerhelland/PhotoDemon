@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2021 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 03/May/18
-'Last update: add support for locking width, height, aspect-ratio
+'Last updated: 01/September/21
+'Last update: continue work on multiple selections
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, polygon, lasso and wand selections are
 ' currently implemented.  A selection brush is on my TODO list, pending the addition of selection unions.
@@ -688,7 +688,7 @@ Friend Sub RequestNewMask()
 End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
-' MouseOver events, the current POI (if any) must be obtained manually via Selections.IsCoordSelectionPOI().
+' MouseOver events, the current POI (if any) must be obtained manually via SelectionUI.IsCoordSelectionPOI().
 Friend Function GetActiveSelectionPOI(Optional ByVal onlyReportActiveTransform As Boolean = True) As PD_PointOfInterest
     If onlyReportActiveTransform Then
         If m_TransformModeActive Then GetActiveSelectionPOI = m_CurrentPOI Else GetActiveSelectionPOI = poi_Undefined
@@ -1727,7 +1727,7 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
     m_RejectRefreshRequests = True
     
     Dim subpanelOffset As Long, subpanelCtlOffset As Long
-    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetActiveImage())
+    subpanelOffset = SelectionUI.GetSelectionSubPanelFromSelectionShape(PDImages.GetActiveImage())
     subpanelCtlOffset = subpanelOffset * 2
     
     'Check all text box entries for validity, then update the corresponding selection values.
@@ -2360,7 +2360,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     
     'Transform nodes are only rendered if the current selection shape matches the current selection tool.  (Otherwise, the
     ' selection is treated as "static", and only the default outline/highlight/whatever is drawn.)
-    If (Selections.GetRelevantToolFromSelectShape() = curToolID) Then
+    If (SelectionUI.GetRelevantToolFromSelectShape() = curToolID) Then
         
         'Before drawing the nodes, we need to convert any relevant selection coordinates from "image coordinates" to "viewport coordinates".
         ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
@@ -2658,7 +2658,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         End If
         
         'Next, compare previous and current rendering modes
-        If (m_LastRenderMode <> Selections.GetSelectionRenderMode()) Then m_ViewportRefReady = False
+        If (m_LastRenderMode <> SelectionUI.GetSelectionRenderMode()) Then m_ViewportRefReady = False
         
     End If
     
@@ -2720,15 +2720,15 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
     ' renders the active selection's outline by treating the underlying selection data as a vector path, not a raster mask).
     Dim renderType As PD_SelectionRender, renderColor As Long, renderOpacity As Long
-    renderType = Selections.GetSelectionRenderMode()
+    renderType = SelectionUI.GetSelectionRenderMode()
     m_LastRenderMode = renderType
     
     If (renderType = PDSR_Highlight) Then
-        renderColor = Selections.GetSelectionColor_Highlight()
-        renderOpacity = Selections.GetSelectionOpacity_Highlight()
+        renderColor = SelectionUI.GetSelectionColor_Highlight()
+        renderOpacity = SelectionUI.GetSelectionOpacity_Highlight()
     Else
-        renderColor = Selections.GetSelectionColor_Lightbox()
-        renderOpacity = Selections.GetSelectionOpacity_Lightbox()
+        renderColor = SelectionUI.GetSelectionColor_Lightbox()
+        renderOpacity = SelectionUI.GetSelectionOpacity_Lightbox()
     End If
     
     'We use the RASTER OVERLAY FUNCTION if...

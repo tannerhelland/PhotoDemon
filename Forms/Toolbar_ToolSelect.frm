@@ -838,7 +838,7 @@ Private Sub NewToolSelected()
 
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
-                If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
+                If (g_CurrentTool = SelectionUI.GetRelevantToolFromSelectShape()) Then
                     SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable
 
                 'A selection is already active, and it doesn't match the current tool type!
@@ -850,11 +850,11 @@ Private Sub NewToolSelected()
                         
                         'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
                         ' against the current selection's settings.
-                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
                         
                     ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
                         PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
-                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+                        SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 
                     End If
                     
@@ -1062,7 +1062,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     Dim activeSelectionSubpanel As Long
     If Tools.IsSelectionToolActive Then
     
-        activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool()
+        activeSelectionSubpanel = SelectionUI.GetSelectionSubPanelFromCurrentTool()
         
         For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
             toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = (i = activeSelectionSubpanel)

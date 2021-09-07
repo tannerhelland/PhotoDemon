@@ -975,9 +975,6 @@ End Sub
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
 Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     
-    'TODO: if DIB is suspended, kill the suspended data first?
-    'If m_IsSuspended Then ???
-    
     'If we have image data, clear it out
     If (m_dibHandle <> 0) Then
         
@@ -994,7 +991,7 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
         GDI.FreeMemoryDC m_dibDC
         m_dibDC = 0
     End If
-        
+    
     'Reset all associated DIB section variables
     m_dibHandleOriginal = 0
     m_dibHandle = 0
@@ -1011,7 +1008,7 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     m_SizeSuspended = 0
     m_SizeUnsuspended = 0
     Erase m_SuspensionBuffer
-    m_IsSuspended = 0
+    m_IsSuspended = False
     
     'Finally, release the memory-mapped file backing the DIB, if one exists
     m_FileMM.CloseFile

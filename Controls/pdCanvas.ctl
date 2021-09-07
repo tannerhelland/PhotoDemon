@@ -683,7 +683,7 @@ Private Sub CanvasView_DoubleClickCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     DisplayImageCoordinates x, y, PDImages.GetActiveImage(), Me, imgX, imgY
     
-    If (g_CurrentTool = SELECT_POLYGON) Then Selections.NotifySelectionMouseDblClick Me, imgX, imgY
+    If (g_CurrentTool = SELECT_POLYGON) Then SelectionUI.NotifySelectionMouseDblClick Me, imgX, imgY
     
 End Sub
 
@@ -896,7 +896,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
+                SelectionUI.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
             Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
@@ -946,7 +946,7 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
             
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
+                SelectionUI.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
                 
             'Pencil and paint tools redraw cursors under certain conditions
             Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_GRADIENT
@@ -1044,7 +1044,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseDown Me, imgX, imgY
+                SelectionUI.NotifySelectionMouseDown Me, imgX, imgY
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
             Case TEXT_BASIC, TEXT_ADVANCED
@@ -1152,7 +1152,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
         Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-            Selections.NotifySelectionMouseLeave Me
+            SelectionUI.NotifySelectionMouseLeave Me
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
@@ -1210,7 +1210,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
+                SelectionUI.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Text layers are identical to the move tool
             Case TEXT_BASIC, TEXT_ADVANCED
@@ -1269,7 +1269,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 
                 'Selection tools
                 Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                    Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
+                    SelectionUI.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
                     
                 'Text tools
                 Case TEXT_BASIC, TEXT_ADVANCED
@@ -1349,7 +1349,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
             'Selection tools have their own dedicated handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
+                SelectionUI.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
                 
             'Text layers
             Case TEXT_BASIC, TEXT_ADVANCED
