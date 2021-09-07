@@ -144,8 +144,9 @@ Attribute VB_Exposed = False
 'Monochrome Conversion Form
 'Copyright 2002-2021 by Tanner Helland
 'Created: some time 2002
-'Last updated: 02/April/18
-'Last update: add "single neighbor" as a dithering option
+'Last updated: 07/September/21
+'Last update: change "auto threshold" calculation to use Otsu's method (https://en.wikipedia.org/wiki/Otsu%27s_method);
+'              this provides better results with no meaningful change to calculation time or complexity
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -157,23 +158,31 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Used to avoid recursive changes
+Dim m_AutoActive As Boolean
+
 Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
     UpdatePreview
 End Sub
 
 Private Sub cboDither_Click()
-    If chkAutoThreshold.Value Then sltThreshold.Value = CalculateOptimalThreshold()
     sldDitheringAmount.Visible = (cboDither.ListIndex <> 0)
     UpdatePreview
 End Sub
 
-'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
+'When the auto threshold button is clicked, calculate the optimal value immediately and set the
+' threshold slider to match whatever value we calculate
 Private Sub chkAutoThreshold_Click()
+    
+    m_AutoActive = True
     cmdBar.SetPreviewStatus False
+    
     If chkAutoThreshold.Value Then sltThreshold.Value = CalculateOptimalThreshold()
-    sltThreshold.Enabled = Not chkAutoThreshold.Value
+    
+    m_AutoActive = False
     cmdBar.SetPreviewStatus True
     UpdatePreview
+    
 End Sub
 
 'OK button
@@ -202,8 +211,10 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Function GetFunctionParamString() As String
+    
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
+    
     With cParams
         .AddParam "threshold", sltThreshold.Value
         .AddParam "dither", cboDither.ListIndex
@@ -212,7 +223,9 @@ Private Function GetFunctionParamString() As String
         .AddParam "color2", csMono(1).Color
         .AddParam "removetransparency", (btsTransparency.ListIndex = 1)
     End With
+    
     GetFunctionParamString = cParams.GetParamString
+    
 End Function
 
 Private Sub csMono_ColorChanged(Index As Integer)
@@ -242,7 +255,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Calculate the optimal threshold for the current image
+'Calculate the optimal threshold for the current image (using Otsu's method - https://en.wikipedia.org/wiki/Otsu%27s_method)
 Private Function CalculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
@@ -285,25 +298,59 @@ Private Function CalculateOptimalThreshold() As Long
     'Safely deallocate imageData() and free the target DIB (as it's no longer needed)
     workingDIB.UnwrapArrayFromDIB imageData
     Set workingDIB = Nothing
+    
+    'Next, use Otsu's method for finding the ideal threshold value.
+    ' Thank you to https://en.wikipedia.org/wiki/Otsu%27s_method
+    ' and http://www.labbookpages.co.uk/software/imgProc/otsuThreshold.html
+    ' for a nice breakdown of how Otsu thresholding can be efficiently implemented.
+    Dim hSum As Double
+    For x = 0 To 255
+        hSum = hSum + CDbl(x) * CDbl(lLookup(x))
+    Next x
+    
+    Dim sumB As Double
+    Dim wB As Long, wF As Long  '"Background" and "Foreground"
+    
+    Dim varMax As Double
+    CalculateOptimalThreshold = 0
+    
+    For x = 0 To 255
+        
+        'Update background tracker
+        wB = wB + lLookup(x)
+        If (wB > 0) Then
+        
+            'Update foreground tracker
+            wF = numOfPixels - wB
+            If (wF > 0) Then        'Required to avoid DBZ
+                
+                'Sum of histogram to this point
+                sumB = sumB + CDbl(x) * CDbl(lLookup(x))
+                
+                'Calculate background and foreground variance
+                Dim mB As Double, mF As Double
+                mB = sumB / wB
+                mF = (hSum - sumB) / wF
+                
+                'Calculate between-class variance; this can be proven (algebraically) to correlate
+                ' with within-class variance; see the above links for details
+                Dim varBetween As Double
+                varBetween = CDbl(wB) * CDbl(wF) * (mB - mF) * (mB - mF)
+                
+                'Look for new max
+                If (varBetween > varMax) Then
+                    varMax = varBetween
+                    CalculateOptimalThreshold = x
+                    Debug.Print varMax, x
+                End If
             
-    'We want to find the midpoint of the current histogram; divide the number of pixels by two
-    numOfPixels = numOfPixels \ 2
-    
-    Dim pixelCount As Long
-    pixelCount = 0
-    x = 0
-                    
-    'Loop through the histogram table until we have moved past half the pixels in the image
-    Do
-        pixelCount = pixelCount + lLookup(x)
-        x = x + 1
-    Loop While pixelCount < numOfPixels
-    
-    'Make sure our suggestion doesn't go too high; 220 is an arbitrarily selected value that's
-    ' near-white but not actually white
-    If (x > 254) Then x = 220
-    
-    CalculateOptimalThreshold = x
+            'wF = 0
+            End If
+            
+        'wB = 0
+        End If
+        
+    Next x
         
 End Function
 
@@ -336,7 +383,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     
     'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
     Dim alphaAlreadyPremultiplied As Boolean: alphaAlreadyPremultiplied = False
-    If (removeTransparency And (curDIBValues.BytesPerPixel = 4)) Then
+    If (removeTransparency And (curDIBValues.bytesPerPixel = 4)) Then
         EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , True
         workingDIB.CompositeBackgroundColor 255, 255, 255
         alphaAlreadyPremultiplied = True
@@ -652,7 +699,10 @@ Private Sub sldDitheringAmount_Change()
 End Sub
 
 Private Sub sltThreshold_Change()
-    UpdatePreview
+    If (Not m_AutoActive) Then
+        chkAutoThreshold.Value = False
+        UpdatePreview
+    End If
 End Sub
 
 Private Sub UpdatePreview()
