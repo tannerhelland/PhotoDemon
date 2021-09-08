@@ -1961,6 +1961,10 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         If raiseDialog Then ShowPDDialog vbModal, FormCurves Else FormCurves.ApplyCurveToImage processParameters
         Process_AdjustmentsMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Dehaze", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormDehaze Else FormDehaze.ApplyDehaze processParameters
+        Process_AdjustmentsMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Exposure", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormExposure Else FormExposure.Exposure processParameters
         Process_AdjustmentsMenu = True
