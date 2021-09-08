@@ -750,7 +750,7 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean, Optiona
                 'As a failsafe, make sure a valid URL was actually found
                 If (urlStart > 0) And (urlEnd > 0) Then
                     
-                    ClipboardPaste_HTML = ClipboardPaste_WellFormedURL(Mid$(htmlString, urlStart, urlEnd - urlStart), srcIsMeantAsLayer)
+                    ClipboardPaste_HTML = ClipboardPaste_WellFormedURL(Mid$(htmlString, urlStart, urlEnd - urlStart), srcIsMeantAsLayer, True, pasteToThisDIBInstead)
                 
                 'An image tag was found, but a parsing error occurred when trying to strip out the source URL.  This is okay;
                 ' exit immediately without raising any errors.
