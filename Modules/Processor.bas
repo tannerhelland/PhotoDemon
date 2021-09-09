@@ -1472,9 +1472,15 @@ Private Function Process_EditMenu(ByRef processID As String, Optional ByVal rais
     ' parameters to the function; those parameters contain cursor x/y position, if any - and if
     ' the paste function receives them, it will perform a "paste to cursor" op instead.)
     ElseIf Strings.StringsEqual(processID, "Paste", True) Then
-        Dim pasteResult As Boolean
-        pasteResult = g_Clipboard.ClipboardPaste(PDImages.IsImageActive())
-        If (PDImages.IsImageActive And (Not pasteResult)) Then createUndo = UNDO_Nothing
+        
+        'Note if an image is active.  If one is *not* active, we will attempt to "paste as new image" instead
+        Dim origState As Boolean: origState = PDImages.IsImageActive()
+        
+        'Perform the paste
+        Dim pasteResult As Boolean: pasteResult = g_Clipboard.ClipboardPaste(PDImages.IsImageActive())
+        
+        'If an image is now loaded and 1) it wasn't originally, or 2) the paste failed, abandon Undo/Redo tagging
+        If (PDImages.IsImageActive And ((Not origState) Or (Not pasteResult))) Then createUndo = UNDO_Nothing
         Process_EditMenu = True
     
     '"Paste to cursor" is identical to "paste", except we ensure process parameters get passed
