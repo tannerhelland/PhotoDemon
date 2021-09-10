@@ -438,7 +438,7 @@ Private Function EstimateAtmosphericLighting(ByRef srcDIB As pdDIB, ByRef dstAtm
         .Bottom = finalY
     End With
     
-    Dim maxMean As Single, curMean As Single, testMean As Single
+    Dim curMean As Single, testMean As Single
     
     'Ensure the initial rect is a valid size; if it *isn't*, immediately return the average value.
     If ((curRect.Bottom - curRect.Top + 1) <= MinSize) Or ((curRect.Right - curRect.Left + 1) < MinSize) Then
