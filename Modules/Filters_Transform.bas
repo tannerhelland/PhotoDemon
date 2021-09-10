@@ -258,7 +258,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
             If selectionIsPureRectangle Then
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0!)
                 selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Area) = sa_Interior)
-                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Smoothing) = es_None)
+                selectionIsPureRectangle = selectionIsPureRectangle And ((.GetSelectionProperty_Long(sp_Smoothing) = es_None) Or (.GetSelectionProperty_Long(sp_Smoothing) = es_Antialiased))
             End If
             
             'If that huge list of above criteria are met, we can apply a non-destructive crop operation.
