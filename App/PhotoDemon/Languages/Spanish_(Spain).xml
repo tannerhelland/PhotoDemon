@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>español (España)</langname>
-<langversion>8.0.60</langversion>
+<langversion>8.0.61</langversion>
 <langstatus>completo</langstatus>
 
 <author>Tecnorama (with help from DeepL.com)</author>
@@ -1899,6 +1899,11 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 </phrase>
 
 <phrase>
+<original>Dehaze</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Exposure</original>
 <translation>Exposición</translation>
 </phrase>
@@ -2393,7 +2398,7 @@ En la versión 6.0 del programa, los archivos de macro PhotoDemon fueron redise�
 <translation>Borrar lista de macros recientes</translation>
 </phrase>
 
-<!-- Menus.bas contains 275 phrases. 33 were duplicates of existing phrases, so only 242 new phrases were written to file. -->
+<!-- Menus.bas contains 276 phrases. 33 were duplicates of existing phrases, so only 243 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5594,7 +5599,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 380 phrases. 199 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 382 phrases. 201 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13636,12 +13641,24 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Tools_ScreenVideoPrefs.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>foreground</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Removing haze from image</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2581</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5314 phrases. -->
-<!-- 2733 are duplicates, so only 2581 unique phrases have been written to file. -->
-<!-- These 2581 phrases contain approximately 11865 total words. -->
+<!-- As of this build, PhotoDemon contains 5324 phrases. -->
+<!-- 2740 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 11871 total words. -->
 
 </pdData>

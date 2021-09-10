@@ -1019,24 +1019,28 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Exposure..."
+            Caption         =   "Dehaze..."
             Index           =   2
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Gamma..."
+            Caption         =   "Exposure..."
             Index           =   3
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "HDR..."
+            Caption         =   "Gamma..."
             Index           =   4
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Levels..."
+            Caption         =   "HDR..."
             Index           =   5
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Shadows and highlights..."
+            Caption         =   "Levels..."
             Index           =   6
+         End
+         Begin VB.Menu MnuLighting 
+            Caption         =   "Shadows and highlights..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -3760,14 +3764,16 @@ Private Sub MnuLighting_Click(Index As Integer)
         Case 1
             Menus.ProcessDefaultAction_ByName "adj_curves"
         Case 2
-            Menus.ProcessDefaultAction_ByName "adj_exposure"
+            Menus.ProcessDefaultAction_ByName "adj_dehaze"
         Case 3
-            Menus.ProcessDefaultAction_ByName "adj_gamma"
+            Menus.ProcessDefaultAction_ByName "adj_exposure"
         Case 4
-            Menus.ProcessDefaultAction_ByName "adj_hdr"
+            Menus.ProcessDefaultAction_ByName "adj_gamma"
         Case 5
-            Menus.ProcessDefaultAction_ByName "adj_levels"
+            Menus.ProcessDefaultAction_ByName "adj_hdr"
         Case 6
+            Menus.ProcessDefaultAction_ByName "adj_levels"
+        Case 7
             Menus.ProcessDefaultAction_ByName "adj_sandh"
     End Select
 End Sub

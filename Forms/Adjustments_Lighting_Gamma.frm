@@ -135,10 +135,10 @@ Attribute VB_Exposed = False
 'Gamma Correction Handler
 'Copyright 2000-2021 by Tanner Helland
 'Created: 12/May/01
-'Last updated: 29/April/20
-'Last update: theme display graph; minor perf improvements
+'Last updated: 09/September/21
+'Last update: subtle improvements to rounding when converting from float-to-int
 '
-'Gamma correction isn't exactly rocket science, but it's an important part of any good editing tool.
+'Gamma correction isn't exactly rocket science, but it's an important part of any photo editor.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -229,11 +229,6 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     If (gGamma < GAMMA_MIN) Then gGamma = GAMMA_MIN
     If (bGamma < GAMMA_MIN) Then bGamma = GAMMA_MIN
     
-    'Divisions are expensive, so invert gamma values in advance
-    rGamma = 1# / rGamma
-    gGamma = 1# / gGamma
-    bGamma = 1# / bGamma
-    
     'Gamma can be easily applied using look-up tables
     Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
     ReDim rLookup(0 To 255) As Byte: ReDim gLookup(0 To 255) As Byte: ReDim bLookup(0 To 255) As Byte
@@ -242,12 +237,10 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
     For x = 0 To 255
         
         rTmp = x / 255#
-        gTmp = rTmp
-        bTmp = rTmp
         
-        rTmp = rTmp ^ rGamma
-        gTmp = gTmp ^ gGamma
-        bTmp = bTmp ^ bGamma
+        rTmp = rTmp ^ (1# / rGamma)
+        gTmp = rTmp ^ (1# / gGamma)
+        bTmp = rTmp ^ (1# / bGamma)
         
         rTmp = rTmp * 255#
         gTmp = gTmp * 255#
@@ -255,15 +248,15 @@ Public Sub GammaCorrect(ByVal effectParams As String, Optional ByVal toPreview A
         
         If (rTmp < 0#) Then rTmp = 0#
         If (rTmp > 255#) Then rTmp = 255#
-        rLookup(x) = rTmp
+        rLookup(x) = Int(rTmp + 0.5)
         
         If (gTmp < 0#) Then gTmp = 0#
         If (gTmp > 255#) Then gTmp = 255#
-        gLookup(x) = gTmp
+        gLookup(x) = Int(gTmp + 0.5)
         
         If (bTmp < 0#) Then bTmp = 0#
         If (bTmp > 255#) Then bTmp = 255#
-        bLookup(x) = bTmp
+        bLookup(x) = Int(bTmp + 0.5)
         
     Next x
         

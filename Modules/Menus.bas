@@ -406,11 +406,12 @@ Public Sub InitializeMenus()
     AddMenuItem "Lighting", "adj_lighting", 5, 16
         AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 16, 0
         AddMenuItem "Curves...", "adj_curves", 5, 16, 1
-        AddMenuItem "Exposure...", "adj_exposure", 5, 16, 2
-        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 3
-        AddMenuItem "HDR...", "adj_hdr", 5, 16, 4
-        AddMenuItem "Levels...", "adj_levels", 5, 16, 5
-        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 6
+        AddMenuItem "Dehaze...", "adj_dehaze", 5, 16, 2
+        AddMenuItem "Exposure...", "adj_exposure", 5, 16, 3
+        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 4
+        AddMenuItem "HDR...", "adj_hdr", 5, 16, 5
+        AddMenuItem "Levels...", "adj_levels", 5, 16, 6
+        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 7
     AddMenuItem "Monochrome", "adj_monochrome", 5, 17
         AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 17, 0
         AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 17, 1
@@ -2595,7 +2596,6 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 Process "Shift colors (right)", , , UNDO_Layer
                 
         Case "adj_color"
-        
             'Case "adj_colorbalance"    'Covered by parent menu
             'Case "adj_whitebalance"    'Covered by parent menu
             
@@ -2651,8 +2651,10 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 
         Case "adj_lighting"
             'Case "adj_bandc"   'Covered by parent menu
-            
             'Case "adj_curves"  'Covered by parent menu
+            
+            Case "adj_dehaze"
+                Process "Dehaze", True
             
             Case "adj_exposure"
                 Process "Exposure", True
@@ -2664,7 +2666,6 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
                 Process "HDR", True
                 
             'Case "adj_levels"  'Covered by parent menu
-            
             'Case "adj_sandh"   'Covered by parent menu
             
         Case "adj_monochrome"
