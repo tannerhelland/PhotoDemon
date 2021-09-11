@@ -2160,7 +2160,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     'Crop operations.  Note that the main form submits "Crop" requests with raiseDialog set to TRUE.  This tells us to ask the
     ' crop handler if a non-destructive crop is possible.  It will then submit a second "Crop" requests with raiseDialog set to FALSE.
     ElseIf Strings.StringsEqual(processID, "Crop", True) Then
-        If raiseDialog Then Filters_Transform.SeeIfCropCanBeAppliedNonDestructively processParameters Else Filters_Transform.CropToSelection_XML processParameters
+        If raiseDialog Then Filters_Transform.SeeIfCropCanBeAppliedNonDestructively Else Filters_Transform.CropToSelection_XML processParameters
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Trim empty image borders", True) Then
