@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.683</langversion>
+<langversion>9.0.702</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1900,7 +1900,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Dunst entfernen (Dehaze)</translation>
 </phrase>
 
 <phrase>
@@ -2340,12 +2340,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Animation background</original>
-<translation>Animations-Hintergrund</translation>
+<translation>Animation Hintergrund</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation>Animations-Vordergrund</translation>
+<translation>Animation Vordergrund</translation>
 </phrase>
 
 <phrase>
@@ -13643,12 +13643,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>foreground</original>
-<translation></translation>
+<translation>Vordergrund</translation>
 </phrase>
 
 <phrase>
 <original>Removing haze from image</original>
-<translation></translation>
+<translation>Entfernung des Dunstes aus Bild</translation>
 </phrase>
 
 <!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
