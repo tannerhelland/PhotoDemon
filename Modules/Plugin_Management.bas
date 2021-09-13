@@ -22,9 +22,14 @@ Attribute VB_Name = "PluginManager"
 
 Option Explicit
 
+'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum),
+' so if you add or remove a plugin, YOU MUST update this.
+Private Const CORE_PLUGIN_COUNT As Long = 13
+
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
 Public Enum CORE_PLUGINS
+    CCP_CharLS
     CCP_ExifTool
     CCP_EZTwain
     CCP_FreeImage
@@ -40,7 +45,7 @@ Public Enum CORE_PLUGINS
 End Enum
 
 #If False Then
-    Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
+    Private Const CCP_AvifExport = 0, CCP_AvifImport = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
     Private Const CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_OptiPNG = 0, CCP_PNGQuant = 0, CCP_pspiHost = 0, CCP_zstd = 0
 #End If
 
@@ -48,6 +53,7 @@ End Enum
 ' the plugin is available, obviously).
 Private Const EXPECTED_AVIFE_VERSION As String = "0.9.0"
 Private Const EXPECTED_AVIFI_VERSION As String = "0.9.0"
+Private Const EXPECTED_CHARLS_VERSION As String = "2.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.16"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
@@ -58,10 +64,6 @@ Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_ZSTD_VERSION As String = "10500"
-
-'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
-' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 12
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
@@ -188,6 +190,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "avifenc.exe"
         Case CCP_AvifImport
             GetPluginFilename = "avifdec.exe"
+        Case CCP_CharLS
+            GetPluginFilename = "charls-2-x86.dll"
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
         Case CCP_EZTwain
@@ -217,6 +221,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "libavif export"
         Case CCP_AvifImport
             GetPluginName = "libavif import"
+        Case CCP_CharLS
+            GetPluginName = "CharLS"
         Case CCP_ExifTool
             GetPluginName = "ExifTool"
         Case CCP_EZTwain
@@ -259,6 +265,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         
         Case CCP_AvifImport
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(False)
+        
+        'CharLS provides a dedicated version-checking function
+        Case CCP_CharLS
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_CharLS.GetVersion()
         
         'ExifTool can write its version number to stdout
         Case CCP_ExifTool
@@ -325,9 +335,12 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_AvifImport
             dstStringStack.AddString "avif-LICENSE.txt"
         
+        Case CCP_CharLS
+            dstStringStack.AddString "charls-2-x86.LICENSE.md"
+        
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"
-                    
+            
         Case CCP_EZTwain
             dstStringStack.AddString "eztwain-README.txt"
         
@@ -381,6 +394,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = m_avifExportEnabled
         Case CCP_AvifImport
             IsPluginCurrentlyEnabled = m_avifImportEnabled
+        Case CCP_CharLS
+            IsPluginCurrentlyEnabled = Plugin_CharLS.IsCharLSEnabled()
         Case CCP_ExifTool
             IsPluginCurrentlyEnabled = m_ExifToolEnabled
         Case CCP_EZTwain
@@ -413,6 +428,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             m_avifExportEnabled = newEnabledState
         Case CCP_AvifImport
             m_avifImportEnabled = newEnabledState
+        Case CCP_CharLS
+            Plugin_CharLS.ForciblySetAvailability newEnabledState
         Case CCP_ExifTool
             m_ExifToolEnabled = newEnabledState
         Case CCP_EZTwain
@@ -451,6 +468,8 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             IsPluginHighPriority = False
         Case CCP_AvifImport
             IsPluginHighPriority = False
+        Case CCP_CharLS
+            IsPluginHighPriority = False
         Case CCP_ExifTool
             IsPluginHighPriority = False
         Case CCP_EZTwain
@@ -482,6 +501,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_AVIFE_VERSION
         Case CCP_AvifImport
             ExpectedPluginVersion = EXPECTED_AVIFI_VERSION
+        Case CCP_CharLS
+            ExpectedPluginVersion = EXPECTED_CHARLS_VERSION
         Case CCP_ExifTool
             ExpectedPluginVersion = EXPECTED_EXIFTOOL_VERSION
         Case CCP_EZTwain
@@ -512,6 +533,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
         Case CCP_AvifImport
             GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
+        Case CCP_CharLS
+            GetPluginHomepage = "https://github.com/team-charls/charls"
         Case CCP_ExifTool
             GetPluginHomepage = "https://exiftool.org/"
         Case CCP_EZTwain
@@ -541,6 +564,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
         Case CCP_AvifExport
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_AvifImport
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_CharLS
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_ExifTool
             GetPluginLicenseName = g_Language.TranslateMessage("artistic license")
@@ -572,6 +597,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
         Case CCP_AvifImport
             GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
+        Case CCP_CharLS
+            GetPluginLicenseURL = "https://github.com/team-charls/charls/blob/master/LICENSE.md"
         Case CCP_ExifTool
             GetPluginLicenseURL = "http://dev.perl.org/licenses/artistic.html"
         Case CCP_EZTwain
@@ -617,6 +644,9 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         Case CCP_AvifImport
             If Plugin_AVIF.InitializeEngines(PluginManager.GetPluginPath()) Then initializationSuccessful = Plugin_AVIF.IsAVIFImportAvailable()
+        
+        Case CCP_CharLS
+            initializationSuccessful = Plugin_CharLS.InitializeEngine(PluginManager.GetPluginPath())
         
         'Unlike most plugins, ExifTool is an .exe file.  Because we interact with it asynchronously,
         ' we start it now, then leave it in "wait" mode.
@@ -681,6 +711,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             
         Case CCP_AvifImport
             m_avifImportEnabled = pluginState
+        
+        Case CCP_CharLS
+            Plugin_CharLS.ForciblySetAvailability pluginState
         
         Case CCP_ExifTool
             m_ExifToolEnabled = pluginState
