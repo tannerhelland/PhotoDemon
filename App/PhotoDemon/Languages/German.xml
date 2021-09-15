@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>9.0.702</langversion>
+<langversion>9.0.703</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1105,7 +1105,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Session aufgezeichneten Aktionen permanent verloren sein. Sind Sie sicher, dass Sie abbrechen wollen?
 
-(Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
+(Drücken Sie "Nein", um zum Screen "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später jederzeit löschen können, wenn Sie sich entscheiden, dass Sie es nicht wollen.)</translation>
 </phrase>
 
 <phrase>
@@ -1168,7 +1168,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgezeichnete Makros nicht länger kompatibel sind. Sie werden diese Makros von Grund auf neu aufzeichnen müssen.
 
-(Hinweis: Beliebige alte Makrodateien werden trotzdem in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
+(Beachten Sie, dass beliebige alte Makrodateien immer noch in alten Versionen von PhotoDemon funktionieren werden, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
 </phrase>
 
 <phrase>
@@ -2562,7 +2562,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 Please make sure the device is turned on and ready for use.</original>
 <translation>Der ausgewählte Scanner oder die ausgewählte Digitalkamera reagieren nicht.
 
-Bitte stellen Sie sicher, dass das Gerät eingeschaltet und bereit für die Nutzung ist.</translation>
+Bitte achten Sie darauf, dass das Gerät eingeschaltet und einsatzbereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -2596,7 +2596,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Bitte stellen Sie sicher, dass Ihr Scanner eingeschaltet und bereit für die Nutzung ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Bitte achten Sie darauf, dass Ihr Scanner eingeschaltet und einsatzbereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -2606,7 +2606,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Bitte stellen Sie sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte achten Sie darauf, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2626,7 +2626,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Bitte besuchen Sie http://www.eztwain.com für mehr Informationen.</translation>
+<translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Bitte besuchen Sie http://www.eztwain.com für weitere Informationen.</translation>
 </phrase>
 
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -3116,7 +3116,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als animiertes.</translation>
+<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als animiertes Bild.</translation>
 </phrase>
 
 <phrase>
@@ -9646,7 +9646,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie sich dafür entscheiden, Bilder in einem neuen Format zu speichern, achten Sie bitte darauf, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -9691,7 +9691,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie abbrechen möchten, werden alle verarbeiteten Bilder trotzdem im Ausgabeordner vorhanden sein, so müssen Sie diese manuell entfernen.</translation>
+<translation>Sie können die Batchverarbeitung zu jeder Zeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie sich dafür entscheiden, abzubrechen, werden alle verarbeiteten Bilder immer noch im Ausgabeordner vorhanden sein, so müssen Sie diese eventuell manuell entfernen.</translation>
 </phrase>
 
 <phrase>
@@ -9954,7 +9954,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
-<translation>Diese URL ist nicht gültig. Bitte stellen Sie sicher, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
+<translation>Diese URL ist nicht gültig. Bitte achten Sie darauf, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
 </phrase>
 
 <phrase>
@@ -10085,7 +10085,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation>%1 konnte das Bild nicht drucken. Bitte stellen Sie sicher, dass der spezifizierte Drucker (%2) eingeschaltet und bereit zum Drucken ist.</translation>
+<translation>%1 konnte das Bild nicht drucken. Bitte achten Sie darauf, dass der spezifizierte Drucker (%2) eingeschaltet und bereit zum Drucken ist.</translation>
 </phrase>
 
 <phrase>
@@ -12684,7 +12684,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im Benutzersprachen-Ordner von PhotoDemon erstellt. Dies bedeutet, Sie können das Programm jederzeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
+<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im Benutzersprachen-Ordner von PhotoDemon erstellt. Dies bedeutet, Sie können das Programm zu jeder Zeit beenden, ohne Ihre Arbeit zu verlieren.</translation>
 </phrase>
 
 <phrase>
@@ -13377,7 +13377,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist eine portable Applikation, es kann nur nach Updates gesucht werden, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
+<translation>Da PhotoDemon eine portable Applikation ist, kann diese nur nach Updates suchen, wenn das Programm ausgeführt wird. Defaultmäßig wird PhotoDemon nach Updates suchen, wann immer das Programm gestartet wird, aber Sie können diese Frequenz reduzieren, falls gewünscht.</translation>
 </phrase>
 
 <phrase>
@@ -13420,7 +13420,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
 <translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neuesten Versionsnummern von Software, Plug-ins und Sprachen. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
-Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
+Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>
